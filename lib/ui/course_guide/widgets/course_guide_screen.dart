@@ -444,6 +444,8 @@ class _LessonTab extends StatelessWidget {
               ? t.trainingResumeLabel(sectionLabel, index, resumeStageLabel)
               : lesson.kind == TrainingLessonKind.test
               ? sectionLabel
+              : modules
+              ? t.trainingModuleLesson(sectionLabel, index)
               : t.trainingPartLesson(index, sectionLabel),
           title: needsProfile
               ? t.trainingProfileMomentTitle
@@ -527,6 +529,7 @@ class _CatalogTabState extends State<_CatalogTab> {
           if (!modules || expanded.contains(group.key)) ...[
             if (modules)
               Padding(
+                key: CourseGuideKeys.module(group.key),
                 padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
                 child: Text(
                   '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}'
@@ -548,8 +551,7 @@ class _CatalogTabState extends State<_CatalogTab> {
                 ),
               ),
             const SizedBox(height: 8),
-            for (final (lessonIndex, lesson)
-                in data.where((l) => l.groupId == group.key).indexed) ...[
+            for (final lesson in data.where((l) => l.groupId == group.key)) ...[
               CourseItemTile(
                 key: CourseGuideKeys.chapterLesson(lesson.id),
                 state: completed.containsKey(lesson.id)
@@ -560,10 +562,7 @@ class _CatalogTabState extends State<_CatalogTab> {
                           : CourseItemState.started
                     : CourseItemState.open,
                 title: modules
-                    ? context.l10n.trainingLessonLabel(
-                        lessonIndex + 1,
-                        lesson.title,
-                      )
+                    ? lesson.title
                     : lesson.kind == TrainingLessonKind.test
                     ? context.l10n.trainingChapterTestTitle
                     : lesson.title,

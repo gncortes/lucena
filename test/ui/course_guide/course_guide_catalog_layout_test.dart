@@ -118,7 +118,7 @@ void main() {
               find.byKey(CourseGuideKeys.chapterLesson('a1')),
             )
             .title,
-        'Lição 1 · Aula a1',
+        'Aula a1',
       );
       await cubit.selectTab(CourseGuideTab.lesson);
       await tester.pumpAndSettle();
@@ -126,7 +126,7 @@ void main() {
         tester
             .widget<CourseContinueCard>(find.byType(CourseContinueCard))
             .label,
-        'Módulo 2 · lição 1',
+        'Módulo 2 · Lição 1',
       );
       expect(tester.takeException(), isNull);
     },

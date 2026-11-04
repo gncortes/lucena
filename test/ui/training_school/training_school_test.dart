@@ -130,7 +130,7 @@ void main() {
       for (final phrase in [
         'a próxima lição, sempre aqui.',
         'o que fazer hoje.',
-        'as lições feitas e as estrelas.',
+        'as lições feitas e as estrelas por peça.',
         'todas as lições do curso.',
       ]) {
         expect(find.textContaining(phrase), findsOneWidget);
@@ -145,7 +145,7 @@ void main() {
       );
       await cubit.load();
       await tester.pumpAndSettle();
-      expect(find.text('Módulo 1 · lição 1'), findsOneWidget);
+      expect(find.text('Módulo 1 · Lição 1'), findsOneWidget);
       await tester.tap(find.byKey(CourseGuideKeys.tab('catalog')));
       await tester.pumpAndSettle();
       expect(find.text('MÓDULO 1 · PEÇAS'), findsOneWidget);
@@ -187,7 +187,7 @@ void main() {
         if (stateName == 'done') {
           expect(find.byKey(TrainingKeys.doubleButton), findsOneWidget);
           expect(
-            find.text('Entram hoje mais 4 lições e os desafios delas.'),
+            find.text('Entram hoje mais quatro lições e os desafios delas.'),
             findsOneWidget,
           );
           await tester.tap(find.byKey(TrainingKeys.doubleButton));

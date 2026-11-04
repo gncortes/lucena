@@ -9868,7 +9868,7 @@
   "@courseGuideTabGoals": {
     "description": "T85 course guide: courseGuideTabGoals."
   },
-  "courseGuideTabProgress": "Progress",
+  "courseGuideTabProgress": "Statistics",
   "@courseGuideTabProgress": {
     "description": "T85 course guide: courseGuideTabProgress."
   },
@@ -9976,6 +9976,18 @@
         "type": "int"
       },
       "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingModuleLesson": "{module} · Lesson {n}",
+  "@trainingModuleLesson": {
+    "description": "Escola lesson card label: module name and lesson number inside the module.",
+    "placeholders": {
+      "module": {
+        "type": "String"
+      },
+      "n": {
         "type": "int"
       }
     }
@@ -10923,7 +10935,7 @@
   "@trainingEscolaDayOffInfo": {
     "description": "T85 Viktor School daily training: trainingEscolaDayOffInfo."
   },
-  "trainingEscolaTabsProgress": "completed lessons and stars.",
+  "trainingEscolaTabsProgress": "completed lessons and stars per piece.",
   "@trainingEscolaTabsProgress": {
     "description": "T85 Viktor School daily training: trainingEscolaTabsProgress."
   },
@@ -10967,10 +10979,13 @@
   "@trainingEscolaTabsCatalog": {
     "description": "T85 Viktor School daily training: trainingEscolaTabsCatalog."
   },
-  "trainingEscolaDoubleBody": "Another {n} lessons and their challenges are added today.",
+  "trainingEscolaDoubleBody": "Another {words, select, w1{one lesson} w2{two lessons} w3{three lessons} w4{four lessons} w5{five lessons} w6{six lessons} other{{n} lessons}} and their challenges are added today.",
   "@trainingEscolaDoubleBody": {
-    "description": "T85 Viktor School daily training: trainingEscolaDoubleBody.",
+    "description": "T85 Viktor School daily training: offer to double the goals. words is w1..w6 for the spelled-out count (any other value falls back to the digit n).",
     "placeholders": {
+      "words": {
+        "type": "String"
+      },
       "n": {
         "type": "int"
       }
