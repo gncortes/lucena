@@ -1,3 +1,4 @@
+import '../../core/theme/app_bar_height.dart';
 import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/load_error.dart';
 
@@ -141,6 +142,7 @@ class _SalePageState extends State<_SalePage>
           slivers: [
             SliverAppBar(
               pinned: true,
+              toolbarHeight: AppBarHeight.standard,
               centerTitle: true,
               backgroundColor: page,
               surfaceTintColor: AppColors.clear,

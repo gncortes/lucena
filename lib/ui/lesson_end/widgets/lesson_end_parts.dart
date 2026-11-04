@@ -23,7 +23,6 @@ class LessonEndClose extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-    toolbarHeight: 64,
     automaticallyImplyLeading: false,
     leading: IconButton(
       key: buttonKey,

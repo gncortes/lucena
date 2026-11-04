@@ -38,7 +38,6 @@ class WeekReviewScreen extends StatelessWidget {
       review.isTournamentDay ? _tournament(context) : _review(context);
 
   AppBar _bar(BuildContext context, String title) => AppBar(
-    toolbarHeight: 64,
     leading: IconButton(
       icon: const Icon(CanvasSymbols.arrowBack),
       tooltip: MaterialLocalizations.of(context).backButtonTooltip,

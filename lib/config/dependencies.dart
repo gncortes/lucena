@@ -97,6 +97,7 @@ import '../data/repositories/speedrun/speedrun_repository_local.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
 import '../data/repositories/analysis/analysis_repository.dart';
 import '../data/repositories/analysis/analysis_repository_stockfish.dart';
+import '../data/repositories/deep_analysis/deep_analysis_repository.dart';
 import '../data/repositories/review/game_review_repository.dart';
 import '../data/repositories/sound/sound_repository.dart';
 import '../data/repositories/sound/sound_repository_device.dart';
@@ -225,6 +226,7 @@ class Dependencies {
     required this.analysisRepository,
     this.learningAnalysisRepository,
     required this.gameReviewRepository,
+    required this.deepAnalysisRepository,
     required this.ongoingGameRepository,
     required this.conclusionRepository,
     required this.positionsRepository,
@@ -350,6 +352,8 @@ class Dependencies {
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     final stockfish = StockfishService();
+    final analysisRepository = StockfishAnalysisRepository(stockfish);
+    final reviewRepository = LocalGameReviewRepository(preferences);
     final pace = AssetPaceRepository(assets);
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
@@ -523,9 +527,14 @@ class Dependencies {
       regionPromptRepository: LocalRegionPromptRepository(preferences),
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
-      analysisRepository: StockfishAnalysisRepository(stockfish),
+      analysisRepository: analysisRepository,
       learningAnalysisRepository: LearningAnalysisRepository(preferences),
-      gameReviewRepository: LocalGameReviewRepository(preferences),
+      gameReviewRepository: reviewRepository,
+      deepAnalysisRepository: EngineDeepAnalysisRepository(
+        analysis: analysisRepository,
+        reviews: reviewRepository,
+        now: now,
+      ),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       conclusionRepository: LocalConclusionRepository(preferences),
       positionsRepository: positions,
@@ -686,6 +695,7 @@ class Dependencies {
   final AnalysisRepository analysisRepository;
   final LearningAnalysisRepository? learningAnalysisRepository;
   final GameReviewRepository gameReviewRepository;
+  final DeepAnalysisRepository deepAnalysisRepository;
   final OngoingGameRepository ongoingGameRepository;
   final ConclusionRepository conclusionRepository;
   final PositionsRepository positionsRepository;

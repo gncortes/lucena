@@ -136,7 +136,6 @@ class CourseGuideScreen extends StatelessWidget {
         key: CourseGuideKeys.screen,
         appBar: LucenaAppBar(
           centerTitle: centerTitle,
-          toolbarHeight: 64,
           titleSpacing: 0,
           title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
           leading: IconButton(

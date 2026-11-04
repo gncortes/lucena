@@ -11,6 +11,7 @@ import '../../../routing/route_names.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/survey_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_bar_height.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
@@ -78,7 +79,6 @@ class SurveyScreen extends StatelessWidget {
             onPressed: null,
           ),
           title: Text(context.l10n.surveyTitle),
-          toolbarHeight: 64,
         ),
         body: const SafeArea(top: false, child: SkeletonList()),
       );
@@ -123,8 +123,8 @@ class SurveyScreen extends StatelessWidget {
               ),
               // Só o título: o passo já aparece na barra de progresso.
               title: Text(l10n.surveyTitle),
-              // A barra de 4 px fica dentro dos 64 da app bar.
-              toolbarHeight: 64 - AppBarProgress.height,
+              // A barra de 4 px fica dentro da altura padrão.
+              toolbarHeight: AppBarHeight.standard - AppBarProgress.height,
               bottom: AppBarProgress(
                 key: SurveyKeys.progress,
                 value: (state.step + 1) / state.total,

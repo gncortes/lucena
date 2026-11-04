@@ -126,18 +126,18 @@ class CourseDownloadFailure extends StatelessWidget {
       );
     }
     final offline = failure is LessonContentNetworkUnavailable;
-    return KeyedSubtree(
-      key: TrainingEntryKeys.failure,
-      child: LoadErrorScreen(
-        kind: offline ? LoadErrorKind.offline : LoadErrorKind.generic,
-        message: offline
-            ? (chapter ? t.licaoSemInternetCapitulo : t.licaoSemInternetCurso)
-            : null,
-        onAction: onRetry,
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
-      ),
+    final screen = LoadErrorScreen(
+      kind: offline ? LoadErrorKind.offline : LoadErrorKind.generic,
+      message: offline
+          ? (chapter ? t.licaoSemInternetCapitulo : t.licaoSemInternetCurso)
+          : null,
+      onAction: onRetry,
+      onBack: () => context.canPop() ? context.pop() : context.go(Routes.home),
     );
+    // O curso usa só o erro padrão (D3); o capítulo mantém a key da entrada.
+    return chapter
+        ? KeyedSubtree(key: TrainingEntryKeys.failure, child: screen)
+        : screen;
   }
 }
 

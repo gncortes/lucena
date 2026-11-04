@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:flutter/rendering.dart';
@@ -724,8 +725,8 @@ void main() {
       expect(before.width, greaterThan(size.width - 32));
       expect(before.width, lessThanOrEqualTo(size.width));
       if (size.height >= 800) expect(before.width, closeTo(size.width, 1));
-      // A barra de topo é a padrão de 56 (E1.08, D21).
-      expect(tester.getSize(find.byType(AppBar)).height, kToolbarHeight);
+      // A barra de topo é a padrão de 64 (canvas 23fd0701).
+      expect(tester.getSize(find.byType(AppBar)).height, AppBarHeight.standard);
       await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
       await tester.pumpAndSettle();
       expect(tester.getRect(find.byKey(BlindKeys.board)), before);

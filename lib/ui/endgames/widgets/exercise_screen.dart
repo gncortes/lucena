@@ -25,6 +25,7 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_bar_height.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
@@ -318,12 +319,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: LucenaAppBar(
-              // A barra de 4 px fica dentro dos 64 da app bar (CompTopBar
+              // H-LIC-45: a app bar de progresso, como no teste de nível. A
+              // barra de 4 px fica dentro da altura padrão (CompTopBar
               // "progresso"), sem roubar altura do tabuleiro.
               toolbarHeight: widget.trainingTest
-                  ? 64 - AppBarProgress.height
+                  ? AppBarHeight.standard - AppBarProgress.height
                   : null,
-              // H-LIC-45: a app bar de progresso, como no teste de nível.
               bottom: widget.trainingTest && lesson != null && state.count > 0
                   ? AppBarProgress(value: state.number / state.count)
                   : null,

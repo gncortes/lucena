@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 
 import '../../../data/repositories/analysis/analysis_repository.dart';
+import '../../../data/repositories/deep_analysis/deep_analysis_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
@@ -14,6 +15,7 @@ import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/deep_analysis_job.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/review_rules.dart';
@@ -288,6 +290,7 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     this._characters,
     this._analysis,
     this._reviews,
+    this._deepAnalysis,
     this._lessons,
     this._settings,
   }) : super(const GameDetailsState());
@@ -326,6 +329,11 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   final CharacterRepository? _characters;
   final AnalysisRepository? _analysis;
   final GameReviewRepository? _reviews;
+
+  /// A análise a fundo (média e profunda), que roda com a vida do app: o
+  /// cubit só dispara e acompanha.
+  final DeepAnalysisRepository? _deepAnalysis;
+  StreamSubscription<DeepAnalysisJob>? _deepJob;
   final LessonRepository? _lessons;
 
   /// De onde vem a engine ligada ao abrir (a preferência gravada; a tela
@@ -408,6 +416,16 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     // Partida sem revisão guardada (antiga): abrir não gera análise sozinha;
     // o aluno decide em "Analisar" (H-PAR-17).
     if (review != null) unawaited(_annotate(state.shownIndex));
+    // Voltando à tela, retoma o acompanhamento da análise a fundo que ficou
+    // rodando (ou pronta) enquanto ela estava fechada.
+    _watchDeep();
+  }
+
+  @override
+  Future<void> close() async {
+    unawaited(_deepJob?.cancel());
+    if (_deepFinished?.isCompleted == false) _deepFinished!.complete();
+    return super.close();
   }
 
   /// Mostra a posição depois do lance [index] da partida (-1: a de início),
@@ -564,6 +582,10 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     final weight = reviewWeights[speed]!;
     if (_analysis == null || state.start == null || state.reviewing) return;
     if (state.moves.isEmpty) return;
+    if (weight >= reviewWeights[ReviewSpeed.medium]!) {
+      await _startDeep(weight);
+      return;
+    }
     // Só a primeira análise leva o tabuleiro junto; aprofundar uma já feita
     // roda sem mexer no que o usuário está vendo.
     _following = state.review == null;
@@ -593,6 +615,96 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     await _save();
     // Ficando no lance mostrado, a engine continua aprofundando.
     unawaited(_annotate(state.shownIndex));
+  }
+
+  /// Pede a análise a fundo ao repositório (que não para se a tela fechar) e
+  /// passa a acompanhá-la.
+  Future<void> _startDeep(int weight) {
+    final deep = _deepAnalysis;
+    if (deep == null) return Future.value();
+    final budget = budgets[weight];
+    emit(
+      state.copyWith(reviewing: true, reviewProgress: 0, reviewWeight: weight),
+    );
+    deep.start(
+      DeepAnalysisRequest(
+        gameId: _gameId,
+        start: state.start!,
+        moves: [for (final move in state.moves) move.move],
+        weight: weight,
+        depth: budget.depth,
+        time: budget.time,
+      ),
+    );
+    _watchDeep();
+    // Quem espera a revisão espera o trabalho terminar; fechar a tela solta
+    // a espera, mas não o trabalho.
+    return (_deepFinished = Completer<void>()).future;
+  }
+
+  Completer<void>? _deepFinished;
+
+  /// Acompanha o trabalho da análise a fundo desta partida, que pode já estar
+  /// rodando de uma visita anterior à tela.
+  void _watchDeep() {
+    final deep = _deepAnalysis;
+    if (deep == null || _deepJob != null) return;
+    _deepJob = deep.watch(_gameId).listen(_onDeepJob);
+  }
+
+  void _onDeepJob(DeepAnalysisJob job) {
+    if (isClosed || !state.ready) return;
+    if (!job.running && (_deepFinished?.isCompleted ?? true) == false) {
+      scheduleMicrotask(() => _deepFinished?.complete());
+    }
+    switch (job.status) {
+      case DeepAnalysisStatus.running:
+        emit(
+          state.copyWith(
+            reviewing: true,
+            reviewProgress: job.progress,
+            reviewWeight: job.weight,
+          ),
+        );
+      case DeepAnalysisStatus.failed:
+        // A engine falhou: a UI é liberada e "Analisar a fundo" tenta de novo.
+        emit(state.copyWith(reviewing: false, annotating: const {}));
+      case DeepAnalysisStatus.done:
+        final review = job.review;
+        if ((state.review?.depth ?? -1) >= job.weight && !state.reviewing) {
+          return;
+        }
+        if (review == null || review.moves.length != state.moves.length) {
+          emit(state.copyWith(reviewing: false));
+          return;
+        }
+        // A barra de avaliação recebe a de cada posição.
+        if (review.moves.isNotEmpty) {
+          _scoreBar(-1, review.moves.first.before, job.weight);
+        }
+        for (final (index, move) in review.moves.indexed) {
+          _scoreBar(index, move.after, move.weight);
+        }
+        // O que o jogador já aprofundou ficando num lance vale mais.
+        final live = {
+          for (final (index, move) in review.moves.indexed)
+            index: (state.live[index]?.weight ?? -1) > move.weight
+                ? state.live[index]!
+                : move,
+        };
+        emit(
+          state.copyWith(
+            live: live,
+            annotating: const {},
+            reviewing: false,
+            reviewProgress: 1,
+            review: ReviewRules.compose([
+              for (var i = 0; i < live.length; i++) live[i]!,
+            ], whiteFirst: state.start!.turn == Side.white),
+          ),
+        );
+        unawaited(_annotate(state.shownIndex));
+    }
   }
 
   /// As linhas da posição [k] no peso da revisão. Se o jogador pedir outra
