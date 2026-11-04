@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/repositories/account/account_invite_repository.dart';
 import '../../data/repositories/account/account_repository.dart';
+import '../../data/repositories/achievements/achievements_repository.dart';
+import '../../data/repositories/rating/rating_repository.dart';
+import '../../ui/my_progress/view_models/my_progress_cubit.dart';
+import '../../ui/my_progress/widgets/my_progress_screen.dart';
 import '../../data/repositories/characters/character_repository.dart';
 import '../../data/repositories/course_preview/course_preview_repository.dart';
 import '../../data/repositories/purchase/purchase_repository.dart';
@@ -110,6 +115,9 @@ abstract final class D2Paths {
   /// Perfil Lichess / Chess.com (H-CON-20).
   static const accountExternal = '/conta/externo/:site';
 
+  /// "Seu progresso" (H-CON-03): a pílula do Início abre aqui.
+  static const progress = '/progress';
+
   /// A oferta com o plano marcado (o vitalício, sem `plano`) e a origem
   /// do analytics.
   static String offer({
@@ -149,6 +157,21 @@ CoursePreviewCubit _previewCubit(BuildContext context, {String? origin}) =>
     )..load();
 
 final List<RouteBase> d2Routes = [
+  // "Seu progresso" (H-CON-03): rating, o convite da conta e as conquistas.
+  appRoute(
+    name: RouteNames.progress,
+    path: D2Paths.progress,
+    builder: (context, state) => BlocProvider(
+      create: (context) => MyProgressCubit(
+        rating: context.read<RatingRepository>(),
+        achievements: context.read<AchievementsRepository>(),
+        invite: context.read<AccountInviteRepository>(),
+        accounts: context.read<AccountRepository>(),
+        characters: context.read<CharacterRepository>(),
+      )..load(),
+      child: const MyProgressScreen(),
+    ),
+  ),
   // A apresentação (H-VEN-01): quem tem o curso vai direto ao Sobre o
   // Pilares; `origem` vai à oferta vista e à oferta.
   appRoute(
@@ -292,15 +315,24 @@ final List<RouteBase> d2Routes = [
         context.read<PurchaseRepository>().state.access.owns
         ? Routes.training(TrainingCourse.pilares.name)
         : null,
-    builder: (context, state) => BlocProvider(
-      lazy: false,
-      create: (context) => CoursePreviewCubit(
-        context.read<CoursePreviewRepository>(),
-        context.read<CharacterRepository>(),
-        analytics: context.analytics,
-        origin: state.uri.queryParameters['origem'] ?? 'home',
-        highlight: 'plano',
-      )..load(),
+    builder: (context, state) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          lazy: false,
+          create: (context) => CoursePreviewCubit(
+            context.read<CoursePreviewRepository>(),
+            context.read<CharacterRepository>(),
+            analytics: context.analytics,
+            origin: state.uri.queryParameters['origem'] ?? 'home',
+            highlight: 'plano',
+          )..load(),
+        ),
+        // O comparativo de custo (SaleCostCompare) lê os preços.
+        BlocProvider(
+          create: (context) =>
+              PilaresPricesCubit(purchases: context.read<PurchaseRepository>()),
+        ),
+      ],
       child: const PilaresPlanSaleScreen(),
     ),
   ),

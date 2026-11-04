@@ -1056,7 +1056,7 @@
   "@profileRating": {
     "description": "Label of the profile field with the player's approximate chess rating; also the title of the panel where the range is picked."
   },
-  "profileRatingGames": "{count, plural, =1{1 rated game} other{{count} rated games}}",
+  "profileRatingGames": "{count, plural, =0{0 rated games} =1{1 rated game} other{{count} rated games}}",
   "@profileRatingGames": {
     "description": "How many games changed the rating.",
     "placeholders": {
@@ -6317,7 +6317,7 @@
       }
     }
   },
-  "levelGamesCount": "{count, plural, =1{1 game} other{{count} games}}",
+  "levelGamesCount": "{count, plural, =0{0 games} =1{1 game} other{{count} games}}",
   "@levelGamesCount": {
     "description": "Number of games under a rating cell.",
     "placeholders": {
@@ -13201,7 +13201,7 @@
   "@conVoltaText": {
     "description": "Bem-vindo de volta (H-CON-10, PropV1PerfilRecuperar): abaixo do título."
   },
-  "conVoltaJourneyValue": "{name}, {done} of {total, plural, =1{1 challenge} other{{total} challenges}}",
+  "conVoltaJourneyValue": "{name}, {done} of {total, plural, =0{0 challenges} =1{1 challenge} other{{total} challenges}}",
   "@conVoltaJourneyValue": {
     "description": "Bem-vindo de volta (H-CON-10): valor da linha Jornada; {name} é o adversário do degrau atual, {done} os desafios cumpridos nele e {total} os do degrau.",
     "placeholders": {
@@ -14151,5 +14151,34 @@
   "venDemoStatsClosing": "In Pilares, statistics show how well you know each theme.",
   "@venDemoStatsClosing": {
     "description": "Texto da chamada no fim das Estatísticas da demonstração."
+  },
+  "conProgressTitle": "Your progress",
+  "@conProgressTitle": {
+    "description": "Título da tela Seu progresso (H-CON-03)."
+  },
+  "conProgressRating": "Your rating",
+  "@conProgressRating": {
+    "description": "Rótulo acima do rating em Seu progresso."
+  },
+  "conProgressGames": "{count, plural, =0{0 games} =1{1 game} other{{count} games}}",
+  "@conProgressGames": {
+    "description": "Partidas que contaram para o rating, em Seu progresso.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "conProgressHistory": "History",
+  "@conProgressHistory": {
+    "description": "Botão que abre o histórico do rating, em Seu progresso."
+  },
+  "conProgressAchievements": "Achievements",
+  "@conProgressAchievements": {
+    "description": "Título da seção de conquistas em Seu progresso."
+  },
+  "conProgressSeeAll": "See all",
+  "@conProgressSeeAll": {
+    "description": "Link que abre a lista de conquistas, em Seu progresso."
   }
 }

@@ -9,6 +9,12 @@ import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/aviso_que_abre.dart';
+import '../../core/motion/cartao_de_plano.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/actions_footer.dart';
@@ -89,17 +95,29 @@ class PilaresOfferScreen extends StatelessWidget {
             ),
             children: [
               if (state.banner case final banner?) ...[
-                PilaresNotice(
+                AvisoQueAbre(
                   key: banner == OfferBanner.error
                       ? PurchaseKeys.errorBanner
                       : PurchaseKeys.offlineBanner,
-                  icon: banner == OfferBanner.error
-                      ? CanvasSymbols.error
-                      : CanvasSymbols.wifiOff,
-                  text: banner == OfferBanner.error
-                      ? l10n.venErrorBanner
-                      : l10n.venOfflineBanner,
-                  error: true,
+                  decoracao: BoxDecoration(
+                    color: AppColors.errorSurface,
+                    borderRadius: BorderRadius.circular(AppShape.large),
+                  ),
+                  icone: Icon(
+                    banner == OfferBanner.error
+                        ? CanvasSymbols.error
+                        : CanvasSymbols.wifiOff,
+                    size: AppIconSize.standard,
+                    color: colors.error,
+                  ),
+                  child: Text(
+                    banner == OfferBanner.error
+                        ? l10n.venErrorBanner
+                        : l10n.venOfflineBanner,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurface,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
               ],
@@ -151,7 +169,7 @@ class PilaresOfferScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
-              PilaresPlanCard(
+              _PlanoDaOferta(
                 key: PurchaseKeys.planLifetime,
                 title: l10n.venPlanLifetime,
                 badge: l10n.venPlanBest,
@@ -167,7 +185,7 @@ class PilaresOfferScreen extends StatelessWidget {
                       ),
               ),
               const SizedBox(height: AppSpacing.md),
-              PilaresPlanCard(
+              _PlanoDaOferta(
                 key: PurchaseKeys.planMonthly,
                 title: l10n.venPlanMonthly,
                 text: l10n.venPlanMonthlyText,
@@ -230,6 +248,94 @@ class PilaresOfferScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// O plano da oferta (H-VEN-03) no [CartaoDePlano]: a seleção passa de um
+/// ao outro em 250 ms (H-ANI-26).
+class _PlanoDaOferta extends StatelessWidget {
+  const _PlanoDaOferta({
+    required this.title,
+    required this.text,
+    required this.price,
+    required this.selected,
+    required this.onTap,
+    this.badge,
+    this.badgeKey,
+    this.loading = false,
+    super.key,
+  });
+
+  final String title;
+  final String text;
+  final String price;
+  final bool selected;
+  final VoidCallback? onTap;
+  final String? badge;
+  final Key? badgeKey;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return CartaoDePlano(
+      selecionado: selected,
+      aoTocar: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: theme.textTheme.titleMedium),
+                if (badge case final badge?) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Container(
+                    key: badgeKey,
+                    height: 22,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: ShapeDecoration(
+                      color: colors.primaryContainer,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: Text(
+                      badge,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colors.primary,
+                        fontSize: 12,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  text,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          AnimatedOpacity(
+            opacity: loading ? 0.3 : 1,
+            duration: AppMotion.state,
+            child: Text(
+              price,
+              textAlign: TextAlign.end,
+              style: theme.textTheme.titleSmall,
+            ),
+          ),
+        ],
       ),
     );
   }

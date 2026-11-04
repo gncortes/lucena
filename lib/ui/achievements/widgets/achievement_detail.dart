@@ -12,7 +12,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
-import '../../core/widgets/animated_progress.dart';
+import '../../core/motion/barra_que_enche.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 
@@ -232,7 +232,7 @@ class _AchievementDetailState extends State<AchievementDetail>
               style: theme.textTheme.titleSmall,
             ),
             const SizedBox(height: AppSpacing.sm),
-            AnimatedProgress(value: progress.fraction),
+            BarraQueEnche(valor: progress.fraction),
           ],
           if (source case (final route, final speedrun)) ...[
             const SizedBox(height: AppSpacing.xl),

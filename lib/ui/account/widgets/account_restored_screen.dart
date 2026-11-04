@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/motion/botao_carregando.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -191,10 +194,10 @@ class _RestoredView extends StatelessWidget {
         ),
         bottomNavigationBar: ActionsFooter(
           children: [
-            FilledButton(
-              key: AccountKeys.restoredContinue,
+            BotaoCarregando(
+              buttonKey: AccountKeys.restoredContinue,
               onPressed: next,
-              child: Text(l10n.accountRestoredContinue),
+              label: l10n.accountRestoredContinue,
             ),
           ],
         ),

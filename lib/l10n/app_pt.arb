@@ -207,7 +207,7 @@
   "profileNickname": "Apelido",
   "profileNicknameDefault": "Jogador",
   "profileRating": "Rating aproximado",
-  "profileRatingGames": "{count, plural, =1{1 partida contada} other{{count} partidas contadas}}",
+  "profileRatingGames": "{count, plural, =0{0 partidas contadas} =1{1 partida contada} other{{count} partidas contadas}}",
   "profileRatingSheetHint": "Escolha a faixa mais próxima do seu rating, online ou no tabuleiro.",
   "profileRatingStart": "Ponto de partida: a sua faixa acima",
   "profileSave": "Salvar",
@@ -1212,7 +1212,7 @@
   "levelRatingRapid": "Rápidas",
   "levelRatingNone": "—",
   "levelRatingProvisional": "{rating}?",
-  "levelGamesCount": "{count, plural, =1{1 partida} other{{count} partidas}}",
+  "levelGamesCount": "{count, plural, =0{0 partidas} =1{1 partida} other{{count} partidas}}",
   "levelStartsAt": "Pelo seu {mode, select, bullet{bullet} rapid{rating de rápidas} other{blitz}}, a Jornada começa no {rung} e seu rating no Lucena começa em {rating}.",
   "levelRung": "{name} ({level})",
   "levelLichessTip": "Cada site usa a sua escala: o mesmo jogador tem um número maior no Lichess do que na FIDE ou no Chess.com. O Lucena usa a escala do Lichess.",
@@ -2635,7 +2635,7 @@
   "conAceiteContinue": "Continuar",
   "conSemRedeCreate": "Você precisa de conexão com a internet para criar a conta.",
   "conVoltaText": "Seu progresso está salvo na conta.",
-  "conVoltaJourneyValue": "{name}, {done} de {total, plural, =1{1 desafio} other{{total} desafios}}",
+  "conVoltaJourneyValue": "{name}, {done} de {total, plural, =0{0 desafios} =1{1 desafio} other{{total} desafios}}",
   "@conVoltaJourneyValue": {
     "placeholders": {
       "name": {
@@ -3006,5 +3006,18 @@
   "venDemoGoalsClosing": "No Pilares, você tem várias metas, cada uma com a parte de hoje: lição, exercícios e abertura.",
   "venDemoGoalsLockTitle": "Metas fazem parte do Pilares",
   "venDemoGoalsLockText": "No Pilares, o que você erra volta nas metas, até o tema ficar firme.",
-  "venDemoStatsClosing": "No Pilares, as estatísticas mostram o domínio de cada tema."
+  "venDemoStatsClosing": "No Pilares, as estatísticas mostram o domínio de cada tema.",
+  "conProgressTitle": "Seu progresso",
+  "conProgressRating": "Seu rating",
+  "conProgressGames": "{count, plural, =0{0 partidas} =1{1 partida} other{{count} partidas}}",
+  "@conProgressGames": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "conProgressHistory": "Histórico",
+  "conProgressAchievements": "Conquistas",
+  "conProgressSeeAll": "Ver todas"
 }

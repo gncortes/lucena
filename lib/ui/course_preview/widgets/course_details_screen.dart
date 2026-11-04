@@ -8,6 +8,10 @@ import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/course_preview_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -30,9 +34,6 @@ class CourseDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loadState = context.watch<CoursePreviewCubit>().state;
-    if (!loadState.ready && loadState.failure == null) {
-      return const LoadSkeletonScreen();
-    }
     if (loadState.failure case final failure?) {
       return LoadErrorScreen(
         kind: LoadErrorKind.fromFailure(failure),
@@ -41,8 +42,17 @@ class CourseDetailsScreen extends StatelessWidget {
       );
     }
     final preview = loadState.preview;
-    if (preview == null) return const Scaffold(key: CoursePreviewKeys.details);
-    return _DetailsPage(preview: preview, onBack: () => _back(context));
+    if (loadState.ready && preview == null) {
+      return const Scaffold(key: CoursePreviewKeys.details);
+    }
+    // H-ANI-07: o esqueleto brilha até chegar e o conteúdo surge no lugar.
+    return ShimmerConteudo(
+      carregando: !loadState.ready,
+      esqueleto: const LoadSkeletonScreen(),
+      child: preview == null
+          ? const SizedBox.shrink()
+          : _DetailsPage(preview: preview, onBack: () => _back(context)),
+    );
   }
 
   void _back(BuildContext context) {
@@ -66,8 +76,12 @@ class _DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<_DetailsPage>
     with SingleTickerProviderStateMixin {
-  late final _tabs = TabController(length: 3, vsync: this)
-    ..addListener(_tabChanged);
+  // O índice muda na hora: quem cruza as abas é o AbasFadeThrough (450 ms).
+  late final _tabs = TabController(
+    length: 3,
+    vsync: this,
+    animationDuration: Duration.zero,
+  )..addListener(_tabChanged);
   final _scroll = ScrollController();
 
   @override
@@ -125,14 +139,27 @@ class _DetailsPageState extends State<_DetailsPage>
                 AppSpacing.xxl,
               ),
               sliver: SliverToBoxAdapter(
-                child: switch (_tabs.index) {
-                  0 => _Overview(details: details),
-                  1 => _Content(sale: sale, details: details),
-                  _ => SaleFaq(
-                    items: details.faq,
-                    keyOf: CoursePreviewKeys.detailsFaq,
+                child: SaleTabBody(
+                  index: _tabs.index,
+                  // Cada aba entra em cascata na primeira visita dela.
+                  child: EntradaDaTela(
+                    id: 'PropV1CursoDetalhes.${_tabs.index}',
+                    child: switch (_tabs.index) {
+                      0 => _Overview(details: details),
+                      1 => _Content(sale: sale, details: details),
+                      _ => EntradaEmCascata(
+                        itens: [
+                          ItemDaCascata.texto(
+                            SaleFaq(
+                              items: details.faq,
+                              keyOf: CoursePreviewKeys.detailsFaq,
+                            ),
+                          ),
+                        ],
+                      ),
+                    },
                   ),
-                },
+                ),
               ),
             ),
           ],
@@ -152,37 +179,44 @@ class _Overview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SaleSection(l10n.venAboutHow),
-        SaleSteps(steps: details.steps),
-        SaleSection(l10n.venAboutCovers),
-        SaleCard(
-          spacing: AppSpacing.lg,
-          children: [
-            Text(details.coverLine, style: saleBody(context)),
-            for (final item in details.parts) SaleIconLine(item: item),
-          ],
+    return EntradaEmCascata(
+      itens: [
+        ItemDaCascata.texto(SaleSection(l10n.venAboutHow)),
+        ItemDaCascata.texto(SaleSteps(steps: details.steps)),
+        ItemDaCascata.texto(SaleSection(l10n.venAboutCovers)),
+        ItemDaCascata.texto(
+          SaleCard(
+            spacing: AppSpacing.lg,
+            children: [
+              Text(details.coverLine, style: saleBody(context)),
+              for (final item in details.parts) SaleIconLine(item: item),
+            ],
+          ),
         ),
-        SaleSection(l10n.venAboutOpenings),
-        SaleCard(
-          spacing: AppSpacing.lg,
-          children: [
-            for (final item in details.openings) SaleIconLine(item: item),
-          ],
+        ItemDaCascata.texto(SaleSection(l10n.venAboutOpenings)),
+        ItemDaCascata.texto(
+          SaleCard(
+            spacing: AppSpacing.lg,
+            children: [
+              for (final item in details.openings) SaleIconLine(item: item),
+            ],
+          ),
         ),
-        SaleSection(l10n.venAboutProgress),
-        SaleCard(
-          spacing: AppSpacing.lg,
-          children: [
-            for (final item in details.progress) SaleIconLine(item: item),
-          ],
+        ItemDaCascata.texto(SaleSection(l10n.venAboutProgress)),
+        ItemDaCascata.texto(
+          SaleCard(
+            spacing: AppSpacing.lg,
+            children: [
+              for (final item in details.progress) SaleIconLine(item: item),
+            ],
+          ),
         ),
-        SaleSection(l10n.courseSaleAudience),
-        SaleAudienceCard(
-          item: details.audience,
-          tapKey: CoursePreviewKeys.detailsAudience,
+        ItemDaCascata.texto(SaleSection(l10n.courseSaleAudience)),
+        ItemDaCascata.texto(
+          SaleAudienceCard(
+            item: details.audience,
+            tapKey: CoursePreviewKeys.detailsAudience,
+          ),
         ),
       ],
     );
@@ -199,19 +233,34 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: AppSpacing.lg),
-        SaleLevelCard(item: details.result, examples: sale.levelExamples),
-        SaleSection(l10n.courseSaleSummary),
-        Text(details.summaryLine, style: saleBody(context)),
-        const SizedBox(height: AppSpacing.md),
-        SaleSummary(
+    return EntradaEmCascata(
+      montar: (itens) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: AppSpacing.lg),
+          ...itens.take(3),
+          const SizedBox(height: AppSpacing.md),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.sm,
+            children: itens.skip(3).toList(),
+          ),
+        ],
+      ),
+      itens: [
+        ItemDaCascata.texto(
+          SaleLevelCard(item: details.result, examples: sale.levelExamples),
+        ),
+        ItemDaCascata.texto(SaleSection(l10n.courseSaleSummary)),
+        ItemDaCascata.texto(
+          Text(details.summaryLine, style: saleBody(context)),
+        ),
+        for (final tile in saleSummaryTiles(
           parts: sale.parts,
           openings: sale.openings,
           keyOf: CoursePreviewKeys.detailsPart,
-        ),
+        ))
+          ItemDaCascata.texto(tile),
       ],
     );
   }
@@ -228,57 +277,59 @@ class CourseAboutTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final radius = BorderRadius.circular(AppShape.card);
-    return Material(
-      color: AppColors.cardSurface,
-      shape: RoundedRectangleBorder(
-        borderRadius: radius,
-        side: const BorderSide(color: AppColors.cardOutline),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        key: CoursePreviewKeys.aboutTile,
-        onTap: () => context.push(D2Paths.about(fromHelp: true)),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            spacing: AppSpacing.lg,
-            children: [
-              Icon(
-                Icons.article,
-                size: AppIconSize.standard,
-                color: colors.primary,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 2,
-                  children: [
-                    Text(
-                      l10n.venAboutTitle,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontSize: 16,
-                        height: 24 / 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Text(
-                      l10n.venAboutCardLine,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 14,
-                        height: 20 / 14,
-                        letterSpacing: 0,
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+    return CartaoPressionavel(
+      child: Material(
+        color: AppColors.cardSurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: radius,
+          side: const BorderSide(color: AppColors.cardOutline),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          key: CoursePreviewKeys.aboutTile,
+          onTap: () => context.push(D2Paths.about(fromHelp: true)),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Row(
+              spacing: AppSpacing.lg,
+              children: [
+                Icon(
+                  Icons.article,
+                  size: AppIconSize.standard,
+                  color: colors.primary,
                 ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                size: AppIconSize.standard,
-                color: colors.onSurfaceVariant,
-              ),
-            ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 2,
+                    children: [
+                      Text(
+                        l10n.venAboutTitle,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontSize: 16,
+                          height: 24 / 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        l10n.venAboutCardLine,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 14,
+                          height: 20 / 14,
+                          letterSpacing: 0,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  size: AppIconSize.standard,
+                  color: colors.onSurfaceVariant,
+                ),
+              ],
+            ),
           ),
         ),
       ),

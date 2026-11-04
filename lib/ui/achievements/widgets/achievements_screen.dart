@@ -10,12 +10,13 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/staggered_entrance.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../view_models/achievements_cubit.dart';
 import 'achievement_detail.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/section_title.dart';
 import '../../core/widgets/empty_state.dart';
@@ -43,16 +44,22 @@ class AchievementsScreen extends StatelessWidget {
     return Scaffold(
       key: AchievementsKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.achievementsTitle)),
-      body: all == null
-          ? const SkeletonList()
-          : ListView(
-              padding: scrollPadding(context),
-              children: [
-                _Overall(done: state.unlockedCount, total: all.length),
-                _Filter(selected: state.filter),
-                ..._items(context, state),
-              ],
-            ),
+      // H-ANI-07: a primeira carga brilha e o conteúdo surge no lugar.
+      body: ShimmerConteudo(
+        carregando: all == null,
+        esqueleto: const SkeletonList(),
+        child: all == null
+            ? const SizedBox.shrink()
+            : ListView(
+                padding: scrollPadding(context),
+                children: [
+                  _Overall(done: state.unlockedCount, total: all.length),
+                  _Filter(selected: state.filter),
+                  // H-ANI-17: títulos e medalhas entram em ordem.
+                  ListaEmOrdem(itens: _items(context, state)),
+                ],
+              ),
+      ),
     );
   }
 
@@ -70,11 +77,8 @@ class AchievementsScreen extends StatelessWidget {
         ),
       ];
     }
-    var index = 0;
-    Widget row(Achievement achievement) => StaggeredEntrance(
-      index: index++,
-      child: _AchievementRow(achievement: achievement, state: state),
-    );
+    Widget row(Achievement achievement) =>
+        _AchievementRow(achievement: achievement, state: state);
     // O histórico é uma fileira só, pela data.
     if (state.filter == AchievementsFilter.history) {
       return [for (final achievement in visible) row(achievement)];
@@ -130,9 +134,9 @@ class _Overall extends StatelessWidget {
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.sm),
-          AnimatedProgress(
+          BarraQueEnche(
             key: AchievementsKeys.progressBar,
-            value: total == 0 ? 0 : done / total,
+            valor: total == 0 ? 0 : done / total,
           ),
         ],
       ),
@@ -227,7 +231,7 @@ class _AchievementRow extends StatelessWidget {
                 Text(achievement.description(l10n, state.characters)),
                 if (progress != null) ...[
                   const SizedBox(height: AppSpacing.xs),
-                  AnimatedProgress(value: progress.fraction),
+                  BarraQueEnche(valor: progress.fraction),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     progress.label(l10n),
