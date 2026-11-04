@@ -226,6 +226,7 @@ import '../ui/settings/widgets/settings_tiles.dart';
 import '../ui/settings/widgets/theme_screen.dart';
 import '../ui/core/theme/app_motion.dart';
 import '../ui/core/motion/tabuleiro_hero.dart';
+import '../ui/core/motion/transicao_eixo_x.dart';
 import '../ui/core/widgets/reload_on_return.dart';
 import '../ui/core/sound/game_haptics.dart';
 import '../ui/core/sound/game_sounds.dart';
@@ -515,12 +516,14 @@ GoRouter buildRouter({
       _route(
         name: RouteNames.accountEnter,
         path: Routes.accountEnter,
+        eixoX: true,
         builder: (context, state) =>
             AccountScreen(from: state.uri.queryParameters['from'] ?? 'tour'),
       ),
       _route(
         name: RouteNames.accountEmail,
         path: Routes.accountEmail,
+        eixoX: true,
         builder: (context, state) => AccountEmailScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
           signIn: state.uri.queryParameters['entrar'] == '1',
@@ -530,6 +533,7 @@ GoRouter buildRouter({
       _route(
         name: RouteNames.accountData,
         path: Routes.accountData,
+        eixoX: true,
         builder: (context, state) => AccountDataScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
           welcome: state.uri.queryParameters['novo'] == '1',
@@ -538,6 +542,7 @@ GoRouter buildRouter({
       _route(
         name: RouteNames.accountConsent,
         path: Routes.accountConsent,
+        eixoX: true,
         builder: (context, state) => AccountConsentScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
           offline: state.uri.queryParameters['offline'] == '1',
@@ -547,6 +552,7 @@ GoRouter buildRouter({
       _route(
         name: RouteNames.accountRestored,
         path: Routes.accountRestored,
+        eixoX: true,
         redirect: (context, state) =>
             state.extra is SyncResult ? null : Routes.home,
         builder: (context, state) => AccountRestoredScreen(
@@ -2105,6 +2111,7 @@ GoRoute _route({
   List<RouteBase> routes = const [],
   bool fade = false,
   bool sharedAxis = false,
+  bool eixoX = false,
 }) => GoRoute(
   name: name,
   path: path,
@@ -2117,6 +2124,14 @@ GoRoute _route({
           : lessonScopeId(state),
       (scoped) => builder(scoped, state),
     );
+    // H-ANI-03: os passos da Conta deslizam no eixo X.
+    if (eixoX) {
+      return PaginaEixoX<void>(
+        context: context,
+        key: state.pageKey,
+        child: buildChild(),
+      );
+    }
     if (sharedAxis) {
       final duration = AppMotion.of(context).screen;
       return CustomTransitionPage<void>(

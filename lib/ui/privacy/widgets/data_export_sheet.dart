@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/motion/botao_carregando.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/data_export/data_export_repository.dart';
@@ -62,14 +65,11 @@ class DataExportSheet extends StatelessWidget {
             OutlinedButton(onPressed: close, child: Text(l10n.conDadosCancel)),
           ],
           DataExportStep.downloading => [
-            FilledButton.icon(
-              key: PrivacyKeys.downloading,
+            BotaoCarregando(
+              buttonKey: PrivacyKeys.downloading,
+              busy: true,
               onPressed: null,
-              icon: const SizedBox.square(
-                dimension: 20,
-                child: CircularProgressIndicator(strokeWidth: 3),
-              ),
-              label: Text(l10n.conDadosDownloading),
+              label: l10n.conDadosDownloading,
             ),
             OutlinedButton(
               onPressed: cubit.cancel,

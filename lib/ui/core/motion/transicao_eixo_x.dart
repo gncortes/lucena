@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 import 'lucena_motion.dart';
 import 'movimento_reduzido.dart';
@@ -47,6 +48,44 @@ class TransicaoEixoX extends StatelessWidget {
       child: child,
     );
   }
+}
+
+/// O mesmo eixo X da [TransicaoEixoX] para passos que são rotas (os da
+/// Conta): a página nova entra pela direita e a de baixo sai pela esquerda;
+/// no voltar, ao contrário. Com movimento reduzido, fade de 100 ms.
+class PaginaEixoX<T> extends CustomTransitionPage<T> {
+  PaginaEixoX({
+    required BuildContext context,
+    required Widget child,
+    LocalKey? key,
+    String? name,
+  }) : this._(
+         reduzir: MovimentoReduzido.of(context),
+         child: child,
+         key: key,
+         name: name,
+       );
+
+  PaginaEixoX._({
+    required bool reduzir,
+    required super.child,
+    super.key,
+    super.name,
+  }) : super(
+         transitionDuration: reduzir
+             ? LucenaMotion.fadeReduzido
+             : LucenaMotion.eixoX,
+         reverseTransitionDuration: reduzir
+             ? LucenaMotion.fadeReduzido
+             : LucenaMotion.eixoX,
+         transitionsBuilder: (context, primaria, secundaria, filho) => reduzir
+             ? _fade(filho, primaria, secundaria)
+             : _Lado(
+                 animacao: primaria,
+                 lado: 1,
+                 child: _Lado(animacao: secundaria, lado: -1, child: filho),
+               ),
+       );
 }
 
 Widget _fade(

@@ -5,7 +5,8 @@ import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/canvas_symbols.dart';
+import '../../core/motion/sucesso_da_compra.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import 'pilares_sale_parts.dart';
 
@@ -17,20 +18,47 @@ class PilaresPurchaseDoneScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
     return KeyedSubtree(
       key: PurchaseKeys.doneScreen,
-      child: PilaresResultScreen(
-        icon: CanvasSymbols.check,
-        title: l10n.venDoneTitle,
-        titleKey: PurchaseKeys.doneTitle,
-        text: l10n.venDoneText,
-        onBack: () => context.go(Routes.home),
-        actions: pilaresOwnedActions(
-          context,
-          goalFirst: true,
-          goalKey: PurchaseKeys.doneGoal,
-          otherKey: PurchaseKeys.doneSeeCourse,
-          other: l10n.venSeeCourse,
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) context.go(Routes.home);
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xxl,
+                  vertical: AppSpacing.xl,
+                ),
+                child: SucessoDaCompra(
+                  titulo: Text(
+                    l10n.venDoneTitle,
+                    key: PurchaseKeys.doneTitle,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                  texto: Text(
+                    l10n.venDoneText,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  botoes: pilaresOwnedActions(
+                    context,
+                    goalFirst: true,
+                    goalKey: PurchaseKeys.doneGoal,
+                    otherKey: PurchaseKeys.doneSeeCourse,
+                    other: l10n.venSeeCourse,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

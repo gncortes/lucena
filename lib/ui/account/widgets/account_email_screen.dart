@@ -4,6 +4,9 @@ import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../core/analytics/analytics_context.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../core/motion/botao_carregando.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -197,10 +200,11 @@ class _EmailViewState extends State<_EmailView> {
           bottomNavigationBar: ActionsFooter(
             stacked: true,
             children: [
-              FilledButton(
-                key: AccountKeys.emailSubmit,
+              BotaoCarregando(
+                buttonKey: AccountKeys.emailSubmit,
+                busy: busy,
                 onPressed: busy ? null : _submit,
-                child: Text(create ? l10n.accountCreate : l10n.accountSignIn),
+                label: create ? l10n.accountCreate : l10n.accountSignIn,
               ),
               if (!widget.reauth)
                 AccountSwitchLink(

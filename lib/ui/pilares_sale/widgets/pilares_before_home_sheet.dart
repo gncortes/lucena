@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
@@ -29,109 +31,141 @@ class PilaresBeforeHomeSheet extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) cubit.dismissed();
       },
-      child: SafeArea(
-        key: PurchaseKeys.beforeHomeSheet,
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-                child: IconButton(
-                  key: PurchaseKeys.beforeHomeClose,
-                  tooltip: l10n.venBeforeHomeClose,
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).maybePop(),
+      // H-ANI-16: avatar, nome, título, os três itens e o botão entram em
+      // cascata; o X de fechar fica fora e aparece já.
+      child: EntradaDaTela(
+        id: 'PropV2OfertaAntesInicioFolha',
+        child: SafeArea(
+          key: PurchaseKeys.beforeHomeSheet,
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                  ),
+                  child: IconButton(
+                    key: PurchaseKeys.beforeHomeClose,
+                    tooltip: l10n.venBeforeHomeClose,
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).maybePop(),
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                0,
-                AppSpacing.xl,
-                AppSpacing.xl,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.xl,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.sm,
-                    children: [
-                      SizedBox.square(
-                        dimension: CharacterAvatar.versus,
-                        child: teacher == null
-                            ? null
-                            : CharacterAvatar(
-                                character: teacher,
-                                size: CharacterAvatar.versus,
-                                radius: AppSpacing.xl,
-                              ),
+              EntradaEmCascata(
+                montar: (i) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.xl,
+                        0,
+                        AppSpacing.xl,
+                        AppSpacing.xl,
                       ),
-                      Text(
-                        l10n.venCourseName,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontSize: 14,
-                          height: 20 / 14,
-                          fontWeight: FontWeight.w500,
-                          color: colors.onSurfaceVariant,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: AppSpacing.xl,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: AppSpacing.sm,
+                            children: [i[0], i[1], i[2]],
+                          ),
+                          Column(
+                            spacing: AppSpacing.lg,
+                            children: [i[3], i[4], i[5]],
+                          ),
+                        ],
                       ),
-                      Text(
-                        l10n.venBeforeHomeTitle,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontSize: 24,
-                          height: 32 / 24,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                    ),
+                    i[6],
+                  ],
+                ),
+                itens: [
+                  ItemDaCascata.selo(
+                    SizedBox.square(
+                      dimension: CharacterAvatar.versus,
+                      child: teacher == null
+                          ? null
+                          : CharacterAvatar(
+                              character: teacher,
+                              size: CharacterAvatar.versus,
+                              radius: AppSpacing.xl,
+                            ),
+                    ),
                   ),
-                  Column(
-                    spacing: AppSpacing.lg,
-                    children: [
-                      _Item(
-                        icon: Icons.edit_calendar,
-                        title: l10n.venBeforeHomePlan,
+                  ItemDaCascata.texto(
+                    Text(
+                      l10n.venCourseName,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontSize: 14,
+                        height: 20 / 14,
+                        fontWeight: FontWeight.w500,
+                        color: colors.onSurfaceVariant,
                       ),
-                      _Item(
-                        icon: Icons.task_alt,
-                        title: l10n.venBenefitGoals,
-                        text: l10n.venBeforeHomeGoalsText,
+                    ),
+                  ),
+                  ItemDaCascata.titulo(
+                    Text(
+                      l10n.venBeforeHomeTitle,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontSize: 24,
+                        height: 32 / 24,
+                        fontWeight: FontWeight.w500,
                       ),
-                      _Item(
-                        icon: Icons.menu_book,
-                        title: l10n.venBenefitChapters,
-                        text: l10n.venBeforeHomeChaptersText,
-                      ),
-                    ],
+                    ),
+                  ),
+                  ItemDaCascata.texto(
+                    _Item(
+                      icon: Icons.edit_calendar,
+                      title: l10n.venBeforeHomePlan,
+                    ),
+                  ),
+                  ItemDaCascata.texto(
+                    _Item(
+                      icon: Icons.task_alt,
+                      title: l10n.venBenefitGoals,
+                      text: l10n.venBeforeHomeGoalsText,
+                    ),
+                  ),
+                  ItemDaCascata.texto(
+                    _Item(
+                      icon: Icons.menu_book,
+                      title: l10n.venBenefitChapters,
+                      text: l10n.venBeforeHomeChaptersText,
+                    ),
+                  ),
+                  ItemDaCascata.botao(
+                    ActionsFooter(
+                      stacked: true,
+                      children: [
+                        BusyButton(
+                          buttonKey: PurchaseKeys.beforeHomeLearn,
+                          label: l10n.venBeforeHomeLearn,
+                          onPressed: () {
+                            cubit.learn();
+                            final router = GoRouter.of(context);
+                            Navigator.of(context).pop();
+                            router.push(
+                              D2Paths.plan(
+                                origin: PilaresBeforeHomeCubit.origin,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-            ),
-            ActionsFooter(
-              stacked: true,
-              children: [
-                BusyButton(
-                  buttonKey: PurchaseKeys.beforeHomeLearn,
-                  label: l10n.venBeforeHomeLearn,
-                  onPressed: () {
-                    cubit.learn();
-                    final router = GoRouter.of(context);
-                    Navigator.of(context).pop();
-                    router.push(
-                      D2Paths.plan(origin: PilaresBeforeHomeCubit.origin),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

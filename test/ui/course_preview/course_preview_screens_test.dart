@@ -16,6 +16,7 @@ import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/course_preview/widgets/course_details_screen.dart';
 import 'package:lucena/ui/course_preview/widgets/course_sale_parts.dart';
@@ -246,7 +247,10 @@ void main() {
         );
       }
       expect(
-        find.descendant(of: cost, matching: find.byType(FractionallySizedBox)),
+        find.descendant(
+          of: cost,
+          matching: find.byKey(MotionKeys.barraQueEnche),
+        ),
         findsNWidgets(2),
       );
     });
@@ -457,13 +461,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Resposta de exemplo 2.'), findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byKey(CoursePreviewKeys.detailsFaq(1)),
-          matching: find.byIcon(Icons.expand_less_rounded),
-        ),
-        findsOneWidget,
+      // O Acordeão gira a mesma seta em meia volta (H-ANI-22).
+      final seta = find.descendant(
+        of: find.byKey(CoursePreviewKeys.detailsFaq(1)),
+        matching: find.byKey(MotionKeys.setaDoAcordeao),
       );
+      expect(tester.widget<AnimatedRotation>(seta).turns, .5);
     });
 
     testWidgets('5: a seta volta a "Como funciona", de qualquer aba', (

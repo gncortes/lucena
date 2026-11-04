@@ -6,6 +6,9 @@ import '../../../domain/use_cases/ad_policy.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -74,87 +77,100 @@ class PilaresDemoCatalog extends StatelessWidget {
       fontWeight: FontWeight.w500,
       color: colors.primary,
     );
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.sm,
-        AppSpacing.lg,
-        AppSpacing.lg,
-      ),
-      children: [
-        _Banner(done: done, total: free.length),
-        const SizedBox(height: AppSpacing.sm),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, AppSpacing.sm, 4, 0),
-          child: Row(
-            spacing: AppSpacing.sm,
-            children: [
-              Expanded(
-                child: CoursePartHeader(
-                  label: l10n.trainingChapterLabel(1),
-                  title: free.firstOrNull?.group ?? '',
-                  titleWeight: FontWeight.w500,
-                  padding: EdgeInsets.zero,
-                ),
-              ),
-              PilaresBadge(text: l10n.venDemoCatalogFree),
-            ],
-          ),
+    return EntradaDaTela(
+      id: 'PropV2DemoCatalogo',
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.lg,
         ),
-        const SizedBox(height: AppSpacing.sm),
-        for (final lesson in free) ...[
-          CourseItemTile(
-            key: CourseGuideKeys.chapterLesson(lesson.id),
-            state: completed.contains(lesson.id)
-                ? CourseItemState.approved
-                : lesson.id == nextLessonId
-                ? CourseItemState.next
-                : CourseItemState.open,
-            title: lesson.kind == TrainingLessonKind.test
-                ? l10n.trainingChapterTestTitle
-                : lesson.title,
-            summary: l10n.venDemoCatalogAdFirst,
-            onTap: () => onLesson(lesson),
-          ),
+        children: [
+          _Banner(done: done, total: free.length),
           const SizedBox(height: AppSpacing.sm),
-        ],
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
-          child: Text(
-            l10n.venDemoCatalogFull.toUpperCase(),
-            style: label?.copyWith(
-              height: 20 / 12,
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-        ),
-        for (final part in partOrder)
-          if (parts[part] case final chapters?) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, AppSpacing.sm, 4, 0),
-              child: Text(
-                l10n.trainingPartLabel(
-                  courseGuideRoman(
-                    _partNumber(part) ?? partOrder.indexOf(part) + 1,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, AppSpacing.sm, 4, 0),
+            child: Row(
+              spacing: AppSpacing.sm,
+              children: [
+                Expanded(
+                  child: CoursePartHeader(
+                    label: l10n.trainingChapterLabel(1),
+                    title: free.firstOrNull?.group ?? '',
+                    titleWeight: FontWeight.w500,
+                    padding: EdgeInsets.zero,
                   ),
                 ),
-                style: label,
+                PilaresBadge(text: l10n.venDemoCatalogFree),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // H-ANI-17: os itens do capítulo grátis entram em ordem; o toque
+          // afunda o cartão dentro do CourseItemTile (H-ANI-20).
+          ListaEmOrdem(
+            montar: (itens) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.sm,
+              children: itens,
+            ),
+            itens: [
+              for (final lesson in free)
+                CourseItemTile(
+                  key: CourseGuideKeys.chapterLesson(lesson.id),
+                  state: completed.contains(lesson.id)
+                      ? CourseItemState.approved
+                      : lesson.id == nextLessonId
+                      ? CourseItemState.next
+                      : CourseItemState.open,
+                  title: lesson.kind == TrainingLessonKind.test
+                      ? l10n.trainingChapterTestTitle
+                      : lesson.title,
+                  summary: l10n.venDemoCatalogAdFirst,
+                  onTap: () => onLesson(lesson),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+            child: Text(
+              l10n.venDemoCatalogFull.toUpperCase(),
+              style: label?.copyWith(
+                height: 20 / 12,
+                color: colors.onSurfaceVariant,
               ),
             ),
-            for (final (number, id, title) in chapters)
-              _LockedRow(
-                key: PurchaseKeys.demoCatalogLockedChapter(number),
-                text: '${l10n.trainingChapterLabel(number)} · $title',
-                onTap: () => onChapter(id),
+          ),
+          for (final part in partOrder)
+            if (parts[part] case final chapters?) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, AppSpacing.sm, 4, 0),
+                child: Text(
+                  l10n.trainingPartLabel(
+                    courseGuideRoman(
+                      _partNumber(part) ?? partOrder.indexOf(part) + 1,
+                    ),
+                  ),
+                  style: label,
+                ),
               ),
-          ],
-        const SizedBox(height: AppSpacing.sm),
-        PilaresDemoCallout(
-          text: l10n.venDemoCatalogClosing,
-          buttonKey: PurchaseKeys.demoCatalogLearnMore,
-          origin: 'catalogo',
-        ),
-      ],
+              for (final (number, id, title) in chapters)
+                _LockedRow(
+                  key: PurchaseKeys.demoCatalogLockedChapter(number),
+                  text: '${l10n.trainingChapterLabel(number)} · $title',
+                  onTap: () => onChapter(id),
+                ),
+            ],
+          const SizedBox(height: AppSpacing.sm),
+          PilaresDemoCallout(
+            text: l10n.venDemoCatalogClosing,
+            buttonKey: PurchaseKeys.demoCatalogLearnMore,
+            origin: 'catalogo',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -227,14 +243,12 @@ class _Banner extends StatelessWidget {
                 color: colors.onSurface,
               ),
             ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppShape.full),
-              child: LinearProgressIndicator(
-                value: total == 0 ? 0 : done / total,
-                minHeight: 6,
-                color: colors.primary,
-                backgroundColor: colors.outlineVariant,
-              ),
+            // H-ANI-13: a barra enche até o que já foi feito.
+            BarraQueEnche(
+              valor: total == 0 ? 0 : done / total,
+              altura: 6,
+              cor: colors.primary,
+              corDoTrilho: colors.outlineVariant,
             ),
           ],
         ),
