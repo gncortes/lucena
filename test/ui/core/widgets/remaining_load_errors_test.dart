@@ -71,7 +71,6 @@ void main() {
   for (final route in [
     Routes.feedback,
     Routes.survey(SurveyKind.school),
-    Routes.wouldPay,
     Routes.pilaresSale,
     Routes.pilaresBand,
     Routes.pilaresMap,

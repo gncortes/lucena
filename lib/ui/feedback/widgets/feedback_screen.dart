@@ -1,22 +1,26 @@
-import '../../core/widgets/load_skeleton.dart';
-import '../../core/widgets/load_error.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/feedback_entry.dart';
+import '../../../routing/route_names.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/feedback_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/widgets/busy_button.dart';
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../../survey/widgets/survey_parts.dart';
 import '../view_models/feedback_cubit.dart';
 
-/// O "Enviar feedback" do Perfil (E1.26): assunto, texto até 500 e o
-/// agradecimento do Viktor com "Voltar ao perfil".
+/// O "Enviar feedback" do Perfil (E1.26, H-OPI-11): assunto e texto até
+/// 500. Enviado, abre o "Feedback enviado" no lugar dela (H-OPI-12); se o
+/// envio falha, avisa com "Tentar novamente" e mantém o texto.
 class FeedbackScreen extends StatelessWidget {
   const FeedbackScreen({super.key});
 
@@ -44,21 +48,27 @@ class FeedbackScreen extends StatelessWidget {
     }
 
     final cubit = context.read<FeedbackCubit>();
-    return BlocBuilder<FeedbackCubit, FeedbackState>(
+    return BlocConsumer<FeedbackCubit, FeedbackState>(
+      listenWhen: (before, now) =>
+          (now.sent && !before.sent) || now.sendErrors > before.sendErrors,
+      listener: (context, state) {
+        if (state.sent) {
+          context.pushReplacementNamed(RouteNames.feedbackSent);
+          return;
+        }
+        final l10n = context.l10n;
+        showLucenaSnackBar(
+          context,
+          l10n.loadErrorGenericTitle,
+          key: FeedbackKeys.sendError,
+          action: SnackBarAction(
+            label: l10n.loadErrorRetry,
+            onPressed: cubit.send,
+          ),
+        );
+      },
       builder: (context, state) {
         final l10n = context.l10n;
-        if (state.sent) {
-          return ViktorThanks(
-            key: FeedbackKeys.thanks,
-            title: l10n.feedbackTitle,
-            text: l10n.surveyThanks,
-            backLabel: l10n.feedbackBack,
-            onBack: () => _leave(context),
-            viktor: state.viktor,
-            closeKey: FeedbackKeys.close,
-            backKey: FeedbackKeys.thanksBack,
-          );
-        }
         final theme = Theme.of(context);
         final gray = theme.textTheme.bodyMedium?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
@@ -69,8 +79,8 @@ class FeedbackScreen extends StatelessWidget {
           appBar: LucenaAppBar(
             leading: IconButton(
               key: FeedbackKeys.close,
-              icon: const Icon(Icons.close),
-              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+              icon: const Icon(Icons.arrow_back),
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
               onPressed: () => _leave(context),
             ),
             title: Text(l10n.feedbackTitle),
@@ -122,11 +132,15 @@ class FeedbackScreen extends StatelessWidget {
           ),
           bottomNavigationBar: ActionsFooter(
             children: [
-              FilledButton.icon(
-                key: FeedbackKeys.send,
-                icon: const Icon(Icons.send_outlined),
-                label: Text(l10n.feedbackSend),
-                onPressed: state.canSend ? cubit.send : null,
+              SizedBox(
+                height: kButtonHeight,
+                child: BusyButton(
+                  buttonKey: FeedbackKeys.send,
+                  icon: Icons.send,
+                  label: l10n.feedbackSend,
+                  busy: state.sending,
+                  onPressed: state.canSend ? cubit.send : null,
+                ),
               ),
             ],
           ),

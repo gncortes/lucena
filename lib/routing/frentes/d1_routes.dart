@@ -1,4 +1,14 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../data/repositories/characters/character_repository.dart';
+import '../../domain/models/survey.dart';
+import '../../ui/feedback/widgets/feedback_sent_screen.dart';
+import '../../ui/survey/view_models/viktor_thanks_cubit.dart';
+import '../../ui/survey/widgets/survey_thanks_screen.dart';
+import '../route_names.dart';
+import '../routes.dart';
+import '../router.dart';
 
 /// Telas novas da frente D1 (Lição + Opinião, T85). A frente registra as rotas na
 /// lista [d1Routes] com `appRoute(name: RouteNames.x, path: D1Paths.x, ...)`,
@@ -19,8 +29,35 @@ abstract final class D1Paths {
   /// Obrigado da pesquisa (H-OPI-09).
   static const surveyThanks = '/survey/:kind/thanks';
 
-  /// Feedback enviado (H-OPI-14).
+  /// Feedback enviado (H-OPI-12).
   static const feedbackSent = '/settings/feedback/sent';
 }
 
-final List<RouteBase> d1Routes = [];
+final List<RouteBase> d1Routes = [
+  appRoute(
+    name: RouteNames.surveyThanks,
+    path: D1Paths.surveyThanks,
+    redirect: (context, state) =>
+        SurveyKind.byCode(state.pathParameters['kind'] ?? '') == null
+        ? Routes.home
+        : null,
+    builder: (context, state) => BlocProvider(
+      create: (_) =>
+          ViktorThanksCubit(characters: context.read<CharacterRepository>())
+            ..load(),
+      child: SurveyThanksScreen(
+        kind: SurveyKind.byCode(state.pathParameters['kind']!)!,
+      ),
+    ),
+  ),
+  appRoute(
+    name: RouteNames.feedbackSent,
+    path: D1Paths.feedbackSent,
+    builder: (context, state) => BlocProvider(
+      create: (_) =>
+          ViktorThanksCubit(characters: context.read<CharacterRepository>())
+            ..load(),
+      child: const FeedbackSentScreen(),
+    ),
+  ),
+];

@@ -29,14 +29,12 @@ import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import '../ui/lesson_finished/widgets/lesson_finished_screen.dart';
 import '../ui/survey/view_models/survey_cubit.dart';
 import '../ui/survey/widgets/survey_screen.dart';
+import '../data/repositories/feedback/feedback_draft_repository.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
-import '../data/repositories/would_pay/would_pay_repository.dart';
 import '../ui/feedback/view_models/feedback_cubit.dart';
 import '../ui/feedback/widgets/feedback_screen.dart';
 import '../ui/review/widgets/review_prompt.dart';
-import '../ui/would_pay/view_models/would_pay_cubit.dart';
-import '../ui/would_pay/widgets/would_pay_screen.dart';
 
 import 'package:animations/animations.dart';
 import 'package:dartchess/dartchess.dart';
@@ -409,22 +407,6 @@ GoRouter buildRouter({
           child: const TourScreen(),
         ),
       ),
-      // Antes de `/survey/:kind`, que pegaria o "pagaria" como tipo.
-      _route(
-        name: RouteNames.wouldPay,
-        path: Routes.wouldPay,
-        builder: (context, state) => BlocProvider(
-          create: (_) => WouldPayCubit(
-            wouldPay: context.read<WouldPayRepository>(),
-            feedback: context.read<FeedbackRepository>(),
-            profile: context.read<ProfileRepository>(),
-            characters: context.read<CharacterRepository>(),
-            review: context.read<ReviewRepository>(),
-            analytics: context.analytics,
-          )..load(step: int.tryParse(state.uri.queryParameters['step'] ?? '')),
-          child: const WouldPayScreen(),
-        ),
-      ),
       _route(
         name: RouteNames.survey,
         path: '/survey/:kind',
@@ -442,11 +424,11 @@ GoRouter buildRouter({
                 kind: kind,
                 surveys: context.read<SurveyRepository>(),
                 characters: context.read<CharacterRepository>(),
+                origin: state.uri.queryParameters['origem'],
+                analytics: context.analytics,
               )..load();
             },
-            child: SurveyScreen(
-              fromLesson: state.uri.queryParameters['from'] == 'lesson',
-            ),
+            child: const SurveyScreen(),
           );
         },
       ),
@@ -454,7 +436,7 @@ GoRouter buildRouter({
         name: RouteNames.lessonFinished,
         path: '/lesson-finished/:kind/:id',
         lessonScopeId: (state) =>
-            state.pathParameters['kind'] == SurveyKind.endgames.code
+            state.pathParameters['kind'] == SurveyKind.pilares.code
             ? state.pathParameters['id']
             : null,
         redirect: (context, state) =>
@@ -1966,6 +1948,7 @@ GoRouter buildRouter({
                 builder: (context, state) => BlocProvider(
                   create: (_) => FeedbackCubit(
                     feedback: context.read<FeedbackRepository>(),
+                    drafts: context.read<FeedbackDraftRepository>(),
                     characters: context.read<CharacterRepository>(),
                     language: _language(context),
                     analytics: context.analytics,

@@ -165,9 +165,9 @@ import '../data/services/firebase/auth_service.dart';
 import '../data/repositories/learning/learning_repository.dart';
 import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/repositories/feedback/feedback_draft_repository.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
-import '../data/repositories/would_pay/would_pay_repository.dart';
 import '../data/services/device_service.dart';
 import '../data/services/review_service.dart';
 import '../data/services/firebase/file_store_service.dart';
@@ -287,7 +287,7 @@ class Dependencies {
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
-    this.wouldPayRepository = const NoWouldPayRepository(),
+    this.feedbackDraftRepository = const NoFeedbackDraftRepository(),
     this.reviewRepository = const NoReviewRepository(),
     this.installReferrerRepository = const NoInstallReferrerRepository(),
     this._campaignRepository,
@@ -623,7 +623,7 @@ class Dependencies {
               origin: analytics.origin,
             )
           : const NoFeedbackRepository(),
-      wouldPayRepository: LocalWouldPayRepository(preferences),
+      feedbackDraftRepository: LocalFeedbackDraftRepository(preferences),
       reviewRepository: LocalReviewRepository(
         preferences,
         firebase ? PlayReviewService() : const NoReviewService(),
@@ -777,9 +777,11 @@ class Dependencies {
   final PurchaseRepository purchaseRepository;
   final StoreListingRepository storeListingRepository;
 
-  /// "Enviar feedback" e o "Você pagaria?" (E1.26), em `feedback/{id}`.
+  /// "Enviar feedback" (E1.26), em `feedback/{id}`.
   final FeedbackRepository feedbackRepository;
-  final WouldPayRepository wouldPayRepository;
+
+  /// O rascunho do "Enviar feedback" (H-OPI-11), no aparelho.
+  final FeedbackDraftRepository feedbackDraftRepository;
 
   /// O pedido de avaliação da Play (E1.26).
   final ReviewRepository reviewRepository;

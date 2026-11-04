@@ -4,22 +4,22 @@ import 'package:lucena/domain/use_cases/survey_rules.dart';
 
 void main() {
   test('finais tem 2 passos e a Escola 3', () {
-    expect(SurveyRules.totalSteps(SurveyKind.endgames), 2);
+    expect(SurveyRules.totalSteps(SurveyKind.pilares), 2);
     expect(SurveyRules.totalSteps(SurveyKind.school), 3);
   });
 
-  test('o passo 1 exige a nota e o 2 exige o interesse; o resto é livre', () {
+  test('o passo 1 exige a nota; no Pilares o passo 2 é livre (H-OPI)', () {
     const empty = SurveyAnswers();
-    expect(SurveyRules.canAdvance(SurveyKind.endgames, 0, empty), isFalse);
+    expect(SurveyRules.canAdvance(SurveyKind.pilares, 0, empty), isFalse);
     expect(
       SurveyRules.canAdvance(
-        SurveyKind.endgames,
+        SurveyKind.pilares,
         0,
         const SurveyAnswers(rating: 4),
       ),
       isTrue,
     );
-    expect(SurveyRules.canAdvance(SurveyKind.endgames, 1, empty), isFalse);
+    expect(SurveyRules.canAdvance(SurveyKind.pilares, 1, empty), isTrue);
     expect(
       SurveyRules.canAdvance(
         SurveyKind.school,
@@ -62,7 +62,7 @@ void main() {
     expect(
       SurveyResponse.fromJson(
         SurveyResponse(
-          kind: SurveyKind.endgames,
+          kind: SurveyKind.pilares,
           answers: answers,
           answeredAt: DateTime.utc(2026, 1, 2),
         ).toJson(),

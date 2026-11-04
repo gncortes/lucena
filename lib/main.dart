@@ -55,9 +55,9 @@ import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/photo/photo_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
+import 'data/repositories/feedback/feedback_draft_repository.dart';
 import 'data/repositories/feedback/feedback_repository.dart';
 import 'data/repositories/review/review_repository.dart';
-import 'data/repositories/would_pay/would_pay_repository.dart';
 import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
@@ -788,8 +788,8 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<FeedbackRepository>.value(
           value: dependencies.feedbackRepository,
         ),
-        RepositoryProvider<WouldPayRepository>.value(
-          value: dependencies.wouldPayRepository,
+        RepositoryProvider<FeedbackDraftRepository>.value(
+          value: dependencies.feedbackDraftRepository,
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: dependencies.reviewRepository,

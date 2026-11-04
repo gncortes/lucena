@@ -253,7 +253,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       // Os capítulos todos feitos: a aula concluída, antes do teste final.
       context.pushReplacement(
         Routes.lessonFinished(
-          SurveyKind.endgames,
+          SurveyKind.pilares,
           cubit.lessonId,
           next: outcome.next,
           origin: cubit.origin,

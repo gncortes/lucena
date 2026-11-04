@@ -438,19 +438,12 @@ abstract final class Routes {
   /// O resultado dos exercícios da aula, depois do último.
   static String endgameExercisesDone(String id) => '/endgames/$id/done';
 
-  /// O questionário "Sua opinião" de [kind] (`endgames` ou `school`).
-  /// [fromLesson]: aberto pela aula concluída; o agradecimento então volta
-  /// às aulas, não à tela anterior.
-  static String survey(SurveyKind kind, {bool fromLesson = false}) => Uri(
+  /// O questionário "Sua opinião" de [kind] (`pilares` ou `school`).
+  /// [origin] (`licao_pilares`, `licao_escola`, `diploma_pilares`,
+  /// `diploma_escola`) só vai para o registro.
+  static String survey(SurveyKind kind, {String? origin}) => Uri(
     path: '/survey/${kind.code}',
-    queryParameters: fromLesson ? {'from': 'lesson'} : null,
-  ).toString();
-
-  /// O "Você pagaria?" (E1.26), no passo [step] (1 a 3) ou no do rascunho.
-  static const wouldPay = '/survey/pagaria';
-  static String wouldPayAt({int? step}) => Uri(
-    path: wouldPay,
-    queryParameters: step == null ? null : {'step': '$step'},
+    queryParameters: origin == null ? null : {'origem': origin},
   ).toString();
 
   /// A tela "Aula concluída" da aula [id]: de [kind] `school` (Escola) ou

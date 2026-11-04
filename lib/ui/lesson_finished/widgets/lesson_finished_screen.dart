@@ -180,7 +180,7 @@ class LessonFinishedScreen extends StatelessWidget {
                               kind: kind,
                               source: _school
                                   ? SurveyInviteSource.schoolLesson
-                                  : SurveyInviteSource.endgameLesson,
+                                  : SurveyInviteSource.pilaresLesson,
                             ),
                             FooterButtonTheme(
                               child: Column(

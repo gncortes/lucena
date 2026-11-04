@@ -11,7 +11,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/ads_state.dart';
 import '../../../domain/models/endgame_lesson.dart';
-import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/ads/lesson_gate.dart';
 import '../../core/keys/endgames_keys.dart';
@@ -24,8 +23,6 @@ import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../profile/widgets/rating_level_ui.dart';
-import '../../survey/widgets/survey_invite_card.dart';
-import '../../would_pay/widgets/would_pay_invite_card.dart';
 import '../view_models/endgames_cubit.dart';
 import 'endgames_filters.dart';
 import 'grade_widgets.dart';
@@ -99,13 +96,6 @@ class EndgamesScreen extends StatelessWidget {
                 _Section(section: section, state: state),
               if (state.filteredLessons.isEmpty && state.total > 0)
                 const EndgamesFiltersEmpty(),
-              // O "Você pagaria?" e o "Sua opinião", depois do último cartão.
-              const SizedBox(height: AppSpacing.lg),
-              const WouldPayInviteCard(),
-              const SurveyInviteCard(
-                kind: SurveyKind.endgames,
-                source: SurveyInviteSource.trail,
-              ),
             ],
           );
         },

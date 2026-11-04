@@ -108,7 +108,7 @@ void main() {
     );
     unawaited(
       router.push<void>(
-        Routes.lessonFinished(SurveyKind.endgames, completedTest.id),
+        Routes.lessonFinished(SurveyKind.pilares, completedTest.id),
       ),
     );
     await $(LessonFinishedKeys.screen).waitUntilVisible();
