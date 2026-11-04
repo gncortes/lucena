@@ -52,6 +52,7 @@ import '../ui/training_progress/widgets/training_theme_screen.dart';
 import '../ui/training_help/widgets/training_help_screen.dart';
 import '../ui/training_help/widgets/training_tour.dart';
 import 'routes.dart';
+import '../ui/lesson_ad/widgets/lesson_entry.dart';
 import 'route_names.dart';
 import 'training_launch.dart';
 import 'training_goal_destination.dart';
@@ -314,6 +315,16 @@ void _lesson(
   String origin = 'treino_guia',
   bool replace = false,
 }) {
+  if (LessonEntry.isLocked(context, lesson.groupId)) {
+    unawaited(
+      LessonEntry.openChapter(
+        context,
+        chapterId: lesson.groupId,
+        chapterTitle: lesson.group,
+      ),
+    );
+    return;
+  }
   final guide = context.read<CourseGuideCubit>();
   if (needsOpeningProfile(
     guide.state.training!,
@@ -352,11 +363,21 @@ void _lesson(
       'title': lesson.title,
     },
   ).toString();
-  if (replace) {
-    context.pushReplacement(destination, extra: lesson);
-  } else {
-    context.push(destination, extra: lesson);
-  }
+  // Anúncio só na entrada da lição, nunca dentro dela (H-LIC-15).
+  unawaited(
+    LessonEntry.open(
+      context,
+      lessonId: lesson.id,
+      lessonTitle: lesson.title,
+      open: () {
+        if (replace) {
+          context.pushReplacement(destination, extra: lesson);
+        } else {
+          context.push(destination, extra: lesson);
+        }
+      },
+    ),
+  );
 }
 
 class _Profile extends StatelessWidget {
@@ -510,8 +531,27 @@ class _Guide extends StatelessWidget {
         onHelp: () => context.push('${Routes.training(course)}/help'),
         onLesson: (lesson) => _lesson(context, lesson),
         onStartPilares: () => context.push(Routes.training('pilares')),
-        onChapter: (chapter) =>
-            context.push(Routes.trainingChapter(course, chapter)),
+        onChapter: (chapter) {
+          final title = context
+              .read<CourseGuideCubit>()
+              .state
+              .resources
+              ?.lessons
+              .where((l) => l.groupId == chapter)
+              .firstOrNull
+              ?.group;
+          if (LessonEntry.isLocked(context, chapter)) {
+            unawaited(
+              LessonEntry.openChapter(
+                context,
+                chapterId: chapter,
+                chapterTitle: title ?? chapter,
+              ),
+            );
+            return;
+          }
+          context.push(Routes.trainingChapter(course, chapter));
+        },
         goalsBuilder: (_) => KeyedSubtree(
           key: openings ? TrainingKeys.openingsScreen : null,
           child: TrainingGoalsTab(

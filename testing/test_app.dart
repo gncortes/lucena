@@ -12,6 +12,8 @@ import 'fakes/fake_course_download_repository.dart';
 import 'fakes/fake_account_repository.dart';
 
 import 'package:lucena/data/repositories/ads/ads_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_access_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/demo_ad_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
 import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
@@ -72,6 +74,8 @@ class TestApp extends StatelessWidget {
     this.crowdRepository,
     this.analytics,
     this.adsRepository,
+    this.courseAccessRepository,
+    this.demoAdRepository,
     this.purchaseRepository,
     this.storeListingRepository,
     this.updateCubit,
@@ -126,6 +130,10 @@ class TestApp extends StatelessWidget {
 
   /// Os anúncios. Sem ele, nenhum.
   final AdsRepository? adsRepository;
+
+  /// O acesso ao Pilares e o anúncio da demonstração. Sem eles, curso aberto.
+  final CourseAccessRepository? courseAccessRepository;
+  final DemoAdRepository? demoAdRepository;
 
   /// O "Remover anúncios". Sem ele, a compra não existe (nem a linha).
   final PurchaseRepository? purchaseRepository;
@@ -263,6 +271,12 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<AdsRepository>.value(
           value: adsRepository ?? const NoAdsRepository(),
+        ),
+        RepositoryProvider<CourseAccessRepository>.value(
+          value: courseAccessRepository ?? const FullCourseAccessRepository(),
+        ),
+        RepositoryProvider<DemoAdRepository>.value(
+          value: demoAdRepository ?? const NoDemoAdRepository(),
         ),
         RepositoryProvider<PurchaseRepository>.value(
           value: purchaseRepository ?? const NoPurchaseRepository(),

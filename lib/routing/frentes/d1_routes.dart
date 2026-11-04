@@ -2,8 +2,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/repositories/characters/character_repository.dart';
+import '../../data/repositories/lesson_ad/demo_ad_repository.dart';
+import '../../domain/use_cases/now.dart';
 import '../../domain/models/survey.dart';
 import '../../ui/feedback/widgets/feedback_sent_screen.dart';
+import '../../ui/lesson_ad/view_models/lesson_ad_cubit.dart';
+import '../../ui/lesson_ad/widgets/lesson_ad_screen.dart';
+import '../../ui/lesson_ad/widgets/lesson_entry.dart';
 import '../../ui/survey/view_models/viktor_thanks_cubit.dart';
 import '../../ui/survey/widgets/survey_thanks_screen.dart';
 import '../route_names.dart';
@@ -34,6 +39,23 @@ abstract final class D1Paths {
 }
 
 final List<RouteBase> d1Routes = [
+  // O anúncio só abre pela entrada da lição (extra); aberto sem ela
+  // (link, fechar à força) volta ao início, sem lição aberta (H-LIC-10).
+  appRoute(
+    name: RouteNames.lessonAd,
+    path: D1Paths.lessonAd,
+    redirect: (context, state) =>
+        state.extra is LessonAdArgs ? null : Routes.home,
+    builder: (context, state) => BlocProvider(
+      create: (_) => LessonAdCubit(
+        ads: context.read<DemoAdRepository>(),
+        now: context.read<Now>(),
+      )..load(),
+      child: LessonAdScreen(
+        lessonTitle: (state.extra! as LessonAdArgs).lessonTitle,
+      ),
+    ),
+  ),
   appRoute(
     name: RouteNames.surveyThanks,
     path: D1Paths.surveyThanks,

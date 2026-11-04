@@ -30,6 +30,8 @@ import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/ads/ads_repository.dart';
+import 'data/repositories/lesson_ad/course_access_repository.dart';
+import 'data/repositories/lesson_ad/demo_ad_repository.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
@@ -802,6 +804,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<AdsRepository>.value(
           value: dependencies.adsRepository,
+        ),
+        RepositoryProvider<CourseAccessRepository>.value(
+          value: dependencies.courseAccessRepository,
+        ),
+        RepositoryProvider<DemoAdRepository>.value(
+          value: dependencies.demoAdRepository,
         ),
         RepositoryProvider<PurchaseRepository>.value(
           value: dependencies.purchaseRepository,

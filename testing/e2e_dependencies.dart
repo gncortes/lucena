@@ -26,6 +26,7 @@ import 'training/e2e_training.dart';
 
 import 'dart:async';
 
+import 'fakes/fake_lesson_ad_repositories.dart';
 import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
 import 'fakes/fake_sync_repository.dart';
@@ -43,11 +44,10 @@ import 'package:lucena/data/repositories/push/push_repository.dart';
 
 import 'package:lucena/data/repositories/reminders/reminders_repository.dart';
 
-import 'fakes/fake_ads_service.dart';
 import 'fakes/fake_remote_flags_repository.dart';
 
-import 'package:lucena/data/repositories/ads/ads_repository.dart';
-import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_access_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/demo_ad_repository.dart';
 
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
 import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
@@ -293,12 +293,13 @@ FakeAccountRepository? _courseFixtureAccount;
 ///
 /// Cada chamada fecha o banco da anterior e abre outro, como um app reaberto.
 ///
-/// Com [ads], o anúncio falso da E1.25 (desenhado pelo app, sem SDK) entra
-/// antes das aulas; sem ele, os outros cenários não veem anúncio.
+/// Com [demo], a pessoa está na demonstração do Pilares: aviso e anúncio
+/// (desenhado pelo app, sem SDK) antes das lições, capítulos 2+ trancados;
+/// sem ela, o curso está aberto e os outros cenários não veem anúncio.
 /// [nativeInitialAccount] permite iniciar como visitante os pacotes locais.
 /// [realCourseTraining] usa bancos reais e não aceita cenários pré-preenchidos.
 Future<Dependencies> e2eDependencies({
-  bool ads = false,
+  bool demo = false,
   E2ETrainingScenario? trainingScenario,
   NotificationService? notifications,
   PushRepository? push,
@@ -440,15 +441,12 @@ Future<Dependencies> e2eDependencies({
   return Dependencies(
     now: clock,
     remoteFlagsRepository: flags,
-    adsRepository: ads
-        ? ServiceAdsRepository(
-            service: FakeAdsService(),
-            preferences: PreferencesService(),
-            flags: flags,
-            purchases: const NoPurchaseRepository(),
-            now: clock,
-          )
-        : const NoAdsRepository(),
+    courseAccessRepository: demo
+        ? FakeCourseAccessRepository()
+        : const FullCourseAccessRepository(),
+    demoAdRepository: demo
+        ? LocalDemoAdRepository(PreferencesService())
+        : const NoDemoAdRepository(),
     settingsRepository: LocalSettingsRepository(PreferencesService()),
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: e2eHaptics,

@@ -29,6 +29,8 @@ import '../data/repositories/analytics/analytics_repository.dart';
 import '../data/services/firebase/analytics_service.dart';
 import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/lesson_ad/course_access_repository.dart';
+import '../data/repositories/lesson_ad/demo_ad_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../data/repositories/store/store_listing_repository.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
@@ -284,6 +286,8 @@ class Dependencies {
     this.mailAppRepository = const NoMailAppRepository(),
     this.analyticsRepository = const NoAnalyticsRepository(),
     this.adsRepository = const NoAdsRepository(),
+    this.courseAccessRepository = const FullCourseAccessRepository(),
+    this.demoAdRepository = const NoDemoAdRepository(),
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
@@ -610,6 +614,7 @@ class Dependencies {
       mailAppRepository: const DeviceMailAppRepository(),
       analyticsRepository: analytics,
       adsRepository: ads,
+      demoAdRepository: LocalDemoAdRepository(preferences),
       purchaseRepository: purchases,
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
@@ -774,6 +779,10 @@ class Dependencies {
   /// Os anúncios antes das aulas, a compra que os tira e a página do app na
   /// Play (E1.25). Fora da Play, nenhum.
   final AdsRepository adsRepository;
+
+  /// O que a pessoa tem do Pilares e o anúncio da demonstração (T85-D1).
+  final CourseAccessRepository courseAccessRepository;
+  final DemoAdRepository demoAdRepository;
   final PurchaseRepository purchaseRepository;
   final StoreListingRepository storeListingRepository;
 

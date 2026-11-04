@@ -8804,13 +8804,75 @@
   "@adsLabel": {
     "description": "Chip on the test interstitial ad."
   },
-  "adsLessonNote": "You entered a lesson. The lesson opens when you close the ad.",
-  "@adsLessonNote": {
-    "description": "Test interstitial ad: what happens next."
+  "licaoAdLearnMore": "Learn about Pilares",
+  "@licaoAdLearnMore": {
+    "description": "Ad screen: text button in the top bar that opens the Pilares course presentation."
   },
-  "adsCloseNote": "Tap the X to open the lesson.",
-  "@adsCloseNote": {
-    "description": "Test interstitial ad: how to close it."
+  "licaoAdCloseIn": "Close in {seconds}",
+  "@licaoAdCloseIn": {
+    "description": "Ad screen: close button while the countdown runs.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoAdClose": "Close",
+  "@licaoAdClose": {
+    "description": "Ad screen: close button once the countdown ends."
+  },
+  "licaoAdSpace": "Ad space",
+  "@licaoAdSpace": {
+    "description": "Ad screen: label in the placeholder where the ad shows."
+  },
+  "licaoAdAfter": "After the ad: {lesson}",
+  "@licaoAdAfter": {
+    "description": "Ad screen footer: the lesson that opens after the ad.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoAdFailedTitle": "Could not load the ad",
+  "@licaoAdFailedTitle": {
+    "description": "Ad failed screen: title."
+  },
+  "licaoAdFailedMessage": "Without the ad, the lesson cannot open. Check your internet connection.",
+  "@licaoAdFailedMessage": {
+    "description": "Ad failed screen: message."
+  },
+  "licaoAdRetry": "Try again",
+  "@licaoAdRetry": {
+    "description": "Ad failed screen: retry button."
+  },
+  "licaoAdBack": "Back",
+  "@licaoAdBack": {
+    "description": "Ad failed screen: goes back to the catalog."
+  },
+  "licaoAdNoticeTitle": "An ad before the lesson",
+  "@licaoAdNoticeTitle": {
+    "description": "Sheet shown once before the first ad of the demo: title."
+  },
+  "licaoAdNoticeBody": "The demo is free because each lesson and the exercise list start with an ad. In the full course, you go straight to training.",
+  "@licaoAdNoticeBody": {
+    "description": "Sheet shown once before the first ad of the demo: body."
+  },
+  "licaoAdNoticeSee": "See the ad",
+  "@licaoAdNoticeSee": {
+    "description": "Sheet before the first ad: continue button."
+  },
+  "licaoDemoLater": "Not now",
+  "@licaoDemoLater": {
+    "description": "Demo sheets (ad notice and locked chapter): dismiss button."
+  },
+  "licaoLockedBody": "Available to those with the full course.",
+  "@licaoLockedBody": {
+    "description": "Locked chapter sheet: body."
+  },
+  "licaoLockedBuy": "Buy the course",
+  "@licaoLockedBuy": {
+    "description": "Locked chapter sheet: goes to the offer."
   },
   "feedbackTitle": "Send feedback",
   "@feedbackTitle": {

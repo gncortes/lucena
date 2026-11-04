@@ -1,6 +1,5 @@
 import '../../core/widgets/empty_state.dart';
-import '../../../domain/models/ads_state.dart';
-import '../../core/ads/lesson_gate.dart';
+import '../../lesson_ad/widgets/lesson_entry.dart';
 
 import 'package:flutter/material.dart';
 
@@ -168,12 +167,13 @@ class _SchoolScreenState extends State<SchoolScreen> {
   }
 }
 
-void _openLesson(BuildContext context, String id) => LessonGate.open(
-  context,
-  lessonId: id,
-  kind: LessonKind.school,
-  open: () => context.go(Routes.lessonScript(id)),
-);
+void _openLesson(BuildContext context, String id, String title) =>
+    LessonEntry.open(
+      context,
+      lessonId: id,
+      lessonTitle: title,
+      open: () => context.go(Routes.lessonScript(id)),
+    );
 
 /// O cartão "Continuar": a parte e o número da lição, o título e o resumo.
 class _Continue extends StatelessWidget {
@@ -201,7 +201,8 @@ class _Continue extends StatelessWidget {
       summary: texts.lessonSummary(lessonId),
       buttonLabel: fresh ? l10n.endgamePartStart : l10n.homeContinue,
       buttonKey: SchoolKeys.continueButton,
-      onPressed: () => _openLesson(context, lessonId),
+      onPressed: () =>
+          _openLesson(context, lessonId, texts.lessonTitle(lessonId)),
     );
   }
 }
@@ -284,7 +285,7 @@ class _LessonTile extends StatelessWidget {
         );
         return;
       }
-      _openLesson(context, lesson.id);
+      _openLesson(context, lesson.id, texts.lessonTitle(lesson.id));
     }
 
     return Semantics(
@@ -412,11 +413,10 @@ class _SkippedGroup extends StatelessWidget {
                     key: SchoolKeys.skippedLesson(lesson.id),
                     title: state.texts.lessonTitle(lesson.id),
                     reason: reason,
-                    onTap: () => LessonGate.open(
+                    onTap: () => _openLesson(
                       context,
-                      lessonId: lesson.id,
-                      kind: LessonKind.school,
-                      open: () => context.go(Routes.lessonScript(lesson.id)),
+                      lesson.id,
+                      state.texts.lessonTitle(lesson.id),
                     ),
                   ),
               ],

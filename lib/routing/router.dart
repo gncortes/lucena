@@ -244,6 +244,9 @@ import '../ui/blind/widgets/blind_entry_screen.dart';
 import '../data/repositories/account/account_repository.dart';
 import '../data/repositories/sync/sync_scheduler.dart';
 import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/lesson_ad/course_access_repository.dart';
+import '../domain/models/course_access.dart';
+import 'locked_chapter_redirect.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../ui/privacy/view_models/privacy_cubit.dart';
 import '../ui/privacy/widgets/privacy_screen.dart';
@@ -277,6 +280,14 @@ Future<String?> resolveScriptPart(
 /// Com [updateRequired] verdadeiro, toda rota vai para a atualização
 /// obrigatória (E1.32); [refresh] avisa quando ele muda. A Política de
 /// privacidade abre no navegador, fora das rotas: continua alcançável.
+CourseAccess _courseAccess(BuildContext context) {
+  try {
+    return context.read<CourseAccessRepository>().access;
+  } on ProviderNotFoundException {
+    return CourseAccess.owned;
+  }
+}
+
 GoRouter buildRouter({
   String initialLocation = Routes.home,
   bool requireLessonAccount = false,
@@ -296,6 +307,8 @@ GoRouter buildRouter({
         required: updateRequired,
       );
       if (update != null) return update;
+      final locked = lockedChapterRedirect(state.uri, _courseAccess(context));
+      if (locked != null) return locked;
       if (!requireLessonAccount) return null;
       return lessonAccountRedirect(
         state.uri,

@@ -1702,8 +1702,6 @@
   "removeAdsPending": "Waiting for the payment. As soon as Play confirms it, the ads go away.",
   "removeAdsError": "Couldn't finish the purchase. Try again later.",
   "adsLabel": "Ad",
-  "adsLessonNote": "You entered a lesson. The lesson opens when you close the ad.",
-  "adsCloseNote": "Tap the X to open the lesson.",
   "feedbackTitle": "Send feedback",
   "feedbackIntro": "I read everything. Tell me what is going on, your way.",
   "feedbackKindQuestion": "About what?",
