@@ -305,7 +305,7 @@ void main() {
     await pumpLevel(tester);
     await choose(tester, LevelChoice.manual);
     const help = 'Just the number, from 400 to 3000.';
-    const error = 'Type a number from 400 to 3000.';
+    const error = 'Enter a number from 400 to 3000.';
     final use = find.byKey(LevelKeys.ratingUse);
     // Vazio: a ajuda fica e o botão está desabilitado.
     expect(find.text(help), findsOneWidget);
