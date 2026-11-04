@@ -2569,5 +2569,11 @@
   "partidaQualidades": "Lances por qualidade",
   "partidaSemErro": "Nenhum erro seu nesta partida.",
   "partidaVitoriaDoAdversario": "A vitória veio de um lance do adversário:",
-  "partidaMomentosVazio": "Nenhum lance mudou a partida de lado."
+  "partidaMomentosVazio": "Nenhum lance mudou a partida de lado.",
+  "partidaVarianteDica": "Jogue no tabuleiro para criar uma variante. Toque e segure um lance dela para mais opções.",
+  "partidaSuaVariante": "Sua variante",
+  "partidaMenuDica": "Lance da sua variante",
+  "partidaMenuCopiar": "Copiar estes lances",
+  "partidaMenuEsconder": "Esconder as variantes",
+  "partidaMenuApagar": "Apagar este lance e os seguintes"
 }

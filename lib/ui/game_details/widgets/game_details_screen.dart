@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -38,6 +39,8 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/sheet_header.dart';
 
 /// Os detalhes de uma partida: o resultado e contra quem; a revisão pela
 /// engine (precisão e qualidade de cada lance); o tabuleiro com a anotação
@@ -175,6 +178,7 @@ class _ReviewBody extends StatelessWidget {
     ];
     final moves = [
       MoveExplanation(state: state),
+      if (state.variation.isEmpty) const _VariationHint(),
       _MoveTable(state: state, score: _score(attempt)),
     ];
     final engine = [if (state.engine) EngineLinesPanel(state: state)];
@@ -775,6 +779,73 @@ class _MoveTable extends StatelessWidget {
   }
 }
 
+/// O menu do lance da variante (toque e segure): copiar os lances até ele,
+/// esconder as variantes ou apagar o lance e os seguintes.
+Future<void> _showMoveMenu(
+  BuildContext context,
+  GameDetailsState state,
+  int ply,
+) {
+  final cubit = context.read<GameDetailsCubit>();
+  final l10n = context.l10n;
+  var position = state.variationStart!;
+  final parts = <String>[];
+  var title = '';
+  for (final (index, move) in state.variation.indexed) {
+    final white = position.turn == Side.white;
+    final number = white
+        ? '${position.fullmoves}. '
+        : index == 0
+        ? '${position.fullmoves}... '
+        : '';
+    parts.add('$number${move.san}');
+    if (index == ply) title = '$number${move.san}'.trim();
+    position = move.position;
+  }
+  final copied = parts.take(ply + 1).join(' ');
+  return showLucenaSheet<void>(
+    context,
+    sheetKey: GameDetailsKeys.moveMenu,
+    closeKey: GameDetailsKeys.moveMenuClose,
+    builder: (sheet) => SafeArea(
+      top: false,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SheetHeader(title: title, hint: l10n.partidaMenuDica),
+          ListTile(
+            key: GameDetailsKeys.menuCopy,
+            leading: const Icon(Icons.content_copy),
+            title: Text(l10n.partidaMenuCopiar),
+            onTap: () async {
+              Navigator.of(sheet).pop();
+              await Clipboard.setData(ClipboardData(text: copied));
+            },
+          ),
+          ListTile(
+            key: GameDetailsKeys.menuHideVariations,
+            leading: const Icon(Icons.visibility_off),
+            title: Text(l10n.partidaMenuEsconder),
+            onTap: () {
+              Navigator.of(sheet).pop();
+              cubit.clearVariation();
+            },
+          ),
+          ListTile(
+            key: GameDetailsKeys.menuDelete,
+            leading: const Icon(Icons.delete),
+            title: Text(l10n.partidaMenuApagar),
+            onTap: () {
+              Navigator.of(sheet).pop();
+              cubit.deleteVariationFrom(ply);
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 /// A variante feita no tabuleiro, entre parênteses: `(7... Rf7 8. Qg5)`.
 /// Tocar num lance dela mostra a posição depois dele.
 class _VariationLine extends StatelessWidget {
@@ -806,6 +877,7 @@ class _VariationLine extends StatelessWidget {
           key: GameDetailsKeys.variationMove(ply),
           borderRadius: BorderRadius.circular(AppShape.small),
           onTap: () => cubit.selectVariation(ply),
+          onLongPress: () => _showMoveMenu(context, state, ply),
           child: AnimatedContainer(
             duration: AppMotion.state,
             padding: const EdgeInsets.symmetric(
@@ -854,9 +926,54 @@ class _VariationLine extends StatelessWidget {
         AppSpacing.sm,
         AppSpacing.sm,
       ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Wrap(runSpacing: AppSpacing.xs, children: children),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.partidaSuaVariante,
+            key: GameDetailsKeys.variationLabel,
+            style: theme.textTheme.labelMedium?.copyWith(color: colors.primary),
+          ),
+          Wrap(runSpacing: AppSpacing.xs, children: children),
+        ],
+      ),
+    );
+  }
+}
+
+/// A dica de que dá para criar uma variante jogando no tabuleiro.
+class _VariationHint extends StatelessWidget {
+  const _VariationHint();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      key: GameDetailsKeys.variationHint,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.touch_app,
+            size: AppIconSize.button,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              context.l10n.partidaVarianteDica,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

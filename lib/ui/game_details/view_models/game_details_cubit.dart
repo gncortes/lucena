@@ -431,6 +431,32 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     if (state.engine) unawaited(_analyseShown());
   }
 
+  /// Apaga o lance [ply] da variante e os seguintes. Se sobra algum, o
+  /// tabuleiro fica no último dela; senão, volta à partida.
+  void deleteVariationFrom(int ply) {
+    if (!state.ready || ply < 0 || ply >= state.variation.length) return;
+    if (ply == 0) return clearVariation();
+    final kept = state.variation.take(ply).toList();
+    emit(state.copyWith(variation: kept, variationPly: kept.length - 1));
+    if (state.engine) unawaited(_analyseShown());
+  }
+
+  /// Esconde a variante: some da lista e o tabuleiro volta ao lance da
+  /// partida de onde ela saía.
+  void clearVariation() {
+    if (!state.ready || state.variation.isEmpty) return;
+    final from = state.variationFrom;
+    emit(
+      state.copyWith(
+        variation: const <LoggedMove>[],
+        variationFrom: -1,
+        selected: from,
+        mainLine: true,
+      ),
+    );
+    if (state.engine) unawaited(_analyseShown());
+  }
+
   /// O início e o fim são sempre os da partida; o anterior e o próximo
   /// andam dentro da variante (do primeiro lance dela, o anterior volta à
   /// partida, na posição de onde ela sai).

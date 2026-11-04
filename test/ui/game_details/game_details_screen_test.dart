@@ -501,6 +501,18 @@ void main() {
     expect(variationText(tester, 0), '(1... c5');
     expect(variationText(tester, 1), '2. ♘f3)');
 
+    // Toque e segure abre o menu do lance; apagar corta a partir dele.
+    expect(find.byKey(GameDetailsKeys.variationHint), findsNothing);
+    await tester.longPress(find.byKey(GameDetailsKeys.variationMove(1)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.moveMenu), findsOneWidget);
+    await tester.tap(find.byKey(GameDetailsKeys.menuDelete));
+    await tester.pumpAndSettle();
+    expect(cubit.state.variation, hasLength(1));
+    await tapSquare(tester, Square.g1);
+    await tapSquare(tester, Square.f3);
+    expect(cubit.state.variation, hasLength(2));
+
     // Tocar num lance da variante mostra a posição dele.
     await tester.tap(find.byKey(GameDetailsKeys.variationMove(0)));
     await tester.pumpAndSettle();

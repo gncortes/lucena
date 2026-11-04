@@ -27,6 +27,13 @@ abstract final class GameDetailsKeys {
 
   /// A variante feita no tabuleiro, na tabela, e o lance [ply] dela.
   static const variation = Key('gameDetails.variation');
+  static const variationHint = Key('gameDetails.variationHint');
+  static const variationLabel = Key('gameDetails.variationLabel');
+  static const moveMenu = Key('gameDetails.moveMenu');
+  static const moveMenuClose = Key('gameDetails.moveMenu.close');
+  static const menuCopy = Key('gameDetails.menu.copy');
+  static const menuHideVariations = Key('gameDetails.menu.hideVariations');
+  static const menuDelete = Key('gameDetails.menu.delete');
   static Key variationMove(int ply) => Key('gameDetails.variation.$ply');
 
   /// A revisão: o botão, o progresso, o resumo e a precisão de cada lado.

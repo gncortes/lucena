@@ -2429,5 +2429,11 @@
   "partidaQualidades": "[Mövéš bý qûålîtý one two]",
   "partidaSemErro": "[Ýöû mådé ñö mîštåkéš îñ thîš ĝåmé. one two three]",
   "partidaVitoriaDoAdversario": "[Thé wîñ çåmé fŕöm åñ öppöñéñt'š mövé: one two three four]",
-  "partidaMomentosVazio": "[Ñö šîñĝlé mövé šwûñĝ thé ĝåmé. one two three]"
+  "partidaMomentosVazio": "[Ñö šîñĝlé mövé šwûñĝ thé ĝåmé. one two three]",
+  "partidaVarianteDica": "[Plåý öñ thé böåŕd tö çŕéåté å våŕîåtîöñ. Pŕéšš åñd höld öñé öf îtš mövéš föŕ möŕé öptîöñš. one two three four five six seven eight]",
+  "partidaSuaVariante": "[Ýöûŕ våŕîåtîöñ one two]",
+  "partidaMenuDica": "[Mövé fŕöm ýöûŕ våŕîåtîöñ one two three]",
+  "partidaMenuCopiar": "[Çöpý théšé mövéš one two]",
+  "partidaMenuEsconder": "[Hîdé våŕîåtîöñš one two]",
+  "partidaMenuApagar": "[Délété thîš mövé åñd thé öñéš åftéŕ ît one two three four]"
 }

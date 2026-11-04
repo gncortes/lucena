@@ -12629,5 +12629,17 @@
   "partidaVitoriaDoAdversario": "The win came from an opponent's move:",
   "@partidaVitoriaDoAdversario": {"description": "Game analysis summary: partidaVitoriaDoAdversario"},
   "partidaMomentosVazio": "No single move swung the game.",
-  "@partidaMomentosVazio": {"description": "Game analysis summary: partidaMomentosVazio"}
+  "@partidaMomentosVazio": {"description": "Game analysis summary: partidaMomentosVazio"},
+  "partidaVarianteDica": "Play on the board to create a variation. Press and hold one of its moves for more options.",
+  "@partidaVarianteDica": {"description": "Game analysis, Moves tab: partidaVarianteDica"},
+  "partidaSuaVariante": "Your variation",
+  "@partidaSuaVariante": {"description": "Game analysis, Moves tab: partidaSuaVariante"},
+  "partidaMenuDica": "Move from your variation",
+  "@partidaMenuDica": {"description": "Game analysis, Moves tab: partidaMenuDica"},
+  "partidaMenuCopiar": "Copy these moves",
+  "@partidaMenuCopiar": {"description": "Game analysis, Moves tab: partidaMenuCopiar"},
+  "partidaMenuEsconder": "Hide variations",
+  "@partidaMenuEsconder": {"description": "Game analysis, Moves tab: partidaMenuEsconder"},
+  "partidaMenuApagar": "Delete this move and the ones after it",
+  "@partidaMenuApagar": {"description": "Game analysis, Moves tab: partidaMenuApagar"}
 }
