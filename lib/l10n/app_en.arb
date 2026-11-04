@@ -11931,5 +11931,65 @@
   "conPerfilFailed": "An unexpected error occurred",
   "@conPerfilFailed": {
     "description": "Perfil (H-CON-13, gap 5): sair da conta ou desconectar o Lichess falhou; nada mudou."
+  },
+  "conAceiteTitle": "Terms and privacy",
+  "@conAceiteTitle": {
+    "description": "Aceite (H-CON-08, PropV1ContaAceite): título da tela logo depois de criar a conta."
+  },
+  "conAceiteSavedTitle": "What the account keeps",
+  "@conAceiteSavedTitle": {
+    "description": "Aceite (H-CON-08): título do primeiro cartão."
+  },
+  "conAceiteSavedIdentity": "Account name, email and photo",
+  "@conAceiteSavedIdentity": {
+    "description": "Aceite (H-CON-08): item com o ícone badge."
+  },
+  "conAceiteSavedProgress": "Progress in lessons, games, rating and achievements",
+  "@conAceiteSavedProgress": {
+    "description": "Aceite (H-CON-08): item com o ícone school."
+  },
+  "conAceiteSavedUsage": "How you use the app, to improve the lessons",
+  "@conAceiteSavedUsage": {
+    "description": "Aceite (H-CON-08): item com o ícone insights."
+  },
+  "conAceiteRightsTitle": "Your rights under the LGPD",
+  "@conAceiteRightsTitle": {
+    "description": "Aceite (H-CON-08): título do cartão de direitos (LGPD, a lei brasileira de dados)."
+  },
+  "conAceiteRightsSee": "See and download your data",
+  "@conAceiteRightsSee": {
+    "description": "Aceite (H-CON-08): direito com o ícone visibility."
+  },
+  "conAceiteRightsEdit": "Correct your data",
+  "@conAceiteRightsEdit": {
+    "description": "Aceite (H-CON-08): direito com o ícone edit."
+  },
+  "conAceiteRightsDelete": "Delete the account whenever you want",
+  "@conAceiteRightsDelete": {
+    "description": "Aceite (H-CON-08): direito com o ícone delete."
+  },
+  "conAceiteRightsWhere": "You'll find all of this in Settings, Privacy and data.",
+  "@conAceiteRightsWhere": {
+    "description": "Aceite (H-CON-08): onde ficam os direitos, no fim do cartão."
+  },
+  "conAceiteUsage": "We use usage data and error reports to improve Lucena. You can turn this off anytime in Settings, Privacy and data.",
+  "@conAceiteUsage": {
+    "description": "Aceite (H-CON-08): aviso obrigatório sobre dados de uso, abaixo dos cartões."
+  },
+  "conAceiteCheck": "I have read and accept the {terms} and the {privacy}",
+  "@conAceiteCheck": {
+    "description": "Aceite (H-CON-08): ao lado da caixa; {terms} e {privacy} viram os links \"Termos de uso\" e \"Política de privacidade\".",
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
+  },
+  "conAceiteContinue": "Continue",
+  "@conAceiteContinue": {
+    "description": "Aceite (H-CON-08): botão do rodapé, só habilitado com a caixa marcada."
   }
 }

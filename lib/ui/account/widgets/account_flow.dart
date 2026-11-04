@@ -20,17 +20,16 @@ void continueAfterSignIn(
   bool replace = false,
 }) {
   final restored = state.restored;
-  // Course entry resumes its authenticated package gate immediately.
-  if (Routes.isRouteFrom(from) &&
-      Uri.tryParse(from)?.path.startsWith('/training/') == true) {
+  // A conta nova aceita os Termos e a Política antes de seguir (H-CON-08).
+  final target = state.needsConsent
+      ? Routes.accountConsentFrom(from, offline: state.offline)
+      : restored != null
+      ? Routes.accountRestoredFrom(from)
+      : afterConsent(from, offline: state.offline);
+  if (_isTraining(from) && !state.needsConsent) {
     context.go(from);
     return;
   }
-  final target = restored != null
-      ? Routes.accountRestoredFrom(from)
-      : state.offline
-      ? Routes.afterAccount(from)
-      : Routes.accountDataFrom(from, welcome: true);
   if (!Routes.isRouteFrom(from)) {
     context.go(target, extra: restored);
     return;
@@ -43,6 +42,20 @@ void continueAfterSignIn(
     unawaited(context.push(target, extra: restored));
   }
 }
+
+/// Para onde a conta nova segue depois do aceite: o treino que abriu a conta
+/// (o portão do pacote retoma na hora); sem rede, o fim da conta; senão,
+/// "Seu perfil" com o aviso de boas-vindas.
+String afterConsent(String from, {required bool offline}) => _isTraining(from)
+    ? from
+    : offline
+    ? Routes.afterAccount(from)
+    : Routes.accountDataFrom(from, welcome: true);
+
+// O portão do pacote de treino retoma sozinho depois da conta.
+bool _isTraining(String from) =>
+    Routes.isRouteFrom(from) &&
+    Uri.tryParse(from)?.path.startsWith('/training/') == true;
 
 /// O fim da conta (`Routes.afterAccount`): vinda de uma rota, o destino toma
 /// o lugar da tela da conta, e quem abriu a conta fica por baixo.

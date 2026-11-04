@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/legal/legal_consent_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/campaign/campaign_repository.dart';
@@ -20,6 +21,7 @@ class AccountState {
     this.created = false,
     this.restored,
     this.offline = false,
+    this.needsConsent = false,
     this.failure,
   });
 
@@ -37,6 +39,10 @@ class AccountState {
 
   /// Entrou, mas sem rede a conta não foi lida (sobe depois, sozinho).
   final bool offline;
+
+  /// Entrou e ainda não aceitou os Termos e a Política: o aceite vem antes
+  /// de seguir (H-CON-08). Quem trouxe progresso da conta já aceitou.
+  final bool needsConsent;
   final AccountFailure? failure;
 }
 
@@ -47,7 +53,10 @@ class AccountCubit extends Cubit<AccountState> {
     this._analytics = const NoAnalyticsRepository(),
     this.moment,
     this._campaigns,
+    this._consent = const NoLegalConsentRepository(),
   }) : super(const AccountState());
+
+  final LegalConsentRepository _consent;
 
   final AnalyticsRepository _analytics;
 
@@ -140,6 +149,9 @@ class AccountCubit extends Cubit<AccountState> {
         return;
       }
       final (restored, offline) = await _read(account, created: created);
+      final needsConsent =
+          restored == null && !await _consent.accepted(account.uid);
+      if (needsConsent) await _consent.markPending(account.uid);
       if (method != null) {
         unawaited(
           _analytics.log(
@@ -166,6 +178,7 @@ class AccountCubit extends Cubit<AccountState> {
             created: created,
             restored: restored,
             offline: offline,
+            needsConsent: needsConsent,
           ),
         );
       }

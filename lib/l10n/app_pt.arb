@@ -2431,5 +2431,28 @@
       }
     }
   },
-  "conPerfilFailed": "Ocorreu um erro inesperado"
+  "conPerfilFailed": "Ocorreu um erro inesperado",
+  "conAceiteTitle": "Termos e privacidade",
+  "conAceiteSavedTitle": "O que fica salvo na conta",
+  "conAceiteSavedIdentity": "Nome, e-mail e foto da conta",
+  "conAceiteSavedProgress": "Progresso nas lições, partidas, rating e conquistas",
+  "conAceiteSavedUsage": "Como você usa o app, para melhorar as lições",
+  "conAceiteRightsTitle": "Seus direitos pela LGPD",
+  "conAceiteRightsSee": "Ver e baixar seus dados",
+  "conAceiteRightsEdit": "Corrigir seus dados",
+  "conAceiteRightsDelete": "Excluir a conta quando quiser",
+  "conAceiteRightsWhere": "Você encontra tudo isso em Configurações, Privacidade e dados.",
+  "conAceiteUsage": "Usamos dados de uso e relatórios de erro para melhorar o Lucena. Você desliga quando quiser em Configurações, Privacidade e dados.",
+  "conAceiteCheck": "Li e aceito os {terms} e a {privacy}",
+  "@conAceiteCheck": {
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
+  },
+  "conAceiteContinue": "Continuar"
 }

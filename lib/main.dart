@@ -35,6 +35,7 @@ import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
 import 'data/repositories/purchase/purchase_repository.dart';
+import 'data/repositories/legal/legal_consent_repository.dart';
 import 'data/repositories/legal/legal_repository.dart';
 import 'data/repositories/device/device_settings_repository.dart';
 import 'data/repositories/links/link_repository.dart';
@@ -396,6 +397,11 @@ class _LucenaAppState extends State<LucenaApp> {
     // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
     // formulário agora.
     final profile = await widget.dependencies.profileRepository.load();
+    final consentUid = await widget.dependencies.legalConsentRepository
+        .pending();
+    final consentPending =
+        consentUid != null &&
+        widget.dependencies.accountRepository.current?.uid == consentUid;
     _startOnce(
       'ads',
       () => widget.dependencies.adsRepository.start(
@@ -445,6 +451,7 @@ class _LucenaAppState extends State<LucenaApp> {
           endgames: endgames,
           stars: stars,
           boardControlsOpen: onboarding.boardControlsOpen,
+          consentPending: consentPending,
           link: link,
           // Erro frio é empilhado sobre a retomada, para Voltar recuperá-la.
           uri: opened != null && Routes.appLink(opened) != Routes.invalidLink
@@ -795,6 +802,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<DataExportRepository>.value(
           value: dependencies.dataExportRepository,
+        ),
+        RepositoryProvider<LegalConsentRepository>.value(
+          value: dependencies.legalConsentRepository,
         ),
         RepositoryProvider<WouldPayRepository>.value(
           value: dependencies.wouldPayRepository,

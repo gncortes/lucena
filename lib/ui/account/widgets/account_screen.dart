@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../data/repositories/legal/legal_consent_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../routing/routes.dart';
@@ -38,6 +39,7 @@ class AccountScreen extends StatelessWidget {
       sync: context.read<SyncScheduler>(),
       analytics: context.analytics,
       campaigns: context.campaigns,
+      consent: context.read<LegalConsentRepository>(),
     ),
     child: _AccountView(from: from),
   );

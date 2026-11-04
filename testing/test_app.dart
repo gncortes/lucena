@@ -23,6 +23,7 @@ import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/store/store_listing_repository.dart';
 import 'package:lucena/data/repositories/links/link_repository.dart';
+import 'package:lucena/data/repositories/legal/legal_consent_repository.dart';
 import 'package:lucena/data/repositories/legal/legal_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
@@ -88,6 +89,7 @@ class TestApp extends StatelessWidget {
     this.wouldPayRepository,
     this.feedbackRepository,
     this.dataExportRepository,
+    this.legalConsentRepository,
     this.reviewRepository,
     this.schoolProgressRepository,
     this.endgameProgressRepository,
@@ -160,6 +162,9 @@ class TestApp extends StatelessWidget {
 
   /// "Baixar meus dados". Sem ele, um falso que baixa na hora.
   final DataExportRepository? dataExportRepository;
+
+  /// Nulo: toda conta já aceitou os Termos (os testes antigos seguem).
+  final LegalConsentRepository? legalConsentRepository;
   final ReviewRepository? reviewRepository;
 
   /// O progresso que conta as aulas concluídas do convite.
@@ -267,6 +272,9 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<DataExportRepository>.value(
           value: dataExportRepository ?? FakeDataExportRepository(),
+        ),
+        RepositoryProvider<LegalConsentRepository>.value(
+          value: legalConsentRepository ?? const NoLegalConsentRepository(),
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: reviewRepository ?? FakeReviewRepository(),

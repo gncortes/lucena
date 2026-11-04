@@ -278,14 +278,15 @@ final _samples = <AnalyticsEvent>[
   ),
   AnalyticsEvents.privacidadeAnalytics(ligado: false),
   AnalyticsEvents.dadosBaixados(resultado: 'ok'),
+  AnalyticsEvents.aceiteTermos(versao: 1),
   AnalyticsEvents.screenView('/featured/:id'),
 ];
 
 void main() {
   group('catálogo', () {
-    test('tem os 97 eventos (94 do app, com o treino, o funil de campanha da '
-        'T84 e o dados_baixados da T85, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(94));
+    test('tem os 98 eventos (95 do app, com o treino, o funil de campanha da '
+        'T84, o dados_baixados e o aceite_termos da T85, e 3 da web)', () {
+      expect(AnalyticsCatalog.app, hasLength(95));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(

@@ -21,6 +21,7 @@ abstract final class RouteNames {
   static const accountEnter = 'accountEnter';
   static const accountEmail = 'accountEmail';
   static const accountData = 'accountData';
+  static const accountConsent = 'accountConsent';
   static const accountRestored = 'accountRestored';
   static const goal = 'goal';
   static const level = 'level';

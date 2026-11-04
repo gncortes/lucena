@@ -54,6 +54,13 @@ abstract final class AccountKeys {
   static Key avatar(int index) => Key('account.avatar.$index');
   static const photoRemove = Key('account.photoRemove');
 
+  /// "Termos e privacidade" (H-CON-08): o aceite logo depois de criar a conta.
+  static const acceptScreen = Key('account.accept');
+  static const acceptCheck = Key('account.acceptCheck');
+  static const acceptTerms = Key('account.acceptTerms');
+  static const acceptUsage = Key('account.acceptUsage');
+  static const acceptContinue = Key('account.acceptContinue');
+
   static const restoredScreen = Key('account.restored');
   static const restoredContinue = Key('account.restoredContinue');
 

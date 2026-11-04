@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../data/repositories/legal/legal_consent_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../routing/routes.dart';
@@ -42,6 +43,9 @@ class AccountEmailScreen extends StatelessWidget {
       sync: reauth ? null : context.read<SyncScheduler>(),
       analytics: reauth ? const NoAnalyticsRepository() : context.analytics,
       campaigns: reauth ? null : context.campaigns,
+      consent: reauth
+          ? const NoLegalConsentRepository()
+          : context.read<LegalConsentRepository>(),
     ),
     child: _EmailView(from: from, create: !signIn && !reauth, reauth: reauth),
   );

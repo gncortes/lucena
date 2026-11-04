@@ -2298,5 +2298,18 @@
   "conApagarCancelled": "[Šîĝñ-îñ çåñçéléd. Ñöthîñĝ wåš délétéd. one two three four]",
   "conApagarDifferent": "[Thåt îšñ't thé åççöûñt ýöû wéŕé délétîñĝ. Ñöthîñĝ wåš délétéd. one two three four five six]",
   "conPerfilSyncedOn": "[öñ {date} one]",
-  "conPerfilFailed": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]"
+  "conPerfilFailed": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]",
+  "conAceiteTitle": "[Téŕmš åñd pŕîvåçý one two]",
+  "conAceiteSavedTitle": "[Whåt thé åççöûñt kéépš one two three]",
+  "conAceiteSavedIdentity": "[Åççöûñt ñåmé, émåîl åñd phötö one two three]",
+  "conAceiteSavedProgress": "[Pŕöĝŕéšš îñ léššöñš, ĝåméš, ŕåtîñĝ åñd åçhîévéméñtš one two three four five]",
+  "conAceiteSavedUsage": "[Höw ýöû ûšé thé åpp, tö împŕövé thé léššöñš one two three four]",
+  "conAceiteRightsTitle": "[Ýöûŕ ŕîĝhtš ûñdéŕ thé LĜPD one two three]",
+  "conAceiteRightsSee": "[Šéé åñd döwñlöåd ýöûŕ dåtå one two three]",
+  "conAceiteRightsEdit": "[Çöŕŕéçt ýöûŕ dåtå one two]",
+  "conAceiteRightsDelete": "[Délété thé åççöûñt whéñévéŕ ýöû wåñt one two three four]",
+  "conAceiteRightsWhere": "[Ýöû'll fîñd åll öf thîš îñ Šéttîñĝš, Pŕîvåçý åñd dåtå. one two three four five]",
+  "conAceiteUsage": "[Wé ûšé ûšåĝé dåtå åñd éŕŕöŕ ŕépöŕtš tö împŕövé Lûçéñå. Ýöû çåñ tûŕñ thîš öff åñýtîmé îñ Šéttîñĝš, Pŕîvåçý åñd dåtå. one two three four five six seven eight nine ten]",
+  "conAceiteCheck": "[Î håvé ŕéåd åñd åççépt thé {terms} åñd thé {privacy} one two three four five]",
+  "conAceiteContinue": "[Çöñtîñûé one]"
 }

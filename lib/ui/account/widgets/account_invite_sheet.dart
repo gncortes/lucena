@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../data/repositories/legal/legal_consent_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../routing/routes.dart';
@@ -52,6 +53,7 @@ Future<bool> showAccountInviteSheet(
           analytics: context.analytics,
           moment: moment,
           campaigns: context.campaigns,
+          consent: context.read<LegalConsentRepository>(),
         ),
         child: SafeArea(
           top: false,

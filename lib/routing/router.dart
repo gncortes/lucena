@@ -187,6 +187,7 @@ import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
 import '../ui/challenge/view_models/link_setup_cubit.dart';
 import '../ui/challenge/widgets/link_setup_screen.dart';
+import '../ui/account/widgets/account_consent_screen.dart';
 import '../ui/account/widgets/account_data_screen.dart';
 import '../ui/account/widgets/account_email_screen.dart';
 import '../ui/account/widgets/account_restored_screen.dart';
@@ -551,6 +552,14 @@ GoRouter buildRouter({
         builder: (context, state) => AccountDataScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
           welcome: state.uri.queryParameters['novo'] == '1',
+        ),
+      ),
+      _route(
+        name: RouteNames.accountConsent,
+        path: Routes.accountConsent,
+        builder: (context, state) => AccountConsentScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+          offline: state.uri.queryParameters['offline'] == '1',
         ),
       ),
       // Sem o resultado da leitura (link aberto de fora), volta ao início.

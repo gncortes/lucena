@@ -520,6 +520,14 @@ abstract final class Routes {
   ).toString();
 
   /// "Bem-vindo de volta": recebe o `SyncResult` como `extra`.
+  /// "Termos e privacidade" (H-CON-08): o aceite logo depois de criar a
+  /// conta. [offline]: a conta não foi lida (segue direto no fim).
+  static const accountConsent = '/conta/aceite';
+  static String accountConsentFrom(String from, {bool offline = false}) => Uri(
+    path: accountConsent,
+    queryParameters: {'from': from, if (offline) 'offline': '1'},
+  ).toString();
+
   static const accountRestored = '/conta/de-volta';
   static String accountRestoredFrom(String from) =>
       _from(accountRestored, from);
@@ -534,7 +542,7 @@ abstract final class Routes {
 
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
-    'game' => home,
+    'game' || 'home' => home,
     'level' => nextSteps,
     final route? when isRouteFrom(route) => route,
     _ => goal,
