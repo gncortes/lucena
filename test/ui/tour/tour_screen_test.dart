@@ -121,6 +121,21 @@ void main() {
           path: Routes.home,
           builder: (_, _) => const Scaffold(body: Text('rota-inicio')),
         ),
+        // O teste de nível: "Usar este nível" grava o rating e volta com true.
+        GoRoute(
+          path: Routes.placement,
+          builder: (context, _) => Scaffold(
+            body: TextButton(
+              onPressed: () async {
+                await profile.save(
+                  (await profile.load()).copyWith(rating: 1420),
+                );
+                if (context.mounted) context.pop(true);
+              },
+              child: const Text('usar-este-nivel'),
+            ),
+          ),
+        ),
       ],
     );
     accounts = FakeAccountRepository();
@@ -719,6 +734,22 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(TourKeys.step(TourStep.region)), findsOneWidget);
       expect(onboarding.saved.done, isFalse);
+    });
+
+    testWidgets('teste feito e "Usar este nível": segue para a região', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.level);
+      final card = find.byKey(LevelKeys.option(LevelChoice.test));
+      await tester.ensureVisible(card);
+      await tester.tap(card);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(LevelKeys.continueButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('usar-este-nivel'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.region)), findsOneWidget);
+      expect((await profile.load()).rating, 1420);
     });
   });
 
