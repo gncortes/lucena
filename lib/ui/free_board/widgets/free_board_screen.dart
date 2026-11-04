@@ -31,6 +31,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
@@ -671,24 +672,38 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                         scrollPhysics: _GameScrollPhysics(() => _boardTouch),
                         reserveTop: reserveTop,
                         reserveBottom: clocksBelow,
-                        footer: machineEnded && featured
-                            ? FeaturedEndBar(onAgain: cubit.newGame)
-                            : machineEnded && state.mode.fromLink
-                            ? _LinkEndBar(
-                                onLesson: offer == LinkLessonOffer.none
-                                    ? null
-                                    : () => unawaited(
-                                        _openLead(context, linkLesson!, offer),
+                        footer: machineEnded
+                            // H-ANI-25: o resultado aparece no tabuleiro e o
+                            // rodapé do fim desliza por último.
+                            ? EntradaDeResultado(
+                                id: 'fim-${state.startedAt?.microsecondsSinceEpoch}',
+                                botoes: featured
+                                    ? FeaturedEndBar(onAgain: cubit.newGame)
+                                    : state.mode.fromLink
+                                    ? _LinkEndBar(
+                                        onLesson: offer == LinkLessonOffer.none
+                                            ? null
+                                            : () => unawaited(
+                                                _openLead(
+                                                  context,
+                                                  linkLesson!,
+                                                  offer,
+                                                ),
+                                              ),
+                                        onAgain: () => _playLinkAgain(cubit),
+                                        onShare: () =>
+                                            _shareLinkResult(context, state),
+                                        onMeetApp: () => _meetApp(context),
+                                      )
+                                    : _SeeResultBar(
+                                        onPressed: () => unawaited(
+                                          _conclude(
+                                            context,
+                                            cubit,
+                                            cubit.state,
+                                          ),
+                                        ),
                                       ),
-                                onAgain: () => _playLinkAgain(cubit),
-                                onShare: () => _shareLinkResult(context, state),
-                                onMeetApp: () => _meetApp(context),
-                              )
-                            : machineEnded
-                            ? _SeeResultBar(
-                                onPressed: () => unawaited(
-                                  _conclude(context, cubit, cubit.state),
-                                ),
                               )
                             : GameActionsBar(
                                 training: training,
