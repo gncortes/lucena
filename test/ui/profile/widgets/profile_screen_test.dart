@@ -27,7 +27,6 @@ import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
-import '../../../../testing/fakes/fake_purchase_service.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_store_listing_repository.dart';
 import '../../../../testing/fakes/fake_sync_repository.dart';
@@ -366,54 +365,18 @@ void main() {
     expect(inRow(ProfileKeys.rowRegion, 'Paraná · Curitiba'), findsOneWidget);
   });
 
-  group('anúncios e ajuda (E1.25)', () {
-    testWidgets('sem a compra na Play, só privacidade, feedback e avaliar', (
-      tester,
-    ) async {
-      await pumpScreen(tester);
-      expect(find.byKey(ProfileKeys.rowRemoveAds), findsNothing);
-      expect(find.byKey(ProfileKeys.rowPrivacy), findsOneWidget);
-      expect(find.byKey(ProfileKeys.rowFeedback), findsOneWidget);
-      expect(find.byKey(ProfileKeys.rowRate), findsOneWidget);
-    });
-
-    testWidgets('"Remover anúncios" mostra o preço da Play', (tester) async {
-      await pumpScreen(
-        tester,
-        purchases: FakePurchaseRepository(
-          const PurchaseState(price: 'R\$ 9,90'),
-        ),
-      );
-      expect(
-        inRow(ProfileKeys.rowRemoveAds, 'R\$ 9,90, uma vez só, para sempre'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('depois da compra, a linha diz "Sem anúncios"', (tester) async {
-      final purchases = FakePurchaseRepository(
-        const PurchaseState(price: 'R\$ 9,90'),
-      );
-      await pumpScreen(tester, purchases: purchases);
-      purchases.state = const PurchaseState(adFree: true, price: 'R\$ 9,90');
-      await tester.pumpAndSettle();
-      expect(inRow(ProfileKeys.rowRemoveAds, 'Sem anúncios'), findsOneWidget);
-    });
-
-    testWidgets('"Avaliar o Lucena" abre a página na Play', (tester) async {
-      final store = FakeStoreListingRepository();
-      await pumpScreen(tester, store: store);
-      await tester.ensureVisible(find.byKey(ProfileKeys.rowRate));
-      await tester.tap(find.byKey(ProfileKeys.rowRate));
-      expect(store.opened, 1);
-    });
-
-    testWidgets('"Privacidade e anúncios" abre a tela', (tester) async {
-      await pumpScreen(tester);
-      await tester.ensureVisible(find.byKey(ProfileKeys.rowPrivacy));
-      await tester.tap(find.byKey(ProfileKeys.rowPrivacy));
-      await tester.pumpAndSettle();
-      expect(find.text('rota-privacidade'), findsOneWidget);
-    });
+  testWidgets('H-AJU-01: privacidade, feedback e avaliar saem do Perfil', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.scrollUntilVisible(find.byKey(ProfileKeys.ratingCard), 200);
+    for (final text in [
+      'Privacidade e anúncios',
+      'Enviar feedback',
+      'Avaliar o Lucena',
+      'Remover anúncios',
+    ]) {
+      expect(find.text(text), findsNothing, reason: text);
+    }
   });
 }

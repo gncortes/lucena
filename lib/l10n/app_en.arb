@@ -3132,7 +3132,7 @@
   "@settingsGame": {
     "description": "Settings menu group: how pieces move, the clock and opponent comments."
   },
-  "settingsGameHint": "Moving pieces, clock and opponent comments",
+  "settingsGameHint": "Moving pieces, clock and comments",
   "@settingsGameHint": {
     "description": "Subtitle of the Game group in the settings menu."
   },
@@ -8685,47 +8685,6 @@
   "@analyticsOptInBody": {
     "description": "Explains what the usage statistics send."
   },
-  "profileRemoveAds": "Remove ads",
-  "@profileRemoveAds": {
-    "description": "Profile row: the one-time purchase that removes ads."
-  },
-  "profileRemoveAdsValue": "{price}, once, forever",
-  "@profileRemoveAdsValue": {
-    "description": "Profile row value: the Play price of removing ads.",
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "profileRemoveAdsDone": "No ads",
-  "@profileRemoveAdsDone": {
-    "description": "Profile row value after buying \"Remove ads\"."
-  },
-  "profilePrivacy": "Privacy and ads",
-  "@profilePrivacy": {
-    "description": "Profile row that opens the privacy screen."
-  },
-  "profilePrivacyValue": "Ad choices and privacy policy",
-  "@profilePrivacyValue": {
-    "description": "Profile row value under \"Privacy and ads\"."
-  },
-  "profileFeedback": "Send feedback",
-  "@profileFeedback": {
-    "description": "Profile row that opens the feedback screen."
-  },
-  "profileFeedbackValue": "Tell us a problem, an idea or some praise",
-  "@profileFeedbackValue": {
-    "description": "Profile row value under \"Send feedback\"."
-  },
-  "profileRate": "Rate Lucena",
-  "@profileRate": {
-    "description": "Profile row that opens the app page on Google Play."
-  },
-  "profileRateValue": "Opens the app page on Google Play",
-  "@profileRateValue": {
-    "description": "Profile row value under \"Rate Lucena\"."
-  },
   "privacyTitle": "Privacy and ads",
   "@privacyTitle": {
     "description": "Privacy screen title."
@@ -9064,10 +9023,6 @@
   "privacyTitleNoAds": "Privacy",
   "@privacyTitleNoAds": {
     "description": "Privacy screen title in a build without ads."
-  },
-  "profilePrivacyNoAdsValue": "Your data and privacy policy",
-  "@profilePrivacyNoAdsValue": {
-    "description": "Profile row subtitle for the privacy screen in a build without ads."
   },
   "alertsBlockedSummary": "Blocked in Android settings",
   "@alertsBlockedSummary": {
@@ -11827,5 +11782,33 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "ajuSectionPrivacy": "Privacy",
+  "@ajuSectionPrivacy": {
+    "description": "Settings: section with privacy, feedback and rating rows."
+  },
+  "ajuPrivacyTitle": "Privacy and data",
+  "@ajuPrivacyTitle": {
+    "description": "Settings: row that opens Privacy and data."
+  },
+  "ajuPrivacyHint": "Terms, policy, ads and your data",
+  "@ajuPrivacyHint": {
+    "description": "Settings: subtitle of the Privacy and data row."
+  },
+  "ajuFeedbackTitle": "Send feedback",
+  "@ajuFeedbackTitle": {
+    "description": "Settings: row that opens the feedback form."
+  },
+  "ajuFeedbackHint": "A problem, an idea or a compliment",
+  "@ajuFeedbackHint": {
+    "description": "Settings: subtitle of the feedback row."
+  },
+  "ajuRateTitle": "Rate Lucena",
+  "@ajuRateTitle": {
+    "description": "Settings: row that opens the store page."
+  },
+  "ajuRateHint": "Opens the app page on Google Play",
+  "@ajuRateHint": {
+    "description": "Settings: subtitle of the rate row."
   }
 }

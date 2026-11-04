@@ -77,6 +77,13 @@ abstract final class SettingsKeys {
 
   /// Sobre o Lucena.
   static const aboutTile = Key('settings.about');
+
+  /// Seção "Privacidade": "Privacidade e dados" (H-AJU-15).
+  static const privacyTile = Key('settings.privacyTile');
+
+  /// "Ajuda e sobre": "Enviar feedback" e "Avaliar o Lucena" (H-AJU-01).
+  static const feedbackTile = Key('settings.feedbackTile');
+  static const rateTile = Key('settings.rateTile');
   static const aboutScreen = Key('settings.about.screen');
   static const aboutWebsite = Key('settings.about.website');
   static const aboutSource = Key('settings.about.source');

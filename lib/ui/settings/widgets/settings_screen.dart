@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,11 +7,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
 import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/store/store_listing_repository.dart';
 import '../../../domain/models/account.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../alerts/view_models/alerts_cubit.dart';
 import '../../analytics/widgets/version_footer.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
@@ -73,6 +78,39 @@ class SettingsScreen extends StatelessWidget {
                 route: Routes.settingsSound,
               ),
               const _AlertsGroup(),
+            ],
+          ),
+          SectionTitle(l10n.ajuSectionPrivacy, inset: AppSpacing.xs),
+          ProfileRowGroup(
+            children: [
+              ProfileRow(
+                key: SettingsKeys.privacyTile,
+                icon: Icons.privacy_tip_outlined,
+                title: l10n.ajuPrivacyTitle,
+                value: l10n.ajuPrivacyHint,
+                onTap: () => context.push(Routes.privacy),
+              ),
+              ProfileRow(
+                key: SettingsKeys.feedbackTile,
+                icon: Icons.feedback_outlined,
+                title: l10n.ajuFeedbackTitle,
+                value: l10n.ajuFeedbackHint,
+                onTap: () => context.push(Routes.feedback),
+              ),
+              ProfileRow(
+                key: SettingsKeys.rateTile,
+                icon: Icons.star_outline,
+                title: l10n.ajuRateTitle,
+                value: l10n.ajuRateHint,
+                onTap: () {
+                  unawaited(
+                    context.analytics.log(
+                      AnalyticsEvents.avaliacaoPerfilAberto(),
+                    ),
+                  );
+                  unawaited(context.read<StoreListingRepository>().open());
+                },
+              ),
             ],
           ),
           SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
