@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/meta_dobrada.dart';
 
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 
@@ -250,26 +251,36 @@ class TrainingGoalsTab extends StatelessWidget {
           ),
         );
       } else if (day.doubled) {
+        // H-ANI-29: os cartões em fila e "META DOBRADA" por último.
+        final pending = day.goals.where((g) => !g.done).toList();
+        final done = day.goals.where((g) => g.done).toList();
         contents.add(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 8,
-            children: [
-              _section(context, t.trainingSectionDoubled),
-              for (final g in day.goals.where((g) => !g.done))
-                _goal(context, state, g),
-            ],
-          ),
-        );
-        contents.add(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 8,
-            children: [
-              _section(context, t.trainingSectionDoneToday),
-              for (final g in day.goals.where((g) => g.done))
+          MetaDobradaEmOrdem(
+            selo: _section(context, t.trainingSectionDoubled),
+            cartoes: [
+              for (final g in pending) _goal(context, state, g),
+              for (final g in done)
                 _goal(context, state, g, completedCopy: true),
             ],
+            montar: (selo, cartoes) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: goalGap,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 8,
+                  children: [selo, ...cartoes.take(pending.length)],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 8,
+                  children: [
+                    _section(context, t.trainingSectionDoneToday),
+                    ...cartoes.skip(pending.length),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       } else if (day.allDone && (!offer || escola)) {

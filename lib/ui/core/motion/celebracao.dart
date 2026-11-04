@@ -24,6 +24,7 @@ class Celebracao extends StatefulWidget {
     required this.child,
     this.tamanho = TamanhoDaCelebracao.grande,
     this.diploma,
+    this.escalar = true,
     super.key,
   });
 
@@ -33,6 +34,10 @@ class Celebracao extends StatefulWidget {
 
   /// O diploma que escala; sem ele, escala o [child] inteiro.
   final Widget? diploma;
+
+  /// Falso: o [child] fica parado e só escala o [DiplomaDaCelebracao] que
+  /// estiver dentro dele, no lugar onde a tela o pôs.
+  final bool escalar;
 
   @override
   State<Celebracao> createState() => _CelebracaoState();
@@ -127,10 +132,14 @@ class _CelebracaoState extends State<Celebracao>
       ),
     );
 
+    final conteudo = diploma == null && widget.escalar
+        ? escalado(widget.child)
+        : _EscopoDaCelebracao(escalado: escalado, child: widget.child);
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        diploma == null ? escalado(widget.child) : widget.child,
+        conteudo,
         if (diploma != null)
           Positioned.fill(child: Center(child: escalado(diploma))),
         if (!_reduzido)
@@ -159,6 +168,29 @@ class _CelebracaoState extends State<Celebracao>
               _total.inMicroseconds /
               LucenaMotion.diplomaDaCelebracao.inMicroseconds)
           .clamp(0.0, 1.0);
+}
+
+class _EscopoDaCelebracao extends InheritedWidget {
+  const _EscopoDaCelebracao({required this.escalado, required super.child});
+
+  final Widget Function(Widget filho) escalado;
+
+  @override
+  bool updateShouldNotify(_EscopoDaCelebracao antigo) => false;
+}
+
+/// O diploma que escala no lugar, dentro de uma [Celebracao] com
+/// `escalar: false`. Fora de uma [Celebracao], mostra o [child] parado.
+class DiplomaDaCelebracao extends StatelessWidget {
+  const DiplomaDaCelebracao({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final escopo = context.getInheritedWidgetOfExactType<_EscopoDaCelebracao>();
+    return escopo == null ? child : escopo.escalado(child);
+  }
 }
 
 /// Uma partícula: posição de saída ([x], 0 a 1), deriva lateral, instante de

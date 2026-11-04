@@ -76,4 +76,73 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1));
     expect(tester.hasRunningAnimations, isFalse);
   });
+
+  group('diploma no lugar (DiplomaDaCelebracao, escalar: false)', () {
+    Widget noLugar({bool reduzir = false}) => MediaQuery(
+      data: MediaQueryData(disableAnimations: reduzir),
+      child: const MaterialApp(
+        home: Scaffold(
+          body: Celebracao(
+            escalar: false,
+            child: Column(
+              children: [
+                Text('Título', key: Key('titulo')),
+                DiplomaDaCelebracao(child: Text('Diploma')),
+                Text('Botões', key: Key('botoes')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    testWidgets('só o diploma escala; o resto da tela não', (tester) async {
+      await tester.pumpWidget(noLugar());
+      final diploma = find.byKey(MotionKeys.diplomaDaCelebracao);
+      expect(diploma, findsOneWidget);
+      expect(
+        find.descendant(of: diploma, matching: find.text('Diploma')),
+        findsOneWidget,
+      );
+      for (final fora in ['titulo', 'botoes']) {
+        expect(
+          find.ancestor(of: find.byKey(Key(fora)), matching: diploma),
+          findsNothing,
+        );
+      }
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(escala(tester), greaterThan(1));
+      await tester.pump(const Duration(milliseconds: 220));
+      expect(escala(tester), 1);
+      expect(confete(tester).particulas, hasLength(40));
+      await tester.pumpAndSettle();
+      expect(find.byKey(MotionKeys.confeteDaCelebracao), findsNothing);
+    });
+
+    testWidgets('movimento reduzido: sem confete e o diploma com fade', (
+      tester,
+    ) async {
+      await tester.pumpWidget(noLugar(reduzir: true));
+      expect(find.byKey(MotionKeys.confeteDaCelebracao), findsNothing);
+      expect(escala(tester), 1);
+      final fade = tester.widget<FadeTransition>(
+        find.byKey(MotionKeys.fadeDaCelebracao),
+      );
+      expect(fade.opacity.value, lessThan(1));
+      await tester.pumpAndSettle();
+      expect(fade.opacity.value, 1);
+    });
+
+    testWidgets('fora de uma Celebracao, o diploma fica parado', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(home: DiplomaDaCelebracao(child: Text('Diploma'))),
+      );
+      expect(find.byKey(MotionKeys.diplomaDaCelebracao), findsNothing);
+      expect(find.text('Diploma'), findsOneWidget);
+    });
+  });
 }
+

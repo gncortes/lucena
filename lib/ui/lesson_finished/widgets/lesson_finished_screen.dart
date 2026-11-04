@@ -9,12 +9,12 @@ import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/lesson_finished_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/celebracao.dart';
 import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../catalog/widgets/catalog_ui.dart';
-import '../../core/widgets/celebration.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/next_steps.dart';
 import '../../survey/widgets/survey_invite_card.dart';
@@ -126,117 +126,119 @@ class LessonFinishedScreen extends StatelessWidget {
             onPressed: () => context.go(_backRoute(context)),
           ),
         ),
-        body: Stack(
-          children: [
-            // O bloco fica centralizado na altura quando cabe e rola quando
-            // não cabe (canvas: `<main>` com `justify-content: center`).
-            LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xl,
-                  vertical: AppSpacing.lg,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 2 * AppSpacing.lg,
+        body: Celebracao(
+          tamanho: TamanhoDaCelebracao.pequena,
+          escalar: false,
+          child:
+              // O bloco fica centralizado na altura quando cabe e rola quando
+              // não cabe (canvas: `<main>` com `justify-content: center`).
+              LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
+                    vertical: AppSpacing.lg,
                   ),
-                  child: state.ready
-                      // H-ANI-25: o selo salta, o título sobe, os próximos
-                      // passos e o convite entram e os botões vêm por último;
-                      // a mesma aula concluída de novo na sessão abre pronta.
-                      ? EntradaDeResultado(
-                          id: 'aula-${state.lessonId}',
-                          estrela: Container(
-                            width: 104,
-                            height: 104,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: colors.primaryContainer,
-                            ),
-                            child: Icon(
-                              Icons.check_circle,
-                              size: _iconSize,
-                              color: colors.onPrimaryContainer,
-                            ),
-                          ),
-                          titulo: Text(
-                            l10n.lessonFinishedTitle(state.title),
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.w700),
-                          ),
-                          viktor: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            spacing: _blockGap,
-                            children: [
-                              if (_steps(context, state) case final steps?
-                                  when steps.isNotEmpty) ...[
-                                NextSteps(steps: steps),
-                                const ResultsInfoLine(),
-                              ],
-                              SurveyInviteCard(
-                                kind: kind,
-                                source: _school
-                                    ? SurveyInviteSource.schoolLesson
-                                    : SurveyInviteSource.pilaresLesson,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 2 * AppSpacing.lg,
+                    ),
+                    child: state.ready
+                        // H-ANI-25: o selo salta, o título sobe, os próximos
+                        // passos e o convite entram e os botões vêm por último;
+                        // a mesma aula concluída de novo na sessão abre pronta.
+                        ? EntradaDeResultado(
+                            id: 'aula-${state.lessonId}',
+                            estrela: Container(
+                              width: 104,
+                              height: 104,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: colors.primaryContainer,
                               ),
-                            ],
-                          ),
-                          botoes: FooterButtonTheme(
-                            child: Column(
+                              child: Icon(
+                                Icons.check_circle,
+                                size: _iconSize,
+                                color: colors.onPrimaryContainer,
+                              ),
+                            ),
+                            titulo: Text(
+                              l10n.lessonFinishedTitle(state.title),
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            viktor: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              spacing: AppSpacing.md,
+                              spacing: _blockGap,
                               children: [
-                                if (state.nextId != null)
-                                  SizedBox(
-                                    height: kButtonHeight,
-                                    child: FilledButton.icon(
-                                      key: LessonFinishedKeys.next,
-                                      icon: const Icon(Icons.arrow_forward),
-                                      label: Text(
-                                        l10n.lessonNext(state.nextTitle ?? ''),
-                                      ),
-                                      onPressed: () =>
-                                          _next(context, state.nextId!),
-                                    ),
-                                  ),
-                                SizedBox(
-                                  height: kButtonHeight,
-                                  child: OutlinedButton(
-                                    key: LessonFinishedKeys.back,
-                                    onPressed: () =>
-                                        context.go(_backRoute(context)),
-                                    child: Text(
-                                      _school
-                                          ? l10n.surveyBackToSchool
-                                          : l10n.surveyBackToLessons,
-                                    ),
-                                  ),
+                                if (_steps(context, state) case final steps?
+                                    when steps.isNotEmpty) ...[
+                                  NextSteps(steps: steps),
+                                  const ResultsInfoLine(),
+                                ],
+                                SurveyInviteCard(
+                                  kind: kind,
+                                  source: _school
+                                      ? SurveyInviteSource.schoolLesson
+                                      : SurveyInviteSource.pilaresLesson,
                                 ),
                               ],
                             ),
-                          ),
-                          // O selo e o título juntos; o resto com o espaço
-                          // do canvas entre os blocos.
-                          montar: (partes) => Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            spacing: _blockGap,
-                            children: [
-                              Column(
-                                spacing: AppSpacing.lg,
-                                children: partes.sublist(0, 2),
+                            botoes: FooterButtonTheme(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                spacing: AppSpacing.md,
+                                children: [
+                                  if (state.nextId != null)
+                                    SizedBox(
+                                      height: kButtonHeight,
+                                      child: FilledButton.icon(
+                                        key: LessonFinishedKeys.next,
+                                        icon: const Icon(Icons.arrow_forward),
+                                        label: Text(
+                                          l10n.lessonNext(
+                                            state.nextTitle ?? '',
+                                          ),
+                                        ),
+                                        onPressed: () =>
+                                            _next(context, state.nextId!),
+                                      ),
+                                    ),
+                                  SizedBox(
+                                    height: kButtonHeight,
+                                    child: OutlinedButton(
+                                      key: LessonFinishedKeys.back,
+                                      onPressed: () =>
+                                          context.go(_backRoute(context)),
+                                      child: Text(
+                                        _school
+                                            ? l10n.surveyBackToSchool
+                                            : l10n.surveyBackToLessons,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              ...partes.sublist(2),
-                            ],
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+                            ),
+                            // O selo e o título juntos; o resto com o espaço
+                            // do canvas entre os blocos.
+                            montar: (partes) => Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: _blockGap,
+                              children: [
+                                Column(
+                                  spacing: AppSpacing.lg,
+                                  children: partes.sublist(0, 2),
+                                ),
+                                ...partes.sublist(2),
+                              ],
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
                 ),
               ),
-            ),
-            const Positioned.fill(child: IgnorePointer(child: Celebration())),
-          ],
         ),
       ),
     );

@@ -42,10 +42,12 @@ void main() {
 
   Future<TrainingExerciseCubit> open(
     WidgetTester tester,
-    TrainingExercise exercise,
-  ) async {
-    tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(412, 915);
+    TrainingExercise exercise, {
+    double dpr = 1,
+    Size physical = const Size(412, 915),
+  }) async {
+    tester.view.devicePixelRatio = dpr;
+    tester.view.physicalSize = physical;
     tester.view.padding = const FakeViewPadding(top: 52, bottom: 24);
     tester.view.viewPadding = const FakeViewPadding(top: 52, bottom: 24);
     addTearDown(tester.view.resetPadding);
@@ -150,16 +152,39 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('acerto e erro usam a mesma marca, com ícones diferentes', (
-    tester,
-  ) async {
+  testWidgets('canvas PropV1TreinoErrou: o resultado não põe marca na app bar '
+      '(o selo fica só na peça)', (tester) async {
     final cubit = await open(tester, build(statement: 'Brancas jogam.'));
-    expect(find.byKey(TrainingKeys.exerciseResultMark), findsNothing);
     await cubit.play('a1a8');
     await tester.pumpAndSettle();
-    final mark = find.byKey(TrainingKeys.exerciseResultMark);
-    expect(mark, findsOneWidget);
-    expect(tester.widget<Icon>(mark).icon, Icons.check_circle);
+    final bar = find.byType(AppBar);
+    for (final icon in [Icons.check_circle, Icons.cancel]) {
+      expect(
+        find.descendant(of: bar, matching: find.byIcon(icon)),
+        findsNothing,
+      );
+    }
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('canvas PropV1TreinoErrou em 1080x2400 a 420 dpi: sem lupa e '
+      '"Ver a solução" numa linha', (tester) async {
+    final cubit = await open(
+      tester,
+      build(statement: 'Brancas jogam.'),
+      dpr: 420 / 160,
+      physical: const Size(1080, 2400),
+    );
+    await cubit.play('a1a2');
+    await tester.pumpAndSettle();
+    expect(find.byKey(TrainingKeys.exerciseAnalyze), findsNothing);
+    final label = find.descendant(
+      of: find.byKey(TrainingKeys.secondary),
+      matching: find.text('Ver a solução'),
+    );
+    expect(label, findsOneWidget);
+    // Uma linha de 16/24; duas dariam 48.
+    expect(tester.getSize(label).height, lessThan(30));
     await tester.pumpWidget(const SizedBox());
   });
 }

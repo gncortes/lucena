@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/route_names.dart';
 import '../../core/keys/ads_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/barra_do_anuncio.dart';
 import '../../core/motion/entrada_de_estado.dart';
 import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_button.dart';
@@ -133,25 +134,29 @@ class _AdBody extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  _TopText(
-                    key: AdsKeys.learnMore,
-                    label: l10n.licaoAdLearnMore,
-                    style: label?.copyWith(color: colors.primary),
-                    onTap: () => context.pushNamed(
-                      RouteNames.pilaresPresentation,
-                      queryParameters: const {'origem': 'anuncio'},
+                  // H-ANI-31: "Conhecer o Pilares" entra e afunda no toque.
+                  ConhecerQueEntra(
+                    child: _TopText(
+                      key: AdsKeys.learnMore,
+                      onTap: () => context.pushNamed(
+                        RouteNames.pilaresPresentation,
+                        queryParameters: const {'origem': 'anuncio'},
+                      ),
+                      child: Text(
+                        l10n.licaoAdLearnMore,
+                        style: label?.copyWith(color: colors.primary),
+                      ),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
+                  // H-ANI-31: a contagem cruza 3 → 2 → 1 → "Fechar".
                   _TopText(
                     key: AdsKeys.adCloseButton,
-                    label: state.canClose
-                        ? l10n.licaoAdClose
-                        : l10n.licaoAdCloseIn(state.secondsLeft),
-                    style: label?.copyWith(color: colors.onSurfaceVariant),
-                    onTap: state.canClose
-                        ? () => Navigator.of(context).pop(true)
-                        : null,
+                    child: ContagemParaFechar(
+                      restantes: state.canClose ? 0 : state.secondsLeft,
+                      aoFechar: () => Navigator.of(context).pop(true),
+                      estilo: label?.copyWith(color: colors.onSurfaceVariant),
+                    ),
                   ),
                 ],
               ),
@@ -221,17 +226,11 @@ class _AdBody extends StatelessWidget {
 }
 
 /// Texto tocável da barra do topo (14/20, peso 500), com a altura de toque
-/// de 48.
+/// de 48. Sem [onTap], o toque é do próprio [child] (a contagem).
 class _TopText extends StatelessWidget {
-  const _TopText({
-    required this.label,
-    required this.style,
-    required this.onTap,
-    super.key,
-  });
+  const _TopText({required this.child, this.onTap, super.key});
 
-  final String label;
-  final TextStyle? style;
+  final Widget child;
   final VoidCallback? onTap;
 
   @override
@@ -244,7 +243,7 @@ class _TopText extends StatelessWidget {
         widthFactor: 1,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-          child: Text(label, style: style),
+          child: child,
         ),
       ),
     ),

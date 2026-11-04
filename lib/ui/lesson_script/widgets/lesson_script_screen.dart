@@ -7,7 +7,6 @@ import 'dart:async';
 
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../domain/models/load_failure.dart';
-import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/load_error.dart';
 
 import '../../../domain/models/lesson_content.dart';
@@ -320,9 +319,6 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               ),
             ),
             actions: [
-              // A mesma marca de acerto e erro do treino (H-LIC-42).
-              if (state.tone != ScriptTone.neutral)
-                ExerciseResultMark(correct: state.tone == ScriptTone.good),
               if (state.curiosities != null)
                 IconButton(
                   key: LessonScriptKeys.bookButton,

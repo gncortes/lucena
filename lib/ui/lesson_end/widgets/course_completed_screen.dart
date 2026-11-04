@@ -6,11 +6,11 @@ import '../../../domain/models/training/lesson_end.dart';
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/share/share_button.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/celebracao.dart';
 import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/busy_button.dart';
-import '../../core/widgets/celebration.dart';
 import '../../core/widgets/diploma_card.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/widgets/about_screen.dart';
@@ -68,22 +68,23 @@ class _CourseCompletedScreenState extends State<CourseCompletedScreen> {
       ),
       // H-ANI-25: título, o diploma, o Viktor com o convite e os botões por
       // último; o confete passa por cima de tudo.
-      body: Stack(
-        children: [
-          EntradaDeResultado(
-            id: 'curso-${completion.courseName}',
-            titulo: Text(
-              l.licaoCursoConcluidoTitle(completion.courseName),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontSize: 28,
-                height: 36 / 28,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0,
-              ),
+      body: Celebracao(
+        escalar: false,
+        child: EntradaDeResultado(
+          id: 'curso-${completion.courseName}',
+          titulo: Text(
+            l.licaoCursoConcluidoTitle(completion.courseName),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontSize: 28,
+              height: 36 / 28,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0,
             ),
-            placar: Padding(
-              padding: const EdgeInsets.only(top: 16),
+          ),
+          placar: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: DiplomaDaCelebracao(
               child: RepaintBoundary(
                 key: _diploma,
                 child: ColoredBox(
@@ -104,47 +105,46 @@ class _CourseCompletedScreenState extends State<CourseCompletedScreen> {
                 ),
               ),
             ),
-            viktor: Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Column(
-                spacing: 12,
-                children: [
-                  TeacherSpeech(
-                    showSpeedBadge: false,
-                    canvasTrainingBalloon: true,
-                    teacher: widget.teacher,
-                    avatarSize: 56,
-                    text: l.licaoCursoConcluidoFala,
-                    speechContext: SpeechContext.teaching,
-                  ),
-                  const SurveyInviteCard(
-                    kind: SurveyKind.pilares,
-                    source: SurveyInviteSource.pilaresDiploma,
-                  ),
-                ],
-              ),
-            ),
-            botoes: ActionsFooter(
-              stacked: true,
+          ),
+          viktor: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Column(
+              spacing: 12,
               children: [
-                BusyButton(
-                  buttonKey: LessonEndKeys.completedGoals,
-                  icon: CanvasSymbols.taskAlt,
-                  label: l.licaoCursoConcluidoMetas,
-                  onPressed: widget.onGoals,
+                TeacherSpeech(
+                  showSpeedBadge: false,
+                  canvasTrainingBalloon: true,
+                  teacher: widget.teacher,
+                  avatarSize: 56,
+                  text: l.licaoCursoConcluidoFala,
+                  speechContext: SpeechContext.teaching,
                 ),
-                BusyButton(
-                  buttonKey: LessonEndKeys.completedCatalog,
-                  style: BusyButtonStyle.outlined,
-                  label: l.licaoCursoConcluidoCatalogo,
-                  onPressed: widget.onCatalog,
+                const SurveyInviteCard(
+                  kind: SurveyKind.pilares,
+                  source: SurveyInviteSource.pilaresDiploma,
                 ),
               ],
             ),
-            montar: montarFimComBotoes,
           ),
-          const Positioned.fill(child: IgnorePointer(child: Celebration())),
-        ],
+          botoes: ActionsFooter(
+            stacked: true,
+            children: [
+              BusyButton(
+                buttonKey: LessonEndKeys.completedGoals,
+                icon: CanvasSymbols.taskAlt,
+                label: l.licaoCursoConcluidoMetas,
+                onPressed: widget.onGoals,
+              ),
+              BusyButton(
+                buttonKey: LessonEndKeys.completedCatalog,
+                style: BusyButtonStyle.outlined,
+                label: l.licaoCursoConcluidoCatalogo,
+                onPressed: widget.onCatalog,
+              ),
+            ],
+          ),
+          montar: montarFimComBotoes,
+        ),
       ),
     );
   }

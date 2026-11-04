@@ -10,7 +10,9 @@ import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/training/school_training_resources.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/motion/celebracao.dart';
 import 'package:lucena/ui/school_graduation/view_models/school_graduation_cubit.dart';
 import 'package:lucena/ui/school_graduation/widgets/school_graduation_screen.dart';
 
@@ -89,7 +91,17 @@ void main() {
     expect(find.text('3 de novembro de 2026'), findsOneWidget);
     expect(find.text('Professor'), findsOneWidget);
     expect(find.text('Viktor'), findsOneWidget);
-    expect(find.byKey(TrainingKeys.diplomaConfetti), findsOneWidget);
+    // H-15: Celebração grande; o diploma escala no lugar.
+    final festa = tester.widget<Celebracao>(find.byType(Celebracao));
+    expect(festa.tamanho, TamanhoDaCelebracao.grande);
+    expect(festa.escalar, isFalse);
+    expect(
+      find.descendant(
+        of: find.byKey(MotionKeys.diplomaDaCelebracao),
+        matching: find.byKey(TrainingKeys.diploma),
+      ),
+      findsOneWidget,
+    );
     expect(find.byKey(TrainingKeys.diplomaShare), findsOneWidget);
     expect(find.byKey(TrainingKeys.diplomaSummary), findsOneWidget);
     await tester.scrollUntilVisible(find.byKey(TrainingKeys.surveyCard), 200);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/training_goals_tab.dart';
@@ -70,7 +71,22 @@ void main() {
             expect(find.byKey(TrainingKeys.goalsSummary), findsOneWidget);
           }
           if (sample == 'doubled') {
-            expect(find.text('META DOBRADA'), findsOneWidget);
+            // H-ANI-29: "META DOBRADA" é o selo; todo cartão entra em fila.
+            expect(
+              find.descendant(
+                of: find.byKey(MotionKeys.seloDaMetaDobrada),
+                matching: find.text('META DOBRADA'),
+              ),
+              findsOneWidget,
+            );
+            final goals = training.day!.goals;
+            for (var i = 0; i < goals.length; i++) {
+              expect(
+                find.byKey(MotionKeys.cartaoDaMetaDobrada(i)),
+                findsOneWidget,
+              );
+            }
+            expect(find.text('FEITAS HOJE'), findsOneWidget);
           }
           if (sample == 'first' ||
               sample == 'large' ||

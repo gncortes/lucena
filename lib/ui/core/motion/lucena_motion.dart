@@ -484,4 +484,14 @@ abstract final class LucenaMotion {
   /// tela do sistema não ter pulo. O topo do nome fica a 65% da altura.
   static const figuraDaAbertura = 288.0;
   static const topoDoNome = .65;
+
+  // H-ANI-29 · Meta dobrada.
+
+  /// Os cartões entram em fila: 40 ms entre eles, sobem 10 px em 240 ms.
+  static const intervaloDaMetaDobrada = Duration(milliseconds: 40);
+  static const cartaoDaMetaDobrada = Duration(milliseconds: 240);
+
+  /// "META DOBRADA" sobe 6 px em 300 ms (DEC), depois dos cartões e da barra.
+  static const seloDaMetaDobrada = Duration(milliseconds: 300);
+  static const subidaDoSeloDobrado = 6.0;
 }

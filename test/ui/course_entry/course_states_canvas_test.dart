@@ -25,6 +25,7 @@ import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/motion/celebracao.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/course_entry/widgets/course_entry_gate.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
@@ -703,12 +704,18 @@ void main() {
         );
         expect(find.byKey(TrainingKeys.exerciseHint), findsNothing);
         expect(cubit.state.firstTry, [false, true, true]);
+        // H-15: parte concluída não comemora; só a abertura inteira.
+        expect(find.byType(Celebracao), findsNothing);
         for (var i = 3; i <= 5; i++) {
           await cubit.nextPart();
           await cubit.play('d2d4');
           await cubit.play('c1f4');
           await cubit.play('e2e3');
         }
+        await tester.pump();
+        final festa = tester.widget<Celebracao>(find.byType(Celebracao));
+        expect(festa.tamanho, TamanhoDaCelebracao.pequena);
+        expect(festa.escalar, isFalse);
         await tester.pumpAndSettle();
         await shot(tester, 'AberturaTreinoConcluido', size);
         expect(
