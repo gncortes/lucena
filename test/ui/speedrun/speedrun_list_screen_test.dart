@@ -297,10 +297,7 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         locale: const Locale('pt'),
-        child: BlocProvider.value(
-          value: cubit,
-          child: const SpeedrunScreen(),
-        ),
+        child: BlocProvider.value(value: cubit, child: const SpeedrunScreen()),
       ),
     );
     await tester.pumpAndSettle();
