@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:lucena/ui/core/widgets/actions_footer.dart';
 import 'package:lucena/ui/core/widgets/load_error.dart';
@@ -11,6 +12,20 @@ import 'package:lucena/ui/core/widgets/load_error.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
+  testWidgets('o ícone e o texto entram como estado de erro (H-ANI-24)', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: LoadErrorScreen(kind: LoadErrorKind.generic, onAction: () {}),
+      ),
+    );
+    expect(find.byKey(MotionKeys.iconeDoEstado), findsOneWidget);
+    expect(find.byKey(MotionKeys.textoDoEstado), findsOneWidget);
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('retry assíncrono carrega no botão e mantém a tela', (
     tester,
   ) async {

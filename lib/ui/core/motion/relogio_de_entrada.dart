@@ -19,6 +19,7 @@ class RelogioDeEntrada extends StatefulWidget {
     required this.total,
     required this.child,
     this.animar,
+    this.esperarATransicao = true,
     super.key,
   });
 
@@ -27,6 +28,10 @@ class RelogioDeEntrada extends StatefulWidget {
 
   /// Nulo: só na primeira entrada da tela.
   final bool? animar;
+
+  /// `false`: começa junto com a transição da rota, com os próprios atrasos
+  /// (o painel de filtro, que entra enquanto a folha sobe).
+  final bool esperarATransicao;
 
   final Widget child;
 
@@ -51,15 +56,34 @@ class _RelogioDeEntradaState extends State<RelogioDeEntrada>
         !MovimentoReduzido.of(context) &&
         (widget.animar ?? MovimentoReduzido.animarEntrada(context));
     _animar = animar;
-    if (animar && widget.total > Duration.zero) {
-      _tempo.forward();
-    } else {
+    if (!animar || widget.total <= Duration.zero) {
       _tempo.value = 1;
+      return;
     }
+    // A tela que ainda está chegando (rota, cartão que abre) começa a
+    // entrada só quando a transição acaba.
+    final rota = ModalRoute.of(context)?.animation;
+    if (widget.esperarATransicao &&
+        rota != null &&
+        rota.status == AnimationStatus.forward) {
+      _rota = rota..addStatusListener(_rotaChegou);
+    } else {
+      _tempo.forward();
+    }
+  }
+
+  Animation<double>? _rota;
+
+  void _rotaChegou(AnimationStatus status) {
+    if (status != AnimationStatus.completed) return;
+    _rota?.removeStatusListener(_rotaChegou);
+    _rota = null;
+    if (mounted) _tempo.forward();
   }
 
   @override
   void dispose() {
+    _rota?.removeStatusListener(_rotaChegou);
     _tempo.dispose();
     super.dispose();
   }

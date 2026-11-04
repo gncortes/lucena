@@ -7,7 +7,8 @@ import 'movimento_reduzido.dart';
 
 /// A folha de baixo sobre o véu (H-ANI-06): sobe em 400 ms
 /// (`emphasizedDecelerate`) sobre o véu preto de 32% e desce no mesmo tempo
-/// ao fechar. Com movimento reduzido, aparece pronta.
+/// ao fechar. Com [filtro], a folha do filtro da app bar (H-ANI-23): 350 ms.
+/// Com movimento reduzido, aparece pronta.
 ///
 /// É o único lugar do app que chama `showModalBottomSheet` (teste
 /// `tokens_soltos_test.dart`). As telas abrem a folha pelo `showLucenaSheet`,
@@ -23,8 +24,10 @@ abstract final class FolhaLucena {
     Color? backgroundColor = Colors.transparent,
     double? elevation = 0,
     Key? chave,
+    bool filtro = false,
   }) {
     final reduzido = MovimentoReduzido.of(context);
+    final duracao = filtro ? LucenaMotion.folhaDoFiltro : LucenaMotion.folha;
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: isScrollControlled,
@@ -37,8 +40,8 @@ abstract final class FolhaLucena {
       sheetAnimationStyle: reduzido
           ? AnimationStyle.noAnimation
           : AnimationStyle(
-              duration: LucenaMotion.folha,
-              reverseDuration: LucenaMotion.folha,
+              duration: duracao,
+              reverseDuration: duracao,
               curve: LucenaMotion.emphasizedDecelerate,
               reverseCurve: LucenaMotion.emphasizedAccelerate,
             ),

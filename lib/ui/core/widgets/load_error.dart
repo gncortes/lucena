@@ -6,6 +6,7 @@ import '../../../domain/models/load_failure.dart';
 
 import '../keys/load_error_keys.dart';
 import '../l10n/l10n.dart';
+import '../motion/entrada_de_estado.dart';
 import '../theme/canvas_symbols.dart';
 import 'actions_footer.dart';
 import 'busy_button.dart';
@@ -123,41 +124,43 @@ class LoadErrorScreen extends StatelessWidget {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  size: 64,
-                  fill: 0,
-                  weight: 300,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontSize: 22,
-                    height: 28 / 22,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0,
-                  ),
-                ),
-                if (message != null) ...[
-                  const SizedBox(height: 8),
+            child: EntradaDeEstado(
+              espaco: 24,
+              icone: Icon(
+                icon,
+                size: 64,
+                fill: 0,
+                weight: 300,
+                color: theme.colorScheme.primary,
+              ),
+              texto: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(
-                    message,
+                    title,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontSize: 16,
-                      height: 24 / 16,
-                      color: theme.colorScheme.onSurfaceVariant,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontSize: 22,
+                      height: 28 / 22,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0,
                     ),
                   ),
+                  if (message != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontSize: 16,
+                        height: 24 / 16,
+                        color: theme.colorScheme.onSurfaceVariant,
+                        letterSpacing: 0,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

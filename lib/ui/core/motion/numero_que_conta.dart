@@ -16,6 +16,7 @@ class NumeroQueConta extends StatelessWidget {
     this.estilo,
     this.sufixo = '',
     this.alinhamento = AlignmentDirectional.center,
+    this.agrupar = true,
     super.key,
   });
 
@@ -26,10 +27,15 @@ class NumeroQueConta extends StatelessWidget {
   final String sufixo;
   final AlignmentGeometry alinhamento;
 
+  /// `false`: sem separador de milhar, como o rating no xadrez ("1200").
+  final bool agrupar;
+
   @override
   Widget build(BuildContext context) {
     final local = Localizations.maybeLocaleOf(context)?.toLanguageTag();
-    final formato = NumberFormat.decimalPattern(local ?? 'pt_BR');
+    final formato = agrupar
+        ? NumberFormat.decimalPattern(local ?? 'pt_BR')
+        : NumberFormat('0', local ?? 'pt_BR');
     final estilo = (DefaultTextStyle.of(context).style.merge(this.estilo))
         .copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
     final fim = '${formato.format(valor)}$sufixo';
