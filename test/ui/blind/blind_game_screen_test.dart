@@ -43,6 +43,7 @@ void main() {
     String fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1',
     ClockConfig? clock,
     FakeOpponentRepository? opponent,
+    bool startGame = true,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
@@ -82,8 +83,10 @@ void main() {
       phrases: blindPhrases(l10n),
       clock: clock,
     );
-    await cubit.start();
-    await cubit.release();
+    if (startGame) {
+      await cubit.start();
+      await cubit.release();
+    }
     // No fim, a conclusão abre no lugar da partida.
     final router = GoRouter(
       routes: [
@@ -123,6 +126,46 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  group('H-PAR-08 introdução', () {
+    testWidgets('textos, segmentado só com ícone e Começar abre a partida', (
+      tester,
+    ) async {
+      await pump(tester, startGame: false, locale: const Locale('pt'));
+
+      expect(find.text('Às cegas'), findsOneWidget);
+      expect(
+        find.text(
+          'Antes de começar, ouça onde estão as peças ou dê uma olhada no '
+          'tabuleiro.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Ouvir a posição'), findsOneWidget);
+      // Abre sem as peças: o botão oferece "Ver o tabuleiro"; depois de tocar
+      // a vista é "Tabuleiro" e o botão volta para "Só as casas" (os dois
+      // quadros de TelaCegasIntro).
+      expect(find.text('Ver o tabuleiro'), findsOneWidget);
+      expect(find.text('Só as casas'), findsNothing);
+      // O segmentado é só ícone: nenhum dos três rótulos aparece como texto.
+      expect(find.text('Tabuleiro'), findsNothing);
+      expect(find.text('Sem tabuleiro'), findsNothing);
+      for (final view in BlindView.values) {
+        expect(find.byKey(BlindKeys.view(view)), findsOneWidget);
+      }
+
+      await tester.tap(find.byKey(BlindKeys.introBoard));
+      await tester.pumpAndSettle();
+      expect(cubit.state.view, BlindView.board);
+      expect(find.text('Só as casas'), findsOneWidget);
+      expect(find.text('Ver o tabuleiro'), findsNothing);
+
+      await tester.tap(find.byKey(BlindKeys.start));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.introListen), findsNothing);
+      expect(find.text('Começar'), findsNothing);
+    });
+  });
 
   group('H-PAR-09 aviso do microfone', () {
     testWidgets('texto exato do quadro, antes do pedido do sistema', (
