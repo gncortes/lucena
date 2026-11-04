@@ -1,3 +1,4 @@
+import 'data/repositories/data_export/data_export_repository.dart';
 import 'data/repositories/training/training_endgame_content.dart';
 import 'data/repositories/training/course_download_repository.dart';
 
@@ -791,6 +792,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<FeedbackRepository>.value(
           value: dependencies.feedbackRepository,
+        ),
+        RepositoryProvider<DataExportRepository>.value(
+          value: dependencies.dataExportRepository,
         ),
         RepositoryProvider<WouldPayRepository>.value(
           value: dependencies.wouldPayRepository,

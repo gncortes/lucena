@@ -2405,5 +2405,17 @@
   "conPrivTalk": "Falar sobre meus dados",
   "conPrivTalkText": "Com o encarregado, por e-mail",
   "conPrivSectionDocuments": "Documentos",
-  "conPrivSectionAccount": "Conta"
+  "conPrivSectionAccount": "Conta",
+  "conDadosAskTitle": "Baixar seus dados?",
+  "conDadosAskText": "Você recebe um arquivo com os dados da sua conta.",
+  "conDadosStart": "Baixar",
+  "conDadosCancel": "Cancelar",
+  "conDadosDownloading": "Baixando",
+  "conDadosReadyTitle": "Seus dados estão prontos",
+  "conDadosReadyText": "O arquivo tem os dados da sua conta.",
+  "conDadosOpen": "Abrir arquivo",
+  "conDadosClose": "Fechar",
+  "conDadosErrorTitle": "Ocorreu um erro inesperado",
+  "conDadosErrorText": "Seus dados continuam salvos. Tente baixar novamente.",
+  "conDadosRetry": "Tentar de novo"
 }

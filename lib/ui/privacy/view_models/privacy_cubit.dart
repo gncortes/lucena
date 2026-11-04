@@ -10,27 +10,26 @@ import '../../../domain/models/account.dart';
 import '../../../domain/models/load_failure.dart';
 
 class PrivacyState {
-  const PrivacyState({
-    this.ready = false,
-    this.hasAccount = false,
-    this.failure,
-  });
+  const PrivacyState({this.ready = false, this.account, this.failure});
 
   final bool ready;
   final LoadFailure? failure;
 
+  /// A conta de agora (nula: sem conta).
+  final Account? account;
+
   /// "Baixar meus dados" e "Excluir minha conta" só com conta.
-  final bool hasAccount;
+  bool get hasAccount => account != null;
 
   @override
   bool operator ==(Object other) =>
       other is PrivacyState &&
       other.ready == ready &&
       other.failure == failure &&
-      other.hasAccount == hasAccount;
+      other.account == account;
 
   @override
-  int get hashCode => Object.hash(ready, hasAccount, failure);
+  int get hashCode => Object.hash(ready, account, failure);
 }
 
 /// Privacidade e dados (H-CON-20): acompanha a conta e abre as telas de
@@ -54,7 +53,7 @@ class PrivacyCubit extends Cubit<PrivacyState> {
 
   void _show(Account? account) {
     if (isClosed) return;
-    emit(PrivacyState(ready: true, hasAccount: account != null));
+    emit(PrivacyState(ready: true, account: account));
   }
 
   /// Gap 3: a leitura falha e a tela mostra o erro padrão.
@@ -65,7 +64,7 @@ class PrivacyCubit extends Cubit<PrivacyState> {
     emit(
       PrivacyState(
         ready: state.ready,
-        hasAccount: state.hasAccount,
+        account: state.account,
         failure: LoadFailure.generic,
       ),
     );

@@ -19,6 +19,7 @@ import '../../legal/widgets/legal_sheet.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../settings/widgets/about_screen.dart';
 import '../view_models/privacy_cubit.dart';
+import 'data_export_sheet.dart';
 
 /// Privacidade e dados (canvas `PropV1ContaPrivacidade` e
 /// `PropV1ContaPrivacidadeRolado`, H-CON-20 e H-CON-24).
@@ -99,13 +100,13 @@ class PrivacyScreen extends StatelessWidget {
           SectionTitle(l10n.conPrivSectionData, inset: AppSpacing.xs),
           ProfileRowGroup(
             children: [
-              if (state.hasAccount)
+              if (state.account case final account?)
                 ProfileRow(
                   key: PrivacyKeys.download,
                   icon: Icons.download,
                   title: l10n.conPrivDownload,
                   value: l10n.conPrivDownloadText,
-                  onTap: () {},
+                  onTap: () => showDataExportSheet(context, uid: account.uid),
                 ),
               ProfileRow(
                 key: PrivacyKeys.talk,

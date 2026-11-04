@@ -28,4 +28,13 @@ class ShareService {
     );
     return result.status == ShareResultStatus.success;
   }
+
+  /// Abre o menu com o arquivo em [path] (abrir num app ou salvar). Devolve
+  /// se a pessoa escolheu um destino.
+  Future<bool> shareFile(String path, {required String mimeType}) async {
+    final result = await SharePlus.instance.share(
+      ShareParams(files: [XFile(path, mimeType: mimeType)]),
+    );
+    return result.status == ShareResultStatus.success;
+  }
 }

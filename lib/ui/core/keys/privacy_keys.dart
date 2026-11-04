@@ -16,6 +16,16 @@ abstract final class PrivacyKeys {
   static const policy = Key('privacy.policy');
   static const deleteAccount = Key('privacy.deleteAccount');
 
+  /// A folha "Baixar seus dados?" (H-CON-21) e os quadros dela.
+  static const downloadSheet = Key('privacy.downloadSheet');
+  static const downloadClose = Key('privacy.downloadClose');
+  static const downloadStart = Key('privacy.downloadStart');
+  static const downloading = Key('privacy.downloading');
+  static const downloadReady = Key('privacy.downloadReady');
+  static const downloadOpen = Key('privacy.downloadOpen');
+  static const downloadError = Key('privacy.downloadError');
+  static const downloadRetry = Key('privacy.downloadRetry');
+
   /// A folha "Remover anúncios".
   static const removeSheet = Key('privacy.removeSheet');
   static const removeBuy = Key('privacy.removeBuy');

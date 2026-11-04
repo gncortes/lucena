@@ -11850,5 +11850,53 @@
   "conPrivSectionAccount": "Account",
   "@conPrivSectionAccount": {
     "description": "Privacidade e dados: título da seção com Excluir minha conta."
+  },
+  "conDadosAskTitle": "Download your data?",
+  "@conDadosAskTitle": {
+    "description": "Folha Baixar meus dados (H-CON-21): título da pergunta e de Baixando."
+  },
+  "conDadosAskText": "You get a file with your account data.",
+  "@conDadosAskText": {
+    "description": "Folha Baixar meus dados: texto da pergunta."
+  },
+  "conDadosStart": "Download",
+  "@conDadosStart": {
+    "description": "Folha Baixar meus dados: botão que começa."
+  },
+  "conDadosCancel": "Cancel",
+  "@conDadosCancel": {
+    "description": "Folha Baixar meus dados: fecha sem baixar (também durante Baixando)."
+  },
+  "conDadosDownloading": "Downloading",
+  "@conDadosDownloading": {
+    "description": "Folha Baixar meus dados: botão desativado com o indicador de progresso."
+  },
+  "conDadosReadyTitle": "Your data is ready",
+  "@conDadosReadyTitle": {
+    "description": "Folha Baixar meus dados: título quando o arquivo está pronto."
+  },
+  "conDadosReadyText": "The file has your account data.",
+  "@conDadosReadyText": {
+    "description": "Folha Baixar meus dados: texto quando o arquivo está pronto."
+  },
+  "conDadosOpen": "Open file",
+  "@conDadosOpen": {
+    "description": "Folha Baixar meus dados: abre o arquivo pronto (menu do sistema)."
+  },
+  "conDadosClose": "Close",
+  "@conDadosClose": {
+    "description": "Folha Baixar meus dados: fecha a folha."
+  },
+  "conDadosErrorTitle": "An unexpected error occurred",
+  "@conDadosErrorTitle": {
+    "description": "Folha Baixar meus dados: título do erro."
+  },
+  "conDadosErrorText": "Your data is still saved. Try downloading again.",
+  "@conDadosErrorText": {
+    "description": "Folha Baixar meus dados: texto do erro (sem internet, sem espaço)."
+  },
+  "conDadosRetry": "Try again",
+  "@conDadosRetry": {
+    "description": "Folha Baixar meus dados: refaz o download (P6)."
   }
 }

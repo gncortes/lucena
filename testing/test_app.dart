@@ -1,3 +1,7 @@
+import 'package:lucena/data/repositories/data_export/data_export_repository.dart';
+
+import 'fakes/fake_data_export_repository.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,6 +87,7 @@ class TestApp extends StatelessWidget {
     this.updateCubit,
     this.wouldPayRepository,
     this.feedbackRepository,
+    this.dataExportRepository,
     this.reviewRepository,
     this.schoolProgressRepository,
     this.endgameProgressRepository,
@@ -152,6 +157,9 @@ class TestApp extends StatelessWidget {
   /// nunca aparece e o envio vai para um falso.
   final WouldPayRepository? wouldPayRepository;
   final FeedbackRepository? feedbackRepository;
+
+  /// "Baixar meus dados". Sem ele, um falso que baixa na hora.
+  final DataExportRepository? dataExportRepository;
   final ReviewRepository? reviewRepository;
 
   /// O progresso que conta as aulas concluídas do convite.
@@ -256,6 +264,9 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<FeedbackRepository>.value(
           value: feedbackRepository ?? FakeFeedbackRepository(),
+        ),
+        RepositoryProvider<DataExportRepository>.value(
+          value: dataExportRepository ?? FakeDataExportRepository(),
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: reviewRepository ?? FakeReviewRepository(),

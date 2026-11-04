@@ -177,7 +177,21 @@ class _Block extends StatelessWidget {
     LegalBullet(:final spans) => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('•  ', style: style),
+        // O marcador da lista, desenhado (não é texto a traduzir).
+        Padding(
+          padding: EdgeInsetsDirectional.only(
+            top: (style?.fontSize ?? 14) * 0.6,
+            start: 4,
+            end: 10,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: style?.color,
+              shape: BoxShape.circle,
+            ),
+            child: const SizedBox.square(dimension: 5),
+          ),
+        ),
         Expanded(child: Text.rich(_spans(spans), style: style)),
       ],
     ),

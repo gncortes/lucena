@@ -284,6 +284,8 @@ abstract final class AnalyticsCatalog {
     'atualizacao_acao': ['tipo', 'acao', 'via'],
     // Privacidade.
     'privacidade_analytics': ['ligado'],
+    // Baixar meus dados (H-CON-21): ok, erro ou cancelado.
+    'dados_baixados': ['resultado'],
   };
 
   /// Os 3 da página de reserva (stream web, E1.01): o app não os registra.
@@ -1420,6 +1422,10 @@ abstract final class AnalyticsEvents {
 
   static AnalyticsEvent privacidadeAnalytics({required bool ligado}) =>
       _e('privacidade_analytics', {'ligado': _yn(ligado)});
+
+  /// "Baixar meus dados" terminou: `ok`, `erro` ou `cancelado`.
+  static AnalyticsEvent dadosBaixados({required String resultado}) =>
+      _e('dados_baixados', {'resultado': resultado});
 
   /// O `screen_view` manual: só o nome da rota (`/featured/:id`), nunca o
   /// caminho com id.

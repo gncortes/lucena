@@ -277,14 +277,15 @@ final _samples = <AnalyticsEvent>[
     via: 'play_no_app',
   ),
   AnalyticsEvents.privacidadeAnalytics(ligado: false),
+  AnalyticsEvents.dadosBaixados(resultado: 'ok'),
   AnalyticsEvents.screenView('/featured/:id'),
 ];
 
 void main() {
   group('catálogo', () {
-    test('tem os 96 eventos (93 do app, com o treino e o funil de campanha da '
-        'T84, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(93));
+    test('tem os 97 eventos (94 do app, com o treino, o funil de campanha da '
+        'T84 e o dados_baixados da T85, e 3 da web)', () {
+      expect(AnalyticsCatalog.app, hasLength(94));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(

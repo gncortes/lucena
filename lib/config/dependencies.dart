@@ -165,6 +165,8 @@ import '../data/services/firebase/auth_service.dart';
 import '../data/repositories/learning/learning_repository.dart';
 import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/repositories/data_export/data_export_repository.dart';
+import '../data/repositories/data_export/data_export_repository_cloud.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
 import '../data/repositories/would_pay/would_pay_repository.dart';
@@ -287,6 +289,7 @@ class Dependencies {
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
+    this.dataExportRepository = const NoDataExportRepository(),
     this.wouldPayRepository = const NoWouldPayRepository(),
     this.reviewRepository = const NoReviewRepository(),
     this.installReferrerRepository = const NoInstallReferrerRepository(),
@@ -623,6 +626,13 @@ class Dependencies {
               origin: analytics.origin,
             )
           : const NoFeedbackRepository(),
+      dataExportRepository: firebase
+          ? CloudDataExportRepository(
+              cloudStore,
+              directory: getApplicationSupportDirectory,
+              now: now,
+            )
+          : const NoDataExportRepository(),
       wouldPayRepository: LocalWouldPayRepository(preferences),
       reviewRepository: LocalReviewRepository(
         preferences,
@@ -779,6 +789,9 @@ class Dependencies {
 
   /// "Enviar feedback" e o "Você pagaria?" (E1.26), em `feedback/{id}`.
   final FeedbackRepository feedbackRepository;
+
+  /// "Baixar meus dados" (H-CON-21): a cópia da conta num JSON.
+  final DataExportRepository dataExportRepository;
   final WouldPayRepository wouldPayRepository;
 
   /// O pedido de avaliação da Play (E1.26).
