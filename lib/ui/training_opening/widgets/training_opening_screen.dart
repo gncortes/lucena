@@ -35,6 +35,7 @@ import '../../lesson_script/widgets/script_move_list.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_opening_cubit.dart';
 import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/motion/tabuleiro_animado.dart';
 
 class TrainingOpeningScreen extends StatelessWidget {
@@ -97,6 +98,7 @@ class _OpeningViewState extends State<_OpeningView> {
   int _attempt = 0;
   bool _returned = false;
   final _boardKey = GlobalKey();
+  String? _heroId;
   @override
   void dispose() {
     _replay?.cancel();
@@ -457,6 +459,13 @@ class _OpeningViewState extends State<_OpeningView> {
       board = GameBoardHero(orientation: side, child: board);
     } else if (widget.screen.heroTag case final tag?) {
       board = Hero(tag: tag, child: board);
+    } else {
+      // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id (o FEN
+      // com que a tela abre).
+      board = TabuleiroHero(
+        id: _heroId ??= state.line!.fens.first,
+        child: board,
+      );
     }
     return board;
   }

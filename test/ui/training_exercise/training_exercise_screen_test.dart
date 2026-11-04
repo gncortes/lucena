@@ -127,6 +127,7 @@ void main() {
 
       expectCenteredBoard();
       expect(find.text('Encontre o melhor lance.'), findsOneWidget);
+      expectTabuleiroHero(tester, TrainingKeys.exerciseBoard, exercise.fen);
       expect(tester.takeException(), isNull);
       await tester.tap(find.byTooltip('Dica'));
       await tester.pumpAndSettle();

@@ -36,6 +36,7 @@ import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
@@ -149,6 +150,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
 
   /// A casa que o aluno tocou na fala, realçada no tabuleiro.
   final _flash = SquareFlash();
+
+  /// H-ANI-02: o id do tabuleiro que voa (o FEN com que a lição abre).
+  String? _heroId;
 
   @override
   void initState() {
@@ -575,9 +579,12 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         onMove: (uci) => unawaited(cubit.onMove(uci)),
         onSquare: (square) => unawaited(cubit.onSquare(square)),
       );
-      return widget.homeHero
-          ? GameBoardHero(orientation: state.orientation, child: board)
-          : board;
+      if (widget.homeHero) {
+        return GameBoardHero(orientation: state.orientation, child: board);
+      }
+      // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id.
+      final heroId = _heroId ??= state.fen.isEmpty ? null : state.fen;
+      return heroId == null ? board : TabuleiroHero(id: heroId, child: board);
     }
 
     return LayoutBuilder(

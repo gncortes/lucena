@@ -45,6 +45,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_exercise_cubit.dart';
 import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 
 /// Course-neutral destination. Navigation callbacks run only after persistence.
 class TrainingExerciseScreen extends StatelessWidget {
@@ -108,6 +109,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
 
   /// O tabuleiro guarda o estado quando o retorno do lance o envolve.
   final _boardKey = GlobalKey();
+  String? _heroId;
 
   void _cycleAction(
     TrainingExerciseState state,
@@ -416,6 +418,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
       board = GameBoardHero(orientation: side, child: board);
     } else if (widget.screen.heroTag case final tag?) {
       board = Hero(tag: tag, child: board);
+    } else {
+      // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id (o FEN
+      // com que a tela abre).
+      board = TabuleiroHero(id: _heroId ??= state.exercise!.fen, child: board);
     }
     return board;
   }

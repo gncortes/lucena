@@ -358,6 +358,11 @@ void main() {
         void move(String uci) => tester
             .widget<Chessboard>(find.byKey(TrainingKeys.openingBoard))
             .onMove!(NormalMove.fromUci(uci));
+        expectTabuleiroHero(
+          tester,
+          TrainingKeys.openingBoard,
+          GameRules.initial.fen,
+        );
         expectSemRetornoDoLance();
         move('d2d4');
         await tester.pump();

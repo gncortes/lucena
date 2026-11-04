@@ -2,7 +2,9 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/movimento_reduzido.dart';
 import 'package:lucena/ui/core/motion/tabuleiro_animado.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 
 /// H-ANI-10: o tabuleiro de [boardKey] está dentro do [TabuleiroAnimado] e
 /// desliza a peça no tempo do kit (300 ms; nada com movimento reduzido).
@@ -45,4 +47,25 @@ void expectRetornoDoLance(
 /// Sem retorno do lance na tela.
 void expectSemRetornoDoLance() {
   expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
+}
+
+/// H-ANI-02: o tabuleiro de [boardKey] está no [TabuleiroHero] de [id]; sem
+/// movimento reduzido, o `Hero` tem a marca `tabuleiro-<id>`.
+void expectTabuleiroHero(WidgetTester tester, Key boardKey, String id) {
+  final hero = find.ancestor(
+    of: find.byKey(boardKey),
+    matching: find.byType(TabuleiroHero),
+  );
+  expect(hero, findsOneWidget);
+  expect(tester.widget<TabuleiroHero>(hero).id, id);
+  final reduzido = MovimentoReduzido.of(tester.element(find.byKey(boardKey)));
+  expect(
+    find.ancestor(
+      of: find.byKey(boardKey),
+      matching: find.byWidgetPredicate(
+        (w) => w is Hero && w.tag == TabuleiroHero.tag(id),
+      ),
+    ),
+    reduzido ? findsNothing : findsOneWidget,
+  );
 }
