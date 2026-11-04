@@ -1,6 +1,7 @@
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../domain/models/load_failure.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/widgets/load_error.dart';
 import '../../journey/widgets/challenge_load_error.dart';
@@ -225,119 +226,124 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                         ),
                     ],
                   ),
-            body: challenge == null
-                ? const SkeletonList()
-                // O tabuleiro e os selos no centro do espaço entre a barra do app
-                // e o painel do adversário e das partidas (T64), que rola; o botão
-                // de jogar fica fixo embaixo.
-                : LayoutBuilder(
-                    builder: (context, box) => Column(
-                      children: [
-                        SizedBox(
-                          height: BoardOptionsPanel.boardAreaFor(
-                            box.maxHeight,
-                            boardRoom:
-                                box.maxWidth +
-                                2 * (_chipsHeight + AppSpacing.md) +
-                                AppSpacing.md,
-                            minPanel: 0.3,
-                          ),
-                          child: CenteredBoardLayout(
-                            gap: AppSpacing.md,
-                            reserveBottom: _chipsHeight,
-                            board: _BigBoard(
-                              homeHero: widget.homeHero,
-                              challenge: challenge,
-                              launching: _launching,
-                              saved: _preview,
+            // O tabuleiro e os selos no centro do espaço entre a barra do app
+            // e o painel do adversário e das partidas (T64), que rola; o botão
+            // de jogar fica fixo embaixo.
+            body: ShimmerConteudo(
+              carregando: challenge == null,
+              esqueleto: const SkeletonList(),
+              child: challenge == null
+                  ? const SizedBox.shrink()
+                  : LayoutBuilder(
+                      builder: (context, box) => Column(
+                        children: [
+                          SizedBox(
+                            height: BoardOptionsPanel.boardAreaFor(
+                              box.maxHeight,
+                              boardRoom:
+                                  box.maxWidth +
+                                  2 * (_chipsHeight + AppSpacing.md) +
+                                  AppSpacing.md,
+                              minPanel: 0.3,
                             ),
-                            bottom: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.lg,
+                            child: CenteredBoardLayout(
+                              gap: AppSpacing.md,
+                              reserveBottom: _chipsHeight,
+                              board: _BigBoard(
+                                homeHero: widget.homeHero,
+                                challenge: challenge,
+                                launching: _launching,
+                                saved: _preview,
                               ),
-                              child: Wrap(
-                                spacing: AppSpacing.sm,
-                                runSpacing: AppSpacing.sm,
-                                alignment: WrapAlignment.center,
-                                children: [
-                                  _GoalChip(challenge: challenge),
-                                  InfoChip(
-                                    icon: switch (shownTime) {
-                                      final time? => paceIcon(
-                                        PaceCategory.of(time),
-                                      ),
-                                      null => Icons.timer_off_outlined,
-                                    },
-                                    label: switch (shownTime) {
-                                      final time? => l10n.speedrunTimeControl(
-                                        time.initial.inMinutes,
-                                        time.increment.inSeconds,
-                                      ),
-                                      null => l10n.challengeNoClock,
-                                    },
-                                  ),
-                                  if (_preview == null)
-                                    TextButton(
-                                      key: JourneyKeys.changePace,
-                                      onPressed: () async {
-                                        final settings = context
-                                            .read<SettingsCubit>();
-                                        final clock = settings.state?.clock;
-                                        if (clock == null) return;
-                                        final choice = await showPaceSheet(
-                                          context,
-                                          current: clock.journeyTime,
-                                          allowNoClock: true,
-                                        );
-                                        if (choice != null && context.mounted) {
-                                          await settings.setClock(
-                                            clock.copyWith(
-                                              journeyTime: choice.time,
-                                            ),
-                                          );
-                                        }
+                              bottom: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.lg,
+                                ),
+                                child: Wrap(
+                                  spacing: AppSpacing.sm,
+                                  runSpacing: AppSpacing.sm,
+                                  alignment: WrapAlignment.center,
+                                  children: [
+                                    _GoalChip(challenge: challenge),
+                                    InfoChip(
+                                      icon: switch (shownTime) {
+                                        final time? => paceIcon(
+                                          PaceCategory.of(time),
+                                        ),
+                                        null => Icons.timer_off_outlined,
                                       },
-                                      child: Text(l10n.journeyChangePace),
+                                      label: switch (shownTime) {
+                                        final time? => l10n.speedrunTimeControl(
+                                          time.initial.inMinutes,
+                                          time.increment.inSeconds,
+                                        ),
+                                        null => l10n.challengeNoClock,
+                                      },
+                                    ),
+                                    if (_preview == null)
+                                      TextButton(
+                                        key: JourneyKeys.changePace,
+                                        onPressed: () async {
+                                          final settings = context
+                                              .read<SettingsCubit>();
+                                          final clock = settings.state?.clock;
+                                          if (clock == null) return;
+                                          final choice = await showPaceSheet(
+                                            context,
+                                            current: clock.journeyTime,
+                                            allowNoClock: true,
+                                          );
+                                          if (choice != null &&
+                                              context.mounted) {
+                                            await settings.setClock(
+                                              clock.copyWith(
+                                                journeyTime: choice.time,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: Text(l10n.journeyChangePace),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: BoardOptionsPanel(
+                              key: JourneyKeys.challengePanel,
+                              child: ListView(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.xl,
+                                ),
+                                children: [
+                                  _journeyOpponent(
+                                    context,
+                                    challenge.opponent,
+                                    rungId,
+                                  ),
+                                  SectionTitle(l10n.setupHistory),
+                                  if (state.attempts.isEmpty)
+                                    EmptyState(
+                                      style: EmptyStateStyle.filters,
+                                      icon: Icons.sports_esports_outlined,
+                                      message: l10n.challengeHistoryInvite,
+                                      messageKey: JourneyKeys.emptyHistory,
+                                    )
+                                  else
+                                    AttemptHistory(
+                                      attempts: state.attempts,
+                                      monthKey: JourneyKeys.month,
+                                      attemptKey: JourneyKeys.attempt,
                                     ),
                                 ],
                               ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: BoardOptionsPanel(
-                            key: JourneyKeys.challengePanel,
-                            child: ListView(
-                              padding: const EdgeInsets.only(
-                                bottom: AppSpacing.xl,
-                              ),
-                              children: [
-                                _journeyOpponent(
-                                  context,
-                                  challenge.opponent,
-                                  rungId,
-                                ),
-                                SectionTitle(l10n.setupHistory),
-                                if (state.attempts.isEmpty)
-                                  EmptyState(
-                                    style: EmptyStateStyle.filters,
-                                    icon: Icons.sports_esports_outlined,
-                                    message: l10n.challengeHistoryInvite,
-                                    messageKey: JourneyKeys.emptyHistory,
-                                  )
-                                else
-                                  AttemptHistory(
-                                    attempts: state.attempts,
-                                    monthKey: JourneyKeys.month,
-                                    attemptKey: JourneyKeys.attempt,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+            ),
           );
         },
       ),

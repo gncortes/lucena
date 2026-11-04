@@ -24,6 +24,7 @@ import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_race_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -65,6 +66,17 @@ void main() {
     await tester.pumpAndSettle();
     return cubit;
   }
+
+  // Os acertos do resultado contam pelo NumeroQueConta (H-ANI-25): o texto
+  // visível é o Text dentro da chave.
+  String? acertos(WidgetTester tester) => tester
+      .widget<Text>(
+        find.descendant(
+          of: find.byKey(RaceKeys.resultCorrects),
+          matching: find.byType(Text),
+        ),
+      )
+      .data;
 
   // H-ANI-16: a introdução da Corrida se monta em ordem, o "Começar" por
   // último, e o toque fica liberado desde o início.
@@ -356,7 +368,7 @@ void main() {
     expect(find.text('3-min race · 3 mistakes'), findsOneWidget);
     // Só 3 problemas: nada de "Ver os N".
     expect(find.byKey(RaceKeys.seeAllProblems), findsNothing);
-    expect(tester.widget<Text>(find.byKey(RaceKeys.resultCorrects)).data, '0');
+    expect(acertos(tester), '0');
     expect(find.byKey(RaceKeys.problemTile(2)), findsOneWidget);
     expect(find.text('Review the 3 mistakes'), findsOneWidget);
     // Antes de 3 Corridas: quantas faltam para o desempenho por final (L5).
@@ -365,6 +377,14 @@ void main() {
     expect(find.byKey(RaceKeys.performance), findsNothing);
 
     await tester.tap(find.byKey(RaceKeys.reviewMistakes));
+    await tester.pump();
+    // H-ANI-25: na revisão, o "Próximo" desliza por último uma vez só; os
+    // erros seguintes trocam com ele já parado.
+    Finder barraDaRevisao() => find.ancestor(
+      of: find.byKey(RaceKeys.reviewNext),
+      matching: find.byKey(MotionKeys.parteDoResultado('botoes')),
+    );
+    expect(opacidadeDaParte(tester, barraDaRevisao()), lessThan(1));
     await tester.pumpAndSettle();
     expect(find.text('Mistake 1 of 3'), findsOneWidget);
     // Lance que também ganhava, só que devagar, tem o texto próprio.
@@ -376,6 +396,8 @@ void main() {
       findsOneWidget,
     );
     await tester.tap(find.byKey(RaceKeys.reviewNext));
+    await tester.pump();
+    expect(opacidadeDaParte(tester, barraDaRevisao()), 1);
     await tester.pumpAndSettle();
     expect(find.text('Mistake 2 of 3'), findsOneWidget);
     await tester.tap(find.byKey(RaceKeys.reviewNext));
@@ -389,6 +411,61 @@ void main() {
     expect(find.byKey(RaceKeys.gameView), findsOneWidget);
     expect(tester.widget<Text>(find.byKey(RaceKeys.count)).data, '0');
   });
+
+  // H-ANI-25: o resultado se monta em ordem; os acertos contam antes de os
+  // botões entrarem, e em 1,3 s tudo está parado.
+  for (final reduzido in [false, true]) {
+    testWidgets('H-ANI-25: o resultado se monta em ordem (reduzido: '
+        '$reduzido)', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          FakeAccessibilityFeatures(disableAnimations: reduzido);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await pumpRace(tester);
+      await start(tester);
+      for (final (from, to) in [('a1', 'a2'), ('a1', 'b1')]) {
+        await move(tester, from, to);
+        await tester.pumpAndSettle();
+      }
+      await move(tester, 'h1', 'g1');
+      for (var i = 0; i < 300; i++) {
+        if (find.byKey(RaceKeys.resultView).evaluate().isNotEmpty) break;
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      expect(find.byKey(RaceKeys.resultView), findsOneWidget);
+      expectEntradaDeResultado(
+        tester,
+        partes: const ['titulo', 'placar', 'viktor', 'botoes'],
+        animando: !reduzido,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado('placar')),
+          matching: find.byKey(RaceKeys.resultCorrects),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado('botoes')),
+          matching: find.byKey(RaceKeys.again),
+        ),
+        findsOneWidget,
+      );
+      await tester.pump(const Duration(milliseconds: 1300));
+      await tester.pump();
+      expect(
+        opacidadeDaParte(
+          tester,
+          find.byKey(MotionKeys.parteDoResultado('botoes')),
+        ),
+        1,
+      );
+      expect(acertos(tester), '0');
+      await tester.pumpAndSettle();
+    });
+  }
 
   testWidgets('com 3 Corridas, o resultado mostra a linha do desempenho e '
       'a dos dados, sem ponto fraco', (tester) async {
@@ -485,7 +562,7 @@ void main() {
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
     expect(find.text('3-min race · time is up'), findsOneWidget);
-    expect(tester.widget<Text>(find.byKey(RaceKeys.resultCorrects)).data, '1');
+    expect(acertos(tester), '1');
     // Sem erros: não há o que revisar.
     expect(find.byKey(RaceKeys.reviewMistakes), findsNothing);
   });

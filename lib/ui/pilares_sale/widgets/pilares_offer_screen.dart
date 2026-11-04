@@ -94,21 +94,29 @@ class PilaresOfferScreen extends StatelessWidget {
               AppSpacing.xl,
             ),
             children: [
-              if (state.banner case final banner?) ...[
+              Text(l10n.venOfferHeadline, style: theme.textTheme.headlineSmall),
+              const SizedBox(height: AppSpacing.sm),
+              // Com aviso (PropV2CompraErro, PropV2CompraSemInternet), ele toma
+              // o lugar da introdução: erro em vermelho, sem rede em amarelo.
+              if (state.banner case final banner?)
                 AvisoQueAbre(
                   key: banner == OfferBanner.error
                       ? PurchaseKeys.errorBanner
                       : PurchaseKeys.offlineBanner,
                   decoracao: BoxDecoration(
-                    color: AppColors.errorSurface,
+                    color: banner == OfferBanner.error
+                        ? AppColors.errorSurface
+                        : AppColors.waitingSurface,
                     borderRadius: BorderRadius.circular(AppShape.large),
                   ),
                   icone: Icon(
                     banner == OfferBanner.error
                         ? CanvasSymbols.error
-                        : CanvasSymbols.wifiOff,
+                        : CanvasSymbols.cloudOff,
                     size: AppIconSize.standard,
-                    color: colors.error,
+                    color: banner == OfferBanner.error
+                        ? colors.error
+                        : AppColors.waitingOnSurface,
                   ),
                   child: Text(
                     banner == OfferBanner.error
@@ -118,17 +126,14 @@ class PilaresOfferScreen extends StatelessWidget {
                       color: colors.onSurface,
                     ),
                   ),
+                )
+              else
+                Text(
+                  l10n.venOfferIntro,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
-              ],
-              Text(l10n.venOfferHeadline, style: theme.textTheme.headlineSmall),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                l10n.venOfferIntro,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
               const SizedBox(height: AppSpacing.xl),
               PilaresBenefitSection(
                 label: l10n.venOfferTake,

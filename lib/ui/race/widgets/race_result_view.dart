@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/models/race.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/race_keys.dart';
+import '../../core/motion/entrada_de_resultado.dart';
+import '../../core/motion/numero_que_conta.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -57,144 +59,141 @@ class RaceResultView extends StatelessWidget {
         : l10n.raceStatPaceValue(
             (used.inMilliseconds / run.answers.length / 1000).round(),
           );
-    return Column(
+    // H-ANI-25: o título sobe, os acertos contam, o resto do resultado entra
+    // e os botões deslizam por último. Cada Corrida é um resultado novo.
+    return KeyedSubtree(
       key: RaceKeys.resultView,
-      children: [
-        Expanded(
-          child: ListView(
-            padding: scrollPadding(
-              context,
-              left: AppSpacing.lg,
-              right: AppSpacing.lg,
-              top: AppSpacing.sm,
+      child: EntradaDeResultado(
+        id: 'corrida-${run.startedAt.microsecondsSinceEpoch}',
+        titulo: Text(
+          l10n.desafiosRaceHeadline(run.duration.minutes, switch (result.end) {
+            RaceEnd.time => l10n.desafiosRaceEndTime,
+            RaceEnd.errors => l10n.desafiosRaceEndErrors,
+            RaceEnd.quit => l10n.desafiosRaceEndQuit,
+          }),
+          key: RaceKeys.resultTitle,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+        placar: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            NumeroQueConta(
+              key: RaceKeys.resultCorrects,
+              valor: run.corrects,
+              estilo: theme.textTheme.displayLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
             ),
-            children: [
-              Text(
-                l10n.desafiosRaceHeadline(
-                  run.duration.minutes,
-                  switch (result.end) {
-                    RaceEnd.time => l10n.desafiosRaceEndTime,
-                    RaceEnd.errors => l10n.desafiosRaceEndErrors,
-                    RaceEnd.quit => l10n.desafiosRaceEndQuit,
-                  },
-                ),
-                key: RaceKeys.resultTitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
+            Text(
+              l10n.raceCorrectsCount(run.corrects),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: colors.onSurfaceVariant,
               ),
-              Text(
-                '${run.corrects}',
-                key: RaceKeys.resultCorrects,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              Text(
-                l10n.raceCorrectsCount(run.corrects),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-              if (outcome.isRecord && outcome.previous.corrects > 0)
-                Padding(
-                  padding: const EdgeInsets.only(top: AppSpacing.md),
-                  child: Center(
-                    child: InfoChip(
-                      key: RaceKeys.newRecord,
-                      icon: Icons.emoji_events,
-                      label: l10n.desafiosRaceNewRecord(
-                        run.duration.minutes,
-                        outcome.previous.corrects,
-                      ),
-                      background: ChangeColors.of(
-                        context,
-                        up: true,
-                      ).withValues(alpha: 0.16),
-                      foreground: ChangeColors.of(context, up: true),
+            ),
+            if (outcome.isRecord && outcome.previous.corrects > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.md),
+                child: Center(
+                  child: InfoChip(
+                    key: RaceKeys.newRecord,
+                    icon: Icons.emoji_events,
+                    label: l10n.desafiosRaceNewRecord(
+                      run.duration.minutes,
+                      outcome.previous.corrects,
                     ),
+                    background: ChangeColors.of(
+                      context,
+                      up: true,
+                    ).withValues(alpha: 0.16),
+                    foreground: ChangeColors.of(context, up: true),
                   ),
                 ),
-              const SizedBox(height: AppSpacing.lg),
-              Row(
-                spacing: AppSpacing.sm,
-                children: [
-                  _Stat(
-                    key: RaceKeys.statErrors,
-                    value: '${run.errors}',
-                    label: l10n.raceStatErrors(run.errors),
-                  ),
-                  _Stat(
-                    key: RaceKeys.statHardest,
-                    value: run.hardestSolved == 0
-                        ? '-'
-                        : '${run.hardestSolved}',
-                    label: l10n.raceStatHardest,
-                  ),
-                  _Stat(
-                    key: RaceKeys.statPace,
-                    value: pace,
-                    label: l10n.raceStatPace,
-                  ),
-                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              // Sem ponto fraco no resultado (canvas L6): o desempenho por
-              // final fica a um toque; antes de 3 Corridas, quantas faltam (L5).
-              if (diagnosis.ready)
-                PathCard(
-                  key: RaceKeys.performance,
-                  icon: Icons.query_stats,
-                  title: l10n.racePerformanceLine,
-                  body: l10n.racePerformanceLineBody,
-                  onTap: () => context.push(Routes.racePerformance),
-                )
-              else
-                RaceProgressCard(diagnosis: diagnosis),
-              const SizedBox(height: AppSpacing.lg),
-              const ResultsInfoLine(),
-              // O título sem o recuo próprio: alinhado aos cartões de cima.
-              SectionTitle(
-                l10n.raceProblemsTitle,
-                inset: 0,
-                action: run.answers.length > shownProblems
-                    ? SectionAction(
-                        key: RaceKeys.seeAllProblems,
-                        label: l10n.desafiosRaceSeeAll(run.answers.length),
-                        onPressed: () => unawaited(
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => RaceProblemsScreen(
-                                answers: run.answers,
-                                problems: state.problems,
-                              ),
+          ],
+        ),
+        viktor: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              spacing: AppSpacing.sm,
+              children: [
+                _Stat(
+                  key: RaceKeys.statErrors,
+                  value: '${run.errors}',
+                  label: l10n.raceStatErrors(run.errors),
+                ),
+                _Stat(
+                  key: RaceKeys.statHardest,
+                  value: run.hardestSolved == 0 ? '-' : '${run.hardestSolved}',
+                  label: l10n.raceStatHardest,
+                ),
+                _Stat(
+                  key: RaceKeys.statPace,
+                  value: pace,
+                  label: l10n.raceStatPace,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            // Sem ponto fraco no resultado (canvas L6): o desempenho por
+            // final fica a um toque; antes de 3 Corridas, quantas faltam (L5).
+            if (diagnosis.ready)
+              PathCard(
+                key: RaceKeys.performance,
+                icon: Icons.query_stats,
+                title: l10n.racePerformanceLine,
+                body: l10n.racePerformanceLineBody,
+                onTap: () => context.push(Routes.racePerformance),
+              )
+            else
+              RaceProgressCard(diagnosis: diagnosis),
+            const SizedBox(height: AppSpacing.lg),
+            const ResultsInfoLine(),
+            // O título sem o recuo próprio: alinhado aos cartões de cima.
+            SectionTitle(
+              l10n.raceProblemsTitle,
+              inset: 0,
+              action: run.answers.length > shownProblems
+                  ? SectionAction(
+                      key: RaceKeys.seeAllProblems,
+                      label: l10n.desafiosRaceSeeAll(run.answers.length),
+                      onPressed: () => unawaited(
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => RaceProblemsScreen(
+                              answers: run.answers,
+                              problems: state.problems,
                             ),
                           ),
                         ),
-                      )
-                    : null,
-              ),
-              RaceProblemGrid(
-                tiles: (size) => [
-                  for (final (index, answer)
-                      in run.answers.take(shownProblems).indexed)
-                    RaceProblemTile(
-                      key: RaceKeys.problemTile(index),
-                      size: size,
-                      answer: answer,
-                      problem: state.problems
-                          .where((p) => p.id == answer.problemId)
-                          .firstOrNull,
-                    ),
-                ],
-              ),
-            ],
-          ),
+                      ),
+                    )
+                  : null,
+            ),
+            RaceProblemGrid(
+              tiles: (size) => [
+                for (final (index, answer)
+                    in run.answers.take(shownProblems).indexed)
+                  RaceProblemTile(
+                    key: RaceKeys.problemTile(index),
+                    size: size,
+                    answer: answer,
+                    problem: state.problems
+                        .where((p) => p.id == answer.problemId)
+                        .firstOrNull,
+                  ),
+              ],
+            ),
+          ],
         ),
-        ActionsFooter(
+        botoes: ActionsFooter(
           stacked: true,
           children: [
             FilledButton.icon(
@@ -212,7 +211,23 @@ class RaceResultView extends StatelessWidget {
               ),
           ],
         ),
-      ],
+        montar: (partes) => Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: scrollPadding(
+                  context,
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  top: AppSpacing.sm,
+                ),
+                children: partes.sublist(0, partes.length - 1),
+              ),
+            ),
+            partes.last,
+          ],
+        ),
+      ),
     );
   }
 }

@@ -6877,7 +6877,7 @@
   "@settingsWarmUp": {
     "description": "Game settings: switch for the warm-up offer before a game."
   },
-  "settingsWarmUpHint": "Before a game, a few quick problems on the same ending.",
+  "settingsWarmUpHint": "Before a game, a few quick exercises on the same ending.",
   "@settingsWarmUpHint": {
     "description": "Game settings: what the warm-up offer is."
   },
@@ -7441,7 +7441,7 @@
   "@profileEditData": {
     "description": "Profile header: tooltip of the pencil button."
   },
-  "profileSyncedTitle": "Everything saved to the account",
+  "profileSyncedTitle": "Progress on your account",
   "@profileSyncedTitle": {
     "description": "Profile with account: sync card title."
   },
@@ -7463,7 +7463,7 @@
       }
     }
   },
-  "profileSyncedNever": "Last sync: not yet",
+  "profileSyncedNever": "Not saved yet",
   "@profileSyncedNever": {
     "description": "Profile sync time: never synced."
   },
@@ -7731,7 +7731,7 @@
   "@alertsTitle": {
     "description": "Alerts screen title and its row in Settings."
   },
-  "alertsCount": "{on} of {total} on",
+  "alertsCount": "{on} of {total} notifications on",
   "@alertsCount": {
     "description": "Settings: how many alert switches are on.",
     "placeholders": {
@@ -13521,7 +13521,7 @@
   "@venCanceled": {
     "description": "Aviso ao fechar a folha da loja (H-VEN-06)."
   },
-  "venErrorBanner": "The purchase could not be completed. If you were charged, the course will be unlocked. If not, you were not charged.",
+  "venErrorBanner": "An unexpected error occurred. If you were charged, the course will be unlocked. If not, you were not charged.",
   "@venErrorBanner": {
     "description": "Aviso de erro da compra (H-VEN-06)."
   },
@@ -13708,7 +13708,7 @@
   "@venBadgeMonthly": {
     "description": "Selo do cartão do curso no Perfil (H-VEN-09)."
   },
-  "venDemoText": "You have Chapter 1. The full course has 20 chapters.",
+  "venDemoText": "In the demo you play Chapter 1. The full course has 20 chapters.",
   "@venDemoText": {
     "description": "Cartão do curso no Perfil, demonstração (H-VEN-04)."
   },
@@ -13924,7 +13924,7 @@
   },
   "venBeforeHomeTitle": "More than a course",
   "@venBeforeHomeTitle": {
-    "description": "Título da oferta antes do Início (PropV2OfertaAntesInicioFolha, H-VEN-15)."
+    "description": "Título da oferta antes do Início (PropV2OfertaAntesInicio, H-VEN-15)."
   },
   "venBeforeHomePlan": "A plan up to your tournament",
   "@venBeforeHomePlan": {

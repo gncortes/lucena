@@ -111,4 +111,13 @@ export type Dictionary = {
     /** Parágrafos com HTML simples (links e ênfase), escritos aqui. */
     sections: { title: string; body: string[] }[];
   };
+  /** A página de exclusão de conta, em <idioma>/<slug>/ (só nos idiomas que a têm). */
+  deletion?: {
+    slug: string;
+    title: string;
+    description: string;
+    updated: string;
+    back: string;
+    sections: { title: string; body: string[] }[];
+  };
 };

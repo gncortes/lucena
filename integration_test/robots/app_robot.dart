@@ -40,6 +40,7 @@ class AppRobot {
     bool demo = false,
     PurchaseRepository? purchases,
     bool signedIn = false,
+    bool accountInvite = false,
   }) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
@@ -73,6 +74,7 @@ class AppRobot {
       demo: demo,
       purchases: purchases,
       signedIn: signedIn,
+      accountInvite: accountInvite,
     );
   }
 
@@ -115,6 +117,7 @@ class AppRobot {
     bool demo = false,
     PurchaseRepository? purchases,
     bool signedIn = false,
+    bool accountInvite = false,
   }) async {
     await $.pumpWidgetAndSettle(
       LucenaApp(
@@ -124,6 +127,7 @@ class AppRobot {
           demo: demo,
           purchases: purchases,
           signedIn: signedIn,
+          accountInvite: accountInvite,
         ),
       ),
     );

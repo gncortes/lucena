@@ -40,3 +40,13 @@ export const pageUrl = (locale: Locale) =>
 /** A política de privacidade em [locale] (o caminho muda com o idioma). */
 export const privacyUrl = (locale: Locale) =>
   `${pageUrl(locale)}${locales[locale].dict.privacy.slug}/`;
+
+/** A página de exclusão de conta em [locale], ou undefined se o idioma não a tem. */
+export const deletionUrl = (locale: Locale) => {
+  const slug = locales[locale].dict.deletion?.slug;
+  return slug ? `${pageUrl(locale)}${slug}/` : undefined;
+};
+
+/** Os idiomas que têm a página de exclusão de conta. */
+export const deletionLocales = () =>
+  (Object.keys(locales) as Locale[]).filter((l) => deletionUrl(l) !== undefined);

@@ -6,7 +6,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/sucesso_da_compra.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import 'pilares_sale_parts.dart';
 
@@ -28,34 +27,26 @@ class PilaresPurchaseDoneScreen extends StatelessWidget {
         },
         child: Scaffold(
           body: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xxl,
-                  vertical: AppSpacing.xl,
+            child: SucessoDaCompra(
+              titulo: Text(
+                l10n.venDoneTitle,
+                key: PurchaseKeys.doneTitle,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall,
+              ),
+              texto: Text(
+                l10n.venDoneText,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                child: SucessoDaCompra(
-                  titulo: Text(
-                    l10n.venDoneTitle,
-                    key: PurchaseKeys.doneTitle,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall,
-                  ),
-                  texto: Text(
-                    l10n.venDoneText,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  botoes: pilaresOwnedActions(
-                    context,
-                    goalFirst: true,
-                    goalKey: PurchaseKeys.doneGoal,
-                    otherKey: PurchaseKeys.doneSeeCourse,
-                    other: l10n.venSeeCourse,
-                  ),
-                ),
+              ),
+              botoes: pilaresOwnedActions(
+                context,
+                goalFirst: true,
+                goalKey: PurchaseKeys.doneGoal,
+                otherKey: PurchaseKeys.doneSeeCourse,
+                other: l10n.venSeeCourse,
               ),
             ),
           ),
@@ -95,7 +86,7 @@ class PilaresPurchasePendingScreen extends StatelessWidget {
   }
 }
 
-/// Os botões de quem acabou de ter o curso: "Definir meu objetivo" (com o
+/// Os botões de quem acabou de ter o curso: "Escolher meu objetivo" (com o
 /// estádio) e o outro caminho ("Ver o curso" na Concluída; "Continuar o
 /// curso", que vem primeiro, na Restaurada). Os dois levam ao perfil com o
 /// cartão do curso (H-VEN-09) ou a "Seu objetivo" (H-TRE-06).

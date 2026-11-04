@@ -24,6 +24,7 @@ class BusyButton extends StatefulWidget {
     required this.onPressed,
     this.busy,
     this.icon,
+    this.leading,
     this.style = BusyButtonStyle.filled,
     this.buttonKey,
     this.textStyle,
@@ -34,6 +35,9 @@ class BusyButton extends StatefulWidget {
   final FutureOr<void> Function()? onPressed;
   final bool? busy;
   final IconData? icon;
+
+  /// No lugar de [icon], quando o ícone não é da fonte (o "G" do Google).
+  final Widget? leading;
   final BusyButtonStyle style;
 
   /// Key do botão do Material por dentro, para quem confere `onPressed`.
@@ -70,6 +74,7 @@ class _BusyButtonState extends State<BusyButton> {
     final content = _BusyContent(
       label: widget.label,
       icon: widget.icon,
+      leading: widget.leading,
       busy: _busy,
     );
     final child = textStyle == null
@@ -117,19 +122,25 @@ class _BusyContent extends StatelessWidget {
   const _BusyContent({
     required this.label,
     required this.icon,
+    required this.leading,
     required this.busy,
   });
 
   final String label;
   final IconData? icon;
+  final Widget? leading;
   final bool busy;
 
-  Widget _content(Widget text, {required bool hidden}) => icon == null
+  Widget _content(Widget text, {required bool hidden}) =>
+      icon == null && leading == null
       ? text
       : Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: hidden ? Colors.transparent : null),
+            if (leading case final leading?)
+              Opacity(opacity: hidden ? 0 : 1, child: leading)
+            else
+              Icon(icon, color: hidden ? Colors.transparent : null),
             const SizedBox(width: 8),
             Flexible(child: text),
           ],

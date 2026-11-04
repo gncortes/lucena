@@ -42,7 +42,7 @@ class ProgressRobot {
 
   Future<void> _openRating() async {
     // O histórico do rating abre pelo cartão do jogador na Home (o Perfil
-    // não tem mais o botão, quadro PropV1RetencaoPerfil).
+    // não tem mais o botão, quadro PropV1PerfilSemConta).
     if (find.byKey(HomeKeys.playerCard).hitTestable().evaluate().isEmpty) {
       await $(HomeKeys.playerCard).scrollTo(scrollDirection: AxisDirection.up);
     }

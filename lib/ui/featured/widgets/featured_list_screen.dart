@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/analytics_event.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -45,31 +46,32 @@ class FeaturedListScreen extends StatelessWidget {
             ),
           );
         }
-        if (!state.ready) {
-          return Scaffold(
-            key: FeaturedKeys.listLoading,
-            appBar: LucenaAppBar(
-              title: Text(l10n.featuredTitle),
-              actions: [_Bell(state: state, enabled: false)],
-            ),
-            body: const SafeArea(child: SkeletonList()),
-          );
-        }
+        // H-ANI-07: uma tela só; o esqueleto dissolve e a lista sobe.
         return Scaffold(
-          key: FeaturedKeys.listScreen,
           appBar: LucenaAppBar(
             title: Text(l10n.featuredTitle),
-            actions: [_Bell(state: state)],
+            actions: [_Bell(state: state, enabled: state.ready)],
           ),
-          body: state.isEmpty
-              ? Center(
-                  child: EmptyState(
-                    messageKey: FeaturedKeys.listEmpty,
-                    icon: Icons.emoji_events_outlined,
-                    message: l10n.featuredEmpty,
+          body: ShimmerConteudo(
+            carregando: !state.ready,
+            esqueleto: const SafeArea(
+              child: SkeletonList(key: FeaturedKeys.listLoading),
+            ),
+            child: !state.ready
+                ? const SizedBox.shrink()
+                : KeyedSubtree(
+                    key: FeaturedKeys.listScreen,
+                    child: state.isEmpty
+                        ? Center(
+                            child: EmptyState(
+                              messageKey: FeaturedKeys.listEmpty,
+                              icon: Icons.emoji_events_outlined,
+                              message: l10n.featuredEmpty,
+                            ),
+                          )
+                        : _Sections(state: state),
                   ),
-                )
-              : _Sections(state: state),
+          ),
         );
       },
     );

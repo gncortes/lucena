@@ -9,7 +9,14 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const telas = [
     'blind/widgets/blind_game_screen.dart',
+    'catalog/widgets/catalog_screen.dart',
+    'catalog/widgets/category_screen.dart',
+    'challenge/widgets/challenge_link_screen.dart',
     'conclusion/widgets/conclusion_screen.dart',
+    'featured/widgets/featured_list_screen.dart',
+    'journey/widgets/challenge_screen.dart',
+    'journey/widgets/journey_screen.dart',
+    'journey/widgets/rung_screen.dart',
     'custom_position/widgets/custom_position_screen.dart',
     'free_board/widgets/free_board_screen.dart',
     'game_details/widgets/game_details_screen.dart',

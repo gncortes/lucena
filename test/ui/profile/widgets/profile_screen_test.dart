@@ -23,7 +23,10 @@ import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
+import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
+import 'package:lucena/ui/profile/widgets/profile_rows.dart';
 import 'package:lucena/ui/profile/widgets/profile_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
@@ -399,7 +402,7 @@ void main() {
 
     testWidgets('H-CON-13: nunca sincronizou diz "ainda não"', (tester) async {
       await pumpScreen(tester);
-      expect(find.text('Última sincronização: ainda não'), findsOneWidget);
+      expect(find.text('Ainda não salvo'), findsOneWidget);
       // Critério 4: o cartão diz o que acontece sem internet.
       expect(
         find.text(
@@ -571,7 +574,7 @@ void main() {
     });
   });
 
-  testWidgets('PropV1RetencaoPerfil: um grupo de linhas e um de avisos', (
+  testWidgets('PropV1PerfilSemConta: um grupo de linhas e um de avisos', (
     tester,
   ) async {
     await pumpScreen(tester);
@@ -594,6 +597,65 @@ void main() {
     expect(find.text('Histórico do rating'), findsNothing);
     expect(inRow(ProfileKeys.rowLanguage, 'Idioma'), findsOneWidget);
     expect(inRow(ProfileKeys.rowNotices, 'Notificações'), findsOneWidget);
+  });
+
+  // O canvas desenha as linhas com Material Symbols Rounded contornados
+  // (CompOpcaoLista, FILL 0): o app usa a mesma fonte.
+  testWidgets('as linhas do Perfil têm os ícones do canvas', (tester) async {
+    await pumpScreen(tester);
+    final icons = {
+      ProfileKeys.rowCountry: CanvasSymbols.public,
+      ProfileKeys.rowRegion: CanvasSymbols.locationOn,
+      ProfileKeys.rowLanguage: CanvasSymbols.language,
+      ProfileKeys.rowGoal: CanvasSymbols.flag,
+      ProfileKeys.rowLevel: CanvasSymbols.showChart,
+      ProfileKeys.rowLichess: CanvasSymbols.link,
+      ProfileKeys.rowNotices: CanvasSymbols.notifications,
+    };
+    for (final MapEntry(:key, :value) in icons.entries) {
+      expect(
+        find.descendant(of: find.byKey(key), matching: find.byIcon(value)),
+        findsOneWidget,
+        reason: '$key',
+      );
+    }
+  });
+
+  // O canvas contorna os cartões e os grupos com 1 px de #E1E5DF.
+  testWidgets('os grupos e o cartão do Perfil têm o contorno do canvas', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    final grupo = tester.widget<Material>(
+      find
+          .descendant(
+            of: find.byType(ProfileRowGroup).first,
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    expect(
+      (grupo.shape! as RoundedRectangleBorder).side,
+      const BorderSide(color: AppColors.cardOutline),
+    );
+    final cartao = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byKey(ProfileKeys.localCard),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect(
+      (cartao.decoration as BoxDecoration).border,
+      Border.all(color: AppColors.cardOutline),
+    );
+  });
+
+  // CompOpcaoLista: linha com subtítulo tem 72 px de altura mínima.
+  testWidgets('a linha com valor tem a altura do canvas', (tester) async {
+    await pumpScreen(tester);
+    expect(tester.getSize(find.byKey(ProfileKeys.rowLanguage)).height, 72);
   });
 
   testWidgets('Idioma e Notificações abrem as telas dos Ajustes', (
@@ -659,7 +721,9 @@ void main() {
       expect(inCard('Pilares do Xadrez'), findsOneWidget);
       expect(inCard('Demonstração'), findsOneWidget);
       expect(
-        inCard('Você tem o Capítulo 1. O curso completo tem 20 capítulos.'),
+        inCard(
+          'Na demonstração você faz o Capítulo 1. O curso completo tem 20 capítulos.',
+        ),
         findsOneWidget,
       );
       await tester.tap(find.byKey(PurchaseKeys.courseSeeFull));
