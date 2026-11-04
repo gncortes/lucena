@@ -18,6 +18,7 @@ import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/widgets/board/piece_badge_overlay.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
@@ -645,13 +646,6 @@ class _ReviewBoardState extends State<ReviewBoard> {
     final locale = Localizations.localeOf(context).toString();
     final reviewed = state.shownReview;
     final move = state.shownMove;
-    final annotations = <Square, Annotation>{
-      if (reviewed != null && move is NormalMove)
-        move.to: Annotation(
-          symbol: reviewed.quality.symbol,
-          color: reviewed.quality.color,
-        ),
-    };
     final shapes = <Shape>{
       if (_arrow(state) case (final orig, final dest, final color))
         Arrow(color: color, orig: orig, dest: dest),
@@ -698,22 +692,35 @@ class _ReviewBoardState extends State<ReviewBoard> {
                     ),
                   ),
                 ),
-              // Sem recorte em volta: a anotação do lance passa um pouco da
-              // casa (na fileira de cima, da borda do tabuleiro).
-              Chessboard(
-                key: GameDetailsKeys.board,
-                size: boardSize,
-                controller: _controller,
-                orientation: widget.orientation,
-                settings: settings.chessground.copyWith(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(AppShape.small),
+              // O selo do lance é um componente por cima do tabuleiro, que
+              // não sai dele (a8, h8, h1, bordas).
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Chessboard(
+                    key: GameDetailsKeys.board,
+                    size: boardSize,
+                    controller: _controller,
+                    orientation: widget.orientation,
+                    settings: settings.chessground.copyWith(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(AppShape.small),
+                      ),
+                    ),
+                    shapes: shapes,
+                    onMove: (move, {viaDragAndDrop}) =>
+                        context.read<GameDetailsCubit>().play(move),
                   ),
-                ),
-                annotations: annotations,
-                shapes: shapes,
-                onMove: (move, {viaDragAndDrop}) =>
-                    context.read<GameDetailsCubit>().play(move),
+                  if (reviewed != null && move is NormalMove)
+                    PieceBadgeOverlay(
+                      key: GameDetailsKeys.pieceBadge,
+                      square: move.to,
+                      orientation: widget.orientation,
+                      size: boardSize,
+                      symbol: reviewed.quality.symbol,
+                      color: reviewed.quality.color,
+                    ),
+                ],
               ),
             ],
           ),

@@ -122,8 +122,8 @@ void main() {
     // mentira avalia o resto pelo material (+9), ainda ganho.
     expect(find.byKey(GameDetailsKeys.moveQuality(0)), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.moveQuality(2)), findsOneWidget);
-    final board = tester.widget<Chessboard>(find.byKey(GameDetailsKeys.board));
-    expect(board.annotations, isNotEmpty);
+    // O selo do lance é o componente por cima do tabuleiro.
+    expect(find.byKey(GameDetailsKeys.pieceBadge), findsOneWidget);
   });
 
   testWidgets('navegar: os botões andam lance a lance e a explicação '
