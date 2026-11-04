@@ -47,10 +47,13 @@ abstract final class AppMotion {
   /// Volta contínua do brilho do esqueleto de carregamento.
   static const shimmer = Duration(milliseconds: 1400);
 
-  /// Confete da celebração.
   /// Quanto o aviso (snackbar) fica na tela.
   static const snackBar = Duration(seconds: 4);
 
+  /// O aviso no alto (às cegas) é mais curto: 3 s (canvas CompSnackbar).
+  static const snackBarAlto = Duration(seconds: 3);
+
+  /// Confete da celebração.
   static const confetti = Duration(milliseconds: 1600);
 
   /// Selo de fim da partida: entra, fica no pico ([narrationPeak]) e sai.
