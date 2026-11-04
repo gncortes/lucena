@@ -17,6 +17,10 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/test_app.dart';
 import 'history_harness.dart';
+import '../core/motion/entrada_helpers.dart';
+
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 
 void main() {
   late HistoryWorld world;
@@ -41,11 +45,14 @@ void main() {
     int? highlightedGame,
     HistoryCubit? cubit,
     List<String>? pushed,
+    bool animar = false,
+    bool assentar = true,
   }) async {
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = size;
     addTearDown(tester.view.reset);
+    final vistas = EntradasVistas();
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -53,13 +60,17 @@ void main() {
           builder: (context, _) => MediaQuery(
             data: MediaQuery.of(context).copyWith(
               textScaler: TextScaler.linear(textScale),
-              disableAnimations: true,
+              disableAnimations: !animar,
             ),
-            child: BlocProvider(
-              create: (_) =>
-                  (cubit ?? world.cubit(highlightedGame: highlightedGame))
-                    ..load(),
-              child: const HistoryScreen(),
+            // O registro da sessão, como no app: a entrada é uma por tela.
+            child: EntradasVistasEscopo(
+              vistas: vistas,
+              child: BlocProvider(
+                create: (_) =>
+                    (cubit ?? world.cubit(highlightedGame: highlightedGame))
+                      ..load(),
+                child: const HistoryScreen(),
+              ),
             ),
           ),
         ),
@@ -85,7 +96,7 @@ void main() {
         child: const SizedBox(),
       ),
     );
-    await tester.pumpAndSettle();
+    if (assentar) await tester.pumpAndSettle();
   }
 
   Future<void> openTab(WidgetTester tester, int index) async {
@@ -126,6 +137,41 @@ void main() {
   }
 
   group('Partidas', () {
+    testWidgets('as linhas entram em ordem só na primeira vez da aba', (
+      tester,
+    ) async {
+      await populate();
+      await pump(tester, animar: true, assentar: false);
+      final primeira = find.descendant(
+        of: find.byKey(RatingKeys.screen),
+        matching: find.byKey(MotionKeys.itemDaLista(0)),
+      );
+      var voltas = 0;
+      while (primeira.evaluate().isEmpty && voltas++ < 100) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      await tester.pump(const Duration(milliseconds: 100));
+      final terceira = find.descendant(
+        of: find.byKey(RatingKeys.screen),
+        matching: find.byKey(MotionKeys.itemDaLista(2)),
+      );
+      expect(
+        opacidade(tester, terceira),
+        lessThan(opacidade(tester, primeira)),
+      );
+      await tester.pumpAndSettle();
+      expect(opacidade(tester, terceira), 1);
+
+      // Trocar de aba e voltar mostra a lista pronta.
+      await openTab(tester, 1);
+      await tester.tap(find.byKey(HistoryKeys.tab(0)));
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(opacidade(tester, terceira), 1);
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('três abas, o cartão do rating, o placar e os meses', (
       tester,
     ) async {
