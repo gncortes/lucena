@@ -204,6 +204,7 @@ Future<_Setup> _open(
   bool navigable = false,
   LessonScriptRepository? repository,
   Future<String?>? title,
+  ValueChanged<String>? onAnalyze,
 }) async {
   tester.view
     ..physicalSize = size
@@ -247,6 +248,7 @@ Future<_Setup> _open(
       value: cubit,
       child: LessonScriptScreen(
         title: title ?? Future.value('Oposição distante'),
+        onAnalyze: onAnalyze,
       ),
     ),
   );
@@ -1347,6 +1349,43 @@ void main() {
     await tester.pump();
     expect(s.cubit.state.speech, isNot(first));
     await _settle(tester);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('rodapé da demonstração em 411×914: com ↻ ⏮ ⏸ e o ⏭ na tela, '
+      'a lupa espera o fim e nada estoura', (tester) async {
+    // Duas demonstrações: a primeira acaba num fim de exemplo, com os
+    // controles ainda na tela.
+    final json = scriptJson();
+    final demos = (json['etapas'] as List).cast<Map<String, dynamic>>()[1];
+    final d1 = (demos['exemplos'] as List).single as Map<String, dynamic>;
+    demos['exemplos'] = [
+      {...d1, 'fim': 'exemplo'},
+      {...d1, 'id': 'd2'},
+    ];
+    final s = await _open(
+      tester,
+      const Size(411, 914),
+      json: json,
+      stage: 1,
+      onAnalyze: (_) {},
+    );
+    var fimDeExemploComControles = false;
+    for (var i = 0; i < 12 && s.cubit.state.demo?.ended != true; i++) {
+      final emAndamento = find.byKey(LessonScriptKeys.demoRing).evaluate();
+      if (emAndamento.isNotEmpty) {
+        expect(find.byKey(LessonScriptKeys.analyze), findsNothing);
+        if (s.cubit.state.phase == ScriptPhase.fimExemplo) {
+          fimDeExemploComControles = true;
+        }
+      }
+      expect(tester.takeException(), isNull);
+      await _tap(tester, LessonScriptKeys.primary);
+    }
+    expect(fimDeExemploComControles, isTrue);
+    // No fim da demonstração a lupa volta, ao lado do ↻ e do botão.
+    expect(s.cubit.state.demo?.ended, isTrue);
+    expect(find.byKey(LessonScriptKeys.analyze), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

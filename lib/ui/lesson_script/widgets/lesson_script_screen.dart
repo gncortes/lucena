@@ -779,6 +779,8 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             onNext: () => primary.onPressed?.call(),
             canvasLayout: true,
           );
+    // A demonstração com ↻ ⏮ ⏸ e o ⏭ (a teoria só tem ⏸ e o ⏭).
+    final assistindo = controls != null && demo!.full;
     final back = state.canBack && state.stageId != 'pratica'
         ? _CanvasLessonFab(
             key: LessonScriptKeys.back,
@@ -861,14 +863,16 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           spacing: 12,
           children: [
             ?back,
-            if (cubit.canHint)
+            // Com ↻ ⏮ ⏸ e o ⏭ na tela o aluno só assiste: a 💡 e a 🔍
+            // esperam o fim da demonstração (e o rodapé cabe em 411 dp).
+            if (!assistindo && cubit.canHint)
               _CanvasLessonFab(
                 key: LessonScriptKeys.hint,
                 tooltip: context.l10n.lessonHint,
                 onPressed: () => unawaited(cubit.hint()),
                 child: const Icon(CanvasSymbols.lightbulb),
               ),
-            if (cubit.canAnalyze && widget.onAnalyze != null)
+            if (!assistindo && cubit.canAnalyze && widget.onAnalyze != null)
               _CanvasLessonFab(
                 key: LessonScriptKeys.analyze,
                 tooltip: context.l10n.lessonAnalyzePosition,
