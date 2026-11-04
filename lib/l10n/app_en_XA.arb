@@ -1863,11 +1863,8 @@
   "homeForYouBodyUntested": "[Thé çhåptéŕš ýöû štîll ñééd, îñ öŕdéŕ. one two three four]",
   "homeSeeMore": "[Šéé möŕé one]",
   "homeRatingStarting": "[Ĝéttîñĝ štåŕtéd one two]",
-  "homeHeroFirstSteps": "[Fîŕšt štépš one two]",
   "homeHeroSchool": "[Šçhööl one]",
   "homeHeroLesson": "[Léššöñ {number} one two]",
-  "homeHeroCourseDone": "[Çöûŕšé çömplétéd one two]",
-  "homeHeroSpeedrun": "[Fŕöm Çöçö tö Štöçkfîšh one two three]",
   "homeHeroStart": "[Štåŕt one]",
   "homeHeroPlay": "[Plåý one]",
   "homeHeroResume": "[Ŕéšûmé one]",
@@ -2276,5 +2273,6 @@
   "practiceOpponentUnavailable": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]",
   "homeShortcutPosition": "[Šét ûp å pöšîtîöñ one two]",
   "homeShortcutBoardBody": "[Plåý böth šîdéš, wîth öŕ wîthöût å çlöçk one two three four]",
-  "homeShortcutPositionBody": "[Šét ûp åñý pöšîtîöñ åñd plåý ît one two three]"
+  "homeShortcutPositionBody": "[Šét ûp åñý pöšîtîöñ åñd plåý ît one two three]",
+  "homeHeroLastPosition": "[Ýöûŕ låšt pöšîtîöñ one two]"
 }

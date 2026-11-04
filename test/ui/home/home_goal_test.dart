@@ -88,16 +88,19 @@ void main() {
     ]);
   });
 
-  test('aprender finais: a primeira aula da trilha é o cartão', () async {
-    final state = await load(GoalPreference.improve);
+  test(
+    'melhorar o jogo sem treino: a Jornada no cartão, sem texto de venda',
+    () async {
+      final state = await load(GoalPreference.improve);
 
-    expect(state.hero, HomeHero.endgame);
-    expect(state.endgame!.lessonId, 'rook.lucena');
-    expect(state.endgame!.recommended, isTrue);
-    expect(state.shortcuts.first, HomeShortcut.pillars);
-  });
+      expect(state.hero, HomeHero.journey);
+      expect(state.endgame!.lessonId, 'rook.lucena');
+      expect(state.endgame!.recommended, isTrue);
+      expect(state.shortcuts.first, HomeShortcut.pillars);
+    },
+  );
 
-  test('aprender finais: a aula começada é a do cartão', () async {
+  test('melhorar o jogo: a aula de final começada segue calculada', () async {
     endgames = FakeEndgameProgressRepository(
       const EndgameProgress(
         lessons: {
@@ -107,7 +110,7 @@ void main() {
     );
     final state = await load(GoalPreference.improve);
 
-    expect(state.hero, HomeHero.endgame);
+    expect(state.hero, HomeHero.journey);
     expect(state.endgame!.lessonId, 'rook.philidor');
     expect(state.endgame!.progress, greaterThan(0));
   });
@@ -165,6 +168,7 @@ void main() {
     test('"Explorar posições": o Tabuleiro livre abre a lista', () async {
       final state = await load(GoalPreference.explore);
 
+      expect(state.hero, HomeHero.board);
       expect(state.shortcuts.take(2), [
         HomeShortcut.freeBoard,
         HomeShortcut.customPosition,

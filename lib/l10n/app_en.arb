@@ -9755,10 +9755,6 @@
   "@homeRatingStarting": {
     "description": "Home top bar, in place of the rating number while the beginner has played too few games."
   },
-  "homeHeroFirstSteps": "First steps",
-  "@homeHeroFirstSteps": {
-    "description": "Small label on the home hero card before the first game: where the player is."
-  },
   "homeHeroSchool": "School",
   "@homeHeroSchool": {
     "description": "Small label on the home hero card: the beginner school."
@@ -9771,14 +9767,6 @@
         "type": "int"
       }
     }
-  },
-  "homeHeroCourseDone": "Course completed",
-  "@homeHeroCourseDone": {
-    "description": "Home hero card title when every endgame chapter is passed."
-  },
-  "homeHeroSpeedrun": "From Coco to Stockfish",
-  "@homeHeroSpeedrun": {
-    "description": "Home hero card title for the speedrun: the whole Journey."
   },
   "homeHeroStart": "Start",
   "@homeHeroStart": {
@@ -11843,5 +11831,9 @@
   "homeShortcutPositionBody": "Set up any position and play it",
   "@homeShortcutPositionBody": {
     "description": "Description of the Home shortcut for the custom position editor."
+  },
+  "homeHeroLastPosition": "Your last position",
+  "@homeHeroLastPosition": {
+    "description": "Home top card for the Explore positions goal: the title, the saved free board position."
   }
 }

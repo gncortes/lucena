@@ -259,7 +259,6 @@ void main() {
       endgameProgress: endgames,
     ).load();
     final expected = roadmap!.steps.firstWhere((step) => !step.school);
-    expect(home.state.hero, HomeHero.endgame);
     expect(home.state.endgame!.lessonId, expected.lessonId);
     expect(home.state.endgame!.lessonId, 'rook.lucena');
     expect(home.state.endgame!.recommended, isTrue);
@@ -317,7 +316,6 @@ void main() {
     final home = cubit(layout: priority(HomePath.forYou), placement: placed());
     await home.load();
     expect(home.state.endgame!.lessonId, 'rook.lucena');
-    expect(home.state.hero, HomeHero.endgame);
   });
 
   test(

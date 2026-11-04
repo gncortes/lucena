@@ -1967,11 +1967,8 @@
   "homeForYouBodyUntested": "Os capítulos que faltam, na ordem certa.",
   "homeSeeMore": "Ver mais",
   "homeRatingStarting": "Começando",
-  "homeHeroFirstSteps": "Primeiros passos",
   "homeHeroSchool": "Escola",
   "homeHeroLesson": "Lição {number}",
-  "homeHeroCourseDone": "Curso concluído",
-  "homeHeroSpeedrun": "Do Coco ao Stockfish",
   "homeHeroStart": "Começar",
   "homeHeroPlay": "Jogar",
   "homeHeroResume": "Continuar",
@@ -2402,5 +2399,6 @@
   "practiceOpponentUnavailable": "Ocorreu um erro inesperado",
   "homeShortcutPosition": "Montar posição",
   "homeShortcutBoardBody": "Jogue pelos dois lados, com ou sem relógio",
-  "homeShortcutPositionBody": "Monte qualquer posição e jogue"
+  "homeShortcutPositionBody": "Monte qualquer posição e jogue",
+  "homeHeroLastPosition": "Sua última posição"
 }

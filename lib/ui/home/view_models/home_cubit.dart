@@ -172,33 +172,29 @@ class HomeState {
   /// "Finais em destaque" (o final do dia e o destaque) aparece (T83 B3).
   bool get showsFeatured => BeginnerHome.showsFeatured(goal, journeyStarted);
 
-  /// O que o cartão azul de cima mostra (T83, os 20 estados da prancha
-  /// "card-estados"). Nulo: nenhum cartão.
+  /// O que o cartão azul de cima mostra (H-INI-02 e H-INI-03): o treino dos
+  /// Pilares primeiro; senão, o que o objetivo pede. Nulo: nenhum cartão
+  /// (sem nada a retomar, o Início começa nos finais em destaque ou nos
+  /// atalhos).
   HomeHero? get hero {
     if (!ready) return null;
     if (training != null) return HomeHero.course;
     final goal = this.goal;
-    if (goal == GoalPreference.learn && !boardControlsDone) {
-      return HomeHero.firstSteps;
-    }
     if (goal == null) {
-      // Sem objetivo: a aula de final em andamento (ou recomendada), as
-      // aulas do iniciante ou a Jornada.
-      if (endgame != null) return HomeHero.endgame;
+      // Sem objetivo: a lição da Escola aberta ou a Jornada.
       if (school != null) return HomeHero.school;
-      return _journeyOr(HomeHero.speedrun);
+      return _journeyOr(null);
     }
     return switch (HomeSuggestion.goalPath(goal)) {
-      HomePath.learn when school != null => HomeHero.school,
-      HomePath.endgames when endgame != null => HomeHero.endgame,
-      HomePath.endgames when courseDone => HomeHero.courseDone,
-      HomePath.endgames ||
-      HomePath.train => trainGoal != null ? HomeHero.train : HomeHero.speedrun,
-      _ => _journeyOr(trainGoal != null ? HomeHero.train : HomeHero.speedrun),
+      HomePath.train => trainGoal != null ? HomeHero.train : null,
+      HomePath.board => HomeHero.board,
+      // Aprender a jogar, melhorar sem treino e enfrentar desafios: a
+      // Jornada, sem texto de venda no cartão.
+      _ => _journeyOr(null),
     };
   }
 
-  HomeHero _journeyOr(HomeHero done) =>
+  HomeHero? _journeyOr(HomeHero? done) =>
       current != null && next != null ? HomeHero.journey : done;
 
   /// Os atalhos da grade: todos os caminhos marcados, na ordem do nível.
@@ -243,33 +239,20 @@ class HomeState {
 
 /// O cartão azul de cima da tela inicial: um lugar do app por vez.
 enum HomeHero {
-  course(HomePath.learn),
-
-  /// Como mover as peças, antes da primeira partida de quem aprende a jogar.
-  firstSteps(HomePath.journey),
+  /// O plano dos Pilares: a lição, a meta, a folga (cinco estados).
+  course,
 
   /// A lição da vez na Escola.
-  school(HomePath.learn),
+  school,
 
   /// O adversário atual da Jornada.
-  journey(HomePath.journey),
-
-  /// A aula de final em andamento ou a recomendada.
-  endgame(HomePath.endgames),
-
-  /// O Curso de finais todo aprovado: o botão leva ao treino.
-  courseDone(HomePath.train),
+  journey,
 
   /// O final sugerido pelo nível.
-  train(HomePath.train),
+  train,
 
-  /// Nada por fazer nos outros: o speedrun.
-  speedrun(HomePath.speedrun);
-
-  const HomeHero(this.path);
-
-  /// O caminho que o cartão já mostra (sai dos atalhos).
-  final HomePath path;
+  /// O Tabuleiro livre, na última posição.
+  board,
 }
 
 final class HomeTraining {

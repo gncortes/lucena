@@ -269,9 +269,8 @@ void main() {
       'Escola, Jornada, Problemas e Estrelas', (tester) async {
     await pumpHome(tester, profile: learner);
 
-    expect(text(tester, HomeKeys.heroLabel), 'Primeiros passos');
-    expect(text(tester, HomeKeys.goalTitle), 'Como mover as peças');
-    expect(action(tester), 'Começar');
+    // Aprender a jogar: a Jornada no cartão (H-INI-02).
+    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
     expect(tiles(tester), [
       HomeKeys.schoolButton,
       HomeKeys.journeyButton,
@@ -312,9 +311,7 @@ void main() {
       locale: const Locale('en'),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Pilares do Xadrez');
-    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
-    expect(action(tester), 'Start');
+    expect(text(tester, HomeKeys.heroLabel), 'Journey');
     expect(tiles(tester), [
       HomeKeys.pillarsButton,
       HomeKeys.journeyButton,
@@ -325,8 +322,8 @@ void main() {
     ]);
   });
 
-  testWidgets('aula de final aberta: Continuar, a barra e o exercício em '
-      'miniatura', (tester) async {
+  testWidgets('lição de final aberta: o Início mostra a Jornada, '
+      'não a lição (H-INI-02)', (tester) async {
     await pumpHome(
       tester,
       locale: const Locale('en'),
@@ -341,10 +338,9 @@ void main() {
       ),
     );
 
-    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
-    expect(action(tester), 'Continue');
-    expect(find.byKey(HomeKeys.heroProgress), findsOneWidget);
-    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
+    // A lição aberta não vira cartão no Início (H-INI-02): sem objetivo,
+    // o cartão é o da Jornada.
+    expect(text(tester, HomeKeys.heroLabel), 'Journey');
   });
 
   testWidgets('treinar finais: o final da faixa no cartão e Treinar primeiro '
