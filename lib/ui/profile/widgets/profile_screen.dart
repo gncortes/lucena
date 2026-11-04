@@ -24,6 +24,7 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../../goal/widgets/goal_sheet.dart';
@@ -143,7 +144,7 @@ class _ProfileView extends StatelessWidget {
               children: [
                 ProfileRow(
                   key: ProfileKeys.rowCountry,
-                  icon: Icons.public,
+                  icon: CanvasSymbols.public,
                   title: l10n.profileCountry,
                   value: profileCountryValue(
                     l10n,
@@ -154,7 +155,7 @@ class _ProfileView extends StatelessWidget {
                 ),
                 ProfileRow(
                   key: ProfileKeys.rowRegion,
-                  icon: Icons.location_on,
+                  icon: CanvasSymbols.locationOn,
                   title: l10n.profileRegion,
                   value:
                       regionLabel(
@@ -168,7 +169,7 @@ class _ProfileView extends StatelessWidget {
                 ),
                 ProfileRow(
                   key: ProfileKeys.rowLanguage,
-                  icon: Icons.language,
+                  icon: CanvasSymbols.language,
                   title: l10n.settingsLanguage,
                   value: profileLanguageName(context),
                   onTap: () => context.push(Routes.settingsLanguage),
@@ -176,21 +177,21 @@ class _ProfileView extends StatelessWidget {
                 // Grava na hora: a folha tem o próprio "Salvar".
                 ProfileRow(
                   key: ProfileKeys.rowGoal,
-                  icon: Icons.flag,
+                  icon: CanvasSymbols.flag,
                   title: l10n.profileGoal,
                   value: profile?.goal?.title(l10n) ?? l10n.profileGoalNone,
                   onTap: () => _pickGoal(context, profile),
                 ),
                 ProfileRow(
                   key: ProfileKeys.rowLevel,
-                  icon: Icons.show_chart,
+                  icon: CanvasSymbols.showChart,
                   title: l10n.profileLevel,
                   value: profile == null ? '' : _level(l10n, profile),
                   onTap: () => _openLevel(context),
                 ),
                 ProfileRow(
                   key: ProfileKeys.rowLichess,
-                  icon: Icons.link,
+                  icon: CanvasSymbols.link,
                   title: l10n.profileLichess,
                   value: lichessUser ?? l10n.profileLichessNone,
                   onTap: lichess == null
@@ -295,7 +296,7 @@ class _Header extends StatelessWidget {
               key: ProfileKeys.editData,
               tooltip: l10n.profileEditData,
               onPressed: edit,
-              icon: const Icon(Icons.edit),
+              icon: const Icon(CanvasSymbols.edit),
             ),
           ],
         ),
@@ -457,7 +458,7 @@ class _NoticesGroup extends StatelessWidget {
       children: [
         ProfileRow(
           key: ProfileKeys.rowNotices,
-          icon: Icons.notifications,
+          icon: CanvasSymbols.notifications,
           title: l10n.alertsTitle,
           value: state.permitted
               ? l10n.alertsCount(state.enabled, state.total)
@@ -492,7 +493,7 @@ class _AccountActions extends StatelessWidget {
         OutlinedButton.icon(
           key: ProfileKeys.signOut,
           onPressed: busy ? null : onSignOut,
-          icon: const Icon(Icons.logout),
+          icon: const Icon(CanvasSymbols.logout),
           label: Text(l10n.profileSignOut),
         ),
         const SizedBox(height: AppSpacing.xs),
@@ -500,7 +501,7 @@ class _AccountActions extends StatelessWidget {
           key: ProfileKeys.delete,
           style: TextButton.styleFrom(foregroundColor: error),
           onPressed: busy ? null : onDelete,
-          icon: const Icon(Icons.delete),
+          icon: const Icon(CanvasSymbols.delete),
           label: Text(l10n.profileDeleteAccount),
         ),
         Text(

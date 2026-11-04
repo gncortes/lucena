@@ -23,6 +23,7 @@ import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/profile/widgets/profile_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -596,6 +597,28 @@ void main() {
     expect(inRow(ProfileKeys.rowNotices, 'Notificações'), findsOneWidget);
   });
 
+  // O canvas desenha as linhas com Material Symbols Rounded contornados
+  // (CompOpcaoLista, FILL 0): o app usa a mesma fonte.
+  testWidgets('as linhas do Perfil têm os ícones do canvas', (tester) async {
+    await pumpScreen(tester);
+    final icons = {
+      ProfileKeys.rowCountry: CanvasSymbols.public,
+      ProfileKeys.rowRegion: CanvasSymbols.locationOn,
+      ProfileKeys.rowLanguage: CanvasSymbols.language,
+      ProfileKeys.rowGoal: CanvasSymbols.flag,
+      ProfileKeys.rowLevel: CanvasSymbols.showChart,
+      ProfileKeys.rowLichess: CanvasSymbols.link,
+      ProfileKeys.rowNotices: CanvasSymbols.notifications,
+    };
+    for (final MapEntry(:key, :value) in icons.entries) {
+      expect(
+        find.descendant(of: find.byKey(key), matching: find.byIcon(value)),
+        findsOneWidget,
+        reason: '$key',
+      );
+    }
+  });
+
   testWidgets('Idioma e Notificações abrem as telas dos Ajustes', (
     tester,
   ) async {
@@ -659,7 +682,9 @@ void main() {
       expect(inCard('Pilares do Xadrez'), findsOneWidget);
       expect(inCard('Demonstração'), findsOneWidget);
       expect(
-        inCard('Na demonstração você faz o Capítulo 1. O curso completo tem 20 capítulos.'),
+        inCard(
+          'Na demonstração você faz o Capítulo 1. O curso completo tem 20 capítulos.',
+        ),
         findsOneWidget,
       );
       await tester.tap(find.byKey(PurchaseKeys.courseSeeFull));

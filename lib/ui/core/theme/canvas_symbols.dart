@@ -56,4 +56,13 @@ abstract final class CanvasSymbols {
   static const folderOpen = IconData(0xe2c8, fontFamily: family);
   static const searchOff = IconData(0xea76, fontFamily: family);
   static const shieldPerson = IconData(0xf650, fontFamily: family);
+  static const public = IconData(0xe80b, fontFamily: family);
+  static const locationOn = IconData(0xf1db, fontFamily: family);
+  static const language = IconData(0xea07, fontFamily: family);
+  static const flag = IconData(0xf0c6, fontFamily: family);
+  static const showChart = IconData(0xe6e1, fontFamily: family);
+  static const link = IconData(0xe250, fontFamily: family);
+  static const edit = IconData(0xf097, fontFamily: family);
+  static const delete = IconData(0xe92e, fontFamily: family);
+  static const logout = IconData(0xe9ba, fontFamily: family);
 }
