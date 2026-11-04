@@ -25,13 +25,13 @@ class FakeAchievementsRepository implements AchievementsRepository {
   };
 
   /// Com valor, a próxima leitura da lista falha com ele.
-  Object? failure;
+  Object? allFailure;
 
   @override
   Future<List<Achievement>> all() async {
-    final error = failure;
+    final error = allFailure;
     if (error != null) {
-      failure = null;
+      allFailure = null;
       throw error;
     }
     return achievements;

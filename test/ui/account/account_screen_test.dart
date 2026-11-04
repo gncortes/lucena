@@ -8,6 +8,7 @@ import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/account.dart';
+import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
@@ -60,6 +61,7 @@ void main() {
           builder: (_, state) => MultiRepositoryProvider(
             providers: [
               RepositoryProvider<AccountRepository>.value(value: accounts),
+              RepositoryProvider<OnboardingRepository>.value(value: onboarding),
               RepositoryProvider<SyncScheduler>.value(value: scheduler),
             ],
             child: AccountScreen(from: state.uri.queryParameters['from']!),
@@ -94,21 +96,62 @@ void main() {
   BuildContext top(WidgetTester tester) =>
       tester.element(find.byType(Scaffold).last);
 
-  group('aberta de uma rota (a aula do link, T84)', () {
+  group('H-CON-04: o convite do link (PropV1LinkConta)', () {
     const lesson = '/aula/rook.lucena';
 
-    testWidgets('o título fala da aula e some o "sem conta, tudo continua"', (
-      tester,
-    ) async {
-      await pumpAccount(tester, from: lesson);
+    testWidgets('1. "Quer salvar seu progresso?", os dois benefícios, as 4 '
+        'ações e o X à esquerda', (tester) async {
+      await pumpAccount(tester, from: lesson, locale: const Locale('pt'));
       expect(
-        find.text('Create your account to access the free lesson'),
+        tester.widget<Text>(find.byKey(AccountKeys.enterTitle)).data,
+        'Quer salvar seu progresso?',
+      );
+      expect(
+        tester.widget<Text>(find.byKey(AccountKeys.enterText)).data,
+        'Dá para criar a conta depois, no Perfil.',
+      );
+      expect(find.byIcon(Icons.cloud_sync), findsOneWidget);
+      expect(
+        find.text('Seu progresso fica salvo e aparece em qualquer celular'),
         findsOneWidget,
       );
-      expect(find.text('It takes less than a minute.'), findsOneWidget);
-      expect(find.text('Save your progress'), findsNothing);
-      expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-      expect(find.byIcon(Icons.wifi_off), findsNothing);
+      expect(
+        find.text('O app funciona sem conta, só neste celular'),
+        findsOneWidget,
+      );
+      expect(find.text('Criar conta com Google'), findsOneWidget);
+      expect(find.text('Criar conta com e-mail'), findsOneWidget);
+      expect(find.byKey(AccountKeys.toSignIn), findsOneWidget);
+      expect(find.text('Agora não'), findsOneWidget);
+      final close = tester.getRect(find.byKey(AccountKeys.close));
+      expect(close.left, lessThan(56));
+    });
+
+    testWidgets('2. "Agora não" (sem o tour feito) vai à pergunta do '
+        'objetivo, sem conta', (tester) async {
+      onboarding.saved = const Onboarding();
+      await pumpAccount(tester, from: lesson, locale: const Locale('pt'));
+      await tester.tap(find.byKey(AccountKeys.later));
+      await tester.pumpAndSettle();
+      expect(find.text('rota-objetivo'), findsOneWidget);
+      expect(accounts.current, isNull);
+    });
+
+    testWidgets('"Agora não" com o tour feito volta para quem abriu', (
+      tester,
+    ) async {
+      await pumpAccount(tester, from: lesson, locale: const Locale('pt'));
+      await tester.tap(find.byKey(AccountKeys.later));
+      await tester.pumpAndSettle();
+      expect(find.text('base'), findsOneWidget);
+    });
+
+    testWidgets('o X vale como "Agora não"', (tester) async {
+      onboarding.saved = const Onboarding();
+      await pumpAccount(tester, from: lesson, locale: const Locale('pt'));
+      await tester.tap(find.byKey(AccountKeys.close));
+      await tester.pumpAndSettle();
+      expect(find.text('rota-objetivo'), findsOneWidget);
     });
 
     testWidgets('o e-mail toma o lugar da conta: voltar volta à base', (

@@ -8,19 +8,18 @@ import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/legal/legal_consent_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/account_cubit.dart';
 import 'account_failure_gate.dart';
 import 'account_flow.dart';
-import 'account_widgets.dart';
+import 'account_invite.dart';
 
 /// "Guarde o seu progresso" (`V1ContaEntrada`, §2.12), aberto pelo Perfil ou
 /// pelo "Já tenho conta" da pergunta. Google, criar conta com e-mail ou "Já
@@ -40,10 +39,25 @@ class AccountScreen extends StatelessWidget {
       analytics: context.analytics,
       campaigns: context.campaigns,
       consent: context.read<LegalConsentRepository>(),
+      // Vinda do link (H-CON-04): o convite conta no `conta_convite`.
+      moment: Routes.isRouteFrom(from) ? accountInviteAfterLink : null,
+      onboarding: _onboarding(context),
     ),
     child: _AccountView(from: from),
   );
 }
+
+/// O tour, quando o app o oferece (os testes antigos da conta não oferecem).
+OnboardingRepository? _onboarding(BuildContext context) {
+  try {
+    return context.read<OnboardingRepository>();
+  } on ProviderNotFoundException {
+    return null;
+  }
+}
+
+/// O convite do link abre antes da lição (`conta_convite`).
+const accountInviteAfterLink = 'pos_desafio_link';
 
 class _AccountView extends StatelessWidget {
   const _AccountView({required this.from});
@@ -53,30 +67,33 @@ class _AccountView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final cubit = context.read<AccountCubit>();
+    // Aberta de uma rota (o link, H-CON-04): é o convite, com "Agora não";
+    // a tela seguinte toma o lugar desta, e voltar do fim volta para quem
+    // abriu a conta.
+    final invite = Routes.isRouteFrom(from);
     // Aberta por cima (Perfil ou "Já tenho conta"), fechar volta.
-    void next() => context.canPop()
+    void close() => context.canPop()
         ? context.pop()
         : context.go(Routes.afterAccount(from));
-    final busy = context.select((AccountCubit cubit) => cubit.state.busy);
-    // Aberta de uma rota (a aula do link, T84): a tela seguinte toma o lugar
-    // desta, e voltar do fim volta para quem abriu a conta.
-    final fromRoute = Routes.isRouteFrom(from);
-    void open(String route) => fromRoute
+    // "Agora não", o X e o voltar do convite: sem o tour feito, a pergunta
+    // do objetivo; com ele, volta para quem abriu (ou o início).
+    Future<void> later() async {
+      cubit.inviteAnswered(accepted: false);
+      final goal = await cubit.needsGoal();
+      if (!context.mounted) return;
+      if (goal) return context.go(Routes.goal);
+      context.canPop() ? context.pop() : context.go(Routes.home);
+    }
+
+    void open(String route) => invite
         ? context.pushReplacement(route)
         : unawaited(context.push(route));
-    // Aberta para a aula gratuita do link (T84), que só abre com conta: o
-    // título fala da aula.
-    final benefits = [
-      (Icons.cloud_done, l10n.conEntradaSaved),
-      // A aula do link só abre com conta: sem o "funciona sem conta".
-      if (!fromRoute) (Icons.wifi_off, l10n.conEntradaOffline),
-    ];
+    final busy = context.select((AccountCubit cubit) => cubit.state.busy);
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
         if (state.done) {
-          return continueAfterSignIn(context, state, from, replace: fromRoute);
+          return continueAfterSignIn(context, state, from, replace: invite);
         }
         final failure = state.failure;
         if (failure == null || state.screenFailure != null) return;
@@ -88,111 +105,56 @@ class _AccountView extends StatelessWidget {
       },
       child: AccountFailureGate(
         message: l10n.conSemRedeCreate,
-        child: Scaffold(
-          key: AccountKeys.enterScreen,
-          appBar: LucenaAppBar(
-            automaticallyImplyLeading: false,
-            leading: IconButton(
-              key: AccountKeys.close,
-              icon: const Icon(Icons.close),
-              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-              onPressed: next,
-            ),
-          ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.xl,
-              vertical: AppSpacing.lg,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(AppShape.large),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Icon(
-                        Icons.cloud_sync,
-                        size: AppIconSize.illustration,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                Text(
-                  fromRoute
-                      ? l10n.accountEntryTitleLesson
-                      : l10n.conEntradaTitle,
-                  key: AccountKeys.enterTitle,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  fromRoute
-                      ? l10n.accountEntryTextLesson
-                      : l10n.accountEntryText,
-                  key: AccountKeys.enterText,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                for (final (icon, text) in benefits)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                    child: Row(
-                      children: [
-                        Icon(
-                          icon,
-                          size: AppIconSize.standard,
-                          color: colors.primary,
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Text(text, style: theme.textTheme.bodyLarge),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: ActionsFooter(
-            stacked: true,
-            children: [
-              OutlinedButton.icon(
-                key: AccountKeys.google,
-                onPressed: busy
-                    ? null
-                    : () => context.read<AccountCubit>().signInWithGoogle(),
-                icon: const Icon(Icons.account_circle),
-                label: Text(l10n.conEntradaGoogle),
+        child: PopScope(
+          canPop: !invite,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop && !busy) unawaited(later());
+          },
+          child: Scaffold(
+            key: AccountKeys.enterScreen,
+            appBar: LucenaAppBar(
+              automaticallyImplyLeading: false,
+              leading: IconButton(
+                key: AccountKeys.close,
+                icon: const Icon(Icons.close),
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: invite ? () => unawaited(later()) : close,
               ),
-              OutlinedButton.icon(
-                key: AccountKeys.email,
-                onPressed: busy
-                    ? null
-                    : () => open(Routes.accountEmailFrom(from)),
-                icon: const Icon(Icons.mail),
-                label: Text(l10n.accountCreateWithEmail),
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xl,
+                vertical: AppSpacing.lg,
               ),
-              AccountSwitchLink(
-                key: AccountKeys.toSignIn,
-                question: l10n.accountHaveAccount,
-                action: l10n.accountSignIn,
-                onPressed: busy
-                    ? null
-                    : () => open(Routes.accountEmailFrom(from, signIn: true)),
+              child: AccountInviteHeader(
+                title: invite ? l10n.conConviteTitle : l10n.conEntradaTitle,
+                text: invite ? l10n.conConviteLater : l10n.accountEntryText,
+                titleKey: AccountKeys.enterTitle,
+                textKey: AccountKeys.enterText,
+                benefits: [
+                  (Icons.cloud_done, l10n.conEntradaSaved),
+                  (Icons.wifi_off, l10n.conEntradaOffline),
+                ],
               ),
-            ],
+            ),
+            bottomNavigationBar: ActionsFooter(
+              stacked: true,
+              children: accountInviteActions(
+                context,
+                busy: busy,
+                onGoogle: () {
+                  cubit.inviteAnswered(accepted: true);
+                  return cubit.signInWithGoogle();
+                },
+                onEmail: () {
+                  cubit.inviteAnswered(accepted: true);
+                  open(Routes.accountEmailFrom(from));
+                },
+                onSignIn: () =>
+                    open(Routes.accountEmailFrom(from, signIn: true)),
+                onLater: invite ? () => unawaited(later()) : null,
+              ),
+            ),
           ),
         ),
       ),

@@ -6554,10 +6554,6 @@
   "@accountGoogle": {
     "description": "Account screen button."
   },
-  "accountEmail": "Continue with e-mail",
-  "@accountEmail": {
-    "description": "Account screen button."
-  },
   "accountLater": "Not now",
   "@accountLater": {
     "description": "Account screen: skip the account."
@@ -8349,14 +8345,6 @@
   "accountEntryText": "It is free and takes less than a minute.",
   "@accountEntryText": {
     "description": "Account entry screen text under the title."
-  },
-  "accountEntryTitleLesson": "Create your account to access the free lesson",
-  "@accountEntryTitleLesson": {
-    "description": "Account entry screen title when opened to reach a free lesson (campaign link)."
-  },
-  "accountEntryTextLesson": "It takes less than a minute.",
-  "@accountEntryTextLesson": {
-    "description": "Account entry screen text under the title when opened to reach a free lesson."
   },
   "accountCreateWithEmail": "Create account with email",
   "@accountCreateWithEmail": {
@@ -12042,5 +12030,17 @@
   "conLichessNote": "Disconnecting removes Lucena's access to your Lichess. Your Lucena rating doesn't change.",
   "@conLichessNote": {
     "description": "Folha do Lichess no Perfil (H-CON-17): nota sobre Desconectar."
+  },
+  "conConviteTitle": "Want to save your progress?",
+  "@conConviteTitle": {
+    "description": "Título do convite de conta (link, folha do fim da partida, passo 5/5 do tour) (H-CON-01/02/04)."
+  },
+  "conConviteLater": "You can create the account later, in Profile.",
+  "@conConviteLater": {
+    "description": "Texto do convite de conta do link (H-CON-04)."
+  },
+  "conConviteSheetText": "Your progress is saved and shows up on any phone. The app works without an account, on this phone only.",
+  "@conConviteSheetText": {
+    "description": "Texto da folha de convite de conta depois da partida (PropV1PerfilConvite, H-CON-02)."
   }
 }

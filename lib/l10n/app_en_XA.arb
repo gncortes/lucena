@@ -1245,7 +1245,6 @@
   "levelManualTip": "[Ýöûŕ lévél ådjûštš wîth ýöûŕ ĝåméš: îf ît féélš éåšý öŕ håŕd, Lûçéñå çöŕŕéçtš ît bý îtšélf. one two three four five six seven eight]",
   "accountTitle": "[Wåñt tö kéép ýöûŕ pŕöĝŕéšš? one two three]",
   "accountGoogle": "[Çöñtîñûé wîth Ĝööĝlé one two]",
-  "accountEmail": "[Çöñtîñûé wîth é-måîl one two]",
   "accountLater": "[Ñöt ñöw one]",
   "accountSoon": "[Šîĝñîñĝ îñ îš çömîñĝ šööñ. one two three]",
   "accountFailedNetwork": "[Ñö îñtéŕñét. Tŕý åĝåîñ whéñ thé çöññéçtîöñ îš båçk. one two three four five]",
@@ -1572,8 +1571,6 @@
   "profileRegionNone": "[Öptîöñål · tö šéé töûŕñåméñtš ñéåŕ ýöû one two three four]",
   "profileCountryValue": "[{flag} {country} one two]",
   "accountEntryText": "[Ît îš fŕéé åñd tåkéš léšš thåñ å mîñûté. one two three four]",
-  "accountEntryTitleLesson": "[Çŕéåté ýöûŕ åççöûñt tö åççéšš thé fŕéé léššöñ one two three four]",
-  "accountEntryTextLesson": "[Ît tåkéš léšš thåñ å mîñûté. one two three]",
   "accountCreateWithEmail": "[Çŕéåté åççöûñt wîth émåîl one two three]",
   "accountHaveAccount": "[Ålŕéådý håvé åñ åççöûñt? one two three]",
   "accountNoAccount": "[Ñö åççöûñt ýét? one two]",
@@ -2325,5 +2322,8 @@
   "conRatingError": "[Éñtéŕ å ñûmbéŕ fŕöm 400 tö 3000. one two three]",
   "conNivelZeroHome": "[Štåŕt wîth thé éåšîéšt öppöñéñtš. one two three]",
   "conLichessText": "[Çöññéçtéd wîth ýöûŕ Lîçhéšš löĝîñ. Wé öñlý ŕéåd ýöûŕ pŕöfîlé åñd ŕåtîñĝš. one two three four five six seven]",
-  "conLichessNote": "[Dîšçöññéçtîñĝ ŕémövéš Lûçéñå'š åççéšš tö ýöûŕ Lîçhéšš. Ýöûŕ Lûçéñå ŕåtîñĝ döéšñ't çhåñĝé. one two three four five six seven eight]"
+  "conLichessNote": "[Dîšçöññéçtîñĝ ŕémövéš Lûçéñå'š åççéšš tö ýöûŕ Lîçhéšš. Ýöûŕ Lûçéñå ŕåtîñĝ döéšñ't çhåñĝé. one two three four five six seven eight]",
+  "conConviteTitle": "[Wåñt tö šåvé ýöûŕ pŕöĝŕéšš? one two three]",
+  "conConviteLater": "[Ýöû çåñ çŕéåté thé åççöûñt låtéŕ, îñ Pŕöfîlé. one two three four]",
+  "conConviteSheetText": "[Ýöûŕ pŕöĝŕéšš îš šåvéd åñd šhöwš ûp öñ åñý phöñé. Thé åpp wöŕkš wîthöût åñ åççöûñt, öñ thîš phöñé öñlý. one two three four five six seven eight nine]"
 }

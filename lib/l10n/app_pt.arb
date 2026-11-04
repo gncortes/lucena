@@ -1310,7 +1310,6 @@
   "levelManualTip": "O nível se ajusta com as partidas: se ficar fácil ou difícil, o Lucena corrige sozinho.",
   "accountTitle": "Quer guardar o seu progresso?",
   "accountGoogle": "Continuar com Google",
-  "accountEmail": "Continuar com e-mail",
   "accountLater": "Agora não",
   "accountSoon": "Entrar com conta chega em breve.",
   "accountFailedNetwork": "Sem internet. Tente novamente quando a conexão voltar.",
@@ -1637,8 +1636,6 @@
   "profileRegionNone": "Opcional · para ver torneios perto de você",
   "profileCountryValue": "{flag} {country}",
   "accountEntryText": "É de graça e leva menos de um minuto.",
-  "accountEntryTitleLesson": "Crie sua conta para ter acesso à lição gratuita",
-  "accountEntryTextLesson": "Leva menos de um minuto.",
   "accountCreateWithEmail": "Criar conta com e-mail",
   "accountHaveAccount": "Já tem conta?",
   "accountNoAccount": "Não tem conta?",
@@ -2488,5 +2485,8 @@
   "conRatingError": "Digite um número de 400 a 3000.",
   "conNivelZeroHome": "Comece pelos adversários mais fáceis.",
   "conLichessText": "Conectado pelo login do Lichess. Só lemos seu perfil e seus ratings.",
-  "conLichessNote": "Desconectar remove o acesso do Lucena ao seu Lichess. Seu rating no Lucena não muda."
+  "conLichessNote": "Desconectar remove o acesso do Lucena ao seu Lichess. Seu rating no Lucena não muda.",
+  "conConviteTitle": "Quer salvar seu progresso?",
+  "conConviteLater": "Dá para criar a conta depois, no Perfil.",
+  "conConviteSheetText": "Seu progresso fica salvo e aparece em qualquer celular. O app funciona sem conta, só neste celular."
 }

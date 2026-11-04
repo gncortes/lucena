@@ -611,7 +611,10 @@ class Dependencies {
         positions,
         preferences,
       ),
-      accountInviteRepository: LocalAccountInviteRepository(preferences),
+      accountInviteRepository: LocalAccountInviteRepository(
+        preferences,
+        now: now,
+      ),
       avatarRepository: avatars,
       photoRepository: DevicePhotoRepository(),
       mailAppRepository: const DeviceMailAppRepository(),

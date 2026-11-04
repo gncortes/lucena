@@ -142,7 +142,7 @@ void main() {
 
   testWidgets('H-CON-18 gap 3: leitura falhando mostra o erro padrão e '
       '"Tentar novamente" lê de novo', (tester) async {
-    repository.failure = StateError('banco');
+    repository.allFailure = StateError('banco');
     await pumpScreen(tester);
     expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
     expect(find.byType(SkeletonList), findsNothing);

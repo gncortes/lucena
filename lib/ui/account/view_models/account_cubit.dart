@@ -6,6 +6,7 @@ import '../../../data/repositories/legal/legal_consent_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/campaign/campaign_repository.dart';
+import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
@@ -59,7 +60,18 @@ class AccountCubit extends Cubit<AccountState> {
     this.moment,
     this._campaigns,
     this._consent = const NoLegalConsentRepository(),
+    this._onboarding,
   }) : super(const AccountState());
+
+  /// O tour: o "Agora não" do convite do link vai à pergunta do objetivo
+  /// enquanto ele não foi feito (H-CON-04).
+  final OnboardingRepository? _onboarding;
+
+  /// Se quem dispensou o convite ainda não fez o tour (vai ao objetivo).
+  Future<bool> needsGoal() async {
+    final onboarding = await _onboarding?.load();
+    return onboarding != null && !onboarding.done;
+  }
 
   final LegalConsentRepository _consent;
 
