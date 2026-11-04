@@ -452,12 +452,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.byKey(TourKeys.boardPieces(PieceStyle.merida)), findsNothing);
-      await tester.tap(
-        find.descendant(
-          of: find.byKey(TourKeys.boardTabs),
-          matching: find.text('Peças'),
-        ),
-      );
+      await tester.tap(find.byKey(TourKeys.boardTabPieces));
       await tester.pumpAndSettle();
       expect(
         find.byKey(TourKeys.boardPieces(PieceStyle.merida)),
@@ -478,12 +473,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.byKey(TourKeys.boardTabs));
       await tester.pumpAndSettle();
-      await tester.tap(
-        find.descendant(
-          of: find.byKey(TourKeys.boardTabs),
-          matching: find.text('Peças'),
-        ),
-      );
+      await tester.tap(find.byKey(TourKeys.boardTabPieces));
       await tester.pumpAndSettle();
       await tester.ensureVisible(
         find.byKey(TourKeys.boardPieces(PieceStyle.merida)),
