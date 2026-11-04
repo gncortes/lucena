@@ -9194,6 +9194,15 @@
       }
     }
   },
+  "trainingCountOf": " of {total}",
+  "@trainingCountOf": {
+    "description": "Course progress: text after the animated done count (the count itself is a separate number).",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "trainingPartLabel": "Part {roman}",
   "@trainingPartLabel": {
     "description": "T85 course guide: trainingPartLabel.",

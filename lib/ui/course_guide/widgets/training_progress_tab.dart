@@ -22,6 +22,8 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/animated_progress.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/numero_que_conta.dart';
 import '../../core/widgets/course/piece_stars_row.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
@@ -74,12 +76,11 @@ class TrainingProgressTab extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
-                    Text(
-                      t.trainingCount(
-                        lessons.length,
-                        completed(lessons.map((l) => l.id)),
-                      ),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    NumeroQueConta(
+                      valor: completed(lessons.map((l) => l.id)),
+                      sufixo: t.trainingCountOf(lessons.length),
+                      alinhamento: AlignmentDirectional.centerEnd,
+                      estilo: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
@@ -120,10 +121,10 @@ class TrainingProgressTab extends StatelessWidget {
                           ),
                           SizedBox(
                             height: 6,
-                            child: AnimatedProgress(
-                              roundValue: true,
-                              value: items.isEmpty ? 0 : done / items.length,
-                              backgroundColor: Theme.of(context)
+                            child: BarraQueEnche(
+                              altura: 6,
+                              valor: items.isEmpty ? 0 : done / items.length,
+                              corDoTrilho: Theme.of(context)
                                   .colorScheme
                                   .outlineVariant,
                             ),

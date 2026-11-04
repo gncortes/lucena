@@ -26,6 +26,11 @@ import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/keys/training_keys.dart';
+import '../../core/motion/entrada_de_resultado.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -91,6 +96,28 @@ class CourseGuideScreen extends StatelessWidget {
         Expanded(child: body),
       ],
     );
+  }
+
+  /// A tela do quadro do canvas de cada aba da Escola (H-ANI-01): a entrada
+  /// em ordem só acontece na primeira vez que a aba aparece na sessão.
+  static String? _quadro(CourseGuideTab tab, bool aulaVista) => switch (tab) {
+    CourseGuideTab.lesson =>
+      aulaVista ? 'PropV1TreinoEscolaAula' : 'PropV1TreinoEscolaAulaBoasVindas',
+    CourseGuideTab.goals => 'PropV1TreinoEscolaMetas',
+    CourseGuideTab.stats => 'PropV1TreinoEscolaEstatisticas',
+    CourseGuideTab.catalog => 'PropV1TreinoEscolaCatalogo',
+    CourseGuideTab.guide => null,
+  };
+
+  Widget _entradaDaAba(
+    TrainingCourse course,
+    CourseGuideTab tab,
+    bool aulaVista,
+    Widget corpo,
+  ) {
+    final id = course == TrainingCourse.escola ? _quadro(tab, aulaVista) : null;
+    if (id == null) return corpo;
+    return EntradaDaTela(key: ValueKey(id), id: id, child: corpo);
   }
 
   @override
@@ -164,33 +191,42 @@ class CourseGuideScreen extends StatelessWidget {
         ),
         body: SafeArea(
           top: false,
-          child: state.loading
-              ? const CourseDownloadSkeleton()
-              : bodyOverride ??
-                    switch (tab) {
-                      CourseGuideTab.lesson =>
-                        training?.onboardingDone == true
-                            ? _withPlanBand(
-                                _LessonTab(
-                                  state: state,
-                                  onLesson: onLesson,
-                                  onDiploma: onDiploma,
-                                ),
-                              )
-                            : _WelcomeTab(onContinue: onWelcomeContinue),
-                      CourseGuideTab.goals => goalsBuilder(context),
-                      CourseGuideTab.guide => TrainingGuideTab(
-                        key: CourseGuideKeys.guideTab,
-                        course: config.course,
-                      ),
-                      CourseGuideTab.stats => progressBuilder(context),
-                      CourseGuideTab.catalog => _CatalogTab(
-                        state: state,
-                        onChapter: onChapter,
-                        onLesson: onLesson,
-                        onLevelTest: onLevelTest,
-                      ),
-                    },
+          child: ShimmerConteudo(
+            carregando: state.loading,
+            esqueleto: const CourseDownloadSkeleton(),
+            child: state.loading
+                ? const SizedBox.shrink()
+                : _entradaDaAba(
+                    config.course,
+                    tab,
+                    training?.onboardingDone == true,
+                    bodyOverride ??
+                        switch (tab) {
+                          CourseGuideTab.lesson =>
+                            training?.onboardingDone == true
+                                ? _withPlanBand(
+                                    _LessonTab(
+                                      state: state,
+                                      onLesson: onLesson,
+                                      onDiploma: onDiploma,
+                                    ),
+                                  )
+                                : _WelcomeTab(onContinue: onWelcomeContinue),
+                          CourseGuideTab.goals => goalsBuilder(context),
+                          CourseGuideTab.guide => TrainingGuideTab(
+                            key: CourseGuideKeys.guideTab,
+                            course: config.course,
+                          ),
+                          CourseGuideTab.stats => progressBuilder(context),
+                          CourseGuideTab.catalog => _CatalogTab(
+                            state: state,
+                            onChapter: onChapter,
+                            onLesson: onLesson,
+                            onLevelTest: onLevelTest,
+                          ),
+                        },
+                  ),
+          ),
         ),
         bottomNavigationBar: CourseNavigationBar(
           tabs: tabs,
@@ -217,112 +253,130 @@ class _WelcomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = context.read<CourseGuideCubit>().config;
     final t = context.l10n;
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      children: [
-        Card(
-          margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppShape.card),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
-              children: [
-                Text(
-                  courseGuideCopy(context, config.welcomeKeys[0]),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: 20,
-                    height: 26 / 20,
-                    fontWeight: FontWeight.w500,
+    final escola = config.course == TrainingCourse.escola;
+    return EntradaEmCascata(
+      animar: escola ? null : false,
+      montar: (itens) => ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: [
+          itens[0],
+          const SizedBox(height: 12),
+          itens[1],
+          const SizedBox(height: 12),
+          itens[2],
+        ],
+      ),
+      itens: [
+        ItemDaCascata.titulo(
+          Card(
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppShape.card),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 8,
+                children: [
+                  Text(
+                    courseGuideCopy(context, config.welcomeKeys[0]),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 20,
+                      height: 26 / 20,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                Text(
-                  courseGuideCopy(context, config.welcomeKeys[1]),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+                  Text(
+                    courseGuideCopy(context, config.welcomeKeys[1]),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 12),
-        Card(
-          margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppShape.card),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 12,
-              children: [
-                Text(
-                  t.courseGuideTabsTitle,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                for (final (icon, title, body) in [
-                  (
-                    Icons.school_outlined,
-                    t.courseGuideTabLesson,
-                    config.welcomeKeys.length > 2
-                        ? courseGuideCopy(context, config.welcomeKeys[2])
-                        : t.courseGuideTabsLesson,
+        ItemDaCascata.texto(
+          Card(
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppShape.card),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 12,
+                children: [
+                  Text(
+                    t.courseGuideTabsTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  (
-                    Icons.task_alt,
-                    t.courseGuideTabGoals,
-                    config.welcomeKeys.length > 3
-                        ? courseGuideCopy(context, config.welcomeKeys[3])
-                        : t.courseGuideTabsGoals,
-                  ),
-                  (
-                    Icons.insights,
-                    t.courseGuideTabProgress,
-                    config.welcomeKeys.length > 4
-                        ? courseGuideCopy(context, config.welcomeKeys[4])
-                        : t.courseGuideTabsProgress,
-                  ),
-                  (
-                    Icons.menu_book_outlined,
-                    t.courseGuideTabCatalog,
-                    config.welcomeKeys.length > 5
-                        ? courseGuideCopy(context, config.welcomeKeys[5])
-                        : t.courseGuideTabsCatalog,
-                  ),
-                ])
-                  Row(
-                    spacing: 12,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(icon, color: Theme.of(context).colorScheme.primary),
-                      Expanded(
-                        child: Text(
-                          t.courseGuideTabIntro(title, body),
-                          style: Theme.of(context).textTheme.bodyMedium,
+                  for (final (icon, title, body) in [
+                    (
+                      Icons.school_outlined,
+                      t.courseGuideTabLesson,
+                      config.welcomeKeys.length > 2
+                          ? courseGuideCopy(context, config.welcomeKeys[2])
+                          : t.courseGuideTabsLesson,
+                    ),
+                    (
+                      Icons.task_alt,
+                      t.courseGuideTabGoals,
+                      config.welcomeKeys.length > 3
+                          ? courseGuideCopy(context, config.welcomeKeys[3])
+                          : t.courseGuideTabsGoals,
+                    ),
+                    (
+                      Icons.insights,
+                      t.courseGuideTabProgress,
+                      config.welcomeKeys.length > 4
+                          ? courseGuideCopy(context, config.welcomeKeys[4])
+                          : t.courseGuideTabsProgress,
+                    ),
+                    (
+                      Icons.menu_book_outlined,
+                      t.courseGuideTabCatalog,
+                      config.welcomeKeys.length > 5
+                          ? courseGuideCopy(context, config.welcomeKeys[5])
+                          : t.courseGuideTabsCatalog,
+                    ),
+                  ])
+                    Row(
+                      spacing: 12,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          icon,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                      ),
-                    ],
-                  ),
-              ],
+                        Expanded(
+                          child: Text(
+                            t.courseGuideTabIntro(title, body),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 12),
-        FilledButton(
-          key: CourseGuideKeys.continueButton,
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(kButtonHeight),
-            textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontSize: 16,
-              height: 24 / 16,
-              fontWeight: FontWeight.w500,
+        ItemDaCascata.botao(
+          FilledButton(
+            key: CourseGuideKeys.continueButton,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
+              textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontSize: 16,
+                height: 24 / 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
+            onPressed: onContinue,
+            child: Text(t.homeContinue),
           ),
-          onPressed: onContinue,
-          child: Text(t.homeContinue),
         ),
       ],
     );
@@ -365,69 +419,89 @@ class _LessonTab extends StatelessWidget {
       }
       final school =
           cubit.config.progressKind == TrainingProgressKind.modulesAndPieces;
-      return ListView(
-        key: TrainingKeys.completedCourse,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        children: [
-          Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
+      final cartao = Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 8,
+            children: [
+              Row(
+                spacing: 16,
                 children: [
-                  Row(
-                    spacing: 16,
-                    children: [
-                      const Icon(
-                        Icons.emoji_events_outlined,
-                        color: AppColors.trainingDayCorrect,
-                      ),
-                      Expanded(
-                        child: Text(
-                          school
-                              ? t.trainingEscolaCompletedTitle
-                              : t.trainingPilaresCompletedTitle,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                    ],
+                  const Icon(
+                    Icons.emoji_events_outlined,
+                    color: AppColors.trainingDayCorrect,
                   ),
-                  Text(
-                    school
-                        ? t.trainingEscolaCompletedBody
-                        : t.trainingPilaresCompletedBody,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  Expanded(
+                    child: Text(
+                      school
+                          ? t.trainingEscolaCompletedTitle
+                          : t.trainingPilaresCompletedTitle,
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ],
               ),
-            ),
+              Text(
+                school
+                    ? t.trainingEscolaCompletedBody
+                    : t.trainingPilaresCompletedBody,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
+        ),
+      );
+      final primario = FilledButton(
+        key: TrainingKeys.completedPrimary,
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(kButtonHeight),
+        ),
+        onPressed: school
+            ? onDiploma
+            : () => cubit.selectTab(CourseGuideTab.goals),
+        child: Text(school ? t.schoolGraduationOpen : t.trainingViewGoals),
+      );
+      final catalogo = OutlinedButton.icon(
+        key: TrainingKeys.completedCatalog,
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size.fromHeight(kButtonHeight),
+        ),
+        icon: const Icon(Icons.menu_book),
+        onPressed: () => cubit.selectTab(CourseGuideTab.catalog),
+        label: Text(t.trainingViewCatalog),
+      );
+      if (school) {
+        // Escola concluída (H-ANI-25): o resultado se monta em ordem.
+        return EntradaDeResultado(
+          id: 'escola-concluida',
+          titulo: cartao,
+          botoes: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [primario, catalogo],
+          ),
+          montar: (partes) => ListView(
+            key: TrainingKeys.completedCourse,
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            children: [partes[0], const SizedBox(height: 12), partes[1]],
+          ),
+        );
+      }
+      return ListView(
+        key: TrainingKeys.completedCourse,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: [
+          cartao,
           const SizedBox(height: 12),
-          FilledButton(
-            key: TrainingKeys.completedPrimary,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
-            onPressed: school
-                ? onDiploma
-                : () => cubit.selectTab(CourseGuideTab.goals),
-            child: Text(school ? t.schoolGraduationOpen : t.trainingViewGoals),
-          ),
+          primario,
           const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: TrainingKeys.completedCatalog,
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
-            icon: const Icon(Icons.menu_book),
-            onPressed: () => cubit.selectTab(CourseGuideTab.catalog),
-            label: Text(t.trainingViewCatalog),
-          ),
+          catalogo,
         ],
       );
     }
@@ -590,45 +664,45 @@ class _CatalogTabState extends State<_CatalogTab> {
     final modules =
         config.progressKind == TrainingProgressKind.modulesAndPieces;
     final groups = {for (final lesson in data) lesson.groupId: lesson.group};
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      children: [
-        _CatalogHeader(
-          course: config.course,
-          hasPlan: planIds != null,
-          onlyPlan: filtered,
-          onChanged: (value) => unawaited(
-            context.read<CourseGuideCubit>().setCatalogOnlyPlan(value),
-          ),
+    final linhas = <Widget>[
+      _CatalogHeader(
+        course: config.course,
+        hasPlan: planIds != null,
+        onlyPlan: filtered,
+        onChanged: (value) => unawaited(
+          context.read<CourseGuideCubit>().setCatalogOnlyPlan(value),
         ),
-        for (final (index, group) in groups.entries.indexed) ...[
-          if (!modules || expanded.contains(group.key)) ...[
-            if (modules)
-              Padding(
-                key: CourseGuideKeys.module(group.key),
-                padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
-                child: Text(
-                  '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}'
-                      .toUpperCase(),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    height: 20 / 12,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              )
-            else
-              KeyedSubtree(
-                key: CourseGuideKeys.chapter(group.key),
-                child: CoursePartHeader(
-                  label: context.l10n.trainingChapterLabel(index + 1),
-                  title: group.value,
-                  titleWeight: FontWeight.w500,
-                  padding: EdgeInsets.fromLTRB(4, index == 0 ? 0 : 8, 4, 0),
+      ),
+      for (final (index, group) in groups.entries.indexed) ...[
+        if (!modules || expanded.contains(group.key)) ...[
+          if (modules)
+            Padding(
+              key: CourseGuideKeys.module(group.key),
+              padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+              child: Text(
+                '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}'
+                    .toUpperCase(),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  height: 20 / 12,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
-            const SizedBox(height: 8),
-            for (final lesson in data.where((l) => l.groupId == group.key)) ...[
-              CourseItemTile(
+            )
+          else
+            KeyedSubtree(
+              key: CourseGuideKeys.chapter(group.key),
+              child: CoursePartHeader(
+                label: context.l10n.trainingChapterLabel(index + 1),
+                title: group.value,
+                titleWeight: FontWeight.w500,
+                padding: EdgeInsets.fromLTRB(4, index == 0 ? 0 : 8, 4, 0),
+              ),
+            ),
+          const SizedBox(height: 8),
+          for (final lesson in data.where((l) => l.groupId == group.key))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: CourseItemTile(
                 key: CourseGuideKeys.chapterLesson(lesson.id),
                 state: completed.containsKey(lesson.id)
                     ? CourseItemState.approved
@@ -645,29 +719,35 @@ class _CatalogTabState extends State<_CatalogTab> {
                 summary: modules ? lesson.summary : null,
                 onTap: () => widget.onLesson(lesson),
               ),
-              const SizedBox(height: 8),
-            ],
-          ] else
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Material(
-                color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                borderRadius: BorderRadius.circular(AppShape.card),
-                child: ListTile(
-                  key: CourseGuideKeys.catalogPart(group.key),
-                  title: Text(
-                    '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}',
-                  ),
-                  trailing: const Icon(
-                    Icons.expand_more,
-                    size: AppIconSize.standard,
-                  ),
-                  onTap: () => setState(() => expanded.add(group.key)),
+            ),
+        ] else
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Material(
+              color: Theme.of(context).colorScheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(AppShape.card),
+              child: ListTile(
+                key: CourseGuideKeys.catalogPart(group.key),
+                title: Text(
+                  '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}',
                 ),
+                trailing: const Icon(
+                  Icons.expand_more,
+                  size: AppIconSize.standard,
+                ),
+                onTap: () => setState(() => expanded.add(group.key)),
               ),
             ),
-        ],
+          ),
       ],
+    ];
+    return ListaEmOrdem(
+      animar: config.course == TrainingCourse.escola ? null : false,
+      itens: linhas,
+      montar: (itens) => ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: itens,
+      ),
     );
   }
 }

@@ -444,6 +444,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final viktor = _viktor;
     final voice = TeacherSpeech.speechOf(context);
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
+    final vibration = context.select(
+      (SettingsCubit c) => c.state?.vibration ?? true,
+    );
     // O clique no balão abre a fala inteira, sempre.
     final onOpen = viktor == null || state.machineThinking
         ? null
@@ -563,6 +566,8 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     Widget board(double size) {
       final board = ScriptBoard(
         canvasFeedback: true,
+        animado: cubit.escola,
+        vibrar: vibration,
         state: state,
         size: size,
         settings: settings,

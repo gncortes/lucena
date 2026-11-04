@@ -9,6 +9,8 @@ import '../../../domain/models/lesson_script.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
+import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/square_flash.dart';
@@ -47,6 +49,8 @@ class ScriptBoard extends StatefulWidget {
     this.flash,
     this.showMarks = true,
     this.canvasFeedback = false,
+    this.animado = false,
+    this.vibrar = false,
     super.key,
   });
 
@@ -63,6 +67,14 @@ class ScriptBoard extends StatefulWidget {
   final double size;
   final BoardSettings settings;
   final bool canvasFeedback;
+
+  /// Liga o kit de movimento (H-ANI-10/11/33): deslize de 300 ms, peça
+  /// capturada que encolhe, halo de xeque e o retorno de acerto e erro. Só a
+  /// Escola liga; a lição de finais fica como estava.
+  final bool animado;
+
+  /// A vibração do acerto e do erro (ajuste do app).
+  final bool vibrar;
   final ValueChanged<String> onMove;
 
   /// Toque numa casa (qualquer uma, até vazia) na prática do tipo toque.
@@ -363,6 +375,44 @@ class _ScriptBoardState extends State<ScriptBoard> {
     return base;
   }
 
+  Widget _animar(Widget tabuleiro, ChessboardSettings settings) =>
+      widget.animado
+      ? TabuleiroAnimado(
+          controlador: _controller,
+          orientacao: _orientation,
+          tamanho: widget.size,
+          pecas: settings.pieceAssets,
+          child: tabuleiro,
+        )
+      : tabuleiro;
+
+  ChessboardSettings _ajustado(BuildContext context, ChessboardSettings base) =>
+      widget.animado ? TabuleiroAnimado.ajustes(context, base) : base;
+
+  /// O acerto ou o erro do último lance, quando a peça já chegou.
+  Widget _comRetorno(Widget tabuleiro) {
+    final s = widget.state;
+    final move = s.lastMove == null ? null : Move.parse(s.lastMove!);
+    if (!widget.animado ||
+        _busy ||
+        !_shapes ||
+        s.tone == ScriptTone.neutral ||
+        move == null) {
+      return tabuleiro;
+    }
+    return RetornoDoLance(
+      key: ValueKey('retorno-${s.transition.id}-${s.tone.name}'),
+      tipo: s.tone == ScriptTone.good
+          ? TipoDeRetorno.acerto
+          : TipoDeRetorno.erro,
+      casa: move.to,
+      orientacao: _orientation,
+      tamanho: widget.size,
+      vibrar: widget.vibrar,
+      child: tabuleiro,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _drawn = _shapeSet(Theme.of(context).colorScheme);
@@ -377,19 +427,28 @@ class _ScriptBoardState extends State<ScriptBoard> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Chessboard(
-            key: LessonScriptKeys.board,
-            size: widget.size,
-            controller: _controller,
-            settings: coordinates
-                ? settings.copyWith(enableCoordinates: false)
-                : settings,
-            orientation: _orientation,
-            shapes: _drawn,
-            onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
-            onTouchedSquare: widget.state.touching && widget.onSquare != null
-                ? (square) => widget.onSquare!(square.name)
-                : null,
+          _comRetorno(
+            _animar(
+              Chessboard(
+                key: LessonScriptKeys.board,
+                size: widget.size,
+                controller: _controller,
+                settings: _ajustado(
+                  context,
+                  coordinates
+                      ? settings.copyWith(enableCoordinates: false)
+                      : settings,
+                ),
+                orientation: _orientation,
+                shapes: _drawn,
+                onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
+                onTouchedSquare:
+                    widget.state.touching && widget.onSquare != null
+                    ? (square) => widget.onSquare!(square.name)
+                    : null,
+              ),
+              settings,
+            ),
           ),
           if (ghost != null)
             Positioned.fill(
