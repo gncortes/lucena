@@ -47,14 +47,13 @@ class TourRobot {
   /// A barra de progresso da barra do app: (posição + 1) de quantos passos
   /// aparecem (cinco; quatro vindo de um link).
   void expectProgress(TourStep step) {
-    final steps = cubit.state.steps;
     final bar = $.tester.widget<LinearProgressIndicator>(
       find.descendant(
         of: find.byKey(TourKeys.progress),
         matching: find.byType(LinearProgressIndicator),
       ),
     );
-    expect(bar.value, closeTo((steps.indexOf(step) + 1) / steps.length, 0.001));
+    expect(bar.value, closeTo(cubit.state.progress, 0.001));
   }
 
   /// "Continuar" do passo (o último troca só a chave) está habilitado.
@@ -103,6 +102,8 @@ class TourRobot {
   Future<void> openVoice() async {
     await expectStep(TourStep.board);
     await next();
+    await expectStep(TourStep.theme);
+    await next();
     await expectStep(TourStep.voice);
   }
 
@@ -115,7 +116,7 @@ class TourRobot {
 
   /// Termina os passos do tour (o último leva ao objetivo).
   Future<void> finishSteps() async {
-    await nextUntil(TourStep.play);
+    await nextUntil(TourStep.account);
     await $(TourKeys.startButton).tap();
     await $.pumpAndSettle();
   }

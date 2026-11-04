@@ -50,7 +50,7 @@ void main() {
     // Fechar à força no meio do tour não perde o nome.
     await tour.next();
     await app.restart();
-    await tour.expectStep(TourStep.school);
+    await tour.expectStep(TourStep.level);
     await tour.back();
     await tour.expectStep(TourStep.voice);
     await tour.expectName('Gabriel');
@@ -96,10 +96,10 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await tour.nextUntil(TourStep.help);
+    await tour.nextUntil(TourStep.region);
 
     await app.restart();
-    await tour.expectStep(TourStep.help);
+    await tour.expectStep(TourStep.region);
   });
 
   patrolTest('primeira abertura: tabuleiro verde e peças Mérida no tour valem '

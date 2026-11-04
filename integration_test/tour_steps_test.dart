@@ -88,7 +88,7 @@ void main() {
   });
 
   patrolTest('tour B: fechar à força em qualquer passo reabre no mesmo '
-      'passo (tour.stepV2)', ($) async {
+      'passo (tour.stepV3)', ($) async {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
@@ -96,7 +96,7 @@ void main() {
     for (final step in TourStep.values.skip(1)) {
       await tour.nextUntil(step);
       expect(
-        await PreferencesService().getString('tour.stepV2'),
+        await PreferencesService().getString('tour.stepV3'),
         '${step.index}',
       );
 
@@ -107,12 +107,12 @@ void main() {
 
     // Voltar também é gravado: do último passo, volta ao anterior.
     await tour.back();
-    await tour.expectStep(TourStep.help);
+    await tour.expectStep(TourStep.region);
     expect(
-      await PreferencesService().getString('tour.stepV2'),
-      '${TourStep.help.index}',
+      await PreferencesService().getString('tour.stepV3'),
+      '${TourStep.region.index}',
     );
     await app.restart();
-    await tour.expectStep(TourStep.help);
+    await tour.expectStep(TourStep.region);
   });
 }

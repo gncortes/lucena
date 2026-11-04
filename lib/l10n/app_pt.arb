@@ -288,7 +288,7 @@
   "@tourSpeechBoard": {
     "description": "Public onboarding speech, copied verbatim from tour.board."
   },
-  "tourSpeechVoice": "Posso ler em voz alta tudo o que eu disser. Escolha a minha voz; clique em uma delas para ouvir. E diga como devo chamar você.",
+  "tourSpeechVoice": "Posso ler em voz alta tudo o que eu disser. Toque em uma voz para ouvir.",
   "@tourSpeechVoice": {
     "description": "Public onboarding speech, copied verbatim from tour.voice."
   },
@@ -303,18 +303,6 @@
   "tourSpeechVoiceLinkNone": "Bela partida! Eu sou o Viktor, o seu professor. Antes de seguir, diga como devo chamar você.",
   "@tourSpeechVoiceLinkNone": {
     "description": "Public onboarding speech, copied verbatim from tour.voice.link.none."
-  },
-  "tourSpeechSchool": "Nas lições, primeiro eu explico a ideia, lance por lance. Depois mostro exemplos. No fim, você pratica no tabuleiro.",
-  "@tourSpeechSchool": {
-    "description": "Public onboarding speech, copied verbatim from tour.school."
-  },
-  "tourSpeechHelp": "Travou? Na lição, clique em Ver resposta. No exercício, clique na lâmpada, e eu dou uma pista. Errou um lance? Eu mostro por que, e você tenta de novo.",
-  "@tourSpeechHelp": {
-    "description": "Public onboarding speech, copied verbatim from tour.help."
-  },
-  "tourSpeechPlay": "Fora das lições, você joga finais contra adversários que jogam como gente de verdade, do Coco ao Stockfish. As partidas contra eles mexem no seu rating, que fica no alto da tela inicial.",
-  "@tourSpeechPlay": {
-    "description": "Public onboarding speech, copied verbatim from tour.play."
   },
   "tourBack": "Voltar",
   "tourNext": "Continuar",
@@ -1065,37 +1053,9 @@
   "lessonBackToStart": "Voltar ao início",
   "lessonPreviousStep": "Voltar um passo",
   "lessonMoveList": "Lances",
-  "tourVoiceHint": "Os adversários ganham uma voz do aparelho sozinhos. A minha voz muda depois nas Configurações, e o seu nome, no perfil.",
+  "tourVoiceHint": "Os adversários usam uma voz do aparelho. A minha voz muda depois nas Configurações, e o seu nome, no Perfil.",
   "@tourVoiceHint": {
     "description": "Note under the voice choice in the tour."
-  },
-  "tourStageIdea": "Ideia",
-  "@tourStageIdea": {
-    "description": "Tour, lessons step: first stage."
-  },
-  "tourStageIdeaBody": "eu explico,\nlance por lance",
-  "@tourStageIdeaBody": {
-    "description": "Tour, lessons step: what happens in the first stage."
-  },
-  "tourStageExamples": "Exemplos",
-  "@tourStageExamples": {
-    "description": "Tour, lessons step: second stage."
-  },
-  "tourStageExamplesBody": "eu mostro\nno tabuleiro",
-  "@tourStageExamplesBody": {
-    "description": "Tour, lessons step: what happens in the second stage."
-  },
-  "tourStagePractice": "Prática",
-  "@tourStagePractice": {
-    "description": "Tour, lessons step: third stage."
-  },
-  "tourStagePracticeBody": "você joga\nsozinho",
-  "@tourStagePracticeBody": {
-    "description": "Tour, lessons step: what happens in the third stage."
-  },
-  "tourStockfishMax": "máximo",
-  "@tourStockfishMax": {
-    "description": "Tour, games step: rating label under the Stockfish square."
   },
   "exerciseSayCorrect": "Correto.",
   "exerciseSayWrong": "Não.",
@@ -2403,5 +2363,10 @@
   "practiceSolutionTarget": "Toque na casa marcada.",
   "practiceSolutionUnavailable": "Ocorreu um erro inesperado",
   "practiceOpponentUnavailable": "Ocorreu um erro inesperado",
-  "updateOfflineMessage": "Você precisa de conexão com a internet para atualizar o Lucena."
+  "updateOfflineMessage": "Você precisa de conexão com a internet para atualizar o Lucena.",
+  "tourSpeechTheme": "Agora escolha o tema do app. No padrão do sistema, ele acompanha o do seu celular.",
+  "tourSpeechLevel": "Com sinceridade: em que ponto você está no xadrez?",
+  "tourSpeechRegion": "De onde você joga? Assim eu destaco os finais de torneios da sua região.",
+  "tourSpeechAccount": "Por último: quer salvar seu progresso? Dá para criar a conta depois, no Perfil.",
+  "tourTabColors": "Cores"
 }

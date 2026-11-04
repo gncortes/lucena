@@ -402,7 +402,6 @@ GoRouter buildRouter({
             onboarding: context.read<OnboardingRepository>(),
             profile: context.read<ProfileRepository>(),
             characters: context.read<CharacterRepository>(),
-            lessons: context.read<LessonRepository>(),
             voice: context.read<VoiceRepository>(),
             analytics: context.analytics,
           )..load(_language(context)),

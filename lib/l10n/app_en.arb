@@ -1415,7 +1415,7 @@
   },
   "tourSpeechBoard": "Hello! I am Viktor, your teacher. Before we start, choose the board colours and the pieces you like best.",
   "@tourSpeechBoard": {"description": "Public onboarding speech, copied verbatim from tour.board."},
-  "tourSpeechVoice": "I can read aloud everything I say. Choose my voice; tap one to hear it. And tell me what to call you.",
+  "tourSpeechVoice": "I can read aloud everything I say. Tap a voice to hear it.",
   "@tourSpeechVoice": {"description": "Public onboarding speech, copied verbatim from tour.voice."},
   "tourSpeechVoiceNone": "Before we go on, tell me what to call you.",
   "@tourSpeechVoiceNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.none."},
@@ -1423,12 +1423,6 @@
   "@tourSpeechVoiceLink": {"description": "Public onboarding speech, copied verbatim from tour.voice.link."},
   "tourSpeechVoiceLinkNone": "Nice game! I am Viktor, your teacher. Before we go on, tell me what to call you.",
   "@tourSpeechVoiceLinkNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.link.none."},
-  "tourSpeechSchool": "In the lessons, I first explain the idea, move by move. Then I show examples. At the end, you practise on the board.",
-  "@tourSpeechSchool": {"description": "Public onboarding speech, copied verbatim from tour.school."},
-  "tourSpeechHelp": "Stuck? In a lesson, tap Show answer. In an exercise, tap the bulb and I give you a hint. Wrong move? I show you why, and you try again.",
-  "@tourSpeechHelp": {"description": "Public onboarding speech, copied verbatim from tour.help."},
-  "tourSpeechPlay": "Outside the lessons, you play endgames against opponents who play like real people, from Coco to Stockfish. Games against them change your rating, shown at the top of the home screen.",
-  "@tourSpeechPlay": {"description": "Public onboarding speech, copied verbatim from tour.play."},
   "tourBack": "Back",
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
@@ -5495,37 +5489,9 @@
   "@lessonMoveList": {
     "description": "Accessibility label of the move list below the board in the scripted lesson."
   },
-  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "tourVoiceHint": "Opponents use a device voice. You can change my voice later in Settings, and your name in your Profile.",
   "@tourVoiceHint": {
     "description": "Note under the voice choice in the tour."
-  },
-  "tourStageIdea": "Idea",
-  "@tourStageIdea": {
-    "description": "Tour, lessons step: first stage."
-  },
-  "tourStageIdeaBody": "I explain,\nmove by move",
-  "@tourStageIdeaBody": {
-    "description": "Tour, lessons step: what happens in the first stage."
-  },
-  "tourStageExamples": "Examples",
-  "@tourStageExamples": {
-    "description": "Tour, lessons step: second stage."
-  },
-  "tourStageExamplesBody": "I show\non the board",
-  "@tourStageExamplesBody": {
-    "description": "Tour, lessons step: what happens in the second stage."
-  },
-  "tourStagePractice": "Practice",
-  "@tourStagePractice": {
-    "description": "Tour, lessons step: third stage."
-  },
-  "tourStagePracticeBody": "you play\nalone",
-  "@tourStagePracticeBody": {
-    "description": "Tour, lessons step: what happens in the third stage."
-  },
-  "tourStockfishMax": "maximum",
-  "@tourStockfishMax": {
-    "description": "Tour, games step: rating label under the Stockfish square."
   },
   "exerciseSayCorrect": "Correct.",
   "@exerciseSayCorrect": {
@@ -11847,5 +11813,25 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "tourSpeechTheme": "Now choose the app theme. With the system default, it follows your phone's theme.",
+  "@tourSpeechTheme": {
+    "description": "Tour, theme step: what Viktor says."
+  },
+  "tourSpeechLevel": "Be honest: where are you in chess?",
+  "@tourSpeechLevel": {
+    "description": "Tour, level step: what Viktor says."
+  },
+  "tourSpeechRegion": "Where do you play from? That way I highlight the tournament endgames from your region.",
+  "@tourSpeechRegion": {
+    "description": "Tour, region step: what Viktor says."
+  },
+  "tourSpeechAccount": "Last one: do you want to save your progress? You can create the account later, in your Profile.",
+  "@tourSpeechAccount": {
+    "description": "Tour, account step: what Viktor says."
+  },
+  "tourTabColors": "Colors",
+  "@tourTabColors": {
+    "description": "Tour, board step: segmented tab that shows the board colour options."
   }
 }

@@ -46,13 +46,15 @@ abstract final class TourKeys {
   /// O interruptor do som das peças, no fim do passo do tabuleiro.
   static const boardSound = Key('tour.board.sound');
 
-  /// No passo das aulas: as três etapas.
-  static const stages = Key('tour.stages');
+  /// No passo do tema: os três cartões.
+  static const themeSystem = Key('tour.theme.system');
+  static const themeLight = Key('tour.theme.light');
+  static const themeDark = Key('tour.theme.dark');
 
-  /// No passo da ajuda: a lâmpada e "Ver resposta".
-  static const helpButtons = Key('tour.helpButtons');
+  /// No passo do tabuleiro: o seletor "Cores | Peças".
+  static const boardTabs = Key('tour.board.tabs');
 
-  /// No passo das partidas: os cinco adversários e o chip do rating.
-  static const opponents = Key('tour.opponents');
-  static const ratingChip = Key('tour.ratingChip');
+  /// No passo da voz: o cartão da voz de número [n] (de 1) e "Sem voz".
+  static Key voiceCard(int n) => Key('tour.voice.card.$n');
+  static const voiceNone = Key('tour.voice.none');
 }
