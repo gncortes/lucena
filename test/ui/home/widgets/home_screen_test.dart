@@ -277,7 +277,7 @@ void main() {
       'atalhos', (tester) async {
     await pumpHome(
       tester,
-      profile: const UserProfile(rating: 1450, goal: GoalPreference.endgames),
+      profile: const UserProfile(rating: 1450, goal: GoalPreference.improve),
       locale: const Locale('en'),
     );
 
@@ -362,7 +362,7 @@ void main() {
   ) async {
     await pumpHome(
       tester,
-      profile: const UserProfile(rating: 1450, goal: GoalPreference.endgames),
+      profile: const UserProfile(rating: 1450, goal: GoalPreference.improve),
       trail: const EndgameTrail(modules: []),
     );
 

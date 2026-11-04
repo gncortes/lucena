@@ -147,7 +147,7 @@ void main() {
     await pumpGoal(tester, fromLink: true);
     expect(find.byKey(GoalKeys.option(GoalPreference.learn)), findsNothing);
     expect(
-      find.byKey(GoalKeys.option(GoalPreference.endgames)),
+      find.byKey(GoalKeys.option(GoalPreference.improve)),
       findsOneWidget,
     );
     expect(find.byKey(GoalKeys.option(GoalPreference.train)), findsOneWidget);

@@ -7335,7 +7335,7 @@
   "@allModesRaceBody": {
     "description": "All modes: short description of the problem race."
   },
-  "goalViktorSay": "I will tailor the app to you: the home screen starts with what you choose below.",
+  "goalViktorSay": "I will build your home screen around what you want to do.",
   "@goalViktorSay": {
     "description": "Viktor's line on the first-launch question about the user's goal."
   },
@@ -7347,27 +7347,43 @@
   "@goalLearnTitle": {
     "description": "Goal option: learn chess from scratch."
   },
-  "goalLearnText": "First, try moving the pieces on the board. Then practice with the opponents.",
+  "goalLearnText": "From the pieces to the first checkmate",
   "@goalLearnText": {
     "description": "Text of the learn-to-play goal option. Viktor is the teacher's name."
-  },
-  "goalEndgamesTitle": "Learn endgames",
-  "@goalEndgamesTitle": {
-    "description": "Goal option: endgame lessons."
-  },
-  "goalEndgamesText": "Lessons on Lucena, Philidor and the endgames that come up most.",
-  "@goalEndgamesText": {
-    "description": "Text of the learn-endgames goal option. Lucena and Philidor are endgame positions (names, keep)."
   },
   "goalTrainTitle": "Practice endgames",
   "@goalTrainTitle": {
     "description": "Goal option: practice endgame positions."
   },
-  "goalTrainText": "I know the theory: I want to practice the positions.",
+  "goalTrainText": "More than 3,500 endgames of every kind",
   "@goalTrainText": {
     "description": "Text of the practice-endgames goal option."
   },
-  "goalHint": "The other paths stay on the home screen. You can change this later in Profile.",
+  "goalImproveTitle": "Improve my game",
+  "@goalImproveTitle": {
+    "description": "Goal option: improve my game (training guide)."
+  },
+  "goalImproveText": "Your training guide, built for your game",
+  "@goalImproveText": {
+    "description": "Subtitle of the improve goal option."
+  },
+  "goalExploreTitle": "Explore positions",
+  "@goalExploreTitle": {
+    "description": "Goal option: explore positions (free board)."
+  },
+  "goalExploreText": "Play both sides or set up the position",
+  "@goalExploreText": {
+    "description": "Subtitle of the explore goal option."
+  },
+  "goalChallengeTitle": "Take on challenges",
+  "@goalChallengeTitle": {
+    "description": "Goal option: take on challenges (Journey, clock)."
+  },
+  "goalChallengeText": "Stronger opponents and the clock",
+  "@goalChallengeText": {
+    "description": "Subtitle of the challenge goal option."
+  },
+  "goalHint": "The other paths stay on Home. You can change this later in Profile.",
   "@goalHint": {
     "description": "Note under the goal options."
   },

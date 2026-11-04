@@ -123,7 +123,7 @@ class TourRobot {
   /// "O que você quer fazer?": marca [goal] e segue (aprender a jogar vai
   /// direto para a tela inicial; os outros, para o nível).
   Future<void> answerGoal([
-    GoalPreference goal = GoalPreference.endgames,
+    GoalPreference goal = GoalPreference.improve,
   ]) async {
     await $(GoalKeys.screen).waitUntilVisible();
     await _tap(GoalKeys.option(goal));
@@ -132,7 +132,7 @@ class TourRobot {
 
   /// Avança o tour inteiro e o objetivo ([goal]) até "Seu nível".
   Future<void> nextUntilLevel([
-    GoalPreference goal = GoalPreference.endgames,
+    GoalPreference goal = GoalPreference.improve,
   ]) async {
     await finishSteps();
     await answerGoal(goal);

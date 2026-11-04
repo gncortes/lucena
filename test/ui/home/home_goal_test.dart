@@ -89,7 +89,7 @@ void main() {
   });
 
   test('aprender finais: a primeira aula da trilha é o cartão', () async {
-    final state = await load(GoalPreference.endgames);
+    final state = await load(GoalPreference.improve);
 
     expect(state.hero, HomeHero.endgame);
     expect(state.endgame!.lessonId, 'rook.lucena');
@@ -105,7 +105,7 @@ void main() {
         },
       ),
     );
-    final state = await load(GoalPreference.endgames);
+    final state = await load(GoalPreference.improve);
 
     expect(state.hero, HomeHero.endgame);
     expect(state.endgame!.lessonId, 'rook.philidor');
@@ -168,7 +168,7 @@ void main() {
     });
 
     test('"Aprender finais" sem curso vira o cartão de treinar', () async {
-      final state = await load(GoalPreference.endgames, trail: empty);
+      final state = await load(GoalPreference.improve, trail: empty);
 
       expect(state.hero, HomeHero.train);
       expect(state.endgame, isNull);

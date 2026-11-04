@@ -34,7 +34,7 @@ class GoalState {
   const GoalState({
     this.ready = false,
     this.failure,
-    this.goal = GoalPreference.endgames,
+    this.goal = GoalPreference.train,
     this.exit,
     this.viktor,
   });
@@ -104,8 +104,8 @@ class GoalCubit extends Cubit<GoalState> {
         goal:
             fromLink &&
                 (profile.goal ?? GoalPreference.learn) == GoalPreference.learn
-            ? GoalPreference.endgames
-            : profile.goal ?? GoalPreference.endgames,
+            ? GoalPreference.train
+            : profile.goal ?? GoalPreference.train,
         viktor: viktor,
       ),
     );
@@ -179,7 +179,9 @@ class GoalCubit extends Cubit<GoalState> {
   /// O `objetivo` do E1.03.
   static String goalCode(GoalPreference goal) => switch (goal) {
     GoalPreference.learn => 'aprender_jogar',
-    GoalPreference.endgames => 'aprender_finais',
+    GoalPreference.improve => 'melhorar_jogo',
     GoalPreference.train => 'treinar_finais',
+    GoalPreference.explore => 'explorar_posicoes',
+    GoalPreference.challenge => 'enfrentar_desafios',
   };
 }

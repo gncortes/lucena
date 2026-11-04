@@ -143,7 +143,6 @@ abstract final class HomeSuggestion {
     if (goal == GoalPreference.learn && !(school ?? VisibleLessons.school)) {
       return HomePath.journey;
     }
-    if (goal == GoalPreference.endgames && !course) return HomePath.train;
     return goal.path;
   }
 

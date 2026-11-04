@@ -19,7 +19,7 @@ Future<GoalPreference?> showGoalSheet(
     context,
     builder: (context) => SafeArea(
       top: false,
-      child: _GoalSheet(initial: selected ?? GoalPreference.endgames),
+      child: _GoalSheet(initial: selected ?? GoalPreference.train),
     ),
   );
 }

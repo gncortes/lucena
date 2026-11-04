@@ -66,7 +66,7 @@ void main() {
   });
 
   test('aprender finais (1450): o Curso primeiro, mesmo sendo o cartão', () {
-    expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.endgames), [
+    expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.improve), [
       endgames,
       journey,
       train,
@@ -103,7 +103,7 @@ void main() {
     expect(
       shortcuts(
         RatingLevel.intermediate,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
         unchecked: {HomePath.speedrun, HomePath.stars},
       ),
       [endgames, journey, train, race],
@@ -114,7 +114,7 @@ void main() {
     expect(
       shortcuts(
         RatingLevel.intermediate,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
         course: false,
       ),
       isNot(contains(endgames)),

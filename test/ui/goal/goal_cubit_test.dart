@@ -39,7 +39,7 @@ void main() {
     final cubit = await loaded();
 
     expect(cubit.state.ready, isTrue);
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
     expect(cubit.state.viktor?.id, 'master');
   });
 
@@ -90,7 +90,7 @@ void main() {
     await cubit.finish();
     cubit.select(GoalPreference.learn);
 
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
   });
 
   test('vindo de um link: "Aprender a jogar" não vale', () async {
@@ -99,9 +99,9 @@ void main() {
     );
     final cubit = await loaded(fromLink: true);
 
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
     cubit.select(GoalPreference.learn);
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
     cubit.select(GoalPreference.train);
     await cubit.finish();
     expect(cubit.state.exit, GoalExit.level);

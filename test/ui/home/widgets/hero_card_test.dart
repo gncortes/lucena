@@ -121,7 +121,7 @@ void main() {
       tester,
       HomeState(
         ready: true,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
         endgame: lucena(recommended: true),
       ),
     );
@@ -140,7 +140,7 @@ void main() {
       tester,
       HomeState(
         ready: true,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
         endgame: lucena(progress: 0.4),
       ),
     );
@@ -155,7 +155,7 @@ void main() {
       tester,
       const HomeState(
         ready: true,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
         courseDone: true,
       ),
     );
@@ -202,7 +202,7 @@ void main() {
       tester,
       HomeState(
         ready: true,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
         endgame: lucena(progress: 0.4),
       ),
     );

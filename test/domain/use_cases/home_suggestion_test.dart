@@ -81,7 +81,7 @@ void main() {
       layout = HomeSuggestion.of(
         RatingLevel.advanced,
         school: true,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
       );
       expect(layout.order, [
         endgames,
@@ -333,13 +333,13 @@ void main() {
 
     test('o objetivo "Aprender finais" cai em treinar finais', () {
       expect(
-        HomeSuggestion.goalPath(GoalPreference.endgames, course: false),
+        HomeSuggestion.goalPath(GoalPreference.improve, course: false),
         train,
       );
       final layout = HomeSuggestion.of(
         RatingLevel.intermediate,
         course: false,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
       );
       expect(layout.order.first, train);
       expect(layout.visible, contains(train));
@@ -366,7 +366,7 @@ void main() {
         HomeSuggestion.of(RatingLevel.casual, school: false),
         HomeSuggestion.of(RatingLevel.casual, school: false, course: true),
       );
-      expect(HomeSuggestion.goalPath(GoalPreference.endgames), endgames);
+      expect(HomeSuggestion.goalPath(GoalPreference.improve), endgames);
     });
   });
 }
