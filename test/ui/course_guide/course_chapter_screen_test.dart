@@ -5,7 +5,9 @@ import 'package:lucena/domain/models/training/training_content.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
+import 'package:lucena/routing/abre_do_cartao.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
+import 'package:lucena/ui/core/motion/rota_que_abre.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_chapter_screen.dart';
 
@@ -71,6 +73,18 @@ void main() {
     expect(find.text('Primeira aula'), findsOneWidget);
     expect(find.text('Outro capítulo'), findsNothing);
     expect(find.text('Aula oculta'), findsNothing);
+    // H-ANI-04: a linha é a origem de onde a aula cresce.
+    expect(
+      tester
+          .widget<OrigemQueAbre>(
+            find.ancestor(
+              of: find.byKey(CourseGuideKeys.chapterLesson(first.id)),
+              matching: find.byType(OrigemQueAbre),
+            ),
+          )
+          .id,
+      AbreDoCartao.daAula(first.id),
+    );
     await tester.tap(find.byKey(CourseGuideKeys.chapterLesson(first.id)));
     expect(opened, same(first));
     opened = null;

@@ -52,6 +52,8 @@ abstract final class TourKeys {
 
   /// No passo do tabuleiro: o seletor "Cores | Peças".
   static const boardTabs = Key('tour.board.tabs');
+  static const boardTabColors = Key('tour.board.tabs.colors');
+  static const boardTabPieces = Key('tour.board.tabs.pieces');
 
   /// No passo da voz: o cartão da voz de número [n] (de 1) e "Sem voz".
   static Key voiceCard(int n) => Key('tour.voice.card.$n');

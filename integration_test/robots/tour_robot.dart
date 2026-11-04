@@ -158,11 +158,16 @@ class TourRobot {
   }
 
   /// No passo do tabuleiro: as cores e as peças.
-  Future<void> chooseBoardColors(BoardColors colors) =>
-      _tap(TourKeys.boardColors(colors));
+  /// As cores e as peças ficam em abas: abre a aba antes de escolher.
+  Future<void> chooseBoardColors(BoardColors colors) async {
+    await _tap(TourKeys.boardTabColors);
+    await _tap(TourKeys.boardColors(colors));
+  }
 
-  Future<void> chooseBoardPieces(PieceStyle pieces) =>
-      _tap(TourKeys.boardPieces(pieces));
+  Future<void> chooseBoardPieces(PieceStyle pieces) async {
+    await _tap(TourKeys.boardTabPieces);
+    await _tap(TourKeys.boardPieces(pieces));
+  }
 
   /// O que o tabuleiro de amostra do passo do tabuleiro está mostrando.
   Future<void> expectBoardPreview({

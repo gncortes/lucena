@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/all_modes/widgets/all_modes_screen.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/lucena_motion.dart';
+import 'package:lucena/ui/core/motion/rota_que_abre.dart';
 
 import '../../../testing/test_app.dart';
 
@@ -222,6 +225,48 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(AllModesKeys.item('pilares')));
+    await tester.pumpAndSettle();
+    expect(find.text('venda'), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-04: a venda cresce do cartão Pilares (entrada única)', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(393, 873);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const AllModesScreen()),
+        GoRoute(
+          path: Routes.pilaresSale,
+          pageBuilder: (context, state) => RotaQueAbre<void>(
+            context: context,
+            id: 'venda',
+            venda: true,
+            key: state.pageKey,
+            child: const Scaffold(body: Text('venda')),
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        router: router,
+        child: const SizedBox.shrink(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final cartao = tester.getRect(find.byKey(AllModesKeys.item('pilares')));
+    await tester.tap(find.byKey(AllModesKeys.item('pilares')));
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(LucenaMotion.cartaoDaVenda ~/ 2);
+    final meio = tester.getRect(find.byKey(MotionKeys.rotaQueAbre));
+    expect(meio.width * meio.height, greaterThan(cartao.width * cartao.height));
+    expect(meio.height, lessThan(873));
     await tester.pumpAndSettle();
     expect(find.text('venda'), findsOneWidget);
   });
