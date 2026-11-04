@@ -59,7 +59,13 @@ void main() {
       tester.widget<NavigationBar>(find.byType(NavigationBar)).labelBehavior,
       NavigationDestinationLabelBehavior.alwaysHide,
     );
-    for (final label in ['Lição', 'Metas', 'Guia', 'Estatísticas', 'Catálogo']) {
+    for (final label in [
+      'Lição',
+      'Metas',
+      'Guia',
+      'Estatísticas',
+      'Catálogo',
+    ]) {
       final visible = find.text(label).evaluate().where((e) {
         final render = e.renderObject;
         return render != null && render.paintBounds.height > 0;
@@ -67,7 +73,10 @@ void main() {
       expect(
         tester
             .widgetList<Opacity>(
-              find.ancestor(of: find.text(label), matching: find.byType(Opacity)),
+              find.ancestor(
+                of: find.text(label),
+                matching: find.byType(Opacity),
+              ),
             )
             .every((o) => o.opacity == 0),
         isTrue,
@@ -76,7 +85,9 @@ void main() {
     }
   });
 
-  testWidgets('cada ícone anuncia o nome para o leitor de tela', (tester) async {
+  testWidgets('cada ícone anuncia o nome para o leitor de tela', (
+    tester,
+  ) async {
     final handle = tester.ensureSemantics();
     await pump(tester);
     for (final (tab, name) in [
@@ -99,7 +110,13 @@ void main() {
     final badge = tester.widget<Badge>(find.byKey(CourseGuideKeys.goalsBadge));
     expect(badge.isLabelVisible, isTrue);
     expect(badge.backgroundColor, const Color(0xFFB3261E));
-    expect(find.descendant(of: find.byKey(CourseGuideKeys.goalsBadge), matching: find.text('3')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(CourseGuideKeys.goalsBadge),
+        matching: find.text('3'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('acima de 9 mostra 9+', (tester) async {

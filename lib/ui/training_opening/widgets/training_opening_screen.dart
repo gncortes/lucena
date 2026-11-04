@@ -1,3 +1,5 @@
+import '../../../domain/models/load_failure.dart';
+
 import 'dart:async';
 
 import 'package:chessground/chessground.dart';
@@ -143,6 +145,18 @@ class _OpeningViewState extends State<_OpeningView> {
           ),
         );
       }
+      if (state.phase == TrainingOpeningPhase.expired ||
+          (state.phase != TrainingOpeningPhase.loading && !ready)) {
+        // Trecho que saiu do dia ou nunca carregou: erro padrão, com ação.
+        return trainingLoadError(
+          context,
+          LoadFailure.unavailable,
+          () => cubit.load(
+            lessonId: widget.screen.lessonId,
+            partId: widget.screen.partId,
+          ),
+        );
+      }
       return Scaffold(
         key: TrainingKeys.openingScreen,
         appBar: LucenaAppBar(
@@ -171,15 +185,7 @@ class _OpeningViewState extends State<_OpeningView> {
         ),
         body: SafeArea(
           child: !ready
-              ? state.phase == TrainingOpeningPhase.loading
-                    ? const SkeletonList()
-                    : Center(
-                        child: Text(
-                          state.phase == TrainingOpeningPhase.expired
-                              ? l.trainingExerciseExpired
-                              : l.exerciseMissing,
-                        ),
-                      )
+              ? const SkeletonList()
               : IgnorePointer(
                   ignoring: loading || _replayFen != null,
                   child: TrainingCanvasPage(

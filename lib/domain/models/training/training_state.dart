@@ -170,7 +170,8 @@ final class TrainingState {
       plan: TrainingPlan.fromJson(Map<String, dynamic>.from(j['plan'] as Map)),
       onboardingDone: j['onboardingDone'] as bool,
       tourSeen: j['tourSeen'] as bool,
-      tab: CourseGuideTab.values.asNameMap()[switch (j['tab'] as String) {
+      tab:
+          CourseGuideTab.values.asNameMap()[switch (j['tab'] as String) {
             // Saves from before the Guide tab called the statistics tab "progress".
             'progress' => 'stats',
             final name => name,

@@ -1,3 +1,5 @@
+import '../../theme/app_colors.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../../domain/models/training/training_course.dart';
@@ -24,7 +26,7 @@ class CourseNavigationBar extends StatelessWidget {
   final ValueChanged<int>? onDestinationSelected;
 
   /// The red of the goals badge (canvas #B3261E).
-  static const badgeColor = Color(0xFFB3261E);
+  static const badgeColor = AppColors.trainingDayWrong;
 
   /// Above this many goals the badge reads "9+".
   static const badgeMax = 9;
@@ -93,7 +95,7 @@ class CourseNavigationBar extends StatelessWidget {
       key: CourseGuideKeys.goalsBadge,
       isLabelVisible: remaining > 0,
       backgroundColor: badgeColor,
-      textColor: Colors.white,
+      textColor: AppColors.white,
       label: Text(
         remaining > badgeMax
             ? l.treinoTabBadgeMany(badgeMax)
