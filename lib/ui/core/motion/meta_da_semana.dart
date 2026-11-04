@@ -77,12 +77,11 @@ class _MetaDaSemanaState extends State<MetaDaSemana>
   }
 
   @override
-  Widget build(BuildContext context) =>
-      _EscopoDaMeta(
-        valor: _controle.value,
-        festa: _celebrou,
-        child: widget.child,
-      );
+  Widget build(BuildContext context) => _EscopoDaMeta(
+    valor: _controle.value,
+    festa: _celebrou,
+    child: widget.child,
+  );
 }
 
 class _EscopoDaMeta extends InheritedWidget {

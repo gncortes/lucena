@@ -27,8 +27,7 @@ void main() {
                 for (var i = 0; i < 5; i++)
                   SizedBox(height: 60, child: Text('Meta $i')),
               ],
-              montar: (selo, cartoes) =>
-                  Column(children: [selo, ...cartoes]),
+              montar: (selo, cartoes) => Column(children: [selo, ...cartoes]),
             ),
           ),
         ),
