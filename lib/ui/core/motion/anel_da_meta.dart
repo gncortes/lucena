@@ -203,16 +203,20 @@ class PintorDoAnel extends CustomPainter {
     required this.feito,
     required this.faixa,
     required this.cor,
+    this.espessura,
   });
 
   final double tempo;
+
+  /// A largura do traço; sem ela, 10% do lado.
+  final double? espessura;
   final double feito;
   final Color faixa;
   final Color cor;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final espessura = size.shortestSide * .1;
+    final espessura = this.espessura ?? size.shortestSide * .1;
     final retangulo = (Offset.zero & size).deflate(espessura / 2);
     final pincel = Paint()
       ..style = PaintingStyle.stroke
@@ -236,7 +240,8 @@ class PintorDoAnel extends CustomPainter {
       antigo.tempo != tempo ||
       antigo.feito != feito ||
       antigo.faixa != faixa ||
-      antigo.cor != cor;
+      antigo.cor != cor ||
+      antigo.espessura != espessura;
 }
 
 /// As 8 faíscas que saem do anel e somem.

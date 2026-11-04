@@ -101,6 +101,9 @@ abstract final class MotionKeys {
       Key('motion.cartaoDaMetaDobrada.$i');
   static const seloDaMetaDobrada = Key('motion.seloDaMetaDobrada');
 
+  /// O ✓ de cada dia da sequência na faixa da semana ([MetaDaSemana]).
+  static Key checkDaSemana(int i) => Key('motion.checkDaSemana.$i');
+
   /// O contador da sequência no [AnelDaMeta].
   static const contadorDaMeta = Key('motion.contadorDaMeta');
 

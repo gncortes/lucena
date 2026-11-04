@@ -7,10 +7,13 @@ import '../../core/widgets/load_error.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
 
+import '../../core/keys/motion_keys.dart';
 import '../../core/keys/streak_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/anel_da_meta.dart';
 import '../../core/motion/entradas_vistas.dart';
 import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/meta_da_semana.dart';
 import '../../core/motion/numero_que_conta.dart';
 import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/motion/valor_que_anima.dart';
@@ -112,73 +115,108 @@ class _Hero extends StatelessWidget {
     final muted = theme.textTheme.bodyMedium?.copyWith(
       color: colors.onSurfaceVariant,
     );
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.insideCard),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(AppShape.large),
-                  ),
-                  child: SizedBox.square(
-                    dimension: 64,
-                    child: Icon(
-                      Icons.event_repeat,
-                      size: AppIconSize.large,
-                      color: colors.primary,
+    final today = state.today;
+    // H-ANI-28: hoje cumprido comemora na faixa da semana e no contador.
+    return MetaDaSemana(
+      cumprida: state.ready && today != null && state.run.contains(today),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.insideCard),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: colors.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppShape.large),
+                    ),
+                    child: SizedBox.square(
+                      dimension: 64,
+                      child: Icon(
+                        Icons.event_repeat,
+                        size: AppIconSize.large,
+                        color: colors.primary,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    key: StreakKeys.current,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      key: StreakKeys.current,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Builder(
+                          builder: (context) {
+                            final estilo = theme.textTheme.headlineLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                );
+                            final meta = MetaDaSemana.of(context);
+                            if (!meta.festa) {
+                              return ValorQueAnima(
+                                valor: streak.current.toDouble(),
+                                duracao: LucenaMotion.numeroConta,
+                                builder: (context, agora) => Text(
+                                  l10n.streakDayCount(agora.round()),
+                                  style: estilo,
+                                ),
+                              );
+                            }
+                            // Na festa, o contador sai do valor de ontem e
+                            // sobe com um salto.
+                            return Transform.scale(
+                              key: MotionKeys.contadorDaMeta,
+                              alignment: AlignmentDirectional.centerStart
+                                  .resolve(Directionality.of(context)),
+                              scale: meta.contadorAntes ? 1 : meta.contador,
+                              child: Text(
+                                l10n.streakDayCount(
+                                  meta.contadorAntes
+                                      ? streak.current - 1
+                                      : streak.current,
+                                ),
+                                style: estilo,
+                              ),
+                            );
+                          },
+                        ),
+                        Text(
+                          l10n.streakFollowing(streak.current),
+                          style: muted,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    key: StreakKeys.record,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      ValorQueAnima(
-                        valor: streak.current.toDouble(),
-                        duracao: LucenaMotion.numeroConta,
-                        builder: (context, agora) => Text(
-                          l10n.streakDayCount(agora.round()),
-                          style: theme.textTheme.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
+                      NumeroQueConta(
+                        valor: streak.record,
+                        alinhamento: AlignmentDirectional.centerEnd,
+                        estilo: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Text(l10n.streakFollowing(streak.current), style: muted),
+                      Text(
+                        l10n.streakRecord,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                Column(
-                  key: StreakKeys.record,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    NumeroQueConta(
-                      valor: streak.record,
-                      alinhamento: AlignmentDirectional.centerEnd,
-                      estilo: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      l10n.streakRecord,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-            StreakWeek(state: state),
-          ],
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              StreakWeek(state: state),
+            ],
+          ),
         ),
       ),
     );
@@ -199,10 +237,18 @@ class StreakWeek extends StatelessWidget {
     final weekday = DateFormat.EEEEE(
       Localizations.localeOf(context).toString(),
     );
+    final meta = MetaDaSemana.of(context);
+    final cumprida = state.today != null && state.run.contains(state.today);
+    // A ordem da onda: os dias da sequência antes de hoje, da esquerda.
+    final antes = [
+      for (final day in state.week)
+        if (day != state.today && state.run.contains(day)) day,
+    ];
+    final week = state.week;
     return Row(
       key: StreakKeys.weekStrip,
       children: [
-        for (final day in state.week)
+        for (final (i, day) in week.indexed)
           Expanded(
             child: Column(
               children: [
@@ -215,6 +261,8 @@ class StreakWeek extends StatelessWidget {
                 const SizedBox(height: AppSpacing.sm),
                 _Ring(
                   on: day == state.today,
+                  // H-ANI-28: o anel de hoje fecha quando a meta é cumprida.
+                  tempo: day == state.today && cumprida ? meta.anel : null,
                   gap: 2,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -226,10 +274,16 @@ class StreakWeek extends StatelessWidget {
                     child: SizedBox.square(
                       dimension: 32,
                       child: state.run.contains(day)
-                          ? Icon(
-                              Icons.check,
-                              size: AppIconSize.button,
-                              color: colors.onPrimary,
+                          ? Transform.scale(
+                              key: MotionKeys.checkDaSemana(i),
+                              scale: day == state.today
+                                  ? meta.checkDeHoje
+                                  : meta.checkAnterior(antes.indexOf(day)),
+                              child: Icon(
+                                Icons.check,
+                                size: AppIconSize.button,
+                                color: colors.onPrimary,
+                              ),
                             )
                           : null,
                     ),
@@ -377,9 +431,13 @@ class _Ring extends StatelessWidget {
     required this.on,
     required this.gap,
     required this.child,
+    this.tempo,
   });
 
   final bool on;
+
+  /// Com valor, o anel é pintado fechando até [tempo] (0 a 1).
+  final double? tempo;
   final double gap;
   final Widget child;
 
@@ -399,15 +457,26 @@ class _Ring extends StatelessWidget {
           right: outside,
           bottom: outside,
           child: IgnorePointer(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: _width,
-                ),
-              ),
-            ),
+            child: tempo == null
+                ? DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: _width,
+                      ),
+                    ),
+                  )
+                : CustomPaint(
+                    key: MotionKeys.anelDaMeta,
+                    painter: PintorDoAnel(
+                      tempo: tempo!,
+                      feito: 1,
+                      espessura: _width,
+                      faixa: Colors.transparent,
+                      cor: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
           ),
         ),
       ],
