@@ -377,6 +377,14 @@ void main() {
     expect(find.byKey(RaceKeys.performance), findsNothing);
 
     await tester.tap(find.byKey(RaceKeys.reviewMistakes));
+    await tester.pump();
+    // H-ANI-25: na revisão, o "Próximo" desliza por último uma vez só; os
+    // erros seguintes trocam com ele já parado.
+    Finder barraDaRevisao() => find.ancestor(
+      of: find.byKey(RaceKeys.reviewNext),
+      matching: find.byKey(MotionKeys.parteDoResultado('botoes')),
+    );
+    expect(opacidadeDaParte(tester, barraDaRevisao()), lessThan(1));
     await tester.pumpAndSettle();
     expect(find.text('Mistake 1 of 3'), findsOneWidget);
     // Lance que também ganhava, só que devagar, tem o texto próprio.
@@ -388,6 +396,8 @@ void main() {
       findsOneWidget,
     );
     await tester.tap(find.byKey(RaceKeys.reviewNext));
+    await tester.pump();
+    expect(opacidadeDaParte(tester, barraDaRevisao()), 1);
     await tester.pumpAndSettle();
     expect(find.text('Mistake 2 of 3'), findsOneWidget);
     await tester.tap(find.byKey(RaceKeys.reviewNext));
