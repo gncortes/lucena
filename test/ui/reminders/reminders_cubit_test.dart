@@ -156,4 +156,21 @@ void main() {
     await pumpEventQueue();
     expect(reminders.replaces, 0);
   });
+
+  test('H-AJU-12 Gap 5: falha ao agendar não escapa e o próximo refresh '
+      'tenta de novo', () async {
+    final cubit = build();
+    reminders.replaceError = StateError('alarme');
+
+    await expectLater(
+      cubit.update(settings: const AlertSettings(), texts: texts),
+      completes,
+    );
+    expect(reminders.scheduled, isEmpty);
+
+    await cubit.refresh();
+
+    expect(reminders.replaces, 1);
+    expect(reminders.scheduled, isNotEmpty);
+  });
 }

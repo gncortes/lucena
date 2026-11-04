@@ -10085,7 +10085,7 @@
   "@trainingReminderSilent": {
     "description": "T85 study plan: trainingReminderSilent"
   },
-  "trainingReminderDenied": "Lucena notifications are disabled on your phone. To receive reminders, allow them in settings.",
+  "trainingReminderDenied": "Lucena notifications are turned off. Turn them on to get the reminder.",
   "@trainingReminderDenied": {
     "description": "T85 study plan: trainingReminderDenied"
   },

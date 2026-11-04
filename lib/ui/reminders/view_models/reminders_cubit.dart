@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../data/repositories/week/week_repository.dart';
 import '../../../data/repositories/training/course_training_repository.dart';
@@ -97,6 +98,11 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     _running = running;
     try {
       await running;
+    } on Object catch (error, stack) {
+      // Gap 5: falha ao agendar não escapa; o próximo refresh (abrir o app,
+      // voltar do segundo plano, mudar uma chave) tenta de novo.
+      debugPrint('reminders replan failed: $error');
+      reportHandledError(error, stack);
     } finally {
       _running = null;
     }

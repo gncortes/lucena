@@ -20,6 +20,9 @@ class FakeRemindersRepository implements RemindersRepository {
   List<ScheduledNotification> scheduled = const [];
   int replaces = 0;
 
+  /// Quando não nulo, o próximo [replace] lança este erro (nada é agendado).
+  Object? replaceError;
+
   final tapsController = StreamController<String>.broadcast();
 
   @override
@@ -31,6 +34,11 @@ class FakeRemindersRepository implements RemindersRepository {
 
   @override
   Future<void> replace(List<ScheduledNotification> notifications) async {
+    final error = replaceError;
+    if (error != null) {
+      replaceError = null;
+      throw error;
+    }
     scheduled = notifications;
     replaces++;
   }

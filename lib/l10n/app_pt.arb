@@ -2059,7 +2059,7 @@
   "trainingReminderSub": "Só se faltar meta no dia",
   "trainingReminderTime": "Horário",
   "trainingReminderSilent": "Chega sem som e sem vibração: é só um lembrete.",
-  "trainingReminderDenied": "As notificações do Lucena estão desativadas no celular. Para receber o lembrete, permita nas configurações.",
+  "trainingReminderDenied": "As notificações do Lucena estão desligadas. Ligue-as para receber o lembrete.",
   "trainingOpenSettings": "Abrir configurações",
   "trainingPermissionTitle": "Receber o lembrete?",
   "trainingPermissionBody": "Para avisar na hora do estudo, o Lucena precisa da sua permissão para enviar notificações. O aviso chega sem som e sem vibração.",
