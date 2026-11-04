@@ -136,8 +136,25 @@ void main() {
     expect(find.byKey(CourseGuideKeys.chapterLesson('b1')), findsNothing);
     expect(find.byKey(TrainingGoalKeys.catalogChangePlan), findsOneWidget);
 
+    // H-ANI-30 (PropV2FiltroA, CompSegmentado): "Todas" se enche em 200 ms.
+    Color fundo(Key rotulo) => tester
+        .widget<Material>(
+          find
+              .ancestor(of: find.byKey(rotulo), matching: find.byType(Material))
+              .first,
+        )
+        .color!;
+    final vazio = fundo(TrainingGoalKeys.catalogFilterAll);
+    final cheio = fundo(TrainingGoalKeys.catalogFilterPlan);
     await tester.tap(find.byKey(TrainingGoalKeys.catalogFilterAll));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(
+      fundo(TrainingGoalKeys.catalogFilterAll),
+      isNot(anyOf(vazio, cheio)),
+    );
     await tester.pumpAndSettle();
+    expect(fundo(TrainingGoalKeys.catalogFilterAll), cheio);
     expect(find.byKey(CourseGuideKeys.chapterLesson('b1')), findsOneWidget);
     expect(find.byKey(TrainingGoalKeys.catalogChangePlan), findsNothing);
   });
