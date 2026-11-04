@@ -10,21 +10,11 @@ import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
 import '../../../domain/models/analytics_event.dart';
-import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/platform_rating.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
 
 /// Um aviso do Perfil, mostrado uma vez.
 enum ProfileNotice {
-  /// A remoção não pôde ser concluída por falta de conexão.
-  deleteOffline,
-
-  /// O Firebase pediu um login recente; com e-mail, a tela pede a senha.
-  deleteRelogin,
-  deleteFailed,
-  deleteDifferentAccount,
-  deleted,
-
   /// "Atualizar o rating" sem rede: fica o de antes.
   lichessOffline,
 }
@@ -48,7 +38,7 @@ class ProfileAccountState {
   /// A última sincronização da conta neste aparelho.
   final DateTime? syncedAt;
 
-  /// Apagando a conta ou lendo o Lichess.
+  /// Lendo o Lichess.
   final bool busy;
   final ProfileNotice? notice;
 
@@ -127,59 +117,6 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
 
   /// O progresso fica no aparelho; a conta continua na nuvem.
   Future<void> signOut() => _accounts.signOut();
-
-  /// Fixa a conta confirmada antes de ler o perfil ou abrir o Google.
-  Future<void> deleteAccount({String? expectedUid}) async {
-    if (state.busy) return;
-    final uid = expectedUid ?? state.account?.uid;
-    if (uid == null) return _done(ProfileNotice.deleteFailed);
-    await _delete(uid);
-  }
-
-  Future<void> _delete(String expectedUid) async {
-    if (state.busy) return;
-    emit(state.copyWith(busy: true));
-    try {
-      final deleted = await _accounts.deleteAccount(
-        expectedUid: expectedUid,
-        photo: await _uploadedPhoto(),
-      );
-      if (!deleted) return _done(null);
-      unawaited(_analytics.log(AnalyticsEvents.contaApagada()));
-      _done(ProfileNotice.deleted);
-    } on AccountException catch (error) {
-      _done(_deleteNotice(error.failure));
-    } on Object {
-      _done(ProfileNotice.deleteFailed);
-    }
-  }
-
-  /// Depois de entrar de novo com e-mail (pedido pelo Firebase): apaga só
-  /// se a conta ainda é a [uid] confirmada no diálogo.
-  Future<void> deleteAfterSignIn(String uid) async {
-    if (_accounts.current?.uid != uid) {
-      try {
-        await _accounts.signOut();
-      } on Object {
-        // O aviso não promete que a saída foi concluída.
-      }
-      _done(ProfileNotice.deleteDifferentAccount);
-      return;
-    }
-    await _delete(uid);
-  }
-
-  // Só a foto enviada mora no Storage; a do Google e a inicial, não.
-  Future<bool> _uploadedPhoto() async =>
-      (await _profile.load()).photo == AvatarPhoto.upload;
-
-  static ProfileNotice _deleteNotice(AccountFailure failure) =>
-      switch (failure) {
-        AccountFailure.network => ProfileNotice.deleteOffline,
-        AccountFailure.recentLoginRequired => ProfileNotice.deleteRelogin,
-        AccountFailure.userMismatch => ProfileNotice.deleteDifferentAccount,
-        _ => ProfileNotice.deleteFailed,
-      };
 
   void _done(ProfileNotice? notice) {
     if (!isClosed) emit(state.copyWith(busy: false, notice: notice));

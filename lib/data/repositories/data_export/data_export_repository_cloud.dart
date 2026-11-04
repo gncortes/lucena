@@ -19,6 +19,7 @@ class CloudDataExportRepository implements DataExportRepository {
   });
 
   final CloudStoreService _store;
+
   /// A pasta do app (`getApplicationSupportDirectory`).
   final Future<Directory> Function() _directory;
   final Now _now;

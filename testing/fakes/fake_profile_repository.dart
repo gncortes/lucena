@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:lucena/data/repositories/profile/profile_repository.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 
@@ -8,8 +10,14 @@ class FakeProfileRepository implements ProfileRepository {
   UserProfile profile;
   final saved = <UserProfile>[];
 
+  /// Segura a leitura até completar.
+  Completer<void>? loadGate;
+
   @override
-  Future<UserProfile> load() async => profile;
+  Future<UserProfile> load() async {
+    await loadGate?.future;
+    return profile;
+  }
 
   @override
   Future<void> save(UserProfile profile) async {

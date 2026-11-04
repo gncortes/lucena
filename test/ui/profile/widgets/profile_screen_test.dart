@@ -278,25 +278,63 @@ void main() {
       expect(find.byKey(ProfileKeys.localCard), findsOneWidget);
     });
 
-    testWidgets('apagar pergunta antes; cancelar não apaga', (tester) async {
-      await pumpScreen(tester);
+    Future<void> openDelete(WidgetTester tester) async {
+      await tester.scrollUntilVisible(find.byKey(ProfileKeys.delete), 200);
       await tester.tap(find.byKey(ProfileKeys.delete));
       await tester.pumpAndSettle();
-      expect(find.byKey(AccountKeys.deleteDialog), findsOneWidget);
+    }
 
+    testWidgets('caso 42: a folha diz o que se perde e avisa da assinatura', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      await openDelete(tester);
+
+      expect(find.byKey(AccountKeys.deleteSheet), findsOneWidget);
+      expect(find.text('Excluir sua conta?'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(AccountKeys.deleteLose),
+          matching: find.byType(Icon),
+        ),
+        findsNWidgets(3),
+      );
+      for (final text in [
+        'Progresso nas lições e na Jornada',
+        'Rating, histórico de partidas e conquistas',
+        'Perfil e foto',
+      ]) {
+        expect(find.text(text), findsOneWidget, reason: text);
+      }
+      expect(
+        find.descendant(
+          of: find.byKey(AccountKeys.deletePlayWarning),
+          matching: find.textContaining('Google Play'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(AccountKeys.deleteNotice), findsNothing);
+    });
+
+    testWidgets('cancelar não apaga', (tester) async {
+      await pumpScreen(tester);
+      await openDelete(tester);
       await tester.tap(find.byKey(AccountKeys.deleteCancel));
       await tester.pumpAndSettle();
-      expect(accounts.current, FakeAccountRepository.google);
+
+      expect(find.byKey(AccountKeys.deleteSheet), findsNothing);
+      expect(accounts.deletedUids, isEmpty);
       expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
     });
 
-    testWidgets('apagar confirmado apaga e avisa', (tester) async {
+    testWidgets('excluir confirmado fecha a folha e avisa', (tester) async {
       await pumpScreen(tester);
-      await tester.tap(find.byKey(ProfileKeys.delete));
-      await tester.pumpAndSettle();
+      await openDelete(tester);
       await tester.tap(find.byKey(AccountKeys.deleteConfirm));
       await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
 
+      expect(find.byKey(AccountKeys.deleteSheet), findsNothing);
       expect(
         find.text('Conta excluída. Neste celular, tudo continua sem conta.'),
         findsOneWidget,
@@ -306,21 +344,19 @@ void main() {
       expect(find.byKey(ProfileKeys.localCard), findsOneWidget);
     });
 
-    testWidgets('Conta1 trocar de conta com confirmação aberta não apaga B', (
+    testWidgets('Conta1 trocar de conta com a folha aberta não apaga B', (
       tester,
     ) async {
       await pumpScreen(tester);
-      await tester.tap(find.byKey(ProfileKeys.delete));
-      await tester.pumpAndSettle();
+      await openDelete(tester);
       await accounts.signInWithEmail('outra@example.com', 'password');
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(AccountKeys.deleteConfirm));
       await tester.pumpAndSettle();
 
       expect(accounts.deletedUids, isEmpty);
-      expect(accounts.current, isNull);
       expect(
-        find.text('Por segurança, entre novamente na conta para excluir.'),
+        find.text('Essa não é a conta que você ia excluir. Nada foi excluído.'),
         findsOneWidget,
       );
       expect(
@@ -329,21 +365,43 @@ void main() {
       );
     });
 
-    testWidgets('apagar sem internet não apaga e avisa', (tester) async {
+    testWidgets('caso 48: sem internet a folha fica e diz que nada saiu', (
+      tester,
+    ) async {
       await pumpScreen(tester);
       accounts.failure = AccountFailure.network;
-      await tester.tap(find.byKey(ProfileKeys.delete));
-      await tester.pumpAndSettle();
+      await openDelete(tester);
       await tester.tap(find.byKey(AccountKeys.deleteConfirm));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
+      expect(find.byKey(AccountKeys.deleteSheet), findsOneWidget);
       expect(
-        find.text(
-          'Sem internet não dá para excluir a conta. Nada foi excluído.',
+        find.descendant(
+          of: find.byKey(AccountKeys.deleteNotice),
+          matching: find.text(
+            'Sem internet não dá para excluir a conta. Nada foi excluído.',
+          ),
         ),
         findsOneWidget,
       );
       expect(accounts.current, FakeAccountRepository.google);
+    });
+
+    testWidgets('erro inesperado: Tentar de novo na própria folha', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      accounts.failure = AccountFailure.unknown;
+      await openDelete(tester);
+      await tester.tap(find.byKey(AccountKeys.deleteConfirm));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(find.text('Tentar de novo'), findsOneWidget);
+      accounts.failure = null;
+      await tester.tap(find.byKey(AccountKeys.deleteConfirm));
+      await tester.pumpAndSettle();
+      expect(accounts.current, isNull);
     });
   });
 

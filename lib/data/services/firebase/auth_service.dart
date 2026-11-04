@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../domain/models/account.dart';
+import '../../../domain/use_cases/now.dart';
 
 /// A conta pelo Firebase Auth: Google ou e-mail e senha.
 ///
@@ -85,12 +86,16 @@ class NoAuthService implements AuthService {
 }
 
 class FirebaseAuthService implements AuthService {
-  FirebaseAuthService({FirebaseAuth? auth, GoogleSignIn? google})
-    : _auth = auth ?? FirebaseAuth.instance,
-      _google = google ?? GoogleSignIn.instance;
+  FirebaseAuthService({
+    FirebaseAuth? auth,
+    GoogleSignIn? google,
+    this._now = const SystemNow(),
+  }) : _auth = auth ?? FirebaseAuth.instance,
+       _google = google ?? GoogleSignIn.instance;
 
   final FirebaseAuth _auth;
   final GoogleSignIn _google;
+  final Now _now;
 
   // O google_sign_in 7 pede um `initialize` antes de tudo, uma vez só. No
   // Android o id do cliente vem do `google-services.json`.
@@ -225,6 +230,10 @@ class FirebaseAuthService implements AuthService {
             throw const AccountException(AccountFailure.userMismatch);
           }
           _requireUser(expectedUid);
+        } else if (!_recentSignIn(user)) {
+          // E-mail: o Firebase recusaria o delete só no fim, com a nuvem já
+          // apagada. Pede o login antes de tocar em qualquer dado (gap 2).
+          throw const AccountException(AccountFailure.recentLoginRequired);
         }
         await deleteData();
         _requireUser(expectedUid);
@@ -255,6 +264,15 @@ class FirebaseAuthService implements AuthService {
       rethrow;
     }
   });
+
+  // O Firebase aceita apagar até 5 min depois do login; a folga cobre o
+  // relógio do aparelho e o tempo de apagar a nuvem.
+  static const _recentLogin = Duration(minutes: 3);
+
+  bool _recentSignIn(User user) {
+    final at = user.metadata.lastSignInTime;
+    return at != null && _now().toUtc().difference(at) < _recentLogin;
+  }
 
   User _requireUser(String expectedUid) {
     final user = _auth.currentUser;

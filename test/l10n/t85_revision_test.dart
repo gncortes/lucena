@@ -25,10 +25,7 @@ void main() {
       t.trainingDownloadCourseError,
       'Não foi possível baixar o curso. Tente novamente.',
     );
-    expect(
-      t.accountDeleteFailed,
-      'Não foi possível excluir a conta. Tente novamente.',
-    );
+    expect(t.conApagarFailed, 'Ocorreu um erro inesperado');
     expect(
       t.accountPhotoFailed,
       'Não foi possível enviar a foto. Tente novamente.',

@@ -158,7 +158,29 @@ class CloudAccountRepository implements AccountRepository {
 
   void _signedIn(Account account, {bool created = false}) {
     _touchProfile(account, created: created);
-    unawaited(_claimPush(account.uid));
+    _track(_claimPush(account.uid));
+  }
+
+  /// As gravações disparadas sem esperar (perfil e push do login).
+  final _writes = <Future<void>>{};
+
+  // Quanto apagar a conta espera essas gravações; sem rede elas ficam na
+  // fila do Firestore e a remoção falharia de qualquer jeito.
+  static const _settleTimeout = Duration(seconds: 10);
+
+  void _track(Future<void> write) {
+    final tracked = write.catchError((Object _) {});
+    _writes.add(tracked);
+    unawaited(tracked.whenComplete(() => _writes.remove(tracked)));
+  }
+
+  Future<void> _settleWrites() async {
+    if (_writes.isEmpty) return;
+    try {
+      await Future.wait(_writes.toList()).timeout(_settleTimeout);
+    } on TimeoutException {
+      debugPrint('Apagar a conta: gravação do login ainda na fila.');
+    }
   }
 
   // Entrou na conta: este aparelho passa a ser o do push, no lugar do outro.
@@ -224,18 +246,31 @@ class CloudAccountRepository implements AccountRepository {
       }
 
       requireAccount();
+      // O novo login deixa o perfil e o push gravando; se chegassem depois
+      // da remoção, sobraria documento de uma conta apagada (gap 8).
+      await _settleWrites();
+      requireAccount();
+      // Sem internet antes do primeiro dado apagado: nada mudou. Depois
+      // disso a falha é parcial e o aviso não pode dizer que nada saiu
+      // (gap 9); repetir termina, porque cada remoção é idempotente.
+      var started = false;
       try {
         // UID imutável em cada remoção; uma falha tardia pode ser parcial.
         if (photo) {
           await _avatars.delete(expectedUid);
+          started = true;
           requireAccount();
         }
         await _store.deleteUser(expectedUid);
         requireAccount();
       } on FileStoreException {
         throw const AccountException(AccountFailure.network);
-      } on CloudStoreException {
-        throw const AccountException(AccountFailure.network);
+      } on CloudStoreException catch (error) {
+        throw AccountException(
+          started || error.partial
+              ? AccountFailure.unknown
+              : AccountFailure.network,
+        );
       }
       await _preferences?.remove(_pushKey);
       requireAccount();
@@ -247,7 +282,7 @@ class CloudAccountRepository implements AccountRepository {
   void _touchProfile(Account account, {bool created = false, String? name}) {
     final now = _now();
     final trimmed = (name ?? account.name)?.trim();
-    unawaited(() async {
+    _track(() async {
       try {
         final language = await _language();
         await _store.mergeUser(account.uid, {

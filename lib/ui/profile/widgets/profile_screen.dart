@@ -31,7 +31,7 @@ import '../../goal/widgets/goal_ui.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/profile_account_cubit.dart';
 import '../view_models/profile_cubit.dart';
-import 'account_delete_dialog.dart';
+import 'account_delete_sheet.dart';
 import 'lichess_sheet.dart';
 import 'profile_rows.dart';
 
@@ -91,41 +91,13 @@ class _ProfileView extends StatelessWidget {
   }
 
   Future<void> _delete(BuildContext context) async {
-    final cubit = context.read<ProfileAccountCubit>();
-    final uid = cubit.state.account?.uid;
+    final uid = context.read<ProfileAccountCubit>().state.account?.uid;
     if (uid == null) return;
-    if (await showAccountDeleteDialog(context)) {
-      await cubit.deleteAccount(expectedUid: uid);
-    }
+    await showAccountDeleteSheet(context, uid: uid, from: 'profile');
   }
 
-  // Com e-mail, o Firebase pediu um login recente: a pessoa entra de novo e
-  // a conta é apagada em seguida.
-  Future<void> _reauthAndDelete(BuildContext context, Account account) async {
-    final cubit = context.read<ProfileAccountCubit>();
-    final ok = await context.push<bool>(
-      Routes.accountEmailFrom('profile', reauth: true),
-    );
-    if (ok == true) await cubit.deleteAfterSignIn(account.uid);
-  }
-
-  void _notice(BuildContext context, ProfileAccountState state) {
-    final l10n = context.l10n;
-    final account = state.account;
-    final notice = state.notice;
-    if (notice == ProfileNotice.deleteRelogin && account != null) {
-      _reauthAndDelete(context, account);
-      return;
-    }
-    showLucenaSnackBar(context, switch (notice) {
-      ProfileNotice.deleteOffline => l10n.accountDeleteOffline,
-      ProfileNotice.deleteRelogin => l10n.accountDeleteRelogin,
-      ProfileNotice.deleteFailed => l10n.accountDeleteFailed,
-      ProfileNotice.deleteDifferentAccount => l10n.accountDeleteRelogin,
-      ProfileNotice.deleted => l10n.accountDeleted,
-      ProfileNotice.lichessOffline || null => l10n.lichessRefreshFailed,
-    });
-  }
+  void _notice(BuildContext context, ProfileAccountState state) =>
+      showLucenaSnackBar(context, context.l10n.lichessRefreshFailed);
 
   @override
   Widget build(BuildContext context) {

@@ -325,7 +325,9 @@ class Dependencies {
     bool firebase = false,
     String? trainingInstallSeed,
   }) {
-    final auth = firebase ? FirebaseAuthService() : const NoAuthService();
+    final auth = firebase
+        ? FirebaseAuthService(now: const SystemNow())
+        : const NoAuthService();
     final preferences = PreferencesService();
     final settings = LocalSettingsRepository(preferences);
     // Um plugin só para os lembretes e o push (o toque tem um dono só).

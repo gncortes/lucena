@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/profile/profile_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/analytics_keys.dart';
 import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/legal_keys.dart';
@@ -17,6 +19,7 @@ import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_device_settings_repository.dart';
 import '../../../testing/fakes/fake_link_repository.dart';
+import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_purchase_service.dart';
 import '../../../testing/test_app.dart';
 
@@ -41,12 +44,10 @@ void main() {
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 2.625;
       addTearDown(tester.view.reset);
-      final cubit = PrivacyCubit(
-        accounts:
-            accounts ??
-            FakeAccountRepository(account: FakeAccountRepository.google),
-        device: device,
-      );
+      final repository =
+          accounts ??
+          FakeAccountRepository(account: FakeAccountRepository.google);
+      final cubit = PrivacyCubit(accounts: repository, device: device);
       addTearDown(cubit.close);
       await tester.runAsync(cubit.load);
       await tester.pumpWidget(
@@ -54,7 +55,18 @@ void main() {
           locale: const Locale('pt', 'BR'),
           analytics: FakeAnalyticsRepository(),
           linkRepository: links,
-          child: BlocProvider.value(value: cubit, child: const PrivacyScreen()),
+          child: MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<AccountRepository>.value(value: repository),
+              RepositoryProvider<ProfileRepository>.value(
+                value: FakeProfileRepository(),
+              ),
+            ],
+            child: BlocProvider.value(
+              value: cubit,
+              child: const PrivacyScreen(),
+            ),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -192,6 +204,27 @@ void main() {
         200,
       );
       await tester.runAsync(accounts.signOut);
+      await tester.pumpAndSettle();
+      expect(find.byKey(PrivacyKeys.deleteAccount), findsNothing);
+    });
+
+    testWidgets('H-CON-14: "Excluir a conta" abre a mesma folha do Perfil', (
+      tester,
+    ) async {
+      final accounts = FakeAccountRepository(
+        account: FakeAccountRepository.google,
+      );
+      await pumpScreen(tester, accounts: accounts);
+      await tapRow(tester, PrivacyKeys.deleteAccount);
+      expect(find.byKey(PrivacyKeys.screen), findsOneWidget);
+      expect(find.byKey(AccountKeys.deleteSheet), findsOneWidget);
+
+      await tester.tap(find.byKey(AccountKeys.deleteConfirm));
+      await tester.pumpAndSettle();
+      expect(accounts.current, isNull);
+      expect(find.byKey(AccountKeys.deleteSheet), findsNothing);
+      // O cubit escuta a conta fora do relógio falso (carregado no runAsync).
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pumpAndSettle();
       expect(find.byKey(PrivacyKeys.deleteAccount), findsNothing);
     });

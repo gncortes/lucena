@@ -4,11 +4,10 @@ import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/progress_summary.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/account/view_models/account_cubit.dart';
-import 'package:lucena/ui/profile/view_models/profile_account_cubit.dart';
+import 'package:lucena/ui/profile/view_models/account_delete_cubit.dart';
 
 import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_analytics_repository.dart';
-import '../../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_sync_repository.dart';
 
@@ -80,35 +79,28 @@ void main() {
     });
   });
 
-  group('ProfileAccountCubit', () {
-    Future<ProfileAccountCubit> profileCubit() async {
-      final scheduler = SyncScheduler(accounts, sync);
-      addTearDown(scheduler.dispose);
-      final cubit = ProfileAccountCubit(
+  group('AccountDeleteCubit', () {
+    AccountDeleteCubit deleteCubit() {
+      final cubit = AccountDeleteCubit(
+        uid: FakeAccountRepository.google.uid,
         accounts: accounts,
-        sync: scheduler,
-        lichess: FakeLichessRepository(),
         profile: FakeProfileRepository(const UserProfile()),
         analytics: analytics,
       );
       addTearDown(cubit.close);
-      await cubit.load();
-      await pumpEventQueue();
       return cubit;
     }
 
     test('apagar a conta loga conta_apagada uma vez', () async {
       accounts.account = FakeAccountRepository.google;
-      final cubit = await profileCubit();
-      await cubit.deleteAccount();
+      await deleteCubit().confirm();
       expect(analytics.eventsNamed('conta_apagada'), hasLength(1));
     });
 
     test('apagar que falhou não loga', () async {
       accounts.account = FakeAccountRepository.google;
-      final cubit = await profileCubit();
       accounts.failure = AccountFailure.network;
-      await cubit.deleteAccount();
+      await deleteCubit().confirm();
       expect(analytics.eventsNamed('conta_apagada'), isEmpty);
     });
   });

@@ -16,6 +16,7 @@ import '../../core/widgets/open_link.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../../legal/widgets/legal_sheet.dart';
+import '../../profile/widgets/account_delete_sheet.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../settings/widgets/about_screen.dart';
 import '../view_models/privacy_cubit.dart';
@@ -148,7 +149,11 @@ class PrivacyScreen extends StatelessWidget {
                   icon: Icons.delete_outline,
                   title: l10n.privacyDelete,
                   value: l10n.privacyDeleteValue,
-                  onTap: () => context.pop(true),
+                  onTap: () => showAccountDeleteSheet(
+                    context,
+                    uid: state.account!.uid,
+                    from: 'privacy',
+                  ),
                 ),
               ],
             ),

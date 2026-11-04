@@ -57,7 +57,11 @@ abstract final class AccountKeys {
   static const restoredScreen = Key('account.restored');
   static const restoredContinue = Key('account.restoredContinue');
 
-  static const deleteDialog = Key('account.deleteDialog');
+  static const deleteSheet = Key('account.deleteSheet');
+  static const deleteClose = Key('account.deleteClose');
+  static const deleteLose = Key('account.deleteLose');
+  static const deletePlayWarning = Key('account.deletePlayWarning');
+  static const deleteNotice = Key('account.deleteNotice');
   static const deleteConfirm = Key('account.deleteConfirm');
   static const deleteCancel = Key('account.deleteCancel');
 }

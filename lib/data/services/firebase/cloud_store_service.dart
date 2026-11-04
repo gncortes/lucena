@@ -72,9 +72,12 @@ class CloudExport {
 
 /// O Firestore não respondeu (sem rede, sem permissão).
 class CloudStoreException implements Exception {
-  const CloudStoreException(this.code);
+  const CloudStoreException(this.code, {this.partial = false});
 
   final String code;
+
+  /// A remoção já tinha apagado parte dos documentos quando falhou.
+  final bool partial;
 
   @override
   String toString() => 'CloudStoreException($code)';
@@ -284,20 +287,24 @@ class FirestoreCloudStoreService implements CloudStoreService {
     // Do servidor: sem rede, o get() comum leria só o cache do aparelho e
     // deixaria partidas na nuvem.
     const server = GetOptions(source: Source.server);
+    // Depois do primeiro documento apagado, a falha é parcial (gap 9).
+    var started = false;
     try {
       await () async {
         for (final name in _subcollections) {
           final docs = await user.collection(name).get(server);
           for (final doc in docs.docs) {
+            started = true;
             await doc.reference.delete();
           }
         }
+        started = true;
         await user.delete();
       }().timeout(_deleteTimeout);
     } on FirebaseException catch (error) {
-      throw CloudStoreException(error.code);
+      throw CloudStoreException(error.code, partial: started);
     } on TimeoutException {
-      throw const CloudStoreException('unavailable');
+      throw CloudStoreException('unavailable', partial: started);
     }
   }
 }
