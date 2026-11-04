@@ -24,36 +24,66 @@ import '../view_models/tour_cubit.dart';
 /// O momento do convite no evento `conta_convite`.
 const _moment = 'tour';
 
-/// O passo "Conta" do tour (canvas `PropV1AbEstConta`): o convite para salvar
-/// o progresso, sem "Pular" nem "Continuar". Sair daqui ("Agora não" ou a conta
-/// criada) é o que termina o tour. Quem já tem conta não vê o convite. As
-/// telas da conta são as da frente Conta; este passo só navega para elas.
-class TourAccountStep extends StatelessWidget {
-  const TourAccountStep({super.key});
+/// O "Sem internet" do passo Conta: o passo troca o convite pelo aviso e o
+/// rodapé some.
+/// (Um invólucro: o Provider não aceita um `Listenable` direto.)
+class TourAccountOffline {
+  final shown = ValueNotifier<bool>(false);
+
+  void dispose() => shown.dispose();
+}
+
+/// O que o passo "Conta" e o rodapé dele dividem: a conta (criada só quando
+/// o passo abre) e o "Sem internet". Fica em volta do corpo do tour, porque
+/// as ações ficam fixas no pé da tela, fora da rolagem (canvas
+/// `PropV2TourBConta`).
+class TourAccountScope extends StatefulWidget {
+  const TourAccountScope({required this.child, super.key});
+
+  final Widget child;
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (_) => AccountCubit(
-      context.read<AccountRepository>(),
-      sync: context.read<SyncScheduler>(),
-      analytics: context.analytics,
-      moment: _moment,
-      campaigns: context.campaigns,
+  State<TourAccountScope> createState() => _TourAccountScopeState();
+}
+
+class _TourAccountScopeState extends State<TourAccountScope> {
+  final _offline = TourAccountOffline();
+
+  @override
+  void dispose() {
+    _offline.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => RepositoryProvider.value(
+    value: _offline,
+    child: BlocProvider(
+      create: (_) => AccountCubit(
+        context.read<AccountRepository>(),
+        sync: context.read<SyncScheduler>(),
+        analytics: context.analytics,
+        moment: _moment,
+        campaigns: context.campaigns,
+      ),
+      child: widget.child,
     ),
-    child: const _AccountBody(),
   );
 }
 
-class _AccountBody extends StatefulWidget {
-  const _AccountBody();
+/// O passo "Conta" do tour (canvas `PropV2TourBConta`): o convite para salvar
+/// o progresso, sem "Pular" nem "Continuar"; as ações ficam no
+/// [TourAccountFooter]. Sair daqui ("Agora não" ou a conta criada) é o que
+/// termina o tour. Quem já tem conta não vê o convite. As telas da conta são
+/// as da frente Conta; este passo só navega para elas.
+class TourAccountStep extends StatefulWidget {
+  const TourAccountStep({super.key});
 
   @override
-  State<_AccountBody> createState() => _AccountBodyState();
+  State<TourAccountStep> createState() => _TourAccountStepState();
 }
 
-class _AccountBodyState extends State<_AccountBody> {
-  bool _offline = false;
-
+class _TourAccountStepState extends State<TourAccountStep> {
   @override
   void initState() {
     super.initState();
@@ -65,32 +95,14 @@ class _AccountBodyState extends State<_AccountBody> {
     }
   }
 
-  /// A pessoa saiu do tour para a conta: o tour conta como visto e o fim da
-  /// conta leva ao Início.
-  Future<void> _leave() => context.read<TourCubit>().finish(leave: false);
-
-  Future<void> _email({bool signIn = false}) async {
-    context.read<AccountCubit>().inviteAnswered(accepted: true);
-    await _leave();
-    if (!mounted) return;
-    unawaited(
-      context.push(Routes.accountEmailFrom(Routes.home, signIn: signIn)),
-    );
-  }
-
-  Future<void> _later() async {
-    context.read<AccountCubit>().inviteAnswered(accepted: false);
-    await context.read<TourCubit>().finish();
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final cubit = context.read<AccountCubit>();
+    final offline = context.read<TourAccountOffline>().shown;
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) async {
         if (state.done) {
-          await _leave();
+          await _leave(context);
           if (context.mounted) {
             continueAfterSignIn(context, state, Routes.home);
           }
@@ -100,41 +112,79 @@ class _AccountBodyState extends State<_AccountBody> {
           case null:
             return;
           case AccountFailure.network:
-            setState(() => _offline = true);
+            offline.value = true;
           case final failure:
             showLucenaSnackBar(context, accountFailureText(l10n, failure));
         }
       },
-      child: _offline
-          ? _Offline(onBack: () => setState(() => _offline = false))
-          : _Invite(
-              busy: context.select((AccountCubit c) => c.state.busy),
-              onGoogle: () {
-                cubit.inviteAnswered(accepted: true);
-                return cubit.signInWithGoogle();
-              },
-              onEmail: _email,
-              onLogin: () => _email(signIn: true),
-              onLater: _later,
+      child: ValueListenableBuilder(
+        valueListenable: offline,
+        builder: (context, isOffline, _) => isOffline
+            ? _Offline(onBack: () => offline.value = false)
+            : const _Invite(),
+      ),
+    );
+  }
+}
+
+/// A pessoa saiu do tour para a conta: o tour conta como visto e o fim da
+/// conta leva ao Início.
+Future<void> _leave(BuildContext context) =>
+    context.read<TourCubit>().finish(leave: false);
+
+/// As ações do convite, fixas no pé da tela (o rodapé empilhado do canvas).
+/// São as do convite da Conta (H-CON-01), com as keys do tour. No "Sem
+/// internet", somem: o aviso tem os botões dele.
+class TourAccountFooter extends StatelessWidget {
+  const TourAccountFooter({super.key});
+
+  Future<void> _email(BuildContext context, {bool signIn = false}) async {
+    context.read<AccountCubit>().inviteAnswered(accepted: true);
+    await _leave(context);
+    if (!context.mounted) return;
+    unawaited(
+      context.push(Routes.accountEmailFrom(Routes.home, signIn: signIn)),
+    );
+  }
+
+  Future<void> _later(BuildContext context) async {
+    context.read<AccountCubit>().inviteAnswered(accepted: false);
+    await context.read<TourCubit>().finish();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<AccountCubit>();
+    final busy = context.select((AccountCubit c) => c.state.busy);
+    return ValueListenableBuilder(
+      valueListenable: context.read<TourAccountOffline>().shown,
+      builder: (context, offline, _) => offline
+          ? const SizedBox.shrink()
+          : ActionsFooter(
+              stacked: true,
+              children: accountInviteActions(
+                context,
+                onGoogle: () {
+                  cubit.inviteAnswered(accepted: true);
+                  return cubit.signInWithGoogle();
+                },
+                onEmail: () => _email(context),
+                onSignIn: () => _email(context, signIn: true),
+                onLater: () => _later(context),
+                busy: busy,
+                googleKey: TourKeys.accountGoogle,
+                emailKey: TourKeys.accountEmail,
+                signInKey: TourKeys.accountLogin,
+                laterKey: TourKeys.accountLater,
+              ),
             ),
     );
   }
 }
 
+/// O texto do convite; as ações ficam no [TourAccountFooter].
 class _Invite extends StatelessWidget {
-  const _Invite({
-    required this.busy,
-    required this.onGoogle,
-    required this.onEmail,
-    required this.onLogin,
-    required this.onLater,
-  });
-
-  final bool busy;
-  final Future<void> Function() onGoogle;
-  final VoidCallback onEmail;
-  final VoidCallback onLogin;
-  final VoidCallback onLater;
+  const _Invite();
 
   @override
   Widget build(BuildContext context) {
@@ -152,39 +202,13 @@ class _Invite extends StatelessWidget {
         ],
       ),
     );
-    // H-ANI-16: o texto que explica entra em cascata, os botões por último.
+    // H-ANI-16: o texto que explica entra em cascata.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: EntradaEmCascata(
         itens: [
           ItemDaCascata.texto(line(Icons.cloud_done, l10n.tourAccountSaved)),
-          ItemDaCascata.texto(
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: line(Icons.wifi_off, l10n.tourAccountNoAccount),
-            ),
-          ),
-          // O rodapé empilhado do canvas, dentro do passo (o botão da base
-          // do tour é o dos outros passos). As ações são as do convite da
-          // Conta (H-CON-01), com as keys do tour.
-          ItemDaCascata.botao(
-            ActionsFooter(
-              stacked: true,
-              margin: 0,
-              children: accountInviteActions(
-                context,
-                onGoogle: onGoogle,
-                onEmail: onEmail,
-                onSignIn: onLogin,
-                onLater: onLater,
-                busy: busy,
-                googleKey: TourKeys.accountGoogle,
-                emailKey: TourKeys.accountEmail,
-                signInKey: TourKeys.accountLogin,
-                laterKey: TourKeys.accountLater,
-              ),
-            ),
-          ),
+          ItemDaCascata.texto(line(Icons.wifi_off, l10n.tourAccountNoAccount)),
         ],
       ),
     );

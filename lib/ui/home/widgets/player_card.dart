@@ -6,6 +6,7 @@ import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/valor_que_anima.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
@@ -22,6 +23,9 @@ class PlayerCard extends StatelessWidget {
   /// O chevron ao lado do número (canvas `PropV2UxHome`).
   static const chevron = 22.0;
 
+  /// A altura mínima da pílula de "Começando" (canvas: 40).
+  static const _pillHeight = 40.0;
+
   final HomeState state;
 
   @override
@@ -31,10 +35,15 @@ class PlayerCard extends StatelessWidget {
     final rating = state.rating;
     final shown = rating != null && state.showsRating;
     return ContainerNavigation(
-      // Solto, sem pílula (H-INI-01, PropV2UxHomeTopo B).
-      color: Colors.transparent,
+      // O número fica solto, sem pílula (H-INI-01, PropV2UxHomeTopo B);
+      // "Começando" é pílula com contorno (PropV2UxHome), na cor de cartão
+      // (sem branco, T85-D0).
+      color: shown ? Colors.transparent : AppColors.cardSurface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppShape.full),
+        side: shown
+            ? BorderSide.none
+            : const BorderSide(color: AppColors.cardOutline),
       ),
       // H-CON-03: a pílula abre "Seu progresso" (o Histórico fica lá).
       routeName: D2Paths.progress,
@@ -46,7 +55,8 @@ class PlayerCard extends StatelessWidget {
         key: HomeKeys.playerCard,
         onTap: open,
         customBorder: const StadiumBorder(),
-        child: Padding(
+        child: Container(
+          constraints: BoxConstraints(minHeight: shown ? 0 : _pillHeight),
           padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.md,
             AppSpacing.xs,
@@ -82,12 +92,20 @@ class PlayerCard extends StatelessWidget {
                 )
               else
                 // Quem começa só vê o número depois de algumas partidas.
-                Text(
-                  context.l10n.homeRatingStarting,
-                  key: HomeKeys.ratingPending,
-                  maxLines: 1,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: AppWeight.strong,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                  ),
+                  child: Text(
+                    context.l10n.homeRatingStarting,
+                    key: HomeKeys.ratingPending,
+                    maxLines: 1,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontSize: 15,
+                      height: 21 / 15,
+                      fontWeight: AppWeight.strong,
+                      color: colors.primary,
+                    ),
                   ),
                 ),
               Icon(

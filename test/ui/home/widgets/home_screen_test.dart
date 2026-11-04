@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
@@ -544,6 +545,44 @@ void main() {
 
     expect(find.byKey(HomeKeys.ratingValue), findsNothing);
     expect(text(tester, HomeKeys.ratingPending), 'Começando');
+  });
+
+  testWidgets('"Começando" é pílula de cartão com contorno e o texto na cor '
+      'primária (canvas PropV2UxHome; sem branco, T85-D0)', (tester) async {
+    await pumpHome(tester, profile: learner);
+    final colors = Theme.of(tester.element(find.byKey(HomeKeys.playerCard)))
+        .colorScheme;
+    final pill = tester
+        .widgetList<Material>(
+          find.ancestor(
+            of: find.byKey(HomeKeys.playerCard),
+            matching: find.byType(Material),
+          ),
+        )
+        .first;
+    expect(pill.color, AppColors.cardSurface);
+    final shape = pill.shape! as OutlinedBorder;
+    expect(shape.side.color, AppColors.cardOutline);
+    expect(shape.side.width, 1);
+    expect(
+      tester.getSize(find.byKey(HomeKeys.playerCard)).height,
+      greaterThanOrEqualTo(40),
+    );
+    final label = tester.widget<Text>(find.byKey(HomeKeys.ratingPending));
+    expect(label.style?.color, colors.primary);
+  });
+
+  testWidgets('com o número, o rating segue solto, sem pílula', (tester) async {
+    await pumpHome(tester, profile: const UserProfile(rating: 1450));
+    final card = tester
+        .widgetList<Material>(
+          find.ancestor(
+            of: find.byKey(HomeKeys.playerCard),
+            matching: find.byType(Material),
+          ),
+        )
+        .first;
+    expect(card.color, Colors.transparent);
   });
 
   testWidgets('o nome do app e o rating ficam fixos ao rolar a tela', (

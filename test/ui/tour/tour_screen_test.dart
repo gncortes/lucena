@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/core/theme/app_bar_height.dart';
+import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/ui/account/widgets/account_widgets.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
@@ -796,6 +797,27 @@ void main() {
       expect(find.byKey(TourKeys.skipButton), findsNothing);
     });
 
+    for (final size in [const Size(360, 800), const Size(412, 915)]) {
+      testWidgets('$size: as ações ficam fixas no pé da tela, fora da '
+          'rolagem (canvas PropV2TourBConta)', (tester) async {
+        await pumpTour(tester, step: TourStep.account, size: size);
+        expect(
+          find.descendant(
+            of: find.byKey(TourKeys.scroll),
+            matching: find.byKey(TourKeys.accountGoogle),
+          ),
+          findsNothing,
+        );
+        final later = tester.getRect(find.byKey(TourKeys.accountLater));
+        expect(later.bottom, closeTo(size.height - AppSpacing.sm, 1));
+        final scroll = tester.getRect(find.byKey(TourKeys.scroll));
+        expect(
+          tester.getRect(find.byKey(TourKeys.accountGoogle)).top,
+          greaterThanOrEqualTo(scroll.bottom),
+        );
+      });
+    }
+
     testWidgets('H-ABE-11: o convite é o da Conta, na ordem do quadro', (
       tester,
     ) async {
@@ -856,14 +878,13 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('H-ANI-16: a conta entra em cascata e o toque já vale', (
-      tester,
-    ) async {
+    testWidgets('H-ANI-16: o texto da conta entra em cascata e o toque das '
+        'ações fixas já vale', (tester) async {
       await pumpTour(tester, step: TourStep.account, settle: false);
-      expect(opacidadeDoItem(tester, 2), 0);
+      expect(opacidadeDoItem(tester, 1), 0);
       await tester.pump(const Duration(milliseconds: 100));
       expect(opacidadeDoItem(tester, 0), greaterThan(0));
-      expect(opacidadeDoItem(tester, 2), lessThan(1));
+      expect(opacidadeDoItem(tester, 1), lessThan(1));
       // O toque fica liberado desde o início.
       expect(
         tester
@@ -872,7 +893,7 @@ void main() {
         isNotNull,
       );
       await tester.pump(const Duration(milliseconds: 1300));
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < 2; i++) {
         expect(opacidadeDoItem(tester, i), 1);
       }
       await tester.pumpAndSettle();
