@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:lucena/domain/models/find_move_checkpoint.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/routing/routes.dart';
@@ -13,7 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/featured/widgets/featured_card.dart';
-import 'package:lucena/domain/models/crowd_stat.dart';
 import 'package:lucena/domain/models/app_links.dart';
 import 'package:lucena/ui/core/share/share_button.dart';
 import 'package:go_router/go_router.dart';
@@ -33,11 +33,11 @@ import 'package:lucena/ui/featured/widgets/featured_list_screen.dart';
 import 'package:lucena/ui/featured/widgets/featured_tournament_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
-import '../../../testing/fakes/fake_crowd_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_push_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
 
@@ -68,29 +68,24 @@ void main() {
   late FakeFeaturedRepository repository;
   late FakeFeaturedProgressRepository progress;
   late FakeFeaturedAlertsRepository alerts;
+  late FakePushRepository push;
   final now = FakeNow(DateTime(2026, 1, 1, 12));
 
   setUp(() {
     repository = FakeFeaturedRepository(sampleFeaturedCatalog());
     progress = FakeFeaturedProgressRepository();
     alerts = FakeFeaturedAlertsRepository();
+    push = FakePushRepository();
   });
 
   /// A tela [child] numa rota, com tudo o que ela lê, e uma rota "para onde
   /// foi" que mostra o endereço.
-  /// A faixa de filtros rola: leva o chip para a tela antes de tocar.
-  Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-    await tester.ensureVisible(finder);
-    await tester.pumpAndSettle();
-    await tester.tap(finder);
-  }
-
   Future<GoRouter> pump(
     WidgetTester tester,
     Widget child, {
     required String location,
     required String path,
-    FakeCrowdRepository? crowd,
+    bool load = true,
   }) async {
     tester.view.physicalSize = const Size(900, 3000);
     tester.view.devicePixelRatio = 2;
@@ -110,30 +105,43 @@ void main() {
               ),
               BlocProvider(
                 lazy: false,
-                create: (_) => FeaturedCatalogCubit(
-                  featured: repository,
-                  progress: progress,
-                  now: now,
-                )..load(),
+                create: (_) {
+                  final cubit = FeaturedCatalogCubit(
+                    featured: repository,
+                    progress: progress,
+                    alerts: alerts,
+                    push: push,
+                    now: now,
+                  );
+                  if (load) cubit.load();
+                  return cubit;
+                },
               ),
               BlocProvider(
                 lazy: false,
-                create: (_) => FeaturedTournamentCubit(
-                  id: state.pathParameters['id'] ?? 'live',
-                  featured: repository,
-                  progress: progress,
-                  alerts: alerts,
-                  now: now,
-                )..load(),
+                create: (_) {
+                  final cubit = FeaturedTournamentCubit(
+                    id: state.pathParameters['id'] ?? 'live',
+                    featured: repository,
+                    progress: progress,
+                    now: now,
+                  );
+                  if (load) cubit.load();
+                  return cubit;
+                },
               ),
               BlocProvider(
                 lazy: false,
-                create: (_) => FeaturedEndgameCubit(
-                  id: state.pathParameters['id'] ?? 'a',
-                  featured: repository,
-                  progress: progress,
-                  characters: FakeCharacterRepository(),
-                )..load(),
+                create: (_) {
+                  final cubit = FeaturedEndgameCubit(
+                    id: state.pathParameters['id'] ?? 'a',
+                    featured: repository,
+                    progress: progress,
+                    characters: FakeCharacterRepository(),
+                  );
+                  if (load) cubit.load();
+                  return cubit;
+                },
               ),
               RepositoryProvider<FeaturedProgressRepository>.value(
                 value: progress,
@@ -144,6 +152,11 @@ void main() {
             ],
             child: child,
           ),
+        ),
+        GoRoute(
+          path: '/featured/tournament/:id',
+          builder: (context, state) =>
+              Text('torneio ${state.pathParameters['id']}'),
         ),
         GoRoute(
           path: '/featured/:id',
@@ -162,189 +175,324 @@ void main() {
       TestApp(
         router: router,
         locale: const Locale('pt'),
-        crowdRepository: crowd,
         child: const SizedBox(),
       ),
     );
+    if (!load) {
+      await tester.pump();
+      return router;
+    }
     await tester.pumpAndSettle();
     return router;
   }
 
   group('lista', () {
-    testWidgets('mostra o torneio em andamento e os cartões', (tester) async {
-      await pump(
-        tester,
-        const FeaturedListScreen(),
-        location: '/list',
-        path: '/list',
-      );
+    Future<void> openList(WidgetTester tester, {bool load = true}) => pump(
+      tester,
+      const FeaturedListScreen(),
+      location: '/list',
+      path: '/list',
+      load: load,
+    );
+
+    testWidgets('mostra o carrossel de torneios e as seções', (tester) async {
+      await openList(tester);
       expect(find.byKey(FeaturedKeys.listScreen), findsOneWidget);
       expect(find.byKey(FeaturedKeys.ongoingTitle), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.tournamentCarousel), findsOneWidget);
       expect(find.byKey(FeaturedKeys.tournamentCard('live')), findsOneWidget);
-      expect(find.byKey(FeaturedKeys.card('a')), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.recentTitle), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.historicTitle), findsOneWidget);
+      expect(find.text('Finais históricos'), findsOneWidget);
       expect(find.byKey(FeaturedKeys.card('b')), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.card('a')), findsOneWidget);
     });
 
-    testWidgets('o cartão tem jogadores, evento e ano e a meta, sem selos', (
+    testWidgets('não há filtros de país nem de origem', (tester) async {
+      await openList(tester);
+      expect(find.byType(ChoiceChip), findsNothing);
+      expect(find.byType(PopupMenuButton<String>), findsNothing);
+    });
+
+    testWidgets('o cartão do torneio conta os finais para praticar', (
       tester,
     ) async {
-      await pump(
-        tester,
-        const FeaturedListScreen(),
-        location: '/list',
-        path: '/list',
+      await openList(tester);
+      expect(
+        find.descendant(
+          of: find.byKey(FeaturedKeys.tournamentCard('live')),
+          matching: find.text('Um final para praticar'),
+        ),
+        findsOneWidget,
       );
+    });
+
+    testWidgets('sem torneio ao vivo, a seção "Acontecendo agora" some', (
+      tester,
+    ) async {
+      repository.value = FeaturedCatalog(
+        tournaments: [
+          for (final t in sampleFeaturedCatalog().tournaments)
+            if (t.id == 'old') t,
+        ],
+        finals: [
+          for (final f in sampleFeaturedCatalog().finals)
+            if (f.tournamentId != 'live') f,
+        ],
+      );
+      await openList(tester);
+      expect(find.byKey(FeaturedKeys.ongoingTitle), findsNothing);
+      expect(find.byKey(FeaturedKeys.tournamentCarousel), findsNothing);
+    });
+
+    testWidgets('selos: NOVO e Torneio no recente, Histórica no histórico', (
+      tester,
+    ) async {
+      progress.playedIds.add('a');
+      await openList(tester);
+      final recent = find.byKey(FeaturedKeys.card('b'));
+      expect(
+        find.descendant(of: recent, matching: find.byKey(FeaturedKeys.cardNew)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: recent,
+          matching: find.byKey(FeaturedKeys.cardTournament),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: recent,
+          matching: find.byKey(FeaturedKeys.cardHistoric),
+        ),
+        findsNothing,
+      );
+      final old = find.byKey(FeaturedKeys.card('a'));
+      expect(
+        find.descendant(
+          of: old,
+          matching: find.byKey(FeaturedKeys.cardHistoric),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: old, matching: find.byKey(FeaturedKeys.cardPlayed)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: old, matching: find.byKey(FeaturedKeys.cardNew)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('o cartão mostra título, jogadores com o evento e o tema', (
+      tester,
+    ) async {
+      await openList(tester);
       final card = find.byKey(FeaturedKeys.card('a'));
       expect(
-        find.descendant(of: card, matching: find.text('A × A')),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: card, matching: find.text('Torneio Antigo 1959')),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: card, matching: find.text('Defender')),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: card, matching: find.text('NOVO')),
-        findsNothing,
-      );
-      expect(
         find.descendant(of: card, matching: find.text('Final A')),
-        findsNothing,
+        findsOneWidget,
       );
-    });
-
-    testWidgets('filtrar por origem esconde os outros e limpa', (tester) async {
-      await pump(
-        tester,
-        const FeaturedListScreen(),
-        location: '/list',
-        path: '/list',
+      expect(
+        find.descendant(
+          of: card,
+          matching: find.text('A × A · Torneio Antigo 1959'),
+        ),
+        findsOneWidget,
       );
-      await tapVisible(tester, find.byKey(FeaturedKeys.originFilter('video')));
-      await tester.pumpAndSettle();
-      expect(find.byKey(FeaturedKeys.card('c')), findsOneWidget);
-      expect(find.byKey(FeaturedKeys.card('a')), findsNothing);
-      await tapVisible(
-        tester,
-        find.byKey(FeaturedKeys.originFilter('historical')),
-      );
-      await tester.pumpAndSettle();
-      expect(find.byKey(FeaturedKeys.card('a')), findsOneWidget);
-      expect(find.byKey(FeaturedKeys.card('c')), findsNothing);
-    });
-
-    testWidgets('filtros que escondem tudo oferecem limpar', (tester) async {
-      await pump(
-        tester,
-        const FeaturedListScreen(),
-        location: '/list',
-        path: '/list',
-      );
-      await tester.tap(find.byKey(FeaturedKeys.countryFilter));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(FeaturedKeys.countryOption('US')));
-      await tester.pumpAndSettle();
-      await tapVisible(tester, find.byKey(FeaturedKeys.originFilter('video')));
-      await tester.pumpAndSettle();
-      expect(find.byKey(FeaturedKeys.listFilteredOut), findsOneWidget);
-      await tester.tap(find.byKey(FeaturedKeys.clearFilters));
-      await tester.pumpAndSettle();
-      expect(find.byKey(FeaturedKeys.card('a')), findsOneWidget);
-    });
-
-    testWidgets('"Todos os países" tira o filtro de país', (tester) async {
-      await pump(
-        tester,
-        const FeaturedListScreen(),
-        location: '/list',
-        path: '/list',
-      );
-      await tester.tap(find.byKey(FeaturedKeys.countryFilter));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(FeaturedKeys.countryOption('US')));
-      await tester.pumpAndSettle();
-      expect(find.byKey(FeaturedKeys.card('b')), findsNothing);
-      await tester.tap(find.byKey(FeaturedKeys.countryFilter));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(FeaturedKeys.countryAll));
-      await tester.pumpAndSettle();
-      expect(find.byKey(FeaturedKeys.card('b')), findsOneWidget);
     });
 
     testWidgets('sem finais, mostra o vazio', (tester) async {
       repository.value = FeaturedCatalog.empty;
-      await pump(
-        tester,
-        const FeaturedListScreen(),
-        location: '/list',
-        path: '/list',
-      );
+      await openList(tester);
       expect(find.byKey(FeaturedKeys.listEmpty), findsOneWidget);
     });
 
-    testWidgets('tocar no cartão abre o final', (tester) async {
-      await pump(
-        tester,
-        const FeaturedListScreen(),
-        location: '/list',
-        path: '/list',
-      );
-      await tester.tap(find.byKey(FeaturedKeys.card('a')));
+    testWidgets('carregando mostra o esqueleto, sem tela em branco', (
+      tester,
+    ) async {
+      await openList(tester, load: false);
+      expect(find.byKey(FeaturedKeys.listLoading), findsOneWidget);
+      expect(find.byKey(CoreKeys.skeleton), findsOneWidget);
+    });
+
+    testWidgets('catálogo ilegível mostra o erro padrão, e tentar de novo '
+        'recarrega', (tester) async {
+      repository.failure = StateError('lixo');
+      await openList(tester);
+      expect(find.byKey(FeaturedKeys.listError), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      repository.failure = null;
+      await tester.tap(find.byKey(LoadErrorKeys.action));
       await tester.pumpAndSettle();
-      expect(find.text('final a'), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.listScreen), findsOneWidget);
+    });
+
+    testWidgets('tocar no cartão abre o final', (tester) async {
+      await openList(tester);
+      await tester.tap(find.byKey(FeaturedKeys.card('b')));
+      await tester.pumpAndSettle();
+      expect(find.text('final b'), findsOneWidget);
+    });
+
+    testWidgets('tocar no cartão do torneio abre o torneio', (tester) async {
+      await openList(tester);
+      await tester.tap(find.byKey(FeaturedKeys.tournamentCard('live')));
+      await tester.pumpAndSettle();
+      expect(find.text('torneio live'), findsOneWidget);
+    });
+
+    group('sino', () {
+      testWidgets('liga com a permissão e avisa', (tester) async {
+        push.granted = true;
+        await openList(tester);
+        await tester.tap(find.byKey(FeaturedKeys.bell));
+        await tester.pumpAndSettle();
+        expect(find.byKey(FeaturedKeys.bellNotice), findsOneWidget);
+        expect(
+          find.text('Notificações de finais novos ligadas'),
+          findsOneWidget,
+        );
+        expect(alerts.all, isTrue);
+      });
+
+      testWidgets('desliga e avisa', (tester) async {
+        alerts.all = true;
+        push.allowed = true;
+        await openList(tester);
+        await tester.tap(find.byKey(FeaturedKeys.bell));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Notificações de finais novos desligadas'),
+          findsOneWidget,
+        );
+        expect(alerts.all, isFalse);
+      });
+
+      testWidgets('permissão negada oferece abrir os ajustes', (tester) async {
+        push.granted = false;
+        await openList(tester);
+        await tester.tap(find.byKey(FeaturedKeys.bell));
+        await tester.pumpAndSettle();
+        expect(find.byKey(FeaturedKeys.bellSettings), findsOneWidget);
+        expect(alerts.all, isFalse);
+        await tester.tap(find.byKey(FeaturedKeys.bellSettings));
+        await tester.pumpAndSettle();
+        expect(push.settingsOpened, 1);
+      });
+
+      testWidgets('carregando, o sino fica desabilitado', (tester) async {
+        await openList(tester, load: false);
+        final bell = tester.widget<IconButton>(find.byKey(FeaturedKeys.bell));
+        expect(bell.onPressed, isNull);
+      });
     });
   });
 
   group('torneio', () {
-    testWidgets('resumo, links, final e o interruptor só com canal', (
+    Future<void> openTournament(
+      WidgetTester tester,
+      String id, {
+      bool load = true,
+    }) => pump(
+      tester,
+      const FeaturedTournamentScreen(),
+      location: '/t/$id',
+      path: '/t/:id',
+      load: load,
+    );
+
+    testWidgets('em andamento: selos, datas, links e finais para praticar', (
       tester,
     ) async {
-      await pump(
-        tester,
-        const FeaturedTournamentScreen(),
-        location: '/t/live',
-        path: '/t/:id',
-      );
+      await openTournament(tester, 'live');
       expect(find.byKey(FeaturedKeys.tournamentSummary), findsOneWidget);
       expect(find.byKey(FeaturedKeys.tournamentOngoing), findsOneWidget);
-      expect(
-        find.byKey(FeaturedKeys.tournamentLink('results')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(FeaturedKeys.tournamentLink('broadcast')),
-        findsOneWidget,
-      );
+      expect(find.text('Oslo · 28 de dezembro a 5 de janeiro'), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.tournamentLinkResults), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.tournamentLinkLive), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.tournamentLinkAbout), findsNothing);
+      expect(find.byKey(FeaturedKeys.tournamentPractice), findsOneWidget);
+      expect(find.text('Finais para praticar'), findsOneWidget);
       expect(find.byKey(FeaturedKeys.card('b')), findsOneWidget);
-      expect(find.byKey(FeaturedKeys.tournamentAlert), findsOneWidget);
-      await tester.tap(find.byKey(FeaturedKeys.tournamentAlert));
-      await tester.pumpAndSettle();
-      expect(alerts.tournaments, {'live'});
     });
 
-    testWidgets('sem canal de aviso, o interruptor some', (tester) async {
-      alerts = FakeFeaturedAlertsRepository(available: false);
-      await pump(
-        tester,
-        const FeaturedTournamentScreen(),
-        location: '/t/live',
-        path: '/t/:id',
-      );
-      expect(find.byKey(FeaturedKeys.tournamentAlert), findsNothing);
+    testWidgets('não há aviso por torneio', (tester) async {
+      await openTournament(tester, 'live');
+      expect(find.byType(Switch), findsNothing);
+      expect(find.byType(SwitchListTile), findsNothing);
     });
 
-    testWidgets('torneio que não existe mostra o aviso', (tester) async {
-      await pump(
-        tester,
-        const FeaturedTournamentScreen(),
-        location: '/t/nada',
-        path: '/t/:id',
+    testWidgets('terminado: só "Sobre o torneio" e sem "Em andamento"', (
+      tester,
+    ) async {
+      repository.value = FeaturedCatalog(
+        tournaments: [
+          FeaturedTournament(
+            id: 'past',
+            name: 'Passado',
+            year: 2017,
+            place: 'Stavanger',
+            links: [
+              FeaturedLink(
+                kind: FeaturedLinkKind.info,
+                url: Uri.parse('https://example.org/about'),
+              ),
+              FeaturedLink(
+                kind: FeaturedLinkKind.results,
+                url: Uri.parse('https://example.org/results'),
+              ),
+            ],
+          ),
+        ],
+        finals: const [],
       );
+      await openTournament(tester, 'past');
+      expect(find.byKey(FeaturedKeys.tournamentOngoing), findsNothing);
+      expect(find.byKey(FeaturedKeys.tournamentLinkAbout), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.tournamentLinkResults), findsNothing);
+      expect(find.text('Stavanger · 2017'), findsOneWidget);
+    });
+
+    testWidgets('sem finais: avisa que aparecem quando as partidas acabam', (
+      tester,
+    ) async {
+      repository.value = FeaturedCatalog(
+        tournaments: sampleFeaturedCatalog().tournaments,
+        finals: const [],
+      );
+      await openTournament(tester, 'live');
+      expect(find.byKey(FeaturedKeys.tournamentNoFinals), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.tournamentPractice), findsNothing);
+    });
+
+    testWidgets('carregando mostra o esqueleto', (tester) async {
+      await openTournament(tester, 'live', load: false);
+      expect(find.byKey(FeaturedKeys.tournamentLoading), findsOneWidget);
+      expect(find.byKey(CoreKeys.skeleton), findsOneWidget);
+    });
+
+    testWidgets('torneio que não existe: conteúdo não encontrado', (
+      tester,
+    ) async {
+      await openTournament(tester, 'nada');
+      expect(find.byKey(FeaturedKeys.tournamentMissing), findsOneWidget);
       expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('leitura que falha mostra o erro padrão e o Voltar', (
+      tester,
+    ) async {
+      repository.failure = StateError('lixo');
+      await openTournament(tester, 'live');
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.back), findsOneWidget);
     });
   });
 
@@ -599,45 +747,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(FeaturedKeys.nextSheet), findsOneWidget);
       expect(find.byKey(FeaturedKeys.nextLesson), findsOneWidget);
-    });
-
-    testWidgets('o número ainda não saiu: sem o cartão', (tester) async {
-      await pump(
-        tester,
-        Scaffold(body: FeaturedEndBar(onAgain: () {})),
-        location: '/e/a',
-        path: '/e/:id',
-      );
-      expect(find.byKey(FeaturedKeys.crowdCard), findsNothing);
-    });
-
-    testWidgets('o x% acertaram e quantos jogaram este final', (tester) async {
-      await pump(
-        tester,
-        Scaffold(body: FeaturedEndBar(onAgain: () {})),
-        location: '/e/a',
-        path: '/e/:id',
-        crowd: FakeCrowdRepository(
-          featured: {'a': const CrowdStat(percent: 41, total: 1284)},
-        ),
-      );
-      expect(find.byKey(FeaturedKeys.crowdCard), findsOneWidget);
-      expect(find.text('41% acertaram'), findsOneWidget);
-      expect(find.text('1.284 pessoas jogaram este final.'), findsOneWidget);
-    });
-
-    testWidgets('menos de 30 pessoas: sem número', (tester) async {
-      await pump(
-        tester,
-        Scaffold(body: FeaturedEndBar(onAgain: () {})),
-        location: '/e/a',
-        path: '/e/:id',
-        crowd: FakeCrowdRepository(
-          featured: {'a': const CrowdStat(percent: 41, total: 12)},
-        ),
-      );
-      expect(find.byKey(FeaturedKeys.crowdFew), findsOneWidget);
-      expect(find.text('41% acertaram'), findsNothing);
     });
 
     testWidgets('a barra de cima tem o livro e, no fim, compartilhar', (

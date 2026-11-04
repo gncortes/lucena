@@ -50,6 +50,7 @@ import 'package:go_router/go_router.dart';
 import '../data/repositories/featured/featured_alerts_repository.dart';
 import '../data/repositories/featured/featured_progress_repository.dart';
 import '../data/repositories/featured/featured_repository.dart';
+import '../data/repositories/push/push_repository.dart';
 import '../ui/featured/view_models/featured_catalog_cubit.dart';
 import '../ui/featured/view_models/featured_endgame_cubit.dart';
 import '../ui/featured/view_models/featured_tournament_cubit.dart';
@@ -1582,6 +1583,8 @@ GoRouter buildRouter({
               create: (context) => FeaturedCatalogCubit(
                 featured: context.read<FeaturedRepository>(),
                 progress: context.read<FeaturedProgressRepository>(),
+                alerts: context.read<FeaturedAlertsRepository>(),
+                push: context.read<PushRepository>(),
                 now: context.read<Now>(),
                 country: context.read<ProfileCubit>().state?.country,
               )..load(),
@@ -1596,7 +1599,6 @@ GoRouter buildRouter({
                     id: state.pathParameters['id']!,
                     featured: context.read<FeaturedRepository>(),
                     progress: context.read<FeaturedProgressRepository>(),
-                    alerts: context.read<FeaturedAlertsRepository>(),
                     now: context.read<Now>(),
                   )..load(),
                   child: const FeaturedTournamentScreen(),

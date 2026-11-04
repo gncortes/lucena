@@ -231,9 +231,8 @@ abstract final class AnalyticsCatalog {
     'final_filtro': ['tipo', 'valor', 'resultados'],
     // Finais em destaque e torneios.
     'final_destaque_aberto': ['final_id', 'torneio_id', 'entrada'],
-    'final_destaque_filtro': ['tipo', 'valor', 'resultados'],
     'final_destaque_torneio': ['torneio_id', 'em_andamento', 'entrada'],
-    'final_destaque_aviso': ['torneio_id', 'ligado'],
+    'final_destaque_aviso': ['ligado'],
     'final_destaque_ache_lance': [
       'final_id', 'acertou', 'tentativas', 'dica', 'ver_resposta', //
     ],
@@ -1080,17 +1079,6 @@ abstract final class AnalyticsEvents {
     'entrada': entrada,
   });
 
-  /// `tipo`: `pais|origem`.
-  static AnalyticsEvent finalDestaqueFiltro({
-    required String tipo,
-    required String valor,
-    required int resultados,
-  }) => _e('final_destaque_filtro', {
-    'tipo': tipo,
-    'valor': valor,
-    'resultados': resultados,
-  });
-
   static AnalyticsEvent finalDestaqueTorneio({
     required String torneioId,
     required bool emAndamento,
@@ -1101,13 +1089,9 @@ abstract final class AnalyticsEvents {
     'entrada': entrada,
   });
 
-  static AnalyticsEvent finalDestaqueAviso({
-    required String torneioId,
-    required bool ligado,
-  }) => _e('final_destaque_aviso', {
-    'torneio_id': torneioId,
-    'ligado': _yn(ligado),
-  });
+  /// O sino geral de finais novos (um só, sem aviso por torneio).
+  static AnalyticsEvent finalDestaqueAviso({required bool ligado}) =>
+      _e('final_destaque_aviso', {'ligado': _yn(ligado)});
 
   static AnalyticsEvent finalDestaqueAcheLance({
     required String finalId,

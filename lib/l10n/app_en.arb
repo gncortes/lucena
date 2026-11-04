@@ -6630,10 +6630,6 @@
   "@featuredOriginChallenge": {
     "description": "Origin of a featured endgame: a challenge from the community."
   },
-  "featuredOriginAll": "All",
-  "@featuredOriginAll": {
-    "description": "Origin filter chip that shows every origin."
-  },
   "featuredThemeEscapedWin": "Win that slipped away",
   "@featuredThemeEscapedWin": {
     "description": "Theme label of a featured endgame where a won position was not converted."
@@ -6658,14 +6654,6 @@
         "type": "String"
       }
     }
-  },
-  "featuredCountryAll": "All countries",
-  "@featuredCountryAll": {
-    "description": "Country filter chip that shows every country."
-  },
-  "featuredFilterCountry": "Filter by country",
-  "@featuredFilterCountry": {
-    "description": "Tooltip of the country filter chip."
   },
   "featuredPlayers": "{white} × {black}",
   "@featuredPlayers": {
@@ -6721,14 +6709,6 @@
   "@featuredEmpty": {
     "description": "Empty state of the featured endgames list."
   },
-  "featuredEmptyFilters": "No endgames match these filters.",
-  "@featuredEmptyFilters": {
-    "description": "Empty state when the filters hide every featured endgame."
-  },
-  "featuredClearFilters": "Clear filters",
-  "@featuredClearFilters": {
-    "description": "Button that removes the country and origin filters."
-  },
   "featuredOngoing": "Happening now",
   "@featuredOngoing": {
     "description": "List section with the tournaments in progress."
@@ -6740,14 +6720,6 @@
   "featuredLive": "In progress",
   "@featuredLive": {
     "description": "Chip on a tournament that is happening now."
-  },
-  "featuredTournamentMissing": "This tournament is no longer available.",
-  "@featuredTournamentMissing": {
-    "description": "Message when a tournament id is not in the catalog."
-  },
-  "featuredTournamentFinals": "Endgames from this tournament",
-  "@featuredTournamentFinals": {
-    "description": "Section of the tournament screen with its featured endgames."
   },
   "featuredTournamentNoFinals": "Endgames show up here when the games finish.",
   "@featuredTournamentNoFinals": {
@@ -6793,17 +6765,9 @@
   "@featuredLinkInfo": {
     "description": "Link to a page about a tournament."
   },
-  "featuredAlertTournament": "Notify me about new endgames from this tournament",
-  "@featuredAlertTournament": {
-    "description": "Switch on the tournament screen to receive a notice for each new endgame of the tournament."
-  },
   "featuredEndgameTitle": "Featured endgame",
   "@featuredEndgameTitle": {
     "description": "App bar title of a featured endgame (before and during the game)."
-  },
-  "featuredEndgameMissing": "This endgame is no longer available.",
-  "@featuredEndgameMissing": {
-    "description": "Message when a featured endgame id is not in the catalog."
   },
   "featuredPromptWhite": "White to move. What would you play?",
   "@featuredPromptWhite": {
@@ -6955,15 +6919,6 @@
   "featuredFindHintButton": "Hint",
   "@featuredFindHintButton": {
     "description": "Button that shows a hint."
-  },
-  "featuredOriginFilter": "{origin, select, tournament{Tournaments} video{Videos} online{Online games} historical{Historic} challenge{Challenges} other{Other}}",
-  "@featuredOriginFilter": {
-    "description": "Origin filter chip on the featured list (plural).",
-    "placeholders": {
-      "origin": {
-        "type": "String"
-      }
-    }
   },
   "featuredNextLessonSub": "Chapter: {title}",
   "@featuredNextLessonSub": {
@@ -8406,33 +8361,6 @@
   "accountPhotoFailed": "Could not upload the photo. Check the internet and try again.",
   "@accountPhotoFailed": {
     "description": "Snack bar when the photo upload fails."
-  },
-  "crowdPercent": "{percent}% got it right",
-  "@crowdPercent": {
-    "description": "How many players met the endgame goal on the first try.",
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "crowdPlayersFinal": "{count} people played this endgame.",
-  "@crowdPlayersFinal": {
-    "description": "Featured endgame end: how many people played it.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
-  "crowdFew": "Few people played this endgame",
-  "@crowdFew": {
-    "description": "Featured endgame: too few players to show the percentage."
-  },
-  "crowdFewText": "The number shows from 30 people on.",
-  "@crowdFewText": {
-    "description": "Text under the \"few people played\" title."
   },
   "updateRequiredTitle": "Update Lucena",
   "@updateRequiredTitle": {
@@ -11657,5 +11585,23 @@
   "desafiosDailyWinLater": "Not now",
   "@desafiosDailyWinLater": {"description": "Daily endgame: desafiosDailyWinLater"},
   "desafiosDailyNone": "There is no endgame today. Come back tomorrow.",
-  "@desafiosDailyNone": {"description": "Daily endgame: desafiosDailyNone"}
+  "@desafiosDailyNone": {"description": "Daily endgame: desafiosDailyNone"},
+  "desafiosFeaturedBellTooltip": "New endgame notifications",
+  "@desafiosFeaturedBellTooltip": {"description": "Featured: desafiosFeaturedBellTooltip"},
+  "desafiosFeaturedBellOn": "New endgame notifications on",
+  "@desafiosFeaturedBellOn": {"description": "Featured: desafiosFeaturedBellOn"},
+  "desafiosFeaturedBellOff": "New endgame notifications off",
+  "@desafiosFeaturedBellOff": {"description": "Featured: desafiosFeaturedBellOff"},
+  "desafiosFeaturedBellDenied": "Notifications are turned off on this device. Turn them on in settings to get the alert.",
+  "@desafiosFeaturedBellDenied": {"description": "Featured: desafiosFeaturedBellDenied"},
+  "desafiosFeaturedBellSettings": "Open settings",
+  "@desafiosFeaturedBellSettings": {"description": "Featured: desafiosFeaturedBellSettings"},
+  "desafiosFeaturedHistoric": "Historic endgames",
+  "@desafiosFeaturedHistoric": {"description": "Featured: desafiosFeaturedHistoric"},
+  "desafiosFeaturedPractice": "Endgames to practice",
+  "@desafiosFeaturedPractice": {"description": "Featured: desafiosFeaturedPractice"},
+  "desafiosFeaturedTournamentFinals": "{count, plural, =1{One endgame to practice} other{{count} endgames to practice}}",
+  "@desafiosFeaturedTournamentFinals": {"placeholders": {"count": {"type": "int"}}},
+  "desafiosTournamentDates": "{start} to {end}",
+  "@desafiosTournamentDates": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
 }
