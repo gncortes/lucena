@@ -384,6 +384,40 @@ void main() {
         expect(push.settingsOpened, 1);
       });
 
+      testWidgets('vazio: o sino fica ativo e liga o aviso (H-DES-07)', (
+        tester,
+      ) async {
+        repository.value = FeaturedCatalog.empty;
+        push.granted = true;
+        await openList(tester);
+        expect(find.byKey(FeaturedKeys.listEmpty), findsOneWidget);
+        final bell = tester.widget<IconButton>(find.byKey(FeaturedKeys.bell));
+        expect(bell.onPressed, isNotNull);
+        await tester.tap(find.byKey(FeaturedKeys.bell));
+        await tester.pumpAndSettle();
+        expect(alerts.all, isTrue);
+      });
+
+      testWidgets('carregando e vazio: os mesmos ícones na barra', (
+        tester,
+      ) async {
+        Iterable<Key?> icons() => tester
+            .widgetList<IconButton>(
+              find.descendant(
+                of: find.byType(AppBar),
+                matching: find.byType(IconButton),
+              ),
+            )
+            .map((b) => b.key)
+            .where((k) => k != null);
+        await openList(tester, load: false);
+        final loading = icons().toList();
+        expect(loading, contains(FeaturedKeys.bell));
+        repository.value = FeaturedCatalog.empty;
+        await openList(tester);
+        expect(icons().toList(), loading);
+      });
+
       testWidgets('carregando, o sino fica desabilitado', (tester) async {
         await openList(tester, load: false);
         final bell = tester.widget<IconButton>(find.byKey(FeaturedKeys.bell));

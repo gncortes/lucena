@@ -118,7 +118,7 @@ void main() {
       ('race', 'Problemas', 'Corrida de finais: 3 minutos, 3 erros'),
       ('blind', 'Às cegas', 'Sem ver as peças'),
       ('freeBoard', 'Tabuleiro livre', 'Jogue qualquer posição'),
-      ('custom', 'Posição personalizada', 'Monte a posição peça por peça'),
+      ('custom', 'Montar posição', 'Monte a posição peça por peça'),
     ];
     var previous = -1.0;
     for (final (id, title, body) in rows) {

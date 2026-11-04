@@ -97,7 +97,7 @@
   "customFen": "FEN",
   "customFenHint": "Cole ou digite um FEN, ou monte o tabuleiro acima",
   "customPaste": "Colar",
-  "customPositionTitle": "Posição personalizada",
+  "customPositionTitle": "Montar posição",
   "customToolErase": "Apagar",
   "customToolMove": "Mover peças",
   "feedbackAchievement": "Conquista: {title}",
