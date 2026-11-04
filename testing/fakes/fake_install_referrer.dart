@@ -8,9 +8,16 @@ class FakeInstallReferrerService implements InstallReferrerService {
   String? value;
   int reads = 0;
 
+  /// Quantas leituras seguintes falham (Play fora do ar, tempo esgotado).
+  int failures = 0;
+
   @override
   Future<String?> referrer() async {
     reads++;
+    if (failures > 0) {
+      failures--;
+      throw const InstallReferrerFailure('Play fora do ar');
+    }
     return value;
   }
 }
