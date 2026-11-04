@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/rung_screen.dart';
@@ -16,13 +17,18 @@ import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
 
 void main() {
   final rung = sampleLadder.first;
   final queen = rung.challenges[0];
   final rook = rung.challenges[1];
 
-  Future<void> pump(WidgetTester tester, {Set<String> done = const {}}) async {
+  Future<void> pump(
+    WidgetTester tester, {
+    Set<String> done = const {},
+    bool assentar = true,
+  }) async {
     final cubit = JourneyCubit(
       FakeJourneyRepository(),
       FakeProgressRepository([
@@ -55,8 +61,22 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (assentar) await tester.pumpAndSettle();
   }
+
+  testWidgets('primeira entrada: a grade de desafios entra em ordem', (
+    tester,
+  ) async {
+    await pump(tester, assentar: false);
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final primeiro = find.byKey(MotionKeys.itemDaLista(0));
+    final segundo = find.byKey(MotionKeys.itemDaLista(1));
+    expect(primeiro, findsOneWidget);
+    expect(opacidade(tester, segundo), lessThan(opacidade(tester, primeiro)));
+    await tester.pumpAndSettle();
+    expect(opacidade(tester, segundo), 1);
+  });
 
   testWidgets('o personagem no alto, com o progresso', (tester) async {
     await pump(tester, done: {queen.id});

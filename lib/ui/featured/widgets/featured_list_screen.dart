@@ -16,6 +16,8 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../../core/widgets/skeleton.dart';
 import '../view_models/featured_catalog_cubit.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'featured_card.dart';
 import 'featured_tournament_card.dart';
 
@@ -140,65 +142,75 @@ class _Sections extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<FeaturedCatalogCubit>();
-    return ListView(
-      padding: scrollPadding(context, left: 16, right: 16),
-      children: [
-        if (state.ongoing.isNotEmpty) ...[
-          SectionTitle(
-            l10n.featuredOngoing,
-            textKey: FeaturedKeys.ongoingTitle,
-          ),
-          SizedBox(
-            key: FeaturedKeys.tournamentCarousel,
-            height: FeaturedTournamentCard.height,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: state.ongoing.length,
-              separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
-              itemBuilder: (context, index) {
-                final tournament = state.ongoing[index];
-                return FeaturedTournamentCard(
-                  tournament: tournament,
-                  finals: state.finalsOf(tournament.id),
-                  onTap: () => _open(
-                    context,
-                    cubit,
-                    Routes.featuredTournament(tournament.id),
-                  ),
-                );
-              },
+    return EntradaDaTela(
+      id: 'DesafiosLista',
+      child: ListaEmOrdem(
+        montar: (itens) => ListView(
+          padding: scrollPadding(context, left: 16, right: 16),
+          children: itens,
+        ),
+        itens: [
+          if (state.ongoing.isNotEmpty) ...[
+            SectionTitle(
+              l10n.featuredOngoing,
+              textKey: FeaturedKeys.ongoingTitle,
             ),
-          ),
-        ],
-        if (state.recent.isNotEmpty) ...[
-          SectionTitle(l10n.featuredRecent, textKey: FeaturedKeys.recentTitle),
-          for (final item in state.recent)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: FeaturedCard(
-                item: item,
-                onTap: () =>
-                    _open(context, cubit, Routes.featuredEndgame(item.id)),
+            SizedBox(
+              key: FeaturedKeys.tournamentCarousel,
+              height: FeaturedTournamentCard.height,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.ongoing.length,
+                separatorBuilder: (_, _) =>
+                    const SizedBox(width: AppSpacing.sm),
+                itemBuilder: (context, index) {
+                  final tournament = state.ongoing[index];
+                  return FeaturedTournamentCard(
+                    tournament: tournament,
+                    finals: state.finalsOf(tournament.id),
+                    onTap: () => _open(
+                      context,
+                      cubit,
+                      Routes.featuredTournament(tournament.id),
+                    ),
+                  );
+                },
               ),
             ),
-        ],
-        if (state.historic.isNotEmpty) ...[
-          SectionTitle(
-            l10n.desafiosFeaturedHistoric,
-            textKey: FeaturedKeys.historicTitle,
-          ),
-          for (final item in state.historic)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: FeaturedCard(
-                item: item,
-                historic: true,
-                onTap: () =>
-                    _open(context, cubit, Routes.featuredEndgame(item.id)),
-              ),
+          ],
+          if (state.recent.isNotEmpty) ...[
+            SectionTitle(
+              l10n.featuredRecent,
+              textKey: FeaturedKeys.recentTitle,
             ),
+            for (final item in state.recent)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: FeaturedCard(
+                  item: item,
+                  onTap: () =>
+                      _open(context, cubit, Routes.featuredEndgame(item.id)),
+                ),
+              ),
+          ],
+          if (state.historic.isNotEmpty) ...[
+            SectionTitle(
+              l10n.desafiosFeaturedHistoric,
+              textKey: FeaturedKeys.historicTitle,
+            ),
+            for (final item in state.historic)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: FeaturedCard(
+                  item: item,
+                  historic: true,
+                  onTap: () =>
+                      _open(context, cubit, Routes.featuredEndgame(item.id)),
+                ),
+              ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
