@@ -5,6 +5,7 @@ import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
 import 'package:patrol/patrol.dart';
 
+import 'package:lucena/data/repositories/conclusion/conclusion_repository_local.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
@@ -78,7 +79,18 @@ class AppRobot {
   /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho. Como
   /// ao fechar à força: nenhuma tela é avisada de que o app vai fechar.
   Future<void> restart() async {
+    final conclusions = LocalConclusionRepository(PreferencesService());
+    // Fechar à força não avisa a tela, mas tirar o app da árvore fecha o
+    // view model da conclusão e apaga a "conclusão aberta": ela é devolvida
+    // depois, como o aparelho a deixaria.
+    final open = await $.tester.runAsync(conclusions.pending);
     await $.pumpWidgetAndSettle(const SizedBox());
+    // As gravações do app que saiu (partida às cegas, conclusão aberta)
+    // terminam antes de o novo abrir, como no aparelho.
+    await $.tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (open != null) await conclusions.open(open);
+    });
     await _pumpApp();
   }
 

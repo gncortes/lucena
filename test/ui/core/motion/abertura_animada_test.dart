@@ -209,4 +209,46 @@ void main() {
     await ate(tester, 760);
     expect(abertura(tester), isFalse);
   });
+
+  // Defeito do MP4 de 04/11: ao sair, a abertura trocava a árvore e o app por
+  // baixo montava de novo (esqueleto, Início e onboarding outra vez).
+  teste('o app por baixo não monta de novo quando a abertura sai', (
+    tester,
+  ) async {
+    var montagens = 0;
+    tester.view.physicalSize = const Size(412, 860);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      AberturaAnimada(
+        carga: carga.future,
+        child: _Montagens(aoMontar: () => montagens++),
+      ),
+    );
+    await tester.pump();
+    carga.complete();
+    await tester.pumpAndSettle();
+    expect(abertura(tester), isFalse);
+    expect(montagens, 1);
+  });
+}
+
+class _Montagens extends StatefulWidget {
+  const _Montagens({required this.aoMontar});
+
+  final VoidCallback aoMontar;
+
+  @override
+  State<_Montagens> createState() => _MontagensState();
+}
+
+class _MontagensState extends State<_Montagens> {
+  @override
+  void initState() {
+    super.initState();
+    widget.aoMontar();
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.expand();
 }

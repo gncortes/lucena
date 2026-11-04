@@ -108,6 +108,25 @@ void main() {
       },
     );
 
+    // Defeito do MP4 de 04/11: sem ouvinte de saída, o sistema esmaece a
+    // tela nativa e o peão escurece antes do peão do Flutter (H-ANI-44)
+    // aparecer. A troca tem de ser seca: o primeiro quadro do Flutter já é o
+    // peão na mesma pose, no mesmo lugar.
+    test('Android 12+: a tela nativa sai sem fade, de uma vez', () {
+      final atividade = File(
+        'android/app/src/main/kotlin/com/gncortes/lucena/MainActivity.kt',
+      ).readAsStringSync();
+      expect(atividade, contains('setOnExitAnimationListener'));
+      expect(
+        atividade,
+        matches(
+          RegExp(
+            r'setOnExitAnimationListener\s*\{\s*\w+\s*->\s*\w+\.remove\(\)',
+          ),
+        ),
+      );
+    });
+
     test('Android 11 e anteriores: launch_background #14211B', () {
       for (final pasta in ['values', 'values-night']) {
         final cor = File('$res/$pasta/launch_colors.xml').readAsStringSync();

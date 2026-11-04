@@ -38,6 +38,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.
@@ -166,7 +167,11 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               children: [
                 SafeArea(
                   child: Builder(
-                    builder: (context) => _body(context, state, boardSettings),
+                    builder: (context) => ShimmerConteudo(
+                      carregando: !state.ready || _board == null,
+                      esqueleto: const SkeletonList(),
+                      child: _body(context, state, boardSettings),
+                    ),
                   ),
                 ),
                 if (_action(context, state) case final action?)
@@ -260,7 +265,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     BoardSettings boardSettings,
   ) {
     final board = _board;
-    if (!state.ready || board == null) return const SkeletonList();
+    if (!state.ready || board == null) return const SizedBox.shrink();
     final scaler = MediaQuery.textScalerOf(context);
     // Plain numbers occupy 24 dp at the default scale, plus 10/6 padding.
     final timerHeight = 16 + scaler.scale(24).ceilToDouble();

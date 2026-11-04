@@ -56,7 +56,6 @@ import 'package:lucena/data/repositories/endgames/endgame_progress_repository_no
 import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 
 import 'fakes/fake_position_judge.dart';
-import 'fakes/fake_blind_checkpoint_repository.dart';
 
 import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
@@ -133,6 +132,7 @@ import 'fakes/fake_speech_input_repository.dart';
 
 import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
+import 'package:lucena/data/repositories/blind/blind_checkpoint_repository.dart';
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
 import 'package:lucena/data/repositories/course_preview/course_preview_repository_asset.dart';
 import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
@@ -583,7 +583,10 @@ Future<Dependencies> e2eDependencies({
       e2eTts,
     ),
     speechInputRepository: e2eSpeechInput,
-    blindCheckpointRepository: FakeBlindCheckpointRepository(),
+    // Real: a partida às cegas guardada tem de sobreviver ao restart().
+    blindCheckpointRepository: LocalBlindCheckpointRepository(
+      PreferencesService(),
+    ),
     // Real: o rascunho e a resposta têm de sobreviver ao restart() do cenário.
     surveyRepository: LocalSurveyRepository(PreferencesService(), clock),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
@@ -676,6 +679,9 @@ Future<void> resetE2EData() async {
   e2eSound.played.clear();
   e2eHaptics.events.clear();
   e2eTts.reset();
+  e2eSpeechInput
+    ..permitted = true
+    ..grants = true;
   e2eAnalysis
     ..useStockfish = false
     ..requests.clear()

@@ -83,6 +83,28 @@ void main() {
         last = size;
       }
     });
+    test('grupo só com teste (sem lição de tema) não vira capítulo', () {
+      final base = course(chapters: 2);
+      final resources = TrainingResources(
+        lessons: [
+          ...base.lessons,
+          const TrainingLesson(
+            id: 'ab.test',
+            kind: TrainingLessonKind.test,
+            title: 'Teste',
+            group: 'Aberturas',
+            groupId: 'ab',
+            partId: 'p',
+            partTitle: 'Parte',
+          ),
+        ],
+        banks: base.banks,
+        openings: base.openings,
+      );
+      final chapters = planChapters(resources);
+      expect(chapters.map((c) => c.id), isNot(contains('ab')));
+      expect(chapters.every((c) => c.lessonIds.isNotEmpty), isTrue);
+    });
     test('capítulos do teste não passam do que existe', () {
       final chapters = planChapters(course(chapters: 3));
       expect(diagnosticChapters(chapters, 20), hasLength(3));

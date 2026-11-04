@@ -9,6 +9,8 @@ import '../../../domain/models/lesson_script.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/movimento_reduzido.dart';
 import '../../core/motion/retorno_do_lance.dart';
 import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/canvas_symbols.dart';
@@ -58,7 +60,8 @@ class ScriptBoard extends StatefulWidget {
 
   /// O tempo de cada lance rápido (`seq`) e do crossfade da posição nova.
   static const seqStep = AppMotion.component;
-  static const fade = AppMotion.component;
+  // H-ANI-03: a posição nova troca em fade, no tempo do TrocaComFade do kit.
+  static const fade = LucenaMotion.trocaComFade;
 
   /// O tempo até as setas aparecerem depois de um lance (o lance mais 120 ms de respiro; protótipo, 420 ms).
   static final shapesDelay = Duration(
@@ -268,10 +271,14 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   bool _alive(int run) => mounted && run == _run;
 
+  /// O tempo do crossfade: o do kit, ou o fade curto com movimento reduzido.
+  Duration get _fade => MovimentoReduzido.of(context)
+      ? LucenaMotion.fadeReduzido
+      : ScriptBoard.fade;
+
   /// Põe por cima uma cópia fixa do que está na tela, que se dissolve no
-  /// tabuleiro novo embaixo (sem movimento reduzido, troca seca).
+  /// tabuleiro novo embaixo (com movimento reduzido, o fade curto do kit).
   void _crossfade() {
-    if (AppMotion.reduced(context)) return;
     final game = _controller.game;
     _ghostId++;
     _ghost = StaticChessboard(
@@ -321,9 +328,9 @@ class _ScriptBoardState extends State<ScriptBoard> {
           resetPremove: true,
         );
         if (t.ucis.isEmpty) {
-          await _finish(run, s, ScriptBoard.fade);
+          await _finish(run, s, _fade);
         } else {
-          await _wait(ScriptBoard.fade);
+          await _wait(_fade);
           if (!_alive(run)) return;
           await _play(run, s, start, t.ucis, fade: true);
         }
@@ -487,7 +494,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
                   // Cópia nova, animação nova (troca antes do fim recomeça).
                   key: ValueKey(_ghostId),
                   tween: Tween(begin: 1, end: 0),
-                  duration: ScriptBoard.fade,
+                  duration: _fade,
                   onEnd: () => setState(() => _ghost = null),
                   builder: (_, opacity, child) =>
                       Opacity(opacity: opacity, child: child),

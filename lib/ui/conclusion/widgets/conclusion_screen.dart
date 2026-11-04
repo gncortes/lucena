@@ -59,6 +59,7 @@ import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o
@@ -176,23 +177,27 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
               ),
           ],
         ),
-        body: !state.ready
-            ? const SkeletonList()
-            : conclusion == null
-            ? const SizedBox.shrink()
-            : Stack(
-                children: [
-                  _Body(
-                    state: state,
-                    conclusion: conclusion,
-                    card: _card,
-                    analysis: _analysis,
-                    onAccountInviteClose: _inviteAvailable
-                        ? _closeInvite
-                        : null,
-                  ),
-                ],
-              ),
+        body: ShimmerConteudo(
+          carregando: !state.ready,
+          esqueleto: const SkeletonList(),
+          child: !state.ready
+              ? const SizedBox.shrink()
+              : conclusion == null
+              ? const SizedBox.shrink()
+              : Stack(
+                  children: [
+                    _Body(
+                      state: state,
+                      conclusion: conclusion,
+                      card: _card,
+                      analysis: _analysis,
+                      onAccountInviteClose: _inviteAvailable
+                          ? _closeInvite
+                          : null,
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
     // O aviso de conquista vai por cima da tela inteira, AppBar incluída
