@@ -2233,5 +2233,22 @@
   "desafiosDailyWinBody": "[Ýöû wöñ tödåý'š éñdĝåmé. one two three]",
   "desafiosDailyWinShare": "[Šhåŕé one]",
   "desafiosDailyWinLater": "[Ñöt ñöw one]",
-  "desafiosDailyNone": "[Théŕé îš ñö éñdĝåmé tödåý. Çömé båçk tömöŕŕöw. one two three four]"
+  "desafiosDailyNone": "[Théŕé îš ñö éñdĝåmé tödåý. Çömé båçk tömöŕŕöw. one two three four]",
+  "desafiosFeaturedBellTooltip": "[Ñéw éñdĝåmé ñötîfîçåtîöñš one two three]",
+  "desafiosFeaturedBellOn": "[Ñéw éñdĝåmé ñötîfîçåtîöñš öñ one two three]",
+  "desafiosFeaturedBellOff": "[Ñéw éñdĝåmé ñötîfîçåtîöñš öff one two three]",
+  "desafiosFeaturedBellDenied": "[Ñötîfîçåtîöñš åŕé tûŕñéd öff öñ thîš dévîçé. Tûŕñ thém öñ îñ šéttîñĝš tö ĝét thé åléŕt. one two three four five six seven eight]",
+  "desafiosFeaturedBellSettings": "[Öpéñ šéttîñĝš one two]",
+  "desafiosFeaturedHistoric": "[Hîštöŕîç éñdĝåméš one two]",
+  "desafiosFeaturedPractice": "[Éñdĝåméš tö pŕåçtîçé one two]",
+  "desafiosFeaturedTournamentFinals": "{count, plural, =1{[Öñé éñdĝåmé tö pŕåçtîçé one two three]} other{[{count} éñdĝåméš tö pŕåçtîçé one two three]}}",
+  "desafiosTournamentDates": "[{start} tö {end} one two]",
+  "desafiosRaceHeadline": "[{minutes}-mîñ ŕåçé · {reason} one two three]",
+  "desafiosRaceEndTime": "[tîmé îš ûp one]",
+  "desafiosRaceEndErrors": "[3 mîštåkéš one]",
+  "desafiosRaceEndQuit": "[qûît one]",
+  "desafiosRaceNewRecord": "[Ñéw {minutes}-mîñ ŕéçöŕd! Ît wåš {previous} one two three four]",
+  "desafiosRaceSeeAll": "[Šéé åll {count} one two]",
+  "desafiosShareError": "[Çöûld ñöt šhåŕé thé lîñk. one two three]",
+  "desafiosSpeedrunEmpty": "[Ñö špéédŕûñš åt thîš lévél. one two three]"
 }
