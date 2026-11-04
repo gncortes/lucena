@@ -22,10 +22,6 @@ void main() {
       'Não foi possível baixar o capítulo. Tente novamente.',
     );
     expect(
-      t.trainingDownloadCourseError,
-      'Não foi possível baixar o curso. Tente novamente.',
-    );
-    expect(
       t.accountDeleteFailed,
       'Não foi possível excluir a conta. Tente novamente.',
     );

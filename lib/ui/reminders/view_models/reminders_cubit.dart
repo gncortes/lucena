@@ -172,7 +172,13 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
             title: texts.trainingTitle,
             body: texts.trainingBody(request.text, lesson?.title),
             at: request.at,
-            payload: Routes.home,
+            payload: switch (config.course) {
+              TrainingCourse.escola =>
+                lesson == null
+                    ? Routes.trainingGoals(config.course.name)
+                    : Routes.lessonScript(lesson.id, origin: 'treino_lembrete'),
+              _ => Routes.home,
+            },
             repeatWeekly: repeatWeekly,
           ),
         );

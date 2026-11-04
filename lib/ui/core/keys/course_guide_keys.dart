@@ -8,6 +8,7 @@ abstract final class CourseGuideKeys {
   static Key chapterLesson(String id) => Key('courseGuide.chapter.lesson.$id');
   static const chapterContinue = Key('courseGuide.chapter.continue');
   static const goalsBadge = Key('courseGuide.goalsBadge');
+  static Key module(String id) => Key('courseGuide.module.$id');
   static Key catalogPart(String id) => Key('courseGuide.catalogPart.$id');
   static Key tab(String tab) => Key('courseGuide.tab.$tab');
   static const planAction = Key('courseGuide.planAction');

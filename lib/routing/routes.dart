@@ -626,6 +626,11 @@ abstract final class Routes {
 
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';
+
+  /// Guia do curso já na aba Metas (toque na notificação sem lição pendente).
+  static String trainingGoals(String course) => '${training(course)}?aba=goals';
+  static String trainingCatalog(String course) =>
+      '${training(course)}?aba=catalog';
   static String trainingPlan(String course) => '${training(course)}/plan';
   static String trainingChapter(String course, String chapter) =>
       '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';

@@ -84,7 +84,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       if (sample == 'first') {
-        expect(find.text('AULA'), findsNothing);
+        expect(find.text('LIÇÃO'), findsNothing);
         final info = find.text(
           'Ao concluir uma lição, o tema dela entra nas metas por 7 dias, um exercício por dia.',
         );
@@ -97,13 +97,13 @@ void main() {
         );
         expect(find.byIcon(Icons.info_outline), findsOneWidget);
       } else if (sample == 'second') {
-        expect(find.text('AULA'), findsOneWidget);
+        expect(find.text('LIÇÃO'), findsOneWidget);
       } else if (sample == 'doneExtra') {
         expect(
           tester.getSize(find.byKey(TrainingKeys.doubleButton)).height,
           52,
         );
-        expect(find.text('AULAS'), findsOneWidget);
+        expect(find.text('LIÇÕES'), findsOneWidget);
       } else if (sample == 'dayOff') {
         expect(find.text('Plano: 0 dias de estudo'), findsOneWidget);
         final info = find.text(

@@ -11,6 +11,10 @@
   "@loadErrorGenericTitle": {"description": "Standard loading error: GenericTitle."},
   "loadErrorOfflineTitle": "No internet",
   "@loadErrorOfflineTitle": {"description": "Standard loading error: OfflineTitle."},
+  "loadErrorOfflineCourseMessage": "You need an internet connection to access this course.",
+  "@loadErrorOfflineCourseMessage": {
+    "description": "Standard error screen, offline variant shown when a course package cannot be downloaded."
+  },
   "loadErrorOfflineMessage": "You need an internet connection to access this feature.",
   "@loadErrorOfflineMessage": {"description": "Standard loading error: OfflineMessage."},
   "loadErrorNoSpaceTitle": "Not enough space on your phone",
@@ -9791,7 +9795,7 @@
   "@courseGuideTabGoals": {
     "description": "T85 course guide: courseGuideTabGoals."
   },
-  "courseGuideTabProgress": "Progress",
+  "courseGuideTabProgress": "Statistics",
   "@courseGuideTabProgress": {
     "description": "T85 course guide: courseGuideTabProgress."
   },
@@ -9899,6 +9903,18 @@
         "type": "int"
       },
       "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingModuleLesson": "{module} · Lesson {n}",
+  "@trainingModuleLesson": {
+    "description": "Escola lesson card label: module name and lesson number inside the module.",
+    "placeholders": {
+      "module": {
+        "type": "String"
+      },
+      "n": {
         "type": "int"
       }
     }
@@ -10846,7 +10862,7 @@
   "@trainingEscolaDayOffInfo": {
     "description": "T85 Viktor School daily training: trainingEscolaDayOffInfo."
   },
-  "trainingEscolaTabsProgress": "completed lessons and stars.",
+  "trainingEscolaTabsProgress": "completed lessons and stars per piece.",
   "@trainingEscolaTabsProgress": {
     "description": "T85 Viktor School daily training: trainingEscolaTabsProgress."
   },
@@ -10890,10 +10906,13 @@
   "@trainingEscolaTabsCatalog": {
     "description": "T85 Viktor School daily training: trainingEscolaTabsCatalog."
   },
-  "trainingEscolaDoubleBody": "Another {n} lessons and their challenges are added today.",
+  "trainingEscolaDoubleBody": "Another {words, select, w1{one lesson} w2{two lessons} w3{three lessons} w4{four lessons} w5{five lessons} w6{six lessons} w8{eight lessons} w12{twelve lessons} other{{n} lessons}} and their challenges are added today.",
   "@trainingEscolaDoubleBody": {
-    "description": "T85 Viktor School daily training: trainingEscolaDoubleBody.",
+    "description": "T85 Viktor School daily training: offer to double the goals. words is w1..w6 for the spelled-out count (any other value falls back to the digit n).",
     "placeholders": {
+      "words": {
+        "type": "String"
+      },
       "n": {
         "type": "int"
       }
@@ -10980,7 +10999,6 @@
   "trainingViewProgress": "View progress",
   "trainingViewGoals": "View goals",
   "trainingViewCatalog": "View catalog",
-  "trainingStartPilares": "Start Pilares",
   "trainingPilaresCompletedTitle": "You completed Pilares do Xadrez",
   "trainingPilaresCompletedBody": "All lessons and tests completed. Goals continue with theme exercises and openings; use the Catalog to review a lesson.",
   "trainingEscolaCompletedTitle": "You completed Viktor’s School",
@@ -11009,10 +11027,17 @@
   "trainingProfileSolid": "Solid",
   "trainingProfileAggressive": "Aggressive",
   "trainingEntrySpeech": "To start the course, sign in to your account. This lets me save your progress, lesson by lesson.",
+  "trainingEntrySpeechSchool": "I will follow every lesson and every test of yours, from the first chapter to the diploma.",
+  "@trainingEntrySpeechSchool": {
+    "description": "Viktor speech on the School account gate, shown before sign-in."
+  },
+  "trainingEntrySignIn": "Sign in or create an account",
+  "@trainingEntrySignIn": {
+    "description": "Single button on the School account gate; opens the account screen."
+  },
   "trainingEntrySaved": "Your progress saved, on any phone",
   "trainingEntryOffline": "Downloaded lessons work offline",
   "trainingEntryEmail": "Use email",
-  "trainingDownloadCourseOffline": "You are offline. To download the course for the first time, connect and tap Try again.",
   "trainingDownloadChapterOffline": "This lesson has not been downloaded. Connect to the internet: the entire chapter downloads at once, then works offline.",
   "trainingDownloadChapterError": "Could not download the chapter. Try again in a few moments.",
   "trainingDownloadStorage": "Your phone needs more space to download this chapter (about {size} MB). Once downloaded, its lessons and exercises work offline.",
@@ -11047,9 +11072,6 @@
     "description": "Training course state."
   },
   "@trainingViewCatalog": {
-    "description": "Training course state."
-  },
-  "@trainingStartPilares": {
     "description": "Training course state."
   },
   "@trainingPilaresCompletedTitle": {
@@ -11089,9 +11111,6 @@
     "description": "Training course state."
   },
   "@trainingEntryEmail": {
-    "description": "Training course state."
-  },
-  "@trainingDownloadCourseOffline": {
     "description": "Training course state."
   },
   "@trainingDownloadChapterOffline": {
@@ -11234,10 +11253,6 @@
   },
   "@trainingTestLeave": {
     "description": "Training course state."
-  },
-  "trainingDownloadCourseError": "Could not download the course. Try again in a few moments.",
-  "@trainingDownloadCourseError": {
-    "description": "Course entry download failure without a dedicated Canvas artboard."
   },
   "trainingDownloadCourseStorage": "There is not enough space to download the course (about {size} MB). Free up space and try again. Once downloaded, the course works offline.",
   "@trainingDownloadCourseStorage": {
@@ -11782,5 +11797,60 @@
   "homeHeroLastPosition": "Your last position",
   "@homeHeroLastPosition": {
     "description": "Home top card for the Explore positions goal: the title, the saved free board position."
+  },
+  "schoolGraduationBrand": "Viktor's School",
+  "@schoolGraduationBrand": {
+    "description": "Brand line at the top of the School diploma (shown in capitals)."
+  },
+  "schoolGraduationText": "for completing the {n} lessons of Viktor's School",
+  "@schoolGraduationText": {
+    "description": "Diploma text for the School: what the student completed.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolGraduationTeacher": "Viktor",
+  "@schoolGraduationTeacher": {
+    "description": "Teacher name signed on the School diploma."
+  },
+  "schoolGraduationSummary": "What you completed",
+  "@schoolGraduationSummary": {
+    "description": "Title of the per-module summary on the School diploma screen."
+  },
+  "schoolGraduationModuleCount": "{n, plural, =1{1 lesson} other{{n} lessons}}",
+  "@schoolGraduationModuleCount": {
+    "description": "How many lessons the student completed in a module, in the diploma summary.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolGraduationSurveyTitle": "What did you think of the School?",
+  "@schoolGraduationSurveyTitle": {
+    "description": "Title of the card that opens the opinion survey at the end of the School."
+  },
+  "schoolGraduationSurveyBody": "It takes 1 minute and helps improve the lessons.",
+  "@schoolGraduationSurveyBody": {
+    "description": "Subtitle of the opinion card at the end of the School."
+  },
+  "schoolGraduationPilares": "Meet Pilares",
+  "@schoolGraduationPilares": {
+    "description": "Button on the School diploma that opens the Pilares course presentation."
+  },
+  "schoolGraduationShareText": "I completed Viktor's School on Lucena! {link}",
+  "@schoolGraduationShareText": {
+    "description": "Text sent with the diploma image when sharing.",
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolGraduationOpen": "View the diploma",
+  "@schoolGraduationOpen": {
+    "description": "Lesson tab button, with the School completed, that reopens the diploma."
   }
 }

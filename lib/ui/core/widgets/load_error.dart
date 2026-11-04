@@ -36,6 +36,7 @@ class LoadErrorScreen extends StatelessWidget {
     this.onBack,
     this.onFreeSpace,
     this.showAction = true,
+    this.offlineMessage,
     super.key,
   });
 
@@ -44,6 +45,9 @@ class LoadErrorScreen extends StatelessWidget {
   final VoidCallback? onBack;
   final VoidCallback? onFreeSpace;
   final bool showAction;
+
+  /// Replaces the offline text when the screen belongs to a specific course.
+  final String? offlineMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +61,7 @@ class LoadErrorScreen extends StatelessWidget {
       ),
       LoadErrorKind.offline => (
         t.loadErrorOfflineTitle,
-        t.loadErrorOfflineMessage,
+        offlineMessage ?? t.loadErrorOfflineMessage,
         CanvasSymbols.wifiOff,
       ),
       LoadErrorKind.noSpace => (
