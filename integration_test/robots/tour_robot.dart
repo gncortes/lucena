@@ -196,8 +196,18 @@ class TourRobot {
       return;
     }
     await _tap(LevelKeys.option(LevelChoice.band));
-    await _tap(LevelKeys.bandOption(level));
-    await _tap(LevelKeys.bandConfirm);
+    await _tapInSheet(LevelKeys.bandOption(level));
+    await _tapInSheet(LevelKeys.bandConfirm);
+  }
+
+  // Na folha de faixas, o `scrollTo` procura a rolagem da página de trás:
+  // o `ensureVisible` rola a da própria folha.
+  Future<void> _tapInSheet(Key key) async {
+    await $(LevelKeys.bandSheet).waitUntilVisible();
+    await $.tester.ensureVisible(find.byKey(key));
+    await $.pumpAndSettle();
+    await $(key).tap();
+    await $.pumpAndSettle();
   }
 
   /// No passo do nível: abre o teste de nível.

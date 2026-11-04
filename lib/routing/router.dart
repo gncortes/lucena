@@ -54,6 +54,8 @@ import '../ui/featured/widgets/featured_tournament_screen.dart';
 import '../data/repositories/conclusion/conclusion_repository.dart';
 import '../data/repositories/chesscom/chesscom_repository.dart';
 import '../data/repositories/lichess/lichess_repository.dart';
+import '../data/repositories/purchase/opening_offer_repository.dart';
+import '../data/repositories/purchase/purchase_repository.dart';
 import '../data/repositories/blind/blind_log_repository.dart';
 import '../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
@@ -667,6 +669,8 @@ GoRouter buildRouter({
             analytics: context.analytics,
             courseTraining: context.read<course_training.TrainingRepository>(),
             trainingCourses: activeTrainingCourses,
+            openingOffer: context.read<OpeningOfferRepository>(),
+            purchases: context.read<PurchaseRepository>(),
             trainingLessonPreview: trainingLessonPreviewLoader(
               scripts: context.read<LessonScriptRepository>(),
               language: _language(context),

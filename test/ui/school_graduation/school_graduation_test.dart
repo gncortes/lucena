@@ -14,6 +14,7 @@ import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/school_graduation/view_models/school_graduation_cubit.dart';
 import 'package:lucena/ui/school_graduation/widgets/school_graduation_screen.dart';
 
+import '../../../testing/fakes/fake_opening_offer_repository.dart';
 import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/training/training_scenario_builder.dart';
@@ -21,6 +22,7 @@ import '../../../testing/training/training_scenario_builder.dart';
 /// T85-D3 H-ESC-22: o diploma da Escola, o resumo por módulo e os destinos.
 void main() {
   late List<String> visited;
+  late FakeOpeningOfferRepository offer;
 
   Future<void> mount(WidgetTester tester) async {
     setPhoneSize(tester, const Size(412, 917));
@@ -41,15 +43,18 @@ void main() {
     );
     addTearDown(repository.dispose);
     visited = [];
+    offer = FakeOpeningOfferRepository(now: scenario.now);
     final router = GoRouter(
       initialLocation: '/graduation',
       routes: [
         GoRoute(
           path: '/graduation',
           builder: (context, state) => BlocProvider(
-            create: (_) =>
-                SchoolGraduationCubit(repository: repository, now: scenario.now)
-                  ..load(),
+            create: (_) => SchoolGraduationCubit(
+              repository: repository,
+              now: scenario.now,
+              openingOffer: offer,
+            )..load(),
             child: const SchoolGraduationScreen(),
           ),
         ),
@@ -105,6 +110,15 @@ void main() {
     await tester.tap(find.byKey(TrainingKeys.diplomaPilares));
     await tester.pumpAndSettle();
     expect(visited.last, Routes.pilaresSale);
+  });
+
+  testWidgets('H-VEN-15: Conhecer o Pilares conta como a 1ª vez da oferta '
+      'ao abrir o app', (tester) async {
+    await mount(tester);
+    expect(offer.state.count, 0);
+    await tester.tap(find.byKey(TrainingKeys.diplomaPilares));
+    await tester.pumpAndSettle();
+    expect(offer.state.count, 1);
   });
 
   testWidgets('Ver o catálogo abre o catálogo da Escola', (tester) async {

@@ -35,6 +35,7 @@ import 'data/repositories/alerts/alerts_repository.dart';
 import 'data/repositories/lesson_ad/course_access_repository.dart';
 import 'data/repositories/lesson_ad/demo_ad_repository.dart';
 import 'data/repositories/training/demo_offer_repository.dart';
+import 'data/repositories/purchase/opening_offer_repository.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
@@ -837,6 +838,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<DemoOfferRepository>.value(
           value: dependencies.demoOfferRepository,
+        ),
+        RepositoryProvider<OpeningOfferRepository>.value(
+          value: dependencies.openingOfferRepository,
         ),
         RepositoryProvider<PurchaseRepository>.value(
           value: dependencies.purchaseRepository,
