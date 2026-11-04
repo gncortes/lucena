@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../view_models/course_guide_cubit.dart';
+
 import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/push/push_repository.dart';
-import '../../../data/repositories/training/course_training_repository.dart';
 import '../../../domain/models/training/training_course.dart';
-import '../../../domain/models/training/training_course_config.dart';
-import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/training/goal/goal_view.dart';
 import '../../../domain/use_cases/training/goal/tournament_rules.dart';
 import '../../../routing/route_names.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -29,16 +28,25 @@ class TrainingGuideTab extends StatelessWidget {
   final TrainingCourse course;
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (context) => TrainingGoalCubit(
-      repository: context.read<TrainingRepository>(),
-      config: TrainingCourseConfig.fromName(course.name)!,
-      now: context.read<Now>(),
-      analytics: context.analytics,
-      afterSave: (_) => context.read<RemindersCubit>().refresh(),
-    )..load(),
-    child: _GuideBody(course: course),
-  );
+  Widget build(BuildContext context) {
+    final guide = context.read<CourseGuideCubit>();
+    return BlocProvider(
+      create: (context) => TrainingGoalCubit(
+        repository: guide.repository,
+        config: guide.config,
+        now: guide.now,
+        analytics: guide.analytics,
+        afterSave: (_) async {
+          try {
+            await context.read<RemindersCubit>().refresh();
+          } on ProviderNotFoundException {
+            // Sem lembretes na árvore (por exemplo, em teste de tela).
+          }
+        },
+      )..load(),
+      child: _GuideBody(course: course),
+    );
+  }
 }
 
 class _GuideBody extends StatefulWidget {

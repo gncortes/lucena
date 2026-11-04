@@ -140,8 +140,7 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
       for (final reminder in plan) _notification(reminder, now, texts),
       ...trainingNotifications,
     ]);
-    await _recordTrainingSchedules(trainingNotifications, now);
-    await _recordTournamentPush(trainingNotifications, now, permitted);
+    await _recordTrainingSchedules(trainingNotifications, now, permitted);
     if (!isClosed && !listEquals(plan, state)) emit(plan);
   }
 
@@ -222,10 +221,15 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   Future<void> _recordTrainingSchedules(
     List<ScheduledNotification> notifications,
     DateTime now,
+    bool permitted,
   ) async {
     final repository = _training;
     if (repository == null) return;
     for (final config in courses) {
+      final tournamentScheduled = notifications.any(
+        (n) => n.id == tournamentPushFirstId + config.course.index,
+      );
+      AnalyticsEvent? pushEvent;
       final notification = notifications
           .where((n) => n.id == trainingFirstId + config.course.index)
           .firstOrNull;
@@ -262,50 +266,31 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
             );
           }
         }
-        return next;
-      });
-      if (shown != null) unawaited(_log(shown!));
-      if (scheduled != null) unawaited(_log(scheduled!));
-    }
-  }
-
-  /// Registra o aviso do torneio uma vez: agendado ao entrar na lista, mostrado
-  /// quando a hora passa. O estado guarda a data do torneio avisado.
-  Future<void> _recordTournamentPush(
-    List<ScheduledNotification> notifications,
-    DateTime now,
-    bool permitted,
-  ) async {
-    final repository = _training;
-    if (repository == null || !permitted) return;
-    for (final config in courses) {
-      final scheduledNow = notifications.any(
-        (n) => n.id == tournamentPushFirstId + config.course.index,
-      );
-      AnalyticsEvent? event;
-      await repository.transact(config.course, (current) {
-        final date = current.objective?.tournamentDate;
-        final marked = current.tournamentPushFor;
-        if (scheduledNow && marked != date) {
-          event = AnalyticsEvents.torneioPushAgendado(
-            curso: config.course.name,
-          );
-          return current.copyWith(tournamentPushFor: date);
-        }
-        if (!scheduledNow && marked != null) {
-          if (marked == date && tournamentPush(current, now) == null) {
+        // Aviso do torneio (H-TRE-14): agendado uma vez; mostrado quando a
+        // hora passa sem registro. O estado guarda a data já avisada.
+        if (permitted) {
+          final date = current.objective?.tournamentDate;
+          final marked = current.tournamentPushFor;
+          if (tournamentScheduled && marked != date) {
+            next = next.copyWith(tournamentPushFor: date);
+            pushEvent = AnalyticsEvents.torneioPushAgendado(
+              curso: config.course.name,
+            );
+          } else if (!tournamentScheduled && marked != null) {
             final registered = current.tournaments.any((t) => t.date == date);
-            if (!registered) {
-              event = AnalyticsEvents.torneioPushMostrado(
+            if (marked == date && !registered) {
+              pushEvent = AnalyticsEvents.torneioPushMostrado(
                 curso: config.course.name,
               );
             }
+            next = next.copyWith(tournamentPushFor: null);
           }
-          return current.copyWith(tournamentPushFor: null);
         }
-        return current;
+        return next;
       });
-      if (event != null) unawaited(_log(event!));
+      if (pushEvent != null) unawaited(_log(pushEvent!));
+      if (shown != null) unawaited(_log(shown!));
+      if (scheduled != null) unawaited(_log(scheduled!));
     }
   }
 
