@@ -29,6 +29,7 @@ import '../../core/widgets/lucena_snack_bar.dart';
 import '../../goal/widgets/goal_sheet.dart';
 import '../../goal/widgets/goal_ui.dart';
 import '../../region/widgets/region_sheet.dart';
+import '../../pilares_sale/widgets/pilares_course_card.dart';
 import '../view_models/profile_account_cubit.dart';
 import '../view_models/profile_cubit.dart';
 import 'account_delete_sheet.dart';
@@ -130,6 +131,8 @@ class _ProfileView extends StatelessWidget {
           ),
           children: [
             _Header(profile: profile, account: account),
+            const SizedBox(height: AppSpacing.lg),
+            const PilaresCourseCard(),
             const SizedBox(height: AppSpacing.lg),
             if (account == null)
               const _LocalCard()

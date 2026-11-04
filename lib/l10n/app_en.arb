@@ -13816,5 +13816,29 @@
         "type": "int"
       }
     }
+  },
+  "venAboutTitle": "About Pilares",
+  "@venAboutTitle": {
+    "description": "Título da tela de detalhes do curso e do cartão no fim de Como funciona (H-VEN-02)."
+  },
+  "venAboutCardLine": "Content, plan and questions about Pilares do Xadrez.",
+  "@venAboutCardLine": {
+    "description": "Frase do cartão Sobre o Pilares no fim de Como funciona (PropV1TreinoAjuda)."
+  },
+  "venAboutHow": "How the course works",
+  "@venAboutHow": {
+    "description": "Seção da Visão geral do Sobre o Pilares (PropV1CursoDetalhes)."
+  },
+  "venAboutCovers": "What the course covers",
+  "@venAboutCovers": {
+    "description": "Seção da Visão geral do Sobre o Pilares (PropV1CursoDetalhes)."
+  },
+  "venAboutOpenings": "Openings",
+  "@venAboutOpenings": {
+    "description": "Seção da Visão geral do Sobre o Pilares (PropV1CursoDetalhes)."
+  },
+  "venAboutProgress": "Tests and progress",
+  "@venAboutProgress": {
+    "description": "Seção da Visão geral do Sobre o Pilares (PropV1CursoDetalhes)."
   }
 }

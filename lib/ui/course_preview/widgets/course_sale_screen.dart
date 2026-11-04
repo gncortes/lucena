@@ -150,38 +150,10 @@ class _SalePageState extends State<_SalePage>
           ),
           SliverPersistentHeader(
             pinned: true,
-            delegate: _TabsHeader(
+            delegate: SaleTabsHeader(
+              controller: _tabs,
               color: page,
-              tabs: TabBar(
-                controller: _tabs,
-                dividerHeight: 0,
-                indicatorSize: TabBarIndicatorSize.tab,
-                // abas_venda: indicador de 3 com 12 de recuo.
-                indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(
-                    width: 3,
-                    color: theme.colorScheme.primary,
-                  ),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(AppShape.tiny),
-                  ),
-                  insets: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                ),
-                labelColor: theme.colorScheme.primary,
-                unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                labelStyle: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                tabs: [
-                  for (final (i, label) in [
-                    l10n.courseSaleOverview,
-                    l10n.courseSaleContent,
-                    l10n.courseSaleFaq,
-                  ].indexed)
-                    Tab(key: CoursePreviewKeys.tab(i), text: label),
-                ],
-              ),
-              line: theme.colorScheme.outlineVariant,
+              keyOf: CoursePreviewKeys.tab,
             ),
           ),
           SliverPadding(
@@ -203,44 +175,6 @@ class _SalePageState extends State<_SalePage>
       ),
     );
   }
-}
-
-/// As abas grudadas embaixo da barra: 48 e a linha fina (abas_venda).
-class _TabsHeader extends SliverPersistentHeaderDelegate {
-  const _TabsHeader({
-    required this.tabs,
-    required this.color,
-    required this.line,
-  });
-
-  final TabBar tabs;
-  final Color color;
-  final Color line;
-
-  static const _height = 48.0 + 1;
-
-  @override
-  double get minExtent => _height;
-
-  @override
-  double get maxExtent => _height;
-
-  @override
-  Widget build(BuildContext context, double shrink, bool overlaps) =>
-      DecoratedBox(
-        decoration: BoxDecoration(
-          color: color,
-          border: Border(bottom: BorderSide(color: line)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 1),
-          child: SizedBox(height: 48, child: tabs),
-        ),
-      );
-
-  @override
-  bool shouldRebuild(_TabsHeader old) =>
-      old.tabs != tabs || old.color != color || old.line != line;
 }
 
 /// O topo (quadro PropV2CursoApresentacao): a linha, os números, o que vem
@@ -700,7 +634,6 @@ class _Overview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colors = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -736,46 +669,9 @@ class _Overview extends StatelessWidget {
         ),
         SaleSection(l10n.courseSaleAudience),
         // cartao_faixa: abre a tela "Para quem é" (PropV2CursoFaixa).
-        Material(
-          color: colors.primaryContainer,
-          borderRadius: BorderRadius.circular(AppShape.large),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            key: CoursePreviewKeys.audience,
-            onTap: () => context.push(D2Paths.pilaresForWhom),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Row(
-                spacing: AppSpacing.md,
-                children: [
-                  Icon(
-                    Icons.groups_rounded,
-                    size: AppIconSize.standard,
-                    color: colors.primary,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 2,
-                      children: [
-                        Text(sale.audience.title, style: saleStrong(context)),
-                        if (sale.audience.summary case final summary?)
-                          Text(
-                            summary,
-                            style: saleBody(context, color: colors.onSurface),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    size: AppIconSize.standard,
-                    color: colors.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
+        SaleAudienceCard(
+          item: sale.audience,
+          tapKey: CoursePreviewKeys.audience,
         ),
         const SizedBox(height: AppSpacing.sm),
         SaleCard(
@@ -805,77 +701,18 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: AppSpacing.lg),
-        // destaque_nivel.
-        SaleCard(
-          color: colors.primaryContainer,
-          spacing: 10,
-          children: [
-            Row(
-              spacing: 10,
-              children: [
-                Icon(
-                  Icons.insights_rounded,
-                  size: AppIconSize.standard,
-                  color: colors.primary,
-                ),
-                Expanded(
-                  child: Text(
-                    sale.level.title,
-                    style: saleStrong(context, size: 17),
-                  ),
-                ),
-              ],
-            ),
-            if (sale.level.summary case final summary?)
-              Text(summary, style: saleBody(context, color: colors.onSurface)),
-            SaleCard(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
-              spacing: 0,
-              children: [
-                for (final example in sale.levelExamples)
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 36),
-                    child: Row(
-                      spacing: AppSpacing.md,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            example.title,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontSize: 15,
-                              height: 20 / 15,
-                            ),
-                          ),
-                        ),
-                        SalePill(text: example.status, tone: example.tone),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ),
+        SaleLevelCard(item: sale.level, examples: sale.levelExamples),
         SaleSection(l10n.courseSaleSummary),
         Text(sale.summaryNote, style: saleBody(context)),
         const SizedBox(height: AppSpacing.md),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.sm,
-          children: [
-            for (final (i, part) in sale.parts.indexed)
-              SalePartTile(
-                key: CoursePreviewKeys.part(i),
-                part: part,
-                initiallyOpen: i == 0,
-                openings: sale.openings,
-              ),
-          ],
+        SaleSummary(
+          parts: sale.parts,
+          openings: sale.openings,
+          keyOf: CoursePreviewKeys.part,
         ),
       ],
     );

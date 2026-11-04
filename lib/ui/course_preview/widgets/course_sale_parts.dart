@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/course_preview.dart';
+import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/course_preview_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -577,4 +579,219 @@ class _SaleFaqState extends State<SaleFaq> {
       ),
     );
   }
+}
+
+/// As abas grudadas embaixo da barra (abas_venda): 48 de altura, indicador de
+/// 3 com 12 de recuo e a linha fina. Visão geral, Conteúdo e Dúvidas.
+class SaleTabsHeader extends SliverPersistentHeaderDelegate {
+  const SaleTabsHeader({
+    required this.controller,
+    required this.color,
+    required this.keyOf,
+  });
+
+  final TabController controller;
+  final Color color;
+  final Key Function(int i) keyOf;
+
+  static const _height = 48.0 + 1;
+
+  @override
+  double get minExtent => _height;
+
+  @override
+  double get maxExtent => _height;
+
+  @override
+  Widget build(BuildContext context, double shrink, bool overlaps) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color,
+        border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 1),
+        child: SizedBox(
+          height: 48,
+          child: TabBar(
+            controller: controller,
+            dividerHeight: 0,
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(width: 3, color: colors.primary),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppShape.tiny),
+              ),
+              insets: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            ),
+            labelColor: colors.primary,
+            unselectedLabelColor: colors.onSurfaceVariant,
+            labelStyle: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            tabs: [
+              for (final (i, label) in [
+                l10n.courseSaleOverview,
+                l10n.courseSaleContent,
+                l10n.courseSaleFaq,
+              ].indexed)
+                Tab(key: keyOf(i), text: label),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(SaleTabsHeader old) =>
+      old.controller != controller || old.color != color;
+}
+
+/// O cartão "Para quem é" (cartao_faixa): abre a tela da faixa
+/// (PropV2CursoFaixa).
+class SaleAudienceCard extends StatelessWidget {
+  const SaleAudienceCard({required this.item, this.tapKey, super.key});
+
+  final CourseSaleItem item;
+  final Key? tapKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.primaryContainer,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        key: tapKey,
+        onTap: () => context.push(D2Paths.pilaresForWhom),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            spacing: AppSpacing.md,
+            children: [
+              Icon(
+                saleIcon(item.icon ?? 'groups'),
+                size: AppIconSize.standard,
+                color: colors.primary,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(item.title, style: saleStrong(context)),
+                    if (item.summary case final summary?)
+                      Text(
+                        summary,
+                        style: saleBody(context, color: colors.onSurface),
+                      ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: AppIconSize.standard,
+                color: colors.primary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O destaque do teste de nível (destaque_nivel): a pergunta, a frase e o
+/// exemplo de cada parte com a pílula.
+class SaleLevelCard extends StatelessWidget {
+  const SaleLevelCard({required this.item, required this.examples, super.key});
+
+  final CourseSaleItem item;
+  final List<({String title, String status, String tone})> examples;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return SaleCard(
+      color: colors.primaryContainer,
+      spacing: 10,
+      children: [
+        Row(
+          spacing: 10,
+          children: [
+            Icon(
+              saleIcon(item.icon ?? 'insights'),
+              size: AppIconSize.standard,
+              color: colors.primary,
+            ),
+            Expanded(
+              child: Text(item.title, style: saleStrong(context, size: 17)),
+            ),
+          ],
+        ),
+        if (item.summary case final summary?)
+          Text(summary, style: saleBody(context, color: colors.onSurface)),
+        SaleCard(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+          spacing: 0,
+          children: [
+            for (final example in examples)
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 36),
+                child: Row(
+                  spacing: AppSpacing.md,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        example.title,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 15,
+                          height: 20 / 15,
+                        ),
+                      ),
+                    ),
+                    SalePill(text: example.status, tone: example.tone),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// O sumário por parte: cada parte é um acordeão e a primeira vem aberta.
+class SaleSummary extends StatelessWidget {
+  const SaleSummary({
+    required this.parts,
+    required this.openings,
+    required this.keyOf,
+    super.key,
+  });
+
+  final List<CourseSalePart> parts;
+  final ({String title, String line, List<String> items}) openings;
+  final Key Function(int i) keyOf;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    spacing: AppSpacing.sm,
+    children: [
+      for (final (i, part) in parts.indexed)
+        SalePartTile(
+          key: keyOf(i),
+          part: part,
+          initiallyOpen: i == 0,
+          openings: openings,
+        ),
+    ],
+  );
 }

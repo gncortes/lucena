@@ -37,6 +37,7 @@ import '../ui/core/analytics/analytics_context.dart';
 import '../ui/core/l10n/l10n.dart';
 import '../ui/core/keys/training_keys.dart';
 import '../ui/course_entry/widgets/course_entry_gate.dart';
+import '../ui/course_preview/widgets/course_details_screen.dart';
 import '../ui/course_entry/widgets/course_content_session.dart';
 import '../ui/core/theme/app_motion.dart';
 import '../ui/course_guide/view_models/course_guide_cubit.dart';
@@ -135,6 +136,9 @@ GoRoute trainingRoute() => GoRoute(
         onTour: () => context.push(
           '${Routes.training(_config(state).course.name)}/tour?help=1',
         ),
+        footer: _config(state).course == TrainingCourse.pilares
+            ? const CourseAboutTile()
+            : null,
       ),
     ),
     GoRoute(
