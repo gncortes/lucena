@@ -70,4 +70,47 @@ void main() {
     await tester.pumpWidget(tela(.8, reduzir: true));
     expect(lido(tester), .8);
   });
+
+  testWidgets('eixo vertical: enche de baixo para cima, na altura do pai', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              height: 120,
+              child: EntradaDaTela(
+                id: 'PropV1RetencaoSemana',
+                child: BarraQueEnche(
+                  valor: .5,
+                  eixo: Axis.vertical,
+                  altura: 12,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(lido(tester), 0);
+    expect(
+      tester.getSize(find.byKey(MotionKeys.barraQueEnche)),
+      const Size(12, 120),
+    );
+    // Um quarto de volta anti-horário: o começo da barra fica embaixo.
+    expect(
+      tester
+          .widget<RotatedBox>(
+            find.descendant(
+              of: find.byKey(MotionKeys.barraQueEnche),
+              matching: find.byType(RotatedBox),
+            ),
+          )
+          .quarterTurns,
+      3,
+    );
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(lido(tester), .5);
+  });
 }

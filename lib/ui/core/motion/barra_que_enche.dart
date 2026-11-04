@@ -22,6 +22,7 @@ class BarraQueEnche extends StatelessWidget {
     this.cor,
     this.corDoTrilho,
     this.altura = 8,
+    this.eixo = Axis.horizontal,
     super.key,
   });
 
@@ -32,7 +33,13 @@ class BarraQueEnche extends StatelessWidget {
 
   /// O trilho (padrão do tema); sobre um cartão colorido, a tela passa o seu.
   final Color? corDoTrilho;
+
+  /// A espessura da barra (a altura na horizontal, a largura na vertical).
   final double altura;
+
+  /// Na vertical (barras de gráfico), enche de baixo para cima e ocupa a
+  /// altura que o pai der.
+  final Axis eixo;
 
   Color? _cor(BuildContext context) => switch (papel) {
     ProgressRole.primary => null,
@@ -50,12 +57,20 @@ class BarraQueEnche extends StatelessWidget {
       child: ValorQueAnima(
         valor: valor.clamp(0, 1),
         duracao: LucenaMotion.barraEnche,
-        builder: (context, valor) => LinearProgressIndicator(
-          value: valor,
-          minHeight: altura,
-          color: cor,
-          backgroundColor: corDoTrilho,
-        ),
+        builder: (context, valor) {
+          final barra = LinearProgressIndicator(
+            value: valor,
+            minHeight: altura,
+            color: cor,
+            backgroundColor: corDoTrilho,
+          );
+          return eixo == Axis.horizontal
+              ? barra
+              : SizedBox(
+                  width: altura,
+                  child: RotatedBox(quarterTurns: 3, child: barra),
+                );
+        },
       ),
     );
   }

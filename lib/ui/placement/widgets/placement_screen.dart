@@ -13,6 +13,7 @@ import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/botao_carregando.dart';
 import '../../core/motion/entradas_vistas.dart';
 import '../../core/motion/tabuleiro_animado.dart';
+import '../../core/motion/troca_com_fade.dart';
 import '../../core/motion/transicao_eixo_x.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/theme/app_text.dart';
@@ -35,7 +36,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
@@ -137,12 +137,11 @@ class PlacementScreen extends StatelessWidget {
               PlacementView.question => 'perguntas',
               PlacementView.result => 'resultado',
             }),
-            child: AnimatedSwitcher(
-              duration: AppMotion.of(context).component,
-              switchInCurve: AppMotion.enter,
-              switchOutCurve: AppMotion.exit,
-              transitionBuilder: (child, animation) =>
-                  FadeTransition(opacity: animation, child: child),
+            child: TrocaComFade(
+              chave: switch (state.view) {
+                PlacementView.question => 'q${state.number}',
+                final view => view,
+              },
               child: switch (state.view) {
                 PlacementView.loading => const SkeletonList(),
                 PlacementView.intro => EntradaDaTela(
