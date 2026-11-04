@@ -13,33 +13,101 @@ void main() {
   const train = HomePath.train;
   const race = HomePath.race;
   const stars = HomePath.stars;
+  const board = HomePath.board;
+  const position = HomePath.position;
 
   test('a sugestão de cada nível: a ordem e os marcados', () {
     final expected = {
       // Os finais para você vêm logo antes das aulas de finais e são
       // marcados com elas.
       RatingLevel.beginner: (
-        [learn, journey, forYou, endgames, train, speedrun, race, stars],
+        [
+          learn,
+          journey,
+          forYou,
+          endgames,
+          train,
+          speedrun,
+          board,
+          position,
+          race,
+          stars,
+        ],
         {learn, journey, race, stars},
       ),
       RatingLevel.casual: (
-        [journey, forYou, endgames, train, speedrun, race, stars, learn],
+        [
+          journey,
+          forYou,
+          endgames,
+          train,
+          speedrun,
+          board,
+          position,
+          race,
+          stars,
+          learn,
+        ],
         {journey, forYou, endgames, train, race, stars},
       ),
       RatingLevel.intermediate: (
-        [journey, forYou, endgames, train, speedrun, race, stars, learn],
+        [
+          journey,
+          forYou,
+          endgames,
+          train,
+          speedrun,
+          board,
+          position,
+          race,
+          stars,
+          learn,
+        ],
         {journey, forYou, endgames, train, speedrun, race, stars},
       ),
       RatingLevel.advanced: (
-        [forYou, endgames, journey, speedrun, race, stars, train, learn],
+        [
+          forYou,
+          endgames,
+          journey,
+          speedrun,
+          board,
+          position,
+          race,
+          stars,
+          train,
+          learn,
+        ],
         {forYou, endgames, journey, speedrun, train, race, stars},
       ),
       RatingLevel.expert: (
-        [forYou, endgames, speedrun, race, stars, train, journey, learn],
+        [
+          forYou,
+          endgames,
+          speedrun,
+          board,
+          position,
+          race,
+          stars,
+          train,
+          journey,
+          learn,
+        ],
         {forYou, endgames, speedrun, train, race, stars},
       ),
       RatingLevel.master: (
-        [speedrun, forYou, endgames, race, stars, train, journey, learn],
+        [
+          speedrun,
+          forYou,
+          endgames,
+          board,
+          position,
+          race,
+          stars,
+          train,
+          journey,
+          learn,
+        ],
         {speedrun, forYou, endgames, train, race, stars},
       ),
     };
@@ -71,6 +139,8 @@ void main() {
         endgames,
         train,
         speedrun,
+        board,
+        position,
         race,
         stars,
       ]);
@@ -88,6 +158,8 @@ void main() {
         forYou,
         journey,
         speedrun,
+        board,
+        position,
         race,
         stars,
         train,
@@ -116,6 +188,8 @@ void main() {
         forYou,
         endgames,
         speedrun,
+        board,
+        position,
         race,
         stars,
       ]);
@@ -319,54 +393,68 @@ void main() {
     expect(HomeLayout.fromJson('nada'), isNull);
   });
 
-  group('sem aula de final liberada (T83 B1)', () {
-    test('o curso e os finais para você saem da sugestão de todo nível', () {
+  group('Pilares, Tabuleiro livre e Montar posição (H-INI-06)', () {
+    test('o objetivo "Melhorar o jogo" abre os Pilares', () {
+      expect(HomeSuggestion.goalPath(GoalPreference.improve), endgames);
+      final layout = HomeSuggestion.of(
+        RatingLevel.intermediate,
+        goal: GoalPreference.improve,
+      );
+      expect(layout.order.first, endgames);
+      expect(layout.visible, contains(endgames));
+    });
+
+    test('o objetivo "Explorar posições" abre o Tabuleiro livre', () {
+      expect(HomeSuggestion.goalPath(GoalPreference.explore), HomePath.board);
+      final layout = HomeSuggestion.of(
+        RatingLevel.intermediate,
+        goal: GoalPreference.explore,
+      );
+      expect(layout.order.take(4), [
+        HomePath.board,
+        HomePath.position,
+        train,
+        journey,
+      ]);
+      expect(layout.visible, {
+        HomePath.board,
+        HomePath.position,
+        train,
+        journey,
+        race,
+        stars,
+      });
+    });
+
+    test('sem explorar, os dois ficam na lista, escondidos', () {
       for (final level in RatingLevel.values) {
-        final layout = HomeSuggestion.of(level, school: false, course: false);
-        expect(layout.order, isNot(contains(endgames)), reason: '$level');
-        expect(layout.order, isNot(contains(forYou)), reason: '$level');
-        expect(layout.visible, isNot(contains(endgames)), reason: '$level');
-        expect(layout.visible, isNot(contains(forYou)), reason: '$level');
-        expect(layout.visible, isNotEmpty);
+        final layout = HomeSuggestion.of(level, school: false);
+        expect(layout.order, contains(HomePath.board), reason: '$level');
+        expect(layout.order, contains(HomePath.position), reason: '$level');
+        expect(layout.visible, isNot(contains(HomePath.board)));
+        expect(layout.visible, isNot(contains(HomePath.position)));
       }
     });
 
-    test('o objetivo "Aprender finais" cai em treinar finais', () {
-      expect(
-        HomeSuggestion.goalPath(GoalPreference.improve, course: false),
-        train,
-      );
-      final layout = HomeSuggestion.of(
-        RatingLevel.intermediate,
-        course: false,
-        goal: GoalPreference.improve,
-      );
-      expect(layout.order.first, train);
-      expect(layout.visible, contains(train));
+    test('o layout gravado antes dos dois ganha os dois escondidos', () {
+      final old = HomeLayout.fromJson({
+        'order': ['journey', 'endgames', 'train', 'race', 'stars'],
+        'visible': ['journey'],
+      })!;
+      expect(old.order.sublist(old.order.length - 2), [
+        HomePath.board,
+        HomePath.position,
+      ]);
+      expect(old.visible, {journey});
     });
 
-    test('o layout ajustado pela pessoa também perde os dois', () {
+    test('o layout ajustado pela pessoa fica como está', () {
       const saved = HomeLayout(
         order: [journey, forYou, endgames, train, speedrun, race],
         visible: {forYou, endgames},
         custom: true,
       );
-      final layout = HomeSuggestion.resolve(
-        saved,
-        RatingLevel.casual,
-        school: false,
-        course: false,
-      );
-      expect(layout.order, [journey, train, speedrun, race]);
-      expect(layout.visible, {journey});
-    });
-
-    test('com o curso, nada muda (volta sozinho)', () {
-      expect(
-        HomeSuggestion.of(RatingLevel.casual, school: false),
-        HomeSuggestion.of(RatingLevel.casual, school: false, course: true),
-      );
-      expect(HomeSuggestion.goalPath(GoalPreference.improve), endgames);
+      expect(HomeSuggestion.resolve(saved, RatingLevel.casual), saved);
     });
   });
 }

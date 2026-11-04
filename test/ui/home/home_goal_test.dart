@@ -94,7 +94,7 @@ void main() {
     expect(state.hero, HomeHero.endgame);
     expect(state.endgame!.lessonId, 'rook.lucena');
     expect(state.endgame!.recommended, isTrue);
-    expect(state.shortcuts.first, HomeShortcut.endgames);
+    expect(state.shortcuts.first, HomeShortcut.pillars);
   });
 
   test('aprender finais: a aula começada é a do cartão', () async {
@@ -147,32 +147,28 @@ void main() {
     ]);
   });
 
-  group('sem aula de final liberada (T83 B1)', () {
+  group('Pilares no lugar do Curso de finais (H-INI-06)', () {
     const empty = EndgameTrail(modules: []);
 
-    test('a home perde o Curso de finais e os finais para você', () async {
-      final state = await load(null, trail: empty);
+    test('a home nunca tem o Curso de finais, com ou sem aula', () async {
+      for (final trail in [null, empty]) {
+        final state = trail == null
+            ? await load(null)
+            : await load(null, trail: trail);
 
-      expect(state.courseAvailable, isFalse);
-      expect(state.layout!.order, isNot(contains(HomePath.endgames)));
-      expect(state.layout!.order, isNot(contains(HomePath.forYou)));
-      expect(state.shortcuts, isNot(contains(HomeShortcut.endgames)));
+        expect(state.shortcuts, contains(HomeShortcut.pillars));
+        expect(state.layout!.order, contains(HomePath.endgames));
+        expect(state.layout!.order, contains(HomePath.forYou));
+      }
     });
 
-    test('com aula, tudo volta sozinho', () async {
-      final state = await load(null);
+    test('"Explorar posições": o Tabuleiro livre abre a lista', () async {
+      final state = await load(GoalPreference.explore);
 
-      expect(state.courseAvailable, isTrue);
-      expect(state.layout!.order, contains(HomePath.endgames));
-      expect(state.layout!.order, contains(HomePath.forYou));
-    });
-
-    test('"Aprender finais" sem curso vira o cartão de treinar', () async {
-      final state = await load(GoalPreference.improve, trail: empty);
-
-      expect(state.hero, HomeHero.train);
-      expect(state.endgame, isNull);
-      expect(state.trainGoal, isNotNull);
+      expect(state.shortcuts.take(2), [
+        HomeShortcut.freeBoard,
+        HomeShortcut.customPosition,
+      ]);
     });
   });
 

@@ -1871,11 +1871,11 @@
   "@gameDetailsNotFound": {
     "description": "Game details: shown when the game was not found."
   },
-  "homeEndgames": "Endgame course",
+  "homeEndgames": "Pilares do Xadrez",
   "@homeEndgames": {
     "description": "Home card that opens the endgame lessons trail."
   },
-  "homeEndgamesBody": "Lucena, Philidor, bishop and knight: the endgames every player must master.",
+  "homeEndgamesBody": "Your training guide, built around your game",
   "@homeEndgamesBody": {
     "description": "One line under the endgame lessons card on the home screen."
   },
@@ -9804,7 +9804,7 @@
   "@homeShortcutJourneyBody": {
     "description": "Two-line description on the Journey shortcut tile."
   },
-  "homeShortcutEndgamesBody": "Learn theoretical endgames like Lucena and Philidor",
+  "homeShortcutEndgamesBody": "Your training guide, built around your game",
   "@homeShortcutEndgamesBody": {
     "description": "Two-line description on the endgame course shortcut tile."
   },
@@ -11831,5 +11831,17 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "homeShortcutPosition": "Set up a position",
+  "@homeShortcutPosition": {
+    "description": "Title of the Home shortcut that opens the custom position editor."
+  },
+  "homeShortcutBoardBody": "Play both sides, with or without a clock",
+  "@homeShortcutBoardBody": {
+    "description": "Description of the Home shortcut for the free board."
+  },
+  "homeShortcutPositionBody": "Set up any position and play it",
+  "@homeShortcutPositionBody": {
+    "description": "Description of the Home shortcut for the custom position editor."
   }
 }

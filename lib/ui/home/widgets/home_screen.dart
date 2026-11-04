@@ -280,7 +280,10 @@ class _HomeScreenState extends State<HomeScreen>
                   child: column < shortcuts.length
                       ? StaggeredEntrance(
                           index: column,
-                          child: ModeTile(shortcut: shortcuts[column]),
+                          child: ModeTile(
+                            shortcut: shortcuts[column],
+                            hasPlan: state.training != null,
+                          ),
                         )
                       : const SizedBox.shrink(),
                 ),

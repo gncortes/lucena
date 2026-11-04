@@ -27,9 +27,9 @@ enum GoalPreference {
   /// O caminho da tela inicial que vira o cartão do objetivo.
   HomePath get path => switch (this) {
     GoalPreference.learn => HomePath.learn,
-    GoalPreference.improve => HomePath.forYou,
+    GoalPreference.improve => HomePath.endgames,
     GoalPreference.train => HomePath.train,
-    GoalPreference.explore => HomePath.train,
+    GoalPreference.explore => HomePath.board,
     GoalPreference.challenge => HomePath.journey,
   };
 }

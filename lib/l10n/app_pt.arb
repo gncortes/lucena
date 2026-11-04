@@ -390,8 +390,8 @@
   "ratingHighest": "Mais alto",
   "gameDetailsTitle": "Detalhes da partida",
   "gameDetailsNotFound": "Esta partida não está disponível.",
-  "homeEndgames": "Curso de finais",
-  "homeEndgamesBody": "Lucena, Philidor, bispo e cavalo: os finais que todo jogador precisa dominar.",
+  "homeEndgames": "Pilares do Xadrez",
+  "homeEndgamesBody": "Seu guia de treino, feito para o seu jogo",
   "homeForYou": "Finais para você",
   "homeForYouBody": "Os capítulos que faltam, na ordem certa, a partir do seu teste de nível.",
   "endgamesTitle": "Curso de finais",
@@ -1978,7 +1978,7 @@
   "homeShortcutsTitle": "Atalhos",
   "homeShortcutStars": "Estrelas",
   "homeShortcutJourneyBody": "Enfrente adversários cada vez mais fortes",
-  "homeShortcutEndgamesBody": "Aprenda finais teóricos como Lucena e Philidor",
+  "homeShortcutEndgamesBody": "Seu guia de treino, feito para o seu jogo",
   "homeShortcutTrainBody": "Mais de 3.500 finais de todos os tipos",
   "homeShortcutRaceBody": "Quantos finais você resolve no tempo?",
   "homeShortcutSpeedrunBody": "A Jornada inteira contra o relógio",
@@ -2399,5 +2399,8 @@
   "practiceSolutionFollow": "Siga a seta.",
   "practiceSolutionTarget": "Toque na casa marcada.",
   "practiceSolutionUnavailable": "Ocorreu um erro inesperado",
-  "practiceOpponentUnavailable": "Ocorreu um erro inesperado"
+  "practiceOpponentUnavailable": "Ocorreu um erro inesperado",
+  "homeShortcutPosition": "Montar posição",
+  "homeShortcutBoardBody": "Jogue pelos dois lados, com ou sem relógio",
+  "homeShortcutPositionBody": "Monte qualquer posição e jogue"
 }

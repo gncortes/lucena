@@ -12,7 +12,9 @@ abstract final class HomeKeys {
   static const catalogButton = Key('home.catalog');
   static const raceButton = Key('home.race');
   static const schoolButton = Key('home.school');
-  static const endgamesButton = Key('home.endgames');
+  static const pillarsButton = Key('home.pillars');
+  static const boardButton = Key('home.board');
+  static const positionButton = Key('home.position');
   static const forYouButton = Key('home.forYou');
 
   /// O esqueleto do primeiro carregamento e a tela de erro (H-INI-01).

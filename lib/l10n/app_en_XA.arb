@@ -366,8 +366,8 @@
   "ratingHighest": "[Hîĝhéšt one]",
   "gameDetailsTitle": "[Ĝåmé détåîlš one two]",
   "gameDetailsNotFound": "[Thîš ĝåmé îš ñö löñĝéŕ šåvéd. one two three]",
-  "homeEndgames": "[Éñdĝåmé çöûŕšé one two]",
-  "homeEndgamesBody": "[Lûçéñå, Phîlîdöŕ, bîšhöp åñd kñîĝht: thé éñdĝåméš évéŕý plåýéŕ mûšt måštéŕ. one two three four five six seven]",
+  "homeEndgames": "[Pîlåŕéš dö Xådŕéž one two]",
+  "homeEndgamesBody": "[Ýöûŕ tŕåîñîñĝ ĝûîdé, bûîlt åŕöûñd ýöûŕ ĝåmé one two three four]",
   "homeForYou": "[Éñdĝåméš föŕ ýöû one two]",
   "homeForYouBody": "[Thé çhåptéŕš ýöû štîll ñééd, îñ öŕdéŕ, båšéd öñ ýöûŕ lévél téšt. one two three four five six]",
   "endgamesTitle": "[Éñdĝåmé çöûŕšé one two]",
@@ -1874,7 +1874,7 @@
   "homeShortcutsTitle": "[Šhöŕtçûtš one]",
   "homeShortcutStars": "[Štåŕš one]",
   "homeShortcutJourneyBody": "[Fåçé štŕöñĝéŕ åñd štŕöñĝéŕ öppöñéñtš one two three four]",
-  "homeShortcutEndgamesBody": "[Léåŕñ théöŕétîçål éñdĝåméš lîké Lûçéñå åñd Phîlîdöŕ one two three four five]",
+  "homeShortcutEndgamesBody": "[Ýöûŕ tŕåîñîñĝ ĝûîdé, bûîlt åŕöûñd ýöûŕ ĝåmé one two three four]",
   "homeShortcutTrainBody": "[Övéŕ 3,500 éñdĝåméš öf évéŕý kîñd one two three]",
   "homeShortcutRaceBody": "[Höw måñý éñdĝåméš çåñ ýöû šölvé îñ tîmé? one two three four]",
   "homeShortcutSpeedrunBody": "[Thé whölé Jöûŕñéý åĝåîñšt thé çlöçk one two three]",
@@ -2273,5 +2273,8 @@
   "practiceSolutionFollow": "[Föllöw thé åŕŕöw. one two]",
   "practiceSolutionTarget": "[Tåp thé måŕkéd šqûåŕé. one two three]",
   "practiceSolutionUnavailable": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]",
-  "practiceOpponentUnavailable": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]"
+  "practiceOpponentUnavailable": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]",
+  "homeShortcutPosition": "[Šét ûp å pöšîtîöñ one two]",
+  "homeShortcutBoardBody": "[Plåý böth šîdéš, wîth öŕ wîthöût å çlöçk one two three four]",
+  "homeShortcutPositionBody": "[Šét ûp åñý pöšîtîöñ åñd plåý ît one two three]"
 }

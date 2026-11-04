@@ -312,11 +312,11 @@ void main() {
       locale: const Locale('en'),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Endgame course');
+    expect(text(tester, HomeKeys.heroLabel), 'Pilares do Xadrez');
     expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
     expect(action(tester), 'Start');
     expect(tiles(tester), [
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.journeyButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
@@ -359,7 +359,7 @@ void main() {
     expect(tiles(tester), [
       HomeKeys.catalogButton,
       HomeKeys.journeyButton,
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
       HomeKeys.starsButton,
@@ -374,7 +374,7 @@ void main() {
     final shown = tiles(tester);
     expect(shown, [
       HomeKeys.journeyButton,
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
@@ -388,18 +388,21 @@ void main() {
     }
   });
 
-  testWidgets('sem aula liberada: nem o Curso de finais nos atalhos', (
-    tester,
-  ) async {
+  testWidgets('os Pilares do Xadrez ficam nos atalhos, com ou sem aula de '
+      'final: nunca o Curso de finais', (tester) async {
     await pumpHome(
       tester,
       profile: const UserProfile(rating: 1450, goal: GoalPreference.improve),
       trail: const EndgameTrail(modules: []),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Treinar finais');
-    expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
-    expect(find.byKey(HomeKeys.forYouButton), findsNothing);
+    expect(find.byKey(HomeKeys.pillarsButton), findsOneWidget);
+    expect(find.text('Pilares do Xadrez'), findsOneWidget);
+    expect(
+      find.text('Seu guia de treino, feito para o seu jogo'),
+      findsWidgets,
+    );
+    expect(find.text('Curso de finais'), findsNothing);
     expect(tiles(tester).last, HomeKeys.starsButton);
   });
 

@@ -50,7 +50,6 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/streak.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/beginner_home.dart';
-import '../../../domain/use_cases/course_availability.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -88,7 +87,6 @@ class HomeState {
     this.trainGoal,
     this.journeyStarted = false,
     this.streak = Streak.none,
-    this.courseAvailable = true,
     this.placementDone = true,
     this.ratedGames = 0,
     this.training,
@@ -161,10 +159,6 @@ class HomeState {
   /// sai uma vez.
   final Streak streak;
 
-  /// Há aula de final liberada. Falso: o Curso de finais e os finais para
-  /// você não aparecem (T83 B1).
-  final bool courseAvailable;
-
   /// A pessoa fez o teste de nível (T83 B4).
   final bool placementDone;
 
@@ -194,7 +188,7 @@ class HomeState {
       if (school != null) return HomeHero.school;
       return _journeyOr(HomeHero.speedrun);
     }
-    return switch (HomeSuggestion.goalPath(goal, course: courseAvailable)) {
+    return switch (HomeSuggestion.goalPath(goal)) {
       HomePath.learn when school != null => HomeHero.school,
       HomePath.endgames when endgame != null => HomeHero.endgame,
       HomePath.endgames when courseDone => HomeHero.courseDone,
@@ -241,7 +235,6 @@ class HomeState {
     trainGoal: trainGoal,
     journeyStarted: journeyStarted,
     streak: streak ?? this.streak,
-    courseAvailable: courseAvailable,
     placementDone: placementDone,
     ratedGames: ratedGames,
     training: training,
@@ -511,17 +504,9 @@ class HomeCubit extends Cubit<HomeState> {
     final profile = await _profile.load();
     final saved = await _homeLayout?.load();
     final goal = profile.goal;
-    final courseAvailable = await CourseAvailability(_endgameLessons.trail)();
-    final layout = HomeSuggestion.resolve(
-      saved,
-      profile.level,
-      goal: goal,
-      course: courseAvailable,
-    );
+    final layout = HomeSuggestion.resolve(saved, profile.level, goal: goal);
     final priority = layout.shown.firstOrNull;
-    final goalPath = goal == null
-        ? null
-        : HomeSuggestion.goalPath(goal, course: courseAvailable);
+    final goalPath = goal == null ? null : HomeSuggestion.goalPath(goal);
     final endgame = await _optionalContent(
       () => _endgameSummary(
         language,
@@ -582,7 +567,6 @@ class HomeCubit extends Cubit<HomeState> {
         trainGoal: trainGoal,
         journeyStarted: fulfilled.isNotEmpty,
         streak: streak,
-        courseAvailable: courseAvailable,
         placementDone: placementDone,
         ratedGames: history.where((entry) => !entry.isBonus).length,
         training: training,
