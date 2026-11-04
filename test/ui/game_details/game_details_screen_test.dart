@@ -623,7 +623,7 @@ void main() {
       expect(find.text(t.partidaAnaliseTitulo), findsOneWidget);
       expect(find.text(t.gameDetailsNotFound), findsOneWidget);
       expect(find.byKey(GameDetailsKeys.notFound), findsOneWidget);
-        expect(find.byKey(GameDetailsKeys.board), findsNothing);
+      expect(find.byKey(GameDetailsKeys.board), findsNothing);
     },
   );
 }

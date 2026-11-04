@@ -607,6 +607,23 @@ void main() {
       expect(invite.shown, isFalse);
     });
 
+    testWidgets('H-PAR-20 sem conta e com conquista nova: aviso e convite', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        fresh: true,
+        settled: false,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+        invite: FakeAccountInviteRepository(),
+      );
+      await tester.pump(AchievementToasts.duration * 0.3);
+      expect(cubit.state.conclusion!.achievements, isNotEmpty);
+      expect(find.byKey(AchievementsKeys.toast), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+    });
+
     testWidgets('com conta, não convida', (tester) async {
       final invite = FakeAccountInviteRepository();
       await open(
