@@ -648,8 +648,13 @@ GoRouter buildRouter({
             )..load(),
             // Volta com true quando o resultado foi usado.
             child: Builder(
-              builder: (context) =>
-                  PlacementScreen(onDone: () => context.pop(true)),
+              builder: (context) => PlacementScreen(
+                onDone: () => context.pop(true),
+                // Vindo do passo Nível, dá para desistir do teste.
+                onPreferRating: state.uri.queryParameters['from'] == 'level'
+                    ? () => context.pop(false)
+                    : null,
+              ),
             ),
           );
         },

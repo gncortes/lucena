@@ -3628,7 +3628,7 @@
   "@placementTitle": {
     "description": "Title of the placement test screen."
   },
-  "placementIntroSpeech": "No guessing: if you don't know, tap \"I don't know\". At the end I'll build your study plan.",
+  "placementIntroSpeech": "If you don't know, tap \"I don't know\". At the end I'll build your study plan.",
   "@placementIntroSpeech": {
     "description": "Viktor at the start of the placement test."
   },
@@ -3636,7 +3636,7 @@
   "@placementChipQuestions": {
     "description": "Chip on the placement intro."
   },
-  "placementChipMinutes": "about 8 minutes",
+  "placementChipMinutes": "about 8 to 12 minutes",
   "@placementChipMinutes": {
     "description": "Chip on the placement intro: estimated time."
   },
@@ -3689,7 +3689,7 @@
       }
     }
   },
-  "placementResultTitle": "Your level",
+  "placementResultTitle": "Level test",
   "@placementResultTitle": {
     "description": "Title on the placement result."
   },
@@ -3728,6 +3728,10 @@
   "placementUseLevel": "Use this level",
   "@placementUseLevel": {
     "description": "Placement result: button that saves the level and continues."
+  },
+  "placementPreferRating": "I'd rather enter my rating",
+  "@placementPreferRating": {
+    "description": "Placement intro and result: text button that leaves the test and goes back to the level step to pick a rating range."
   },
   "placementTwoLevels": "Between two levels. Which one fits you better?",
   "@placementTwoLevels": {

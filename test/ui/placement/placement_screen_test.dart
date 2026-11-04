@@ -40,6 +40,7 @@ void main() {
   Future<(PlacementCubit, FakeProfileRepository)> pump(
     WidgetTester tester, {
     VoidCallback? onDone,
+    VoidCallback? onPreferRating,
     Size size = const Size(400, 800),
     bool systemBars = false,
     bool geometry = false,
@@ -87,7 +88,10 @@ void main() {
             ),
             child: BlocProvider.value(
               value: cubit,
-              child: PlacementScreen(onDone: onDone),
+              child: PlacementScreen(
+                onDone: onDone,
+                onPreferRating: onPreferRating,
+              ),
             ),
           ),
         ),
@@ -184,12 +188,43 @@ void main() {
     }
   });
 
+  testWidgets('abertura: "Prefiro informar meu rating" sai do teste', (
+    tester,
+  ) async {
+    var left = false;
+    await pump(tester, onPreferRating: () => left = true);
+    expect(find.text('Prefiro informar meu rating'), findsOneWidget);
+    await tester.tap(find.byKey(PlacementKeys.preferRating));
+    expect(left, isTrue);
+  });
+
+  testWidgets('abertura sem a saída: o botão não aparece', (tester) async {
+    await pump(tester);
+    expect(find.byKey(PlacementKeys.preferRating), findsNothing);
+  });
+
+  testWidgets('abertura: Começar mostra carregando e leva à pergunta 1', (
+    tester,
+  ) async {
+    final (cubit, _) = await pump(tester);
+    final seen = <bool>[];
+    final sub = cubit.stream.listen((state) => seen.add(state.starting));
+    addTearDown(sub.cancel);
+    await tester.tap(find.byKey(PlacementKeys.start));
+    // O primeiro estado é o do botão carregando; o último, a pergunta.
+    await tester.pumpAndSettle();
+    expect(seen.first, isTrue);
+    expect(seen.last, isFalse);
+    expect(find.text('Pergunta 1 de 20'), findsOneWidget);
+  });
+
   testWidgets('abertura: o balão não repete o que os selos dizem', (
     tester,
   ) async {
     await pump(tester);
     expect(find.textContaining('20 perguntas, sem relógio'), findsNothing);
-    expect(find.textContaining('Não vale chutar'), findsOneWidget);
+    expect(find.textContaining('Se não souber, toque em'), findsOneWidget);
+    expect(find.text('uns 8 a 12 minutos'), findsOneWidget);
   });
 
   for (final size in [const Size(360, 740), const Size(412, 917)]) {

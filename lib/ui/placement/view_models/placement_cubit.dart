@@ -42,6 +42,7 @@ class PlacementViewState {
     this.result,
     this.skills,
     this.resuming = false,
+    this.starting = false,
     this.applied = false,
     this.fen,
     this.lastMove,
@@ -78,6 +79,9 @@ class PlacementViewState {
   /// Havia um teste começado: a abertura oferece continuar.
   final bool resuming;
 
+  /// "Começar" ou "Continuar teste" tocado: monta a primeira pergunta.
+  final bool starting;
+
   /// O resultado já foi para o perfil (rating e degrau da Jornada).
   final bool applied;
 
@@ -102,6 +106,7 @@ class PlacementViewState {
     PlacementResult? result,
     SkillMap? skills,
     bool? resuming,
+    bool? starting,
     bool? applied,
     String? fen,
     Move? lastMove,
@@ -123,6 +128,7 @@ class PlacementViewState {
     result: result ?? this.result,
     skills: skills ?? this.skills,
     resuming: resuming ?? this.resuming,
+    starting: starting ?? this.starting,
     applied: applied ?? this.applied,
   );
 }
@@ -210,18 +216,24 @@ class PlacementCubit extends Cubit<PlacementViewState> {
   Future<void> start() async {
     final engine = _engine;
     if (engine == null) return;
-    var test = state.test;
-    if (test == null) {
-      // Quem já escolheu uma faixa começa do meio dela.
-      final profile = await _profile.load();
-      test = engine.start(
-        seed: seed ?? _now().millisecondsSinceEpoch,
-        prior: profile.level,
-      );
-      await _placement.saveOngoing(test);
+    if (state.starting) return;
+    emit(state.copyWith(starting: true));
+    try {
+      var test = state.test;
+      if (test == null) {
+        // Quem já escolheu uma faixa começa do meio dela.
+        final profile = await _profile.load();
+        test = engine.start(
+          seed: seed ?? _now().millisecondsSinceEpoch,
+          prior: profile.level,
+        );
+        await _placement.saveOngoing(test);
+      }
+      _startedAt ??= _now();
+      _show(test);
+    } finally {
+      if (!isClosed && state.starting) emit(state.copyWith(starting: false));
     }
-    _startedAt ??= _now();
-    _show(test);
   }
 
   /// Recomeça do zero (na abertura, em vez de continuar).
