@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/rung_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -99,5 +100,29 @@ void main() {
     await pump(tester, done: {queen.id, rook.id});
 
     expect(find.byKey(JourneyKeys.nextChallenge), findsNothing);
+  });
+
+  // H-ANI-02: o tabuleiro que voa até a tela do desafio é o do kit, com o id
+  // = FEN que a tela do desafio abre. Uma marca por posição.
+  testWidgets('os tabuleiros que voam são TabuleiroHero com a FEN', (
+    tester,
+  ) async {
+    await pump(tester, done: {queen.id});
+
+    final ids = tester
+        .widgetList<TabuleiroHero>(find.byType(TabuleiroHero))
+        .map((h) => h.id)
+        .toList();
+    // O destaque (torre) voa; a grade não repete a marca dele.
+    expect(ids, contains(rook.position.fen));
+    expect(ids.toSet().length, ids.length);
+    final tags = tester
+        .widgetList<Hero>(find.byType(Hero))
+        .map((h) => h.tag)
+        .toList();
+    expect(
+      tags.whereType<String>().where((t) => t.startsWith('journey.board.')),
+      isEmpty,
+    );
   });
 }

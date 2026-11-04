@@ -10,12 +10,10 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/widgets/lucena_card.dart';
 import '../../core/widgets/position_board.dart';
 import 'featured_labels.dart';
-
-/// O tabuleiro de um final em destaque voa da tela inicial até a tela dele.
-String featuredBoardTag(String id) => 'featured.board.$id';
 
 /// Um final em destaque numa lista (canvas `PropV1DesLista`): miniatura, os
 /// selos (Torneio, NOVO, Histórica, Jogado), o título, quem jogou e o evento,
@@ -97,10 +95,13 @@ class FeaturedCard extends StatelessWidget {
           spacing: AppSpacing.md,
           children: [
             ExcludeSemantics(
-              child: PositionBoard(
-                fen: endgame.fen,
-                size: thumbnail,
-                radius: AppShape.small,
+              child: TabuleiroHero(
+                id: endgame.fen,
+                child: PositionBoard(
+                  fen: endgame.fen,
+                  size: thumbnail,
+                  radius: AppShape.small,
+                ),
               ),
             ),
             Expanded(
@@ -171,11 +172,13 @@ extension on FeaturedCard {
             spacing: AppSpacing.md,
             children: [
               ExcludeSemantics(
-                child: PositionBoard(
-                  fen: endgame.fen,
-                  size: FeaturedCard.compactThumbnail,
-                  radius: AppShape.small,
-                  heroTag: featuredBoardTag(item.id),
+                child: TabuleiroHero(
+                  id: endgame.fen,
+                  child: PositionBoard(
+                    fen: endgame.fen,
+                    size: FeaturedCard.compactThumbnail,
+                    radius: AppShape.small,
+                  ),
                 ),
               ),
               Expanded(
