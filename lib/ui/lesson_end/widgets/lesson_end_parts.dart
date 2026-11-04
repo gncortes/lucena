@@ -55,6 +55,31 @@ class LessonEndBadge extends StatelessWidget {
   );
 }
 
+/// H-ANI-25: arruma as partes da `EntradaDeResultado` das telas de fim. O
+/// conteúdo rola com o respiro do canvas e os botões (a última parte, um
+/// `ActionsFooter`, com o próprio SafeArea) ficam presos embaixo.
+Widget montarFimComBotoes(
+  List<Widget> partes, {
+  EdgeInsets padding = const EdgeInsets.fromLTRB(16, 8, 16, 16),
+  CrossAxisAlignment alinhamento = CrossAxisAlignment.center,
+}) => Column(
+  children: [
+    Expanded(
+      child: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: padding,
+          child: Column(
+            crossAxisAlignment: alinhamento,
+            children: partes.sublist(0, partes.length - 1),
+          ),
+        ),
+      ),
+    ),
+    partes.last,
+  ],
+);
+
 TextStyle? endTitleStyle(BuildContext context) => Theme.of(context)
     .textTheme
     .titleLarge

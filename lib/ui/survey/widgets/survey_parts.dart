@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../domain/models/character.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_chip.dart';
 import '../../core/theme/app_colors.dart';
@@ -52,28 +53,30 @@ class ViktorThanks extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.xl,
-          children: [
-            if (viktor != null)
-              TeacherSpeech(
-                speechContext: SpeechContext.teaching,
-                teacher: viktor,
-                text: text,
-              )
-            else
-              Text(text),
-            SizedBox(
-              height: kButtonHeight,
-              child: FilledButton(
-                key: backKey,
-                onPressed: onBack,
-                child: Text(backLabel),
-              ),
+        // H-ANI-25: o Viktor entra e o botão desliza por último.
+        child: EntradaDeResultado(
+          id: 'obrigado-$title-$text',
+          viktor: viktor != null
+              ? TeacherSpeech(
+                  speechContext: SpeechContext.teaching,
+                  teacher: viktor,
+                  text: text,
+                )
+              : Text(text),
+          botoes: SizedBox(
+            height: kButtonHeight,
+            child: FilledButton(
+              key: backKey,
+              onPressed: onBack,
+              child: Text(backLabel),
             ),
-          ],
+          ),
+          montar: (partes) => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.xl,
+            children: partes,
+          ),
         ),
       ),
     );

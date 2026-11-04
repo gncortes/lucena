@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 
 import '../../../domain/models/training/lesson_end.dart';
 import '../../core/keys/lesson_end_keys.dart';
@@ -60,109 +61,110 @@ class DayGoalScreen extends StatelessWidget {
         buttonKey: LessonEndKeys.dayGoalClose,
         onClose: onBack,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Column(
-            children: [
-              const LessonEndBadge(icon: CanvasSymbols.taskAlt),
-              const SizedBox(height: 12),
-              Text(
-                l.licaoMetaDiaTitle,
-                textAlign: TextAlign.center,
-                style: endTitleStyle(context),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                l.licaoMetaDiaSemana(
-                  summary.week,
-                  summary.weekCount,
-                  summary.daysLeft,
-                ),
-                textAlign: TextAlign.center,
-                style: endSubtitleStyle(context),
-              ),
-              const SizedBox(height: 20),
-              KeyedSubtree(
-                key: LessonEndKeys.dayGoalProgress,
-                child: LucenaCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      row(
-                        Icons.my_location,
-                        summary.currentChapter,
-                        strong: true,
-                      ),
-                      const SizedBox(height: 8),
-                      row(
-                        CanvasSymbols.radioButtonUnchecked,
-                        summary.testPending
-                            ? l.licaoMetaDiaLicoesTeste(
-                                summary.lessonsDone,
-                                summary.lessonsTotal,
-                              )
-                            : l.licaoMetaDiaLicoes(
-                                summary.lessonsDone,
-                                summary.lessonsTotal,
-                              ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          for (final (i, f) in summary.chapterProgress.indexed)
-                            Expanded(
-                              child: Padding(
-                                padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
-                                // H-ANI-13: enche de 0 na entrada.
-                                child: BarraQueEnche(
-                                  valor: f.clamp(0, 1).toDouble(),
-                                  altura: 6,
-                                  cor: f >= 1
-                                      ? AppColors.trainingDayCorrect
-                                      : primary,
-                                  corDoTrilho: AppColors.cardOutline,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        l.licaoMetaDiaCapitulos(
-                          summary.chaptersDone,
-                          summary.chapterProgress.length,
-                        ),
-                        style: rowStyle?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+      // H-ANI-25: selo, título, semana, o cartão do plano e os botões por
+      // último.
+      body: EntradaDeResultado(
+        id:
+            'meta-dia-${summary.week}-${summary.currentChapter}-'
+            '${summary.lessonsDone}',
+        estrela: const LessonEndBadge(icon: CanvasSymbols.taskAlt),
+        titulo: Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Text(
+            l.licaoMetaDiaTitle,
+            textAlign: TextAlign.center,
+            style: endTitleStyle(context),
           ),
         ),
-      ),
-      bottomNavigationBar: ActionsFooter(
-        stacked: true,
-        children: [
-          BusyButton(
-            buttonKey: LessonEndKeys.dayGoalBack,
-            icon: CanvasSymbols.taskAlt,
-            label: l.licaoVoltarMetas,
-            onPressed: onBack,
-          ),
-          if (summary.testPending && onTest != null)
-            BusyButton(
-              buttonKey: LessonEndKeys.dayGoalTest,
-              style: BusyButtonStyle.outlined,
-              label: l.licaoMetaDiaTesteAgora,
-              onPressed: onTest,
+        subtitulo: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            l.licaoMetaDiaSemana(
+              summary.week,
+              summary.weekCount,
+              summary.daysLeft,
             ),
-        ],
+            textAlign: TextAlign.center,
+            style: endSubtitleStyle(context),
+          ),
+        ),
+        placar: Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: KeyedSubtree(
+            key: LessonEndKeys.dayGoalProgress,
+            child: LucenaCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  row(Icons.my_location, summary.currentChapter, strong: true),
+                  const SizedBox(height: 8),
+                  row(
+                    CanvasSymbols.radioButtonUnchecked,
+                    summary.testPending
+                        ? l.licaoMetaDiaLicoesTeste(
+                            summary.lessonsDone,
+                            summary.lessonsTotal,
+                          )
+                        : l.licaoMetaDiaLicoes(
+                            summary.lessonsDone,
+                            summary.lessonsTotal,
+                          ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      for (final (i, f) in summary.chapterProgress.indexed)
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
+                            // H-ANI-13: enche de 0 na entrada.
+                            child: BarraQueEnche(
+                              valor: f.clamp(0, 1).toDouble(),
+                              altura: 6,
+                              cor: f >= 1
+                                  ? AppColors.trainingDayCorrect
+                                  : primary,
+                              corDoTrilho: AppColors.cardOutline,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l.licaoMetaDiaCapitulos(
+                      summary.chaptersDone,
+                      summary.chapterProgress.length,
+                    ),
+                    style: rowStyle?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        botoes: ActionsFooter(
+          stacked: true,
+          children: [
+            BusyButton(
+              buttonKey: LessonEndKeys.dayGoalBack,
+              icon: CanvasSymbols.taskAlt,
+              label: l.licaoVoltarMetas,
+              onPressed: onBack,
+            ),
+            if (summary.testPending && onTest != null)
+              BusyButton(
+                buttonKey: LessonEndKeys.dayGoalTest,
+                style: BusyButtonStyle.outlined,
+                label: l.licaoMetaDiaTesteAgora,
+                onPressed: onTest,
+              ),
+          ],
+        ),
+        montar: montarFimComBotoes,
       ),
     );
   }

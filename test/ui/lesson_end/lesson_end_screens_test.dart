@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/lesson_end.dart';
 import 'package:lucena/ui/core/keys/lesson_end_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/widgets/diploma_card.dart';
 import 'package:lucena/ui/lesson_end/widgets/course_completed_screen.dart';
 import 'package:lucena/ui/lesson_end/widgets/day_goal_screen.dart';
@@ -12,6 +13,7 @@ import 'package:lucena/ui/lesson_end/widgets/week_review_screen.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_survey_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 
 /// H-LIC-50 a 58: telas do fim da lição e do curso, com os textos do canvas.
@@ -261,5 +263,109 @@ void main() {
     await tester.tap(find.byKey(LessonEndKeys.soonClose));
     await tester.tap(find.byKey(LessonEndKeys.soonBack));
     expect(back, 2);
+  });
+
+  group('H-ANI-25: o fim se monta em ordem e os botões entram por último', () {
+    final telas = <String, (Widget Function(), List<String>, Key)>{
+      'meta do dia': (
+        () => DayGoalScreen(summary: summary(), onBack: () {}, onTest: () {}),
+        ['estrela', 'titulo', 'subtitulo', 'placar', 'botoes'],
+        LessonEndKeys.dayGoalBack,
+      ),
+      'oferta da demonstração': (
+        () => DemoOfferScreen(
+          chapterNumber: 1,
+          exerciseTitle: 'Lista de exercícios',
+          correct: 10,
+          total: 12,
+          teacher: FakeCharacterRepository.viktor,
+          onSeeCourse: () {},
+          onNotNow: () {},
+        ),
+        ['estrela', 'titulo', 'subtitulo', 'viktor', 'botoes'],
+        LessonEndKeys.offerAction,
+      ),
+      'curso concluído': (
+        () => CourseCompletedScreen(
+          completion: const CourseCompletion(
+            courseName: 'Pilares',
+            chapters: 12,
+            lessons: 48,
+            studentName: 'Ana Souza',
+            dateLabel: '4 de novembro de 2026',
+            teacherName: 'Viktor',
+          ),
+          teacher: FakeCharacterRepository.viktor,
+          onGoals: () {},
+          onCatalog: () {},
+          onClose: () {},
+        ),
+        ['titulo', 'placar', 'viktor', 'botoes'],
+        LessonEndKeys.completedGoals,
+      ),
+    };
+
+    Future<void> abrir(
+      WidgetTester tester,
+      Widget tela, {
+      EntradasVistas? vistas,
+    }) async {
+      final child = vistas == null
+          ? tela
+          : EntradasVistasEscopo(vistas: vistas, child: tela);
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          surveyRepository: FakeSurveyRepository(),
+          child: child,
+        ),
+      );
+    }
+
+    for (final MapEntry(key: nome, value: (tela, partes, botao))
+        in telas.entries) {
+      for (final reduced in [false, true]) {
+        testWidgets('$nome (reduzido: $reduced)', (tester) async {
+          tester.platformDispatcher.accessibilityFeaturesTestValue =
+              FakeAccessibilityFeatures(disableAnimations: reduced);
+          addTearDown(
+            tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+          );
+          await abrir(tester, tela());
+          expectEntradaDeResultado(tester, partes: partes, animando: !reduced);
+          // O botão principal mora na última parte e aceita toque desde o
+          // começo.
+          expect(
+            find.descendant(
+              of: find.byKey(MotionKeys.parteDoResultado('botoes')),
+              matching: find.byKey(botao),
+            ),
+            findsOneWidget,
+          );
+          await tester.pump(const Duration(milliseconds: 1300));
+          await tester.pump();
+          expect(
+            opacidadeDaParte(
+              tester,
+              find.byKey(MotionKeys.parteDoResultado('botoes')),
+            ),
+            1,
+          );
+          await tester.pump(const Duration(seconds: 5));
+        });
+      }
+
+      testWidgets('$nome: reabrir na mesma sessão mostra pronto', (
+        tester,
+      ) async {
+        final vistas = EntradasVistas();
+        await abrir(tester, tela(), vistas: vistas);
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pumpWidget(const SizedBox());
+        await abrir(tester, tela(), vistas: vistas);
+        expectEntradaDeResultado(tester, partes: partes, animando: false);
+        await tester.pump(const Duration(seconds: 5));
+      });
+    }
   });
 }

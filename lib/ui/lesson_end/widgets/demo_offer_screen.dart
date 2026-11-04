@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/motion/entrada_de_resultado.dart';
+
 import '../../../domain/models/character.dart';
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -40,25 +42,31 @@ class DemoOfferScreen extends StatelessWidget {
         buttonKey: LessonEndKeys.offerClose,
         onClose: onNotNow,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      // H-ANI-25: selo, título, placar da lista, o Viktor com o convite e os
+      // botões por último.
+      body: EntradaDeResultado(
+        id: 'oferta-$chapterNumber-$exerciseTitle-$correct-$total',
+        estrela: const LessonEndBadge(icon: Icons.workspace_premium),
+        titulo: Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Text(
+            l.licaoOfertaTitle(chapterNumber),
+            textAlign: TextAlign.center,
+            style: endTitleStyle(context),
+          ),
+        ),
+        subtitulo: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            l.licaoOfertaResultado(exerciseTitle, correct, total),
+            textAlign: TextAlign.center,
+            style: endSubtitleStyle(context),
+          ),
+        ),
+        viktor: Padding(
+          padding: const EdgeInsets.only(top: 20),
           child: Column(
             children: [
-              const LessonEndBadge(icon: Icons.workspace_premium),
-              const SizedBox(height: 12),
-              Text(
-                l.licaoOfertaTitle(chapterNumber),
-                textAlign: TextAlign.center,
-                style: endTitleStyle(context),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                l.licaoOfertaResultado(exerciseTitle, correct, total),
-                textAlign: TextAlign.center,
-                style: endSubtitleStyle(context),
-              ),
-              const SizedBox(height: 20),
               TeacherSpeech(
                 showSpeedBadge: false,
                 canvasTrainingBalloon: true,
@@ -110,22 +118,23 @@ class DemoOfferScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: ActionsFooter(
-        stacked: true,
-        children: [
-          BusyButton(
-            buttonKey: LessonEndKeys.offerAction,
-            label: l.licaoOfertaAcao,
-            onPressed: onSeeCourse,
-          ),
-          BusyButton(
-            buttonKey: LessonEndKeys.offerNotNow,
-            style: BusyButtonStyle.text,
-            label: l.licaoAgoraNao,
-            onPressed: onNotNow,
-          ),
-        ],
+        botoes: ActionsFooter(
+          stacked: true,
+          children: [
+            BusyButton(
+              buttonKey: LessonEndKeys.offerAction,
+              label: l.licaoOfertaAcao,
+              onPressed: onSeeCourse,
+            ),
+            BusyButton(
+              buttonKey: LessonEndKeys.offerNotNow,
+              style: BusyButtonStyle.text,
+              label: l.licaoAgoraNao,
+              onPressed: onNotNow,
+            ),
+          ],
+        ),
+        montar: montarFimComBotoes,
       ),
     );
   }
