@@ -172,11 +172,15 @@ class BlindState {
     this.concluded = false,
     this.gameId,
     this.opponentError = false,
+    this.recordFailed = false,
   });
 
   /// O adversário falhou 3 vezes seguidas: a folha de erro está aberta e o
   /// relógio parado (H-PAR-18).
   final bool opponentError;
+
+  /// A tentativa não coube no aparelho ao gravar o fim (H-PAR-19).
+  final bool recordFailed;
 
   /// O resultado já foi dito: a tela troca para a conclusão (T51, B).
   final bool concluded;
@@ -315,10 +319,12 @@ class BlindState {
     bool? concluded,
     int? gameId,
     bool? opponentError,
+    bool? recordFailed,
   }) => BlindState(
     failed: failed ?? this.failed,
     concluded: concluded ?? this.concluded,
     opponentError: opponentError ?? this.opponentError,
+    recordFailed: recordFailed ?? this.recordFailed,
     gameId: gameId ?? this.gameId,
     held: held ?? this.held,
     phase: phase ?? this.phase,
@@ -1572,7 +1578,14 @@ class BlindGameCubit extends Cubit<BlindState> {
       ),
     );
     final won = state.userWon;
-    final gameId = await _recordChallenge(end, won);
+    int? gameId;
+    try {
+      gameId = await _recordChallenge(end, won);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(recordFailed: true));
+      return;
+    }
     await _say(
       end.reason == GameEndReason.resign
           ? _phrases.resigned
@@ -1585,6 +1598,28 @@ class BlindGameCubit extends Cubit<BlindState> {
           : _phrases.lost,
     ); // Dito o resultado, a conclusão.
     if (!isClosed) emit(state.copyWith(concluded: true, gameId: gameId));
+  }
+
+  /// "Tentar novamente" do erro de gravação (H-PAR-19).
+  Future<void> retryRecord() async {
+    final end = state.end;
+    if (!state.recordFailed || end == null || isClosed) return;
+    try {
+      final gameId = await _recordChallenge(end, state.userWon);
+      if (isClosed) return;
+      emit(
+        state.copyWith(recordFailed: false, concluded: true, gameId: gameId),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+    }
+  }
+
+  /// "Voltar" do erro de gravação: segue para a conclusão sem a partida
+  /// gravada.
+  void dismissRecordError() {
+    if (!state.recordFailed || isClosed) return;
+    emit(state.copyWith(recordFailed: false, concluded: true));
   }
 
   bool _background = false;

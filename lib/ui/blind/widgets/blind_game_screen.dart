@@ -27,6 +27,7 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/free_space_action.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_button.dart';
@@ -363,6 +364,14 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<BlindGameCubit>();
+    if (context.watch<BlindGameCubit>().state.recordFailed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.noSpace,
+        onAction: () => unawaited(cubit.retryRecord()),
+        onBack: cubit.dismissRecordError,
+        onFreeSpace: freeSpaceAction(context),
+      );
+    }
     if (context.watch<BlindGameCubit>().state.failed) {
       return LoadErrorScreen(
         kind: LoadErrorKind.generic,

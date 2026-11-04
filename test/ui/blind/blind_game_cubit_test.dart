@@ -857,6 +857,73 @@ void main() {
     },
   );
 
+  group('H-PAR-19 sem espaço ao gravar o fim', () {
+    Future<BlindGameCubit> openChallenge(
+      FakeProgressRepository progress,
+    ) async {
+      final cubit = BlindGameCubit(
+        opponent: opponent,
+        voice: voice,
+        input: input,
+        log: log,
+        now: FakeNow(DateTime.utc(2026, 10, 7)),
+        progress: progress,
+        thinkTime: Duration.zero,
+        restartDelay: Duration.zero,
+      );
+      addTearDown(cubit.close);
+      await cubit.load(
+        fen: '7k/8/6K1/8/8/8/8/1Q6 w - - 0 1',
+        userSide: Side.white,
+        kind: OpponentKind.maia,
+        level: 1000,
+        language: 'pt-BR',
+        phrases: phrases,
+        view: BlindView.hidden,
+        challengeId: '1000/blind.basic.queen.0001',
+        positionId: 'basic.queen.0001',
+      );
+      await cubit.start();
+      await cubit.release();
+      return cubit;
+    }
+
+    test('falha ao gravar: erro no estado e a conclusão espera', () async {
+      final progress = FakeProgressRepository()..failAddAttempt = 1;
+      final cubit = await openChallenge(progress);
+      await play(cubit, ['dama b8']);
+
+      expect(cubit.state.phase, BlindPhase.finished);
+      expect(cubit.state.recordFailed, isTrue);
+      expect(cubit.state.concluded, isFalse);
+    });
+
+    test('tentar novamente grava e conclui com o id', () async {
+      final progress = FakeProgressRepository()..failAddAttempt = 1;
+      final cubit = await openChallenge(progress);
+      await play(cubit, ['dama b8']);
+
+      await cubit.retryRecord();
+
+      expect(cubit.state.recordFailed, isFalse);
+      expect(cubit.state.concluded, isTrue);
+      expect(cubit.state.gameId, isNotNull);
+      expect(progress.attempts, hasLength(1));
+    });
+
+    test('voltar conclui sem id e sem gravar', () async {
+      final progress = FakeProgressRepository()..failAddAttempt = 1;
+      final cubit = await openChallenge(progress);
+      await play(cubit, ['dama b8']);
+
+      cubit.dismissRecordError();
+
+      expect(cubit.state.recordFailed, isFalse);
+      expect(cubit.state.concluded, isTrue);
+      expect(cubit.state.gameId, isNull);
+    });
+  });
+
   group('H-PAR-18 adversário que falha', () {
     const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
     final fiveMinutes = ClockConfig.same(
