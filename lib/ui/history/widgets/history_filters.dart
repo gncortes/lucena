@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_chip.dart';
+import '../../core/motion/chip_lucena.dart';
+import '../../core/motion/opcoes_do_filtro.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -49,6 +50,7 @@ Future<Map<String, String?>?> showHistoryFilterSheet(
   required String Function(int count) applyLabel,
 }) => showLucenaSheet<Map<String, String?>>(
   context,
+  filtro: true,
   builder: (_) => _FilterSheet(
     groups: groups,
     initial: initial,
@@ -111,15 +113,19 @@ class _FilterSheetState extends State<_FilterSheet> {
             ),
           ),
           Flexible(
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.xl,
-                0,
-                AppSpacing.xl,
-                AppSpacing.lg,
+            child: OpcoesDoFiltro(
+              id: 'historico',
+              montar: (itens) => ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  AppSpacing.lg,
+                ),
+                children: itens,
               ),
-              children: [
+              itens: [
                 for (final group in widget.groups) ...[
                   Padding(
                     padding: const EdgeInsets.only(
@@ -138,16 +144,14 @@ class _FilterSheetState extends State<_FilterSheet> {
                     runSpacing: AppSpacing.sm,
                     children: [
                       for (final option in group.options)
-                        FilterChip(
-                          materialTapTargetSize: AppChip.tapTarget,
-                          visualDensity: AppChip.density,
+                        ChipLucena(
                           key: HistoryKeys.filterOption(
                             group.name,
                             option.value,
                           ),
                           label: Text(option.label),
-                          selected: _draft[group.name] == option.value,
-                          onSelected: (_) => _toggle(group, option.value),
+                          selecionado: _draft[group.name] == option.value,
+                          aoEscolher: (_) => _toggle(group, option.value),
                         ),
                     ],
                   ),

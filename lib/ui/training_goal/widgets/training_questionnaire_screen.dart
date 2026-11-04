@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/training/goal/training_diagnostic.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/segmentado_lucena.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/lucena_card.dart';
@@ -63,28 +64,14 @@ class TrainingQuestionnaireScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    SegmentedButton<TopicLevel>(
-                      showSelectedIcon: false,
-                      emptySelectionAllowed: true,
-                      segments: [
-                        for (final l in TopicLevel.values)
-                          ButtonSegment(
-                            value: l,
-                            label: Text(
-                              label(l),
-                              key: TrainingGoalKeys.questLevel(
-                                entry.key,
-                                l.name,
-                              ),
-                            ),
-                          ),
-                      ],
-                      selected: {?answers[entry.key]},
-                      onSelectionChanged: (set) {
-                        if (set.isNotEmpty) {
-                          cubit.answerTopic(entry.key, set.first);
-                        }
-                      },
+                    SegmentadoLucena<TopicLevel>(
+                      valores: TopicLevel.values,
+                      selecionado: answers[entry.key],
+                      rotulo: (l) => Text(
+                        label(l),
+                        key: TrainingGoalKeys.questLevel(entry.key, l.name),
+                      ),
+                      aoEscolher: (l) => cubit.answerTopic(entry.key, l),
                     ),
                   ],
                 ),

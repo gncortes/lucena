@@ -147,4 +147,7 @@ abstract final class MotionKeys {
 
   /// O peão desenhado da abertura ([MascotePainter]).
   static const mascote = Key('motion.mascote');
+
+  /// Um segmento do [SegmentadoLucena] (H-ANI-30), pelo valor.
+  static Key segmento(String valor) => Key('motion.segmento.$valor');
 }

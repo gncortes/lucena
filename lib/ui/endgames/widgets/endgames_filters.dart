@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/chip_lucena.dart';
+import '../../core/motion/opcoes_do_filtro.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/endgames_cubit.dart';
@@ -71,6 +73,7 @@ Future<void> showEndgamesFilterSheet(BuildContext context) {
   final cubit = context.read<EndgamesCubit>();
   return showLucenaSheet<void>(
     context,
+    filtro: true,
     builder: (_) => BlocProvider.value(
       value: cubit,
       child: const SafeArea(top: false, child: _FilterSheet()),
@@ -106,25 +109,29 @@ class _FilterSheet extends StatelessWidget {
                     ),
             ),
             Flexible(
-              child: ListView(
-                shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                children: [
+              child: OpcoesDoFiltro(
+                id: 'finais',
+                montar: (itens) => ListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
+                  ),
+                  children: itens,
+                ),
+                itens: [
                   if (levels.isNotEmpty) ...[
                     _Heading(l10n.endgamesFilterOrder),
                     _Options(
                       children: [
                         for (final sort in EndgameSort.values)
-                          ChoiceChip(
-                            materialTapTargetSize: AppChip.tapTarget,
-                            visualDensity: AppChip.density,
+                          ChipLucena(
                             key: EndgamesKeys.filterOption('sort.${sort.name}'),
                             label: Text(switch (sort) {
                               EndgameSort.trail => l10n.endgamesSortTrail,
                               EndgameSort.easiest => l10n.endgamesSortEasiest,
                             }),
-                            selected: filter.sort == sort,
-                            onSelected: (_) => cubit.setSort(sort),
+                            selecionado: filter.sort == sort,
+                            aoEscolher: (_) => cubit.setSort(sort),
                           ),
                       ],
                     ),
@@ -132,13 +139,11 @@ class _FilterSheet extends StatelessWidget {
                     _Options(
                       children: [
                         for (final level in levels)
-                          FilterChip(
-                            materialTapTargetSize: AppChip.tapTarget,
-                            visualDensity: AppChip.density,
+                          ChipLucena(
                             key: EndgamesKeys.filterOption(_levelCode(level)),
                             label: Text(level.name(l10n)),
-                            selected: filter.levels.contains(level),
-                            onSelected: (_) => cubit.toggleLevel(level),
+                            selecionado: filter.levels.contains(level),
+                            aoEscolher: (_) => cubit.toggleLevel(level),
                           ),
                       ],
                     ),
@@ -147,13 +152,11 @@ class _FilterSheet extends StatelessWidget {
                   _Options(
                     children: [
                       for (final kind in state.availableKinds)
-                        FilterChip(
-                          materialTapTargetSize: AppChip.tapTarget,
-                          visualDensity: AppChip.density,
+                        ChipLucena(
                           key: EndgamesKeys.filterOption(kind.code),
                           label: Text(kind.label(l10n)),
-                          selected: filter.kinds.contains(kind),
-                          onSelected: (_) => cubit.toggleKind(kind),
+                          selecionado: filter.kinds.contains(kind),
+                          aoEscolher: (_) => cubit.toggleKind(kind),
                         ),
                     ],
                   ),
@@ -161,13 +164,11 @@ class _FilterSheet extends StatelessWidget {
                   _Options(
                     children: [
                       for (final status in EndgameLessonStatus.values)
-                        FilterChip(
-                          materialTapTargetSize: AppChip.tapTarget,
-                          visualDensity: AppChip.density,
+                        ChipLucena(
                           key: EndgamesKeys.filterOption(status.code),
                           label: Text(status.label(l10n)),
-                          selected: filter.statuses.contains(status),
-                          onSelected: (_) => cubit.toggleStatus(status),
+                          selecionado: filter.statuses.contains(status),
+                          aoEscolher: (_) => cubit.toggleStatus(status),
                         ),
                     ],
                   ),
