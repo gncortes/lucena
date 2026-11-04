@@ -44,7 +44,7 @@ class NumeroQueConta extends StatelessWidget {
             RichText(
               text: TextSpan(
                 text: fim,
-                style: estilo.copyWith(color: const Color(0x00000000)),
+                style: estilo.copyWith(color: Colors.transparent),
               ),
               textScaler: MediaQuery.textScalerOf(context),
               maxLines: 1,

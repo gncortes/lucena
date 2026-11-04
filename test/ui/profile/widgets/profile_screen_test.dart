@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/motion/lucena_motion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
@@ -495,7 +496,9 @@ void main() {
       await openDelete(tester);
       await tester.tap(find.byKey(AccountKeys.deleteConfirm));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 400));
+      // A folha fecha em LucenaMotion.folha (400 ms) e sai no quadro seguinte.
+      await tester.pump(LucenaMotion.folha);
+      await tester.pump(const Duration(milliseconds: 16));
 
       expect(find.byKey(AccountKeys.deleteSheet), findsNothing);
       expect(
