@@ -1,3 +1,4 @@
+import '../../training_goal/widgets/training_goal_card.dart';
 import '../../core/widgets/course/course_navigation_bar.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../domain/use_cases/training/needs_opening_profile.dart';
@@ -442,6 +443,10 @@ class _LessonTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
+        TrainingGoalCard(
+          course: cubit.config.course,
+          place: TrainingGoalCardPlace.home,
+        ),
         CourseContinueCard(
           key: needsProfile ? TrainingProfileKeys.moment : null,
           label: needsProfile

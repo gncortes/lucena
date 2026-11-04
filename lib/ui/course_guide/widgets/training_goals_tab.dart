@@ -17,6 +17,7 @@ import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/course_guide_cubit.dart';
+import '../../training_goal/widgets/training_goal_card.dart';
 import 'course_guide_copy.dart';
 import '../../training_opening/widgets/opening_goal_cards.dart';
 import '../../course_entry/widgets/course_content_states.dart';
@@ -74,7 +75,12 @@ class TrainingGoalsTab extends StatelessWidget {
       final schoolFirstLessons =
           cubit.config.progressKind == TrainingProgressKind.modulesAndPieces &&
           state.training!.completedLessons.isEmpty;
-      final contents = <Widget>[];
+      final contents = <Widget>[
+        TrainingGoalCard(
+          course: cubit.config.course,
+          place: TrainingGoalCardPlace.goals,
+        ),
+      ];
       if (hasOfflineLesson) {
         contents.add(const TrainingGoalsOfflineNotice());
       }
