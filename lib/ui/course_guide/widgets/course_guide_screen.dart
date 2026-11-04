@@ -13,7 +13,9 @@ import '../../core/theme/canvas_symbols.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/training/training_content.dart';
+import '../../../domain/models/training/plan_event.dart';
 import '../../../domain/models/training/training_course.dart';
+import '../../../domain/use_cases/now.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/theme/app_colors.dart';
@@ -27,6 +29,7 @@ import '../../core/widgets/course/course_part_header.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
+import 'licao_plan_band.dart';
 import '../../course_entry/widgets/course_content_states.dart';
 
 class CourseGuideScreen extends StatelessWidget {
@@ -46,11 +49,20 @@ class CourseGuideScreen extends StatelessWidget {
     this.titleOverride,
     this.onTabChanged,
     this.onStartPilares,
+    this.planEvent,
+    this.now,
+    this.onPlanBand,
     super.key,
   });
   final VoidCallback onBack, onPlan, onHelp, onWelcomeContinue;
   final VoidCallback? onLevelTest;
   final VoidCallback? onStartPilares;
+
+  /// O plano até um torneio (H-LIC-05): com ele a aba Lição mostra a faixa
+  /// do plano; sem ele (sem plano, demo) a faixa não aparece.
+  final PlanEvent? planEvent;
+  final Now? now;
+  final VoidCallback? onPlanBand;
   final ValueChanged<TrainingLesson> onLesson;
   final ValueChanged<String> onChapter;
   final WidgetBuilder goalsBuilder, progressBuilder;
@@ -58,6 +70,19 @@ class CourseGuideScreen extends StatelessWidget {
   final Widget? bodyOverride;
   final String? titleOverride;
   final ValueChanged<CourseGuideTab>? onTabChanged;
+
+  Widget _withPlanBand(Widget body) {
+    final event = planEvent;
+    final clock = now;
+    final open = onPlanBand ?? onPlan;
+    if (event == null || clock == null) return body;
+    return Column(
+      children: [
+        LicaoPlanBand(event: event, now: clock(), onTap: open),
+        Expanded(child: body),
+      ],
+    );
+  }
 
   @override
   Widget build(
@@ -129,10 +154,12 @@ class CourseGuideScreen extends StatelessWidget {
                     switch (tab) {
                       CourseGuideTab.lesson =>
                         training?.onboardingDone == true
-                            ? _LessonTab(
-                                state: state,
-                                onLesson: onLesson,
-                                onStartPilares: onStartPilares,
+                            ? _withPlanBand(
+                                _LessonTab(
+                                  state: state,
+                                  onLesson: onLesson,
+                                  onStartPilares: onStartPilares,
+                                ),
                               )
                             : _WelcomeTab(onContinue: onWelcomeContinue),
                       CourseGuideTab.goals => goalsBuilder(context),
@@ -441,10 +468,10 @@ class _LessonTab extends StatelessWidget {
           label: needsProfile
               ? t.trainingProfileMomentLabel(partLabel)
               : resumed
-              ? t.trainingResumeLabel(sectionLabel, index, resumeStageLabel)
+              ? t.courseGuideResumeLabel(sectionLabel, resumeStageLabel)
               : lesson.kind == TrainingLessonKind.test
               ? sectionLabel
-              : t.trainingPartLesson(index, sectionLabel),
+              : t.courseGuideLessonLabel(sectionLabel, index),
           title: needsProfile
               ? t.trainingProfileMomentTitle
               : trainingMasteryLessonTitle(context, lesson),

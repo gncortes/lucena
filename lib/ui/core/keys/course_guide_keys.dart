@@ -13,6 +13,12 @@ abstract final class CourseGuideKeys {
   static const planAction = Key('courseGuide.planAction');
   static const helpAction = Key('courseGuide.helpAction');
   static const continueButton = Key('courseGuide.continue');
+
+  /// O "Continuar" das boas-vindas da aba Lição.
+  static const courseGuideWelcomeContinue = continueButton;
+
+  /// A faixa do plano acima do cartão da lição (H-LIC-05).
+  static const licaoPlanBand = Key('courseGuide.licaoPlanBand');
   static const levelTest = Key('courseGuide.levelTest');
   static const seeCatalog = Key('courseGuide.seeCatalog');
   static Key difficultyStar(String id) => Key('courseGuide.difficulty.$id');
