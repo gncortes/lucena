@@ -32,6 +32,7 @@ import '../../core/widgets/one_line.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.
 class SpeedrunListScreen extends StatelessWidget {
@@ -250,55 +251,61 @@ class SpeedrunListScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.xl,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        section(
-                          Icons.timer_outlined,
-                          l10n.speedrunModeClassic,
-                          Text(
-                            l10n.speedrunHelpClassic,
-                            key: SpeedrunKeys.intro,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
-                        section(
-                          Icons.all_inclusive,
-                          l10n.marathonSection,
-                          Text(
-                            l10n.speedrunHelpMarathon,
-                            key: SpeedrunKeys.helpText,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
-                        section(
-                          Icons.av_timer_outlined,
-                          l10n.speedrunPaceLine(paceShort(l10n, pace)),
-                          Text(
-                            l10n.speedrunHelpClock(
-                              initial,
-                              pace.increment.inSeconds,
+                    child: EntradaEmCascata(
+                      montar: (itens) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: itens,
+                      ),
+                      itens: [
+                        for (final secao in [
+                          section(
+                            Icons.timer_outlined,
+                            l10n.speedrunModeClassic,
+                            Text(
+                              l10n.speedrunHelpClassic,
+                              key: SpeedrunKeys.intro,
+                              style: theme.textTheme.bodyLarge,
                             ),
-                            key: SpeedrunKeys.paceHelp,
-                            style: theme.textTheme.bodyLarge,
                           ),
-                        ),
-                        section(
-                          Icons.school_outlined,
-                          l10n.speedrunHelpLevels,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: levels,
+                          section(
+                            Icons.all_inclusive,
+                            l10n.marathonSection,
+                            Text(
+                              l10n.speedrunHelpMarathon,
+                              key: SpeedrunKeys.helpText,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
-                        ),
-                        section(
-                          Icons.pause_circle_outline,
-                          l10n.lessonDemoPause,
-                          Text(
-                            l10n.speedrunHelpPause,
-                            style: theme.textTheme.bodyLarge,
+                          section(
+                            Icons.av_timer_outlined,
+                            l10n.speedrunPaceLine(paceShort(l10n, pace)),
+                            Text(
+                              l10n.speedrunHelpClock(
+                                initial,
+                                pace.increment.inSeconds,
+                              ),
+                              key: SpeedrunKeys.paceHelp,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
-                        ),
+                          section(
+                            Icons.school_outlined,
+                            l10n.speedrunHelpLevels,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: levels,
+                            ),
+                          ),
+                          section(
+                            Icons.pause_circle_outline,
+                            l10n.lessonDemoPause,
+                            Text(
+                              l10n.speedrunHelpPause,
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ),
+                        ])
+                          ItemDaCascata.texto(secao),
                       ],
                     ),
                   ),

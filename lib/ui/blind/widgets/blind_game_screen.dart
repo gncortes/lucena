@@ -52,6 +52,7 @@ import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 
 /// As frases do modo às cegas no idioma da tela.
 BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(
@@ -921,49 +922,62 @@ class _IntroPanel extends StatelessWidget {
     final l10n = context.l10n;
     final showing = state.view == BlindView.board;
     return _BottomSheetFrame(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.blindIntro,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  key: BlindKeys.introListen,
-                  icon: const Icon(Icons.hearing),
-                  label: Text(l10n.blindListenPosition),
-                  onPressed: cubit.narratePosition,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: OutlinedButton.icon(
-                  key: BlindKeys.introBoard,
-                  icon: Icon(showing ? Icons.grid_4x4 : Icons.grid_on),
-                  label: Text(
-                    showing ? l10n.blindViewEmpty : l10n.blindShowBoard,
-                  ),
-                  onPressed: () => cubit.setView(
-                    showing ? BlindView.empty : BlindView.board,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          FilledButton(
-            key: BlindKeys.start,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
+      child: EntradaEmCascata(
+        montar: (itens) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: itens,
+        ),
+        itens: [
+          ItemDaCascata.texto(
+            Text(
+              l10n.blindIntro,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
-            onPressed: cubit.start,
-            child: Text(l10n.blindStart),
+          ),
+          ItemDaCascata.texto(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: BlindKeys.introListen,
+                      icon: const Icon(Icons.hearing),
+                      label: Text(l10n.blindListenPosition),
+                      onPressed: cubit.narratePosition,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: BlindKeys.introBoard,
+                      icon: Icon(showing ? Icons.grid_4x4 : Icons.grid_on),
+                      label: Text(
+                        showing ? l10n.blindViewEmpty : l10n.blindShowBoard,
+                      ),
+                      onPressed: () => cubit.setView(
+                        showing ? BlindView.empty : BlindView.board,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ItemDaCascata.botao(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.sm),
+              child: FilledButton(
+                key: BlindKeys.start,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(kButtonHeight),
+                ),
+                onPressed: cubit.start,
+                child: Text(l10n.blindStart),
+              ),
+            ),
           ),
         ],
       ),
