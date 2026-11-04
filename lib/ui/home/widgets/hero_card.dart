@@ -10,6 +10,7 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
 import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_button.dart';
@@ -229,108 +230,111 @@ class _HeroLayout extends StatelessWidget {
       );
       if (avatarTag != null) portrait = Hero(tag: avatarTag, child: portrait);
     }
-    return Material(
-      key: HomeKeys.goalCard,
-      color: colors.primary,
-      borderRadius: BorderRadius.circular(AppShape.large),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: data.onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.md,
-            children: [
-              Row(
-                spacing: AppSpacing.md,
-                children: [
-                  ?portrait,
-                  Expanded(
-                    child: Text(
-                      data.title,
-                      key: HomeKeys.goalTitle,
-                      maxLines: 2,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: on,
-                        fontWeight: AppWeight.heavy,
+    // H-ANI-20: o cartão afunda no toque.
+    return CartaoPressionavel(
+      child: Material(
+        key: HomeKeys.goalCard,
+        color: colors.primary,
+        borderRadius: BorderRadius.circular(AppShape.large),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: data.onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.md,
+              children: [
+                Row(
+                  spacing: AppSpacing.md,
+                  children: [
+                    ?portrait,
+                    Expanded(
+                      child: Text(
+                        data.title,
+                        key: HomeKeys.goalTitle,
+                        maxLines: 2,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: on,
+                          fontWeight: AppWeight.heavy,
+                        ),
                       ),
                     ),
-                  ),
-                  if (fen != null)
-                    _comHero(
-                      data.boardHeroId,
-                      PositionBoard(
-                        key: HomeKeys.heroBoard,
-                        fen: fen,
-                        orientation: orientation,
-                        size: HeroCard.board,
-                        heroTag: data.boardTag,
+                    if (fen != null)
+                      _comHero(
+                        data.boardHeroId,
+                        PositionBoard(
+                          key: HomeKeys.heroBoard,
+                          fen: fen,
+                          orientation: orientation,
+                          size: HeroCard.board,
+                          heroTag: data.boardTag,
+                        ),
                       ),
-                    ),
-                ],
-              ),
-              Row(
-                children: [
-                  // Com a barra, ela ocupa o meio (o rótulo vai até a metade
-                  // do espaço antes do botão); sem, o rótulo vai até o botão.
-                  // O botão fica sempre encostado à direita.
-                  Expanded(
-                    child: data.progress > 0
-                        ? LayoutBuilder(
-                            builder: (context, constraints) => Row(
-                              children: [
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth: constraints.maxWidth / 2,
+                  ],
+                ),
+                Row(
+                  children: [
+                    // Com a barra, ela ocupa o meio (o rótulo vai até a metade
+                    // do espaço antes do botão); sem, o rótulo vai até o botão.
+                    // O botão fica sempre encostado à direita.
+                    Expanded(
+                      child: data.progress > 0
+                          ? LayoutBuilder(
+                              builder: (context, constraints) => Row(
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: constraints.maxWidth / 2,
+                                    ),
+                                    child: label,
                                   ),
-                                  child: label,
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  // A barra branca sobre o azul; enche até
-                                  // o ponto em que a pessoa está (H-ANI-13).
-                                  child: BarraQueEnche(
-                                    key: HomeKeys.heroProgress,
-                                    valor: data.progress,
-                                    cor: on,
-                                    corDoTrilho: on.withValues(alpha: 0.3),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  Expanded(
+                                    // A barra branca sobre o azul; enche até
+                                    // o ponto em que a pessoa está (H-ANI-13).
+                                    child: BarraQueEnche(
+                                      key: HomeKeys.heroProgress,
+                                      valor: data.progress,
+                                      cor: on,
+                                      corDoTrilho: on.withValues(alpha: 0.3),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : label,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  FilledButton.icon(
-                    key: HomeKeys.goalAction,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: on,
-                      foregroundColor: colors.primary,
-                      minimumSize: const Size(0, kButtonHeightPill),
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        AppSpacing.md,
-                        0,
-                        AppSpacing.lg,
-                        0,
+                                ],
+                              ),
+                            )
+                          : label,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    FilledButton.icon(
+                      key: HomeKeys.goalAction,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: on,
+                        foregroundColor: colors.primary,
+                        minimumSize: const Size(0, kButtonHeightPill),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          AppSpacing.md,
+                          0,
+                          AppSpacing.lg,
+                          0,
+                        ),
+                        // O desenho tem 36; o toque, os 48 do Material (D6).
+                        tapTargetSize: MaterialTapTargetSize.padded,
+                        visualDensity: VisualDensity.standard,
+                        shape: const StadiumBorder(),
                       ),
-                      // O desenho tem 36; o toque, os 48 do Material (D6).
-                      tapTargetSize: MaterialTapTargetSize.padded,
-                      visualDensity: VisualDensity.standard,
-                      shape: const StadiumBorder(),
+                      onPressed: data.onPressed,
+                      icon: const Icon(
+                        CanvasSymbols.playArrow,
+                        fill: 1,
+                        size: AppIconSize.button,
+                      ),
+                      label: Text(data.action),
                     ),
-                    onPressed: data.onPressed,
-                    icon: const Icon(
-                      CanvasSymbols.playArrow,
-                      fill: 1,
-                      size: AppIconSize.button,
-                    ),
-                    label: Text(data.action),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

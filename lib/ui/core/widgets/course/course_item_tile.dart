@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../motion/cartao_pressionavel.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_shape.dart';
 import '../../theme/app_spacing.dart';
@@ -93,93 +94,96 @@ class CourseItemTile extends StatelessWidget {
         Icons.lock_rounded,
       ),
     };
-    return Material(
-      color: colors.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppShape.card),
-        side: state == CourseItemState.next
-            ? BorderSide(color: colors.primary, width: 2)
-            : BorderSide.none,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.lg,
-            children: [
-              Container(
-                width: circleSize,
-                height: circleSize,
-                decoration: BoxDecoration(
-                  color: background,
-                  shape: BoxShape.circle,
+    // H-ANI-20: o cartão afunda no toque.
+    return CartaoPressionavel(
+      child: Material(
+        color: colors.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.card),
+          side: state == CourseItemState.next
+              ? BorderSide(color: colors.primary, width: 2)
+              : BorderSide.none,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: AppSpacing.lg,
+              children: [
+                Container(
+                  width: circleSize,
+                  height: circleSize,
+                  decoration: BoxDecoration(
+                    color: background,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: foreground,
+                    fill: icon == CanvasSymbols.playArrow ? 1 : null,
+                  ),
                 ),
-                child: Icon(
-                  icon,
-                  color: foreground,
-                  fill: icon == CanvasSymbols.playArrow ? 1 : null,
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  // CompAulaTile: gap 2 entre título e resumo.
-                  spacing: 2,
-                  children: [
-                    Text(
-                      title,
-                      // CompAulaTile v2: 16/20 em 700.
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        height: 20 / 16,
-                        fontWeight: AppWeight.strong,
-                        color: state == CourseItemState.locked
-                            ? colors.onSurface.withValues(alpha: 0.38)
-                            : null,
-                      ),
-                    ),
-                    if (summary != null &&
-                        summary.isNotEmpty &&
-                        difficulty == null)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // CompAulaTile: gap 2 entre título e resumo.
+                    spacing: 2,
+                    children: [
                       Text(
-                        summary,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
+                        title,
+                        // CompAulaTile v2: 16/20 em 700.
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          height: 20 / 16,
+                          fontWeight: AppWeight.strong,
+                          color: state == CourseItemState.locked
+                              ? colors.onSurface.withValues(alpha: 0.38)
+                              : null,
                         ),
                       ),
-                    if (summary != null &&
-                        summary.isNotEmpty &&
-                        difficulty != null)
-                      Row(
-                        spacing: AppSpacing.xs,
-                        children: [
-                          TrainingBadge.difficultyIcon(
-                            context,
-                            difficulty,
-                            key: CourseGuideKeys.difficultyStar(title),
+                      if (summary != null &&
+                          summary.isNotEmpty &&
+                          difficulty == null)
+                        Text(
+                          summary,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
                           ),
-                          Flexible(
-                            child: Text(
-                              summary,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.onSurfaceVariant,
+                        ),
+                      if (summary != null &&
+                          summary.isNotEmpty &&
+                          difficulty != null)
+                        Row(
+                          spacing: AppSpacing.xs,
+                          children: [
+                            TrainingBadge.difficultyIcon(
+                              context,
+                              difficulty,
+                              key: CourseGuideKeys.difficultyStar(title),
+                            ),
+                            Flexible(
+                              child: Text(
+                                summary,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    for (final tag in tags)
-                      Padding(
-                        padding: const EdgeInsets.only(top: AppSpacing.xs),
-                        child: tag,
-                      ),
-                  ],
+                          ],
+                        ),
+                      for (final tag in tags)
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
+                          child: tag,
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              if (medal != null) SizedBox(height: medalSize, child: medal),
-            ],
+                if (medal != null) SizedBox(height: medalSize, child: medal),
+              ],
+            ),
           ),
         ),
       ),

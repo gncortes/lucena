@@ -9,7 +9,10 @@ import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/keys/featured_keys.dart';
+import 'package:lucena/ui/core/motion/cartao_pressionavel.dart';
 import 'package:lucena/ui/core/motion/entradas_vistas.dart';
+import 'package:lucena/ui/home/widgets/mode_tile.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/home/widgets/hero_card.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
@@ -194,6 +197,42 @@ void main() {
       await tester.pump();
       expect(opacidade(tester, find.byKey(MotionKeys.itemDaLista(2))), 1);
       await tester.pumpAndSettle();
+    });
+  });
+
+  group('H-ANI-20 · os cartões afundam no toque', () {
+    testWidgets('meta do dia, atalhos e destaque estão no CartaoPressionavel', (
+      tester,
+    ) async {
+      await pumpHome(tester);
+      await tester.pumpAndSettle();
+      // O efeito envolve o cartão por fora ou fica dentro do widget dele.
+      int pressionavel(Finder cartao) =>
+          find
+              .ancestor(of: cartao, matching: find.byType(CartaoPressionavel))
+              .evaluate()
+              .length +
+          find
+              .descendant(of: cartao, matching: find.byType(CartaoPressionavel))
+              .evaluate()
+              .length;
+      final cartoes = <Finder>[
+        find.byKey(HomeKeys.goalCard),
+        find.byType(ModeTile),
+        find.byKey(FeaturedKeys.homeCard),
+      ];
+      var vistos = 0;
+      for (final cartao in cartoes) {
+        for (final each in cartao.evaluate()) {
+          vistos++;
+          expect(
+            pressionavel(find.byElementPredicate((e) => e == each)),
+            1,
+            reason: '${each.widget}',
+          );
+        }
+      }
+      expect(vistos, greaterThan(1));
     });
   });
 

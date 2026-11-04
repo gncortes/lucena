@@ -14,6 +14,8 @@ import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/motion/cartao_pressionavel.dart';
+import 'package:lucena/ui/core/widgets/course/course_item_tile.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
 import 'package:lucena/ui/course_guide/widgets/training_goals_tab.dart';
@@ -187,6 +189,24 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(TrainingGoalsTab), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('cartões do catálogo (H-ANI-20)', () {
+    testWidgets('cada item afunda no toque', (tester) async {
+      await mount(tester, (s) => s.schoolDayOne(), tab: CourseGuideTab.catalog);
+      await tester.pumpAndSettle();
+      final itens = find.byType(CourseItemTile);
+      expect(itens, findsWidgets);
+      for (final each in itens.evaluate()) {
+        expect(
+          find.descendant(
+            of: find.byElementPredicate((e) => e == each),
+            matching: find.byType(CartaoPressionavel),
+          ),
+          findsOneWidget,
+        );
+      }
     });
   });
 
