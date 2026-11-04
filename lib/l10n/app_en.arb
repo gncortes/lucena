@@ -13521,7 +13521,7 @@
   "@venCanceled": {
     "description": "Aviso ao fechar a folha da loja (H-VEN-06)."
   },
-  "venErrorBanner": "The purchase could not be completed. If you were charged, the course will be unlocked. If not, you were not charged.",
+  "venErrorBanner": "An unexpected error occurred. If you were charged, the course will be unlocked. If not, you were not charged.",
   "@venErrorBanner": {
     "description": "Aviso de erro da compra (H-VEN-06)."
   },

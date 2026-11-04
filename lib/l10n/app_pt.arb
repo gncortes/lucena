@@ -2754,7 +2754,7 @@
   "venRestore": "Restaurar compra",
   "venProcessing": "Confirmando a compra",
   "venCanceled": "Compra cancelada. Nada foi cobrado.",
-  "venErrorBanner": "Não foi possível concluir a compra. Se houve cobrança, o curso é liberado. Se não, nada foi cobrado.",
+  "venErrorBanner": "Ocorreu um erro inesperado. Se houve cobrança, o curso é liberado. Se não, nada foi cobrado.",
   "venOfflineBanner": "Você precisa de conexão com a internet para comprar o curso.",
   "venDoneTitle": "O curso completo é seu",
   "venDoneText": "Os 20 capítulos estão liberados. Com o seu objetivo, a gente planeja junto a sua rotina de estudos.",

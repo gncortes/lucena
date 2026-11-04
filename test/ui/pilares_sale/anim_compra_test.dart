@@ -13,6 +13,7 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/theme/app_colors.dart';
+import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
@@ -215,6 +216,67 @@ void main() {
     // Embaixo da tela, longe do texto (no quadro: 758 de 900).
     expect(botao.top, greaterThan(915 * .75));
     expect(botao.top - texto.bottom, greaterThan(100));
+  });
+
+  // Bug 6 da D2 (PropV2CompraErro e PropV2CompraSemInternet): o aviso fica
+  // logo abaixo do título, no lugar da introdução; erro em vermelho com
+  // "Ocorreu um erro inesperado", sem internet em amarelo com cloud_off.
+  Future<void> comAviso(WidgetTester tester, PurchaseOutcome outcome) async {
+    await montaOferta(tester);
+    purchases.state = purchases.state.copyWith(outcome: outcome);
+    await tester.pumpAndSettle();
+  }
+
+  BoxDecoration fundoDoAviso(WidgetTester tester, Key aviso) =>
+      tester
+              .widget<Container>(
+                find
+                    .descendant(
+                      of: find.byKey(aviso),
+                      matching: find.byType(Container),
+                    )
+                    .first,
+              )
+              .decoration!
+          as BoxDecoration;
+
+  testWidgets('erro na compra segue o quadro', (tester) async {
+    await comAviso(tester, PurchaseOutcome.error);
+    expect(
+      find.text(
+        'Ocorreu um erro inesperado. Se houve cobrança, o curso é liberado. '
+        'Se não, nada foi cobrado.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      fundoDoAviso(tester, PurchaseKeys.errorBanner).color,
+      AppColors.errorSurface,
+    );
+    final titulo = tester.getRect(find.text('Treine o que o seu jogo pede'));
+    final aviso = tester.getRect(find.byKey(PurchaseKeys.errorBanner));
+    expect(aviso.top, greaterThan(titulo.bottom));
+    expect(find.textContaining('Você faz o teste'), findsNothing);
+  });
+
+  testWidgets('sem internet na compra segue o quadro', (tester) async {
+    await comAviso(tester, PurchaseOutcome.offline);
+    expect(
+      fundoDoAviso(tester, PurchaseKeys.offlineBanner).color,
+      AppColors.waitingSurface,
+    );
+    final icone = tester.widget<Icon>(
+      find.descendant(
+        of: find.byKey(PurchaseKeys.offlineBanner),
+        matching: find.byType(Icon),
+      ),
+    );
+    expect(icone.icon, CanvasSymbols.cloudOff);
+    expect(icone.color, AppColors.waitingOnSurface);
+    final titulo = tester.getRect(find.text('Treine o que o seu jogo pede'));
+    final aviso = tester.getRect(find.byKey(PurchaseKeys.offlineBanner));
+    expect(aviso.top, greaterThan(titulo.bottom));
+    expect(find.textContaining('Você faz o teste'), findsNothing);
   });
 
   testWidgets('H-ANI-27: o aviso de erro abre empurrando e o ícone pulsa', (
