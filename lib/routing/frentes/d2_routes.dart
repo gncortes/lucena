@@ -12,6 +12,7 @@ import '../../data/repositories/characters/character_repository.dart';
 import '../../data/repositories/course_preview/course_preview_repository.dart';
 import '../../data/repositories/purchase/purchase_repository.dart';
 import '../../ui/core/analytics/analytics_context.dart';
+import '../../ui/core/motion/rota_que_abre.dart';
 import '../../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../../ui/course_preview/widgets/course_band_preview_screen.dart';
 import '../../ui/course_preview/widgets/course_details_screen.dart';
@@ -35,6 +36,10 @@ import '../router.dart' show appRoute;
 import '../../domain/models/pilares_access.dart';
 import '../../domain/models/training/training_course.dart';
 import '../routes.dart';
+
+/// O id da [OrigemQueAbre] de onde a apresentação do Pilares (`/pilares`)
+/// cresce na [RotaQueAbre] (H-ANI-04 da Venda).
+const pilaresSaleOrigin = 'venda';
 
 /// Telas novas da frente D2 (Venda + Conta + Ajustes, T85). A frente registra as rotas na
 /// lista [d2Routes] com `appRoute(name: RouteNames.x, path: D2Paths.x, ...)`,
@@ -174,27 +179,35 @@ final List<RouteBase> d2Routes = [
   ),
   // A apresentação (H-VEN-01): quem tem o curso vai direto ao Sobre o
   // Pilares; `origem` vai à oferta vista e à oferta.
-  appRoute(
+  // H-ANI-04: cresce do cartão marcado com [pilaresSaleOrigin] (a chamada da
+  // demo); de outra origem, entra em fade.
+  GoRoute(
     name: RouteNames.pilaresPresentation,
     path: D2Paths.pilaresPresentation,
     redirect: (context, state) =>
         context.read<PurchaseRepository>().state.access.owns
         ? D2Paths.pilaresAbout
         : null,
-    builder: (context, state) {
+    pageBuilder: (context, state) {
       final origin = state.uri.queryParameters['origem'] ?? 'perfil';
-      return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => _previewCubit(context, origin: origin),
-          ),
-          BlocProvider(
-            create: (context) => PilaresPricesCubit(
-              purchases: context.read<PurchaseRepository>(),
+      return RotaQueAbre<void>(
+        context: context,
+        id: pilaresSaleOrigin,
+        venda: true,
+        key: state.pageKey,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => _previewCubit(context, origin: origin),
             ),
-          ),
-        ],
-        child: CourseSaleScreen(origin: origin),
+            BlocProvider(
+              create: (context) => PilaresPricesCubit(
+                purchases: context.read<PurchaseRepository>(),
+              ),
+            ),
+          ],
+          child: CourseSaleScreen(origin: origin),
+        ),
       );
     },
   ),

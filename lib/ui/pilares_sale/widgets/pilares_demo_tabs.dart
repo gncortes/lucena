@@ -8,6 +8,7 @@ import '../../../routing/route_names.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/rota_que_abre.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -91,6 +92,11 @@ class _PilaresDemoCalloutState extends State<PilaresDemoCallout> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // H-ANI-04: a apresentação (`/pilares`) cresce deste cartão.
+    return OrigemQueAbre(id: pilaresSaleOrigin, child: _card(context, theme));
+  }
+
+  Widget _card(BuildContext context, ThemeData theme) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: AppColors.cardSurface,

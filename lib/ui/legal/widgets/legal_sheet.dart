@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/legal/legal_repository.dart';
 import '../../../domain/models/legal_document.dart';
 import '../../core/keys/legal_keys.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -99,39 +101,62 @@ class LegalSheet extends StatelessWidget {
                 AppSpacing.xxl,
               ),
               children: [
-                Row(
-                  spacing: AppSpacing.sm,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppShape.small),
-                      child: Image.asset(
-                        'assets/branding/launcher_icon.png',
-                        width: 28,
-                        height: 28,
+                // H-ANI-16: o topo (marca, título e introdução) entra em
+                // cascata na primeira abertura; as seções ficam paradas.
+                EntradaDaTela(
+                  id: switch (kind) {
+                    LegalKind.terms => 'PropV1LegalTermosSobre',
+                    LegalKind.privacy => 'PropV1LegalPoliticaSobre',
+                  },
+                  child: EntradaEmCascata(
+                    itens: [
+                      ItemDaCascata.texto(
+                        Row(
+                          spacing: AppSpacing.sm,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                AppShape.small,
+                              ),
+                              child: Image.asset(
+                                'assets/branding/launcher_icon.png',
+                                width: 28,
+                                height: 28,
+                              ),
+                            ),
+                            Text(
+                              context.l10n.appTitle,
+                              style: text.titleMedium?.copyWith(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Text(
-                      context.l10n.appTitle,
-                      style: text.titleMedium?.copyWith(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
+                      ItemDaCascata.titulo(
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Text(
+                            title,
+                            style: text.headlineSmall?.copyWith(
+                              fontSize: 26,
+                              height: 34 / 26,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  title,
-                  style: text.headlineSmall?.copyWith(
-                    fontSize: 26,
-                    height: 34 / 26,
-                    fontWeight: FontWeight.w700,
+                      for (final block in document.intro)
+                        ItemDaCascata.texto(
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: _Block(block, style: body),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                for (final block in document.intro) ...[
-                  const SizedBox(height: 20),
-                  _Block(block, style: body),
-                ],
                 for (final (index, section) in document.sections.indexed) ...[
                   const SizedBox(height: 20),
                   Text(
