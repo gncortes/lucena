@@ -97,63 +97,93 @@ class _TrainingGoalScreenState extends State<TrainingGoalScreen> {
       builder: (context, view) {
         final today = view.today;
         final tomorrow = earliestTournamentDate(today);
+        final theme = Theme.of(context);
+        final muted = theme.colorScheme.onSurfaceVariant;
+        final date = _date;
         return [
-          Text(t.treinoGoalIntro),
-          const SizedBox(height: AppSpacing.lg),
+          Text(t.treinoGoalIntro, style: theme.textTheme.bodyLarge),
+          const SizedBox(height: AppSpacing.md),
           _Option(
             optionKey: TrainingGoalKeys.goalTournament,
+            icon: Icons.stadium_outlined,
             title: t.treinoGoalTournament,
             subtitle: t.treinoGoalTournamentSub,
             selected: _kind == ObjectiveKind.tournament,
             onTap: () => setState(() => _kind = ObjectiveKind.tournament),
+            extra: _kind != ObjectiveKind.tournament
+                ? null
+                : [
+                    const Divider(height: 1),
+                    // Linha que abre o seletor: ícone, rótulo, data e seta.
+                    InkWell(
+                      key: TrainingGoalKeys.goalDateRow,
+                      onTap: () => _pick(today),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Row(
+                            spacing: AppSpacing.lg,
+                            children: [
+                              Icon(Icons.event, color: muted),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      t.treinoGoalDateRow,
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(color: muted),
+                                    ),
+                                    Text(
+                                      date == null
+                                          ? t.treinoGoalPickDate
+                                          : civilLong(context, date),
+                                      style: theme.textTheme.bodyLarge,
+                                    ),
+                                    if (date != null)
+                                      Text(
+                                        t.treinoDaysLeft(
+                                          daysUntil(today, date),
+                                        ),
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(color: muted),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.chevron_right, color: muted),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (_pastError)
+                      Text(
+                        t.treinoDatePast,
+                        key: TrainingGoalKeys.goalDateError,
+                        style: TextStyle(color: theme.colorScheme.error),
+                      ),
+                    if (date == tomorrow)
+                      Text(
+                        t.treinoTomorrowWarning,
+                        key: TrainingGoalKeys.goalTomorrowWarning,
+                      ),
+                    if (date != null)
+                      Center(
+                        child: TextButton.icon(
+                          key: TrainingGoalKeys.goalAddToCalendar,
+                          onPressed: _calendar,
+                          icon: const Icon(Icons.event_available_outlined),
+                          label: Text(t.treinoAddToCalendar),
+                        ),
+                      ),
+                  ],
           ),
-          if (_kind == ObjectiveKind.tournament) ...[
-            const SizedBox(height: AppSpacing.sm),
-            LucenaCard(
-              onTap: () => _pick(today),
-              child: Row(
-                key: TrainingGoalKeys.goalDateRow,
-                children: [
-                  Expanded(child: Text(t.treinoGoalDateRow)),
-                  Text(
-                    _date == null
-                        ? t.treinoGoalPickDate
-                        : civilLong(context, _date!),
-                  ),
-                ],
-              ),
-            ),
-            if (_pastError)
-              Padding(
-                padding: const EdgeInsets.only(top: AppSpacing.sm),
-                child: Text(
-                  t.treinoDatePast,
-                  key: TrainingGoalKeys.goalDateError,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-            if (_date == tomorrow)
-              Padding(
-                padding: const EdgeInsets.only(top: AppSpacing.sm),
-                child: Text(
-                  t.treinoTomorrowWarning,
-                  key: TrainingGoalKeys.goalTomorrowWarning,
-                ),
-              ),
-            if (_date != null)
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: TextButton.icon(
-                  key: TrainingGoalKeys.goalAddToCalendar,
-                  onPressed: _calendar,
-                  icon: const Icon(Icons.event_outlined),
-                  label: Text(t.treinoAddToCalendar),
-                ),
-              ),
-          ],
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.md),
           _Option(
             optionKey: TrainingGoalKeys.goalImprove,
+            icon: Icons.trending_up,
             title: t.treinoGoalImprove,
             subtitle: t.treinoGoalImproveSub,
             selected: _kind == ObjectiveKind.improve,
@@ -174,38 +204,53 @@ class _TrainingGoalScreenState extends State<TrainingGoalScreen> {
   }
 }
 
+/// CompOpcaoLista (rádio com ícone). Com [extra], o que a opção marcada abre
+/// fica dentro do mesmo cartão (a data do torneio no PropV2MetaInicio).
 class _Option extends StatelessWidget {
   const _Option({
     required this.optionKey,
+    required this.icon,
     required this.title,
     required this.subtitle,
     required this.selected,
     required this.onTap,
+    this.extra,
   });
   final Key optionKey;
+  final IconData icon;
   final String title, subtitle;
   final bool selected;
   final VoidCallback onTap;
+  final List<Widget>? extra;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Semantics(
-      selected: selected,
-      child: LucenaCard(
-        onTap: onTap,
+    final colors = theme.colorScheme;
+    final header = InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
-          key: optionKey,
+          spacing: AppSpacing.lg,
           children: [
+            Icon(icon, color: colors.primary),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 2,
                 children: [
-                  Text(title, style: theme.textTheme.titleMedium),
+                  Text(
+                    title,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: selected ? colors.primary : colors.onSurface,
+                    ),
+                  ),
                   Text(
                     subtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -213,8 +258,36 @@ class _Option extends StatelessWidget {
             ),
             Icon(
               selected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: selected ? theme.colorScheme.primary : null,
+              color: selected ? colors.primary : colors.onSurfaceVariant,
             ),
+          ],
+        ),
+      ),
+    );
+    final more = extra;
+    return Semantics(
+      key: optionKey,
+      selected: selected,
+      child: LucenaCard(
+        padding: EdgeInsets.zero,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            header,
+            if (more != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.sm,
+                  children: more,
+                ),
+              ),
           ],
         ),
       ),
