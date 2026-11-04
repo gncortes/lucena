@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -61,6 +60,7 @@ import '../../../domain/use_cases/wiki_markup.dart';
 import 'move_sentence.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/motion/retorno_do_lance.dart';
 import '../../core/motion/tabuleiro_animado.dart';
 
 /// Um exercício (T72): como a lição roteirizada, o balão do Viktor em cima,
@@ -198,10 +198,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     });
   }
 
-  late final _shake = AnimationController(
-    vsync: this,
-    duration: AppMotion.component,
-  );
+  /// O tabuleiro guarda o estado quando o retorno do lance (H-ANI-11) o
+  /// envolve e quando sai.
+  final _boardKey = GlobalKey();
 
   // O cronômetro: anda enquanto o aluno resolve; resolvido, fica parado no
   // tempo final.
@@ -253,7 +252,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     _elapsed.dispose();
     _flash.dispose();
     _board?.dispose();
-    _shake.dispose();
     super.dispose();
   }
 
@@ -296,9 +294,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     // app, o tabuleiro nasce aqui, antes do primeiro tique).
     if (state.phase != ExercisePhase.done) {
       _elapsed.value = context.read<ExerciseCubit>().elapsed;
-    }
-    if (state.mistakes > previous.mistakes) {
-      _shake.forward(from: 0);
     }
     // Outro passo (posição ou fase nova): a casa marcada pela fala sai.
     if (state.fen != previous.fen || state.phase != previous.phase) {
@@ -757,12 +752,77 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final exerciseId = state.exercise?.id ?? widget.exerciseId ?? '';
     final hint = state.hint;
     final wrong = state.wrongMove;
-    return AnimatedBuilder(
-      animation: _shake,
-      builder: (context, child) => Transform.translate(
-        offset: Offset(sin(_shake.value * pi * 4) * 8 * (1 - _shake.value), 0),
-        child: child,
+    final retorno = _retorno(state);
+    final child = KeyedSubtree(
+      key: _boardKey,
+      child: _boardStack(
+        context,
+        state,
+        boardSettings,
+        size: size,
+        board: board,
+        previewFen: previewFen,
+        lessonId: lessonId,
+        exerciseId: exerciseId,
+        hint: hint,
+        wrong: wrong,
       ),
+    );
+    if (retorno == null) return child;
+    // H-ANI-11/12: a casa pisca, o selo salta na peça e o tabuleiro
+    // respira (acerto) ou treme (erro). O teste do capítulo não tem
+    // retorno.
+    return RetornoDoLance(
+      key: ValueKey(retorno.id),
+      tipo: retorno.tipo,
+      casa: retorno.casa,
+      orientacao: state.side,
+      tamanho: size,
+      vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
+      child: child,
+    );
+  }
+
+  /// O retorno do último lance do aluno, se houver.
+  ({TipoDeRetorno tipo, Square casa, String id})? _retorno(
+    ExerciseState state,
+  ) {
+    if (widget.trainingTest) return null;
+    if (state.wrongMove case final NormalMove wrong) {
+      return (
+        tipo: TipoDeRetorno.erro,
+        casa: wrong.to,
+        id: 'e${state.mistakes}',
+      );
+    }
+    if (state.say == ExerciseSay.correct) {
+      if (state.sayMove case (:final fenBefore, :final uci)) {
+        if (Move.parse(uci) case final NormalMove move) {
+          return (
+            tipo: TipoDeRetorno.acerto,
+            casa: move.to,
+            id: '$fenBefore $uci',
+          );
+        }
+      }
+    }
+    return null;
+  }
+
+  Widget _boardStack(
+    BuildContext context,
+    ExerciseState state,
+    BoardSettings boardSettings, {
+    required double size,
+    required ChessboardController? board,
+    required String? previewFen,
+    required String lessonId,
+    required String exerciseId,
+    required Move? hint,
+    required Move? wrong,
+  }) {
+    return SizedBox.square(
+      dimension: size,
       // A miniatura da lista voa até aqui e vira o tabuleiro.
       child: Hero(
         tag: exerciseHeroTag(lessonId, exerciseId),
