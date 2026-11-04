@@ -198,6 +198,19 @@ void main() {
     expect(left, isTrue);
   });
 
+  testWidgets('abertura (H-ABE-14): app bar "Teste de nível" colada no topo, '
+      'sem faixa acima e sem subtítulo', (tester) async {
+    await pump(tester);
+    final bar = find.byType(AppBar);
+    expect(bar, findsOneWidget);
+    expect(tester.getTopLeft(bar).dy, 0);
+    expect(
+      find.descendant(of: bar, matching: find.text('Teste de nível')),
+      findsOneWidget,
+    );
+    expect(tester.widget<AppBar>(bar).bottom, isNull);
+  });
+
   testWidgets('abertura sem a saída: o botão não aparece', (tester) async {
     await pump(tester);
     expect(find.byKey(PlacementKeys.preferRating), findsNothing);
