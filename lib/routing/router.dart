@@ -47,11 +47,13 @@ import '../ui/board_controls/widgets/board_controls_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../data/repositories/alerts/alerts_repository.dart';
 import '../data/repositories/featured/featured_alerts_repository.dart';
 import '../data/repositories/featured/featured_progress_repository.dart';
 import '../data/repositories/featured/featured_repository.dart';
 import '../data/repositories/push/push_repository.dart';
 import '../ui/featured/view_models/featured_catalog_cubit.dart';
+import '../ui/featured/view_models/featured_alert_cubit.dart';
 import '../ui/featured/view_models/featured_endgame_cubit.dart';
 import '../ui/featured/view_models/featured_tournament_cubit.dart';
 import '../ui/featured/widgets/featured_endgame_screen.dart';
@@ -838,6 +840,16 @@ GoRouter buildRouter({
                         featured: context.read<FeaturedRepository>(),
                         progress: context.read<FeaturedProgressRepository>(),
                         characters: context.read<CharacterRepository>(),
+                      )..load(),
+                    ),
+                  if (mode.featuredId case final featuredId?)
+                    BlocProvider(
+                      create: (context) => FeaturedAlertCubit(
+                        id: featuredId,
+                        prompts: context.read<FeaturedAlertsRepository>(),
+                        alerts: context.read<AlertsRepository>(),
+                        push: context.read<PushRepository>(),
+                        analytics: context.analytics,
                       )..load(),
                     ),
                   BlocProvider(

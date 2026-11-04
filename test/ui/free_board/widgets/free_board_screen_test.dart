@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/featured/view_models/featured_alert_cubit.dart';
 import 'package:lucena/ui/core/widgets/skeleton.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/free_board/widgets/game_actions_bar.dart';
@@ -80,6 +81,8 @@ import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_featured_repositories.dart';
+import '../../../../testing/fakes/fake_alerts_repository.dart';
+import '../../../../testing/fakes/fake_push_repository.dart';
 import '../../../../testing/fakes/fake_evaluation_repository.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
 import '../../../../testing/fakes/fake_talk_repository.dart';
@@ -216,6 +219,15 @@ void main() {
                     featured: FakeFeaturedRepository(sampleFeaturedCatalog()),
                     progress: FakeFeaturedProgressRepository(),
                     characters: FakeCharacterRepository(),
+                  ),
+                ),
+              if (mode.featuredId != null)
+                BlocProvider(
+                  create: (_) => FeaturedAlertCubit(
+                    id: mode.featuredId!,
+                    prompts: FakeFeaturedAlertsRepository(),
+                    alerts: FakeAlertsRepository(),
+                    push: FakePushRepository(),
                   ),
                 ),
             ],
