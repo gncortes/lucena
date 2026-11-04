@@ -528,7 +528,7 @@
   "blindMicTooltip": "Falar o lance",
   "blindMicHint": "Toque ou segure para falar",
   "blindMicTitle": "Usar o microfone?",
-  "blindMicBody": "Para jogar às cegas, o app escuta o lance que você fala. A voz é reconhecida pelo aparelho e não é gravada.",
+  "blindMicBody": "O microfone é usado só para você falar suas jogadas, quando toca para falar. O reconhecimento é feito pelo serviço de fala do seu celular (Google). O Lucena não grava nem guarda sua voz.",
   "blindMicAllow": "Permitir",
   "blindMicDeny": "Agora não",
   "blindMicDenied": "Sem microfone: jogue tocando no tabuleiro.",

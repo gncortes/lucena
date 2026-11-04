@@ -124,6 +124,34 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  group('H-PAR-09 aviso do microfone', () {
+    testWidgets('texto exato do quadro, antes do pedido do sistema', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Usar o microfone?'), findsOneWidget);
+      expect(
+        find.text(
+          'O microfone é usado só para você falar suas jogadas, quando toca '
+          'para falar. O reconhecimento é feito pelo serviço de fala do seu '
+          'celular (Google). O Lucena não grava nem guarda sua voz.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.mic_none), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(BlindKeys.micAllow),
+          matching: find.byIcon(Icons.mic),
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
   group('H-PAR-18 adversário que falha', () {
     Future<void> failThreeTimes(WidgetTester tester) async {
       final opponent = FakeOpponentRepository()..failTimes = 3;

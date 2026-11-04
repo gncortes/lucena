@@ -2619,9 +2619,9 @@
   "@blindMicTitle": {
     "description": "Blindfold mode (T40 spike): blindMicTitle"
   },
-  "blindMicBody": "To play blindfold, the app listens to the move you say. Your speech is recognized by the device and is not recorded.",
+  "blindMicBody": "The microphone is only used so you can say your moves, when you tap to speak. Speech is recognised by your phone's speech service (Google). Lucena does not record or keep your voice.",
   "@blindMicBody": {
-    "description": "Blindfold mode (T40 spike): blindMicBody"
+    "description": "Body of the microphone notice sheet in blindfold games"
   },
   "blindMicAllow": "Allow",
   "@blindMicAllow": {

@@ -335,14 +335,21 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final allow = await showLucenaSheet<bool>(
       context,
       builder: (context) => _BlindSheetBody(
-        icon: Icons.mic_none,
+        icon: Icons.mic,
         title: l10n.blindMicTitle,
         message: l10n.blindMicBody,
         actions: [
           FilledButton(
             key: BlindKeys.micAllow,
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.blindMicAllow),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.mic),
+                const SizedBox(width: AppSpacing.sm),
+                Text(l10n.blindMicAllow),
+              ],
+            ),
           ),
           OutlinedButton(
             key: BlindKeys.micDeny,
