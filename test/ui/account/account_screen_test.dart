@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
+import 'package:lucena/ui/account/widgets/google_logo.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/theme/canvas_symbols.dart';
@@ -206,6 +207,24 @@ void main() {
       expect(find.byKey(AccountKeys.toSignIn), findsOneWidget);
       // O aceite vem depois, na tela própria (H-CON-08): sem a nota legal.
       expect(find.textContaining('concorda', findRichText: true), findsNothing);
+    });
+
+    // Bug 12 da D2: o botão do Google tem o "G" colorido, como no quadro.
+    testWidgets('o botão do Google tem o logo do Google', (tester) async {
+      await pumpAccount(tester, locale: const Locale('pt'));
+      final google = find.byKey(AccountKeys.google);
+      expect(
+        find.descendant(of: google, matching: find.byType(GoogleLogo)),
+        // O segundo é o invisível que guarda a largura do rótulo.
+        findsNWidgets(2),
+      );
+      expect(
+        find.descendant(
+          of: google,
+          matching: find.byIcon(Icons.account_circle),
+        ),
+        findsNothing,
+      );
     });
 
     testWidgets('5. erro inesperado libera os botões e oferece '

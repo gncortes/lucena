@@ -199,9 +199,15 @@ final analyticsMode = AnalyticsRules.mode(
 /// Vazia nos builds locais: aí vale a do aparelho ([Dependencies.installedVersion]).
 const appVersion = String.fromEnvironment('APP_VERSION');
 
+/// Os prints de validação (Patrol) comparam a tela com o quadro, que não tem
+/// as ferramentas de desenvolvimento: o cenário de prints liga isto.
+bool hideDevToolsForPrints = false;
+
 /// As telas de desenvolvimento aparecem nos builds de depuração, nos cenários
 /// Patrol e nas candidatas de QA (`-rc`); nunca na versão final.
-bool get showsDevTools => kDebugMode || isE2E || appVersion.contains('-rc');
+bool get showsDevTools =>
+    !hideDevToolsForPrints &&
+    (kDebugMode || isE2E || appVersion.contains('-rc'));
 
 List<TrainingCourseConfig> get activeTrainingCourses => [
   if (showsDevTools) TrainingCourseConfig.pilares,

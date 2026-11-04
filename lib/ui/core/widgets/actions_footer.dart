@@ -33,7 +33,8 @@ class ActionsFooter extends StatelessWidget {
   final Widget? note;
 
   /// Com [stacked], a [note] entra logo depois deste filho em vez de no fim
-  /// (o aviso que fala do botão fica colado nele).
+  /// (o aviso que fala do botão fica colado nele); -1 a põe antes do primeiro
+  /// (a caixa do aceite, acima do Continuar).
   final int? noteAfter;
   final bool fade;
   final bool stacked;
@@ -50,6 +51,7 @@ class ActionsFooter extends StatelessWidget {
     final note = this.note;
     final after = stacked ? noteAfter : null;
     final items = [
+      if (note != null && after == -1) note,
       for (final (i, child) in children.indexed) ...[
         stacked
             ? SizedBox(height: kButtonHeight, child: child)

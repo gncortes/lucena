@@ -134,6 +134,7 @@ class _ConsentView extends StatelessWidget {
             ),
             bottomNavigationBar: ActionsFooter(
               stacked: true,
+              noteAfter: -1,
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg,
                 AppSpacing.md,

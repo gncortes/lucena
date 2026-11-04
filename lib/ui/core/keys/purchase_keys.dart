@@ -63,7 +63,7 @@ abstract final class PurchaseKeys {
   static const demoEndSeeOptions = Key('demo.offer.seeOptions');
   static const demoEndLater = Key('demo.offer.later');
 
-  // Oferta antes do Início (H-VEN-15, PropV2OfertaAntesInicioFolha).
+  // Oferta antes do Início (H-VEN-15, PropV2OfertaAntesInicio).
   static const beforeHomeSheet = Key('offer.beforeHome');
   static const beforeHomeClose = Key('offer.beforeHome.close');
   static const beforeHomeLearn = Key('offer.beforeHome.learn');

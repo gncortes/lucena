@@ -8,6 +8,7 @@ import 'package:lucena/ui/core/keys/analytics_keys.dart';
 import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/legal_keys.dart';
 import 'package:lucena/ui/core/keys/privacy_keys.dart';
+import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:lucena/ui/privacy/view_models/privacy_cubit.dart';
 import 'package:lucena/ui/privacy/widgets/privacy_screen.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -120,6 +121,32 @@ void main() {
         'Conta',
       ]) {
         expect(find.text(section), findsOneWidget, reason: section);
+      }
+    });
+
+    // Bug 11 da D2 (PropV1ContaPrivacidade): o cartão da LGPD com
+    // `shield_person` cheio; Termos e Política saem do app (`open_in_new`).
+    testWidgets('ícones do quadro: shield_person e open_in_new', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      final escudo = tester.widget<Icon>(
+        find.descendant(
+          of: find.byKey(PrivacyKeys.lgpdCard),
+          matching: find.byType(Icon),
+        ),
+      );
+      expect(escudo.icon, CanvasSymbols.shieldPerson);
+      expect(escudo.fill, 1);
+      for (final key in [PrivacyKeys.terms, PrivacyKeys.policy]) {
+        await tester.scrollUntilVisible(find.byKey(key), 200);
+        expect(
+          find.descendant(
+            of: find.byKey(key),
+            matching: find.byIcon(Icons.open_in_new),
+          ),
+          findsOneWidget,
+        );
       }
     });
 

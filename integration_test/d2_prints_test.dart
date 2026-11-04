@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/config/dependencies.dart' show hideDevToolsForPrints;
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_repository.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/progress_summary.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
@@ -21,6 +24,7 @@ import 'package:lucena/ui/core/keys/privacy_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
+import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/fakes/fake_purchase_service.dart';
@@ -32,6 +36,8 @@ import 'robots/training_capture_robot.dart';
 /// estados de demonstração e de compra saem daqui, com o fake da compra.
 /// Coletor: `tools/capture/t85_capture_server.py` (porta 8792).
 void main() {
+  // O quadro não tem as ferramentas de desenvolvimento.
+  hideDevToolsForPrints = true;
   const prices = {
     PilaresPlan.lifetime: r'R$ 99,90',
     PilaresPlan.monthly: r'R$ 19,90',
@@ -71,6 +77,11 @@ void main() {
     final capture = TrainingCaptureRobot($);
     for (final (name, route, ready) in screens) {
       await go($, route, extra: extras[name], settle: settle);
+      // O conteúdo de algumas telas vem de leitura assíncrona e entra em
+      // cascata depois da rota: sem esta espera, o print sai em branco.
+      for (var i = 0; i < 20; i++) {
+        await $.pump(const Duration(milliseconds: 100));
+      }
       await capture.shot(name, ready: ready);
       final navigator = Navigator.of($.tester.element(find.byKey(ready)));
       navigator.pop();
@@ -110,11 +121,6 @@ void main() {
         PurchaseKeys.beforeHomeClose,
       ),
       (
-        'PropV2CompraRestaurar',
-        D2Paths.pilaresRestore,
-        PurchaseKeys.restoreScreen,
-      ),
-      (
         'PropV2CompraPendente',
         D2Paths.pilaresPurchasePending,
         PurchaseKeys.pendingScreen,
@@ -123,6 +129,25 @@ void main() {
         'PropV2CompraConcluida',
         D2Paths.pilaresPurchaseDone,
         PurchaseKeys.doneScreen,
+      ),
+    ]);
+  }, tags: ['d2-venda']);
+
+  // Restaurar pede conta (sem ela, a rota leva à entrada): o print com a conta
+  // Google do E2E, como no quadro.
+  patrolTest('D2 prints: restaurar com conta', ($) async {
+    await AppRobot($).open(
+      systemLocale: const Locale('pt', 'BR'),
+      lightDevice: true,
+      demo: true,
+      signedIn: true,
+      purchases: FakePurchaseRepository(demo),
+    );
+    await shots($, [
+      (
+        'PropV2CompraRestaurar',
+        D2Paths.pilaresRestore,
+        PurchaseKeys.restoreScreen,
       ),
     ]);
   }, tags: ['d2-venda']);
@@ -167,7 +192,8 @@ void main() {
         lightDevice: true,
         purchases: FakePurchaseRepository(owning(kind)),
       );
-      await shots($, [(name, D2Paths.offer(), PurchaseKeys.offerScreen)]);
+      // O quadro é o Perfil do dono, com o cartão do Pilares.
+      await shots($, [(name, Routes.settingsProfile, ProfileKeys.screen)]);
     }, tags: ['d2-compra']);
   }
 
@@ -211,6 +237,17 @@ void main() {
         AccountKeys.acceptScreen,
       ),
       ('PropV1PerfilSemConta', Routes.settingsProfile, ProfileKeys.screen),
+    ]);
+  }, tags: ['d2-conta']);
+
+  // O quadro do Progresso tem o convite da conta pendente.
+  patrolTest('D2 prints: progresso com o convite', ($) async {
+    await AppRobot($).open(
+      systemLocale: const Locale('pt', 'BR'),
+      lightDevice: true,
+      accountInvite: true,
+    );
+    await shots($, [
       ('PropV2UxProgresso', D2Paths.progress, MyProgressKeys.screen),
     ]);
   }, tags: ['d2-conta']);
@@ -224,7 +261,7 @@ void main() {
     await shots(
       $,
       [
-        ('PropV1RetencaoPerfil', Routes.settingsProfile, ProfileKeys.screen),
+        ('PropV1PerfilConta', Routes.settingsProfile, ProfileKeys.screen),
         (
           'PropV1ContaPerfil',
           Routes.accountDataFrom('perfil', welcome: true),
@@ -253,6 +290,12 @@ void main() {
   patrolTest('D2 prints: ajustes', ($) async {
     await AppRobot($)
         .open(systemLocale: const Locale('pt', 'BR'), lightDevice: true);
+    // PropV1ConfigB: "Sem conta · Melhorar o jogo · 1712".
+    final profile = $.tester
+        .element(find.byKey(HomeKeys.screen))
+        .read<ProfileCubit>();
+    await $.tester.runAsync(() => profile.setGoal(GoalPreference.improve));
+    await $.pumpAndSettle();
     await shots($, [
       ('PropV1ConfigB', Routes.settings, SettingsKeys.screen),
       (
@@ -266,7 +309,7 @@ void main() {
         Routes.settingsBoardAppearance,
         BoardSettingsKeys.appearanceScreen,
       ),
-      ('TelaConfigPartida', Routes.settingsGame, SettingsKeys.gameScreen),
+      ('PropV1ConfigPartidaAquecimento', Routes.settingsGame, SettingsKeys.gameScreen),
       (
         'TelaConfigRelogio',
         Routes.settingsClock,

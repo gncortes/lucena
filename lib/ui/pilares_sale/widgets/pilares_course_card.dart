@@ -17,7 +17,7 @@ import '../../core/theme/app_spacing.dart';
 import '../view_models/pilares_course_card_cubit.dart';
 import 'pilares_sale_parts.dart';
 
-/// O curso no Perfil (H-VEN-04/09, quadros `PropV2CompraEntradaPerfil`,
+/// O curso no Perfil (H-VEN-04/09, quadros `PropV1PerfilConta`, `PropV2Compra`
 /// `…JaTem`, `…JaTemMensal` e `…JaTemFalha`): o aviso de pagamento pendente
 /// (quando houver) e o cartão com o selo e o que o aluno tem.
 class PilaresCourseCard extends StatelessWidget {

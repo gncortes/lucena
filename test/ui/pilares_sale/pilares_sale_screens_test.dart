@@ -203,6 +203,36 @@ void main() {
   });
 
   group('Restaurar (H-VEN-08)', () {
+    // Bug 2 da D2 (PropV2CompraRestaurar): o título também no corpo e o
+    // e-mail da conta no texto.
+    testWidgets('título no corpo e o e-mail no texto', (tester) async {
+      await pump(tester, D2Paths.pilaresRestore);
+      expect(
+        find.descendant(
+          of: find.byType(ListView),
+          matching: find.text('Restaurar compra'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Comprou em outro aparelho ou pelo site? Procuramos a compra na '
+          'conta teste@example.com.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('sem conta, vai primeiro à conta', (tester) async {
+      accounts = FakeAccountRepository();
+      await pump(tester, D2Paths.pilaresRestore);
+      expect(find.byKey(PurchaseKeys.restoreScreen), findsNothing);
+      expect(
+        find.textContaining('conta ${Routes.accountEnter}'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('achou: Compra restaurada', (tester) async {
       purchases
         ..restoreResult = RestoreResult.found
@@ -348,10 +378,22 @@ void main() {
   });
 
   group('Oferta antes do Início (H-VEN-15)', () {
-    testWidgets('folha sobre o Início com os três itens', (tester) async {
+    // Bug 5 da D2: tela cheia com o X à esquerda (decisão do Gabriel, 03/11;
+    // quadro PropV2OfertaAntesInicio), não mais folha sobre o Início.
+    testWidgets('tela cheia com o X à esquerda e os três itens', (
+      tester,
+    ) async {
       await pump(tester, D2Paths.pilaresBeforeHome);
       expect(find.byKey(PurchaseKeys.beforeHomeSheet), findsOneWidget);
-      expect(find.text('inicio'), findsOneWidget);
+      expect(find.text('inicio'), findsNothing);
+      expect(
+        tester.getRect(find.byKey(PurchaseKeys.beforeHomeClose)).left,
+        lessThan(60),
+      );
+      expect(
+        tester.getRect(find.byKey(PurchaseKeys.beforeHomeLearn)).bottom,
+        greaterThan(915 * .85),
+      );
       expect(find.text('Mais que um curso'), findsOneWidget);
       expect(find.text('Plano até o seu torneio'), findsOneWidget);
       expect(
@@ -362,7 +404,7 @@ void main() {
         analytics.eventsNamed('pilares_oferta_vista').single.params,
         allOf(
           containsPair('origem', 'abertura_app'),
-          containsPair('destaque', 'folha'),
+          containsPair('destaque', 'tela'),
         ),
       );
     });
@@ -378,11 +420,13 @@ void main() {
       expect(analytics.eventsNamed('pilares_oferta_fechada'), hasLength(1));
     });
 
-    testWidgets('o toque fora da folha fecha como o X', (tester) async {
+    testWidgets('o voltar do sistema fecha como o X', (tester) async {
       await pump(tester, D2Paths.pilaresBeforeHome);
-      await tester.tapAt(const Offset(200, 20));
+      final popped = await tester.binding.handlePopRoute();
+      expect(popped, isTrue);
       await tester.pumpAndSettle();
       expect(find.byKey(PurchaseKeys.beforeHomeSheet), findsNothing);
+      expect(find.text('inicio'), findsOneWidget);
       expect(analytics.eventsNamed('pilares_oferta_fechada'), hasLength(1));
     });
 

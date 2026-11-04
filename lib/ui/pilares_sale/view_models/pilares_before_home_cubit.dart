@@ -7,7 +7,7 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 
-/// A oferta antes do Início (H-VEN-15, `PropV2OfertaAntesInicioFolha`): a
+/// A oferta antes do Início (H-VEN-15, `PropV2OfertaAntesInicio`): a
 /// conta das vezes é do Início (H-INI-14, `OpeningOfferRepository`); aqui
 /// ficam o rosto do Viktor e os eventos de vista e de fechada. O estado é o
 /// professor (nulo enquanto carrega ou sem o personagem).
@@ -18,7 +18,7 @@ class PilaresBeforeHomeCubit extends Cubit<Character?> {
   }
 
   static const origin = 'abertura_app';
-  static const format = 'folha';
+  static const format = 'tela';
 
   final AnalyticsRepository _analytics;
   final CharacterRepository _characters;

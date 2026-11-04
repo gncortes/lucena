@@ -184,6 +184,14 @@ void main() {
       );
     });
 
+    // Bug 4 da D2: no PropV1ContaAceite a caixa vem acima do Continuar.
+    testWidgets('a caixa do aceite fica acima do Continuar', (tester) async {
+      await openConsent(tester);
+      final check = tester.getRect(find.byKey(AccountKeys.acceptCheck));
+      final button = tester.getRect(find.byKey(AccountKeys.acceptContinue));
+      expect(check.bottom, lessThanOrEqualTo(button.top));
+    });
+
     testWidgets('2. marcar liga Continuar, que grava e leva a "Seu perfil"', (
       tester,
     ) async {

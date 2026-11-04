@@ -7,6 +7,7 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import 'account_widgets.dart';
+import 'google_logo.dart';
 
 /// Um benefício do convite: o ícone e a frase.
 typedef AccountBenefit = (IconData icon, String text);
@@ -131,7 +132,7 @@ List<Widget> accountInviteActions(
     BusyButton(
       buttonKey: googleKey,
       style: BusyButtonStyle.outlined,
-      icon: Icons.account_circle,
+      leading: const GoogleLogo(),
       label: l10n.conEntradaGoogle,
       busy: busy,
       onPressed: onGoogle,
