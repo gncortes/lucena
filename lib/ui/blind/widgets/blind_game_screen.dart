@@ -214,7 +214,11 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       _conclude(context, state);
       return;
     }
-    if (state.mic == MicPermission.asking) _askMic(context);
+    // Um aviso só: cada mudança de estado com o pedido aberto empilhava outro.
+    if (state.mic == MicPermission.asking &&
+        previous.mic != MicPermission.asking) {
+      _askMic(context);
+    }
     if (state.opponentError && !previous.opponentError) {
       unawaited(_askOpponentError());
     }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/training/course_training_repository.dart';
-import 'package:lucena/data/services/notification_service.dart';
 import 'package:lucena/domain/models/training/goal/training_diagnostic.dart';
 import 'package:lucena/domain/models/training/goal/training_objective.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
@@ -13,6 +12,7 @@ import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/training_goal_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import '../testing/e2e_dependencies.dart';
 import '../testing/training/e2e_training.dart';
 import 'robots/app_robot.dart';
 import 'robots/training_capture_robot.dart';
@@ -66,7 +66,8 @@ void main() {
     await reopenGuide($);
     await $(TrainingGoalKeys.guideDefine).tap();
     await $(TrainingGoalKeys.diagnosticScreen).waitUntilVisible();
-    await $(TrainingGoalKeys.diagnosticTest).tap();
+    // O centro da coluna do cartão cai num vazio entre os textos: toca no título.
+    await $(TrainingGoalKeys.diagnosticTest).$(Text).first.tap();
     await $(TrainingGoalKeys.testResume).waitUntilVisible();
     await $(TrainingGoalKeys.testResumeContinue).tap();
     await $(TrainingGoalKeys.testBoard).waitUntilVisible();
@@ -97,39 +98,19 @@ void main() {
     await $(TrainingGoalKeys.questResume).waitUntilVisible();
   });
 
-  /// Caso 34: tocar a notificação do torneio com o app fechado abre o
-  /// Registrar. O Patrol não mata o processo; o app é fechado à força pela
-  /// árvore de widgets (como nos outros casos) e a notificação é tocada na
-  /// barra do sistema, passando pela ligação de produção (RemindersBridge).
+  /// Caso 34: o toque na notificação do torneio, com o app reaberto, abre o
+  /// Registrar. A bandeja nativa não é usada: o toque entra pelo mesmo caminho
+  /// de produção (serviço de notificação -> RemindersRepository.taps ->
+  /// RemindersBridge -> router), com o serviço falso do modo E2E, porque o
+  /// toque em notificação nativa não é confiável no Android headless.
   patrolTest('T85 toque na notificação do torneio abre o Registrar', ($) async {
     final app = AppRobot($);
     await openGuideWithObjective($, app);
-    final service = DeviceNotificationService();
-    const channel = NotificationChannelSpec(id: 'training', name: 'Treino');
-    await service.start(const [channel]);
-    if (!await service.permitted()) {
-      final permission = service.requestPermission();
-      await $.platform.mobile.grantPermissionWhenInUse();
-      expect(await permission, true);
-    }
-    const title = 'Como foi o torneio?';
-    await service.show(
-      ShownNotification(
-        id: 691,
-        channel: channel,
-        title: title,
-        body: 'Registre o seu desempenho.',
-        payload: '${Routes.training(course.name)}/tournaments/register',
-      ),
-    );
-
     await app.restart();
-    await $.platform.mobile.pressHome();
-    await $.platform.mobile.openNotifications();
-    final notifications = await $.platform.mobile.getNotifications();
-    final index = notifications.indexWhere((n) => n.title == title);
-    expect(index, greaterThanOrEqualTo(0));
-    await $.platform.mobile.tapOnNotificationByIndex(index);
+    await $(Scaffold).waitUntilVisible();
+    e2eNotifications.tap(
+      '${Routes.training(course.name)}/tournaments/register',
+    );
     await $(TrainingGoalKeys.registerScreen).waitUntilVisible();
   });
 }
