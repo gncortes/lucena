@@ -15,7 +15,9 @@ abstract final class HomeKeys {
   static const endgamesButton = Key('home.endgames');
   static const forYouButton = Key('home.forYou');
 
-  /// O cartão "Novo modo desbloqueado" (às cegas).
+  /// O esqueleto do primeiro carregamento e a tela de erro (H-INI-01).
+  static const loading = Key('home.loading');
+  static const error = Key('home.error');
 
   /// O cartão azul do alto (T83), o título e o botão dele.
   static const goalCard = Key('home.goalCard');

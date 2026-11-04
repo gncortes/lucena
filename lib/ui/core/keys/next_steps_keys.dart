@@ -14,5 +14,6 @@ abstract final class NextStepsKeys {
       Key('nextSteps.resultsSheet.item.$index');
 
   static const screen = Key('nextSteps.screen');
+  static const loading = Key('nextSteps.loading');
   static const home = Key('nextSteps.home');
 }

@@ -120,6 +120,37 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(HomeKeys.screen), findsOneWidget);
   });
+  testWidgets('carregando: barra fixa e esqueleto, sem erro nem rating', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(locale: const Locale('pt'), child: _Home(const HomeScreen())),
+    );
+    // Antes da carga terminar: o nome, a engrenagem e o esqueleto.
+    expect(find.byKey(HomeKeys.title), findsOneWidget);
+    expect(find.byKey(HomeKeys.settingsButton), findsOneWidget);
+    expect(find.byKey(HomeKeys.loading), findsOneWidget);
+    expect(find.byKey(HomeKeys.playerCard), findsNothing);
+    expect(find.byKey(HomeKeys.error), findsNothing);
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.loading), findsNothing);
+    expect(find.byKey(HomeKeys.shortcutsTitle), findsOneWidget);
+  });
+
+  testWidgets('falha no início: a tela de erro leva a chave do Início', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: _Home(const HomeScreen(), progress: _FailingProgress()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.error), findsOneWidget);
+    expect(find.byKey(HomeKeys.loading), findsNothing);
+  });
+
   double opacityOf(WidgetTester tester, Key key) {
     final fade = tester.widget<FadeTransition>(
       find
