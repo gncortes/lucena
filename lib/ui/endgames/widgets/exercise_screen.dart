@@ -5,6 +5,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/app_bar_progress.dart';
 import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/skeleton.dart';
 
@@ -317,7 +318,15 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: LucenaAppBar(
-              toolbarHeight: widget.trainingTest ? 64 : null,
+              // A barra de 4 px fica dentro dos 64 da app bar (CompTopBar
+              // "progresso"), sem roubar altura do tabuleiro.
+              toolbarHeight: widget.trainingTest
+                  ? 64 - AppBarProgress.height
+                  : null,
+              // H-LIC-45: a app bar de progresso, como no teste de nível.
+              bottom: widget.trainingTest && lesson != null && state.count > 0
+                  ? AppBarProgress(value: state.number / state.count)
+                  : null,
               centerTitle: widget.trainingTest ? true : null,
               leading: widget.trainingTest
                   ? BackButton(
