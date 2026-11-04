@@ -114,6 +114,7 @@ void main() {
           tester.widget<LoadErrorScreen>(find.byType(LoadErrorScreen)).kind,
           LoadErrorKind.generic,
         );
+        expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
         expect(
           find.byKey(LoadErrorKeys.back),
           area == 'board_controls' ? findsOneWidget : findsNothing,
