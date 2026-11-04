@@ -30,7 +30,11 @@ void main() {
 
   /// [from] uma rota (a aula do link, T84): a conta abre por cima de uma
   /// tela de base, pelo `push`.
-  Future<void> pumpAccount(WidgetTester tester, {String? from}) async {
+  Future<void> pumpAccount(
+    WidgetTester tester, {
+    String? from,
+    Locale locale = const Locale('en'),
+  }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
@@ -77,7 +81,9 @@ void main() {
         ),
       ],
     );
-    await tester.pumpWidget(TestApp(router: router, child: const SizedBox()));
+    await tester.pumpWidget(
+      TestApp(router: router, locale: locale, child: const SizedBox()),
+    );
     await tester.pumpAndSettle();
     if (from != null) {
       unawaited(router.push(Routes.accountEnterFrom(from)));
@@ -102,7 +108,6 @@ void main() {
       expect(find.text('It takes less than a minute.'), findsOneWidget);
       expect(find.text('Save your progress'), findsNothing);
       expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-      expect(find.byIcon(Icons.devices_other), findsOneWidget);
       expect(find.byIcon(Icons.wifi_off), findsNothing);
     });
 
@@ -137,15 +142,53 @@ void main() {
     });
   });
 
-  testWidgets('mostra o título, o que se ganha e que é grátis, sem vender '
-      'o "sem conta"', (tester) async {
-    await pumpAccount(tester);
-    expect(find.text('Save your progress'), findsOneWidget);
-    expect(find.textContaining('free'), findsOneWidget);
-    expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-    expect(find.byIcon(Icons.devices_other), findsOneWidget);
-    expect(find.byIcon(Icons.wifi_off), findsNothing);
-    expect(find.textContaining('without an account'), findsNothing);
+  group('H-CON-06: a Entrada (PropV1ContaEntrada)', () {
+    testWidgets('1. "Salve seu progresso", os benefícios e os 3 botões', (
+      tester,
+    ) async {
+      await pumpAccount(tester, locale: const Locale('pt'));
+      for (final text in [
+        'Salve seu progresso',
+        'É de graça e leva menos de um minuto.',
+        'Seu progresso fica salvo e aparece em qualquer celular',
+        'O app funciona sem conta, só neste celular',
+        'Criar conta com Google',
+        'Criar conta com e-mail',
+      ]) {
+        expect(find.text(text), findsOneWidget, reason: text);
+      }
+      expect(find.byIcon(Icons.cloud_done), findsOneWidget);
+      expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+      expect(find.byIcon(Icons.devices_other), findsNothing);
+      expect(find.byKey(AccountKeys.toSignIn), findsOneWidget);
+      // O aceite vem depois, na tela própria (H-CON-08): sem a nota legal.
+      expect(find.textContaining('concorda', findRichText: true), findsNothing);
+    });
+
+    testWidgets('5. erro inesperado libera os botões e oferece '
+        '"Tentar de novo" (gap 4)', (tester) async {
+      accounts.failure = AccountFailure.unknown;
+      await pumpAccount(tester, locale: const Locale('pt'));
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pumpAndSettle();
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(find.byKey(AccountKeys.failureRetry), findsOneWidget);
+      expect(find.text('Tentar de novo'), findsOneWidget);
+      expect(
+        tester
+            .widget<ButtonStyleButton>(find.byKey(AccountKeys.google))
+            .onPressed,
+        isNotNull,
+      );
+      accounts.failure = null;
+      await tester.tap(find.byKey(AccountKeys.failureRetry));
+      await tester.pumpAndSettle();
+      expect(accounts.current, FakeAccountRepository.google);
+      expect(
+        find.text('rota-dados /conta/dados?from=tour&novo=1'),
+        findsOneWidget,
+      );
+    });
   });
 
   testWidgets('entrar com o Google (conta vazia) segue para "Seu perfil"', (
@@ -235,7 +278,7 @@ void main() {
   });
 
   for (final (failure, message) in [
-    (AccountFailure.unknown, 'Could not sign in now. Try again.'),
+    (AccountFailure.unknown, 'An unexpected error occurred'),
     (AccountFailure.unavailable, 'Signing in is coming soon.'),
   ]) {
     testWidgets('Google com falha ${failure.name} avisa e fica na tela', (
@@ -250,12 +293,9 @@ void main() {
     });
   }
 
-  testWidgets('e-mail abre Criar conta; o link, Entrar; e os termos', (
-    tester,
-  ) async {
+  testWidgets('e-mail abre Criar conta', (tester) async {
     await pumpAccount(tester);
     expect(find.text('Create account with email'), findsOneWidget);
-    expect(find.byKey(AccountKeys.legal), findsOneWidget);
     await tester.tap(find.byKey(AccountKeys.email));
     await tester.pumpAndSettle();
     expect(find.text('rota-email /conta/email?from=tour'), findsOneWidget);

@@ -17,7 +17,12 @@ abstract final class AccountKeys {
   /// "Já tem conta? Entrar" e "Não tem conta? Criar conta".
   static const toSignIn = Key('account.toSignIn');
   static const toCreate = Key('account.toCreate');
-  static const legal = Key('account.legal');
+
+  /// "Tentar de novo" no aviso de erro inesperado (H-CON-06, gap 4).
+  static const failureRetry = Key('account.failureRetry');
+
+  /// "Entrar" no aviso de e-mail que já tem conta (H-CON-06).
+  static const inUseSignIn = Key('account.inUseSignIn');
 
   /// O convite em folha, no fim da 1ª partida.
   static const inviteSheet = Key('account.inviteSheet');

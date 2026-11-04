@@ -1,11 +1,13 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/account.dart';
 import '../../../routing/routes.dart';
+import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
 
 /// Depois de entrar: a conta com progresso mostra "Bem-vindo de volta"; a
@@ -80,3 +82,36 @@ String accountFailureText(AppLocalizations l10n, AccountFailure failure) =>
       AccountFailure.tooManyAttempts => l10n.accountTooManyAttempts,
       _ => l10n.accountFailed,
     };
+
+/// O aviso de uma entrada que não deu certo, na Entrada e no e-mail
+/// (H-CON-06): o erro fora da lista conhecida diz "Ocorreu um erro
+/// inesperado" com "Tentar de novo" ([onRetry], gap 4); o e-mail que já tem
+/// conta oferece "Entrar" ([onSignIn]).
+void showAccountFailure(
+  BuildContext context,
+  AccountFailure failure, {
+  required VoidCallback onRetry,
+  VoidCallback? onSignIn,
+}) {
+  final l10n = context.l10n;
+  final (text, action) = switch (failure) {
+    AccountFailure.emailInUse when onSignIn != null => (
+      l10n.conEmailInUse,
+      SnackBarAction(
+        key: AccountKeys.inUseSignIn,
+        label: l10n.accountSignIn,
+        onPressed: onSignIn,
+      ),
+    ),
+    AccountFailure.unknown => (
+      l10n.conUnexpected,
+      SnackBarAction(
+        key: AccountKeys.failureRetry,
+        label: l10n.conRetry,
+        onPressed: onRetry,
+      ),
+    ),
+    _ => (accountFailureText(l10n, failure), null),
+  };
+  showLucenaSnackBar(context, text, action: action);
+}

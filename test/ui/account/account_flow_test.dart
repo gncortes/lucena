@@ -160,10 +160,16 @@ void main() {
       tester,
     ) async {
       await pump(tester, Routes.accountEmailFrom('tour'));
-      // O aviso fala do botão: fica entre ele e "Já tem conta? Entrar".
-      double top(Key key) => tester.getTopLeft(find.byKey(key)).dy;
-      expect(top(AccountKeys.emailSubmit), lessThan(top(AccountKeys.legal)));
-      expect(top(AccountKeys.legal), lessThan(top(AccountKeys.toSignIn)));
+      // H-CON-06 (PropV1ContaCriar): o aviso do e-mail, sem a nota legal (o
+      // aceite vem depois, H-CON-08).
+      expect(
+        find.text(
+          'Enviaremos um e-mail para confirmar seu endereço. Enquanto '
+          'isso, você já pode jogar.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('concorda', findRichText: true), findsNothing);
       await fill(tester, ' ana@example.com ', '12345678');
 
       expect(accounts.current?.email, 'ana@example.com');
@@ -181,6 +187,21 @@ void main() {
       );
       expect(accounts.current, isNull);
       expect(find.byKey(AccountKeys.createScreen), findsOneWidget);
+    });
+
+    testWidgets('3. e-mail que já tem conta avisa e oferece Entrar', (
+      tester,
+    ) async {
+      accounts.failure = AccountFailure.emailInUse;
+      await pump(tester, Routes.accountEmailFrom('tour'));
+      await fill(tester, 'ana@example.com', '12345678');
+
+      expect(find.text('Este e-mail já tem conta.'), findsOneWidget);
+      expect(find.byKey(AccountKeys.inUseSignIn), findsOneWidget);
+      await tester.tap(find.byKey(AccountKeys.inUseSignIn));
+      await tester.pumpAndSettle();
+      expect(find.byKey(AccountKeys.signInScreen), findsOneWidget);
+      expect(find.byKey(AccountKeys.createScreen), findsNothing);
     });
 
     testWidgets('o olho mostra e esconde a senha', (tester) async {
@@ -203,7 +224,7 @@ void main() {
 
       expect(find.byKey(AccountKeys.signInScreen), findsOneWidget);
       expect(find.byKey(AccountKeys.createScreen), findsNothing);
-      expect(find.byKey(AccountKeys.legal), findsNothing);
+      expect(find.textContaining('concorda', findRichText: true), findsNothing);
     });
   });
 
@@ -274,6 +295,27 @@ void main() {
       expect(find.text('rota-perfil'), findsOneWidget);
     });
 
+    testWidgets('5. erro inesperado libera e "Tentar de novo" entra (gap 4)', (
+      tester,
+    ) async {
+      accounts.failure = AccountFailure.unknown;
+      await pump(tester, signIn('tour'));
+      await fill(tester, 'ana@example.com', '12345678');
+
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(AccountKeys.emailSubmit))
+            .onPressed,
+        isNotNull,
+      );
+      accounts.failure = null;
+      await tester.tap(find.byKey(AccountKeys.failureRetry));
+      await tester.pumpAndSettle();
+      expect(accounts.current?.email, 'ana@example.com');
+      expect(find.byKey(AccountKeys.signInScreen), findsNothing);
+    });
+
     testWidgets('e-mail ou senha errados avisam e ficam na tela', (
       tester,
     ) async {
@@ -326,6 +368,12 @@ void main() {
     ) async {
       await openReset(tester);
       expect(find.byKey(AccountKeys.resetSheet), findsOneWidget);
+      // H-CON-07 (PropV1ContaSenha): os textos do quadro.
+      expect(
+        find.text('Enviaremos um link para você criar uma senha nova.'),
+        findsOneWidget,
+      );
+      expect(find.text('Enviar link'), findsOneWidget);
       expect(
         find.descendant(
           of: find.byKey(AccountKeys.resetEmail),
@@ -347,6 +395,8 @@ void main() {
         ),
         findsOneWidget,
       );
+
+      expect(find.textContaining('spam', findRichText: true), findsNothing);
 
       await tester.tap(find.byKey(AccountKeys.resetOpenMail));
       await tester.pumpAndSettle();
@@ -373,6 +423,8 @@ void main() {
       await tester.tap(find.byKey(AccountKeys.resetOk));
       await tester.pumpAndSettle();
       expect(find.byKey(AccountKeys.resetSentSheet), findsNothing);
+      // 3. "Entendi" volta a Entrar.
+      expect(find.byKey(AccountKeys.signInScreen), findsOneWidget);
     });
 
     testWidgets('e-mail mal escrito avisa no campo e fica na folha', (

@@ -1309,8 +1309,6 @@
   "levelManualConverted": "{rating}{source, select, lichess{ do Lichess} chesscom{ do Chess.com} fide{ da FIDE} cbx{ da CBX} other{}} fica perto de {lucena} no Lucena. A Jornada começa no {rung}.",
   "levelManualTip": "O nível se ajusta com as partidas: se ficar fácil ou difícil, o Lucena corrige sozinho.",
   "accountTitle": "Quer guardar o seu progresso?",
-  "accountBenefitSaved": "Seu progresso fica salvo na sua conta",
-  "accountBenefitDevices": "Entre em outro aparelho e continue de onde parou",
   "accountGoogle": "Continuar com Google",
   "accountEmail": "Continuar com e-mail",
   "accountLater": "Agora não",
@@ -1515,7 +1513,6 @@
   "accountEmailHint": "voce@email.com",
   "accountPasswordField": "Senha",
   "accountPasswordHelp": "Pelo menos 8 caracteres.",
-  "accountEmailNote": "Vamos mandar um e-mail para confirmar o endereço. Dá para jogar enquanto isso.",
   "accountCreate": "Criar conta",
   "accountWrongCredentials": "E-mail ou senha errados.",
   "accountEmailInUse": "Esse e-mail já tem conta. Toque em Entrar.",
@@ -1642,7 +1639,6 @@
   "countryNotFound": "Nenhum país encontrado",
   "profileRegionNone": "Opcional · para ver torneios perto de você",
   "profileCountryValue": "{flag} {country}",
-  "accountEntryTitle": "Guarde o seu progresso",
   "accountEntryText": "É de graça e leva menos de um minuto.",
   "accountEntryTitleLesson": "Crie sua conta para ter acesso à lição gratuita",
   "accountEntryTextLesson": "Leva menos de um minuto.",
@@ -1650,17 +1646,12 @@
   "accountHaveAccount": "Já tem conta?",
   "accountNoAccount": "Não tem conta?",
   "accountSignIn": "Entrar",
-  "accountLegalContinue": "Ao continuar, você concorda com os {terms} e a {privacy}.",
-  "accountLegalCreate": "Ao criar a conta, você concorda com os {terms} e a {privacy}.",
   "accountShowPassword": "Mostrar a senha",
   "accountHidePassword": "Ocultar senha",
   "accountForgotPassword": "Esqueci a senha",
   "accountResetTitle": "Esqueceu a senha?",
-  "accountResetText": "Mandamos um link para você criar uma senha nova.",
-  "accountResetSend": "Mandar o link",
   "accountResetCancel": "Cancelar",
   "accountResetSentTitle": "Verifique seu e-mail",
-  "accountResetSentText": "Se existir uma conta com {email}, o link chega em alguns minutos. Veja também o spam.",
   "accountResetOpenMail": "Abrir o e-mail",
   "accountResetOk": "Entendi",
   "accountProfileTitle": "Seu perfil",
@@ -2471,5 +2462,23 @@
   "conPerfilSaved": "Seu progresso deste celular já está salvo na conta.",
   "conFotoInitial": "Ou sua inicial, na cor que quiser",
   "conPerfilPhotoHint": "Opcional. A inicial na cor que quiser ou a foto do Google.",
-  "conPerfilEditSaved": "O que você já fez neste celular agora fica salvo na conta."
+  "conPerfilEditSaved": "O que você já fez neste celular agora fica salvo na conta.",
+  "conEntradaTitle": "Salve seu progresso",
+  "conEntradaSaved": "Seu progresso fica salvo e aparece em qualquer celular",
+  "conEntradaOffline": "O app funciona sem conta, só neste celular",
+  "conEntradaGoogle": "Criar conta com Google",
+  "conCriarNote": "Enviaremos um e-mail para confirmar seu endereço. Enquanto isso, você já pode jogar.",
+  "conEmailInUse": "Este e-mail já tem conta.",
+  "conUnexpected": "Ocorreu um erro inesperado",
+  "conRetry": "Tentar de novo",
+  "conSenhaText": "Enviaremos um link para você criar uma senha nova.",
+  "conSenhaSend": "Enviar link",
+  "conSenhaSentText": "Se existir uma conta com {email}, o link chega em alguns minutos.",
+  "@conSenhaSentText": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  }
 }

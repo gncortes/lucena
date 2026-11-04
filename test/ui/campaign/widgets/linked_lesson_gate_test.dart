@@ -165,7 +165,6 @@ void main() {
       'Leva menos de um minuto.',
     );
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-    expect(find.byIcon(Icons.devices_other), findsOneWidget);
     expect(find.byIcon(Icons.wifi_off), findsNothing);
     expect(answers(), ['aceitou']);
   });

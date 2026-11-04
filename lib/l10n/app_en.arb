@@ -6550,14 +6550,6 @@
   "@accountTitle": {
     "description": "Title of the optional account screen after the tour."
   },
-  "accountBenefitSaved": "Your progress stays saved in your account",
-  "@accountBenefitSaved": {
-    "description": "Account screen, first benefit."
-  },
-  "accountBenefitDevices": "Sign in on another device and pick up where you left off",
-  "@accountBenefitDevices": {
-    "description": "Account screen, second benefit."
-  },
   "accountGoogle": "Continue with Google",
   "@accountGoogle": {
     "description": "Account screen button."
@@ -7649,10 +7641,6 @@
   "@accountPasswordHelp": {
     "description": "E-mail account screen: password help."
   },
-  "accountEmailNote": "We will send an e-mail to confirm the address. You can play in the meantime.",
-  "@accountEmailNote": {
-    "description": "E-mail account screen: note."
-  },
   "accountCreate": "Create account",
   "@accountCreate": {
     "description": "E-mail account screen: create button."
@@ -8370,10 +8358,6 @@
       }
     }
   },
-  "accountEntryTitle": "Save your progress",
-  "@accountEntryTitle": {
-    "description": "Account entry screen title."
-  },
   "accountEntryText": "It is free and takes less than a minute.",
   "@accountEntryText": {
     "description": "Account entry screen text under the title."
@@ -8402,30 +8386,6 @@
   "@accountSignIn": {
     "description": "Sign in screen title, button and link."
   },
-  "accountLegalContinue": "By continuing, you agree to the {terms} and the {privacy}.",
-  "@accountLegalContinue": {
-    "description": "Legal notice on the account entry; {terms} and {privacy} are the linked document names.",
-    "placeholders": {
-      "terms": {
-        "type": "String"
-      },
-      "privacy": {
-        "type": "String"
-      }
-    }
-  },
-  "accountLegalCreate": "By creating the account, you agree to the {terms} and the {privacy}.",
-  "@accountLegalCreate": {
-    "description": "Legal notice on the create account screen; {terms} and {privacy} are the linked document names.",
-    "placeholders": {
-      "terms": {
-        "type": "String"
-      },
-      "privacy": {
-        "type": "String"
-      }
-    }
-  },
   "accountShowPassword": "Show password",
   "@accountShowPassword": {
     "description": "Tooltip of the eye button in the password field."
@@ -8442,14 +8402,6 @@
   "@accountResetTitle": {
     "description": "Password reset sheet title."
   },
-  "accountResetText": "We will send you a link to create a new password.",
-  "@accountResetText": {
-    "description": "Password reset sheet text."
-  },
-  "accountResetSend": "Send the link",
-  "@accountResetSend": {
-    "description": "Password reset sheet: sends the email."
-  },
   "accountResetCancel": "Cancel",
   "@accountResetCancel": {
     "description": "Password reset sheet: closes it."
@@ -8457,15 +8409,6 @@
   "accountResetSentTitle": "Check your email",
   "@accountResetSentTitle": {
     "description": "Sheet after the reset link was requested."
-  },
-  "accountResetSentText": "If there is an account with {email}, the link arrives in a few minutes. Check spam too.",
-  "@accountResetSentText": {
-    "description": "Same text whether or not the account exists; {email} is shown in bold.",
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    }
   },
   "accountResetOpenMail": "Open email",
   "@accountResetOpenMail": {
@@ -12018,5 +11961,54 @@
   "conPerfilEditSaved": "What you've done on this phone is now saved in the account.",
   "@conPerfilEditSaved": {
     "description": "Seu perfil pelo lápis do Perfil (H-CON-11, PropV1PerfilDados): nota com conta, acima do Salvar."
+  },
+  "conEntradaTitle": "Save your progress",
+  "@conEntradaTitle": {
+    "description": "Entrada da conta (H-CON-06, PropV1ContaEntrada): título."
+  },
+  "conEntradaSaved": "Your progress is saved and shows up on any phone",
+  "@conEntradaSaved": {
+    "description": "Entrada da conta (H-CON-06): benefício com cloud_done."
+  },
+  "conEntradaOffline": "The app works without an account, only on this phone",
+  "@conEntradaOffline": {
+    "description": "Entrada da conta (H-CON-06): benefício com wifi_off."
+  },
+  "conEntradaGoogle": "Create account with Google",
+  "@conEntradaGoogle": {
+    "description": "Entrada da conta (H-CON-06): botão do Google."
+  },
+  "conCriarNote": "We'll send an email to confirm your address. In the meantime, you can already play.",
+  "@conCriarNote": {
+    "description": "Criar conta (H-CON-06, PropV1ContaCriar): texto abaixo dos campos."
+  },
+  "conEmailInUse": "This email already has an account.",
+  "@conEmailInUse": {
+    "description": "Criar conta (H-CON-06): aviso com a ação Entrar."
+  },
+  "conUnexpected": "An unexpected error occurred",
+  "@conUnexpected": {
+    "description": "Entrada e e-mail da conta (H-CON-06, gap 4): aviso de erro fora da lista conhecida, com Tentar de novo."
+  },
+  "conRetry": "Try again",
+  "@conRetry": {
+    "description": "Entrada e e-mail da conta (H-CON-06, gap 4): ação do aviso de erro inesperado."
+  },
+  "conSenhaText": "We'll send you a link to create a new password.",
+  "@conSenhaText": {
+    "description": "Esqueci a senha (H-CON-07, PropV1ContaSenha): texto da folha."
+  },
+  "conSenhaSend": "Send link",
+  "@conSenhaSend": {
+    "description": "Esqueci a senha (H-CON-07): botão."
+  },
+  "conSenhaSentText": "If there's an account with {email}, the link arrives in a few minutes.",
+  "@conSenhaSentText": {
+    "description": "Link enviado (H-CON-07, PropV1ContaSenhaEnviada): o e-mail digitado em negrito.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   }
 }

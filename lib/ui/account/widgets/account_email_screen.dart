@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../core/analytics/analytics_context.dart';
 
@@ -14,7 +16,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
 import 'account_failure_gate.dart';
 import 'account_flow.dart';
@@ -110,7 +111,12 @@ class _EmailViewState extends State<_EmailView> {
         if (state.done) return _done(state);
         final failure = state.failure;
         if (failure != null && state.screenFailure == null) {
-          showLucenaSnackBar(context, accountFailureText(l10n, failure));
+          showAccountFailure(
+            context,
+            failure,
+            onRetry: () => unawaited(context.read<AccountCubit>().retry()),
+            onSignIn: create ? _switch : null,
+          );
         }
       },
       child: AccountFailureGate(
@@ -167,7 +173,7 @@ class _EmailViewState extends State<_EmailView> {
               if (create) ...[
                 const SizedBox(height: AppSpacing.lg),
                 Text(
-                  l10n.accountEmailNote,
+                  l10n.conCriarNote,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -190,9 +196,6 @@ class _EmailViewState extends State<_EmailView> {
           ),
           bottomNavigationBar: ActionsFooter(
             stacked: true,
-            // "Ao criar a conta, você concorda...": colado no botão (§2.12).
-            note: create ? const AccountLegalNote(create: true) : null,
-            noteAfter: 0,
             children: [
               FilledButton(
                 key: AccountKeys.emailSubmit,

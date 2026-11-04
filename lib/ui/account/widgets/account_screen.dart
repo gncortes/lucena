@@ -17,7 +17,6 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
 import 'account_failure_gate.dart';
 import 'account_flow.dart';
@@ -70,8 +69,9 @@ class _AccountView extends StatelessWidget {
     // Aberta para a aula gratuita do link (T84), que só abre com conta: o
     // título fala da aula.
     final benefits = [
-      (Icons.cloud_done, l10n.accountBenefitSaved),
-      (Icons.devices_other, l10n.accountBenefitDevices),
+      (Icons.cloud_done, l10n.conEntradaSaved),
+      // A aula do link só abre com conta: sem o "funciona sem conta".
+      if (!fromRoute) (Icons.wifi_off, l10n.conEntradaOffline),
     ];
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
@@ -80,7 +80,11 @@ class _AccountView extends StatelessWidget {
         }
         final failure = state.failure;
         if (failure == null || state.screenFailure != null) return;
-        showLucenaSnackBar(context, accountFailureText(l10n, failure));
+        showAccountFailure(
+          context,
+          failure,
+          onRetry: () => unawaited(context.read<AccountCubit>().retry()),
+        );
       },
       child: AccountFailureGate(
         message: l10n.conSemRedeCreate,
@@ -124,7 +128,7 @@ class _AccountView extends StatelessWidget {
                 Text(
                   fromRoute
                       ? l10n.accountEntryTitleLesson
-                      : l10n.accountEntryTitle,
+                      : l10n.conEntradaTitle,
                   key: AccountKeys.enterTitle,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -163,15 +167,14 @@ class _AccountView extends StatelessWidget {
           ),
           bottomNavigationBar: ActionsFooter(
             stacked: true,
-            note: const AccountLegalNote(),
             children: [
-              FilledButton.icon(
+              OutlinedButton.icon(
                 key: AccountKeys.google,
                 onPressed: busy
                     ? null
                     : () => context.read<AccountCubit>().signInWithGoogle(),
                 icon: const Icon(Icons.account_circle),
-                label: Text(l10n.accountGoogle),
+                label: Text(l10n.conEntradaGoogle),
               ),
               OutlinedButton.icon(
                 key: AccountKeys.email,

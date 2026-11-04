@@ -5,41 +5,9 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/models/legal_document.dart';
 
-import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/widgets/about_screen.dart';
 import '../../legal/widgets/legal_sheet.dart';
-
-/// "Ao continuar, você concorda com os Termos de uso e a Política de
-/// privacidade." (§2.12), com os dois nomes abrindo as páginas no site.
-/// Com [create], "Ao criar a conta...".
-class AccountLegalNote extends StatelessWidget {
-  const AccountLegalNote({this.create = false, super.key});
-
-  final bool create;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    return LegalLinksText(
-      key: AccountKeys.legal,
-      text: create
-          ? l10n.accountLegalCreate(
-              LegalLinksText.terms,
-              LegalLinksText.privacy,
-            )
-          : l10n.accountLegalContinue(
-              LegalLinksText.terms,
-              LegalLinksText.privacy,
-            ),
-      textAlign: TextAlign.center,
-      style: theme.textTheme.bodySmall?.copyWith(
-        color: theme.colorScheme.onSurfaceVariant,
-      ),
-    );
-  }
-}
 
 /// Um texto com "Termos de uso" e "Política de privacidade" em link (azul,
 /// 600, [underline]), cada um abrindo a folha do texto (H-CON-22). O [text]
