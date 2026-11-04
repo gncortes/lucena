@@ -67,6 +67,7 @@ abstract final class GameDetailsKeys {
 
   /// Os momentos decisivos (a seção, cada cartão e o aviso de partida sem
   /// erro do jogador) e a tabela de qualidades por lado.
+  static const gameCard = Key('gameDetails.gameCard');
   static const moments = Key('gameDetails.moments');
   static Key moment(int index) => Key('gameDetails.moment.$index');
   static const noMistakes = Key('gameDetails.noMistakes');

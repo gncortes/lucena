@@ -34,6 +34,7 @@ import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_sound_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
@@ -664,6 +665,28 @@ void main() {
     expect(settings.showLastMove, isFalse);
     expect(settings.animationDuration, Duration.zero);
   });
+
+  testWidgets(
+    'H-PAR-07: a barra tem Virar, Relógio, Nova partida, nesta ordem',
+    (tester) async {
+      await pumpScreen(tester, locale: const Locale('pt'));
+
+      String label(Key key) => tester
+          .widget<Text>(
+            find.descendant(of: find.byKey(key), matching: find.byType(Text)),
+          )
+          .data!;
+      expect(label(FreeBoardKeys.flipButton), 'Virar');
+      expect(label(FreeBoardKeys.clockButton), 'Relógio');
+      expect(label(FreeBoardKeys.newGameButton), 'Nova partida');
+      final x = [
+        FreeBoardKeys.flipButton,
+        FreeBoardKeys.clockButton,
+        FreeBoardKeys.newGameButton,
+      ].map((k) => tester.getTopLeft(find.byKey(k)).dx).toList();
+      expect(x[0] < x[1] && x[1] < x[2], isTrue);
+    },
+  );
 
   testWidgets('virar o tabuleiro inverte a orientação e mantém a lista', (
     tester,
@@ -2225,6 +2248,60 @@ void main() {
       },
     );
 
+    testWidgets('H-PAR-06: textos das folhas de desistir e de empate', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: machine, locale: const Locale('pt'));
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      final resign = find.byKey(FreeBoardKeys.resignSheet);
+      for (final t in [
+        'Desistir da partida?',
+        'A partida termina agora e conta como derrota.',
+        'Desistir',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: resign, matching: find.text(t)),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationClose));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.drawButton));
+      await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+      await tester.pumpAndSettle();
+      final draw = find.byKey(FreeBoardKeys.drawSheet);
+      for (final t in [
+        'Oferecer empate?',
+        'Oferecer empate',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: draw, matching: find.text(t)),
+          findsOneWidget,
+          reason: t,
+        );
+      }
+      // A dica traz o nome do personagem, não "o adversário".
+      final hint = tester
+          .widgetList<Text>(
+            find.descendant(
+              of: draw,
+              matching: find.textContaining('pode aceitar ou recusar'),
+            ),
+          )
+          .single
+          .data!;
+      expect(
+        hint,
+        endsWith(' pode aceitar ou recusar. Se recusar, a partida continua.'),
+      );
+      expect(hint, isNot(contains('adversário')));
+    });
+
     testWidgets('X de desistir fica fora da folha e cancela sem perda', (
       tester,
     ) async {
@@ -2539,6 +2616,77 @@ void main() {
       });
     }
 
+    testWidgets('H-PAR-05: na 3ª fala escondida, a dica com "Ajustar" abre o '
+        'painel de som', (tester) async {
+      await pumpScreen(
+        tester,
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1000),
+        locale: const Locale('pt'),
+      );
+      await cubit.open();
+      await talk.settled();
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 3; i++) {
+        if (talk.state.line == null) {
+          talk.update(
+            cubit.state.copyWith(
+              drawOffer: DrawOffer.declined,
+              drawDeclinedAt: i,
+            ),
+          );
+          await talk.settled();
+        }
+        talk.dismissLine(lineId: talk.state.line!.id);
+        await talk.settled();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.speechHint), findsOneWidget);
+      expect(
+        find.textContaining('Você pode desligar as falas'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(FreeBoardKeys.speechHintAdjust));
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameSoundKeys.dialog), findsOneWidget);
+    });
+
+    testWidgets(
+      'H-PAR-05: sem relógio o detalhe leva o lado ("1164 · brancas"); '
+      'com relógio, não',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating · brancas',
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.black)),
+          'Pretas',
+        );
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+          clock: ClockConfig.same(
+            const TimeControl(initial: Duration(minutes: 5)),
+          ),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating',
+        );
+      },
+    );
+
     testWidgets('desafio de link sem rating ainda: "No rating" no lugar do '
         'número', (tester) async {
       await pumpScreen(
@@ -2548,7 +2696,7 @@ void main() {
       );
       expect(
         textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
-        'No rating',
+        'No rating · white',
       );
     });
 
@@ -3430,8 +3578,10 @@ void main() {
       await cubit.open();
       await tester.pumpAndSettle();
       final detail = textOf(tester, FreeBoardKeys.playerDetail(Side.white));
-      expect(detail, isNot('Sem rating'));
-      expect(int.tryParse(detail), isNotNull);
+      expect(detail, isNot(startsWith('Sem rating')));
+      // Sem relógio: "1164 · brancas" (PropV1PartidaSemRelogio).
+      expect(int.tryParse(detail.split(' · ').first), isNotNull);
+      expect(detail, endsWith(' · brancas'));
     });
   });
   group('Resultado persistente por modo e motivo', () {

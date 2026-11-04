@@ -559,7 +559,7 @@
   "@freeBoardFiftyMoves": {
     "description": "Reason the game ended in a draw: fifty moves by each side without a capture or a pawn move."
   },
-  "freeBoardFlip": "Flip board",
+  "freeBoardFlip": "Flip",
   "@freeBoardFlip": {
     "description": "Tooltip of the button that turns the board around to see it from the other side."
   },
@@ -12756,5 +12756,13 @@
         "type": "int"
       }
     }
-  }
+  },
+  "partidaContra": "Against {name}",
+  "@partidaContra": {"description": "Game summary card: opponent line", "placeholders": {"name": {"type": "String"}}},
+  "playerDetailWithSide": "{detail} · {side}",
+  "@playerDetailWithSide": {"description": "Line under a player's name in a game without a clock: the level or rating, then the side. E.g. 'Level 1000 · black'.", "placeholders": {"detail": {"type": "String", "example": "Level 1000"}, "side": {"type": "String", "example": "black"}}},
+  "playerSideWhiteLower": "white",
+  "@playerSideWhiteLower": {"description": "Lowercase name of the white side, used after a dot in the player line of a game without a clock."},
+  "playerSideBlackLower": "black",
+  "@playerSideBlackLower": {"description": "Lowercase name of the black side, used after a dot in the player line of a game without a clock."}
 }

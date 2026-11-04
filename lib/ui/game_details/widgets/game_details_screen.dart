@@ -31,6 +31,7 @@ import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../view_models/game_details_cubit.dart';
 import 'key_moments_section.dart';
 import 'review_widgets.dart';
@@ -317,55 +318,57 @@ class _Header extends StatelessWidget {
       AttemptOutcome.draw => Icons.handshake_outlined,
       AttemptOutcome.loss => Icons.sentiment_dissatisfied_outlined,
     };
-    return Card(
-      margin: const EdgeInsets.fromLTRB(
+    final opponentName =
+        character?.name ?? attempt.opponent.label(l10n, level: level);
+    final when = DateFormat.yMMMd(locale)
+        .add_Hm()
+        .format(attempt.playedAt.toLocal());
+    Widget chip(IconData chipIcon, String text, {Key? key}) => DecoratedBox(
+      key: key,
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(AppShape.small),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              chipIcon,
+              size: AppIconSize.small,
+              color: colors.onSurfaceVariant,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              text,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    // O cartão da partida do canvas (CompCartaoPartida): o adversário e o
+    // resultado, o rating à direita e os dados da partida em etiquetas.
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
         AppSpacing.sm,
         AppSpacing.lg,
         0,
       ),
-      color: Colors.transparent,
-      elevation: 0,
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // O resultado numa faixa da cor dele, com o rating à direita.
-          Container(
-            color: color.withValues(alpha: 0.14),
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.md,
-              AppSpacing.lg,
-              AppSpacing.md,
-            ),
-            child: Row(
-              children: [
-                Icon(icon, color: color, size: AppIconSize.standard),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Text(
-                    [label, ?reason].join(' · '),
-                    key: GameDetailsKeys.result,
-                    style: context.cardTitle?.copyWith(color: color),
-                  ),
-                ),
-                if (after != null) ...[
-                  // Um respiro entre o resultado e o rating.
-                  const SizedBox(width: AppSpacing.md),
-                  RatingValue(rating: after, change: state.ratingChange),
-                ],
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.md,
-              AppSpacing.lg,
-              AppSpacing.lg,
-            ),
-            child: Row(
+      child: LucenaCard(
+        key: GameDetailsKeys.gameCard,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
               children: [
                 if (character != null)
                   CharacterAvatar(
@@ -375,7 +378,7 @@ class _Header extends StatelessWidget {
                 else
                   Icon(
                     Icons.smart_toy_outlined,
-                    size: CharacterAvatar.lesson,
+                    size: CharacterAvatar.speech,
                     color: colors.outline,
                   ),
                 const SizedBox(width: AppSpacing.md),
@@ -383,13 +386,27 @@ class _Header extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        children: [
+                          Icon(icon, color: color, size: AppIconSize.small),
+                          const SizedBox(width: AppSpacing.sm),
+                          Flexible(
+                            child: Text(
+                              [label, ?reason].join(' · '),
+                              key: GameDetailsKeys.result,
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: color,
+                                fontWeight: AppWeight.heavy,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       Text.rich(
                         TextSpan(
                           children: [
                             TextSpan(
-                              text:
-                                  character?.name ??
-                                  attempt.opponent.label(l10n, level: level),
+                              text: l10n.partidaContra(opponentName),
                               style: const TextStyle(
                                 fontWeight: AppWeight.heavy,
                               ),
@@ -404,44 +421,34 @@ class _Header extends StatelessWidget {
                           ],
                         ),
                         key: GameDetailsKeys.opponent,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.titleMedium,
-                      ),
-                      if (endgame != null)
-                        Text(endgame, style: theme.textTheme.bodyMedium),
-                      const SizedBox(height: AppSpacing.xs),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.schedule,
-                            size: AppIconSize.small,
-                            color: colors.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Flexible(
-                            child: Text(
-                              [
-                                DateFormat.yMMMd(locale)
-                                    .add_Hm()
-                                    .format(attempt.playedAt.toLocal()),
-                                if (time != null)
-                                  paceLabel(l10n, time)
-                                else
-                                  l10n.challengeNoClock,
-                              ].join(' · '),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
                 ),
+                if (after != null) ...[
+                  const SizedBox(width: AppSpacing.md),
+                  RatingValue(rating: after, change: state.ratingChange),
+                ],
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                if (endgame != null) chip(Icons.extension_outlined, endgame),
+                chip(
+                  Icons.timer_outlined,
+                  time != null ? paceLabel(l10n, time) : l10n.challengeNoClock,
+                ),
+                chip(Icons.event, when),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

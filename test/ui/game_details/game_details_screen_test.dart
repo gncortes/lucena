@@ -196,7 +196,7 @@ void main() {
     await pump(tester, id);
 
     expect(find.byKey(GameDetailsKeys.screen), findsOneWidget);
-    expect(plain(tester, GameDetailsKeys.opponent), 'Coco (1000)');
+    expect(plain(tester, GameDetailsKeys.opponent), 'Against Coco (1000)');
     expect(plain(tester, GameDetailsKeys.result), 'Win · Checkmate');
     final after = (await rating.history()).single.rating.rounded;
     expect(find.text('$after'), findsOneWidget);
