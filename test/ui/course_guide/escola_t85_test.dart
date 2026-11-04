@@ -14,6 +14,7 @@ import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
+import 'package:lucena/ui/course_entry/widgets/course_content_states.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_copy.dart';
@@ -48,12 +49,13 @@ void main() {
     CourseGuideTab tab = CourseGuideTab.lesson,
     void Function(TrainingLesson)? onLesson,
     VoidCallback? onDiploma,
+    TrainingResources? resources,
   }) async {
     setPhoneSize(tester, const Size(412, 917));
     final scenario = TrainingScenarioBuilder(
       TrainingCourseConfig.escola.course,
       date: DateTime(2026, 10, 26, 12),
-      resources: escola,
+      resources: resources ?? escola,
     );
     final repository = scenario.repository(build(scenario).copyWith(tab: tab));
     final cubit = CourseGuideCubit(
@@ -219,6 +221,48 @@ void main() {
     }
     await tester.tap(find.text('Ver o diploma'));
     expect(opened, 1);
+  });
+
+  testWidgets('H-ESC-24: sem lição visível, Conteúdo indisponível e retry', (
+    tester,
+  ) async {
+    await mount(
+      tester,
+      (s) => s.schoolDayOne(),
+      resources: TrainingResources(),
+    );
+    expect(find.text('Conteúdo indisponível'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byKey(CourseGuideKeys.screen), findsNothing);
+  });
+
+  testWidgets('H-ESC-24: próxima lição não publicada mostra aviso e Metas', (
+    tester,
+  ) async {
+    final lessons = escola.lessons.toList();
+    final next = lessons[4];
+    lessons[4] = TrainingLesson(
+      id: next.id,
+      kind: next.kind,
+      title: next.title,
+      group: next.group,
+      groupId: next.groupId,
+      partId: next.partId,
+      partTitle: next.partTitle,
+      published: false,
+    );
+    await mount(
+      tester,
+      (s) => s.schoolDayOne().copyWith(
+        completedLessons: {
+          for (final l in escola.lessons.take(4)) l.id: '2026-10-25',
+        },
+      ),
+      resources: TrainingResources(lessons: lessons),
+    );
+    expect(find.byType(TrainingUnpublishedNotice), findsOneWidget);
+    expect(find.text('Ver as metas'), findsOneWidget);
+    expect(find.text('Começar'), findsNothing);
   });
 
   testWidgets('oferta de dobrar escreve o número por extenso', (tester) async {
