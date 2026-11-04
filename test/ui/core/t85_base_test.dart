@@ -95,6 +95,9 @@ void main() {
       await tester.tap(find.byType(BusyButton));
       await tester.pump();
       expect(find.byKey(CoreKeys.busySpinner), findsOneWidget);
+      // H-ANI-08: o rótulo sai em 120 ms.
+      await tester.pump(const Duration(milliseconds: 120));
+      await tester.pump(const Duration(milliseconds: 16));
       expect(find.text('Salvar'), findsNothing);
       // O rótulo continua para o leitor de tela.
       expect(find.bySemanticsLabel('Salvar'), findsOneWidget);

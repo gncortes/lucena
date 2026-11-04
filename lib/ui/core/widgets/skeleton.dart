@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../keys/core_keys.dart';
+import '../motion/lucena_motion.dart';
+import '../motion/shimmer_conteudo.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
@@ -19,8 +21,8 @@ class SkeletonBlock extends StatefulWidget {
   final double height;
   final double radius;
 
-  /// Uma volta do brilho.
-  static const sweep = AppMotion.shimmer;
+  /// Uma volta do brilho (H-ANI-07: laço de 1100 ms, linear).
+  static const sweep = LucenaMotion.brilho;
 
   @override
   State<SkeletonBlock> createState() => _SkeletonBlockState();
@@ -67,22 +69,12 @@ class _SkeletonBlockState extends State<SkeletonBlock>
           ? block
           : AnimatedBuilder(
               animation: _controller,
-              builder: (context, child) {
-                // O brilho atravessa o bloco da esquerda para a direita.
-                final t = _controller.value * 3 - 1;
-                return ShaderMask(
-                  blendMode: BlendMode.srcATop,
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [base, shine, base],
-                    stops: [
-                      (t - 0.3).clamp(0, 1),
-                      t.clamp(0, 1),
-                      (t + 0.3).clamp(0, 1),
-                    ],
-                  ).createShader(bounds),
-                  child: child,
-                );
-              },
+              builder: (context, child) => BrilhoEsqueleto(
+                fase: _controller.value,
+                base: base,
+                brilho: shine,
+                child: child!,
+              ),
               child: block,
             ),
     );
