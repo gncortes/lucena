@@ -1,5 +1,6 @@
 import '../../../models/training/goal/study_plan.dart';
 import '../../../models/training/training_plan.dart';
+import '../../../models/training/training_resources.dart';
 import '../../../models/training/training_state.dart';
 import '../training_date.dart';
 import 'plan_chapters.dart';
@@ -109,4 +110,40 @@ int minutesPerDayNeeded({
     dropped.insert(0, kept.removeLast());
   }
   return (kept: kept, dropped: dropped);
+}
+
+/// Ordem em que as lições entram nas metas do dia (H-TRE-10): com plano,
+/// primeiro os capítulos da semana atual, depois os das semanas seguintes e,
+/// por fim, o resto do curso na ordem dele. Sem plano, a ordem do curso.
+List<String> lessonOrderForPlan(
+  TrainingState state,
+  TrainingResources resources,
+  String today,
+) {
+  final all = [for (final l in resources.lessons) l.id];
+  final plan = state.studyPlan;
+  if (plan == null) return all;
+  final chapters = {for (final c in planChapters(resources)) c.id: c};
+  final from = currentWeekIndex(plan, today);
+  final ordered = <String>[];
+  void add(String chapterId) {
+    final chapter = chapters[chapterId];
+    if (chapter == null) return;
+    for (final id in chapter.allIds) {
+      if (!ordered.contains(id)) ordered.add(id);
+    }
+  }
+
+  if (plan.weeks.isEmpty) {
+    plan.chapterIds.forEach(add);
+  } else {
+    for (final week in plan.weeks.skip(from)) {
+      week.chapterIds.forEach(add);
+    }
+  }
+  return [
+    ...ordered,
+    for (final id in all)
+      if (!ordered.contains(id)) id,
+  ];
 }
