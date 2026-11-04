@@ -276,6 +276,27 @@ void main() {
       },
     );
 
+    testWidgets('School marks the finished lesson as Concluída hoje at $size', (
+      tester,
+    ) async {
+      final scenario = TrainingScenarioBuilder(
+        TrainingCourse.escola,
+        resources: resources(),
+      );
+      final cubit = await show(
+        tester,
+        scenario,
+        scenario.schoolDayOne().copyWith(tab: CourseGuideTab.goals),
+      );
+      expect(find.text('Concluída hoje'), findsNothing);
+      final lesson = scenario.content.lessons.firstWhere(
+        (l) => l.id == 'pieces.rook',
+      );
+      expect(await cubit.observeLesson(lesson), isTrue);
+      await tester.pumpAndSettle();
+      expect(find.text('Concluída hoje'), findsOneWidget);
+    });
+
     testWidgets(
       'School progress counts visible modules and 0–3 completed levels at $size',
       (tester) async {
