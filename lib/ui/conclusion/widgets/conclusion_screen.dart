@@ -59,7 +59,9 @@ import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/valor_que_anima.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o
@@ -373,9 +375,8 @@ class _Body extends StatelessWidget {
             conclusion.achievements.isNotEmpty);
     // O que vai na imagem de compartilhar: o resultado e os números, sem
     // botões.
-    final shared = <Widget>[
-      _Header(state: state, conclusion: conclusion),
-      ?_outcome(context, state, conclusion),
+    final outcome = _outcome(context, state, conclusion);
+    final numbers = <Widget>[
       if (conclusion.before != null && conclusion.after != null)
         _Rating(conclusion: conclusion),
       _Mode(state: state, conclusion: conclusion),
@@ -422,22 +423,6 @@ class _Body extends StatelessWidget {
           )
         : null;
     final sections = <Widget>[
-      RepaintBoundary(
-        key: card,
-        child: ColoredBox(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (final (index, section) in shared.indexed)
-                Padding(
-                  padding: EdgeInsets.only(top: index == 0 ? 0 : AppSpacing.lg),
-                  child: StaggeredEntrance(index: index, child: section),
-                ),
-            ],
-          ),
-        ),
-      ),
       if (opponent != null && comment != null)
         TeacherSpeech(
           key: ConclusionKeys.comment,
@@ -477,50 +462,74 @@ class _Body extends StatelessWidget {
       // curta, no toque na longa.
       ?quick,
     ];
+    final cardKey = card;
+    Widget spaced(Iterable<Widget> blocks) => Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (index, block) in blocks.indexed)
+          Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 0 : AppSpacing.lg),
+            child: block,
+          ),
+      ],
+    );
+    // As ações, fixas embaixo: fora da imagem de compartilhar.
+    final actionsBar = main.isEmpty
+        ? null
+        : _ActionsBar(
+            state: state,
+            actions: main,
+            seeAnalysisId: winFooter ? conclusion.gameId : null,
+          );
+    // O cabeçalho, o resultado e os números vão na imagem de compartilhar.
+    final sharedCount = outcome == null ? 2 : 3;
     return Stack(
       children: [
-        Column(
-          children: [
-            Expanded(
-              // Rolagem simples, não lista preguiçosa: todos os blocos ficam
-              // montados, e compartilhar acha o cartão e a análise mesmo com
-              // a tela rolada para longe deles.
-              child: SingleChildScrollView(
-                padding: scrollPadding(
-                  context,
-                  left: AppSpacing.screen,
-                  top: AppSpacing.sm,
-                  right: AppSpacing.screen,
-                  bottom: AppSpacing.xl,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (final (index, section) in sections.indexed)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: index == 0 ? 0 : AppSpacing.lg,
+        // H-ANI-25: o cabeçalho sobe, o resultado e os números entram (o
+        // rating conta), o resto da conclusão vem depois e as ações deslizam
+        // por último. Reaberta, tudo já pronto.
+        EntradaDeResultado(
+          id: 'conclusao-${conclusion.kind.name}-${conclusion.gameId}',
+          titulo: _Header(state: state, conclusion: conclusion),
+          subtitulo: outcome,
+          placar: spaced(numbers),
+          viktor: sections.isEmpty ? null : spaced(sections),
+          botoes: actionsBar,
+          montar: (parts) {
+            final shared = parts.take(sharedCount);
+            final rest = parts.skip(sharedCount).toList();
+            final bottom = actionsBar == null ? null : rest.removeLast();
+            return Column(
+              children: [
+                Expanded(
+                  // Rolagem simples, não lista preguiçosa: todos os blocos
+                  // ficam montados, e compartilhar acha o cartão e a análise
+                  // mesmo com a tela rolada para longe deles.
+                  child: SingleChildScrollView(
+                    padding: scrollPadding(
+                      context,
+                      left: AppSpacing.screen,
+                      top: AppSpacing.sm,
+                      right: AppSpacing.screen,
+                      bottom: AppSpacing.xl,
+                    ),
+                    child: spaced([
+                      RepaintBoundary(
+                        key: cardKey,
+                        child: ColoredBox(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          child: spaced(shared),
                         ),
-                        // O bloco de cima já entra em cascata por dentro.
-                        child: index == 0
-                            ? section
-                            : StaggeredEntrance(
-                                index: shared.length + index,
-                                child: section,
-                              ),
                       ),
-                  ],
+                      ...rest,
+                    ]),
+                  ),
                 ),
-              ),
-            ),
-            // As ações, fixas embaixo: fora da imagem de compartilhar.
-            if (main.isNotEmpty)
-              _ActionsBar(
-                state: state,
-                actions: main,
-                seeAnalysisId: winFooter ? conclusion.gameId : null,
-              ),
-          ],
+                ?bottom,
+              ],
+            );
+          },
         ),
         if (celebrate && !motion.disabled)
           const Positioned.fill(child: IgnorePointer(child: Celebration())),
@@ -924,48 +933,17 @@ class _Mode extends StatelessWidget {
 }
 
 /// O rating contando do antigo até o novo.
-class _Rating extends StatefulWidget {
+class _Rating extends StatelessWidget {
   const _Rating({required this.conclusion});
 
   final Conclusion conclusion;
 
   @override
-  State<_Rating> createState() => _RatingState();
-}
-
-class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
-  late final _controller = AnimationController(
-    vsync: this,
-    duration: AppMotion.celebrate,
-  );
-  late final _counting = CurvedAnimation(
-    parent: _controller,
-    curve: AppMotion.enter,
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Sem animações: já no valor novo.
-    if (AppMotion.of(context).disabled) {
-      _controller.value = 1;
-    } else if (!_controller.isAnimating && _controller.value == 0) {
-      _controller.forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final before = widget.conclusion.before!.rating;
-    final after = widget.conclusion.after!.rating;
+    final before = conclusion.before!.rating;
+    final after = conclusion.after!.rating;
     return Card(
       key: ConclusionKeys.rating,
       child: Padding(
@@ -982,11 +960,14 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
                 style: theme.textTheme.titleSmall,
               ),
             ),
-            AnimatedBuilder(
-              animation: _counting,
-              builder: (context, _) => RatingValue(
-                rating: (before + (after - before) * _counting.value).round(),
-                change: ((after - before) * _counting.value).round(),
+            // O rating conta do antigo ao novo quando os números entram
+            // (H-ANI-18); reaberta ou sem animações, já no valor novo.
+            ValorQueAnima(
+              valor: 1,
+              duracao: AppMotion.celebrate,
+              builder: (context, t) => RatingValue(
+                rating: (before + (after - before) * t).round(),
+                change: ((after - before) * t).round(),
                 up: after >= before,
                 valueKey: ConclusionKeys.ratingValue,
                 changeKey: ConclusionKeys.ratingDelta,
