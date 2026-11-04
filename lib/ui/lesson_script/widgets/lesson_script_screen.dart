@@ -29,13 +29,13 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/exercise_actions.dart';
-import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
@@ -57,7 +57,6 @@ class LessonScriptScreen extends StatefulWidget {
     this.preview,
     this.previewTeacher,
     this.previewTitle,
-    this.homeHero = false,
     this.onAnalyze,
     super.key,
   });
@@ -67,7 +66,6 @@ class LessonScriptScreen extends StatefulWidget {
   final LessonScriptState? preview;
   final Character? previewTeacher;
   final String? previewTitle;
-  final bool homeHero;
   final ValueChanged<String>? onAnalyze;
 
   @override
@@ -149,6 +147,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
 
   /// A casa que o aluno tocou na fala, realçada no tabuleiro.
   final _flash = SquareFlash();
+
+  /// H-ANI-02: o id do tabuleiro que voa (o FEN com que a lição abre).
+  String? _heroId;
 
   @override
   void initState() {
@@ -421,6 +422,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final savedMarks = context.select(
       (SettingsCubit c) => c.state?.lessonMarks ?? true,
     );
+    final vibration = context.select(
+      (SettingsCubit c) => c.state?.vibration ?? true,
+    );
     // The explicit solution must remain visible without rewriting preferences.
     final marks = savedMarks || cubit.showingPracticeSolution;
     final texts =
@@ -444,9 +448,6 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final viktor = _viktor;
     final voice = TeacherSpeech.speechOf(context);
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
-    final vibration = context.select(
-      (SettingsCubit c) => c.state?.vibration ?? true,
-    );
     // O clique no balão abre a fala inteira, sempre.
     final onOpen = viktor == null || state.machineThinking
         ? null
@@ -566,19 +567,18 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     Widget board(double size) {
       final board = ScriptBoard(
         canvasFeedback: true,
-        animado: cubit.escola,
-        vibrar: vibration,
         state: state,
         size: size,
         settings: settings,
         showMarks: marks,
         flash: _flash,
+        vibrar: vibration,
         onMove: (uci) => unawaited(cubit.onMove(uci)),
         onSquare: (square) => unawaited(cubit.onSquare(square)),
       );
-      return widget.homeHero
-          ? GameBoardHero(orientation: state.orientation, child: board)
-          : board;
+      // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id.
+      final heroId = _heroId ??= state.fen.isEmpty ? null : state.fen;
+      return heroId == null ? board : TabuleiroHero(id: heroId, child: board);
     }
 
     return LayoutBuilder(

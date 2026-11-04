@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/plan_event.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/course_guide/widgets/licao_plan_band.dart';
 
 import '../../../testing/test_app.dart';
@@ -48,6 +49,8 @@ void main() {
       );
       expect(find.text('Torneio da escola'), findsOneWidget);
       expect(find.text('Semana 5 de 9 · faltam 26 dias'), findsOneWidget);
+      // H-ANI-13: uma barra que enche por semana.
+      expect(find.byKey(MotionKeys.barraQueEnche), findsNWidgets(9));
       await tester.tap(find.byKey(CourseGuideKeys.licaoPlanBand));
       expect(taps, 1);
     });

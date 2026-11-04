@@ -224,6 +224,7 @@ import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/settings_tiles.dart';
 import '../ui/settings/widgets/theme_screen.dart';
 import '../ui/core/theme/app_motion.dart';
+import '../ui/core/motion/tabuleiro_hero.dart';
 import '../ui/core/widgets/reload_on_return.dart';
 import '../ui/core/sound/game_haptics.dart';
 import '../ui/core/sound/game_sounds.dart';
@@ -1097,7 +1098,6 @@ GoRouter buildRouter({
                         preview: _trainingLaunch(state)?.lessonPreview,
                         previewTeacher: _trainingLaunch(state)?.teacher,
                         previewTitle: _trainingTitle(state),
-                        homeHero: _trainingLaunch(state)?.lessonPreview != null,
                         title: lessons
                             .texts(language)
                             .then((texts) => texts.lessonTitle(id)),
@@ -1286,8 +1286,6 @@ GoRouter buildRouter({
                             preview: _trainingLaunch(state)?.lessonPreview,
                             previewTeacher: _trainingLaunch(state)?.teacher,
                             previewTitle: _trainingTitle(state),
-                            homeHero:
-                                _trainingLaunch(state)?.lessonPreview != null,
                             title: lessons.texts(language).then((texts) async {
                               final title = texts.partTitle(id, part);
                               if (title == null) return null;
@@ -2136,6 +2134,14 @@ GoRoute _route({
     }
     if (!fade && state.extra is! TrainingLaunch) {
       return MaterialPage<void>(key: state.pageKey, child: buildChild());
+    }
+    // H-ANI-02: a lição aberta do Início recebe o tabuleiro do cartão.
+    if (state.extra case TrainingLaunch(lessonPreview: _?)) {
+      return PaginaComTabuleiro<void>(
+        context: context,
+        key: state.pageKey,
+        child: buildChild(),
+      );
     }
     return gamePage(context, state, buildChild());
   },

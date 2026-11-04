@@ -9,7 +9,10 @@ import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
 import 'package:lucena/ui/lesson_script/widgets/board_coordinates.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 
+import '../../../testing/motion_expectations.dart';
+
 void main() {
+  group('H-ANI-11/12 retorno do lance', retornoDoLanceTests);
   const size = 320.0;
   testWidgets(
     'stars are real board targets and survive hidden teaching marks',
@@ -405,5 +408,101 @@ void main() {
       await tester.pump(ScriptBoard.shapesDelay);
       await tester.pumpAndSettle();
     });
+  });
+}
+
+/// H-ANI-11/12: o lance julgado do aluno pinta a casa e põe o selo na peça;
+/// a resposta da máquina não é julgada; o tom neutro e a volta tiram o sinal.
+void retornoDoLanceTests() {
+  const start = '4k3/8/8/8/8/8/8/4K3 w - - 0 1';
+  const afterKd2 = '4k3/8/8/8/8/8/3K4/8 b - - 1 1';
+  const afterReply = '3k4/8/8/8/8/8/3K4/8 w - - 2 2';
+
+  Widget at(LessonScriptState state) => MaterialApp(
+    home: Scaffold(
+      body: ScriptBoard(
+        state: state,
+        size: 320,
+        settings: const BoardSettings(),
+        onMove: (_) {},
+      ),
+    ),
+  );
+
+  LessonScriptState scene(
+    String fen, {
+    int id = 0,
+    ScriptTone tone = ScriptTone.neutral,
+    Side? movable,
+    List<String> ucis = const [],
+    TransitionKind kind = TransitionKind.move,
+  }) => LessonScriptState(
+    ready: true,
+    fen: fen,
+    tone: tone,
+    movable: movable,
+    lastMove: ucis.isEmpty ? null : ucis.last,
+    transition: ScriptTransition(
+      id: id,
+      kind: id == 0 ? TransitionKind.none : kind,
+      fromFen: start,
+      ucis: ucis,
+    ),
+  );
+
+  for (final reduced in [false, true]) {
+    testWidgets('acerto do aluno, resposta da máquina e volta ao neutro '
+        '(reduzido: $reduced)', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          FakeAccessibilityFeatures(disableAnimations: reduced);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await tester.pumpWidget(at(scene(start, movable: Side.white)));
+      expectSemRetornoDoLance();
+      await tester.pumpWidget(
+        at(scene(afterKd2, id: 1, tone: ScriptTone.good, ucis: const ['e1d2'])),
+      );
+      await tester.pump();
+      expectRetornoDoLance(tester, LessonScriptKeys.board, acerto: true);
+      // A máquina responde com o tom de acerto mantido: o selo fica no rei
+      // branco.
+      await tester.pumpWidget(
+        at(
+          scene(afterReply, id: 2, tone: ScriptTone.good, ucis: const ['e8d8']),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expectRetornoDoLance(tester, LessonScriptKeys.board, acerto: true);
+      await tester.pumpWidget(at(scene(afterReply, id: 3)));
+      await tester.pumpAndSettle();
+      expectSemRetornoDoLance();
+      await tester.pump(const Duration(seconds: 2));
+    });
+  }
+
+  testWidgets('erro do aluno: selo ✗; a volta do lance tira o sinal', (
+    tester,
+  ) async {
+    await tester.pumpWidget(at(scene(start, movable: Side.white)));
+    await tester.pumpWidget(
+      at(scene(afterKd2, id: 1, tone: ScriptTone.bad, ucis: const ['e1d2'])),
+    );
+    await tester.pump();
+    expectRetornoDoLance(tester, LessonScriptKeys.board, acerto: false);
+    await tester.pumpWidget(
+      at(
+        scene(
+          start,
+          id: 2,
+          tone: ScriptTone.bad,
+          ucis: const ['e1d2'],
+          kind: TransitionKind.back,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expectSemRetornoDoLance();
+    await tester.pump(const Duration(seconds: 2));
   });
 }

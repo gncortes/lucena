@@ -242,9 +242,6 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   String get _lessonKind =>
       analyticsLessonType ?? (_source.endgame ? 'finais' : 'escola');
 
-  /// É aula da Escola (e não de finais ou do Pilares): liga o movimento.
-  bool get escola => _lessonKind == 'escola';
-
   Duration get _chapterTime =>
       _chapterStart == null ? Duration.zero : _now().difference(_chapterStart!);
 

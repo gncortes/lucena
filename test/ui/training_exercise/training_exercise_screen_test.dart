@@ -26,6 +26,7 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/goldens/golden_harness.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   setUpAll(Goldens.loadFonts);
@@ -116,6 +117,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.exerciseBoard), findsOneWidget);
+      expectTabuleiroAnimado(tester, TrainingKeys.exerciseBoard);
       void expectCenteredBoard() {
         expectTrainingSpeechFont(tester);
         final board = tester.getRect(find.byKey(TrainingKeys.exerciseBoard));
@@ -125,6 +127,7 @@ void main() {
 
       expectCenteredBoard();
       expect(find.text('Encontre o melhor lance.'), findsOneWidget);
+      expectTabuleiroHero(tester, TrainingKeys.exerciseBoard, exercise.fen);
       expect(tester.takeException(), isNull);
       await tester.tap(find.byTooltip('Dica'));
       await tester.pumpAndSettle();
@@ -136,6 +139,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Isso mesmo.'), findsOneWidget);
       expectCenteredBoard();
+      expectRetornoDoLance(tester, TrainingKeys.exerciseBoard, acerto: true);
 
       expect(tester.takeException(), isNull);
       await tester.tap(find.byKey(TrainingKeys.nextGoal));
@@ -312,6 +316,7 @@ void main() {
       await cubit.play('a1a2');
       await tester.pumpAndSettle();
       expect(cubit.state.fen, real.fen);
+      expectRetornoDoLance(tester, TrainingKeys.exerciseBoard, acerto: false);
       expect(find.byType(ScriptSpeech), findsOneWidget);
       expect(
         tester.getRect(find.byKey(TrainingKeys.exerciseBoard)),
@@ -329,6 +334,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(cubit.state.phase, TrainingExercisePhase.playing);
       expect(cubit.state.fen, real.fen);
+      expectSemRetornoDoLance();
       await cubit.play('a1a8');
       await tester.pumpAndSettle();
       expect(find.text('Isso mesmo.'), findsOneWidget);

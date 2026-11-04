@@ -159,7 +159,7 @@ Future<void> main() async {
               body: CourseDownloadFailure(
                 failure: const LessonContentStorageUnavailable(2 * 1024 * 1024),
                 chapter: true,
-                onRetry: () {},
+                onRetry: () async {},
               ),
             ),
           ),

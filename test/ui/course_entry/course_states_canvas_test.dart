@@ -46,6 +46,7 @@ import '../../../testing/fakes/fake_sync_repository.dart';
 import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 class _Downloads extends CourseDownloadRepository {
   _Downloads({this.failure, this.loading = false}) : super.unconfigured();
@@ -120,6 +121,7 @@ Future<void> shot(WidgetTester tester, String name, Size size) async {
   for (final key in [TrainingKeys.exerciseBoard, TrainingKeys.openingBoard]) {
     if (find.byKey(key).evaluate().isNotEmpty) {
       final board = tester.getRect(find.byKey(key));
+      expectTabuleiroAnimado(tester, key);
       // Canvas centres the speech/Viktor/board/notation block. Its board is
       // deliberately below the viewport centre; block geometry is checked by
       // the dedicated C6/D6 Canvas fixtures, not by this shared capture helper.

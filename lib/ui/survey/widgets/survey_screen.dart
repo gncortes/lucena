@@ -2,6 +2,9 @@ import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/load_error.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../core/motion/barra_que_enche.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -125,9 +128,14 @@ class SurveyScreen extends StatelessWidget {
               title: Text(l10n.surveyTitle),
               // A barra de 4 px fica dentro da altura padrão.
               toolbarHeight: AppBarHeight.standard - AppBarProgress.height,
-              bottom: AppBarProgress(
+              // H-ANI-13: anda do passo anterior para o atual.
+              bottom: PreferredSize(
                 key: SurveyKeys.progress,
-                value: (state.step + 1) / state.total,
+                preferredSize: const Size.fromHeight(AppBarProgress.height),
+                child: BarraQueEnche(
+                  valor: (state.step + 1) / state.total,
+                  altura: AppBarProgress.height,
+                ),
               ),
             ),
             body: _Body(state: state),

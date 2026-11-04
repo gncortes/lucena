@@ -25,7 +25,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/training_canvas_layout.dart';
 import '../../core/theme/canvas_symbols.dart';
-import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/teacher_speech.dart' show LessonVoiceButton;
@@ -34,6 +33,9 @@ import '../../lesson_script/view_models/lesson_script_state.dart';
 import '../../lesson_script/widgets/script_move_list.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_opening_cubit.dart';
+import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_hero.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 
 class TrainingOpeningScreen extends StatelessWidget {
   const TrainingOpeningScreen({
@@ -45,7 +47,6 @@ class TrainingOpeningScreen extends StatelessWidget {
     required this.onNextGoal,
     this.heroTag,
     this.preview,
-    this.homeHero = false,
     this.partId,
     this.onProgress,
     super.key,
@@ -58,7 +59,6 @@ class TrainingOpeningScreen extends StatelessWidget {
   final VoidCallback onNextGoal;
   final Object? heroTag;
   final TrainingOpeningState? preview;
-  final bool homeHero;
   final String? partId;
   final VoidCallback? onProgress;
 
@@ -88,6 +88,14 @@ class _OpeningViewState extends State<_OpeningView> {
   Timer? _replay;
   String? _replayFen;
   int? _lastCursor;
+
+  /// H-ANI-11/12: o último lance do aluno, a tentativa (key nova do retorno)
+  /// e se a peça do lance errado já voltou à origem.
+  NormalMove? _played;
+  int _attempt = 0;
+  bool _returned = false;
+  final _boardKey = GlobalKey();
+  String? _heroId;
   @override
   void dispose() {
     _replay?.cancel();
@@ -312,6 +320,7 @@ class _OpeningViewState extends State<_OpeningView> {
     if (changedLine) {
       _replay?.cancel();
       _replayFen = null;
+      _played = null;
     } else if (_lastCursor != state.cursor &&
         !state.reviewing &&
         state.transitionFens.length > 1 &&
@@ -337,12 +346,20 @@ class _OpeningViewState extends State<_OpeningView> {
       });
     }
     _lastCursor = state.cursor;
-    final fen = _replayFen ?? state.fen!;
+    final played = _played;
+    // O lance errado fica na casa até o retorno devolver a peça.
+    final wrongShown =
+        state.wrong && played != null && !_returned && _replayFen == null;
+    final baseFen = _replayFen ?? state.fen!;
+    final fen = wrongShown
+        ? GameRules.fromFen(baseFen)!.play(played).fen
+        : baseFen;
     final position = GameRules.fromFen(fen)!;
     final playing =
         state.phase == TrainingOpeningPhase.playing &&
         !state.reviewing &&
-        _replayFen == null;
+        _replayFen == null &&
+        !wrongShown;
     final data = GameData(
       fen: fen,
       playerSide: playing
@@ -350,7 +367,9 @@ class _OpeningViewState extends State<_OpeningView> {
           : PlayerSide.none,
       sideToMove: position.turn,
       validMoves: playing ? GameRules.legalMoves(position) : const {},
-      lastMove: state.shown == 0
+      lastMove: wrongShown
+          ? played
+          : state.shown == 0
           ? null
           : state.line!.moveAt(state.shown - 1) == null
           ? null
@@ -362,7 +381,7 @@ class _OpeningViewState extends State<_OpeningView> {
     } else {
       _controller!.updatePosition(
         data,
-        animate: !state.wrong && !changedLine,
+        animate: (!state.wrong || _returned) && !changedLine,
         resetPremove: true,
       );
     }
@@ -375,30 +394,73 @@ class _OpeningViewState extends State<_OpeningView> {
         : null;
     Widget board = Directionality(
       textDirection: TextDirection.ltr,
-      child: Chessboard(
-        key: TrainingKeys.openingBoard,
-        size: size,
-        controller: _controller!,
-        orientation: state.trecho!.black ? Side.black : Side.white,
-        settings: settings.chessground,
-        shapes: {
-          if (hint is NormalMove)
-            Arrow(
-              color: Theme.of(context).colorScheme.primary,
-              orig: hint.from,
-              dest: hint.to,
-            ),
-        },
-        onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
+      // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
+      child: TabuleiroAnimado(
+        controlador: _controller!,
+        orientacao: state.trecho!.black ? Side.black : Side.white,
+        tamanho: size,
+        pecas: settings.chessground.pieceAssets,
+        child: Chessboard(
+          key: TrainingKeys.openingBoard,
+          size: size,
+          controller: _controller!,
+          orientation: state.trecho!.black ? Side.black : Side.white,
+          settings: TabuleiroAnimado.ajustes(context, settings.chessground),
+          shapes: {
+            if (hint is NormalMove)
+              Arrow(
+                color: Theme.of(context).colorScheme.primary,
+                orig: hint.from,
+                dest: hint.to,
+              ),
+          },
+          onMove: (move, {viaDragAndDrop}) {
+            setState(() {
+              _played = move is NormalMove ? move : null;
+              _attempt++;
+              _returned = false;
+            });
+            cubit.play(move.uci);
+          },
+        ),
       ),
     );
-    if (widget.screen.homeHero) {
-      board = GameBoardHero(
-        orientation: state.trecho!.black ? Side.black : Side.white,
+    board = KeyedSubtree(key: _boardKey, child: board);
+    final side = state.trecho!.black ? Side.black : Side.white;
+    final retorno = played == null || state.reviewing
+        ? null
+        : wrongShown
+        ? TipoDeRetorno.erro
+        : !state.wrong &&
+              state.firstTry.isNotEmpty &&
+              position.board.pieceAt(played.to)?.color == side
+        ? TipoDeRetorno.acerto
+        : null;
+    if (retorno != null) {
+      board = RetornoDoLance(
+        key: ValueKey('opening $_attempt'),
+        tipo: retorno,
+        casa: played!.to,
+        orientacao: side,
+        tamanho: size,
+        vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
+        aoVoltar: retorno == TipoDeRetorno.erro
+            ? () {
+                if (mounted) setState(() => _returned = true);
+              }
+            : null,
         child: board,
       );
-    } else if (widget.screen.heroTag case final tag?) {
+    }
+    if (widget.screen.heroTag case final tag?) {
       board = Hero(tag: tag, child: board);
+    } else {
+      // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id (o FEN
+      // com que a tela abre).
+      board = TabuleiroHero(
+        id: _heroId ??= state.line!.fens[state.shown],
+        child: board,
+      );
     }
     return board;
   }

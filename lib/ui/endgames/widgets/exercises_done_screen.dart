@@ -1,3 +1,4 @@
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -417,166 +418,177 @@ class TestCanvasResultPage extends StatelessWidget {
       ),
       body: SafeArea(
         top: false,
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                children: [
-                  Center(
-                    child: TestCanvasMedal(
-                      key: TestCanvasKeys.medal,
-                      grade: grade,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    title,
-                    key: ExercisesDoneKeys.current,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      height: 28 / 22,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${t.testCanvasTitle(chapter)} · ${t.testCanvasScore(correct, answers.length)}',
-                    key: ExercisesDoneKeys.score,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.5,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Center(
-                    child: SizedBox(
-                      width: 294,
-                      child: Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        alignment: WrapAlignment.center,
-                        children: [
-                          for (var i = 0; i < answers.length; i++)
-                            SizedBox.square(
-                              dimension: 44,
-                              child: Material(
-                                type: MaterialType.transparency,
-                                shape: const CircleBorder(),
-                                child: InkWell(
-                                  key: TestCanvasKeys.answer(i),
-                                  customBorder: const CircleBorder(),
-                                  onTap: () => onReview(i),
-                                  child: Center(
-                                    child: Container(
-                                      width: 40,
-                                      height: 40,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: answers[i]
-                                            ? AppColors.trainingDayCorrect
-                                            : AppColors.trainingDayWrong,
-                                      ),
-                                      child: Text(
-                                        '${i + 1}',
-                                        style: const TextStyle(
-                                          color: AppColors.chessWhiteColor,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    t.testCanvasReview,
-                    key: TestCanvasKeys.reviewHint,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 12, height: 16 / 12),
-                  ),
-                  if (teacher case final teacher?) ...[
-                    const SizedBox(height: 16),
-                    Theme(
-                      data: Theme.of(context).copyWith(
-                        textTheme: Theme.of(context).textTheme.copyWith(
-                          bodyLarge: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                fontSize: 14,
-                                height: 20 / 14,
-                                letterSpacing: 0,
-                              ),
-                        ),
-                      ),
-                      child: TeacherSpeech(
-                        key: ExercisesDoneKeys.retrySpeech,
-                        canvasTrainingBalloon: true,
-                        teacher: teacher,
-                        speechContext: SpeechContext.teaching,
-                        text:
-                            speech ??
-                            (below
-                                ? _failedSpeech(t, far: far)
-                                : t.testCanvasResultSpeech(
-                                    correct,
-                                    answers.length,
-                                  )),
-                        avatarSize: 56,
-                        speaks: true,
-                        unifiedSound: true,
-                        canvasHeader: true,
-                        showSpeedBadge: false,
-                      ),
-                    ),
-                  ],
-                ],
+        // H-ANI-25: medalha, título, placar, bolinhas, Viktor e botões em
+        // ordem; reabrir o mesmo resultado mostra tudo pronto.
+        child: EntradaDeResultado(
+          id: 'teste-$chapter-${answers.map((a) => a ? 1 : 0).join()}',
+          estrela: Center(
+            child: TestCanvasMedal(key: TestCanvasKeys.medal, grade: grade),
+          ),
+          titulo: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              title,
+              key: ExercisesDoneKeys.current,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 22,
+                height: 28 / 22,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            ActionsFooter(
-              stacked: true,
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          ),
+          subtitulo: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              '${t.testCanvasTitle(chapter)} · ${t.testCanvasScore(correct, answers.length)}',
+              key: ExercisesDoneKeys.score,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          bolinhas: [
+            for (var i = 0; i < answers.length; i++)
+              SizedBox.square(
+                dimension: 44,
+                child: Material(
+                  type: MaterialType.transparency,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    key: TestCanvasKeys.answer(i),
+                    customBorder: const CircleBorder(),
+                    onTap: () => onReview(i),
+                    child: Center(
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: answers[i]
+                              ? AppColors.trainingDayCorrect
+                              : AppColors.trainingDayWrong,
+                        ),
+                        child: Text(
+                          '${i + 1}',
+                          style: const TextStyle(
+                            color: AppColors.chessWhiteColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+          montarBolinhas: (bolinhas) => Padding(
+            padding: const EdgeInsets.only(top: 14),
+            child: Column(
               children: [
-                if (below) ...[
-                  button(
-                    TestCanvasKeys.reviewLessons,
-                    t.licaoTesteReverLicoes,
-                    onReviewLessons ?? onContinue,
-                    true,
+                SizedBox(
+                  width: 294,
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    alignment: WrapAlignment.center,
+                    children: bolinhas,
                   ),
-                  button(
-                    ExercisesDoneKeys.redo,
-                    t.testCanvasRetry,
-                    onRetry,
-                    false,
-                  ),
-                ] else ...[
-                  button(
-                    ExercisesDoneKeys.back,
-                    t.testCanvasContinue,
-                    onContinue,
-                    true,
-                  ),
-                  button(
-                    ExercisesDoneKeys.redo,
-                    t.testCanvasRetry,
-                    onRetry,
-                    false,
-                  ),
-                ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  t.testCanvasReview,
+                  key: TestCanvasKeys.reviewHint,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 12, height: 16 / 12),
+                ),
               ],
             ),
-          ],
+          ),
+          viktor: switch (teacher) {
+            final teacher? => Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  textTheme: Theme.of(context).textTheme.copyWith(
+                    bodyLarge: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      height: 20 / 14,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ),
+                child: TeacherSpeech(
+                  key: ExercisesDoneKeys.retrySpeech,
+                  canvasTrainingBalloon: true,
+                  teacher: teacher,
+                  speechContext: SpeechContext.teaching,
+                  text:
+                      speech ??
+                      (below
+                          ? _failedSpeech(t, far: far)
+                          : t.testCanvasResultSpeech(correct, answers.length)),
+                  avatarSize: 56,
+                  speaks: true,
+                  unifiedSound: true,
+                  canvasHeader: true,
+                  showSpeedBadge: false,
+                ),
+              ),
+            ),
+            null => null,
+          },
+          botoes: ActionsFooter(
+            stacked: true,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            children: [
+              if (below) ...[
+                button(
+                  TestCanvasKeys.reviewLessons,
+                  t.licaoTesteReverLicoes,
+                  onReviewLessons ?? onContinue,
+                  true,
+                ),
+                button(
+                  ExercisesDoneKeys.redo,
+                  t.testCanvasRetry,
+                  onRetry,
+                  false,
+                ),
+              ] else ...[
+                button(
+                  ExercisesDoneKeys.back,
+                  t.testCanvasContinue,
+                  onContinue,
+                  true,
+                ),
+                button(
+                  ExercisesDoneKeys.redo,
+                  t.testCanvasRetry,
+                  onRetry,
+                  false,
+                ),
+              ],
+            ],
+          ),
+          // A lista rola; os botões ficam presos embaixo.
+          montar: (partes) => Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  children: partes.sublist(0, partes.length - 1),
+                ),
+              ),
+              partes.last,
+            ],
+          ),
         ),
       ),
     );
