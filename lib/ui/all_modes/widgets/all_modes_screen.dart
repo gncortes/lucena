@@ -10,6 +10,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
+import '../../core/motion/rota_que_abre.dart';
 import '../../free_board/widgets/saved_game_sheet.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../../home/widgets/path_card.dart';
@@ -122,25 +123,30 @@ class AllModesScreen extends StatelessWidget {
                 // Os cartões entram um depois do outro.
                 child: StaggeredEntrance(
                   index: index++,
-                  child: PathCard(
-                    key: AllModesKeys.item(item.id),
-                    icon: item.icon,
-                    title: item.title,
-                    body: item.body,
-                    onTap: () async {
-                      if (item.id == 'freeBoard') {
-                        await openFreeBoard(context, preserveOrigin: true);
-                        return;
-                      }
-                      final resume =
-                          item.id == 'blind' &&
-                          (await hasBlindCheckpoint?.call() ?? false);
-                      if (context.mounted) {
-                        await context.push(
-                          resume ? '${Routes.blindEntry}?resume=1' : item.route,
-                        );
-                      }
-                    },
+                  child: _origem(
+                    item.route,
+                    PathCard(
+                      key: AllModesKeys.item(item.id),
+                      icon: item.icon,
+                      title: item.title,
+                      body: item.body,
+                      onTap: () async {
+                        if (item.id == 'freeBoard') {
+                          await openFreeBoard(context, preserveOrigin: true);
+                          return;
+                        }
+                        final resume =
+                            item.id == 'blind' &&
+                            (await hasBlindCheckpoint?.call() ?? false);
+                        if (context.mounted) {
+                          await context.push(
+                            resume
+                                ? '${Routes.blindEntry}?resume=1'
+                                : item.route,
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -161,3 +167,8 @@ class AllModesScreen extends StatelessWidget {
     );
   }
 }
+
+/// H-ANI-04: a venda (entrada única) cresce do cartão que a abre.
+Widget _origem(String route, Widget card) => route == Routes.pilaresSale
+    ? OrigemQueAbre(id: 'venda', child: card)
+    : card;
