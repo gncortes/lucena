@@ -1700,11 +1700,11 @@
   "crowdFewYesterday": "Poucas pessoas jogaram ontem",
   "crowdFew": "Poucas pessoas jogaram este final",
   "crowdFewText": "O número aparece a partir de 30 pessoas.",
-  "updateRequiredTitle": "Atualize o Lucena",
-  "updateRequiredBody": "Esta versão parou de funcionar. A nova leva menos de um minuto para instalar, e o seu progresso continua aqui.",
-  "updateRequiredAction": "Atualizar na Play",
-  "updateRecommendedTitle": "Versão nova do Lucena",
-  "updateRecommendedBody": "Tem correções e melhorias. Atualize quando puder.",
+  "updateRequiredTitle": "Atualização necessária",
+  "updateRequiredBody": "A versão instalada tem um erro que precisa ser corrigido. Suas lições e partidas continuam no aparelho.",
+  "updateRequiredAction": "Atualizar",
+  "updateRecommendedTitle": "Nova versão disponível",
+  "updateRecommendedBody": "Traz correções e melhorias para o Lucena.",
   "updateRecommendedAction": "Atualizar",
   "updateRecommendedLater": "Agora não",
   "updateReadyRestart": "Pronto. Reiniciar o Lucena",
@@ -2402,5 +2402,6 @@
   "practiceSolutionFollow": "Siga a seta.",
   "practiceSolutionTarget": "Toque na casa marcada.",
   "practiceSolutionUnavailable": "Ocorreu um erro inesperado",
-  "practiceOpponentUnavailable": "Ocorreu um erro inesperado"
+  "practiceOpponentUnavailable": "Ocorreu um erro inesperado",
+  "updateOfflineMessage": "Você precisa de conexão com a internet para atualizar o Lucena."
 }

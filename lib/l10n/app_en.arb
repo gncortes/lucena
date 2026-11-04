@@ -8640,23 +8640,23 @@
   "@crowdFewText": {
     "description": "Text under the \"few people played\" title."
   },
-  "updateRequiredTitle": "Update Lucena",
+  "updateRequiredTitle": "Update required",
   "@updateRequiredTitle": {
     "description": "Required update screen title: this app version no longer works."
   },
-  "updateRequiredBody": "This version stopped working. The new one takes less than a minute to install, and your progress stays here.",
+  "updateRequiredBody": "The installed version has an error that needs to be fixed. Your lessons and games stay on your device.",
   "@updateRequiredBody": {
     "description": "Required update screen text."
   },
-  "updateRequiredAction": "Update on Play",
+  "updateRequiredAction": "Update",
   "@updateRequiredAction": {
     "description": "Required update screen button: opens the app page on Google Play."
   },
-  "updateRecommendedTitle": "New Lucena version",
+  "updateRecommendedTitle": "New version available",
   "@updateRecommendedTitle": {
     "description": "Recommended update screen title, shown once per version."
   },
-  "updateRecommendedBody": "It has fixes and improvements. Update when you can.",
+  "updateRecommendedBody": "Brings fixes and improvements to Lucena.",
   "@updateRecommendedBody": {
     "description": "Recommended update screen text."
   },
@@ -8671,6 +8671,10 @@
   "updateReadyRestart": "Done. Restart Lucena",
   "@updateReadyRestart": {
     "description": "The new version finished downloading: tapping installs it and restarts the app."
+  },
+  "updateOfflineMessage": "You need an internet connection to update Lucena.",
+  "@updateOfflineMessage": {
+    "description": "Message under 'No internet' on the update screens."
   },
   "teamModeTitle": "Team mode",
   "@teamModeTitle": {

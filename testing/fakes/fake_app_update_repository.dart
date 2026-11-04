@@ -16,6 +16,9 @@ class FakeAppUpdateRepository implements AppUpdateRepository {
   PlayUpdateInfo info;
   int seen;
   bool flexibleResult;
+
+  /// Há internet para falar com a Play.
+  bool online = true;
   int checks = 0;
   int immediates = 0;
   int flexibles = 0;
@@ -46,6 +49,9 @@ class FakeAppUpdateRepository implements AppUpdateRepository {
     await holdFlexible?.future;
     return flexibleResult;
   }
+
+  @override
+  Future<bool> hasConnection() async => online;
 
   @override
   Future<void> completeFlexible() async => completes++;
