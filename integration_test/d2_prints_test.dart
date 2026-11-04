@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/config/dependencies.dart' show hideDevToolsForPrints;
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_repository.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/progress_summary.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
@@ -21,6 +24,7 @@ import 'package:lucena/ui/core/keys/privacy_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
+import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/fakes/fake_purchase_service.dart';
@@ -32,6 +36,8 @@ import 'robots/training_capture_robot.dart';
 /// estados de demonstração e de compra saem daqui, com o fake da compra.
 /// Coletor: `tools/capture/t85_capture_server.py` (porta 8792).
 void main() {
+  // O quadro não tem as ferramentas de desenvolvimento.
+  hideDevToolsForPrints = true;
   const prices = {
     PilaresPlan.lifetime: r'R$ 99,90',
     PilaresPlan.monthly: r'R$ 19,90',
@@ -273,6 +279,12 @@ void main() {
   patrolTest('D2 prints: ajustes', ($) async {
     await AppRobot($)
         .open(systemLocale: const Locale('pt', 'BR'), lightDevice: true);
+    // PropV1ConfigB: "Sem conta · Melhorar o jogo · 1712".
+    final profile = $.tester
+        .element(find.byKey(HomeKeys.screen))
+        .read<ProfileCubit>();
+    await $.tester.runAsync(() => profile.setGoal(GoalPreference.improve));
+    await $.pumpAndSettle();
     await shots($, [
       ('PropV1ConfigB', Routes.settings, SettingsKeys.screen),
       (

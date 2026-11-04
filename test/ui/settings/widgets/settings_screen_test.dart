@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/config/dependencies.dart' show hideDevToolsForPrints;
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/domain/models/account.dart';
@@ -30,6 +31,7 @@ void main() {
     UserProfile profile = const UserProfile(),
     Widget screen = const SettingsScreen(),
     FakeAccountRepository? account,
+    Locale locale = const Locale('en'),
   }) async {
     final cubit = SettingsCubit(
       FakeSettingsRepository(settings),
@@ -46,6 +48,7 @@ void main() {
         child: TestApp(
           settingsCubit: cubit,
           profileCubit: profileCubit,
+          locale: locale,
           child: screen,
         ),
       ),
@@ -139,6 +142,36 @@ void main() {
     expect(profileName(tester), 'Ana');
     expect(profileValue(tester), startsWith('ana@example.com · '));
     expect(profileValue(tester), endsWith(' · 1850'));
+  });
+
+  // Bug 8 da D2 (PropV1ConfigB): "Sem conta · Melhorar o jogo · 1712".
+  testWidgets('sem conta, com objetivo: a linha do quadro', (tester) async {
+    await pumpScreen(
+      tester,
+      const AppSettings(),
+      locale: const Locale('pt'),
+      profile: const UserProfile(rating: 1712, goal: GoalPreference.improve),
+    );
+
+    expect(profileValue(tester), 'Sem conta · Melhorar o jogo · 1712');
+  });
+
+  // Os prints de validação comparam com o quadro, que não tem as ferramentas
+  // de desenvolvimento; o rodapé da versão aparece logo depois de "Sobre".
+  testWidgets('no modo de prints, sem as ferramentas de desenvolvimento', (
+    tester,
+  ) async {
+    hideDevToolsForPrints = true;
+    addTearDown(() => hideDevToolsForPrints = false);
+    await pumpScreen(
+      tester,
+      const AppSettings(),
+      screen: const SettingsScreen(version: '1.2.3'),
+    );
+    await tester.scrollUntilVisible(find.byKey(SettingsKeys.version), 200);
+
+    expect(find.byKey(SettingsKeys.maiaDebugTile), findsNothing);
+    expect(find.byKey(SettingsKeys.openLinkTile), findsNothing);
   });
 
   testWidgets('mostra a versão do app no rodapé', (tester) async {
