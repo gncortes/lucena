@@ -132,8 +132,10 @@ class _AdBody extends StatelessWidget {
                     key: AdsKeys.learnMore,
                     label: l10n.licaoAdLearnMore,
                     style: label?.copyWith(color: colors.primary),
-                    onTap: () =>
-                        context.pushNamed(RouteNames.pilaresPresentation),
+                    onTap: () => context.pushNamed(
+                      RouteNames.pilaresPresentation,
+                      queryParameters: const {'origem': 'anuncio'},
+                    ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   _TopText(

@@ -9925,6 +9925,15 @@
   "@licaoCursoConcluidoCompartilhar": {
     "description": "T85-D1 Lição, fim: licaoCursoConcluidoCompartilhar."
   },
+  "licaoCursoConcluidoShareText": "I completed Pilares do Xadrez on Lucena! {link}",
+  "@licaoCursoConcluidoShareText": {
+    "description": "Text sent with the Pilares diploma image when sharing.",
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "licaoDiplomaMarcaPilares": "PILARES DO XADREZ",
   "@licaoDiplomaMarcaPilares": {
     "description": "T85-D1 Lição, fim: licaoDiplomaMarcaPilares."
