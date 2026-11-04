@@ -127,13 +127,18 @@ class CourseDownloadFailure extends StatelessWidget {
       );
     }
     final offline = failure is LessonContentNetworkUnavailable;
-    final message = !chapter && offline
-        ? t.trainingDownloadCourseOffline
-        : chapter && offline
+    if (!chapter) {
+      return LoadErrorScreen(
+        kind: offline ? LoadErrorKind.offline : LoadErrorKind.generic,
+        offlineMessage: t.loadErrorOfflineCourseMessage,
+        onAction: onRetry,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
+    final message = offline
         ? t.trainingDownloadChapterOffline
-        : chapter
-        ? t.trainingDownloadChapterError
-        : t.trainingDownloadCourseError;
+        : t.trainingDownloadChapterError;
     return Center(
       key: TrainingEntryKeys.failure,
       child: Padding(

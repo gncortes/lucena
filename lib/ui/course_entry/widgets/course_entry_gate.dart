@@ -10,6 +10,7 @@ import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../data/repositories/training/course_download_repository.dart';
+import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/models/lesson_content.dart';
 import '../../../routing/routes.dart';
@@ -65,11 +66,16 @@ class CourseEntryGate extends StatelessWidget {
               analytics: context.analytics,
               campaigns: context.campaigns,
             ),
-            child: _AccountEntry(title: courseTitle, entry: state),
+            child: _AccountEntry(
+              title: courseTitle,
+              entry: state,
+              school: config.course == TrainingCourse.escola,
+            ),
           );
         }
         if (state.phase == CourseEntryPhase.failure &&
-            state.failure is LessonContentStorageUnavailable) {
+            (chapterId == null ||
+                state.failure is LessonContentStorageUnavailable)) {
           return CourseDownloadFailure(
             failure: state.failure,
             chapter: chapterId != null,
@@ -105,8 +111,13 @@ class CourseEntryGate extends StatelessWidget {
 }
 
 class _AccountEntry extends StatelessWidget {
-  const _AccountEntry({required this.title, required this.entry});
+  const _AccountEntry({
+    required this.title,
+    required this.entry,
+    required this.school,
+  });
   final String title;
+  final bool school;
   final CourseEntryState entry;
   @override
   Widget build(BuildContext context) {
@@ -146,22 +157,33 @@ class _AccountEntry extends StatelessWidget {
                   child: TeacherSpeech(
                     key: TrainingEntryKeys.speech,
                     teacher: teacher,
-                    text: t.trainingEntrySpeech,
+                    text: school
+                        ? t.trainingEntrySpeechSchool
+                        : t.trainingEntrySpeech,
                     unifiedSound: true,
                     avatarSize: 56,
                     speechContext: SpeechContext.teaching,
                   ),
                 )
               else
-                Text(t.trainingEntrySpeech, key: TrainingEntryKeys.speech),
+                Text(
+                  school ? t.trainingEntrySpeechSchool : t.trainingEntrySpeech,
+                  key: TrainingEntryKeys.speech,
+                ),
               const SizedBox(height: 16),
-              for (final text in [t.trainingEntrySaved, t.trainingEntryOffline])
+              for (final text in [
+                t.trainingEntrySaved,
+                if (!school) t.trainingEntryOffline,
+              ])
                 Padding(
+                  key: text == t.trainingEntrySaved
+                      ? TrainingEntryKeys.saved
+                      : null,
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Row(
                     children: [
                       const Icon(
-                        Icons.check_circle_outline,
+                        Icons.check_circle,
                         color: AppColors.trainingDayCorrect,
                         size: 24,
                       ),
@@ -178,26 +200,44 @@ class _AccountEntry extends StatelessWidget {
         bottomNavigationBar: ActionsFooter(
           stacked: true,
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          children: [
-            FilledButton(
-              key: TrainingEntryKeys.google,
-              onPressed: busy
-                  ? null
-                  : () => context.read<AccountCubit>().signInWithGoogle(),
-              child: Text(t.accountGoogle),
-            ),
-            OutlinedButton(
-              key: TrainingEntryKeys.email,
-              onPressed: busy
-                  ? null
-                  : () => context.push(
-                      Routes.accountEmailFrom(
-                        GoRouterState.of(context).uri.toString(),
-                      ),
-                    ),
-              child: Text(t.trainingEntryEmail),
-            ),
-          ],
+          children: school
+              ? [
+                  FilledButton(
+                    key: TrainingEntryKeys.signIn,
+                    onPressed: busy
+                        ? null
+                        : () async {
+                            final entry = context.read<CourseEntryCubit>();
+                            await context.push(
+                              Routes.accountEnterFrom(
+                                GoRouterState.of(context).uri.toString(),
+                              ),
+                            );
+                            unawaited(entry.retry());
+                          },
+                    child: Text(t.trainingEntrySignIn),
+                  ),
+                ]
+              : [
+                  FilledButton(
+                    key: TrainingEntryKeys.google,
+                    onPressed: busy
+                        ? null
+                        : () => context.read<AccountCubit>().signInWithGoogle(),
+                    child: Text(t.accountGoogle),
+                  ),
+                  OutlinedButton(
+                    key: TrainingEntryKeys.email,
+                    onPressed: busy
+                        ? null
+                        : () => context.push(
+                            Routes.accountEmailFrom(
+                              GoRouterState.of(context).uri.toString(),
+                            ),
+                          ),
+                    child: Text(t.trainingEntryEmail),
+                  ),
+                ],
         ),
       ),
     );

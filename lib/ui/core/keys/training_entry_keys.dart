@@ -4,6 +4,8 @@ abstract final class TrainingEntryKeys {
   static const back = ValueKey('training-entry-back');
   static const account = ValueKey('training-entry-account');
   static const google = ValueKey('training-entry-google');
+  static const signIn = ValueKey('training-entry-sign-in');
+  static const saved = ValueKey('training-entry-saved');
   static const email = ValueKey('training-entry-email');
   static const speech = ValueKey('training-entry-speech');
   static const loading = ValueKey('training-entry-loading');

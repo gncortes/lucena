@@ -11,6 +11,10 @@
   "@loadErrorGenericTitle": {"description": "Standard loading error: GenericTitle."},
   "loadErrorOfflineTitle": "No internet",
   "@loadErrorOfflineTitle": {"description": "Standard loading error: OfflineTitle."},
+  "loadErrorOfflineCourseMessage": "You need an internet connection to access this course.",
+  "@loadErrorOfflineCourseMessage": {
+    "description": "Standard error screen, offline variant shown when a course package cannot be downloaded."
+  },
   "loadErrorOfflineMessage": "You need an internet connection to access this feature.",
   "@loadErrorOfflineMessage": {"description": "Standard loading error: OfflineMessage."},
   "loadErrorNoSpaceTitle": "Not enough space on your phone",
@@ -11101,10 +11105,17 @@
   "trainingProfileSolid": "Solid",
   "trainingProfileAggressive": "Aggressive",
   "trainingEntrySpeech": "To start the course, sign in to your account. This lets me save your progress, lesson by lesson.",
+  "trainingEntrySpeechSchool": "I will follow every lesson and every test of yours, from the first chapter to the diploma.",
+  "@trainingEntrySpeechSchool": {
+    "description": "Viktor speech on the School account gate, shown before sign-in."
+  },
+  "trainingEntrySignIn": "Sign in or create an account",
+  "@trainingEntrySignIn": {
+    "description": "Single button on the School account gate; opens the account screen."
+  },
   "trainingEntrySaved": "Your progress saved, on any phone",
   "trainingEntryOffline": "Downloaded lessons work offline",
   "trainingEntryEmail": "Use email",
-  "trainingDownloadCourseOffline": "You are offline. To download the course for the first time, connect and tap Try again.",
   "trainingDownloadChapterOffline": "This lesson has not been downloaded. Connect to the internet: the entire chapter downloads at once, then works offline.",
   "trainingDownloadChapterError": "Could not download the chapter. Try again in a few moments.",
   "trainingDownloadStorage": "Your phone needs more space to download this chapter (about {size} MB). Once downloaded, its lessons and exercises work offline.",
@@ -11181,9 +11192,6 @@
     "description": "Training course state."
   },
   "@trainingEntryEmail": {
-    "description": "Training course state."
-  },
-  "@trainingDownloadCourseOffline": {
     "description": "Training course state."
   },
   "@trainingDownloadChapterOffline": {
@@ -11326,10 +11334,6 @@
   },
   "@trainingTestLeave": {
     "description": "Training course state."
-  },
-  "trainingDownloadCourseError": "Could not download the course. Try again in a few moments.",
-  "@trainingDownloadCourseError": {
-    "description": "Course entry download failure without a dedicated Canvas artboard."
   },
   "trainingDownloadCourseStorage": "There is not enough space to download the course (about {size} MB). Free up space and try again. Once downloaded, the course works offline.",
   "@trainingDownloadCourseStorage": {
