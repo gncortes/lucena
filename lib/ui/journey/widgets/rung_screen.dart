@@ -23,7 +23,7 @@ import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'journey_ui.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/skeleton.dart';
@@ -137,23 +137,22 @@ class RungScreen extends StatelessWidget {
                         final width =
                             (constraints.maxWidth - 32 - gap * (columns - 1)) /
                             columns;
-                        return Wrap(
-                          spacing: gap,
-                          runSpacing: gap,
-                          children: [
-                            for (final (index, challenge)
-                                in rung.rung.challenges.indexed)
+                        return ListaEmOrdem(
+                          montar: (itens) => Wrap(
+                            spacing: gap,
+                            runSpacing: gap,
+                            children: itens,
+                          ),
+                          itens: [
+                            for (final challenge in rung.rung.challenges)
                               SizedBox(
                                 width: width,
-                                child: StaggeredEntrance(
-                                  index: index,
-                                  child: _ChallengeCell(
-                                    rungId: rungId,
-                                    challenge: challenge,
-                                    done: rung.completed.contains(challenge.id),
-                                    // O do próximo voa do destaque.
-                                    flies: challenge.id != next?.id,
-                                  ),
+                                child: _ChallengeCell(
+                                  rungId: rungId,
+                                  challenge: challenge,
+                                  done: rung.completed.contains(challenge.id),
+                                  // O do próximo voa do destaque.
+                                  flies: challenge.id != next?.id,
                                 ),
                               ),
                           ],
