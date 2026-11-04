@@ -11,7 +11,8 @@ import 'sheet_header.dart';
 /// raio 28, alça 32×4 e o ✕ redondo por fora, acima do canto final
 /// ([SheetCloseButton]). O fundo escurecido vem de [AppSheet.scrim]. O ✕ fecha
 /// sem resultado (`null`); quem precisa de outro valor ao fechar passa
-/// [onClose]. Com [dismissible] falso (folha de erro que exige escolha) não há
+/// [onClose]. Com [filtro], a folha do filtro da app bar (350 ms; conteúdo em
+/// `OpcoesDoFiltro`). Com [dismissible] falso (folha de erro que exige escolha) não há
 /// ✕, nem arrastar, nem toque fora, nem o voltar do sistema.
 Future<T?> showLucenaSheet<T>(
   BuildContext context, {
@@ -22,9 +23,11 @@ Future<T?> showLucenaSheet<T>(
   VoidCallback? onClose,
   bool enableDrag = true,
   bool dismissible = true,
+  bool filtro = false,
 }) {
   return FolhaLucena.mostrar<T>(
     context,
+    filtro: filtro,
     enableDrag: dismissible && enableDrag,
     isDismissible: dismissible,
     builder: (context) => LucenaSheetFrame(

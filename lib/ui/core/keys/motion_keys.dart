@@ -58,4 +58,34 @@ abstract final class MotionKeys {
 
   /// A bolinha [i] do resultado (H-ANI-25).
   static Key bolinhaDoResultado(int i) => Key('motion.resultado.bolinha.$i');
+
+  /// O passo à mostra na [TransicaoEixoX] (H-ANI-03).
+  static const passoDoEixo = Key('motion.passoDoEixo');
+
+  /// O retângulo que cresce do [CartaoQueAbre] até a tela (H-ANI-04).
+  static const cartaoQueAbre = Key('motion.cartaoQueAbre');
+
+  /// O corpo das abas na [AbasFadeThrough] (H-ANI-05).
+  static const corpoDasAbas = Key('motion.corpoDasAbas');
+
+  /// A barra que desliza sob a aba escolhida (H-ANI-05).
+  static const indicadorDaAba = Key('motion.indicadorDaAba');
+
+  /// A escala do [CartaoPressionavel] (H-ANI-20).
+  static const cartaoPressionado = Key('motion.cartaoPressionado');
+
+  /// O rádio da [OpcaoSelecionavel] (H-ANI-30).
+  static const radioDaOpcao = Key('motion.radioDaOpcao');
+
+  /// O cabeçalho que abre o [Acordeao] (H-ANI-22).
+  static const cabecalhoDoAcordeao = Key('motion.cabecalhoDoAcordeao');
+
+  /// O corpo que cresce no [Acordeao] (H-ANI-22).
+  static const corpoDoAcordeao = Key('motion.corpoDoAcordeao');
+
+  /// A seta que gira no [Acordeao] (H-ANI-22).
+  static const setaDoAcordeao = Key('motion.setaDoAcordeao');
+
+  /// A opção [i] do painel de filtro ([OpcoesDoFiltro], H-ANI-23).
+  static Key itemDoFiltro(int i) => Key('motion.itemDoFiltro.$i');
 }

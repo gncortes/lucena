@@ -230,4 +230,89 @@ abstract final class LucenaMotion {
 
   /// O tempo máximo do resultado inteiro.
   static const totalDoResultado = Duration(milliseconds: 1300);
+
+  // H-ANI-03: eixo X compartilhado.
+
+  /// A troca de passo inteira: sai em 30% (90 ms) e entra no resto (210 ms).
+  static const eixoX = Duration(milliseconds: 300);
+
+  /// A fração do tempo em que a tela de saída some (eixo X e abas).
+  static const fracaoDaSaida = .3;
+
+  /// Quanto o passo desliza para o lado, em px.
+  static const deslocamentoDoEixo = 30.0;
+
+  // H-ANI-04: cartão que abre.
+
+  /// O cartão que cresce até a tela.
+  static const cartaoAbre = Duration(milliseconds: 450);
+
+  /// O cartão que abre a venda (entrada única).
+  static const cartaoDaVenda = Duration(milliseconds: 560);
+
+  /// O raio do cartão que abre a venda.
+  static const raioDaVenda = 21.0;
+
+  // H-ANI-05: troca de abas.
+
+  /// A troca das abas de baixo e do "já tem".
+  static const abas = Duration(milliseconds: 300);
+
+  /// A troca das abas internas da venda, com o indicador deslizando.
+  static const abasDaVenda = Duration(milliseconds: 450);
+
+  /// A escala de que a aba nova parte.
+  static const escalaDaAba = .92;
+
+  // H-ANI-20: cartão pressionado.
+
+  /// O cartão afunda no toque.
+  static const cartaoAfunda = Duration(milliseconds: 100);
+
+  /// O cartão volta quando o dedo sai.
+  static const cartaoVolta = Duration(milliseconds: 200);
+
+  /// A escala do cartão com o dedo em cima.
+  static const escalaDoToque = .97;
+
+  // H-ANI-21 e 30: chip e opção selecionados.
+
+  /// A troca de cor, borda e ✓ de chip e opção.
+  static const selecao = Duration(milliseconds: 200);
+
+  // H-ANI-22: acordeão.
+
+  /// O acordeão abre e fecha; a seta gira junto.
+  static const acordeao = Duration(milliseconds: 300);
+
+  // H-ANI-23: painel de filtro.
+
+  /// A folha do filtro da app bar sobe.
+  static const folhaDoFiltro = Duration(milliseconds: 350);
+
+  /// As opções do filtro começam a entrar depois que a folha começa a subir.
+  static const atrasoDoFiltro = Duration(milliseconds: 120);
+
+  /// Entre uma opção do filtro e a seguinte.
+  static const intervaloDoFiltro = Duration(milliseconds: 40);
+
+  // H-ANI-19: gráfico que se desenha.
+
+  /// A linha do gráfico se desenha na primeira entrada.
+  static const graficoDesenha = Duration(milliseconds: 900);
+
+  /// Trocar o período redesenha o gráfico.
+  static const graficoRedesenha = Duration(milliseconds: 300);
+
+  /// A área embaixo da linha aparece no fim do desenho.
+  static const areaDoGrafico = Duration(milliseconds: 300);
+
+  /// Os pontos começam a saltar depois deste trecho da linha.
+  static const pontosDoGrafico = Duration(milliseconds: 300);
+
+  /// Entre um ponto e o seguinte.
+  static const intervaloDosPontos = Duration(milliseconds: 40);
+
+  /// O salto de cada ponto.
+  static const saltoDoPonto = Duration(milliseconds: 200);
 }

@@ -26,6 +26,7 @@ class BusyButton extends StatefulWidget {
     this.icon,
     this.style = BusyButtonStyle.filled,
     this.buttonKey,
+    this.textStyle,
     super.key,
   });
 
@@ -37,6 +38,10 @@ class BusyButton extends StatefulWidget {
 
   /// Key do botão do Material por dentro, para quem confere `onPressed`.
   final Key? buttonKey;
+
+  /// O estilo do rótulo, somado ao do botão (fora do `ActionsFooter`, o
+  /// botão usa o `labelLarge` do tema).
+  final TextStyle? textStyle;
 
   @override
   State<BusyButton> createState() => _BusyButtonState();
@@ -61,11 +66,15 @@ class _BusyButtonState extends State<BusyButton> {
   @override
   Widget build(BuildContext context) {
     final onPressed = _busy || widget.onPressed == null ? null : _run;
-    final child = _BusyContent(
+    final textStyle = widget.textStyle;
+    final content = _BusyContent(
       label: widget.label,
       icon: widget.icon,
       busy: _busy,
     );
+    final child = textStyle == null
+        ? content
+        : DefaultTextStyle.merge(style: textStyle, child: content);
     return switch (widget.style) {
       BusyButtonStyle.filled => FilledButton(
         key: widget.buttonKey,
