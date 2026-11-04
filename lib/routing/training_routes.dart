@@ -42,6 +42,7 @@ import '../ui/course_entry/widgets/course_entry_gate.dart';
 import '../ui/course_preview/widgets/course_details_screen.dart';
 import '../ui/course_entry/widgets/course_content_session.dart';
 import '../ui/core/motion/tabuleiro_hero.dart';
+import '../ui/core/motion/transicao_eixo_x.dart';
 import '../ui/course_guide/view_models/course_guide_cubit.dart';
 import '../ui/course_guide/view_models/training_plan_cubit.dart';
 import '../ui/course_guide/widgets/course_chapter_screen.dart';
@@ -232,51 +233,12 @@ GoRoute trainingRoute() => GoRoute(
     GoRoute(
       name: RouteNames.trainingPlan,
       path: 'plan',
-      builder: (context, state) {
-        final flow = state.uri.queryParameters['flow'] == '1';
-        final replanAfter = state.uri.queryParameters['replan'] == '1';
-        final date = state.uri.queryParameters['date'];
-        final now = context.read<Now>();
-        final repository = context.read<course_training.TrainingRepository>();
-        return BlocProvider(
-          create: (_) => TrainingPlanCubit(
-            repository: repository,
-            config: _config(state),
-            now: now,
-            push: context.read<PushRepository>(),
-            analytics: context.analytics,
-            trainingAnalytics: context.trainingAnalytics,
-            afterSave: (_) async {
-              if (replanAfter) {
-                final config = _config(state);
-                final resources = await repository.resources(config.course);
-                final today = trainingGoalToday(now());
-                await repository.update(
-                  config.course,
-                  (s) => replan(s, resources, today),
-                );
-              }
-              if (context.mounted) {
-                await context.read<RemindersCubit>().refresh();
-              }
-            },
-            beforeLoad: () =>
-                context.read<TrainingHistorySource>().bootstrap(_config(state)),
-          )..load(),
-          child: TrainingPlanScreen(
-            flow: flow,
-            tournamentDate: date,
-            today: date == null ? null : trainingGoalToday(now()),
-            onBack: () => _back(context),
-            onSaved: () => flow
-                ? context.pushNamed(
-                    RouteNames.trainingDiagnostic,
-                    pathParameters: {'course': _config(state).course.name},
-                  )
-                : _back(context),
-          ),
-        );
-      },
+      // H-ANI-03: o plano é um passo da Meta e desliza no eixo X.
+      pageBuilder: (context, state) => PaginaEixoX<void>(
+        context: context,
+        key: state.pageKey,
+        child: Builder(builder: (context) => _plan(context, state)),
+      ),
     ),
     GoRoute(
       name: RouteNames.trainingChapter,
@@ -297,6 +259,53 @@ GoRoute trainingRoute() => GoRoute(
     ),
   ],
 );
+
+/// A tela do plano (tempo por dia e dias da semana), com o cubit dela.
+Widget _plan(BuildContext context, GoRouterState state) {
+  final flow = state.uri.queryParameters['flow'] == '1';
+  final replanAfter = state.uri.queryParameters['replan'] == '1';
+  final date = state.uri.queryParameters['date'];
+  final now = context.read<Now>();
+  final repository = context.read<course_training.TrainingRepository>();
+  return BlocProvider(
+    create: (_) => TrainingPlanCubit(
+      repository: repository,
+      config: _config(state),
+      now: now,
+      push: context.read<PushRepository>(),
+      analytics: context.analytics,
+      trainingAnalytics: context.trainingAnalytics,
+      afterSave: (_) async {
+        if (replanAfter) {
+          final config = _config(state);
+          final resources = await repository.resources(config.course);
+          final today = trainingGoalToday(now());
+          await repository.update(
+            config.course,
+            (s) => replan(s, resources, today),
+          );
+        }
+        if (context.mounted) {
+          await context.read<RemindersCubit>().refresh();
+        }
+      },
+      beforeLoad: () =>
+          context.read<TrainingHistorySource>().bootstrap(_config(state)),
+    )..load(),
+    child: TrainingPlanScreen(
+      flow: flow,
+      tournamentDate: date,
+      today: date == null ? null : trainingGoalToday(now()),
+      onBack: () => _back(context),
+      onSaved: () => flow
+          ? context.pushNamed(
+              RouteNames.trainingDiagnostic,
+              pathParameters: {'course': _config(state).course.name},
+            )
+          : _back(context),
+    ),
+  );
+}
 
 Widget _guide(
   Widget child, {
