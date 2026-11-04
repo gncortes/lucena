@@ -86,7 +86,8 @@ void main() {
     expect(level.state.choice, LevelChoice.test);
     expect(level.state.testPending, isTrue);
     expect(level.state.placed, isNull);
-    expect(onboarding.saved.stage, OnboardingStage.level);
+    expect(onboarding.saved.stage, OnboardingStage.tour);
+    expect(onboarding.saved.step, 3);
     // Sem o teste feito, "Continuar" não termina nada.
     await level.finish();
     expect(level.state.finished, isFalse);
@@ -344,7 +345,7 @@ void main() {
     await level.load();
     expect(level.fromProfile, isTrue);
     expect(level.state.placed, isNull);
-    expect(onboarding.saved.stage, isNot(OnboardingStage.level));
+    expect(onboarding.saved.step, isNot(3));
     level.setManual(1800);
     level.setManualOrigin(RatingOrigin.lichess);
     await level.useManual();

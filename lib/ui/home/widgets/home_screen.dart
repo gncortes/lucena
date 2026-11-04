@@ -83,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen>
           context.go(switch (state.stage) {
             OnboardingStage.tour => Routes.tour,
             OnboardingStage.goal => Routes.goal,
-            OnboardingStage.level => Routes.level,
           });
         }
       },

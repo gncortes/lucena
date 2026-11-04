@@ -253,7 +253,7 @@ class LevelCubit extends Cubit<LevelState> {
       if (character.id == 'master') viktor = character;
     }
     if (!_saved.done && !fromProfile) {
-      await _save(_saved.copyWith(stage: OnboardingStage.level));
+      await _save(_saved.copyWith(stage: OnboardingStage.tour, step: 3));
       if (isClosed) return;
     }
     final selected = _saved.selectedRating;
