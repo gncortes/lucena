@@ -488,7 +488,7 @@ class Dependencies {
     );
     // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
     // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
-    const purchases = NoPurchaseRepository();
+    const PurchaseRepository purchases = NoPurchaseRepository();
     const ads = NoAdsRepository();
     final PushService pushService = firebase
         ? FirebasePushService()
@@ -630,6 +630,11 @@ class Dependencies {
       adsRepository: ads,
       demoAdRepository: LocalDemoAdRepository(preferences),
       purchaseRepository: purchases,
+      // Sem loja (V1 sem compra) o curso segue aberto; com a Play ligada
+      // (H-VEN-16), a lição tranca e mostra o anúncio pela compra.
+      courseAccessRepository: purchases is NoPurchaseRepository
+          ? const FullCourseAccessRepository()
+          : PurchaseCourseAccessRepository(purchases),
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
           : const NoStoreListingRepository(),
