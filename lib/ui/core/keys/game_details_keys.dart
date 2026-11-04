@@ -91,6 +91,9 @@ abstract final class GameDetailsKeys {
   /// A engine: o botão e as linhas.
   static const engineButton = Key('gameDetails.engine.button');
   static const engineLines = Key('gameDetails.engine.lines');
+  static const engineHint = Key('gameDetails.engine.hint');
+  static const forcedNote = Key('gameDetails.engine.forcedNote');
+  static Key engineCount(int count) => Key('gameDetails.engine.count.$count');
   static Key engineLine(int index) => Key('gameDetails.engine.line.$index');
 
   /// O menu: abrir fora e copiar.

@@ -2435,5 +2435,8 @@
   "partidaMenuDica": "[Mövé fŕöm ýöûŕ våŕîåtîöñ one two three]",
   "partidaMenuCopiar": "[Çöpý théšé mövéš one two]",
   "partidaMenuEsconder": "[Hîdé våŕîåtîöñš one two]",
-  "partidaMenuApagar": "[Délété thîš mövé åñd thé öñéš åftéŕ ît one two three four]"
+  "partidaMenuApagar": "[Délété thîš mövé åñd thé öñéš åftéŕ ît one two three four]",
+  "partidaMotorDica": "[Tåp å lîñé tö šéé ît öñ thé böåŕd: ît éñtéŕš åš å våŕîåtîöñ îñ Mövéš. one two three four five six]",
+  "partidaMotorForcado": "[Föŕçéd mövé: thé öñlý öñé îš {move}. one two three four]",
+  "partidaMotorLinhas": "{count, plural, =1{[1 lîñé one]} other{[{count} lîñéš one two]}}"
 }

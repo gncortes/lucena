@@ -12641,5 +12641,11 @@
   "partidaMenuEsconder": "Hide variations",
   "@partidaMenuEsconder": {"description": "Game analysis, Moves tab: partidaMenuEsconder"},
   "partidaMenuApagar": "Delete this move and the ones after it",
-  "@partidaMenuApagar": {"description": "Game analysis, Moves tab: partidaMenuApagar"}
+  "@partidaMenuApagar": {"description": "Game analysis, Moves tab: partidaMenuApagar"},
+  "partidaMotorDica": "Tap a line to see it on the board: it enters as a variation in Moves.",
+  "@partidaMotorDica": {"description": "Game analysis, Engine tab: partidaMotorDica"},
+  "partidaMotorForcado": "Forced move: the only one is {move}.",
+  "@partidaMotorForcado": {"description": "Game analysis, Engine tab: partidaMotorForcado", "placeholders": {"move": {"type": "String"}}},
+  "partidaMotorLinhas": "{count, plural, =1{1 line} other{{count} lines}}",
+  "@partidaMotorLinhas": {"description": "Game analysis, Engine tab: partidaMotorLinhas", "placeholders": {"count": {"type": "int"}}}
 }

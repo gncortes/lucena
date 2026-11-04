@@ -1093,10 +1093,20 @@ enum _Export { lichess, chessCom, fen, pgn }
 
 /// Com a engine ligada: as melhores linhas da posição mostrada, cada uma com
 /// a avaliação e os primeiros lances.
-class EngineLinesPanel extends StatelessWidget {
+class EngineLinesPanel extends StatefulWidget {
   const EngineLinesPanel({required this.state, super.key});
 
   final GameDetailsState state;
+
+  @override
+  State<EngineLinesPanel> createState() => _EngineLinesPanelState();
+}
+
+class _EngineLinesPanelState extends State<EngineLinesPanel> {
+  /// Quantas das linhas calculadas aparecem (1, 2 ou 3).
+  int _shown = 3;
+
+  GameDetailsState get state => widget.state;
 
   @override
   Widget build(BuildContext context) {
@@ -1104,8 +1114,14 @@ class EngineLinesPanel extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final locale = Localizations.localeOf(context).toString();
-    final lines = state.shownLines;
+    final all = state.shownLines;
     final position = state.shownPosition;
+    // Lance forçado: um só lance legal; só ele aparece, com a nota.
+    final forced =
+        position != null &&
+        !position.isGameOver &&
+        position.legalMoves.values.fold<int>(0, (n, to) => n + to.size) == 1;
+    final lines = all?.take(forced ? 1 : _shown).toList(growable: false);
     final List<Widget> children;
     if (lines == null) {
       children = [
@@ -1125,40 +1141,79 @@ class EngineLinesPanel extends StatelessWidget {
     } else {
       children = [
         for (final (index, line) in lines.indexed)
-          Padding(
+          InkWell(
             key: GameDetailsKeys.engineLine(index),
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+            borderRadius: BorderRadius.circular(AppShape.small),
+            onTap: () {
+              context.read<GameDetailsCubit>().playLine(line.moves);
+              DefaultTabController.maybeOf(context)?.animateTo(1);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              child: Row(
+                children: [
+                  Container(
+                    width: 58,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.xs,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: line.score.whiteWinPercent >= 50
+                          ? AppColors.paper
+                          : AppColors.chessBlackColor,
+                      borderRadius: BorderRadius.circular(AppShape.small),
+                    ),
+                    child: Text(
+                      formatScore(line.score, locale),
+                      style: TextStyle(
+                        fontWeight: AppWeight.heavy,
+                        color: line.score.whiteWinPercent >= 50
+                            ? AppColors.ink
+                            : AppColors.white,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: SanText(
+                      _numbered(
+                        position,
+                        GameRules.sanLine(position, line.moves, max: 8),
+                      ),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if (forced && lines.isNotEmpty)
+          Padding(
+            key: GameDetailsKeys.forcedNote,
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
             child: Row(
               children: [
-                Container(
-                  width: 58,
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: line.score.whiteWinPercent >= 50
-                        ? AppColors.paper
-                        : AppColors.chessBlackColor,
-                    borderRadius: BorderRadius.circular(AppShape.small),
-                  ),
-                  child: Text(
-                    formatScore(line.score, locale),
-                    style: TextStyle(
-                      fontWeight: AppWeight.heavy,
-                      color: line.score.whiteWinPercent >= 50
-                          ? AppColors.ink
-                          : AppColors.white,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
+                Icon(
+                  Icons.lock,
+                  size: AppIconSize.button,
+                  color: colors.onSurfaceVariant,
                 ),
-                const SizedBox(width: AppSpacing.md),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: SanText(
-                    _numbered(
-                      position,
-                      GameRules.sanLine(position, line.moves, max: 8),
+                  child: Text(
+                    l10n.partidaMotorForcado(
+                      GameRules.sanLine(
+                            position,
+                            lines.first.moves,
+                            max: 1,
+                          ).firstOrNull ??
+                          '',
                     ),
-                    style: theme.textTheme.bodyMedium,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ],
@@ -1186,13 +1241,61 @@ class EngineLinesPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ...children,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Stockfish · ${l10n.reviewDepth(state.shownDepth ?? GameDetailsCubit.engineDepths.first)}',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                if (!forced)
+                  SegmentedButton<int>(
+                    showSelectedIcon: false,
+                    style: SegmentedButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    segments: [
+                      for (final count in const [1, 2, 3])
+                        ButtonSegment(
+                          value: count,
+                          label: Text(
+                            '$count',
+                            key: GameDetailsKeys.engineCount(count),
+                          ),
+                          tooltip: l10n.partidaMotorLinhas(count),
+                        ),
+                    ],
+                    selected: {_shown},
+                    onSelectionChanged: (value) =>
+                        setState(() => _shown = value.first),
+                  ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              'Stockfish · ${l10n.reviewDepth(state.shownDepth ?? GameDetailsCubit.engineDepths.first)}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
+            ...children,
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              key: GameDetailsKeys.engineHint,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.touch_app,
+                  size: AppIconSize.button,
+                  color: colors.onSurfaceVariant,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l10n.partidaMotorDica,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

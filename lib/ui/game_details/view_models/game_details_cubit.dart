@@ -527,6 +527,18 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     if (state.engine) unawaited(_analyseShown());
   }
 
+  /// Joga a sequência [ucis] a partir da posição mostrada, como lances do
+  /// jogador: a linha da engine vira variante.
+  void playLine(List<String> ucis) {
+    for (final uci in ucis) {
+      final move = Move.parse(uci);
+      if (move == null) return;
+      final before = state.shownPosition;
+      play(move);
+      if (state.shownPosition == before) return;
+    }
+  }
+
   /// O tabuleiro acompanha a revisão (até o jogador mexer nele).
   bool _following = false;
 

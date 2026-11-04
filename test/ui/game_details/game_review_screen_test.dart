@@ -209,6 +209,28 @@ void main() {
     expect(text(tester, GameDetailsKeys.result), contains('Win'));
   });
 
+  testWidgets('H-PAR-15: Motor com seletor de linhas; tocar numa linha a '
+      'leva para Lances como variante', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    await tester.tap(find.byKey(GameDetailsKeys.first));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.engineButton));
+    await tester.pumpAndSettle();
+    await openTab(tester, GameDetailsKeys.tabEngine);
+
+    expect(find.byKey(GameDetailsKeys.engineHint), findsOneWidget);
+    await tester.tap(find.byKey(GameDetailsKeys.engineCount(1)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.engineLine(0)), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.engineLine(1)), findsNothing);
+
+    await tester.tap(find.byKey(GameDetailsKeys.engineLine(0)));
+    await tester.pumpAndSettle();
+    expect(cubit.state.inVariation, isTrue);
+    expect(find.byKey(GameDetailsKeys.variation), findsOneWidget);
+  });
+
   testWidgets('a legenda no fim explica os símbolos e, depois da revisão, '
       'conta os lances de cada lado', (tester) async {
     final id = await progress.addAttempt(game);
