@@ -36,6 +36,7 @@ class LoadErrorScreen extends StatelessWidget {
     this.onBack,
     this.onFreeSpace,
     this.showAction = true,
+    this.message,
     super.key,
   });
 
@@ -45,11 +46,14 @@ class LoadErrorScreen extends StatelessWidget {
   final VoidCallback? onFreeSpace;
   final bool showAction;
 
+  /// Troca a frase de baixo do título (a do capítulo ou a do curso sem rede).
+  final String? message;
+
   @override
   Widget build(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
-    final (title, message, icon) = switch (kind) {
+    final (title, defaultMessage, icon) = switch (kind) {
       LoadErrorKind.generic => (
         t.loadErrorGenericTitle,
         null,
@@ -92,6 +96,7 @@ class LoadErrorScreen extends StatelessWidget {
         CanvasSymbols.error,
       ),
     };
+    final message = this.message ?? defaultMessage;
     final freeSpace = kind == LoadErrorKind.noSpace ? onFreeSpace : null;
     final actionLabel = kind == LoadErrorKind.notFound
         ? t.loadErrorHome

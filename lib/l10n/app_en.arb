@@ -10263,7 +10263,7 @@
       }
     }
   },
-  "trainingEndBackToGoals": "Back to goals",
+  "trainingEndBackToGoals": "Continue",
   "@trainingEndBackToGoals": {
     "description": "T85 training exercise and cycle result: trainingEndBackToGoals."
   },
@@ -10372,9 +10372,276 @@
   "@trainingEndReviewLesson": {
     "description": "T85 training exercise and cycle result: trainingEndReviewLesson."
   },
-  "trainingEndSeeGoals": "See goals",
+  "trainingEndSeeGoals": "Do the reinforcement",
   "@trainingEndSeeGoals": {
     "description": "T85 training exercise and cycle result: trainingEndSeeGoals."
+  },
+  "licaoVoltarMetas": "Back to goals",
+  "@licaoVoltarMetas": {
+    "description": "T85-D1 Lição, fim: licaoVoltarMetas."
+  },
+  "licaoAgoraNao": "Not now",
+  "@licaoAgoraNao": {
+    "description": "T85-D1 Lição, fim: licaoAgoraNao."
+  },
+  "licaoMetaDiaTitle": "Today's goal done",
+  "@licaoMetaDiaTitle": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaTitle."
+  },
+  "licaoMetaDiaSemana": "Week {semana} of {total} · {dias, plural, =0{last day} =1{1 day left} other{{dias} days left}}",
+  "@licaoMetaDiaSemana": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaSemana.",
+    "placeholders": {
+      "semana": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "dias": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaLicoes": "{feitas} of {total} lessons",
+  "@licaoMetaDiaLicoes": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaLicoes.",
+    "placeholders": {
+      "feitas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaLicoesTeste": "{feitas} of {total} lessons · test pending",
+  "@licaoMetaDiaLicoesTeste": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaLicoesTeste.",
+    "placeholders": {
+      "feitas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaCapitulos": "{feitos, plural, =1{1 of {total} chapters completed} other{{feitos} of {total} chapters completed}}",
+  "@licaoMetaDiaCapitulos": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaCapitulos.",
+    "placeholders": {
+      "feitos": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaTesteAgora": "Take the test now",
+  "@licaoMetaDiaTesteAgora": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaTesteAgora."
+  },
+  "licaoOfertaTitle": "Chapter {numero} completed",
+  "@licaoOfertaTitle": {
+    "description": "T85-D1 Lição, fim: licaoOfertaTitle.",
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoOfertaResultado": "{titulo} · {certas} of {total} correct",
+  "@licaoOfertaResultado": {
+    "description": "T85-D1 Lição, fim: licaoOfertaResultado.",
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      },
+      "certas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoOfertaFala": "Fork, double attack and loose piece: you already see these tactics. Now practise until it becomes a habit.",
+  "@licaoOfertaFala": {
+    "description": "T85-D1 Lição, fim: licaoOfertaFala."
+  },
+  "licaoOfertaCardTitle": "A plan made for you",
+  "@licaoOfertaCardTitle": {
+    "description": "T85-D1 Lição, fim: licaoOfertaCardTitle."
+  },
+  "licaoOfertaCardBody": "Take the 15-position test and get the right chapters for your goal.",
+  "@licaoOfertaCardBody": {
+    "description": "T85-D1 Lição, fim: licaoOfertaCardBody."
+  },
+  "licaoOfertaAcao": "See the full course",
+  "@licaoOfertaAcao": {
+    "description": "T85-D1 Lição, fim: licaoOfertaAcao."
+  },
+  "licaoRevisaoTitle": "Review",
+  "@licaoRevisaoTitle": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoTitle."
+  },
+  "licaoRevisaoSemana": "Week {semana} of {total} · {periodo}",
+  "@licaoRevisaoSemana": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoSemana.",
+    "placeholders": {
+      "semana": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "periodo": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoRevisaoDias": "{dias, plural, =0{It is today} =1{1 day left} other{{dias} days left}}",
+  "@licaoRevisaoDias": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoDias.",
+    "placeholders": {
+      "dias": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoRevisaoIntro": "The chapters with the most mistakes in the test come first.",
+  "@licaoRevisaoIntro": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoIntro."
+  },
+  "licaoRevisaoItem": "Chapter test · {certas} of {total}",
+  "@licaoRevisaoItem": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoItem.",
+    "placeholders": {
+      "certas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoRevisaoComecar": "Start the review",
+  "@licaoRevisaoComecar": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoComecar."
+  },
+  "licaoTorneioTitle": "Tournament day",
+  "@licaoTorneioTitle": {
+    "description": "T85-D1 Lição, fim: licaoTorneioTitle."
+  },
+  "licaoTorneioHoje": "Today · {data}",
+  "@licaoTorneioHoje": {
+    "description": "T85-D1 Lição, fim: licaoTorneioHoje.",
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoTorneioFala": "Good luck at {torneio}. Warm up with three positions and enter the first round calm.",
+  "@licaoTorneioFala": {
+    "description": "T85-D1 Lição, fim: licaoTorneioFala.",
+    "placeholders": {
+      "torneio": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoTorneioAquecer": "Three positions to warm up",
+  "@licaoTorneioAquecer": {
+    "description": "T85-D1 Lição, fim: licaoTorneioAquecer."
+  },
+  "licaoTorneioPosicao": "Position {numero}",
+  "@licaoTorneioPosicao": {
+    "description": "T85-D1 Lição, fim: licaoTorneioPosicao.",
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoTorneioPosicaoInfo": "{capitulo} · {lado}",
+  "@licaoTorneioPosicaoInfo": {
+    "description": "T85-D1 Lição, fim: licaoTorneioPosicaoInfo.",
+    "placeholders": {
+      "capitulo": {
+        "type": "String"
+      },
+      "lado": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoTorneioAquecerAcao": "Warm up",
+  "@licaoTorneioAquecerAcao": {
+    "description": "T85-D1 Lição, fim: licaoTorneioAquecerAcao."
+  },
+  "licaoCursoConcluidoTitle": "You completed {curso}",
+  "@licaoCursoConcluidoTitle": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoTitle.",
+    "placeholders": {
+      "curso": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoCursoConcluidoTexto": "for completing the {capitulos} chapters and the {licoes} lessons",
+  "@licaoCursoConcluidoTexto": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoTexto.",
+    "placeholders": {
+      "capitulos": {
+        "type": "int"
+      },
+      "licoes": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoCursoConcluidoFala": "The catalog stays open so you can redo any lesson or exercise. In your goals, exercises continue through the themes and your openings.",
+  "@licaoCursoConcluidoFala": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoFala."
+  },
+  "licaoCursoConcluidoMetas": "See goals",
+  "@licaoCursoConcluidoMetas": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoMetas."
+  },
+  "licaoCursoConcluidoCatalogo": "See the catalog",
+  "@licaoCursoConcluidoCatalogo": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoCatalogo."
+  },
+  "licaoCursoConcluidoCompartilhar": "Share achievement",
+  "@licaoCursoConcluidoCompartilhar": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoCompartilhar."
+  },
+  "licaoDiplomaMarcaPilares": "PILARES DO XADREZ",
+  "@licaoDiplomaMarcaPilares": {
+    "description": "T85-D1 Lição, fim: licaoDiplomaMarcaPilares."
+  },
+  "licaoSemInternetCapitulo": "You need an internet connection to access this chapter.",
+  "@licaoSemInternetCapitulo": {
+    "description": "T85-D1 Lição, fim: licaoSemInternetCapitulo."
+  },
+  "licaoSemInternetCurso": "You need an internet connection to access this course.",
+  "@licaoSemInternetCurso": {
+    "description": "T85-D1 Lição, fim: licaoSemInternetCurso."
+  },
+  "licaoEmBreveTitle": "The next lesson is coming soon",
+  "@licaoEmBreveTitle": {
+    "description": "T85-D1 Lição, fim: licaoEmBreveTitle."
+  },
+  "licaoEmBreveBody": "You finished all published lessons. Until the next one arrives, today's goals continue: theme exercises and openings.",
+  "@licaoEmBreveBody": {
+    "description": "T85-D1 Lição, fim: licaoEmBreveBody."
+  },
+  "licaoEmBreveVoltar": "Back",
+  "@licaoEmBreveVoltar": {
+    "description": "T85-D1 Lição, fim: licaoEmBreveVoltar."
   },
   "trainingExerciseExpired": "Return to your goals to continue training.",
   "@trainingExerciseExpired": {
