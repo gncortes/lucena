@@ -130,8 +130,10 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   // As gravações em fila: uma termina antes de a próxima começar.
   Future<void> _saving = Future.value();
 
-  // A tentativa desta partida já foi gravada.
+  // A tentativa desta partida já foi gravada (só depois de gravar de fato) e,
+  // enquanto a gravação está em andamento, não se pede outra.
   bool _recorded = false;
+  bool _recording = false;
 
   // As falhas seguidas do adversário: 3 tentativas, 2 s entre elas (H-PAR-18).
   final _opponentFailures = OpponentFailures();
@@ -526,9 +528,9 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     final positionId = state.mode.positionId;
     final outcome = state.outcome;
     final fulfilled = state.fulfilled;
-    if (_recorded || positionId == null || outcome == null) return;
-    if (fulfilled == null) return;
-    _recorded = true;
+    if (_recorded || _recording || state.recordFailed) return;
+    if (positionId == null || outcome == null || fulfilled == null) return;
+    _recording = true;
     if (fulfilled) unawaited(_feel.play(HapticEvent.success));
     final mode = state.mode;
     final clock = state.clock;
@@ -553,11 +555,43 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       speedrunAttemptId: mode.speedrunAttemptId,
       speedrunStage: mode.speedrunStage,
     );
+    final startedAt = state.startedAt;
     _saving = _saving.whenComplete(() async {
-      final gameId = await _progress.addAttempt(attempt);
+      final int gameId;
+      try {
+        gameId = await _progress.addAttempt(attempt);
+      } on Object catch (error, stack) {
+        // Sem espaço (ou outro erro de disco): a partida segue na tela e o
+        // jogador escolhe tentar de novo (H-PAR-19).
+        reportHandledError(error, stack);
+        _recording = false;
+        if (!isClosed && state.startedAt == startedAt) {
+          emit(state.copyWith(recordFailed: true));
+        }
+        return;
+      }
+      _recording = false;
+      // A partida recomeçou enquanto gravava: o id é da anterior.
+      if (isClosed || state.startedAt != startedAt) return;
+      _recorded = true;
       _gameId = gameId;
       await _report(attempt, gameId: gameId, userSide: user);
     });
+  }
+
+  /// "Tentar novamente" (ou "Ver o resultado" depois de voltar): grava a
+  /// tentativa outra vez, sem duplicar a que já entrou, e espera terminar.
+  Future<void> retryRecord() async {
+    if (_recorded) return;
+    emit(state.copyWith(recordFailed: false));
+    _record();
+    await _saving;
+  }
+
+  /// "Voltar" do erro de gravação: volta ao fim da partida. A tentativa ainda
+  /// não foi gravada; "Ver o resultado" tenta de novo.
+  void dismissRecordError() {
+    if (state.recordFailed) emit(state.copyWith(recordFailed: false));
   }
 
   Future<void> _report(
@@ -899,9 +933,15 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
             turnElapsed: current.turnElapsed,
             turnStartedAt: current.turnStartedAt,
           );
-    _saving = _saving.whenComplete(
-      () => snapshot == null ? _games.clear() : _games.save(snapshot),
-    );
+    _saving = _saving.whenComplete(() async {
+      try {
+        await (snapshot == null ? _games.clear() : _games.save(snapshot));
+      } on Object catch (error, stack) {
+        // Sem espaço: a partida segue na tela e a próxima gravação tenta de
+        // novo; não trava nem avisa (H-PAR-19).
+        reportHandledError(error, stack);
+      }
+    });
   }
 
   // A partida gravada, refeita lance a lance. Nulo se não há gravação ou se

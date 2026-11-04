@@ -38,6 +38,10 @@ abstract class FreeBoardState with _$FreeBoardState {
     @Default(true) bool ready,
     @Default(false) bool failed,
 
+    /// A tentativa não coube no aparelho ao gravar o fim da partida (falta
+    /// de espaço): a tela mostra o erro com "Tentar novamente" (H-PAR-19).
+    @Default(false) bool recordFailed,
+
     /// Os lances jogados, em notação algébrica (`e4`, `Nf3`, `O-O`).
     @Default(<String>[]) List<String> moves,
 

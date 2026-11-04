@@ -35,6 +35,7 @@ import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/game_entrance.dart';
+import '../../core/widgets/free_space_action.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/opponent_error_sheet.dart';
 import '../../profile/view_models/profile_cubit.dart';
@@ -446,6 +447,15 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     TalkState talk,
   ) {
     // O shimmer acompanha a leitura sem exibir o tabuleiro na posição errada.
+    // H-PAR-19: a tentativa não coube no aparelho ao gravar o fim da partida.
+    if (state.recordFailed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.noSpace,
+        onAction: () => unawaited(_retryRecord(context, cubit)),
+        onBack: cubit.dismissRecordError,
+        onFreeSpace: freeSpaceAction(context),
+      );
+    }
     if (state.failed) {
       return LoadErrorScreen(
         kind: LoadErrorKind.generic,
@@ -1009,6 +1019,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     if (route != null) unawaited(context.push(route));
   }
 
+  // "Tentar novamente" do erro de gravação: grava e, se coube, abre o resultado.
+  Future<void> _retryRecord(BuildContext context, FreeBoardCubit cubit) async {
+    await cubit.retryRecord();
+    if (!context.mounted || cubit.state.recordFailed) return;
+    await _conclude(context, cubit, cubit.state);
+  }
+
   Future<void> _conclude(
     BuildContext context,
     FreeBoardCubit cubit,
@@ -1039,8 +1056,17 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         state.mode.positionId != null &&
         state.outcome != null &&
         state.fulfilled != null;
-    final id = recorded ? await cubit.savedGameId() : null;
+    var id = recorded ? await cubit.savedGameId() : null;
+    // A gravação acabou de falhar: o erro já está na tela.
+    if (!context.mounted || cubit.state.recordFailed) return;
+    // Voltou do erro de gravação e pediu o resultado: grava de novo agora.
+    if (recorded && id == null && context.mounted) {
+      await cubit.retryRecord();
+      id = await cubit.savedGameId();
+    }
     if (!context.mounted) return;
+    // Sem espaço outra vez: o erro está na tela e a partida fica onde está.
+    if (recorded && id == null) return;
     setState(() => _quitting = true);
     if (id != null) {
       context.pushReplacement(Routes.conclusion(id, fresh: true));

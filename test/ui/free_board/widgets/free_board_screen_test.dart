@@ -35,6 +35,7 @@ import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
@@ -2421,6 +2422,66 @@ void main() {
       expect(find.byType(FreeBoardScreen), findsNothing);
       expect(progress.attempts.single.fulfilled, isFalse);
       expect(progress.attempts.single.endReason, GameEndReason.resign);
+    });
+
+    /// Desiste sem mexer na rolagem (a tela de erro pode trocar o tabuleiro).
+    Future<void> resignOnly(WidgetTester tester) async {
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('H-PAR-19: sem espaço ao gravar mostra o erro; Tentar '
+        'novamente grava e abre a conclusão', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+
+      await resignOnly(tester);
+
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.text('Not enough space on your phone'), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.freeSpace), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.back), findsOneWidget);
+      expect(progress.attempts, isEmpty);
+
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+
+      final id = await cubit.savedGameId();
+      expect(id, 1);
+      expect(find.text('conclusion $id'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
+    });
+
+    testWidgets('H-PAR-19: Voltar leva ao fim da partida e Ver o resultado '
+        'grava de novo', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+      await resignOnly(tester);
+
+      await tester.tap(find.byKey(LoadErrorKeys.back));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+      expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.pumpAndSettle();
+      expect(find.text('conclusion 1'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
     });
 
     testWidgets(
