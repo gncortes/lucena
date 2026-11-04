@@ -118,6 +118,8 @@ void main() {
       await tester.enterText(find.byKey(RegionKeys.countrySearch), 'xyzw');
       await tester.pumpAndSettle();
       expect(find.byKey(RegionKeys.countryNotFound), findsOneWidget);
+      // H-AJU-10, pergunta 4: o texto recomendado.
+      expect(find.text('Nenhum país encontrado'), findsOneWidget);
     });
   });
 

@@ -1650,7 +1650,7 @@
   "countryFromPhone": "Do seu celular",
   "countryFromPhoneNote": "Escolhido pelo idioma e região do celular",
   "countryAll": "Todos os países",
-  "countryNotFound": "Nenhum país com esse nome.",
+  "countryNotFound": "Nenhum país encontrado",
   "profileRegionNone": "Opcional · para ver torneios perto de você",
   "profileCountryValue": "{flag} {country}",
   "accountEntryTitle": "Guarde o seu progresso",

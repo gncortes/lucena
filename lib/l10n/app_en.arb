@@ -8394,7 +8394,7 @@
   "@countryAll": {
     "description": "Country picker section: every country in alphabetical order."
   },
-  "countryNotFound": "No country with that name.",
+  "countryNotFound": "No country found",
   "@countryNotFound": {
     "description": "Country picker: the search found nothing."
   },
