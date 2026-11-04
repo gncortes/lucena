@@ -34,6 +34,7 @@ import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_sound_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
@@ -2614,6 +2615,41 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('H-PAR-05: na 3ª fala escondida, a dica com "Ajustar" abre o '
+        'painel de som', (tester) async {
+      await pumpScreen(
+        tester,
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1000),
+        locale: const Locale('pt'),
+      );
+      await cubit.open();
+      await talk.settled();
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 3; i++) {
+        if (talk.state.line == null) {
+          talk.update(
+            cubit.state.copyWith(
+              drawOffer: DrawOffer.declined,
+              drawDeclinedAt: i,
+            ),
+          );
+          await talk.settled();
+        }
+        talk.dismissLine(lineId: talk.state.line!.id);
+        await talk.settled();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.speechHint), findsOneWidget);
+      expect(
+        find.textContaining('Você pode desligar as falas'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(FreeBoardKeys.speechHintAdjust));
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameSoundKeys.dialog), findsOneWidget);
+    });
 
     testWidgets(
       'H-PAR-05: sem relógio o detalhe leva o lado ("1164 · brancas"); '
