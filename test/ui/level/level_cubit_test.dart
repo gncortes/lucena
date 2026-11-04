@@ -181,7 +181,7 @@ void main() {
       expect(home.layout, HomeSuggestion.of(RatingLevel.of(1712)));
     });
 
-    test('cancelado na página do Lichess volta sem erro', () async {
+    test('cancelado na página do Lichess avisa, sem tela de erro', () async {
       lichess.hold = true;
       final level = cubit();
       await level.load();
@@ -191,7 +191,8 @@ void main() {
       await connecting;
       expect(level.state.lichessBusy, isFalse);
       expect(level.state.lichess, isNull);
-      expect(level.state.error, isNull);
+      expect(level.state.error, LevelError.lichessCancelled);
+      expect(level.state.lichessOffline, isFalse);
       expect(level.state.choice, LevelChoice.lichess);
     });
 
@@ -201,6 +202,7 @@ void main() {
       await level.load();
       await level.connectLichess();
       expect(level.state.error, LevelError.lichessOffline);
+      expect(level.state.lichessOffline, isTrue);
       expect(level.state.errorCount, 1);
       await level.connectLichess();
       expect(level.state.errorCount, 2);
@@ -263,7 +265,14 @@ void main() {
       await level.load();
       await level.lookUpChess('gabriel_finais');
       expect(level.state.error, LevelError.chessOffline);
+      expect(level.state.chessOffline, isTrue);
       expect(level.state.chessNotFound, isFalse);
+      level.dismissOffline();
+      expect(level.state.chessOffline, isFalse);
+      chessCom.offline = false;
+      await level.lookUpChess('gabriel_finais');
+      expect(level.state.chessOffline, isFalse);
+      expect(level.state.chess, isNotNull);
     });
 
     test('a resposta de uma busca antiga não ganha da nova', () async {

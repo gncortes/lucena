@@ -38,7 +38,7 @@ import '../../../domain/use_cases/visible_lessons.dart';
 enum LevelChoice { test, known, lichess, chess, manual, zero, band }
 
 /// O que deu errado na última tentativa (mostrado uma vez pela tela).
-enum LevelError { lichessOffline, chessOffline }
+enum LevelError { lichessOffline, lichessCancelled, chessOffline }
 
 class LevelState {
   final LoadFailure? failure;
@@ -50,9 +50,11 @@ class LevelState {
     this.placed,
     this.lichess,
     this.lichessBusy = false,
+    this.lichessOffline = false,
     this.chess,
     this.chessBusy = false,
     this.chessNotFound = false,
+    this.chessOffline = false,
     this.manualRating,
     this.manualOrigin = RatingOrigin.fide,
     this.band,
@@ -84,12 +86,18 @@ class LevelState {
   /// O login do Lichess está aberto no navegador.
   final bool lichessBusy;
 
+  /// Sem internet ao abrir o Lichess: a tela mostra "Sem internet".
+  final bool lichessOffline;
+
   /// Os ratings públicos do usuário do Chess.com digitado.
   final PlatformRating? chess;
   final bool chessBusy;
 
   /// O usuário digitado não existe no Chess.com (ou não tem rating).
   final bool chessNotFound;
+
+  /// Sem internet ao buscar no Chess.com: a tela mostra "Sem internet".
+  final bool chessOffline;
 
   /// O número digitado em "Informar o meu rating" e de onde ele é.
   final int? manualRating;
@@ -152,9 +160,11 @@ class LevelState {
     int? Function()? placed,
     PlatformRating? Function()? lichess,
     bool? lichessBusy,
+    bool? lichessOffline,
     PlatformRating? Function()? chess,
     bool? chessBusy,
     bool? chessNotFound,
+    bool? chessOffline,
     int? Function()? manualRating,
     RatingOrigin? manualOrigin,
     RatingLevel? band,
@@ -170,9 +180,11 @@ class LevelState {
     placed: placed == null ? this.placed : placed(),
     lichess: lichess == null ? this.lichess : lichess(),
     lichessBusy: lichessBusy ?? this.lichessBusy,
+    lichessOffline: lichessOffline ?? this.lichessOffline,
     chess: chess == null ? this.chess : chess(),
     chessBusy: chessBusy ?? this.chessBusy,
     chessNotFound: chessNotFound ?? this.chessNotFound,
+    chessOffline: chessOffline ?? this.chessOffline,
     manualRating: manualRating == null ? this.manualRating : manualRating(),
     manualOrigin: manualOrigin ?? this.manualOrigin,
     band: band ?? this.band,
@@ -350,7 +362,13 @@ class LevelCubit extends Cubit<LevelState> {
         ),
       );
       if (isClosed) return;
-      emit(state.copyWith(lichessBusy: false, lichess: () => rating));
+      emit(
+        state.copyWith(
+          lichessBusy: false,
+          lichessOffline: false,
+          lichess: () => rating,
+        ),
+      );
     } on LichessException catch (e) {
       if (isClosed) return;
       emit(state.copyWith(lichessBusy: false));
@@ -390,10 +408,28 @@ class LevelCubit extends Cubit<LevelState> {
     if (state.lichessBusy) _lichess.cancel();
   }
 
-  // Cancelar na página do Lichess volta sem erro (regra 7).
+  /// Recusar ou voltar sem autorizar avisa e deixa tentar de novo; sem
+  /// internet, a tela é a de "Sem internet".
   void _lichessFailed(LichessFailure failure) {
-    if (isClosed || failure == LichessFailure.cancelled) return;
-    emit(state.copyWith(error: LevelError.lichessOffline));
+    if (isClosed) return;
+    if (failure == LichessFailure.cancelled) {
+      emit(
+        state.copyWith(
+          lichessOffline: false,
+          error: LevelError.lichessCancelled,
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(lichessOffline: true, error: LevelError.lichessOffline),
+    );
+  }
+
+  /// "Voltar" (ou "Tentar novamente") da tela "Sem internet".
+  void dismissOffline() {
+    if (isClosed) return;
+    emit(state.copyWith(lichessOffline: false, chessOffline: false));
   }
 
   /// Procura o usuário no Chess.com. Vazio, limpa.
@@ -411,7 +447,13 @@ class LevelCubit extends Cubit<LevelState> {
       );
       return;
     }
-    emit(state.copyWith(chessBusy: true, chessNotFound: false));
+    emit(
+      state.copyWith(
+        chessBusy: true,
+        chessNotFound: false,
+        chessOffline: false,
+      ),
+    );
     try {
       final rating = await _chessCom.stats(name);
       if (isClosed || revision != _chessRevision) return;
@@ -424,6 +466,7 @@ class LevelCubit extends Cubit<LevelState> {
           chessBusy: false,
           chess: () => null,
           chessNotFound: notFound,
+          chessOffline: !notFound,
           error: notFound ? null : LevelError.chessOffline,
         ),
       );

@@ -6309,7 +6309,7 @@
   "@levelLichessConnectedTitle": {
     "description": "Title of the screen shown after signing in with Lichess."
   },
-  "levelLichessBack": "Back from Lichess. The access stays on this phone only.",
+  "levelLichessBack": "Back from Lichess. The access stays on this phone only, and needs no Lucena account.",
   "@levelLichessBack": {
     "description": "Text at the top of the Lichess connected screen."
   },
@@ -6383,7 +6383,7 @@
       }
     }
   },
-  "levelLichessTip": "Lichess ratings tend to be higher than FIDE and Chess.com. If it feels easy or hard, Lucena adjusts by itself.",
+  "levelLichessTip": "Each site has its own scale: the same player has a higher number on Lichess than on FIDE or Chess.com. Lucena uses the Lichess scale.",
   "@levelLichessTip": {
     "description": "Tip on the Lichess connected screen."
   },
@@ -6395,11 +6395,11 @@
   "@levelPreferTest": {
     "description": "Text button: take the placement test instead."
   },
-  "levelProvisionalText": "Lichess marks your rating with ?: it is still provisional, with few games. With the test I get your level right.",
+  "levelProvisionalText": "Lichess marks your rating with ?: it is still provisional, with few games. The test gets your level right.",
   "@levelProvisionalText": {
     "description": "Text when the Lichess rating is provisional."
   },
-  "levelProvisionalTip": "If you prefer, I start at {rating} and adjust by myself after a few games.",
+  "levelProvisionalTip": "With {rating}, the level adjusts by itself after a few games.",
   "@levelProvisionalTip": {
     "description": "Tip when the Lichess rating is provisional.",
     "placeholders": {
@@ -6433,17 +6433,9 @@
   "@levelChessHelp": {
     "description": "Helper under the Chess.com username field."
   },
-  "levelChessNotFound": "I couldn't find this user on Chess.com.",
+  "levelChessNotFound": "I couldn't find this user on Chess.com. Check how it is spelled.",
   "@levelChessNotFound": {
     "description": "Error under the Chess.com username field."
-  },
-  "levelChessOffline": "Couldn't reach Chess.com. Check your connection.",
-  "@levelChessOffline": {
-    "description": "Snack bar when Chess.com cannot be reached."
-  },
-  "levelLichessOffline": "Couldn't reach Lichess. Check your connection.",
-  "@levelLichessOffline": {
-    "description": "Snack bar when Lichess cannot be reached."
   },
   "levelFoundUser": "Found: {user}",
   "@levelFoundUser": {
@@ -6454,7 +6446,7 @@
       }
     }
   },
-  "levelChessTip": "Chess.com ratings tend to be lower than Lichess, so I convert them. If it feels easy or hard, Lucena adjusts by itself.",
+  "levelChessTip": "Each site has its own scale: the same player has a lower number on Chess.com than on Lichess. Lucena converts your rating.",
   "@levelChessTip": {
     "description": "Tip on the Chess.com screen."
   },
@@ -11959,5 +11951,33 @@
   "tourAccountBack": "Back",
   "@tourAccountBack": {
     "description": "Tour account step: back button on the no-internet state."
+  },
+  "levelLichessProvisionalBack": "Lichess access stays on this phone only and needs no Lucena account.",
+  "@levelLichessProvisionalBack": {
+    "description": "Text under the title of the Lichess screen when the rating is provisional."
+  },
+  "levelLichessCancelled": "Could not finish the Lichess authorization",
+  "@levelLichessCancelled": {
+    "description": "Snack bar shown when the player refuses or leaves the Lichess authorization page."
+  },
+  "levelLichessNoNet": "You need an internet connection to reach Lichess.",
+  "@levelLichessNoNet": {
+    "description": "Message of the no-internet screen of the Lichess level step."
+  },
+  "levelChessNoNet": "You need an internet connection to reach Chess.com.",
+  "@levelChessNoNet": {
+    "description": "Message of the no-internet screen of the Chess.com level step."
+  },
+  "levelChessSearch": "Search",
+  "@levelChessSearch": {
+    "description": "Button that looks up the Chess.com username."
+  },
+  "levelChessNoRatingText": "This account has no rated games on Chess.com yet. With the test, I find your level.",
+  "@levelChessNoRatingText": {
+    "description": "Text of the Chess.com result when the user exists but has no rating."
+  },
+  "levelChessNoRatingTip": "By picking a rating range, the Journey also starts with the right opponent.",
+  "@levelChessNoRatingTip": {
+    "description": "Tip of the Chess.com result when the user has no rating."
   }
 }

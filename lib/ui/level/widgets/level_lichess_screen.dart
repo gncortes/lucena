@@ -7,7 +7,9 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/tip_box.dart';
 import '../view_models/level_cubit.dart';
 import 'level_ui.dart';
@@ -23,12 +25,37 @@ class LevelLichessScreen extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<LevelCubit>();
-    return BlocBuilder<LevelCubit, LevelState>(
+    return BlocConsumer<LevelCubit, LevelState>(
+      // Recusou ou voltou sem autorizar: o aviso sai no passo Nível.
+      listenWhen: (previous, current) =>
+          current.errorCount != previous.errorCount &&
+          current.error == LevelError.lichessCancelled,
+      listener: (context, state) => Navigator.of(context).maybePop(),
       builder: (context, state) {
         final lichess = state.lichess;
         final rating = state.lichessRating;
+        if (state.lichessOffline) {
+          return KeyedSubtree(
+            key: LevelKeys.lichessOfflineScreen,
+            child: LoadErrorScreen(
+              kind: LoadErrorKind.offline,
+              message: l10n.levelLichessNoNet,
+              actionKey: LevelKeys.lichessRetry,
+              backKey: LevelKeys.lichessOfflineBack,
+              onAction: cubit.connectLichess,
+              onBack: () {
+                cubit.dismissOffline();
+                Navigator.of(context).maybePop();
+              },
+            ),
+          );
+        }
         if (lichess == null || rating == null) {
-          return const Scaffold(key: LevelKeys.lichessScreen);
+          // Lendo o perfil depois da volta do navegador.
+          return const Scaffold(
+            key: LevelKeys.lichessScreen,
+            body: SafeArea(child: SkeletonList()),
+          );
         }
         final provisional = lichess.main!.provisional;
         final success = AppColors.of(context).success;
@@ -44,7 +71,9 @@ class LevelLichessScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
                 child: Text(
-                  l10n.levelLichessBack,
+                  provisional
+                      ? l10n.levelLichessProvisionalBack
+                      : l10n.levelLichessBack,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

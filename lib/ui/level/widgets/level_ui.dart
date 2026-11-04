@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +14,7 @@ import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/level_cubit.dart';
 
 /// O adversário em que a Jornada começa com [rating]: "Valdini (1600)".
@@ -130,4 +133,49 @@ class _Cell extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Os avisos do Lichess que quem hospeda a escolha (a tela do nível ou o
+/// passo do tour) trata: a volta do navegador abre o resultado, a falta de
+/// internet abre a tela "Sem internet" e a recusa vira um aviso com
+/// "Tentar de novo". Só a tela do topo reage, para não empilhar duas vezes.
+List<BlocListener<LevelCubit, LevelState>> lichessOwnerListeners() {
+  void open(BuildContext context) {
+    if (ModalRoute.of(context)?.isCurrent != true) return;
+    unawaited(
+      context.push(Routes.levelLichess, extra: context.read<LevelCubit>()),
+    );
+  }
+
+  return [
+    BlocListener<LevelCubit, LevelState>(
+      listenWhen: (previous, current) =>
+          previous.lichess == null && current.lichess != null,
+      listener: (context, state) => open(context),
+    ),
+    BlocListener<LevelCubit, LevelState>(
+      listenWhen: (previous, current) =>
+          !previous.lichessOffline && current.lichessOffline,
+      listener: (context, state) => open(context),
+    ),
+    BlocListener<LevelCubit, LevelState>(
+      listenWhen: (previous, current) =>
+          current.errorCount != previous.errorCount &&
+          current.error == LevelError.lichessCancelled,
+      listener: (context, state) {
+        final cubit = context.read<LevelCubit>();
+        showLucenaSnackBar(
+          context,
+          context.l10n.levelLichessCancelled,
+          key: LevelKeys.lichessCancelledSnack,
+          action: SnackBarAction(
+            label: context.l10n.loadErrorRetry,
+            textColor: Colors.white,
+            key: LevelKeys.lichessSnackRetry,
+            onPressed: cubit.connectLichess,
+          ),
+        );
+      },
+    ),
+  ];
 }
