@@ -5,6 +5,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/skeleton.dart';
 
 import '../../core/widgets/load_error.dart';
@@ -336,6 +337,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               // bronze (1); cada erro ou dica desce um degrau, e a vazia fica
               // vazia até o fim.
               actions: [
+                if (!widget.trainingTest &&
+                    (state.say == ExerciseSay.correct ||
+                        state.say == ExerciseSay.wrong))
+                  ExerciseResultMark(correct: state.say == ExerciseSay.correct),
                 if (!widget.trainingTest && state.exercise != null)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(

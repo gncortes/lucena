@@ -37,6 +37,7 @@ import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
+import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../endgames/widgets/grade_widgets.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -189,18 +190,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
           ),
           actions: [
             // Marca única de acerto e de erro (H-LIC-42); sem estrela aqui.
-            if (result)
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Icon(
-                  state.displayedCorrect ? Icons.check_circle : Icons.cancel,
-                  key: TrainingKeys.exerciseResultMark,
-                  size: AppIconSize.standard,
-                  color: state.displayedCorrect
-                      ? AppColors.successColor
-                      : AppColors.errorColor,
-                ),
-              ),
+            if (result) ExerciseResultMark(correct: state.displayedCorrect),
           ],
         ),
         body: SafeArea(
