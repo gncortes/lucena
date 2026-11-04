@@ -5,6 +5,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/widgets/skeleton.dart';
 
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
@@ -763,20 +764,33 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 child: Directionality(
                                   textDirection: TextDirection.ltr,
                                   child: _boardTouchRegion(
-                                    Chessboard(
-                                      key: FreeBoardKeys.board,
-                                      size: box.maxWidth,
-                                      controller: _board,
-                                      // No ultra bullet o pré-lance fica sempre ligado:
-                                      // sem ele, não dá tempo de jogar no celular.
-                                      settings: _ultraBullet(state)
-                                          ? boardSettings
-                                                .copyWith(premoves: true)
-                                                .chessground
-                                          : boardSettings.chessground,
-                                      orientation: state.orientation,
-                                      onMove: (move, {viaDragAndDrop}) =>
-                                          cubit.play(move),
+                                    // H-ANI-10: deslize do kit, captura e
+                                    // halo do xeque.
+                                    TabuleiroAnimado(
+                                      controlador: _board,
+                                      orientacao: state.orientation,
+                                      tamanho: box.maxWidth,
+                                      pecas:
+                                          boardSettings.chessground.pieceAssets,
+                                      child: Chessboard(
+                                        key: FreeBoardKeys.board,
+                                        size: box.maxWidth,
+                                        controller: _board,
+                                        // No ultra bullet o pré-lance fica
+                                        // sempre ligado: sem ele, não dá
+                                        // tempo de jogar no celular.
+                                        settings: TabuleiroAnimado.ajustes(
+                                          context,
+                                          _ultraBullet(state)
+                                              ? boardSettings
+                                                    .copyWith(premoves: true)
+                                                    .chessground
+                                              : boardSettings.chessground,
+                                        ),
+                                        orientation: state.orientation,
+                                        onMove: (move, {viaDragAndDrop}) =>
+                                            cubit.play(move),
+                                      ),
                                     ),
                                   ),
                                 ),

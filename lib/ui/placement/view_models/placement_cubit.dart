@@ -25,6 +25,7 @@ import '../../../domain/models/maia_level.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/placement_engine.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import 'roadmap_loader.dart';
 
@@ -393,6 +394,28 @@ class PlacementCubit extends Cubit<PlacementViewState> {
         endgameProgress == null) {
       return (null, const <String, String>{});
     }
+    try {
+      return await _roadmapFrom(
+        result,
+        school: school,
+        endgames: endgames,
+        schoolProgress: schoolProgress,
+        endgameProgress: endgameProgress,
+      );
+    } on LessonContentUnavailable {
+      // O pacote das aulas ainda não baixou (no tour, antes da conta): o
+      // resultado aparece sem o roteiro, que a Escola monta depois.
+      return (null, const <String, String>{});
+    }
+  }
+
+  Future<(PlacementRoadmap, Map<String, String>)> _roadmapFrom(
+    PlacementResult result, {
+    required LessonRepository school,
+    required EndgameLessonRepository endgames,
+    required SchoolProgressRepository schoolProgress,
+    required EndgameProgressRepository endgameProgress,
+  }) async {
     final roadmap = await RoadmapLoader(
       placement: _placement,
       school: school,

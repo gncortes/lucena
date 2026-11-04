@@ -74,12 +74,11 @@ void main() {
     // O resultado volta a "Seu nível", de onde o teste foi aberto.
     await $(LevelKeys.screen).waitUntilVisible();
 
-    // Depois de fechar o app: o Início mostra o rating, e a Escola não
-    // convida mais para o teste.
+    // Depois de fechar o app: o Início mostra o rating, segue com o atalho
+    // do Pilares e não convida mais para o teste.
     await app.restart();
     await HomeRobot($).expectRating();
-    await $(HomeKeys.schoolButton).scrollTo().tap();
-    await $.pumpAndSettle();
+    await $(HomeKeys.pillarsButton).scrollTo();
     expect(find.byKey(SchoolKeys.placementTest), findsNothing);
   });
 }

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/my_progress_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'home_robot.dart';
@@ -46,6 +47,8 @@ class ProgressRobot {
       await $(HomeKeys.playerCard).scrollTo(scrollDirection: AxisDirection.up);
     }
     await $(HomeKeys.playerCard).tap();
+    // H-CON-03: a pílula abre "Seu progresso"; o Histórico leva ao rating.
+    await $(MyProgressKeys.history).tap();
     await $(RatingKeys.value).waitUntilVisible();
   }
 
@@ -122,6 +125,7 @@ class ProgressRobot {
   /// Os detalhes do rating, a partir do cartão do jogador na tela inicial.
   Future<void> openRatingDetails() async {
     await $(HomeKeys.playerCard).scrollTo().tap();
+    await $(MyProgressKeys.history).tap();
     await $(RatingKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }

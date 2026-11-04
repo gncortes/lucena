@@ -45,6 +45,7 @@ import '../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_push_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 import '../core/motion/entrada_helpers.dart';
 
@@ -705,6 +706,13 @@ void main() {
       location: '/e/b',
       path: '/e/:id',
     );
+
+    testWidgets('H-ANI-10: o tabuleiro do Ache o lance é o TabuleiroAnimado', (
+      tester,
+    ) async {
+      await openFind(tester);
+      expectTabuleiroAnimado(tester, FeaturedKeys.findBoard);
+    });
 
     testWidgets('falha na dica e retry pendente reativam tabuleiro', (
       tester,

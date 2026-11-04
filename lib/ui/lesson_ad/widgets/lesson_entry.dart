@@ -10,6 +10,8 @@ import '../../../domain/use_cases/ad_policy.dart';
 import '../../../routing/route_names.dart';
 import '../../core/keys/ads_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
@@ -111,11 +113,13 @@ abstract final class LessonEntry {
     required Key sheetKey,
     required Key primaryKey,
     required Key laterKey,
+    String quadro = 'PropV2MetaSemCompraDemoCadeadoFolha',
   }) async =>
       await showLucenaSheet<bool>(
         context,
         sheetKey: sheetKey,
         builder: (context) => _SheetBody(
+          quadro: quadro,
           icon: Icons.lock,
           title: title,
           body: body,
@@ -156,8 +160,11 @@ class _SheetBody extends StatelessWidget {
     required this.primaryKey,
     required this.laterKey,
     required this.onPrimary,
+    required this.quadro,
   });
 
+  /// O quadro do canvas (a cascata só entra na primeira vez dele).
+  final String quadro;
   final IconData icon;
   final String title;
   final String body;
@@ -170,42 +177,60 @@ class _SheetBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.md,
-        children: [
-          Row(
-            spacing: AppSpacing.sm,
-            children: [
-              Icon(
-                icon,
-                size: AppIconSize.standard,
-                color: theme.colorScheme.primary,
+    // H-ANI-16: com a folha já parada, título, texto e os botões entram em
+    // cascata, só na primeira vez que o quadro aparece na sessão.
+    return EntradaDaTela(
+      id: quadro,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: EntradaEmCascata(
+          montar: (itens) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.md,
+            children: itens,
+          ),
+          itens: [
+            ItemDaCascata.titulo(
+              Row(
+                spacing: AppSpacing.sm,
+                children: [
+                  Icon(
+                    icon,
+                    size: AppIconSize.standard,
+                    color: theme.colorScheme.primary,
+                  ),
+                  Expanded(
+                    child: Text(title, style: theme.textTheme.titleMedium),
+                  ),
+                ],
               ),
-              Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
-            ],
-          ),
-          Text(
-            body,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
             ),
-          ),
-          BusyButton(
-            buttonKey: primaryKey,
-            label: primary,
-            onPressed: onPrimary,
-          ),
-          BusyButton(
-            buttonKey: laterKey,
-            label: later,
-            style: BusyButtonStyle.text,
-            onPressed: () => Navigator.of(context).pop(false),
-          ),
-        ],
+            ItemDaCascata.texto(
+              Text(
+                body,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            ItemDaCascata.botao(
+              BusyButton(
+                buttonKey: primaryKey,
+                label: primary,
+                onPressed: onPrimary,
+              ),
+            ),
+            ItemDaCascata.botao(
+              BusyButton(
+                buttonKey: laterKey,
+                label: later,
+                style: BusyButtonStyle.text,
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -223,6 +248,7 @@ class _NoticeSheet extends StatelessWidget {
       body: l10n.licaoAdNoticeBody,
       primary: l10n.licaoAdNoticeSee,
       later: l10n.licaoDemoLater,
+      quadro: 'PropV2DemoAviso',
       primaryKey: AdsKeys.demoAdNoticeSee,
       laterKey: AdsKeys.demoAdNoticeLater,
       onPrimary: () => Navigator.of(context).pop(true),
@@ -244,6 +270,7 @@ class _LockedSheet extends StatelessWidget {
       body: l10n.licaoLockedBody,
       primary: l10n.licaoLockedBuy,
       later: l10n.licaoDemoLater,
+      quadro: 'PropV2DemoBloqueado',
       primaryKey: AdsKeys.demoLockedSheetBuy,
       laterKey: AdsKeys.demoLockedSheetLater,
       onPrimary: () => Navigator.of(context).pop(true),

@@ -152,7 +152,10 @@ class TourRobot {
   Future<void> nextUntilLevel([
     GoalPreference goal = GoalPreference.improve,
   ]) async {
-    await answerGoal(goal);
+    // Já dentro do tour (o Objetivo foi respondido antes), segue direto.
+    if (find.byKey(TourKeys.screen).evaluate().isEmpty) {
+      await answerGoal(goal);
+    }
     await nextUntil(TourStep.level);
     await expectStep(TourStep.level);
   }

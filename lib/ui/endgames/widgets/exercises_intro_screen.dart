@@ -1,3 +1,5 @@
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -313,6 +315,19 @@ class TestCanvasIntroPage extends StatelessWidget {
       ChapterTestScores.passed(count),
       (ChapterTestScores.passed(count) - 1).clamp(0, count),
     ];
+    return EntradaDaTela(
+      id: 'PropV1TreinoTesteIntro',
+      child: _scaffold(context, t, facts, names, thresholds),
+    );
+  }
+
+  Widget _scaffold(
+    BuildContext context,
+    AppLocalizations t,
+    List<(IconData, String, String)> facts,
+    List<String> names,
+    List<int> thresholds,
+  ) {
     return Scaffold(
       key: ExercisesIntroKeys.screen,
       appBar: LucenaAppBar(
@@ -329,112 +344,122 @@ class TestCanvasIntroPage extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _TestCanvasCard(
-                      child: Column(
-                        key: TestCanvasKeys.facts,
-                        spacing: 14,
-                        children: [
-                          for (final (icon, title, body) in facts)
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              spacing: 12,
-                              children: [
-                                Icon(
-                                  icon,
-                                  size: AppIconSize.standard,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        title,
+                // H-ANI-16: os dois cartões entram em cascata.
+                child: EntradaEmCascata(
+                  montar: (itens) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 12,
+                    children: itens,
+                  ),
+                  itens: [
+                    ItemDaCascata.texto(
+                      _TestCanvasCard(
+                        child: Column(
+                          key: TestCanvasKeys.facts,
+                          spacing: 14,
+                          children: [
+                            for (final (icon, title, body) in facts)
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                spacing: 12,
+                                children: [
+                                  Icon(
+                                    icon,
+                                    size: AppIconSize.standard,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary,
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          title,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            height: 20 / 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          body,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            height: 16 / 12,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ItemDaCascata.texto(
+                      _TestCanvasCard(
+                        child: Column(
+                          key: ExercisesIntroKeys.tiers,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          spacing: 6,
+                          children: [
+                            Text(
+                              t.testCanvasMedals,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                height: 20 / 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            for (var i = 0; i < 5; i++)
+                              SizedBox(
+                                height: 28,
+                                child: Row(
+                                  spacing: 8,
+                                  children: [
+                                    SizedBox(
+                                      width: 56,
+                                      height: 24,
+                                      child: Center(
+                                        child: TestCanvasMedal(
+                                          grade: ExerciseGrade.values[4 - i],
+                                          size: 24,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        names[i],
                                         style: const TextStyle(
                                           fontSize: 14,
                                           height: 20 / 14,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      Text(
-                                        body,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          height: 16 / 12,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _TestCanvasCard(
-                      child: Column(
-                        key: ExercisesIntroKeys.tiers,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: 6,
-                        children: [
-                          Text(
-                            t.testCanvasMedals,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              height: 20 / 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          for (var i = 0; i < 5; i++)
-                            SizedBox(
-                              height: 28,
-                              child: Row(
-                                spacing: 8,
-                                children: [
-                                  SizedBox(
-                                    width: 56,
-                                    height: 24,
-                                    child: Center(
-                                      child: TestCanvasMedal(
-                                        grade: ExerciseGrade.values[4 - i],
-                                        size: 24,
-                                      ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      names[i],
+                                    Text(
+                                      i == 4
+                                          ? t.testCanvasBelow(thresholds[i])
+                                          : t.testCanvasScore(
+                                              thresholds[i],
+                                              count,
+                                            ),
                                       style: const TextStyle(
                                         fontSize: 14,
                                         height: 20 / 14,
-                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    i == 4
-                                        ? t.testCanvasBelow(thresholds[i])
-                                        : t.testCanvasScore(
-                                            thresholds[i],
-                                            count,
-                                          ),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      height: 20 / 14,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

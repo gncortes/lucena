@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_de_estado.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/busy_button.dart';
@@ -17,51 +19,57 @@ class LessonSoonScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
-    return Scaffold(
-      key: LessonEndKeys.soon,
-      appBar: LessonEndClose(
-        buttonKey: LessonEndKeys.soonClose,
-        onClose: onBack,
-      ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
+    // H-ANI-24: na primeira vez da sessão, o ícone escala e o texto sobe.
+    return EntradaDaTela(
+      id: 'PropV1TreinoAulaEmBreve',
+      child: Scaffold(
+        key: LessonEndKeys.soon,
+        appBar: LessonEndClose(
+          buttonKey: LessonEndKeys.soonClose,
+          onClose: onBack,
+        ),
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+              child: EntradaDeEstado(
+                espaco: 24,
+                icone: Icon(
                   CanvasSymbols.schedule,
                   size: 64,
                   fill: 0,
                   weight: 300,
                   color: theme.colorScheme.primary,
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  l.licaoEmBreveTitle,
-                  textAlign: TextAlign.center,
-                  style: endTitleStyle(context),
+                texto: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    Text(
+                      l.licaoEmBreveTitle,
+                      textAlign: TextAlign.center,
+                      style: endTitleStyle(context),
+                    ),
+                    Text(
+                      l.licaoEmBreveBody,
+                      textAlign: TextAlign.center,
+                      style: endSubtitleStyle(context),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  l.licaoEmBreveBody,
-                  textAlign: TextAlign.center,
-                  style: endSubtitleStyle(context),
-                ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: ActionsFooter(
-        children: [
-          BusyButton(
-            buttonKey: LessonEndKeys.soonBack,
-            label: l.licaoEmBreveVoltar,
-            onPressed: onBack,
-          ),
-        ],
+        bottomNavigationBar: ActionsFooter(
+          children: [
+            BusyButton(
+              buttonKey: LessonEndKeys.soonBack,
+              label: l.licaoEmBreveVoltar,
+              onPressed: onBack,
+            ),
+          ],
+        ),
       ),
     );
   }

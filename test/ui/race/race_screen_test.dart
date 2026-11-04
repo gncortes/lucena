@@ -10,7 +10,9 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/next_steps_keys.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_animado.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/race/view_models/race_cubit.dart';
 import 'package:lucena/ui/race/view_models/race_warm_up_cubit.dart';
@@ -265,6 +267,63 @@ void main() {
     // O segundo problema entrou no tabuleiro.
     expect(cubit.state.problem?.id, 'race.350.01');
     expect(find.byType(Chessboard), findsOneWidget);
+  });
+
+  // H-ANI-10/11: o tabuleiro é o do kit, e o lance que fecha o problema
+  // ganha o retorno (casa, selo e respiro ou tremida) antes da troca.
+  Finder seloDa(IconData icone) => find.descendant(
+    of: find.byKey(MotionKeys.seloNaPeca),
+    matching: find.byIcon(icone),
+  );
+
+  testWidgets('H-ANI-10: o tabuleiro da Corrida é o TabuleiroAnimado', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    await start(tester);
+    final board = find.descendant(
+      of: find.byKey(RaceKeys.board),
+      matching: find.byType(Chessboard),
+    );
+    expect(
+      find.ancestor(of: board, matching: find.byType(TabuleiroAnimado)),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<Chessboard>(board).settings.animationDuration,
+      TabuleiroAnimado.duracaoDoLance(tester.element(board)),
+    );
+  });
+
+  testWidgets('H-ANI-11: o acerto pinta a casa e põe o ✓ na peça', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    await start(tester);
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
+    await move(tester, 'a1', 'g7');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsOneWidget);
+    expect(find.byKey(MotionKeys.corDaCasa), findsOneWidget);
+    expect(seloDa(Icons.check), findsOneWidget);
+    expect(seloDa(Icons.close), findsNothing);
+    await tester.pumpAndSettle();
+    // O problema novo entra limpo.
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
+  });
+
+  testWidgets('H-ANI-11: o erro pinta a casa e põe o ✗ na peça', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    await start(tester);
+    await move(tester, 'a1', 'b1');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsOneWidget);
+    expect(seloDa(Icons.close), findsOneWidget);
+    expect(seloDa(Icons.check), findsNothing);
+    await tester.pumpAndSettle();
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
   });
 
   testWidgets('erro: o ícone de erro aparece e uma chance se perde', (

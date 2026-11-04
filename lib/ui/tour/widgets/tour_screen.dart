@@ -145,57 +145,62 @@ class TourScreen extends StatelessWidget {
                 sync: context.read<SyncScheduler>(),
                 now: context.read<Now>(),
               )..load(),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      key: TourKeys.scroll,
-                      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ViktorConversation(
-                            viktor: state.viktor,
-                            speech: _speech(l10n, state),
-                            viktorKey: TourKeys.viktor,
-                            speechKey: TourKeys.speech,
-                          ),
-                          ClipRect(
-                            // Corta só os lados (a troca desliza); a sombra dos
-                            // botões passa da borda de baixo.
-                            clipper: _SideClipper(),
-                            // H-ANI-03: avançar entra pela direita; voltar,
-                            // pela esquerda.
-                            child: TransicaoEixoX(
-                              voltar: !state.forward,
-                              alinhamento: Alignment.topCenter,
-                              child: Padding(
-                                key: currentKey,
-                                padding: const EdgeInsets.only(
-                                  top: AppSpacing.lg,
-                                ),
-                                // Cada passo é um quadro do canvas: a entrada
-                                // (H-ANI-13/16) só roda na primeira visita.
-                                child: EntradaDaTela(
-                                  id: tourQuadro(step),
-                                  child: switch (step) {
-                                    TourStep.board => const _BoardStep(),
-                                    TourStep.theme => const _ThemeStep(),
-                                    TourStep.voice => _VoiceStep(state: state),
-                                    TourStep.level => const TourLevelStep(),
-                                    TourStep.region => const TourRegionStep(),
-                                    TourStep.account => const TourAccountStep(),
-                                  },
+              child: TourAccountScope(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        key: TourKeys.scroll,
+                        padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ViktorConversation(
+                              viktor: state.viktor,
+                              speech: _speech(l10n, state),
+                              viktorKey: TourKeys.viktor,
+                              speechKey: TourKeys.speech,
+                            ),
+                            ClipRect(
+                              // Corta só os lados (a troca desliza); a sombra dos
+                              // botões passa da borda de baixo.
+                              clipper: _SideClipper(),
+                              // H-ANI-03: avançar entra pela direita; voltar,
+                              // pela esquerda.
+                              child: TransicaoEixoX(
+                                voltar: !state.forward,
+                                alinhamento: Alignment.topCenter,
+                                child: Padding(
+                                  key: currentKey,
+                                  padding: const EdgeInsets.only(
+                                    top: AppSpacing.lg,
+                                  ),
+                                  // Cada passo é um quadro do canvas: a entrada
+                                  // (H-ANI-13/16) só roda na primeira visita.
+                                  child: EntradaDaTela(
+                                    id: tourQuadro(step),
+                                    child: switch (step) {
+                                      TourStep.board => const _BoardStep(),
+                                      TourStep.theme => const _ThemeStep(),
+                                      TourStep.voice => _VoiceStep(
+                                        state: state,
+                                      ),
+                                      TourStep.level => const TourLevelStep(),
+                                      TourStep.region => const TourRegionStep(),
+                                      TourStep.account =>
+                                        const TourAccountStep(),
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  _TourFooter(state: state),
-                ],
+                    _TourFooter(state: state),
+                  ],
+                ),
               ),
             ),
           ),
@@ -252,10 +257,10 @@ class _TourFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<TourCubit>();
-    // O nível tem o "Continuar" dele; a conta, os botões dentro do passo.
+    // O nível tem o "Continuar" dele; a conta, as ações do convite.
     return switch (state.step) {
       TourStep.level => const TourLevelFooter(),
-      TourStep.account => const SizedBox.shrink(),
+      TourStep.account => const TourAccountFooter(),
       _ => ActionsFooter(
         children: [
           FilledButton(

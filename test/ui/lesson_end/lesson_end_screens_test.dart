@@ -265,6 +265,62 @@ void main() {
     expect(back, 2);
   });
 
+  group('H-ANI-24: lição em breve entra com calma', () {
+    Future<void> abrir(WidgetTester tester, {EntradasVistas? vistas}) async {
+      final tela = LessonSoonScreen(onBack: () {});
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          surveyRepository: FakeSurveyRepository(),
+          child: vistas == null
+              ? tela
+              : EntradasVistasEscopo(vistas: vistas, child: tela),
+        ),
+      );
+    }
+
+    for (final reduced in [false, true]) {
+      testWidgets('ícone e depois o texto (reduzido: $reduced)', (
+        tester,
+      ) async {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        await abrir(tester);
+        expect(
+          find.descendant(
+            of: find.byKey(MotionKeys.textoDoEstado),
+            matching: find.text('A próxima lição chega em breve'),
+          ),
+          findsOneWidget,
+        );
+        // A ação continua no rodapé, fora da entrada.
+        expect(find.byKey(MotionKeys.acaoDoEstado), findsNothing);
+        expect(
+          opacidadeDaParte(tester, find.byKey(MotionKeys.textoDoEstado)),
+          reduced ? 1 : 0,
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 1000));
+        expect(
+          opacidadeDaParte(tester, find.byKey(MotionKeys.textoDoEstado)),
+          1,
+        );
+      });
+    }
+
+    testWidgets('reabrir na mesma sessão mostra pronto', (tester) async {
+      final vistas = EntradasVistas();
+      await abrir(tester, vistas: vistas);
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpWidget(const SizedBox());
+      await abrir(tester, vistas: vistas);
+      expect(opacidadeDaParte(tester, find.byKey(MotionKeys.textoDoEstado)), 1);
+    });
+  });
+
   group('H-ANI-25: o fim se monta em ordem e os botões entram por último', () {
     final telas = <String, (Widget Function(), List<String>, Key)>{
       'meta do dia': (

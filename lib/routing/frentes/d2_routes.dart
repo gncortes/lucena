@@ -161,21 +161,25 @@ CoursePreviewCubit _previewCubit(BuildContext context, {String? origin}) =>
       origin: origin,
     )..load();
 
+/// "Seu progresso" (H-CON-03): a rota e a pílula do rating no Início, que
+/// abre por transformação de contêiner.
+Widget progressDestination(BuildContext context) => BlocProvider(
+  create: (context) => MyProgressCubit(
+    rating: context.read<RatingRepository>(),
+    achievements: context.read<AchievementsRepository>(),
+    invite: context.read<AccountInviteRepository>(),
+    accounts: context.read<AccountRepository>(),
+    characters: context.read<CharacterRepository>(),
+  )..load(),
+  child: const MyProgressScreen(),
+);
+
 final List<RouteBase> d2Routes = [
   // "Seu progresso" (H-CON-03): rating, o convite da conta e as conquistas.
   appRoute(
     name: RouteNames.progress,
     path: D2Paths.progress,
-    builder: (context, state) => BlocProvider(
-      create: (context) => MyProgressCubit(
-        rating: context.read<RatingRepository>(),
-        achievements: context.read<AchievementsRepository>(),
-        invite: context.read<AccountInviteRepository>(),
-        accounts: context.read<AccountRepository>(),
-        characters: context.read<CharacterRepository>(),
-      )..load(),
-      child: const MyProgressScreen(),
-    ),
+    builder: (context, state) => progressDestination(context),
   ),
   // A apresentação (H-VEN-01): quem tem o curso vai direto ao Sobre o
   // Pilares; `origem` vai à oferta vista e à oferta.

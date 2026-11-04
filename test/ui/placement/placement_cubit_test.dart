@@ -1,13 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/placement.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/placement/view_models/placement_cubit.dart';
 
+import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
+import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/placement_synthetic.dart';
 
 void main() {
@@ -124,6 +128,33 @@ void main() {
     expect(repository.saved, isNull);
   });
 
+  test(
+    'sem o conteúdo das aulas (o pacote ainda não baixou), o teste '
+    'termina no resultado, sem roteiro, em vez de travar na pergunta 20',
+    () async {
+      final placement = PlacementCubit(
+        placement: repository,
+        profile: profile,
+        now: FakeNow(DateTime.utc(2026, 10, 8, 20)),
+        onboarding: onboarding,
+        seed: 7,
+        school: _CourseUnavailable(),
+        schoolProgress: FakeSchoolProgressRepository(),
+        endgames: FakeEndgameLessonRepository(),
+        endgameProgress: FakeEndgameProgressRepository(),
+      );
+      addTearDown(placement.close);
+      await placement.load();
+      await placement.start();
+      for (var i = 0; i < PlacementState.questionCount; i++) {
+        await placement.answer(PlacementOutcome.dontKnow);
+      }
+      expect(placement.state.view, PlacementView.result);
+      expect(placement.state.result, isNotNull);
+      expect(placement.state.roadmap, isNull);
+    },
+  );
+
   test('usar o nível leva o θ ao perfil e o degrau da Jornada', () async {
     final placement = cubit();
     await placement.load();
@@ -165,4 +196,10 @@ void main() {
     await placement.start();
     expect(placement.state.test!.initialTheta, greaterThan(1500));
   });
+}
+
+/// O curso que ainda não baixou: ler as aulas falha como no app sem pacote.
+class _CourseUnavailable extends FakeLessonRepository {
+  @override
+  Future<Course> course() async => throw const LessonContentUnavailable();
 }

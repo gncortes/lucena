@@ -92,6 +92,7 @@ import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
+import '../../../../testing/motion_expectations.dart';
 
 void main() {
   late FreeBoardCubit cubit;
@@ -381,6 +382,13 @@ void main() {
     expect(boardFen(tester), GameRules.initial.fen);
     expectRing(tester);
     expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-10: o tabuleiro da partida é o TabuleiroAnimado', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    expectTabuleiroAnimado(tester, FreeBoardKeys.board);
   });
 
   testWidgets(
