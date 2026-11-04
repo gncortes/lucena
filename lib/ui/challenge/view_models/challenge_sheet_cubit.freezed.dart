@@ -17,7 +17,8 @@ mixin _$ChallengeSheetState {
 
 /// O desafio, com a trava que a pessoa escolheu.
  ChallengeLink get link;/// O menu do sistema está aberto: sem dois toques abrindo dois menus.
- bool get sharing;
+ bool get sharing;/// Quantas vezes o envio falhou: a tela avisa a cada uma.
+ int get shareErrors;
 /// Create a copy of ChallengeSheetState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +30,20 @@ $ChallengeSheetStateCopyWith<ChallengeSheetState> get copyWith => _$ChallengeShe
 @override
 bool operator ==(Object other) {
   final _this = this as ChallengeSheetState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChallengeSheetState&&(identical(other.link, _this.link) || other.link == _this.link)&&(identical(other.sharing, _this.sharing) || other.sharing == _this.sharing));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChallengeSheetState&&(identical(other.link, _this.link) || other.link == _this.link)&&(identical(other.sharing, _this.sharing) || other.sharing == _this.sharing)&&(identical(other.shareErrors, _this.shareErrors) || other.shareErrors == _this.shareErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ChallengeSheetState;
-  return Object.hash(runtimeType,_this.link,_this.sharing);
+  return Object.hash(runtimeType,_this.link,_this.sharing,_this.shareErrors);
 }
 
 @override
 String toString() {
   final _this = this as ChallengeSheetState;
-  return 'ChallengeSheetState(link: ${_this.link}, sharing: ${_this.sharing})';
+  return 'ChallengeSheetState(link: ${_this.link}, sharing: ${_this.sharing}, shareErrors: ${_this.shareErrors})';
 }
 
 
@@ -53,7 +54,7 @@ abstract mixin class $ChallengeSheetStateCopyWith<$Res>  {
   factory $ChallengeSheetStateCopyWith(ChallengeSheetState value, $Res Function(ChallengeSheetState) _then) = _$ChallengeSheetStateCopyWithImpl;
 @useResult
 $Res call({
- ChallengeLink link, bool sharing
+ ChallengeLink link, bool sharing, int shareErrors
 });
 
 
@@ -70,11 +71,12 @@ class _$ChallengeSheetStateCopyWithImpl<$Res>
 
 /// Create a copy of ChallengeSheetState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? link = null,Object? sharing = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? link = null,Object? sharing = null,Object? shareErrors = null,}) {
   return _then(ChallengeSheetState(
 link: null == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
 as ChallengeLink,sharing: null == sharing ? _self.sharing : sharing // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,shareErrors: null == shareErrors ? _self.shareErrors : shareErrors // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 /// Create a copy of ChallengeSheetState
@@ -168,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ChallengeLink link,  bool sharing)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ChallengeLink link,  bool sharing,  int shareErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChallengeSheetState() when $default != null:
-return $default(_that.link,_that.sharing);case _:
+return $default(_that.link,_that.sharing,_that.shareErrors);case _:
   return orElse();
 
 }
@@ -189,10 +191,10 @@ return $default(_that.link,_that.sharing);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ChallengeLink link,  bool sharing)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ChallengeLink link,  bool sharing,  int shareErrors)  $default,) {final _that = this;
 switch (_that) {
 case _ChallengeSheetState():
-return $default(_that.link,_that.sharing);case _:
+return $default(_that.link,_that.sharing,_that.shareErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +211,10 @@ return $default(_that.link,_that.sharing);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ChallengeLink link,  bool sharing)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ChallengeLink link,  bool sharing,  int shareErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _ChallengeSheetState() when $default != null:
-return $default(_that.link,_that.sharing);case _:
+return $default(_that.link,_that.sharing,_that.shareErrors);case _:
   return null;
 
 }
@@ -224,13 +226,15 @@ return $default(_that.link,_that.sharing);case _:
 
 
 class _ChallengeSheetState implements ChallengeSheetState {
-  const _ChallengeSheetState({required this.link, this.sharing = false});
+  const _ChallengeSheetState({required this.link, this.sharing = false, this.shareErrors = 0});
   
 
 /// O desafio, com a trava que a pessoa escolheu.
 @override final  ChallengeLink link;
 /// O menu do sistema está aberto: sem dois toques abrindo dois menus.
 @override@JsonKey() final  bool sharing;
+/// Quantas vezes o envio falhou: a tela avisa a cada uma.
+@override@JsonKey() final  int shareErrors;
 
 /// Create a copy of ChallengeSheetState
 /// with the given fields replaced by the non-null parameter values.
@@ -242,18 +246,18 @@ _$ChallengeSheetStateCopyWith<_ChallengeSheetState> get copyWith => __$Challenge
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChallengeSheetState&&(identical(other.link, link) || other.link == link)&&(identical(other.sharing, sharing) || other.sharing == sharing));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChallengeSheetState&&(identical(other.link, link) || other.link == link)&&(identical(other.sharing, sharing) || other.sharing == sharing)&&(identical(other.shareErrors, shareErrors) || other.shareErrors == shareErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,link,sharing);
+    return Object.hash(runtimeType,link,sharing,shareErrors);
 }
 
 @override
 String toString() {
-    return 'ChallengeSheetState(link: $link, sharing: $sharing)';
+    return 'ChallengeSheetState(link: $link, sharing: $sharing, shareErrors: $shareErrors)';
 }
 
 
@@ -264,7 +268,7 @@ abstract mixin class _$ChallengeSheetStateCopyWith<$Res> implements $ChallengeSh
   factory _$ChallengeSheetStateCopyWith(_ChallengeSheetState value, $Res Function(_ChallengeSheetState) _then) = __$ChallengeSheetStateCopyWithImpl;
 @override @useResult
 $Res call({
- ChallengeLink link, bool sharing
+ ChallengeLink link, bool sharing, int shareErrors
 });
 
 
@@ -281,11 +285,12 @@ class __$ChallengeSheetStateCopyWithImpl<$Res>
 
 /// Create a copy of ChallengeSheetState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? link = null,Object? sharing = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? link = null,Object? sharing = null,Object? shareErrors = null,}) {
   return _then(_ChallengeSheetState(
 link: null == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
 as ChallengeLink,sharing: null == sharing ? _self.sharing : sharing // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,shareErrors: null == shareErrors ? _self.shareErrors : shareErrors // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

@@ -2374,5 +2374,6 @@
   "desafiosRaceEndErrors": "3 erros",
   "desafiosRaceEndQuit": "saiu",
   "desafiosRaceNewRecord": "Novo recorde de {minutes} min! Antes eram {previous}",
-  "desafiosRaceSeeAll": "Ver os {count}"
+  "desafiosRaceSeeAll": "Ver os {count}",
+  "desafiosShareError": "Erro ao compartilhar o link."
 }

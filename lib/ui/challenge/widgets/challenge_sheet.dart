@@ -59,54 +59,66 @@ class ChallengeSheet extends StatelessWidget {
     final cubit = context.read<ChallengeSheetCubit>();
     final link = state.link;
     final text = l10n.challengeShareText(link.uri.toString());
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SheetHeader(
-            title: l10n.challengeSendTitle,
-            hint: l10n.challengeSendHint,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: ChallengeSummary(link: link, characters: characters),
-          ),
-          SwitchListTile(
-            key: ChallengeKeys.lockSwitch,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.xl,
+    return BlocListener<ChallengeSheetCubit, ChallengeSheetState>(
+      listenWhen: (before, after) => after.shareErrors > before.shareErrors,
+      listener: (context, _) => _notice(
+        context,
+        l10n.desafiosShareError,
+        icon: Icons.error_outline,
+        noticeKey: ChallengeKeys.shareError,
+        actionLabel: l10n.loadErrorRetry,
+        actionKey: ChallengeKeys.shareRetry,
+        onAction: () => unawaited(cubit.share(text)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SheetHeader(
+              title: l10n.challengeSendTitle,
+              hint: l10n.challengeSendHint,
             ),
-            secondary: const Icon(Icons.lock_outline),
-            title: Text(l10n.challengeLockTitle),
-            subtitle: Text(l10n.challengeLockHint),
-            value: link.locked,
-            onChanged: (value) => cubit.setLocked(locked: value),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: _LinkField(link: link),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          ActionsFooter(
-            margin: AppSpacing.xl,
-            stacked: true,
-            children: [
-              FilledButton.icon(
-                key: ChallengeKeys.share,
-                onPressed: state.sharing ? null : () => cubit.share(text),
-                icon: const Icon(Icons.share_outlined),
-                label: Text(l10n.challengeShare),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: ChallengeSummary(link: link, characters: characters),
+            ),
+            SwitchListTile(
+              key: ChallengeKeys.lockSwitch,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xl,
               ),
-              OutlinedButton.icon(
-                key: ChallengeKeys.copy,
-                onPressed: () => _copy(context, link),
-                icon: const Icon(Icons.content_copy),
-                label: Text(l10n.challengeCopyLink),
-              ),
-            ],
-          ),
-        ],
+              secondary: const Icon(Icons.lock_outline),
+              title: Text(l10n.challengeLockTitle),
+              subtitle: Text(l10n.challengeLockHint),
+              value: link.locked,
+              onChanged: (value) => cubit.setLocked(locked: value),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: _LinkField(link: link),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ActionsFooter(
+              margin: AppSpacing.xl,
+              stacked: true,
+              children: [
+                FilledButton.icon(
+                  key: ChallengeKeys.share,
+                  onPressed: state.sharing ? null : () => cubit.share(text),
+                  icon: const Icon(Icons.share_outlined),
+                  label: Text(l10n.challengeShare),
+                ),
+                OutlinedButton.icon(
+                  key: ChallengeKeys.copy,
+                  onPressed: () => _copy(context, link),
+                  icon: const Icon(Icons.content_copy),
+                  label: Text(l10n.challengeCopyLink),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -124,12 +136,25 @@ Future<void> copyChallengeLink(BuildContext context, ChallengeLink link) async {
   final l10n = context.l10n;
   await Clipboard.setData(ClipboardData(text: link.uri.toString()));
   if (!context.mounted) return;
+  _notice(context, l10n.challengeLinkCopied, icon: Icons.check);
+}
+
+/// O aviso sobre a folha: usa a camada de cima do app, com uma ação opcional
+/// ("Tentar novamente"). Some sozinho.
+void _notice(
+  BuildContext context,
+  String text, {
+  required IconData icon,
+  Key? noticeKey,
+  String? actionLabel,
+  Key? actionKey,
+  VoidCallback? onAction,
+}) {
   final overlay = Overlay.of(context, rootOverlay: true);
   final colors = Theme.of(context).colorScheme;
   final textStyle = Theme.of(context).textTheme.bodyMedium
       ?.copyWith(color: colors.onInverseSurface);
   final bottom = MediaQuery.paddingOf(context).bottom;
-  final text = l10n.challengeLinkCopied;
   late final OverlayEntry entry;
   entry = OverlayEntry(
     builder: (_) => Positioned(
@@ -137,7 +162,7 @@ Future<void> copyChallengeLink(BuildContext context, ChallengeLink link) async {
       right: AppSpacing.lg,
       bottom: AppSpacing.lg + bottom,
       child: Material(
-        key: CoreKeys.snackBar,
+        key: noticeKey ?? CoreKeys.snackBar,
         color: colors.inverseSurface,
         borderRadius: BorderRadius.circular(AppShape.small),
         child: Padding(
@@ -146,11 +171,23 @@ Future<void> copyChallengeLink(BuildContext context, ChallengeLink link) async {
             spacing: AppSpacing.md,
             children: [
               Icon(
-                Icons.check,
+                icon,
                 size: AppIconSize.button,
                 color: colors.onInverseSurface,
               ),
               Expanded(child: Text(text, style: textStyle)),
+              if (actionLabel != null)
+                TextButton(
+                  key: actionKey,
+                  style: TextButton.styleFrom(
+                    foregroundColor: colors.inversePrimary,
+                  ),
+                  onPressed: () {
+                    if (entry.mounted) entry.remove();
+                    onAction?.call();
+                  },
+                  child: Text(actionLabel),
+                ),
             ],
           ),
         ),

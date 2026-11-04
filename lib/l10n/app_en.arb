@@ -11594,5 +11594,7 @@
   "desafiosRaceNewRecord": "New {minutes}-min record! It was {previous}",
   "@desafiosRaceNewRecord": {"placeholders": {"minutes": {"type": "int"}, "previous": {"type": "int"}}},
   "desafiosRaceSeeAll": "See all {count}",
-  "@desafiosRaceSeeAll": {"placeholders": {"count": {"type": "int"}}}
+  "@desafiosRaceSeeAll": {"placeholders": {"count": {"type": "int"}}},
+  "desafiosShareError": "Could not share the link.",
+  "@desafiosShareError": {}
 }
