@@ -1,11 +1,15 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/domain/models/challenge_link.dart';
+import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/featured_keys.dart';
+import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -14,10 +18,15 @@ import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
+import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/race_robot.dart';
 
 const _portuguese = Locale('pt', 'BR');
+
+/// Dama contra rei, mate em um (Dh1-h8): a posição que o roteiro ganha
+/// jogando a solução, como em `result_test.dart`.
+const _mateInOne = '3k4/8/3K4/8/8/8/8/7Q w - - 0 1';
 
 /// Roteiro de validação da frente Desafios (`docs/tasks/T85-historias/
 /// desafios.md`), casos "Patrol". Escrito e NÃO executado: rodar no aparelho
@@ -134,6 +143,65 @@ void main() {
     await $(FeaturedKeys.recentTitle).scrollTo();
   });
 
+  patrolTest('caso 39: ganhar o final em destaque mostra o fim em destaque', (
+    $,
+  ) async {
+    await AppRobot($).open(systemLocale: _portuguese);
+    // Os finais em destaque do catálogo são partidas reais, sem vitória
+    // garantida contra o Maia: o roteiro abre a partida de um final do
+    // catálogo (`featured`, com os botões do destaque) na posição de mate em
+    // um e joga a solução.
+    final board = FreeBoardRobot($);
+    await board.openAt(
+      _mateInOne,
+      opponent: 'stockfish',
+      user: Side.white,
+      goal: 'win',
+      featured: 'maroczy-euwe-1929',
+    );
+    expect(find.byKey(FeaturedKeys.bookButton), findsOneWidget);
+    await board.move('h1', 'h8');
+    await $(FreeBoardKeys.endFlash).waitUntilExists();
+    expect(find.text('Você venceu!'), findsWidgets);
+    expect(find.byKey(FeaturedKeys.bookButton), findsOneWidget);
+    expect(find.byKey(FeaturedKeys.shareButton), findsOneWidget);
+    expect(find.byKey(FeaturedKeys.continueButton), findsOneWidget);
+    expect(find.byKey(FeaturedKeys.playAgain), findsOneWidget);
+  });
+
+  patrolTest('caso 54: link travado abre a tela do desafio e o Jogar inicia', (
+    $,
+  ) async {
+    await AppRobot($).open(systemLocale: _portuguese);
+    final link = ChallengeLink(
+      fen: _mateInOne,
+      userSide: Side.white,
+      level: 1400,
+      clock: TimeControl.tryParse('5+0'),
+      locked: true,
+    );
+    await _go($, Routes.challenge(link));
+    await $(ChallengeKeys.screen).waitUntilVisible();
+    expect(find.byKey(ChallengeKeys.opponentCard), findsOneWidget);
+    expect(find.byKey(ChallengeKeys.clockRow), findsOneWidget);
+    expect(find.byKey(ChallengeKeys.modeRow), findsOneWidget);
+    expect(find.byKey(ChallengeKeys.lockedNote), findsOneWidget);
+    await $(ChallengeKeys.play).tap();
+    await $(FreeBoardKeys.screen).waitUntilVisible();
+  });
+
+  patrolTest('caso 55: link só com a posição abre a partida direto', ($) async {
+    await AppRobot($).open(systemLocale: _portuguese);
+    // Sem lado, adversário, nível, relógio nem trava (`ChallengeLink.isBare`).
+    final bare = Uri(
+      path: '/p/semlado',
+      queryParameters: {'fen': _mateInOne},
+    ).toString();
+    await _go($, bare);
+    await $(FreeBoardKeys.screen).waitUntilVisible();
+    expect(find.byKey(ChallengeKeys.screen), findsNothing);
+  });
+
   patrolTest('casos 42, 43, 45 e 46: Corrida do começo ao erro', ($) async {
     final app = AppRobot($);
     await app.open(systemLocale: _portuguese);
@@ -153,16 +221,13 @@ void main() {
     await $(HomeKeys.screen).waitUntilVisible();
   });
 
-  patrolTest(
-    'caso 56: link inválido cai na tela de link inválido (54 e 55 pedem link montado: fora deste roteiro)',
-    ($) async {
-      await AppRobot($).open(systemLocale: _portuguese);
-      // Link ruim: posição inválida cai na tela de link inválido.
-      await _go($, Routes.invalidLink);
-      await $(ChallengeKeys.invalidScreen).waitUntilVisible();
-      expect(find.byKey(ChallengeKeys.invalidBack), findsOneWidget);
-    },
-  );
+  patrolTest('caso 56: link inválido cai na tela de link inválido', ($) async {
+    await AppRobot($).open(systemLocale: _portuguese);
+    // Link ruim: posição inválida cai na tela de link inválido.
+    await _go($, Routes.invalidLink);
+    await $(ChallengeKeys.invalidScreen).waitUntilVisible();
+    expect(find.byKey(ChallengeKeys.invalidBack), findsOneWidget);
+  });
 
   patrolTest('caso 60: degrau e desafio da Jornada', ($) async {
     await AppRobot($).open(systemLocale: _portuguese);
