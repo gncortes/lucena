@@ -12579,5 +12579,9 @@
   "desafiosShareError": "Could not share the link.",
   "@desafiosShareError": {},
   "desafiosSpeedrunEmpty": "No speedruns at this level.",
-  "@desafiosSpeedrunEmpty": {}
+  "@desafiosSpeedrunEmpty": {},
+  "partidaConclusaoVerAnalise": "View analysis",
+  "@partidaConclusaoVerAnalise": {
+    "description": "Footer button on the win conclusion that opens the game analysis"
+  }
 }
