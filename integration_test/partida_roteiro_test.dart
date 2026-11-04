@@ -1,11 +1,22 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/keys/custom_position_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_layout_keys.dart';
+import 'package:dartchess/dartchess.dart';
+import 'package:flutter/widgets.dart';
+import 'package:lucena/domain/models/conclusion.dart';
+import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
+import 'robots/catalog_robot.dart';
+import 'robots/conclusion_robot.dart';
+import 'robots/custom_position_robot.dart';
+import 'robots/free_board_robot.dart';
+import 'robots/game_setup_robot.dart';
 import 'robots/home_robot.dart';
 
 /// Roteiro de validação da frente Partida (docs/tasks/T85-historias/partida.md)
@@ -57,5 +68,121 @@ void main() {
     await $(BlindKeys.micAllow).waitUntilVisible();
     await $(BlindKeys.micDeny).tap();
     await $(BlindKeys.screen).waitUntilVisible();
+  });
+
+  const pt = Locale('pt', 'BR');
+  const mateInOne = '7k/8/5KQ1/8/8/8/8/8 w - - 0 1';
+
+  Future<void> openSetup(PatrolIntegrationTester $) async {
+    final catalog = CatalogRobot($);
+    await catalog.open();
+    await catalog.openCategory('basic');
+    await catalog.openSubcategory('queen');
+    await catalog.openPosition('basic.queen.0001');
+    await GameSetupRobot($).expectVisible();
+  }
+
+  // Roteiro 13 (H-PAR-02): o nível escolhido sobrevive a fechar à força.
+  patrolTest('nova partida: o nível escolhido sobrevive ao fechar à força', (
+    $,
+  ) async {
+    final app = AppRobot($);
+    final setup = GameSetupRobot($);
+    await app.open(systemLocale: pt);
+    await openSetup($);
+    await setup.chooseOpponent(OpponentKind.maia);
+    await setup.chooseLevel(1800);
+
+    await app.restart();
+    await openSetup($);
+
+    await setup.expectLevel(1800);
+  });
+
+  // Roteiro 24 (H-PAR-04): o rascunho do editor sobrevive a fechar à força.
+  patrolTest('editor: a posição montada continua depois de fechar à força', (
+    $,
+  ) async {
+    final app = AppRobot($);
+    final custom = CustomPositionRobot($);
+    await app.open(systemLocale: pt);
+    await custom.open();
+    await custom.typeFen('8/8/8/4k3/8/r7/4P3/4K2R b - - 0 1');
+
+    await app.restart();
+    await custom.open();
+
+    custom.expectFen('8/8/8/4k3/8/r7/4P3/4K2R b - - 0 1');
+  });
+
+  // Roteiro 26 (H-PAR-04): "Continuar" leva à Nova partida com a posição.
+  patrolTest('editor: Continuar abre a Nova partida com a posição', ($) async {
+    final custom = CustomPositionRobot($);
+    await AppRobot($).open(systemLocale: pt);
+    await custom.open();
+    await custom.typeFen('8/8/8/4k3/8/r7/4P3/4K2R b - - 0 1');
+    await custom.continueToSetup();
+
+    await GameSetupRobot($).expectVisible();
+  });
+
+  // Roteiro 27 (H-PAR-05): com relógio, só o do turno corre.
+  patrolTest('partida com relógio: os dois relógios aparecem', ($) async {
+    final setup = GameSetupRobot($);
+    final board = FreeBoardRobot($);
+    await AppRobot($).open(systemLocale: pt);
+    await openSetup($);
+    await setup.setTime('user', minutes: 5, increment: 3);
+    await setup.setTime('opponent', minutes: 5, increment: 3);
+    await setup.start();
+
+    await board.expectVisible();
+    await board.expectClock(Side.white, '5:00');
+    await board.expectClock(Side.black, '5:00');
+  });
+
+  // Roteiro 36 (H-PAR-06): desistir leva à conclusão de derrota.
+  patrolTest('desistir: a conclusão é de derrota, sem Nova partida na barra', (
+    $,
+  ) async {
+    final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
+    await AppRobot($).open(systemLocale: pt);
+    await board.openAt(
+      mateInOne,
+      opponent: 'maia',
+      level: 1600,
+      user: Side.white,
+      goal: 'win',
+      position: 'basic.queen.0001',
+    );
+    await board.resign();
+
+    await conclusion.waitConclusion();
+    await conclusion.expectAction(ConclusionAction.newGame);
+    expect(find.byKey(ConclusionKeys.appBarNewGame), findsNothing);
+  });
+
+  // Roteiro 62 (H-PAR-12): fechar à força na conclusão reabre nela.
+  patrolTest('conclusão: fechar à força reabre na conclusão', ($) async {
+    final app = AppRobot($);
+    final board = FreeBoardRobot($);
+    final conclusion = ConclusionRobot($);
+    await app.open(systemLocale: pt);
+    await board.openAt(
+      mateInOne,
+      opponent: 'maia',
+      level: 1600,
+      user: Side.white,
+      goal: 'win',
+      position: 'basic.queen.0001',
+    );
+    await board.move('g6', 'g7');
+    await conclusion.seeResult();
+    await conclusion.waitConclusion();
+
+    await app.restart();
+
+    await conclusion.waitConclusion();
   });
 }
