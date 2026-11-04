@@ -12619,5 +12619,15 @@
   "partidaPrecisaoAdversario": "{name}'s accuracy",
   "@partidaPrecisaoAdversario": {"description": "Game analysis screen: partidaPrecisaoAdversario", "placeholders": {"name": {"type": "String"}}},
   "partidaNivelNenhuma": "Game not analyzed yet",
-  "@partidaNivelNenhuma": {"description": "Title of the analysis level card when the game has no analysis"}
+  "@partidaNivelNenhuma": {"description": "Title of the analysis level card when the game has no analysis"},
+  "partidaMomentos": "Key moments",
+  "@partidaMomentos": {"description": "Game analysis summary: partidaMomentos"},
+  "partidaQualidades": "Moves by quality",
+  "@partidaQualidades": {"description": "Game analysis summary: partidaQualidades"},
+  "partidaSemErro": "You made no mistakes in this game.",
+  "@partidaSemErro": {"description": "Game analysis summary: partidaSemErro"},
+  "partidaVitoriaDoAdversario": "The win came from an opponent's move:",
+  "@partidaVitoriaDoAdversario": {"description": "Game analysis summary: partidaVitoriaDoAdversario"},
+  "partidaMomentosVazio": "No single move swung the game.",
+  "@partidaMomentosVazio": {"description": "Game analysis summary: partidaMomentosVazio"}
 }

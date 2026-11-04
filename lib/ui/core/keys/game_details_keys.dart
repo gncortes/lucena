@@ -58,6 +58,15 @@ abstract final class GameDetailsKeys {
   static Key count(String quality, {required bool white}) =>
       Key('gameDetails.review.count.$quality.${white ? 'white' : 'black'}');
 
+  /// Os momentos decisivos (a seção, cada cartão e o aviso de partida sem
+  /// erro do jogador) e a tabela de qualidades por lado.
+  static const moments = Key('gameDetails.moments');
+  static Key moment(int index) => Key('gameDetails.moment.$index');
+  static const noMistakes = Key('gameDetails.noMistakes');
+  static const qualityTable = Key('gameDetails.qualityTable');
+  static Key qualityRow(String quality) =>
+      Key('gameDetails.qualityTable.$quality');
+
   /// A explicação do lance mostrado e a barra de avaliação (só com a
   /// engine ligada).
   static const explanation = Key('gameDetails.explanation');

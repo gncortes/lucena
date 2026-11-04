@@ -2424,5 +2424,10 @@
   "partidaProfundidadeProfundaTexto": "[Åböût 1 mîñ · dépth 22 · kéépš ĝöîñĝ whîlé ýöû bŕöwšé one two three four five]",
   "partidaPrecisaoSua": "[Ýöûŕ åççûŕåçý one two]",
   "partidaPrecisaoAdversario": "[{name}'š åççûŕåçý one two]",
-  "partidaNivelNenhuma": "[Ĝåmé ñöt åñålýžéd ýét one two three]"
+  "partidaNivelNenhuma": "[Ĝåmé ñöt åñålýžéd ýét one two three]",
+  "partidaMomentos": "[Kéý möméñtš one two]",
+  "partidaQualidades": "[Mövéš bý qûålîtý one two]",
+  "partidaSemErro": "[Ýöû mådé ñö mîštåkéš îñ thîš ĝåmé. one two three]",
+  "partidaVitoriaDoAdversario": "[Thé wîñ çåmé fŕöm åñ öppöñéñt'š mövé: one two three four]",
+  "partidaMomentosVazio": "[Ñö šîñĝlé mövé šwûñĝ thé ĝåmé. one two three]"
 }

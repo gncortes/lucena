@@ -146,9 +146,9 @@ class AnalysisLevelCard extends StatelessWidget {
                       Text(
                         text,
                         key: review == null && !state.reviewing
-                              ? GameDetailsKeys.oldAnalysis
-                              : null,
-                          style: theme.textTheme.bodyMedium?.copyWith(
+                            ? GameDetailsKeys.oldAnalysis
+                            : null,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
                       ),

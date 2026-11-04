@@ -2564,5 +2564,10 @@
   "partidaProfundidadeProfundaTexto": "Cerca de 1 min · profundidade 22 · continua enquanto você navega",
   "partidaPrecisaoSua": "Sua precisão",
   "partidaPrecisaoAdversario": "Precisão do {name}",
-  "partidaNivelNenhuma": "Partida ainda não analisada"
+  "partidaNivelNenhuma": "Partida ainda não analisada",
+  "partidaMomentos": "Momentos decisivos",
+  "partidaQualidades": "Lances por qualidade",
+  "partidaSemErro": "Nenhum erro seu nesta partida.",
+  "partidaVitoriaDoAdversario": "A vitória veio de um lance do adversário:",
+  "partidaMomentosVazio": "Nenhum lance mudou a partida de lado."
 }

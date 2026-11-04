@@ -31,6 +31,7 @@ import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/game_details_cubit.dart';
+import 'key_moments_section.dart';
 import 'review_widgets.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -157,6 +158,18 @@ class _ReviewBody extends StatelessWidget {
         blackName: blackName,
         userIsWhite: user == null ? null : user == Side.white,
       ),
+      KeyMomentsSection(
+        state: state,
+        userIsWhite: user == null ? null : user == Side.white,
+      ),
+      if ((state.review?.depth ?? 0) >=
+          GameDetailsCubit.reviewWeights[ReviewSpeed.medium]!)
+        QualityTable(
+          state: state,
+          leftName: whiteName,
+          rightName: blackName,
+          leftIsWhite: true,
+        ),
       _Header(state: state, attempt: attempt),
       ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
     ];

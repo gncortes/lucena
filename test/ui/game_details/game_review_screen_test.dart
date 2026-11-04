@@ -485,6 +485,26 @@ void main() {
     expect(find.byKey(GameDetailsKeys.levelDeepen), findsNothing);
   });
 
+  testWidgets('H-PAR-13: a rápida mostra os momentos decisivos; a média '
+      'acrescenta a tabela de qualidades; tocar no momento leva ao lance', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
+    await cubit.review(speed: ReviewSpeed.quick);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(GameDetailsKeys.moments), findsOneWidget);
+    expect(find.text('Momentos decisivos'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.qualityTable), findsNothing);
+
+    await cubit.review(speed: ReviewSpeed.medium);
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.qualityTable), findsOneWidget);
+    expect(find.text('Lances por qualidade'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.qualityRow('blunder')), findsOneWidget);
+  });
+
   testWidgets('H-PAR-13: escolher a Média na folha roda a análise média', (
     tester,
   ) async {
