@@ -137,6 +137,11 @@ void main() {
     await tester.pumpAndSettle();
     router.pop();
     await tester.pumpAndSettle();
+    // A volta precisa ter assentado e o cartão estar tocável (com a máquina
+    // carregada, o toque chegou a cair antes disso).
+    await tester.ensureVisible(find.byKey(cartao));
+    await tester.pumpAndSettle();
+    expect(find.byKey(cartao).hitTestable(), findsOneWidget);
     await tester.tap(find.byKey(cartao));
     await tester.pump();
     await tester.pump();
