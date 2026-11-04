@@ -208,6 +208,43 @@ void main() {
     expect(customChip(tester), 'Custom · 5+0 / 1+0');
   });
 
+  testWidgets('H-PAR-03: textos e ordem do painel; o X volta sem aplicar', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('pt'));
+    await tap(tester, GameSetupKeys.customPace);
+
+    expect(find.text('Personalizar ritmo'), findsOneWidget);
+    // Com os dois tempos diferentes: dois editores, depois o interruptor,
+    // depois o rodapé (TelaPersonalizarRitmo).
+    await tester.tap(find.byKey(GameSetupKeys.customSame));
+    await tester.pumpAndSettle();
+    await slide(tester, 'opponent', 'minutes', 3);
+    await slide(tester, 'opponent', 'increment', 2);
+    expect(find.text('Seu tempo'), findsOneWidget);
+    expect(find.text('Tempo do adversário'), findsOneWidget);
+    expect(find.text('5 minutos'), findsOneWidget);
+    expect(find.text('3 minutos'), findsOneWidget);
+    expect(find.text('+2 segundos por lance'), findsOneWidget);
+    expect(find.text('Mesmo tempo para os dois lados'), findsOneWidget);
+    double top(Finder f) => tester.getTopLeft(f).dy;
+    expect(
+      top(find.text('Seu tempo')) < top(find.text('Tempo do adversário')),
+      isTrue,
+    );
+    expect(
+      top(find.text('Tempo do adversário')) <
+          top(find.text('Mesmo tempo para os dois lados')),
+      isTrue,
+    );
+    expect(find.byKey(GameSetupKeys.customConfirm), findsOneWidget);
+
+    await tester.tap(find.byKey(SheetKeys.close));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameSetupKeys.customSheet), findsNothing);
+    expect(cubit.state.clockCodes, (white: '300+0', black: '300+0'));
+  });
+
   testWidgets('fechar o painel sem confirmar não muda o ritmo', (tester) async {
     await pump(tester);
 
