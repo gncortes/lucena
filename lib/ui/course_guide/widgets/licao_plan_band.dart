@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/motion/barra_que_enche.dart';
+
 import '../../../domain/models/training/plan_event.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 
 /// A faixa do plano acima do cartão da lição (canvas `PropV2LicaoEntradaPlano`):
@@ -74,16 +75,14 @@ class LicaoPlanBand extends StatelessWidget {
               children: [
                 for (final fraction in event.weekFractions(now))
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppShape.tiny),
-                      child: LinearProgressIndicator(
-                        value: fraction,
-                        minHeight: 6,
-                        backgroundColor: colors.outlineVariant,
-                        color: fraction >= 1
-                            ? AppColors.trainingDayCorrect
-                            : colors.primary,
-                      ),
+                    // H-ANI-13: cada semana enche de 0 na entrada.
+                    child: BarraQueEnche(
+                      valor: fraction,
+                      altura: 6,
+                      corDoTrilho: colors.outlineVariant,
+                      cor: fraction >= 1
+                          ? AppColors.trainingDayCorrect
+                          : colors.primary,
                     ),
                   ),
               ],

@@ -101,7 +101,7 @@ class CourseDownloadFailure extends StatelessWidget {
     super.key,
   });
   final Object? failure;
-  final VoidCallback onRetry;
+  final Future<void> Function() onRetry;
   final bool chapter;
   @override
   Widget build(BuildContext context) {

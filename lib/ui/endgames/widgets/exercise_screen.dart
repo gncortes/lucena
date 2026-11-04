@@ -5,7 +5,12 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
 import '../../core/widgets/app_bar_progress.dart';
+import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/sheet_header.dart';
 import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/skeleton.dart';
 
@@ -126,29 +131,62 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final done = await cubit.savedExerciseCount();
     if (!mounted) return;
     final t = context.l10n;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        key: TrainingKeys.testLeaveDialog,
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-        title: Text(t.trainingTestLeaveTitle),
-        content: Text(
-          done == 0
-              ? t.testCanvasLeaveEmptyBody
-              : t.trainingTestLeaveBody(done, cubit.state.number),
+    final body = done == 0
+        ? t.testCanvasLeaveEmptyBody
+        : t.trainingTestLeaveBody(done, cubit.state.number);
+    // H-ANI-06: a saída do teste é a folha do kit, sobre o véu.
+    final confirmed = await showLucenaSheet<bool>(
+      context,
+      sheetKey: TrainingKeys.testLeaveDialog,
+      builder: (context) => SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SheetHeader(title: t.trainingTestLeaveTitle, hint: body),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    FilledButton(
+                      key: TrainingKeys.testContinue,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(kButtonHeight),
+                        textStyle: AppButtonText.footer(context),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(
+                        t.trainingTestContinue,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    OutlinedButton(
+                      key: TrainingKeys.testLeave,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(kButtonHeight),
+                        textStyle: AppButtonText.footer(context),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text(
+                        t.trainingTestLeave,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            key: TrainingKeys.testContinue,
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(t.trainingTestContinue),
-          ),
-          TextButton(
-            key: TrainingKeys.testLeave,
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(t.trainingTestLeave),
-          ),
-        ],
       ),
     );
     _askingExit = false;
@@ -326,7 +364,16 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   ? AppBarHeight.standard - AppBarProgress.height
                   : null,
               bottom: widget.trainingTest && lesson != null && state.count > 0
-                  ? AppBarProgress(value: state.number / state.count)
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(
+                        AppBarProgress.height,
+                      ),
+                      // H-ANI-13: enche do exercício anterior para o atual.
+                      child: BarraQueEnche(
+                        valor: state.number / state.count,
+                        altura: AppBarProgress.height,
+                      ),
+                    )
                   : null,
               centerTitle: widget.trainingTest ? true : null,
               leading: widget.trainingTest

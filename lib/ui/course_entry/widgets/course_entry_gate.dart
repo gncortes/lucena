@@ -19,6 +19,7 @@ import '../../account/widgets/account_flow.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_entry_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -56,8 +57,21 @@ class CourseEntryGate extends StatelessWidget {
     )..start(),
     child: BlocBuilder<CourseEntryCubit, CourseEntryState>(
       builder: (context, state) {
-        if (state.phase == CourseEntryPhase.ready) return child;
         final courseTitle = title ?? courseGuideCopy(context, config.titleKey);
+        final downloading = state.phase == CourseEntryPhase.downloading;
+        if (downloading || state.phase == CourseEntryPhase.ready) {
+          // H-ANI-07: o esqueleto brilha enquanto baixa e se dissolve no
+          // conteúdo quando o pacote fica pronto.
+          return ShimmerConteudo(
+            carregando: downloading,
+            esqueleto: _CourseScaffold(
+              title: courseTitle,
+              chapter: chapterId != null,
+              body: CourseDownloadSkeleton(chapter: chapterId != null),
+            ),
+            child: downloading ? const SizedBox.shrink() : child,
+          );
+        }
         if (state.phase == CourseEntryPhase.account) {
           return BlocProvider(
             create: (context) => AccountCubit(
@@ -82,30 +96,37 @@ class CourseEntryGate extends StatelessWidget {
             onRetry: context.read<CourseEntryCubit>().retry,
           );
         }
-        return Scaffold(
-          appBar: LucenaAppBar(
-            leading: _backButton(context),
-            title: Text(
-              courseTitle,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
+        return _CourseScaffold(
+          title: courseTitle,
+          chapter: chapterId != null,
+          body: CourseDownloadFailure(
+            failure: state.failure,
+            chapter: chapterId != null,
+            onRetry: context.read<CourseEntryCubit>().retry,
           ),
-          body: SafeArea(
-            child: state.phase == CourseEntryPhase.downloading
-                ? CourseDownloadSkeleton(chapter: chapterId != null)
-                : CourseDownloadFailure(
-                    failure: state.failure,
-                    chapter: chapterId != null,
-                    onRetry: () => context.read<CourseEntryCubit>().retry(),
-                  ),
-          ),
-          bottomNavigationBar: chapterId != null
-              ? null
-              : const CourseNavigationBar(),
         );
       },
     ),
+  );
+}
+
+class _CourseScaffold extends StatelessWidget {
+  const _CourseScaffold({
+    required this.title,
+    required this.chapter,
+    required this.body,
+  });
+  final String title;
+  final bool chapter;
+  final Widget body;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: LucenaAppBar(
+      leading: _backButton(context),
+      title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
+    ),
+    body: SafeArea(child: body),
+    bottomNavigationBar: chapter ? null : const CourseNavigationBar(),
   );
 }
 

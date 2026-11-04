@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -76,9 +77,20 @@ void main() {
     'T85 test arrow and Android back open the same cancelable dialog',
     (tester) async {
       await pump(tester, 'e02', trainingTest: true, locale: const Locale('pt'));
+      // H-ANI-06: a barra de cima enche (H-ANI-13) e a saída é a folha
+      // sobre o véu, não um diálogo.
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byKey(MotionKeys.barraQueEnche),
+        ),
+        findsOneWidget,
+      );
       await tester.tap(find.byKey(TrainingKeys.testBack));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.testLeaveDialog), findsOneWidget);
+      expect(find.byKey(MotionKeys.folha), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
       await tester.tap(find.byKey(TrainingKeys.testContinue));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.testLeaveDialog), findsNothing);
