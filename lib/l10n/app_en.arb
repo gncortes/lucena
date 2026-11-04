@@ -10162,7 +10162,7 @@
       }
     }
   },
-  "trainingEndBackToGoals": "Back to goals",
+  "trainingEndBackToGoals": "Continue",
   "@trainingEndBackToGoals": {
     "description": "T85 training exercise and cycle result: trainingEndBackToGoals."
   },
@@ -10271,77 +10271,13 @@
   "@trainingEndReviewLesson": {
     "description": "T85 training exercise and cycle result: trainingEndReviewLesson."
   },
-  "trainingEndSeeGoals": "See goals",
+  "trainingEndSeeGoals": "Do the reinforcement",
   "@trainingEndSeeGoals": {
     "description": "T85 training exercise and cycle result: trainingEndSeeGoals."
-  },
-  "licaoFimPassouTitle": "You passed",
-  "@licaoFimPassouTitle": {
-    "description": "T85-D1 Lição, fim: licaoFimPassouTitle."
-  },
-  "licaoFimQuaseLaTitle": "Almost there",
-  "@licaoFimQuaseLaTitle": {
-    "description": "T85-D1 Lição, fim: licaoFimQuaseLaTitle."
-  },
-  "licaoFimRecomecarTitle": "Let us start over",
-  "@licaoFimRecomecarTitle": {
-    "description": "T85-D1 Lição, fim: licaoFimRecomecarTitle."
-  },
-  "licaoFimNota": "{tema} · score {nota}%",
-  "@licaoFimNota": {
-    "description": "T85-D1 Lição, fim: licaoFimNota.",
-    "placeholders": {
-      "tema": {
-        "type": "String"
-      },
-      "nota": {
-        "type": "int"
-      }
-    }
-  },
-  "licaoFimPassouFala": "With this score, {tema} leaves your goals.",
-  "@licaoFimPassouFala": {
-    "description": "T85-D1 Lição, fim: licaoFimPassouFala.",
-    "placeholders": {
-      "tema": {
-        "type": "String"
-      }
-    }
-  },
-  "licaoFimQuaseLaFala": "You can move on. The {tema} exercises come back to your goals on another day.",
-  "@licaoFimQuaseLaFala": {
-    "description": "T85-D1 Lição, fim: licaoFimQuaseLaFala.",
-    "placeholders": {
-      "tema": {
-        "type": "String"
-      }
-    }
-  },
-  "licaoFimRefazerReforcoFala": "I recommend going back to the {tema} lesson before moving on. After it, the exercises start again from the easiest.",
-  "@licaoFimRefazerReforcoFala": {
-    "description": "T85-D1 Lição, fim: licaoFimRefazerReforcoFala.",
-    "placeholders": {
-      "tema": {
-        "type": "String"
-      }
-    }
-  },
-  "licaoFimRefazerFala": "I strongly recommend going back to the {tema} lesson before any exercise. After it, the exercises start again from the easiest.",
-  "@licaoFimRefazerFala": {
-    "description": "T85-D1 Lição, fim: licaoFimRefazerFala.",
-    "placeholders": {
-      "tema": {
-        "type": "String"
-      }
-    }
   },
   "licaoVoltarMetas": "Back to goals",
   "@licaoVoltarMetas": {
     "description": "T85-D1 Lição, fim: licaoVoltarMetas."
-  },
-  "licaoReverLicao": "Review the lesson",
-  "@licaoReverLicao": {
-    "description": "T85-D1 Lição, fim: licaoReverLicao."
   },
   "licaoAgoraNao": "Not now",
   "@licaoAgoraNao": {
@@ -10585,10 +10521,6 @@
   "licaoDiplomaMarcaPilares": "PILARES DO XADREZ",
   "@licaoDiplomaMarcaPilares": {
     "description": "T85-D1 Lição, fim: licaoDiplomaMarcaPilares."
-  },
-  "licaoSemInternetTitle": "No internet",
-  "@licaoSemInternetTitle": {
-    "description": "T85-D1 Lição, fim: licaoSemInternetTitle."
   },
   "licaoSemInternetCapitulo": "You need an internet connection to access this chapter.",
   "@licaoSemInternetCapitulo": {

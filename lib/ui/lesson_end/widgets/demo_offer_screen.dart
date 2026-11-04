@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/character.dart';
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/busy_button.dart';
@@ -72,7 +73,7 @@ class DemoOfferScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppShape.card),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

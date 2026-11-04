@@ -5,6 +5,7 @@ import '../../../domain/models/survey.dart';
 import '../../../domain/models/training/lesson_end.dart';
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/busy_button.dart';
@@ -130,7 +131,7 @@ class _Diploma extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: theme.colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppShape.card),
         border: Border.all(color: theme.colorScheme.primary),
       ),
       child: Column(

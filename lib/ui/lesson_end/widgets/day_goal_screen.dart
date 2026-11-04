@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/training/lesson_end.dart';
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/actions_footer.dart';
@@ -112,7 +113,9 @@ class DayGoalScreen extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(3),
+                                  borderRadius: BorderRadius.circular(
+                                    AppShape.tiny,
+                                  ),
                                   child: LinearProgressIndicator(
                                     value: f.clamp(0, 1),
                                     minHeight: 6,
