@@ -84,6 +84,7 @@ import 'data/repositories/share/share_repository.dart';
 import 'data/repositories/placement/placement_repository.dart';
 import 'data/repositories/conclusion/conclusion_repository.dart';
 import 'data/repositories/analysis/analysis_repository.dart';
+import 'data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'data/repositories/review/game_review_repository.dart';
 import 'data/repositories/sound/sound_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
@@ -617,6 +618,9 @@ class _LucenaAppState extends State<LucenaApp> {
           create: (_) =>
               dependencies.learningAnalysisRepository ??
               LearningAnalysisRepository(PreferencesService()),
+        ),
+        RepositoryProvider<DeepAnalysisRepository>.value(
+          value: dependencies.deepAnalysisRepository,
         ),
         RepositoryProvider<GameReviewRepository>.value(
           value: dependencies.gameReviewRepository,

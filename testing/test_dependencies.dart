@@ -105,6 +105,7 @@ import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_placement_repository.dart';
 import 'fakes/fake_conclusion_repository.dart';
 import 'fakes/fake_analysis_repository.dart';
+import 'fakes/fake_deep_analysis_repository.dart';
 import 'fakes/fake_game_review_repository.dart';
 import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_home_layout_repository.dart';
@@ -211,6 +212,7 @@ Dependencies testDependencies({
     soundRepository: FakeSoundRepository(),
     analysisRepository: FakeAnalysisRepository(),
     gameReviewRepository: FakeGameReviewRepository(),
+    deepAnalysisRepository: FakeDeepAnalysisRepository(),
     ongoingGameRepository: ongoingGameRepository ?? FakeOngoingGameRepository(),
     conclusionRepository: conclusionRepository ?? FakeConclusionRepository(),
     positionsRepository: positionsRepository ?? FakePositionsRepository(),
