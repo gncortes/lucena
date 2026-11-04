@@ -40,6 +40,12 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
   ChessboardController? _controller;
   String? _fen;
 
+  /// A barra mostra "Posição n de total" só enquanto há posição a responder.
+  bool _showsPosition(TrainingDiagnostic d) =>
+      d.method == DiagnosticMethod.test &&
+      !d.testComplete &&
+      !(_resumePending ?? d.testAnswered > 0);
+
   Future<void> _answer(TrainingGoalCubit cubit, bool correct) async {
     await cubit.answerTest(correct);
   }
@@ -51,6 +57,19 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
     return GoalPage(
       screenKey: TrainingGoalKeys.testScreen,
       title: t.treinoDiagTest,
+      titleKey: TrainingGoalKeys.testProgress,
+      titleOf: (view) {
+        final d = view.state.diagnostic;
+        return d != null && _showsPosition(d)
+            ? t.treinoTestProgress(d.testAnswered + 1, d.testSize)
+            : t.treinoDiagTest;
+      },
+      progressOf: (view) {
+        final d = view.state.diagnostic;
+        return d != null && _showsPosition(d)
+            ? d.testAnswered / d.testSize
+            : null;
+      },
       onBack: widget.onBack,
       builder: (context, view) {
         final d = view.state.diagnostic;
@@ -133,26 +152,13 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
         ),
       ];
     }
-    final white = exercise.fen.split(' ')[1] != 'b';
     return [
-      Text(
-        t.treinoTestProgress(index + 1, d.testSize),
-        key: TrainingGoalKeys.testProgress,
-        textAlign: TextAlign.center,
-      ),
-      const SizedBox(height: AppSpacing.sm),
-      Text(
-        white ? t.treinoTestWhite : t.treinoTestBlack,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      const SizedBox(height: AppSpacing.md),
       LayoutBuilder(
         builder: (context, constraints) =>
             _board(context, cubit, exercise, constraints.maxWidth),
       ),
       const SizedBox(height: AppSpacing.md),
-      OutlinedButton(
+      TextButton(
         key: TrainingGoalKeys.testDontKnow,
         onPressed: () => _answer(cubit, false),
         child: Text(t.treinoTestDontKnow),

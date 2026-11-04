@@ -65,6 +65,7 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
     final t = context.l10n;
     final cubit = context.read<TrainingGoalCubit>();
     return GoalPage(
+      centerTitle: false,
       screenKey: TrainingGoalKeys.registerScreen,
       title: t.treinoRegisterTitle,
       onBack: widget.onBack,
@@ -89,40 +90,6 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Wrap(
-            spacing: AppSpacing.sm,
-            children: [
-              for (final p in TournamentPace.values)
-                ChoiceChip(
-                  key: TrainingGoalKeys.registerPace(p.name),
-                  label: Text(switch (p) {
-                    TournamentPace.classical => t.treinoPaceClassical,
-                    TournamentPace.rapid => t.treinoPaceRapid,
-                    TournamentPace.blitz => t.treinoPaceBlitz,
-                  }),
-                  selected: _draft.pace == p,
-                  onSelected: (_) => _change(_draft.copyWith(pace: p)),
-                ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Wrap(
-            spacing: AppSpacing.sm,
-            children: [
-              for (final e in TournamentEntity.values)
-                ChoiceChip(
-                  key: TrainingGoalKeys.registerEntity(e.name),
-                  label: Text(switch (e) {
-                    TournamentEntity.fide => t.treinoEntityFide,
-                    TournamentEntity.cbx => t.treinoEntityCbx,
-                    TournamentEntity.online => t.treinoEntityOnline,
-                    TournamentEntity.other => t.treinoEntityOther,
-                  }),
-                  selected: _draft.entity == e,
-                  onSelected: (_) => _change(_draft.copyWith(entity: e)),
-                ),
-            ],
-          ),
           const SizedBox(height: AppSpacing.md),
           Row(
             spacing: AppSpacing.md,
@@ -204,6 +171,49 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
                 ),
               ),
             ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            t.treinoFieldPace,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          Wrap(
+            spacing: AppSpacing.sm,
+            children: [
+              for (final p in TournamentPace.values)
+                ChoiceChip(
+                  key: TrainingGoalKeys.registerPace(p.name),
+                  label: Text(switch (p) {
+                    TournamentPace.classical => t.treinoPaceClassical,
+                    TournamentPace.rapid => t.treinoPaceRapid,
+                    TournamentPace.blitz => t.treinoPaceBlitz,
+                  }),
+                  selected: _draft.pace == p,
+                  onSelected: (_) => _change(_draft.copyWith(pace: p)),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            t.treinoFieldEntity,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          Wrap(
+            spacing: AppSpacing.sm,
+            children: [
+              for (final e in TournamentEntity.values)
+                ChoiceChip(
+                  key: TrainingGoalKeys.registerEntity(e.name),
+                  label: Text(switch (e) {
+                    TournamentEntity.fide => t.treinoEntityFide,
+                    TournamentEntity.cbx => t.treinoEntityCbx,
+                    TournamentEntity.online => t.treinoEntityOnline,
+                    TournamentEntity.other => t.treinoEntityOther,
+                  }),
+                  selected: _draft.entity == e,
+                  onSelected: (_) => _change(_draft.copyWith(entity: e)),
+                ),
+            ],
+          ),
           const SizedBox(height: AppSpacing.lg),
           Text(
             t.treinoFeelingTitle,

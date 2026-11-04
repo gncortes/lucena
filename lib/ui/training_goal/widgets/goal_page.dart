@@ -18,12 +18,24 @@ class GoalPage extends StatelessWidget {
     required this.builder,
     this.footer,
     this.backKey,
+    this.centerTitle = true,
+    this.titleOf,
+    this.progressOf,
+    this.titleKey,
     super.key,
   });
 
   final Key screenKey;
   final Key? backKey;
   final String title;
+
+  /// Título à esquerda onde o quadro pede (Registrar, Semana, Meus torneios).
+  final bool centerTitle;
+
+  /// Título e progresso que dependem do estado (a barra do teste).
+  final String Function(GoalView view)? titleOf;
+  final double? Function(GoalView view)? progressOf;
+  final Key? titleKey;
   final VoidCallback onBack;
   final List<Widget> Function(BuildContext context, GoalView view) builder;
   final Widget Function(BuildContext context, GoalView view)? footer;
@@ -43,8 +55,15 @@ class GoalPage extends StatelessWidget {
         return Scaffold(
           key: screenKey,
           appBar: LucenaAppBar(
-            centerTitle: true,
-            title: Text(title),
+            centerTitle: centerTitle,
+            title: Text(titleOf?.call(view) ?? title, key: titleKey),
+            bottom: switch (progressOf?.call(view)) {
+              final value? => PreferredSize(
+                preferredSize: const Size.fromHeight(4),
+                child: LinearProgressIndicator(value: value, minHeight: 4),
+              ),
+              null => null,
+            },
             leading: IconButton(
               key: backKey,
               onPressed: onBack,

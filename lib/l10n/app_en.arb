@@ -12701,5 +12701,13 @@
   "treinoUndoAdjust": "Back to the previous plan",
   "@treinoUndoAdjust": {
     "description": "Training goal flow copy."
+  },
+  "treinoFieldPace": "Pace",
+  "@treinoFieldPace": {
+    "description": "Training goal flow copy."
+  },
+  "treinoFieldEntity": "Counts for rating with",
+  "@treinoFieldEntity": {
+    "description": "Training goal flow copy."
   }
 }
