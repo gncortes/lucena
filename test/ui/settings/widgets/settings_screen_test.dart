@@ -292,12 +292,21 @@ void main() {
         expect(inTile(key, hint), findsOneWidget, reason: hint);
       }
       expect(inTile(SettingsKeys.alertsTile, 'Notificações'), findsOneWidget);
-      // A Privacidade fica entre "Notificações" e "Enviar feedback".
+      // A seção Privacidade só tem "Privacidade e dados".
       final privacyRow = tester
           .getTopLeft(find.byKey(SettingsKeys.privacyTile))
           .dy;
       expect(privacyRow, greaterThan(privacy));
       expect(privacyRow, lessThan(help));
+      // Feedback e avaliar ficam em "Ajuda e sobre", antes do Sobre.
+      final feedbackRow = tester
+          .getTopLeft(find.byKey(SettingsKeys.feedbackTile))
+          .dy;
+      final rateRow = tester.getTopLeft(find.byKey(SettingsKeys.rateTile)).dy;
+      final aboutRow = tester.getTopLeft(find.byKey(SettingsKeys.aboutTile)).dy;
+      expect(feedbackRow, greaterThan(help));
+      expect(feedbackRow, lessThan(rateRow));
+      expect(rateRow, lessThan(aboutRow));
     });
 
     testWidgets('a pessoa sem conta: "Jogador" e "Sem conta · 1712"', (

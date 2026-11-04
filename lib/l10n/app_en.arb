@@ -8097,7 +8097,7 @@
       }
     }
   },
-  "alertsIntro": "Choose what Lucena may notify you about. You can change it any time.",
+  "alertsIntro": "Choose which notifications Lucena can send. You can change this anytime.",
   "@alertsIntro": {
     "description": "Alerts: text above the switches."
   },
@@ -8113,11 +8113,11 @@
   "@alertsOffTitle": {
     "description": "Alerts: banner title when the system permission is denied."
   },
-  "alertsOffBody": "Even with the switches below on, nothing reaches this phone. Turn them on in the system settings.",
+  "alertsOffBody": "Even with the options below turned on, no notification reaches this phone.",
   "@alertsOffBody": {
     "description": "Alerts: banner text when the system permission is denied."
   },
-  "alertsOffOpen": "Open Android settings",
+  "alertsOffOpen": "Open settings",
   "@alertsOffOpen": {
     "description": "Alerts: button that opens the Android notification settings."
   },
@@ -8125,7 +8125,7 @@
   "@alertsTournaments": {
     "description": "Alerts switch: a new tournament endgame."
   },
-  "alertsTournamentsBody": "A new endgame from your region, at most one a day.",
+  "alertsTournamentsBody": "A new endgame in your region, at most one a day",
   "@alertsTournamentsBody": {
     "description": "Alerts switch subtitle."
   },
@@ -8133,7 +8133,7 @@
   "@alertsDaily": {
     "description": "Alerts switch: local reminders."
   },
-  "alertsDailyBody": "Streak, continue the chapter and weekly summary.",
+  "alertsDailyBody": "Streak, continue the lesson and weekly summary",
   "@alertsDailyBody": {
     "description": "Alerts switch subtitle."
   },
@@ -8141,7 +8141,7 @@
   "@alertsNews": {
     "description": "Alerts switch: new app features."
   },
-  "alertsNewsBody": "New Lucena features. A few a month.",
+  "alertsNewsBody": "New Lucena features, a few a month",
   "@alertsNewsBody": {
     "description": "Alerts switch subtitle."
   },
@@ -8149,7 +8149,7 @@
   "@alertsLessons": {
     "description": "Alerts switch: a new endgame lesson."
   },
-  "alertsLessonsBody": "When a new endgame lesson comes out.",
+  "alertsLessonsBody": "When a new endgame lesson comes out",
   "@alertsLessonsBody": {
     "description": "Alerts switch subtitle."
   },
@@ -11810,5 +11810,13 @@
   "ajuRateHint": "Opens the app page on Google Play",
   "@ajuRateHint": {
     "description": "Settings: subtitle of the rate row."
+  },
+  "ajuSaveError": "An unexpected error occurred",
+  "@ajuSaveError": {
+    "description": "Settings: snack bar when a preference could not be saved; the screen goes back to the saved value."
+  },
+  "ajuAlertsAllow": "Allow",
+  "@ajuAlertsAllow": {
+    "description": "Notifications: button in the 'off on Android' banner that shows the system permission request, while it was never asked."
   }
 }

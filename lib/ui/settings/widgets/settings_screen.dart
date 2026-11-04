@@ -90,6 +90,11 @@ class SettingsScreen extends StatelessWidget {
                 value: l10n.ajuPrivacyHint,
                 onTap: () => context.push(Routes.privacy),
               ),
+            ],
+          ),
+          SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
+          ProfileRowGroup(
+            children: [
               ProfileRow(
                 key: SettingsKeys.feedbackTile,
                 icon: Icons.feedback_outlined,
@@ -99,7 +104,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               ProfileRow(
                 key: SettingsKeys.rateTile,
-                icon: Icons.star_outline,
+                icon: Icons.storefront_outlined,
                 title: l10n.ajuRateTitle,
                 value: l10n.ajuRateHint,
                 onTap: () {
@@ -111,11 +116,6 @@ class SettingsScreen extends StatelessWidget {
                   unawaited(context.read<StoreListingRepository>().open());
                 },
               ),
-            ],
-          ),
-          SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
-          ProfileRowGroup(
-            children: [
               _Group(
                 tileKey: SettingsKeys.aboutTile,
                 icon: Icons.info_outline,

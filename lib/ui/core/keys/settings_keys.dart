@@ -81,9 +81,12 @@ abstract final class SettingsKeys {
   /// Seção "Privacidade": "Privacidade e dados" (H-AJU-15).
   static const privacyTile = Key('settings.privacyTile');
 
-  /// "Ajuda e sobre": "Enviar feedback" e "Avaliar o Lucena" (H-AJU-01).
+  /// "Ajuda e sobre": "Enviar feedback" e "Avaliar o Lucena", antes do Sobre (H-AJU-01).
   static const feedbackTile = Key('settings.feedbackTile');
   static const rateTile = Key('settings.rateTile');
+
+  /// Aviso de preferência não gravada (H-AJU-02, Gap 1).
+  static const saveFailure = Key('settings.saveFailure');
   static const aboutScreen = Key('settings.about.screen');
   static const aboutWebsite = Key('settings.about.website');
   static const aboutSource = Key('settings.about.source');

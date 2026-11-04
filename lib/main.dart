@@ -126,6 +126,7 @@ import 'ui/core/widgets/load_error_fallback.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/profile/view_models/profile_cubit.dart';
+import 'ui/settings/widgets/settings_save_failure_listener.dart';
 import 'ui/settings/view_models/settings_cubit.dart';
 import 'ui/voice/view_models/speech_cubit.dart';
 import 'ui/wiki/view_models/wiki_links_cubit.dart';
@@ -911,7 +912,9 @@ class _LucenaAppState extends State<LucenaApp> {
                       );
                       _router?.push(route);
                     },
-                    child: child ?? const SizedBox.shrink(),
+                    child: SettingsSaveFailureListener(
+                      child: child ?? const SizedBox.shrink(),
+                    ),
                   ),
                 ),
               ),
