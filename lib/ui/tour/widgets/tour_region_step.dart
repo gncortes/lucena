@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/brazil_cities.dart';
 import '../../../domain/models/brazil_states.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
@@ -145,7 +146,7 @@ class _Field extends StatelessWidget {
       enabled: enabled,
       child: InkWell(
         onTap: enabled ? onTap : null,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(AppShape.tiny),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 56),
           child: InputDecorator(
