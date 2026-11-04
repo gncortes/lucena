@@ -34,6 +34,7 @@ abstract final class TrainingKeys {
   static const exerciseBoard = Key('training.exerciseBoard');
   static const exerciseScreen = Key('training.exerciseScreen');
   static const exerciseHint = Key('training.exerciseHint');
+  static const exerciseResultMark = Key('training.exerciseResultMark');
   static const exerciseRetry = Key('training.exerciseRetry');
   static const exercisePracticeRetry = Key('training.exercisePracticeRetry');
   static const exerciseFeedbackExpand = Key('training.exerciseFeedbackExpand');
