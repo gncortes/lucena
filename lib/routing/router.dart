@@ -1452,18 +1452,14 @@ GoRouter buildRouter({
           _route(
             name: RouteNames.nextSteps,
             path: 'next',
-            builder: (context, state) => NextStepsScreen(
-              level: int.tryParse(state.uri.queryParameters['level'] ?? ''),
-              courseAvailable: _courseAvailable(context),
-            ),
+            builder: (context, state) =>
+                NextStepsScreen(courseAvailable: _courseAvailable(context)),
             routes: [
               _route(
                 name: RouteNames.nextStepsSchool,
                 path: 'school',
-                builder: (context, state) => NextStepsScreen(
-                  graduated: true,
-                  courseAvailable: _courseAvailable(context),
-                ),
+                builder: (context, state) =>
+                    NextStepsScreen(courseAvailable: _courseAvailable(context)),
               ),
             ],
           ),

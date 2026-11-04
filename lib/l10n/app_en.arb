@@ -9352,66 +9352,13 @@
       }
     }
   },
-  "nextStepsReadyBar": "All set",
-  "@nextStepsReadyBar": {
-    "description": "Next steps after the level: app bar title (and hero title without a level)."
-  },
-  "nextStepsLevel": "Your level: {level}",
-  "@nextStepsLevel": {
-    "description": "Next steps after the level: hero title with the rating.",
-    "placeholders": {
-      "level": {
-        "type": "int"
-      }
-    }
-  },
-  "nextStepsReadyBody": "Now we know where to start. Where would you like to begin?",
-  "@nextStepsReadyBody": {
-    "description": "Next steps after the level: hero text."
-  },
-  "nextStepsLessonsBody": "Learn Opposition, Bishop and knight, Queen vs rook and Lucena.",
-  "@nextStepsLessonsBody": {
-    "description": "Next steps: what the endgame lessons cover."
-  },
-  "nextStepsRaceBody": "Solve endgame puzzles against the clock.",
-  "@nextStepsRaceBody": {
-    "description": "Next steps: what the endgame race is for."
-  },
-  "nextStepsTrainTitle": "Practice endgames",
-  "@nextStepsTrainTitle": {
-    "description": "Next steps: option to play an endgame against the engine."
-  },
-  "nextStepsTrainBody": "Pick a position in the catalog and play.",
-  "@nextStepsTrainBody": {
-    "description": "Next steps: text of the training option."
-  },
   "nextStepsHome": "Go to home",
   "@nextStepsHome": {
     "description": "Next steps: footer button to the home screen."
   },
-  "nextStepsSchoolBar": "School completed",
-  "@nextStepsSchoolBar": {
-    "description": "Next steps after the School: app bar title."
-  },
-  "nextStepsSchoolTitle": "You completed the School!",
-  "@nextStepsSchoolTitle": {
-    "description": "Next steps after the School: hero title."
-  },
-  "nextStepsSchoolBody": "The rules and the first mates are yours. What would you like to do now?",
-  "@nextStepsSchoolBody": {
-    "description": "Next steps after the School: hero text."
-  },
   "nextStepsRecommended": "Recommended",
   "@nextStepsRecommended": {
     "description": "Next steps: badge on the recommended option."
-  },
-  "nextStepsLessonsFirst": "Start with the Opposition, the endgame that comes up most.",
-  "@nextStepsLessonsFirst": {
-    "description": "Next steps after the School: endgame lessons text."
-  },
-  "nextStepsJourneyBody": "Beat opponents, one step at a time.",
-  "@nextStepsJourneyBody": {
-    "description": "Next steps after the School: journey text."
   },
   "lessonFinishedRaceOnly": "{name} Race",
   "@lessonFinishedRaceOnly": {
