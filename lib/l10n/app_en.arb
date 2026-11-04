@@ -12042,5 +12042,25 @@
   "conConviteSheetText": "Your progress is saved and shows up on any phone. The app works without an account, on this phone only.",
   "@conConviteSheetText": {
     "description": "Texto da folha de convite de conta depois da partida (PropV1PerfilConvite, H-CON-02)."
+  },
+  "conCartaoTitleWin": "Save your achievements",
+  "@conCartaoTitleWin": {
+    "description": "Título do cartão de convite de conta no fim da partida (PropV2UxConclusaoConta, H-CON-02)."
+  },
+  "conCartaoTitleProgress": "Save your progress",
+  "@conCartaoTitleProgress": {
+    "description": "Título do cartão de convite de conta em Seu progresso (PropV2UxProgresso, H-CON-03)."
+  },
+  "conCartaoGames": "Games, rating and achievements",
+  "@conCartaoGames": {
+    "description": "Benefício do cartão de convite de conta (H-CON-02/03)."
+  },
+  "conCartaoLessons": "Lessons and Journey",
+  "@conCartaoLessons": {
+    "description": "Benefício do cartão de convite de conta (H-CON-02/03)."
+  },
+  "conCartaoDevices": "Everything on any phone",
+  "@conCartaoDevices": {
+    "description": "Benefício do cartão de convite de conta (H-CON-02/03)."
   }
 }

@@ -2325,5 +2325,10 @@
   "conLichessNote": "[Dîšçöññéçtîñĝ ŕémövéš Lûçéñå'š åççéšš tö ýöûŕ Lîçhéšš. Ýöûŕ Lûçéñå ŕåtîñĝ döéšñ't çhåñĝé. one two three four five six seven eight]",
   "conConviteTitle": "[Wåñt tö šåvé ýöûŕ pŕöĝŕéšš? one two three]",
   "conConviteLater": "[Ýöû çåñ çŕéåté thé åççöûñt låtéŕ, îñ Pŕöfîlé. one two three four]",
-  "conConviteSheetText": "[Ýöûŕ pŕöĝŕéšš îš šåvéd åñd šhöwš ûp öñ åñý phöñé. Thé åpp wöŕkš wîthöût åñ åççöûñt, öñ thîš phöñé öñlý. one two three four five six seven eight nine]"
+  "conConviteSheetText": "[Ýöûŕ pŕöĝŕéšš îš šåvéd åñd šhöwš ûp öñ åñý phöñé. Thé åpp wöŕkš wîthöût åñ åççöûñt, öñ thîš phöñé öñlý. one two three four five six seven eight nine]",
+  "conCartaoTitleWin": "[Šåvé ýöûŕ åçhîévéméñtš one two three]",
+  "conCartaoTitleProgress": "[Šåvé ýöûŕ pŕöĝŕéšš one two]",
+  "conCartaoGames": "[Ĝåméš, ŕåtîñĝ åñd åçhîévéméñtš one two three]",
+  "conCartaoLessons": "[Léššöñš åñd Jöûŕñéý one two]",
+  "conCartaoDevices": "[Évéŕýthîñĝ öñ åñý phöñé one two three]"
 }

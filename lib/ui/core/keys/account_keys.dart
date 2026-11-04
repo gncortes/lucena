@@ -28,6 +28,10 @@ abstract final class AccountKeys {
   static const inviteSheet = Key('account.inviteSheet');
   static const notNow = Key('account.notNow');
 
+  /// O convite em cartão (fim da partida, Seu progresso; H-CON-02/03) e o X.
+  static const inviteCard = Key('account.inviteCard');
+  static const inviteCardClose = Key('account.inviteCardClose');
+
   /// Criar conta e Entrar, com e-mail e senha.
   static const createScreen = Key('account.create');
   static const signInScreen = Key('account.signIn');

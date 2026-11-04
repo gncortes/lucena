@@ -2488,5 +2488,10 @@
   "conLichessNote": "Desconectar remove o acesso do Lucena ao seu Lichess. Seu rating no Lucena não muda.",
   "conConviteTitle": "Quer salvar seu progresso?",
   "conConviteLater": "Dá para criar a conta depois, no Perfil.",
-  "conConviteSheetText": "Seu progresso fica salvo e aparece em qualquer celular. O app funciona sem conta, só neste celular."
+  "conConviteSheetText": "Seu progresso fica salvo e aparece em qualquer celular. O app funciona sem conta, só neste celular.",
+  "conCartaoTitleWin": "Salve suas conquistas",
+  "conCartaoTitleProgress": "Salve seu progresso",
+  "conCartaoGames": "Partidas, rating e conquistas",
+  "conCartaoLessons": "Lições e Jornada",
+  "conCartaoDevices": "Tudo em qualquer celular"
 }
