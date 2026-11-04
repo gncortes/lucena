@@ -17,7 +17,6 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/choice_card.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/viktor_conversation.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../view_models/level_cubit.dart';
@@ -133,7 +132,7 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
         await _open(Routes.levelChess);
       case LevelChoice.manual:
         await _open(Routes.levelRating);
-      case LevelChoice.zero:
+      case LevelChoice.zero || LevelChoice.band:
         await cubit.finish();
     }
   }
@@ -153,18 +152,7 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
           listener: (context, state) => unawaited(_onFinished(state)),
         ),
         // A volta do Lichess (também com o app reaberto por ela).
-        BlocListener<LevelCubit, LevelState>(
-          listenWhen: (previous, current) =>
-              previous.lichess == null && current.lichess != null,
-          listener: (context, state) => _open(Routes.levelLichess),
-        ),
-        BlocListener<LevelCubit, LevelState>(
-          listenWhen: (previous, current) =>
-              current.errorCount != previous.errorCount &&
-              current.error == LevelError.lichessOffline,
-          listener: (context, state) =>
-              showLucenaSnackBar(context, l10n.levelLichessOffline),
-        ),
+        ...lichessOwnerListeners(),
       ],
       child: BlocBuilder<LevelCubit, LevelState>(
         builder: (context, state) {

@@ -106,7 +106,7 @@ void main() {
         solved: 20,
         total: 20,
       ));
-      await cubit.selectTab(CourseGuideTab.progress);
+      await cubit.selectTab(CourseGuideTab.stats);
       expect(cubit.state.levelTestProgress?.score, 13);
     },
   );

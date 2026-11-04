@@ -29,9 +29,12 @@ class GameDetailsRobot {
       .state;
 
   Future<void> review() async {
-    // A rápida começa sozinha ao abrir (T65): a média só depois dela.
+    // A partida antiga abre sem análise (H-PAR-17): Analisar roda a rápida; a média vem depois pela folha.
+    await $(GameDetailsKeys.oldAnalysisButton).tap();
     await _waitReview((s) => s.review != null);
-    await $(GameDetailsKeys.reviewButton).scrollTo().tap();
+    await $(GameDetailsKeys.levelDeepen).scrollTo().tap();
+    await $(GameDetailsKeys.depthMedium).tap();
+    await $(GameDetailsKeys.depthConfirm).tap();
     // Com a engine de verdade a revisão leva um tempo.
     await _waitReview((s) => (s.review?.depth ?? 0) >= 2);
     await $.pumpAndSettle();
@@ -55,16 +58,16 @@ class GameDetailsRobot {
     // A revisão feita fica no botão, marcada e desligada (T51).
   }
 
-  // Os botões de lance ficam fixos embaixo do tabuleiro: se a folha está
-  // aberta por cima deles, o "x" a desce antes.
+  // Os botões de lance ficam fixos embaixo, fora das abas.
   Future<void> _tap(Key key) async {
-    final close = find.byKey(GameDetailsKeys.closeSheet).hitTestable();
-    if (close.evaluate().isNotEmpty) {
-      await $.tester.tap(close);
-      await $.pumpAndSettle();
-    }
     await $(key).tap();
     await $.pumpAndSettle();
+  }
+
+  /// Abre uma das abas (Resumo, Lances ou Motor).
+  Future<void> openTab(Key tab) async {
+    await $(tab).tap();
+    await $.pump(const Duration(milliseconds: 500));
   }
 
   Future<void> first() => _tap(GameDetailsKeys.first);
@@ -74,6 +77,7 @@ class GameDetailsRobot {
 
   Future<void> toggleEngine() async {
     await _tap(GameDetailsKeys.engineButton);
+    await openTab(GameDetailsKeys.tabEngine);
     await $(GameDetailsKeys.engineLines).waitUntilExists();
     // Na posição final (mate ou empate) não há linhas: o painel diz isso.
     final position = state.shownPosition;

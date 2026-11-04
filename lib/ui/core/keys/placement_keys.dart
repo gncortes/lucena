@@ -12,6 +12,7 @@ abstract final class PlacementKeys {
   static const stoppedCard = Key('placement.stoppedCard');
   static const stoppedAt = Key('placement.stoppedAt');
   static const answersSaved = Key('placement.answersSaved');
+  static const preferRating = Key('placement.preferRating');
   static const restart = Key('placement.restart');
 
   /// Na pergunta.

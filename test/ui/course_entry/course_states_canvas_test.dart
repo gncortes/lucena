@@ -209,7 +209,14 @@ void main() {
             ? 'Curso'
             : 'Escola';
         await mount(tester, entry(_Downloads()));
-        expect(find.text('Usar e-mail'), findsOneWidget);
+        expect(
+          find.text(
+            config.course == TrainingCourse.pilares
+                ? 'Usar e-mail'
+                : 'Entrar ou criar conta',
+          ),
+          findsOneWidget,
+        );
         await shot(tester, '${prefix}Conta', size);
         accounts.account = FakeAccountRepository.google;
         await mount(tester, entry(_Downloads(loading: true)));
@@ -234,7 +241,7 @@ void main() {
               expect(find.byKey(LoadErrorKeys.freeSpace), findsOneWidget);
               expect(find.byType(TextButton), findsNothing);
             } else {
-              expect(find.textContaining('o curso'), findsOneWidget);
+              expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
             }
             await shot(tester, '$prefix$name', size);
           }
@@ -321,7 +328,7 @@ void main() {
             onWelcomeContinue: () {},
             onLesson: (_) {},
             onChapter: (_) {},
-            onStartPilares: () {},
+            onDiploma: () {},
             goalsBuilder: (_) => TrainingGoalsTab(
               onGoal: (_) {},
               onPlan: () {},
@@ -455,7 +462,7 @@ void main() {
           ),
         );
         await cubit.load();
-        await cubit.selectTab(CourseGuideTab.progress);
+        await cubit.selectTab(CourseGuideTab.stats);
         await mount(
           tester,
           screen(override: TrainingOpeningProgressScreen(onTrain: (_, _) {})),

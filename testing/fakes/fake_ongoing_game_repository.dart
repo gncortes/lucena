@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 
@@ -13,8 +15,15 @@ class FakeOngoingGameRepository implements OngoingGameRepository {
   @override
   Future<GameSnapshot?> load() async => snapshot;
 
+  /// Quantas gravações da partida ainda falham (falta de espaço, H-PAR-19).
+  int failSave = 0;
+
   @override
   Future<void> save(GameSnapshot snapshot) async {
+    if (failSave > 0) {
+      failSave--;
+      throw const FileSystemException('No space left on device');
+    }
     this.snapshot = snapshot;
     saved.add(snapshot);
   }

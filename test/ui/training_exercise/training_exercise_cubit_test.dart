@@ -14,6 +14,7 @@ import 'package:lucena/domain/use_cases/training/build_day_goals.dart';
 import 'package:lucena/domain/use_cases/training/training_analytics.dart';
 import 'package:lucena/ui/training_exercise/view_models/training_exercise_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 
@@ -705,6 +706,49 @@ void main() {
     expect(cubit.state.phase, TrainingExercisePhase.end);
     expect(cubit.state.cycle!.phase, ThemePhase.firm);
   });
+
+  test(
+    'sétimo dia grava treino_ciclo_fim uma vez, com nota e resultado',
+    () async {
+      await repository.update(
+        TrainingCourse.pilares,
+        (_) => saved(
+          cycle: ThemeCycle(
+            lessonId: 'lesson',
+            startedOn: '2026-10-20',
+            days: [
+              for (var i = 0; i < 6; i++)
+                ThemeDay(
+                  date: '2026-10-${20 + i}',
+                  exerciseId: 'old$i',
+                  stars: [1, 1, 2, 2, 3, 3][i],
+                  correct: true,
+                ),
+            ],
+          ),
+        ),
+      );
+      final analytics = FakeAnalyticsRepository();
+      final logging = TrainingExerciseCubit(
+        repository: repository,
+        config: TrainingCourseConfig.pilares,
+        now: now,
+        analytics: analytics,
+        goalKey: goal.key,
+      );
+      addTearDown(logging.close);
+      await logging.load();
+      await logging.play('e2e4');
+      await logging.play('g1f3');
+      expect(analytics.eventsNamed('treino_ciclo_fim'), isEmpty);
+      logging.next();
+      await Future<void>.delayed(Duration.zero);
+      final events = analytics.eventsNamed('treino_ciclo_fim');
+      expect(events, hasLength(1));
+      expect(events.single.params['nota'], 87);
+      expect(events.single.params['resultado'], 'segue');
+    },
+  );
 
   for (final entry in <({List<int> points, ThemePhase phase, int score})>[
     (points: [1, 1, 2, 2, 3, 1], phase: ThemePhase.firm, score: 73),

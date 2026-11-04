@@ -206,13 +206,19 @@ class RaceCubit extends Cubit<RaceState> {
       await _finish(run, end);
       return;
     }
+    final turn = _first(run);
+    if (turn == null) {
+      // O banco mudou e já não tem o próximo problema: volta à abertura.
+      await _repository.discardOngoing();
+      return;
+    }
     emit(
       state.copyWith(
         phase: RacePhase.playing,
         filter: run.filter,
         run: run,
-        turn: _first(run),
-        boardFen: _first(run)?.fen,
+        turn: turn,
+        boardFen: turn.fen,
         replying: false,
         remaining: RaceRules.remaining(run, _now()),
         clearFeedback: true,

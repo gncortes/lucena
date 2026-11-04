@@ -14,8 +14,8 @@ import '../../core/widgets/rating_value.dart';
 import '../view_models/home_cubit.dart';
 
 /// O rating no alto da tela inicial, ao lado do nome do app (T83): o número
-/// com a variação da última partida e a seta. Antes de ter rating, a pílula
-/// "Começando". Tocar abre os detalhes do rating (o gráfico e o histórico).
+/// com a variação da última partida e a seta, solto, sem pílula. Antes de ter
+/// rating, "Começando". Tocar abre os detalhes do rating (o gráfico e o histórico).
 class PlayerCard extends StatelessWidget {
   const PlayerCard({required this.state, super.key});
 
@@ -31,7 +31,8 @@ class PlayerCard extends StatelessWidget {
     final rating = state.rating;
     final shown = rating != null && state.showsRating;
     return ContainerNavigation(
-      color: shown ? colors.surface : colors.surfaceContainerLow,
+      // Solto, sem pílula (H-INI-01, PropV2UxHomeTopo B).
+      color: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppShape.full),
       ),

@@ -14,18 +14,24 @@ class LocalOnboardingRepository implements OnboardingRepository {
 
   static const _doneKey = 'tour.done';
   static const _legacyStepKey = 'tour.step';
-  static const _stepKey = 'tour.stepV2';
+  static const _v2StepKey = 'tour.stepV2';
+  static const _stepKey = 'tour.stepV3';
 
   /// No tour antigo (12 passos), do índice 12 em diante vinham o nível e os
-  /// caminhos: no tour novo, são o último passo.
+  /// caminhos: no tour novo, é o passo Nível.
   static const _legacyLevelIndex = 12;
-  static const _levelStep = 4;
+
+  /// Índices do tour novo: tabuleiro 0, tema 1, voz 2, nível 3, região 4,
+  /// conta 5.
+  static const _voiceStep = 2;
+  static const _levelStep = 3;
   static const _startRungKey = 'journey.startRung';
   static const _ratingKey = 'tour.selectedRating';
   static const _byHandKey = 'tour.byHand';
   static const _inProgressKey = 'tour.inProgress';
   static const _linkSetupKey = 'tour.linkSetupDone';
-  static const _stageKey = 'tour.stage';
+  static const _legacyStageKey = 'tour.stage';
+  static const _stageKey = 'tour.stageV3';
   static const _controlsKey = 'tour.boardControlsDone';
   static const _controlsOpenKey = 'tour.boardControlsOpen';
   static const _controlsFenKey = 'tour.boardControlsFen';
@@ -33,29 +39,44 @@ class LocalOnboardingRepository implements OnboardingRepository {
   final PreferencesService _preferences;
 
   Future<OnboardingStage> _stage() async {
-    final saved = OnboardingStage.fromCode(
-      await _preferences.getString(_stageKey),
-    );
-    if (saved != null) return saved;
+    final saved = await _preferences.getString(_stageKey);
+    if (saved != null) {
+      return OnboardingStage.fromCode(saved) ?? OnboardingStage.goal;
+    }
+    // Etapa antiga: "tour" e "level" já passaram pelo tour; "goal" ainda
+    // não escolheu o objetivo.
+    final legacy = await _preferences.getString(_legacyStageKey);
+    if (legacy == 'tour' || legacy == 'level') return OnboardingStage.tour;
+    if (legacy != null) return OnboardingStage.goal;
     final hasTour =
         await _preferences.getBool(_inProgressKey) == true ||
-        await _preferences.getString(_stepKey) != null ||
+        await _preferences.getString(_v2StepKey) != null ||
         await _preferences.getString(_legacyStepKey) != null;
     return hasTour ? OnboardingStage.tour : OnboardingStage.goal;
   }
 
-  /// O passo salvo. Sem a chave nova, vem do tour antigo: nível/caminhos
-  /// (índice 12 em diante) levam ao último passo; os outros, ao primeiro. A
-  /// chave nova é gravada e a antiga apagada.
+  /// O passo salvo. Sem a chave nova, vem das antigas: do V2 (voz 1 vira 2;
+  /// escola, ajuda e jogar viram o Nível) ou do tour de 12 passos (índice 12
+  /// em diante é o Nível). A etapa antiga "level" também leva ao Nível. A
+  /// chave nova é gravada e as antigas apagadas.
   Future<int> _loadStep() async {
     final saved = int.tryParse(await _preferences.getString(_stepKey) ?? '');
     if (saved != null) return saved;
+    final v2 = int.tryParse(await _preferences.getString(_v2StepKey) ?? '');
     final legacy = int.tryParse(
       await _preferences.getString(_legacyStepKey) ?? '',
     );
-    if (legacy == null) return 0;
-    final step = legacy >= _legacyLevelIndex ? _levelStep : 0;
+    final legacyStage = await _preferences.getString(_legacyStageKey);
+    int? step;
+    if (v2 != null) {
+      step = v2 <= 0 ? 0 : (v2 == 1 ? _voiceStep : _levelStep);
+    } else if (legacy != null) {
+      step = legacy >= _legacyLevelIndex ? _levelStep : 0;
+    }
+    if (legacyStage == 'level') step = _levelStep;
+    if (step == null) return 0;
     await _preferences.setString(_stepKey, step.toString());
+    await _preferences.remove(_v2StepKey);
     await _preferences.remove(_legacyStepKey);
     return step;
   }

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/crowd/crowd_repository.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../region/widgets/region_sheet.dart';
-import '../view_models/featured_crowd_cubit.dart';
 import '../view_models/featured_endgame_cubit.dart';
-import 'featured_crowd_card.dart';
 import 'featured_book_sheet.dart';
 import 'featured_labels.dart';
 import 'featured_next_sheet.dart';
@@ -78,13 +75,6 @@ class FeaturedEndBar extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        BlocProvider(
-          create: (context) => FeaturedCrowdCubit(
-            id: context.read<FeaturedEndgameCubit>().id,
-            crowd: context.read<CrowdRepository>(),
-          )..load(),
-          child: const FeaturedCrowdCard(),
-        ),
         ActionsFooter(
           children: [
             OutlinedButton.icon(

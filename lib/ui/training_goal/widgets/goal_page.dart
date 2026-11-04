@@ -1,0 +1,101 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../domain/use_cases/training/goal/goal_view.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/load_skeleton.dart';
+import '../../core/widgets/lucena_app_bar.dart';
+import '../../course_guide/widgets/training_load_error.dart';
+import '../view_models/training_goal_cubit.dart';
+
+/// Moldura das telas do fluxo do objetivo: título só com texto, carregando e
+/// erro únicos da base D0, rodapé fixo opcional.
+class GoalPage extends StatelessWidget {
+  const GoalPage({
+    required this.screenKey,
+    required this.title,
+    required this.onBack,
+    required this.builder,
+    this.footer,
+    this.backKey,
+    this.centerTitle = true,
+    this.titleOf,
+    this.progressOf,
+    this.titleKey,
+    super.key,
+  });
+
+  final Key screenKey;
+  final Key? backKey;
+  final String title;
+
+  /// Título à esquerda onde o quadro pede (Registrar, Semana, Meus torneios).
+  final bool centerTitle;
+
+  /// Título e progresso que dependem do estado (a barra do teste).
+  final String Function(GoalView view)? titleOf;
+  final double? Function(GoalView view)? progressOf;
+  final Key? titleKey;
+  final VoidCallback onBack;
+  final List<Widget> Function(BuildContext context, GoalView view) builder;
+  final Widget Function(BuildContext context, GoalView view)? footer;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<TrainingGoalCubit>();
+    return BlocBuilder<TrainingGoalCubit, TrainingGoalState>(
+      builder: (context, state) {
+        final view = state.view;
+        if (view == null) {
+          if (state.failed) {
+            return trainingLoadError(context, state.failure, cubit.load);
+          }
+          return LoadSkeletonScreen(title: title);
+        }
+        return Scaffold(
+          key: screenKey,
+          appBar: LucenaAppBar(
+            centerTitle: centerTitle,
+            title: Text(titleOf?.call(view) ?? title, key: titleKey),
+            bottom: switch (progressOf?.call(view)) {
+              final value? => PreferredSize(
+                preferredSize: const Size.fromHeight(4),
+                child: LinearProgressIndicator(value: value, minHeight: 4),
+              ),
+              null => null,
+            },
+            leading: IconButton(
+              key: backKey,
+              onPressed: onBack,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              icon: const Icon(Icons.arrow_back),
+            ),
+          ),
+          body: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.all(AppSpacing.screen),
+                    children: builder(context, view),
+                  ),
+                ),
+                if (footer != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.screen,
+                      0,
+                      AppSpacing.screen,
+                      AppSpacing.lg,
+                    ),
+                    child: footer!(context, view),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

@@ -231,6 +231,8 @@ void main() {
           create: (_) => FeaturedCatalogCubit(
             featured: FakeFeaturedRepository(sampleFeaturedCatalog()),
             progress: FakeFeaturedProgressRepository(),
+            alerts: FakeFeaturedAlertsRepository(),
+            push: FakePushRepository(),
             now: FakeNow(DateTime(2026, 1, 1, 12)),
           )..load(),
         ),

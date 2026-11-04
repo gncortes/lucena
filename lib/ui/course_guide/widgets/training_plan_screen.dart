@@ -8,7 +8,10 @@ import '../../core/theme/canvas_symbols.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/use_cases/training/goal/tournament_rules.dart';
+import '../../core/keys/training_goal_keys.dart';
 import '../../core/keys/training_keys.dart';
+import '../../training_goal/widgets/goal_format.dart';
 import '../../core/keys/sheet_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
@@ -23,9 +26,18 @@ class TrainingPlanScreen extends StatefulWidget {
   const TrainingPlanScreen({
     required this.onBack,
     required this.onSaved,
+    this.tournamentDate,
+    this.today,
+    this.flow = false,
     super.key,
   });
   final VoidCallback onBack, onSaved;
+
+  /// Data civil do torneio e de hoje: mostram a linha "Até o torneio".
+  final String? tournamentDate, today;
+
+  /// No fluxo do objetivo o botão é "Continuar".
+  final bool flow;
   @override
   State<TrainingPlanScreen> createState() => _TrainingPlanScreenState();
 }
@@ -653,6 +665,26 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
                                 style: TextStyle(color: colors.error),
                               ),
                             ),
+                          if (widget.tournamentDate != null &&
+                              widget.today != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text(
+                                t.treinoUntilTournament(
+                                  durationText(
+                                    context,
+                                    studyMinutesUntil(
+                                      plan,
+                                      widget.today!,
+                                      widget.tournamentDate!,
+                                    ),
+                                  ),
+                                ),
+                                key: TrainingGoalKeys.planUntilTournament,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ),
                           const SizedBox(height: 24),
                           FilledButton(
                             key: TrainingKeys.planSave,
@@ -667,7 +699,9 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
                             ),
                             onPressed: state.busy ? null : _save,
                             child: Text(
-                              state.editing
+                              widget.flow
+                                  ? t.treinoContinue
+                                  : state.editing
                                   ? t.trainingPlanSave
                                   : t.trainingPlanStart,
                             ),

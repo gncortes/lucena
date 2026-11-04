@@ -21,10 +21,6 @@ void main() {
       t.trainingDownloadChapterError,
       'Não foi possível baixar o capítulo. Tente novamente.',
     );
-    expect(
-      t.trainingDownloadCourseError,
-      'Não foi possível baixar o curso. Tente novamente.',
-    );
     expect(t.conApagarFailed, 'Ocorreu um erro inesperado');
     expect(
       t.accountPhotoFailed,

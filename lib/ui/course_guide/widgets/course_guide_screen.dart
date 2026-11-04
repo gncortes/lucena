@@ -1,3 +1,11 @@
+import 'dart:async';
+
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/route_names.dart';
+import '../../core/keys/training_goal_keys.dart';
+import '../../core/widgets/lucena_sheet.dart';
+import '../../training_goal/widgets/training_goal_card.dart';
 import '../../core/widgets/course/course_navigation_bar.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../domain/use_cases/training/needs_opening_profile.dart';
@@ -27,6 +35,7 @@ import '../../core/widgets/course/course_part_header.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
+import 'training_guide_tab.dart';
 import '../../course_entry/widgets/course_content_states.dart';
 
 class CourseGuideScreen extends StatelessWidget {
@@ -45,12 +54,12 @@ class CourseGuideScreen extends StatelessWidget {
     this.bodyOverride,
     this.titleOverride,
     this.onTabChanged,
-    this.onStartPilares,
+    this.onDiploma,
     super.key,
   });
   final VoidCallback onBack, onPlan, onHelp, onWelcomeContinue;
   final VoidCallback? onLevelTest;
-  final VoidCallback? onStartPilares;
+  final VoidCallback? onDiploma;
   final ValueChanged<TrainingLesson> onLesson;
   final ValueChanged<String> onChapter;
   final WidgetBuilder goalsBuilder, progressBuilder;
@@ -73,13 +82,21 @@ class CourseGuideScreen extends StatelessWidget {
       final config = cubit.config;
       final t = context.l10n;
       final training = state.training;
+      // The School has no Guide tab (no goal or tournament plan there).
+      final tabs = [
+        for (final each in CourseGuideTab.values)
+          if (each != CourseGuideTab.guide ||
+              config.course != TrainingCourse.escola)
+            each,
+      ];
       final tab = training?.tab ?? CourseGuideTab.lesson;
       final title =
           titleOverride ??
           switch (tab) {
             CourseGuideTab.lesson => courseGuideCopy(context, config.titleKey),
             CourseGuideTab.goals => t.trainingGoalsTitle,
-            CourseGuideTab.progress => t.courseGuideTabProgress,
+            CourseGuideTab.guide => t.treinoTabGuide,
+            CourseGuideTab.stats => t.courseGuideTabProgress,
             CourseGuideTab.catalog => t.courseGuideTabCatalog,
           };
       if (!state.loading && state.failed && training == null) {
@@ -132,11 +149,15 @@ class CourseGuideScreen extends StatelessWidget {
                             ? _LessonTab(
                                 state: state,
                                 onLesson: onLesson,
-                                onStartPilares: onStartPilares,
+                                onDiploma: onDiploma,
                               )
                             : _WelcomeTab(onContinue: onWelcomeContinue),
                       CourseGuideTab.goals => goalsBuilder(context),
-                      CourseGuideTab.progress => progressBuilder(context),
+                      CourseGuideTab.guide => TrainingGuideTab(
+                        key: CourseGuideKeys.guideTab,
+                        course: config.course,
+                      ),
+                      CourseGuideTab.stats => progressBuilder(context),
                       CourseGuideTab.catalog => _CatalogTab(
                         state: state,
                         onChapter: onChapter,
@@ -146,14 +167,15 @@ class CourseGuideScreen extends StatelessWidget {
                     },
         ),
         bottomNavigationBar: CourseNavigationBar(
-          selectedIndex: tab.index,
+          tabs: tabs,
+          selectedIndex: tabs.indexOf(tab).clamp(0, tabs.length - 1),
           remaining: training == null
               ? 0
               : trainingGoalCounts(training).remaining,
           onDestinationSelected: state.saving
               ? null
               : (index) async {
-                  final tab = CourseGuideTab.values[index];
+                  final tab = tabs[index];
                   if (await cubit.selectTab(tab)) onTabChanged?.call(tab);
                 },
         ),
@@ -285,11 +307,11 @@ class _LessonTab extends StatelessWidget {
   const _LessonTab({
     required this.state,
     required this.onLesson,
-    this.onStartPilares,
+    this.onDiploma,
   });
   final CourseGuideState state;
   final ValueChanged<TrainingLesson> onLesson;
-  final VoidCallback? onStartPilares;
+  final VoidCallback? onDiploma;
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CourseGuideCubit>();
@@ -366,9 +388,9 @@ class _LessonTab extends StatelessWidget {
               minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: school
-                ? onStartPilares
+                ? onDiploma
                 : () => cubit.selectTab(CourseGuideTab.goals),
-            child: Text(school ? t.trainingStartPilares : t.trainingViewGoals),
+            child: Text(school ? t.schoolGraduationOpen : t.trainingViewGoals),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
@@ -436,6 +458,10 @@ class _LessonTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
+        TrainingGoalCard(
+          course: cubit.config.course,
+          place: TrainingGoalCardPlace.home,
+        ),
         CourseContinueCard(
           key: needsProfile ? TrainingProfileKeys.moment : null,
           label: needsProfile
@@ -444,6 +470,8 @@ class _LessonTab extends StatelessWidget {
               ? t.trainingResumeLabel(sectionLabel, index, resumeStageLabel)
               : lesson.kind == TrainingLessonKind.test
               ? sectionLabel
+              : modules
+              ? t.trainingModuleLesson(sectionLabel, index)
               : t.trainingPartLesson(index, sectionLabel),
           title: needsProfile
               ? t.trainingProfileMomentTitle
@@ -501,6 +529,17 @@ class _CatalogTab extends StatefulWidget {
 
 class _CatalogTabState extends State<_CatalogTab> {
   final expanded = <String>{};
+
+  /// Filtro do catálogo (H-TRE-13): com plano, abre em "Meu plano"; a
+  /// escolha do usuário fica salva no estado do treino.
+  bool get _onlyPlan => widget.state.training?.catalogOnlyPlan ?? true;
+
+  Set<String>? get _planIds {
+    final plan = widget.state.training?.studyPlan;
+    if (plan == null || plan.chapterIds.isEmpty) return null;
+    return plan.chapterIds.toSet();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -512,8 +551,15 @@ class _CatalogTabState extends State<_CatalogTab> {
 
   @override
   Widget build(BuildContext context) {
+    final planIds = _planIds;
+    final filtered = _onlyPlan && planIds != null;
     final data = widget.state.resources!.lessons
-        .where((l) => l.visible && l.published)
+        .where(
+          (l) =>
+              l.visible &&
+              l.published &&
+              (!filtered || planIds.contains(l.groupId)),
+        )
         .toList();
     final completed = widget.state.training!.completedLessons;
     final config = context.read<CourseGuideCubit>().config;
@@ -523,10 +569,19 @@ class _CatalogTabState extends State<_CatalogTab> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
+        _CatalogHeader(
+          course: config.course,
+          hasPlan: planIds != null,
+          onlyPlan: filtered,
+          onChanged: (value) => unawaited(
+            context.read<CourseGuideCubit>().setCatalogOnlyPlan(value),
+          ),
+        ),
         for (final (index, group) in groups.entries.indexed) ...[
           if (!modules || expanded.contains(group.key)) ...[
             if (modules)
               Padding(
+                key: CourseGuideKeys.module(group.key),
                 padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
                 child: Text(
                   '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}'
@@ -548,8 +603,7 @@ class _CatalogTabState extends State<_CatalogTab> {
                 ),
               ),
             const SizedBox(height: 8),
-            for (final (lessonIndex, lesson)
-                in data.where((l) => l.groupId == group.key).indexed) ...[
+            for (final lesson in data.where((l) => l.groupId == group.key)) ...[
               CourseItemTile(
                 key: CourseGuideKeys.chapterLesson(lesson.id),
                 state: completed.containsKey(lesson.id)
@@ -560,10 +614,7 @@ class _CatalogTabState extends State<_CatalogTab> {
                           : CourseItemState.started
                     : CourseItemState.open,
                 title: modules
-                    ? context.l10n.trainingLessonLabel(
-                        lessonIndex + 1,
-                        lesson.title,
-                      )
+                    ? lesson.title
                     : lesson.kind == TrainingLessonKind.test
                     ? context.l10n.trainingChapterTestTitle
                     : lesson.title,
@@ -593,6 +644,99 @@ class _CatalogTabState extends State<_CatalogTab> {
             ),
         ],
       ],
+    );
+  }
+}
+
+class _CatalogHeader extends StatelessWidget {
+  const _CatalogHeader({
+    required this.course,
+    required this.hasPlan,
+    required this.onlyPlan,
+    required this.onChanged,
+  });
+  final TrainingCourse course;
+  final bool hasPlan;
+  final bool onlyPlan;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              if (hasPlan)
+                Expanded(
+                  child: SegmentedButton<bool>(
+                    key: TrainingGoalKeys.catalogFilter,
+                    showSelectedIcon: false,
+                    segments: [
+                      ButtonSegment(
+                        value: true,
+                        label: Text(
+                          t.treinoCatalogFilterPlan,
+                          key: TrainingGoalKeys.catalogFilterPlan,
+                        ),
+                      ),
+                      ButtonSegment(
+                        value: false,
+                        label: Text(
+                          t.treinoCatalogFilterAll,
+                          key: TrainingGoalKeys.catalogFilterAll,
+                        ),
+                      ),
+                    ],
+                    selected: {onlyPlan},
+                    onSelectionChanged: (value) => onChanged(value.first),
+                  ),
+                )
+              else
+                const Spacer(),
+              IconButton(
+                key: TrainingGoalKeys.catalogAbout,
+                tooltip: t.treinoAboutPilares,
+                icon: const Icon(Icons.article_outlined),
+                onPressed: () => showLucenaSheet<void>(
+                  context,
+                  builder: (sheetContext) => Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.treinoAboutPilares,
+                          style: Theme.of(sheetContext).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(t.treinoAboutBody),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (hasPlan && onlyPlan)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                key: TrainingGoalKeys.catalogChangePlan,
+                onPressed: () => context.pushNamed(
+                  RouteNames.trainingPlan,
+                  pathParameters: {'course': course.name},
+                  queryParameters: const {'replan': '1'},
+                ),
+                child: Text(t.treinoCatalogChangePlan),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

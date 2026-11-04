@@ -125,7 +125,7 @@ void main() {
       profile: const UserProfile(
         nickname: 'Ana',
         rating: 1850,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
       ),
       account: FakeAccountRepository(
         account: const Account(

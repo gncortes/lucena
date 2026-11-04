@@ -9,15 +9,16 @@ import '../theme/app_text.dart';
 /// os de "O que você quer fazer?" e "Seu nível".
 class ChoiceCard extends StatelessWidget {
   const ChoiceCard({
-    required this.icon,
     required this.title,
     required this.body,
     required this.selected,
     required this.onTap,
+    this.icon,
     super.key,
   });
 
-  final IconData icon;
+  /// Sem ícone, o texto começa na borda (o cartão do Chess.com).
+  final IconData? icon;
   final String title;
   final String body;
   final bool selected;
@@ -54,8 +55,10 @@ class ChoiceCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(icon, size: AppIconSize.large, color: colors.primary),
-                  const SizedBox(width: AppSpacing.md),
+                  if (icon case final icon?) ...[
+                    Icon(icon, size: AppIconSize.large, color: colors.primary),
+                    const SizedBox(width: AppSpacing.md),
+                  ],
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

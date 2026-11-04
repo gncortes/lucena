@@ -1,4 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
+import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
+import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/training/school_training_resources.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/alert_settings.dart';
 import 'package:lucena/domain/models/training/day_goals.dart';
@@ -20,6 +26,7 @@ import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/training/training_scenario_builder.dart';
 
 void main() {
+  escolaPayloadTests();
   final texts = L10nReminderTexts(lookupAppLocalizations(const Locale('pt')));
   test('notificações do treino usam plurais com e sem aula', () {
     for (final n in [1, 3]) {
@@ -245,5 +252,67 @@ void main() {
       goals: [TrainingGoal(kind: GoalKind.exercise, ref: 'theme')],
     );
     expect(reminderText(day)!.arguments, {'n': 1});
+  });
+}
+
+/// T85-D3 H-ESC-21: o toque na notificação da Escola abre a lição pendente
+/// (ou as Metas, sem lição); o Pilares segue para o Início.
+void escolaPayloadTests() {
+  final texts = L10nReminderTexts(lookupAppLocalizations(const Locale('pt')));
+  Future<Map<int, String?>> payloads(
+    TrainingState Function(TrainingScenarioBuilder) build,
+  ) async {
+    final course = AssetLessonRepository.parseCourse(
+      jsonDecode(File('assets/lessons/course.json').readAsStringSync()),
+    );
+    final lessonTexts = LessonTexts.fromJson(
+      jsonDecode(File('assets/lessons/pt/lessons.json').readAsStringSync())
+          as Map<String, dynamic>,
+    );
+    final scenario = TrainingScenarioBuilder(
+      TrainingCourse.escola,
+      resources: schoolTrainingResources(course, lessonTexts),
+    );
+    final training = scenario.repository(build(scenario));
+    addTearDown(training.dispose);
+    final reminders = FakeRemindersRepository();
+    addTearDown(reminders.tapsController.close);
+    final cubit = RemindersCubit(
+      reminders: reminders,
+      activity: FakeActivityRepository(now: scenario.now),
+      week: FakeWeekRepository(
+        WeekSummary(
+          monday: DateTime(2026, 10, 26),
+          finals: 0,
+          perDay: const [0, 0, 0, 0, 0, 0, 0],
+          ratingFrom: 1200,
+          ratingTo: 1200,
+          streakDays: 0,
+          firstTry: 0,
+        ),
+      ),
+      now: scenario.now,
+      training: training,
+      courses: const [TrainingCourseConfig.escola],
+    );
+    addTearDown(cubit.close);
+    await cubit.update(settings: const AlertSettings(), texts: texts);
+    return {
+      for (final n in reminders.scheduled.where(
+        (n) => n.id >= RemindersCubit.trainingFirstId,
+      ))
+        n.id: n.payload,
+    };
+  }
+
+  test('Escola: lembrete de hoje abre a lição pendente', () async {
+    final result = await payloads(
+      (s) => s.schoolDayOne().copyWith(
+        plan: const TrainingPlan(reminderOn: true, reminderHour: 19),
+      ),
+    );
+    final today = result[RemindersCubit.trainingFirstId + 1];
+    expect(today, startsWith('/school/'));
+    expect(today, contains('origem=treino_lembrete'));
   });
 }

@@ -20,4 +20,4 @@ enum TrainingLessonKind { theme, opening, test, school }
 
 enum ThemePhase { cycle, reinforce, redo, firm }
 
-enum CourseGuideTab { lesson, goals, progress, catalog }
+enum CourseGuideTab { lesson, goals, guide, stats, catalog }

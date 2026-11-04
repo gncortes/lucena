@@ -45,4 +45,47 @@ void main() {
     expect(find.text('School destination'), findsOneWidget);
     expect(find.text('Board controls'), findsNothing);
   });
+
+  for (final (hasPlan, destination) in [
+    (false, Routes.pilaresSale),
+    (true, Routes.training('pilares')),
+  ]) {
+    testWidgets(
+      'Pilares do Xadrez ${hasPlan ? 'com plano abre o plano' : 'sem plano '
+                'abre a venda'}',
+      (tester) async {
+        final router = GoRouter(
+          initialLocation: Routes.home,
+          routes: [
+            GoRoute(
+              path: Routes.home,
+              builder: (_, _) => Scaffold(
+                body: ModeTile(
+                  shortcut: HomeShortcut.pillars,
+                  hasPlan: hasPlan,
+                ),
+              ),
+            ),
+            GoRoute(
+              path: destination,
+              builder: (_, _) => const Scaffold(body: Text('Destino')),
+            ),
+          ],
+        );
+        addTearDown(router.dispose);
+        await tester.pumpWidget(
+          TestApp(
+            locale: const Locale('pt'),
+            router: router,
+            child: const SizedBox(),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Pilares do Xadrez'), findsOneWidget);
+        await tester.tap(find.byKey(HomeKeys.pillarsButton));
+        await tester.pumpAndSettle();
+        expect(router.routeInformationProvider.value.uri.path, destination);
+      },
+    );
+  }
 }

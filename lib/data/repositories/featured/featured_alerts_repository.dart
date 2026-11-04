@@ -1,41 +1,26 @@
-/// O aviso de final novo e de torneio começando (E1.20 e E1.21). Hoje não há
-/// canal de aviso: [available] é falso e a tela não mostra o interruptor.
-/// Quando o backend existir, basta trocar esta implementação.
-abstract class FeaturedAlertsRepository {
-  /// Há como avisar? Sem isso, o interruptor "Avisar quando sair final novo"
-  /// não aparece.
-  bool get available;
+import '../../services/preferences_service.dart';
 
-  /// O jogador quer o aviso de final novo?
+/// O aviso geral de finais novos (o sino da lista de finais em destaque,
+/// H-DES-06). É um só: não há aviso por torneio.
+abstract class FeaturedAlertsRepository {
+  /// O jogador quer o aviso de final novo? Desligado por padrão.
   Future<bool> enabled();
 
   Future<void> setEnabled({required bool value});
-
-  /// O jogador quer o aviso deste torneio?
-  Future<bool> tournamentEnabled(String tournamentId);
-
-  Future<void> setTournamentEnabled(String tournamentId, {required bool value});
 }
 
-/// Sem canal de aviso ainda.
-class NoFeaturedAlertsRepository implements FeaturedAlertsRepository {
-  const NoFeaturedAlertsRepository();
+/// Gravado nas preferências do aparelho.
+class LocalFeaturedAlertsRepository implements FeaturedAlertsRepository {
+  LocalFeaturedAlertsRepository(this._preferences);
+
+  final PreferencesService _preferences;
+
+  static const _key = 'featured_notify';
 
   @override
-  bool get available => false;
+  Future<bool> enabled() async => await _preferences.getBool(_key) ?? false;
 
   @override
-  Future<bool> enabled() async => false;
-
-  @override
-  Future<void> setEnabled({required bool value}) async {}
-
-  @override
-  Future<bool> tournamentEnabled(String tournamentId) async => false;
-
-  @override
-  Future<void> setTournamentEnabled(
-    String tournamentId, {
-    required bool value,
-  }) async {}
+  Future<void> setEnabled({required bool value}) =>
+      _preferences.setBool(_key, value: value);
 }

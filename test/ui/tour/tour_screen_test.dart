@@ -3,56 +3,51 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/characters/character_repository.dart';
+import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
+import 'package:lucena/data/repositories/home/home_layout_repository.dart';
+import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/repositories/profile/profile_repository.dart';
+import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
+import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
-import 'package:lucena/domain/models/character.dart';
-import 'package:lucena/domain/models/user_profile.dart';
-import 'package:lucena/domain/models/lesson.dart';
-import 'package:lucena/domain/models/lesson_content.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/onboarding.dart';
+import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/ui/core/widgets/choice_card.dart';
+import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/viktor_conversation.dart';
-import 'package:lucena/domain/models/voice.dart';
-import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena/ui/tour/widgets/tour_screen.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/voice/widgets/voice_pickers.dart';
 
+import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_chesscom_repository.dart';
+import '../../../testing/fakes/fake_home_layout_repository.dart';
+import '../../../testing/fakes/fake_lichess_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_sync_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
-import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
-
-const _longSpeech =
-    'Bem-vindo, meu aluno. Eu sou o Viktor e vou lhe mostrar, passo a passo, '
-    'como se ganha um final de partida com calma e com método, do começo até '
-    'o último lance, sem pressa nenhuma.';
-
-final _texts = LessonTexts.fromJson({
-  'tour.board': _longSpeech,
-  'tour.voice': 'Escolha a minha voz.',
-  'tour.voice.none': 'Só o seu nome, então.',
-  'tour.school': 'Cada lição tem três etapas.',
-  'tour.help': 'Ficou difícil? Peça ajuda.',
-  'tour.play': 'Depois, jogue contra os adversários.',
-  'tour.voice.link': 'Bela partida!',
-});
-
-class _UnavailableLessons extends FakeLessonRepository {
-  @override
-  Future<LessonTexts> texts(String language) async =>
-      throw const LessonContentUnavailable();
-}
 
 void main() {
   late FakeSettingsRepository settings;
@@ -67,8 +62,7 @@ void main() {
     Size size = const Size(412, 915),
     bool voices = true,
     bool link = false,
-    bool unavailable = false,
-    List<Character>? characters,
+    bool learn = false,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
@@ -92,37 +86,63 @@ void main() {
     onboarding = FakeOnboardingRepository(
       Onboarding(step: step.index, linkSetupDone: link),
     );
-    profile = FakeProfileRepository();
+    profile = FakeProfileRepository(
+      learn
+          ? const UserProfile(goal: GoalPreference.learn)
+          : const UserProfile(),
+    );
     final router = GoRouter(
+      initialLocation: Routes.tour,
       routes: [
         GoRoute(
-          path: Routes.home,
+          path: Routes.tour,
           builder: (_, _) => BlocProvider(
             create: (_) => TourCubit(
               onboarding: onboarding,
               profile: profile,
-              characters: FakeCharacterRepository(characters: characters),
-              lessons: unavailable
-                  ? _UnavailableLessons()
-                  : FakeLessonRepository(texts: _texts),
+              characters: FakeCharacterRepository(),
               voice: voices ? voiceRepository : null,
             )..load('pt'),
             child: const TourScreen(),
           ),
         ),
         GoRoute(
-          path: Routes.goal,
-          builder: (_, _) => const Scaffold(body: Text('rota-objetivo')),
+          path: Routes.home,
+          builder: (_, _) => const Scaffold(body: Text('rota-inicio')),
         ),
       ],
     );
+    final accounts = FakeAccountRepository();
+    final sync = SyncScheduler(accounts, FakeSyncRepository());
+    addTearDown(sync.dispose);
     await tester.pumpWidget(
-      TestApp(
-        locale: const Locale('pt'),
-        settingsCubit: settingsCubit,
-        speechCubit: speech,
-        router: router,
-        child: const SizedBox(),
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AccountRepository>.value(value: accounts),
+          RepositoryProvider<OnboardingRepository>.value(value: onboarding),
+          RepositoryProvider<ProfileRepository>.value(value: profile),
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
+          RepositoryProvider<LichessRepository>.value(
+            value: FakeLichessRepository(),
+          ),
+          RepositoryProvider<ChessComRepository>.value(
+            value: FakeChessComRepository(),
+          ),
+          RepositoryProvider<HomeLayoutRepository>.value(
+            value: FakeHomeLayoutRepository(),
+          ),
+          RepositoryProvider<SyncScheduler>.value(value: sync),
+          RepositoryProvider<Now>.value(value: FakeNow(DateTime(2026, 11, 4))),
+        ],
+        child: TestApp(
+          locale: const Locale('pt'),
+          settingsCubit: settingsCubit,
+          speechCubit: speech,
+          router: router,
+          child: const SizedBox(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -134,51 +154,73 @@ void main() {
       .descendant(of: find.byKey(TourKeys.viktor), matching: find.byType(Image))
       .first;
 
+  double barValue(WidgetTester tester) => tester
+      .widget<LinearProgressIndicator>(
+        find.descendant(
+          of: find.byKey(TourKeys.progress),
+          matching: find.byType(LinearProgressIndicator),
+        ),
+      )
+      .value!;
+
+  String speechText(WidgetTester tester) => tester
+      .widget<ViktorConversation>(find.byType(ViktorConversation))
+      .speech!;
+
   const sizes = [Size(412, 915), Size(360, 640)];
 
-  for (final voices in [true, false]) {
-    for (final link in [false, true]) {
-      testWidgets('guest tour has public speech without package '
-          '(voices: $voices, link: $link)', (tester) async {
+  group('a fala de cada passo é a do canvas', () {
+    for (final voices in [true, false]) {
+      testWidgets('(com voz: $voices)', (tester) async {
         final l10n = await AppLocalizations.delegate.load(const Locale('pt'));
-        await pumpTour(tester, voices: voices, link: link, unavailable: true);
+        await pumpTour(tester, voices: voices);
         final expected = [
-          if (!link) l10n.tourSpeechBoard,
-          if (link)
-            voices ? l10n.tourSpeechVoiceLink : l10n.tourSpeechVoiceLinkNone
-          else
-            voices ? l10n.tourSpeechVoice : l10n.tourSpeechVoiceNone,
-          l10n.tourSpeechSchool,
-          l10n.tourSpeechHelp,
-          l10n.tourSpeechPlay,
+          l10n.tourSpeechBoard,
+          l10n.tourSpeechTheme,
+          voices ? l10n.tourSpeechVoice : l10n.tourSpeechVoiceNone,
+          l10n.tourSpeechLevel,
+          l10n.tourSpeechRegion,
+          l10n.tourSpeechAccount,
         ];
         for (var index = 0; index < expected.length; index++) {
           expect(tester.takeException(), isNull);
-          expect(find.byKey(TourKeys.speech), findsOneWidget);
-          expect(
-            tester
-                .widget<ViktorConversation>(find.byType(ViktorConversation))
-                .speech,
-            expected[index],
-          );
+          expect(speechText(tester), expected[index]);
           if (index < expected.length - 1) {
-            await tester.tap(find.byKey(TourKeys.nextButton));
+            // O Nível tem o "Continuar" dele e grava; "Pular" basta aqui.
+            await tester.tap(
+              find.byKey(
+                expected[index] == l10n.tourSpeechLevel
+                    ? TourKeys.skipButton
+                    : TourKeys.nextButton,
+              ),
+            );
             await tester.pumpAndSettle();
           }
         }
-        await tester.tap(find.byKey(TourKeys.startButton));
-        await tester.pumpAndSettle();
-        expect(find.text('rota-objetivo'), findsOneWidget);
       });
     }
-  }
+
+    testWidgets('texto da voz exatamente como no canvas', (tester) async {
+      await pumpTour(tester, step: TourStep.voice);
+      expect(
+        speechText(tester),
+        'Posso ler em voz alta tudo o que eu disser. Toque em uma voz para '
+        'ouvir.',
+      );
+      expect(
+        tester.widget<Text>(find.byKey(TourKeys.voiceHint)).data,
+        'Os adversários usam uma voz do aparelho. A minha voz muda depois '
+        'nas Configurações, e o seu nome, no Perfil.',
+      );
+    });
+  });
 
   group('layout, em 412x915 e 360x640', () {
     for (final size in sizes) {
       for (final step in TourStep.values) {
         testWidgets(
           '${step.name} em ${size.width.toInt()}x${size.height.toInt()} '
-          'cabe, com o botão de 52 a 16 dos lados e 8 do fundo',
+          'cabe, com a barra na fração do canvas',
           (tester) async {
             await pumpTour(tester, step: step, size: size);
             expect(tester.takeException(), isNull);
@@ -190,13 +232,15 @@ void main() {
             expect(progress.left, 0);
             expect(progress.width, size.width);
             expect(progress.top, closeTo(56, 1));
-            final bar = tester.widget<LinearProgressIndicator>(
-              find.descendant(
-                of: find.byKey(TourKeys.progress),
-                matching: find.byType(LinearProgressIndicator),
-              ),
-            );
-            expect(bar.value, closeTo((step.index + 1) / 5, 0.001));
+            const fractions = {
+              TourStep.board: 0.20,
+              TourStep.theme: 0.30,
+              TourStep.voice: 0.40,
+              TourStep.level: 0.60,
+              TourStep.region: 0.80,
+              TourStep.account: 1.0,
+            };
+            expect(barValue(tester), closeTo(fractions[step]!, 0.001));
 
             // Retrato do Viktor: 64, a 16 da esquerda.
             final avatar = rect(tester, avatarImage());
@@ -208,13 +252,21 @@ void main() {
             expect(balloon.left, closeTo(16, 1));
             expect(size.width - balloon.right, closeTo(16, 1));
 
-            // Botão de baixo.
+            // Botão de baixo (a Conta tem os dela dentro do passo).
             final button = rect(
               tester,
-              find.byKey(
-                step.isLast ? TourKeys.startButton : TourKeys.nextButton,
-              ),
+              find.byKey(switch (step) {
+                TourStep.level => LevelKeys.continueButton,
+                TourStep.account => TourKeys.accountLater,
+                _ => TourKeys.nextButton,
+              }),
             );
+            if (step == TourStep.account) {
+              expect(find.byKey(TourKeys.accountGoogle), findsOneWidget);
+              expect(find.byKey(TourKeys.accountEmail), findsOneWidget);
+              expect(find.byKey(TourKeys.nextButton), findsNothing);
+              return;
+            }
             expect(button.height, 52);
             expect(button.left, closeTo(16, 1));
             expect(size.width - button.right, closeTo(16, 1));
@@ -241,6 +293,12 @@ void main() {
   });
 
   group('barra do alto', () {
+    testWidgets('sem pontinhos nem "n/N"', (tester) async {
+      await pumpTour(tester);
+      expect(find.textContaining(RegExp(r'\d+/\d+')), findsNothing);
+      expect(find.textContaining('Passo'), findsNothing);
+    });
+
     testWidgets('Voltar some no primeiro passo e deixa o espaço de 56; Pular '
         'fica no mesmo lugar nos dois primeiros', (tester) async {
       await pumpTour(tester);
@@ -280,39 +338,60 @@ void main() {
       expect(find.byKey(TourKeys.openLink), findsNothing);
     });
 
-    testWidgets('no último passo não há Pular e há Voltar', (tester) async {
-      await pumpTour(tester, step: TourStep.play);
+    testWidgets('na Conta não há Pular, e há Voltar', (tester) async {
+      await pumpTour(tester, step: TourStep.account);
       expect(find.byKey(TourKeys.skipButton), findsNothing);
       expect(find.byKey(TourKeys.backButton), findsOneWidget);
+      expect(barValue(tester), 1);
     });
 
     testWidgets('Continuar e Voltar andam pelos passos', (tester) async {
       await pumpTour(tester);
       await tester.tap(find.byKey(TourKeys.nextButton));
       await tester.pumpAndSettle();
-      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
+      expect(find.byKey(TourKeys.step(TourStep.theme)), findsOneWidget);
       await tester.tap(find.byKey(TourKeys.backButton));
       await tester.pumpAndSettle();
       expect(find.byKey(TourKeys.step(TourStep.board)), findsOneWidget);
     });
 
-    testWidgets('Pular leva à pergunta do objetivo, sem dar o tour por visto', (
+    testWidgets('Pular pula só o passo: Voz vai ao Nível e Região à Conta', (
       tester,
     ) async {
-      await pumpTour(tester);
+      await pumpTour(tester, step: TourStep.voice);
       await tester.tap(find.byKey(TourKeys.skipButton));
       await tester.pumpAndSettle();
-      expect(find.text('rota-objetivo'), findsOneWidget);
+      expect(find.byKey(TourKeys.step(TourStep.level)), findsOneWidget);
+      expect(barValue(tester), closeTo(0.6, 0.001));
+      expect(voice.settings.enabled, isFalse);
+      await tester.tap(find.byKey(TourKeys.skipButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.region)), findsOneWidget);
+      await tester.tap(find.byKey(TourKeys.skipButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.account)), findsOneWidget);
       expect(onboarding.saved.done, isFalse);
     });
 
-    testWidgets('Continuar no último passo leva à pergunta do objetivo', (
+    testWidgets('sair da Conta leva ao Início e dá o tour por visto', (
       tester,
     ) async {
-      await pumpTour(tester, step: TourStep.play);
-      await tester.tap(find.byKey(TourKeys.startButton));
+      await pumpTour(tester, step: TourStep.account);
+      await tester.tap(find.byKey(TourKeys.accountLater));
       await tester.pumpAndSettle();
-      expect(find.text('rota-objetivo'), findsOneWidget);
+      expect(find.text('rota-inicio'), findsOneWidget);
+      expect(onboarding.saved.done, isTrue);
+    });
+
+    testWidgets('com Aprender a jogar não há Nível e a Região fica em 75%', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.voice, learn: true);
+      expect(barValue(tester), closeTo(0.5, 0.001));
+      await tester.tap(find.byKey(TourKeys.nextButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.region)), findsOneWidget);
+      expect(barValue(tester), closeTo(0.75, 0.001));
     });
   });
 
@@ -334,13 +413,6 @@ void main() {
       await tester.tap(find.byKey(TourKeys.speech));
       await tester.pumpAndSettle();
       expect(find.byKey(LessonScriptKeys.speechSheet), findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byKey(LessonScriptKeys.speechSheet),
-          matching: find.textContaining('último lance', findRichText: true),
-        ),
-        findsOneWidget,
-      );
       await tester.tap(find.byKey(LessonScriptKeys.speechSheetClose));
       await tester.pumpAndSettle();
       expect(find.byKey(LessonScriptKeys.speechSheet), findsNothing);
@@ -348,18 +420,52 @@ void main() {
   });
 
   group('passo 1, tabuleiro', () {
-    testWidgets('a amostra tem 216 e fica centrada', (tester) async {
+    testWidgets('a amostra ocupa a largura toda', (tester) async {
       await pumpTour(tester);
       final preview = rect(tester, find.byKey(TourKeys.boardPreview));
-      expect(preview.width, 216);
-      expect(preview.center.dx, closeTo(206, 1));
+      expect(preview.width, 412);
+      expect(preview.left, 0);
+    });
+
+    testWidgets('abre em Cores; "Peças" troca o carrossel', (tester) async {
+      await pumpTour(tester);
+      expect(
+        find.byKey(TourKeys.boardColors(BoardColors.green)),
+        findsOneWidget,
+      );
+      expect(find.byKey(TourKeys.boardPieces(PieceStyle.merida)), findsNothing);
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(TourKeys.boardTabs),
+          matching: find.text('Peças'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(TourKeys.boardPieces(PieceStyle.merida)),
+        findsOneWidget,
+      );
+      expect(find.byKey(TourKeys.boardColors(BoardColors.green)), findsNothing);
     });
 
     testWidgets('cores e peças mudam a amostra e ficam gravadas', (
       tester,
     ) async {
       await pumpTour(tester);
+      await tester.ensureVisible(
+        find.byKey(TourKeys.boardColors(BoardColors.green)),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(TourKeys.boardColors(BoardColors.green)));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(TourKeys.boardTabs));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(TourKeys.boardTabs),
+          matching: find.text('Peças'),
+        ),
+      );
       await tester.pumpAndSettle();
       await tester.ensureVisible(
         find.byKey(TourKeys.boardPieces(PieceStyle.merida)),
@@ -388,61 +494,63 @@ void main() {
       expect(tester.widget<SwitchListTile>(tile).value, isFalse);
       expect(settings.saved.last.sound, isFalse);
     });
+  });
 
-    testWidgets('a cor escolhida vale nos tabuleiros dos passos 3 e 4', (
+  group('passo 2, tema', () {
+    testWidgets('três cartões, com "Padrão do sistema" marcado', (
       tester,
     ) async {
-      await pumpTour(tester);
-      await tester.tap(find.byKey(TourKeys.boardColors(BoardColors.green)));
+      await pumpTour(tester, step: TourStep.theme);
+      bool selected(Key key) =>
+          tester.widget<VoiceCard>(find.byKey(key)).selected;
+      expect(selected(TourKeys.themeSystem), isTrue);
+      expect(selected(TourKeys.themeLight), isFalse);
+      expect(selected(TourKeys.themeDark), isFalse);
+      expect(find.text('Padrão do sistema'), findsOneWidget);
+      expect(find.text('Claro'), findsOneWidget);
+      expect(find.text('Escuro'), findsOneWidget);
+    });
+
+    testWidgets('tocar em "Claro" marca só ele e grava a preferência', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.theme);
+      await tester.tap(find.byKey(TourKeys.themeLight));
       await tester.pumpAndSettle();
-      // Voz, depois aulas (passo 3).
-      for (var i = 0; i < 2; i++) {
-        await tester.tap(find.byKey(TourKeys.nextButton));
-        await tester.pumpAndSettle();
-      }
-      Object scheme() => tester
-          .widget<StaticChessboard>(find.byType(StaticChessboard))
-          .settings
-          .colorScheme;
-      expect(scheme(), BoardColors.green.scheme);
-      await tester.tap(find.byKey(TourKeys.nextButton));
-      await tester.pumpAndSettle();
-      expect(scheme(), BoardColors.green.scheme);
+      expect(
+        tester.widget<VoiceCard>(find.byKey(TourKeys.themeLight)).selected,
+        isTrue,
+      );
+      expect(
+        tester.widget<VoiceCard>(find.byKey(TourKeys.themeSystem)).selected,
+        isFalse,
+      );
+      expect(settings.saved.last.themeMode, AppThemeMode.light);
     });
   });
 
   group('vindo de um link', () {
-    testWidgets('abre na voz, com a fala do Viktor sobre a partida, sem o '
-        'tabuleiro e com quatro passos', (tester) async {
+    testWidgets('abre no tema, sem o tabuleiro e sem seta de voltar', (
+      tester,
+    ) async {
       await pumpTour(tester, link: true);
-      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
+      expect(find.byKey(TourKeys.step(TourStep.theme)), findsOneWidget);
       expect(find.byKey(TourKeys.backButton), findsNothing);
-      expect(find.text('Bela partida!'), findsOneWidget);
-      final bar = tester.widget<LinearProgressIndicator>(
-        find.descendant(
-          of: find.byKey(TourKeys.progress),
-          matching: find.byType(LinearProgressIndicator),
-        ),
-      );
-      expect(bar.value, closeTo(1 / 4, 0.001));
       await tester.tap(find.byKey(TourKeys.nextButton));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(TourKeys.backButton));
       await tester.pumpAndSettle();
-      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
+      expect(find.byKey(TourKeys.step(TourStep.theme)), findsOneWidget);
     });
 
-    testWidgets('Pular vai direto ao objetivo, sem a folha de conta', (
-      tester,
-    ) async {
-      await pumpTour(tester, link: true);
-      await tester.tap(find.byKey(TourKeys.skipButton));
-      await tester.pumpAndSettle();
-      expect(find.text('rota-objetivo'), findsOneWidget);
+    testWidgets('na voz, a fala é a de quem acabou de jogar', (tester) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('pt'));
+      await pumpTour(tester, link: true, step: TourStep.voice);
+      expect(speechText(tester), l10n.tourSpeechVoiceLink);
     });
   });
 
-  group('passo 2, voz e nome', () {
+  group('passo 3, voz e nome', () {
     testWidgets('o campo do nome grava o apelido no perfil', (tester) async {
       await pumpTour(tester, step: TourStep.voice);
       await tester.enterText(find.byKey(TourKeys.nameField), 'Ana');
@@ -454,7 +562,7 @@ void main() {
         'velocidade e sem o botão de som (PropV2TourBVoz)', (tester) async {
       await pumpTour(tester, step: TourStep.voice);
       expect(voice.settings.enabled, isFalse);
-      final none = tester.widget<VoiceCard>(find.byKey(VoiceKeys.none));
+      final none = tester.widget<VoiceCard>(find.byKey(TourKeys.voiceNone));
       expect(none.selected, isTrue);
       final header = find.byKey(TourKeys.viktor);
       expect(
@@ -473,13 +581,29 @@ void main() {
       );
     });
 
+    testWidgets('os cartões vêm antes do nome: Voz 1, Voz 2... e Sem voz', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.voice);
+      expect(find.text('Voz 1'), findsOneWidget);
+      expect(find.text('Voz 2'), findsOneWidget);
+      expect(
+        rect(tester, find.byKey(TourKeys.voiceCard(1))).top,
+        lessThan(rect(tester, find.byKey(TourKeys.nameField)).top),
+      );
+    });
+
     testWidgets('escolhida a Voz 1, o cabeçalho mostra "1×" e o botão de som '
         '(PropV2TourBVozEscolhida)', (tester) async {
       await pumpTour(tester, step: TourStep.voice);
-      await tester.ensureVisible(find.byKey(VoiceKeys.voice('pt-br-a')));
-      await tester.tap(find.byKey(VoiceKeys.voice('pt-br-a')));
+      await tester.ensureVisible(find.byKey(TourKeys.voiceCard(1)));
+      await tester.tap(find.byKey(TourKeys.voiceCard(1)));
       await tester.pumpAndSettle();
       expect(voice.settings.enabled, isTrue);
+      expect(
+        tester.widget<VoiceCard>(find.byKey(TourKeys.voiceCard(1))).selected,
+        isTrue,
+      );
       final header = find.byKey(TourKeys.viktor);
       final speed = find.descendant(
         of: header,
@@ -507,13 +631,13 @@ void main() {
       for (final tone in VoiceTone.values) {
         expect(find.byKey(VoiceKeys.tone(tone)), findsNothing);
       }
-      await tester.ensureVisible(find.byKey(VoiceKeys.voice('pt-br-c')));
-      await tester.tap(find.byKey(VoiceKeys.voice('pt-br-c')));
+      await tester.ensureVisible(find.byKey(TourKeys.voiceCard(3)));
+      await tester.tap(find.byKey(TourKeys.voiceCard(3)));
       await tester.pumpAndSettle();
       expect(voice.settings.enabled, isTrue);
       expect(voice.settings.teacherVoice, 'pt-br-c');
-      await tester.ensureVisible(find.byKey(VoiceKeys.none));
-      await tester.tap(find.byKey(VoiceKeys.none));
+      await tester.ensureVisible(find.byKey(TourKeys.voiceNone));
+      await tester.tap(find.byKey(TourKeys.voiceNone));
       await tester.pumpAndSettle();
       expect(voice.settings.enabled, isFalse);
     });
@@ -523,82 +647,105 @@ void main() {
     ) async {
       await pumpTour(tester, step: TourStep.voice, voices: false);
       expect(find.byKey(TourKeys.nameField), findsOneWidget);
-      expect(find.byKey(VoiceKeys.none), findsNothing);
-      expect(find.textContaining('Só o seu nome'), findsWidgets);
+      expect(find.byKey(TourKeys.voiceNone), findsNothing);
+      expect(find.textContaining('diga como devo chamar'), findsWidgets);
     });
   });
 
-  group('passos 3 a 5', () {
-    testWidgets('aulas: três etapas e tabuleiro de 176 centrado', (
-      tester,
-    ) async {
-      await pumpTour(tester, step: TourStep.school);
-      expect(find.byKey(TourKeys.stages), findsOneWidget);
-      final board = rect(tester, find.byType(PositionBoard));
-      expect(board.width, 176);
-      expect(board.center.dx, closeTo(206, 1));
-      expect(find.text('Ideia'), findsOneWidget);
-      expect(find.text('Exemplos'), findsOneWidget);
-      expect(find.text('Prática'), findsOneWidget);
-    });
-
-    testWidgets('ajuda: tabuleiro de 200 centrado e "Ver resposta" de 48', (
-      tester,
-    ) async {
-      await pumpTour(tester, step: TourStep.help);
-      expect(find.byKey(TourKeys.helpButtons), findsOneWidget);
-      final board = rect(tester, find.byType(PositionBoard));
-      expect(board.width, 200);
-      expect(board.center.dx, closeTo(206, 1));
-      expect(find.text('Ver resposta'), findsOneWidget);
-      expect(
-        rect(tester, find.byKey(TourKeys.helpButtons)).height,
-        greaterThanOrEqualTo(48),
-      );
-    });
-
-    testWidgets('partidas: os 4 personagens de menor nível, o Stockfish e o '
-        'rating do perfil', (tester) async {
-      Character at(String id, String name, int level) => Character(
-        id: id,
-        level: level,
-        name: name,
-        tagline: const {},
-        personality: const {},
-        traits: const [],
-        avatar: FakeCharacterRepository.magician.avatar,
-      );
-      await pumpTour(
-        tester,
-        step: TourStep.play,
-        characters: [
-          at('e', 'Eva', 2200),
-          at('b', 'Bia', 1200),
-          FakeCharacterRepository.viktor,
-          at('d', 'Davi', 1800),
-          at('a', 'Ana', 1000),
-          at('c', 'Caio', 1500),
-        ],
-      );
-      Finder inRow(String text) => find.descendant(
-        of: find.byKey(TourKeys.opponents),
-        matching: find.text(text),
-      );
-      for (final name in ['Ana', 'Bia', 'Caio', 'Davi']) {
-        expect(inRow(name), findsOneWidget, reason: name);
+  group('passo 4, nível', () {
+    testWidgets('cinco cartões, "Estou começando" marcado', (tester) async {
+      await pumpTour(tester, step: TourStep.level);
+      for (final choice in [
+        LevelChoice.zero,
+        LevelChoice.test,
+        LevelChoice.lichess,
+        LevelChoice.chess,
+        LevelChoice.band,
+      ]) {
+        expect(find.byKey(LevelKeys.option(choice)), findsOneWidget);
       }
-      expect(inRow('Eva'), findsNothing);
-      expect(inRow('Viktor'), findsNothing);
-      expect(inRow('1000'), findsOneWidget);
-      expect(inRow('1800'), findsOneWidget);
-      expect(inRow('Stockfish'), findsOneWidget);
       expect(
-        find.descendant(
-          of: find.byKey(TourKeys.ratingChip),
-          matching: find.text('Rating ${UserProfile.defaultRating}'),
-        ),
-        findsOneWidget,
+        tester
+            .widget<ChoiceCard>(find.byKey(LevelKeys.option(LevelChoice.zero)))
+            .selected,
+        isTrue,
       );
+    });
+
+    testWidgets('a faixa abre a folha, Confirmar marca e mostra onde começa', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.level);
+      final card = find.byKey(LevelKeys.option(LevelChoice.band));
+      await tester.ensureVisible(card);
+      await tester.tap(card);
+      await tester.pumpAndSettle();
+      expect(find.byKey(LevelKeys.bandSheet), findsOneWidget);
+      await tester.tap(find.byKey(LevelKeys.bandOption(RatingLevel.advanced)));
+      await tester.tap(find.byKey(LevelKeys.bandConfirm));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LevelKeys.bandSheet), findsNothing);
+      expect(find.textContaining('A Jornada começa no Maia'), findsOneWidget);
+      expect(
+        tester
+            .widget<ChoiceCard>(find.byKey(LevelKeys.option(LevelChoice.band)))
+            .selected,
+        isTrue,
+      );
+    });
+
+    testWidgets('Continuar com "Estou começando" segue para a região', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.level);
+      await tester.tap(find.byKey(LevelKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.region)), findsOneWidget);
+      expect(onboarding.saved.done, isFalse);
+    });
+  });
+
+  group('passo 5, região', () {
+    testWidgets('a cidade espera o estado, e o país vem da busca', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.region);
+      await tester.tap(find.byKey(TourKeys.regionCountry));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(TourKeys.regionSearch), 'Brasil');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.regionOption('BR')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.regionState));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(TourKeys.regionSearch), 'São Paulo');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.regionOption('SP')));
+      await tester.pumpAndSettle();
+      expect(find.text('São Paulo'), findsOneWidget);
+      await tester.tap(find.byKey(TourKeys.nextButton));
+      await tester.pumpAndSettle();
+      expect(profile.profile.country, 'BR');
+      expect(profile.profile.state, 'SP');
+      expect(find.byKey(TourKeys.step(TourStep.account)), findsOneWidget);
+    });
+
+    testWidgets('Pular não grava nada', (tester) async {
+      await pumpTour(tester, step: TourStep.region);
+      await tester.tap(find.byKey(TourKeys.skipButton));
+      await tester.pumpAndSettle();
+      expect(profile.saved.where((p) => p.country != null), isEmpty);
+      expect(find.byKey(TourKeys.step(TourStep.account)), findsOneWidget);
+    });
+  });
+
+  group('passo 6, conta', () {
+    testWidgets('convite sem "Pular" e sem rodapé do tour', (tester) async {
+      await pumpTour(tester, step: TourStep.account);
+      expect(find.byKey(TourKeys.accountGoogle), findsOneWidget);
+      expect(find.byKey(TourKeys.accountEmail), findsOneWidget);
+      expect(find.byKey(TourKeys.accountLogin), findsOneWidget);
+      expect(find.byKey(TourKeys.skipButton), findsNothing);
     });
   });
 }

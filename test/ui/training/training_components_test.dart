@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
-import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/widgets/course/course_item_tile.dart';
@@ -198,10 +197,16 @@ void main() {
           child: Scaffold(
             body: side == Side.white
                 ? const HeroCard(
-                    state: HomeState(ready: true, goal: GoalPreference.learn),
+                    state: HomeState(
+                      ready: true,
+                      school: SchoolSummary(done: 2, total: 6, teacher: null),
+                    ),
                   )
                 : const HeroCard(
-                    state: HomeState(ready: true, goal: GoalPreference.learn),
+                    state: HomeState(
+                      ready: true,
+                      school: SchoolSummary(done: 2, total: 6, teacher: null),
+                    ),
                     orientation: Side.black,
                   ),
           ),

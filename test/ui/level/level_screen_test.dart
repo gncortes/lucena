@@ -65,6 +65,7 @@ void main() {
           readAt: _readAt,
           blitz: const ModeRating(rating: 1405, games: 512),
         ),
+        'sem_partidas': PlatformRating(user: 'sem_partidas', readAt: _readAt),
       },
     );
   });
@@ -374,15 +375,55 @@ void main() {
     expect(profile.profile.rating, 1500);
   });
 
-  testWidgets('Lichess sem rede avisa e fica no Seu nível', (tester) async {
+  testWidgets('Lichess sem rede abre a tela "Sem internet"; Voltar fecha', (
+    tester,
+  ) async {
     lichess.failure = LichessFailure.network;
     await pumpLevel(tester);
     await choose(tester, LevelChoice.lichess);
     expect(find.byKey(LevelKeys.lichessScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsOneWidget);
     expect(
-      find.text("Couldn't reach Lichess. Check your connection."),
+      find.text('You need an internet connection to reach Lichess.'),
       findsOneWidget,
     );
+    await tester.tap(find.byKey(LevelKeys.lichessOfflineBack));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsNothing);
+    expect(find.byKey(LevelKeys.screen), findsOneWidget);
+  });
+
+  testWidgets('Lichess sem rede: Tentar de novo conecta e mostra o rating', (
+    tester,
+  ) async {
+    lichess.failure = LichessFailure.network;
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.lichess);
+    lichess.failure = null;
+    await tester.tap(find.byKey(LevelKeys.lichessRetry));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessScreen), findsOneWidget);
+    expect(find.text('1712'), findsOneWidget);
+  });
+
+  testWidgets('Lichess recusado: aviso com "Tentar de novo", sem tela nova', (
+    tester,
+  ) async {
+    lichess.failure = LichessFailure.cancelled;
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.lichess);
+    expect(find.byKey(LevelKeys.lichessScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessCancelledSnack), findsOneWidget);
+    expect(
+      find.text('Could not finish the Lichess authorization'),
+      findsOneWidget,
+    );
+    lichess.failure = null;
+    await tester.tap(find.byKey(LevelKeys.lichessSnackRetry));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.lichessScreen), findsOneWidget);
   });
 
   testWidgets('Chess.com: não achado mostra o erro; achado usa o convertido', (
@@ -393,15 +434,20 @@ void main() {
     expect(find.byKey(LevelKeys.chessScreen), findsOneWidget);
     final use = find.byKey(LevelKeys.chessUse);
     await tester.enterText(find.byKey(LevelKeys.chessField), 'ninguem');
-    await tester.testTextInput.receiveAction(TextInputAction.search);
+    // Sem busca automática: só o botão procura.
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.textContaining("couldn't find this user"), findsNothing);
+    await tester.tap(find.byKey(LevelKeys.chessSearch));
     await tester.pumpAndSettle();
     expect(
-      find.text("I couldn't find this user on Chess.com."),
+      find.text(
+        "I couldn't find this user on Chess.com. Check how it is spelled.",
+      ),
       findsOneWidget,
     );
     expect(tester.widget<FilledButton>(use).onPressed, isNull);
     await tester.enterText(find.byKey(LevelKeys.chessField), 'gabriel_finais');
-    await tester.pump(const Duration(milliseconds: 700));
+    await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
     expect(find.text('Found: gabriel_finais'), findsOneWidget);
     expect(find.textContaining('Lucena rating starts at 1650'), findsOneWidget);
@@ -409,6 +455,41 @@ void main() {
     await tester.pumpAndSettle();
     expect(profile.profile.rating, 1650);
     expect(profile.profile.chessComUser, 'gabriel_finais');
+  });
+
+  testWidgets('Chess.com sem rede: tela "Sem internet" no lugar', (
+    tester,
+  ) async {
+    chessCom.offline = true;
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.chess);
+    await tester.enterText(find.byKey(LevelKeys.chessField), 'gabriel_finais');
+    await tester.tap(find.byKey(LevelKeys.chessSearch));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.chessOfflineScreen), findsOneWidget);
+    expect(
+      find.text('You need an internet connection to reach Chess.com.'),
+      findsOneWidget,
+    );
+    chessCom.offline = false;
+    await tester.tap(find.byKey(LevelKeys.chessRetry));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.chessOfflineScreen), findsNothing);
+    expect(find.text('Found: gabriel_finais'), findsOneWidget);
+  });
+
+  testWidgets('Chess.com sem rating: teste e faixa no lugar de "Usar"', (
+    tester,
+  ) async {
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.chess);
+    await tester.enterText(find.byKey(LevelKeys.chessField), 'sem_partidas');
+    await tester.tap(find.byKey(LevelKeys.chessSearch));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.chessNoRating), findsOneWidget);
+    expect(find.byKey(LevelKeys.chessUse), findsNothing);
+    expect(find.byKey(LevelKeys.chessTest), findsOneWidget);
+    expect(find.byKey(LevelKeys.chessPickBand), findsOneWidget);
   });
 
   testWidgets('com o teclado aberto, "Usar esse rating" fica acima dele', (

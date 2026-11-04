@@ -188,6 +188,8 @@ class GameSetupCubit extends Cubit<GameSetupState> {
   final bool initialBlind;
 
   Future<void> load() async {
+    // "Tentar novamente": volta ao esqueleto enquanto lê de novo.
+    if (state.failed) emit(state.copyWith(failed: false, ready: false));
     try {
       await _load();
     } on Object catch (error, stack) {

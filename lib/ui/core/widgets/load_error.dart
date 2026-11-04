@@ -39,13 +39,13 @@ class LoadErrorScreen extends StatelessWidget {
     this.onFreeSpace,
     this.showAction = true,
     this.message,
+    this.backLabel,
+    this.actionKey,
+    this.backKey,
     super.key,
   });
 
   final LoadErrorKind kind;
-
-  /// O texto do caso no lugar do padrão do [kind] ("criar a conta", H-CON-09).
-  final String? message;
 
   /// Assíncrona: o botão fica em carregando até ela terminar.
   final FutureOr<void> Function() onAction;
@@ -53,11 +53,22 @@ class LoadErrorScreen extends StatelessWidget {
   final VoidCallback? onFreeSpace;
   final bool showAction;
 
+  /// Troca o texto padrão do tipo ("para atualizar o Lucena"; "criar a
+  /// conta", H-CON-09).
+  final String? message;
+
+  /// Troca o rótulo de [onBack] (ex.: "Agora não").
+  final String? backLabel;
+
+  /// Keys próprias dos botões (padrão: as de [LoadErrorKeys]).
+  final Key? actionKey;
+  final Key? backKey;
+
   @override
   Widget build(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
-    final (title, kindMessage, icon) = switch (kind) {
+    final (title, defaultMessage, icon) = switch (kind) {
       LoadErrorKind.generic => (
         t.loadErrorGenericTitle,
         null,
@@ -100,7 +111,7 @@ class LoadErrorScreen extends StatelessWidget {
         CanvasSymbols.error,
       ),
     };
-    final message = this.message ?? kindMessage;
+    final message = this.message ?? defaultMessage;
     final freeSpace = kind == LoadErrorKind.noSpace ? onFreeSpace : null;
     final actionLabel = kind == LoadErrorKind.notFound
         ? t.loadErrorHome
@@ -164,16 +175,16 @@ class LoadErrorScreen extends StatelessWidget {
                     outlined: false,
                   ),
                 _LoadErrorAction(
-                  buttonKey: LoadErrorKeys.action,
+                  buttonKey: actionKey ?? LoadErrorKeys.action,
                   onAction: onAction,
                   label: actionLabel,
                   outlined: freeSpace != null,
                 ),
                 if (kind != LoadErrorKind.notFound && onBack != null)
                   OutlinedButton(
-                    key: LoadErrorKeys.back,
+                    key: backKey ?? LoadErrorKeys.back,
                     onPressed: onBack,
-                    child: Text(t.loadErrorBack),
+                    child: Text(backLabel ?? t.loadErrorBack),
                   ),
               ],
             ),

@@ -18,7 +18,6 @@ import 'fakes/fake_account_repository.dart';
 import 'package:lucena/data/repositories/ads/ads_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
-import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/store/store_listing_repository.dart';
@@ -39,7 +38,6 @@ import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
 import 'package:lucena/ui/core/widgets/web_pages.dart';
 
 import 'fakes/fake_alerts_repository.dart';
-import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
@@ -78,7 +76,6 @@ class TestApp extends StatelessWidget {
     this.mediaBuilder,
     this.surveyRepository,
     this.regionPromptRepository,
-    this.crowdRepository,
     this.analytics,
     this.adsRepository,
     this.purchaseRepository,
@@ -132,7 +129,6 @@ class TestApp extends StatelessWidget {
 
   /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
   final RegionPromptRepository? regionPromptRepository;
-  final CrowdRepository? crowdRepository;
 
   /// As estatísticas, quando o teste confere os eventos. Sem elas, nenhuma.
   final AnalyticsRepository? analytics;
@@ -287,9 +283,6 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<RegionPromptRepository>.value(
           value: regionPromptRepository ?? const NoRegionPromptRepository(),
-        ),
-        RepositoryProvider<CrowdRepository>.value(
-          value: crowdRepository ?? FakeCrowdRepository(),
         ),
         RepositoryProvider<AnalyticsRepository>.value(
           value: analytics ?? const NoAnalyticsRepository(),

@@ -14,6 +14,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../view_models/history_cubit.dart';
 import 'history_games_tab.dart';
+import 'rating_card.dart';
 import 'history_speedruns_tab.dart';
 
 /// O Histórico: Partidas, Clássico e Maratona. A aba escolhida fica gravada
@@ -69,8 +70,9 @@ class _HistoryScreenState extends State<HistoryScreen>
           await cubit.load();
           if (mounted) _restore(cubit.state);
         },
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
+        onBack: () => context.canPop()
+            ? context.pop()
+            : context.go(Routes.settingsProfile),
       );
     }
     return BlocListener<HistoryCubit, HistoryState>(
@@ -84,27 +86,100 @@ class _HistoryScreenState extends State<HistoryScreen>
               ? BackButton(onPressed: () => ContainerNavigation.close(context))
               : null,
           title: Text(l10n.historyTitle),
+          actions: [if (_hasFilter(state)) _filterIcon(context, state)],
         ),
-        body: Column(
-          children: [
-            _HistoryTabs(controller: _controller),
-            Expanded(
-              child: TabBarView(
-                controller: _controller,
-                children: [
-                  HistoryGamesTab(
-                    gameDestinationBuilder: widget.gameDestinationBuilder,
+        body: !state.loaded
+            ? const HistoryLoading()
+            : NestedScrollView(
+                // O rating sai ao rolar; o título e as abas ficam presos.
+                headerSliverBuilder: (context, _) => [
+                  if (state.history.isNotEmpty)
+                    SliverToBoxAdapter(child: HistoryRatingCard(state: state)),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _TabsHeader(
+                      background: Theme.of(context).scaffoldBackgroundColor,
+                      child: _HistoryTabs(controller: _controller),
+                    ),
                   ),
-                  const HistorySpeedrunsTab(marathon: false),
-                  const HistorySpeedrunsTab(marathon: true),
                 ],
+                body: TabBarView(
+                  controller: _controller,
+                  children: [
+                    HistoryGamesTab(
+                      gameDestinationBuilder: widget.gameDestinationBuilder,
+                    ),
+                    const HistorySpeedrunsTab(marathon: false),
+                    const HistorySpeedrunsTab(marathon: true),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
+
+  // Só há o que filtrar na aba que já tem partidas ou speedruns.
+  bool _hasFilter(HistoryState state) {
+    if (!state.loaded) return false;
+    return switch (_controller.index) {
+      0 => state.history.isNotEmpty,
+      1 => state.classic.isNotEmpty,
+      _ => state.marathons.isNotEmpty,
+    };
+  }
+
+  // O filtro da aba aberta; o ponto avisa que há um filtro valendo.
+  Widget _filterIcon(BuildContext context, HistoryState state) {
+    final active = switch (_controller.index) {
+      0 => !state.gamesFilter.isEmpty,
+      1 => !state.classicFilter.isEmpty,
+      _ => !state.marathonFilter.isEmpty,
+    };
+    return IconButton(
+      key: HistoryKeys.filterIcon,
+      tooltip: context.l10n.historyFiltersAll,
+      onPressed: () => switch (_controller.index) {
+        0 => const HistoryGamesTab().openFilter(context),
+        1 => const HistorySpeedrunsTab(marathon: false).openFilter(context),
+        _ => const HistorySpeedrunsTab(marathon: true).openFilter(context),
+      },
+      icon: Badge(
+        isLabelVisible: active,
+        smallSize: 8,
+        child: const Icon(Icons.tune),
+      ),
+    );
+  }
+}
+
+// O cabeçalho fixo das abas: 48 de toque e 1 do traço de baixo.
+class _TabsHeader extends SliverPersistentHeaderDelegate {
+  const _TabsHeader({required this.child, required this.background});
+
+  final Widget child;
+  final Color background;
+
+  static const _height = 49.0;
+
+  @override
+  double get minExtent => _height;
+
+  @override
+  double get maxExtent => _height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => ColoredBox(
+    color: background,
+    child: SizedBox.expand(child: child),
+  );
+
+  @override
+  bool shouldRebuild(_TabsHeader old) =>
+      old.child != child || old.background != background;
 }
 
 /// As três abas iguais, com o ícone na linha do texto (cheio na escolhida) e

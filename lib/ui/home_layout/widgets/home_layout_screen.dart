@@ -32,11 +32,14 @@ class HomeLayoutScreen extends StatelessWidget {
     final cubit = context.read<HomeLayoutCubit>();
     final state = context.watch<HomeLayoutCubit>().state;
     if (state.failure case final failure?) {
-      return LoadErrorScreen(
-        kind: LoadErrorKind.fromFailure(failure),
-        onAction: cubit.load,
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
+      return KeyedSubtree(
+        key: HomeLayoutKeys.error,
+        child: LoadErrorScreen(
+          kind: LoadErrorKind.fromFailure(failure),
+          onAction: cubit.load,
+          onBack: () =>
+              context.canPop() ? context.pop() : context.go(Routes.home),
+        ),
       );
     }
     final layout = state.layout;

@@ -55,7 +55,6 @@ import '../testing/fakes/fake_deep_link_service.dart';
 import '../testing/fakes/fake_push_repository.dart';
 
 import 'package:lucena/ui/core/keys/goal_keys.dart';
-import 'package:lucena/ui/core/keys/board_controls_keys.dart';
 
 import '../testing/fakes/fake_onboarding_repository.dart';
 
@@ -915,7 +914,7 @@ void main() {
   });
 
   testWidgets(
-    'primeira abertura pergunta intenção e oferece controles sem tour',
+    'primeira abertura pergunta o objetivo e segue para o tour (H-ABE)',
     (tester) async {
       final onboarding = FakeOnboardingRepository(
         const Onboarding(stage: OnboardingStage.goal),
@@ -927,11 +926,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(GoalKeys.continueButton));
       await tester.pumpAndSettle();
-      expect(find.byKey(BoardControlsKeys.screen), findsOneWidget);
-      await tester.tap(find.byKey(BoardControlsKeys.continueButton));
-      await tester.pumpAndSettle();
-      expect(onboarding.saved.boardControlsDone, isTrue);
-      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(onboarding.saved.stage, OnboardingStage.tour);
+      expect(find.byKey(TourKeys.screen), findsOneWidget);
     },
   );
   group('push (E1.19 3.8)', () {

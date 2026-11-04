@@ -43,6 +43,7 @@ void main() {
     await details.open(id);
     await details.review();
     await details.expectReviewed();
+    await details.openTab(GameDetailsKeys.tabMoves);
     await $(GameDetailsKeys.moveQuality(0)).scrollTo();
     // A revisão média (peso 2) anotou todos os lances.
     expect(details.state.review!.depth, 2);
@@ -60,6 +61,7 @@ void main() {
     expect(details.state.engine, isTrue);
     await $(GameDetailsKeys.engineButton).tap();
     await $.pumpAndSettle();
+    await details.openTab(GameDetailsKeys.tabEngine);
     expect(find.byKey(GameDetailsKeys.engineLines), findsNothing);
     await details.toggleEngine();
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);

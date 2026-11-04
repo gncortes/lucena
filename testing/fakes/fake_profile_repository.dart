@@ -13,6 +13,9 @@ class FakeProfileRepository implements ProfileRepository {
   /// Segura a leitura até completar.
   Completer<void>? loadGate;
 
+  /// A próxima gravação falha (uma vez).
+  bool failNextSave = false;
+
   @override
   Future<UserProfile> load() async {
     await loadGate?.future;
@@ -21,6 +24,10 @@ class FakeProfileRepository implements ProfileRepository {
 
   @override
   Future<void> save(UserProfile profile) async {
+    if (failNextSave) {
+      failNextSave = false;
+      throw StateError('save failed');
+    }
     this.profile = profile;
     saved.add(profile);
   }

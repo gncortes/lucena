@@ -21,6 +21,8 @@ import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_list_screen.dart';
+import 'package:lucena/ui/speedrun/widgets/speedrun_screen.dart';
+import 'package:lucena/ui/core/widgets/load_error.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
@@ -245,6 +247,62 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(SpeedrunKeys.item('ending.queen@60+0')), findsOneWidget);
     expect(find.byKey(SpeedrunKeys.item('rung.1000@60+0')), findsOneWidget);
+  });
+
+  testWidgets('nível sem speedrun: mostra o aviso em vez de uma lista vazia', (
+    tester,
+  ) async {
+    await cubit.close();
+    cubit = SpeedrunCubit(
+      journey: FakeJourneyRepository(
+        speedruns: [
+          for (final speedrun in sampleSpeedruns)
+            if (speedrun.id.startsWith('ending.queen')) speedrun,
+        ],
+      ),
+      speedruns: FakeSpeedrunRepository(FakeProgressRepository()),
+      games: FakeOngoingGameRepository(),
+      now: FakeNow(DateTime.utc(2026, 10, 4, 12)),
+      settings: settings,
+      characters: FakeCharacterRepository(),
+      profile: FakeProfileRepository(
+        UserProfile(rating: RatingLevel.master.rating),
+      ),
+    );
+    await pump(tester, locale: const Locale('pt'));
+    expect(find.byKey(SpeedrunKeys.empty), findsOneWidget);
+    expect(find.text('Nenhum speedrun neste nível.'), findsOneWidget);
+    await tester.tap(find.byKey(SpeedrunKeys.categoryOption('beginner')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.empty), findsNothing);
+  });
+
+  testWidgets('Como funciona abre em tela cheia e o fechar volta à lista', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('pt'));
+    await tester.tap(find.byKey(SpeedrunKeys.help));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.helpScreen), findsOneWidget);
+    expect(find.text('Como funciona'), findsOneWidget);
+    await tester.tap(find.byKey(SpeedrunKeys.helpClose));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.helpScreen), findsNothing);
+    expect(find.byKey(SpeedrunKeys.listScreen), findsOneWidget);
+  });
+
+  testWidgets('detalhe sem speedrun escolhido: erro explícito, não corpo em '
+      'branco', (tester) async {
+    await cubit.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: BlocProvider.value(value: cubit, child: const SpeedrunScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(LoadErrorScreen), findsOneWidget);
+    expect(find.text('Conteúdo não encontrado'), findsOneWidget);
   });
 
   testWidgets('quem está começando vê o ritmo numa linha, que abre o '

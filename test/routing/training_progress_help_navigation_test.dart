@@ -98,7 +98,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(TrainingKeys.tourOverlay), findsNothing);
-      await tester.tap(find.byKey(CourseGuideKeys.tab('progress')));
+      await tester.tap(find.byKey(CourseGuideKeys.tab('stats')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(TrainingKeys.masteryRow('theme1')));
       await tester.pumpAndSettle();
