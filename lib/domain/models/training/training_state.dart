@@ -66,6 +66,7 @@ final class TrainingState {
     Iterable<TrainingObjective> objectiveHistory = const [],
     this.studyPlan,
     this.previousStudyPlan,
+    this.catalogOnlyPlan,
     this.diagnostic,
     Iterable<TournamentRecord> tournaments = const [],
     this.tournamentDraft,
@@ -113,6 +114,10 @@ final class TrainingState {
 
   /// Plano de antes do último ajuste (H-TRE-09); só um nível de desfazer.
   final StudyPlan? previousStudyPlan;
+
+  /// Filtro do Catálogo (H-TRE-13): `null` ainda não escolhido (abre em Meu
+  /// plano quando há plano), `false` mostra tudo.
+  final bool? catalogOnlyPlan;
   final TrainingDiagnostic? diagnostic;
 
   /// Torneios registrados, do mais recente ao mais antigo.
@@ -154,6 +159,7 @@ final class TrainingState {
     Iterable<TrainingObjective>? objectiveHistory,
     Object? studyPlan = _keep,
     Object? previousStudyPlan = _keep,
+    Object? catalogOnlyPlan = _keep,
     Object? diagnostic = _keep,
     Iterable<TournamentRecord>? tournaments,
     Object? tournamentDraft = _keep,
@@ -199,6 +205,9 @@ final class TrainingState {
     previousStudyPlan: identical(previousStudyPlan, _keep)
         ? this.previousStudyPlan
         : previousStudyPlan as StudyPlan?,
+    catalogOnlyPlan: identical(catalogOnlyPlan, _keep)
+        ? this.catalogOnlyPlan
+        : catalogOnlyPlan as bool?,
     diagnostic: identical(diagnostic, _keep)
         ? this.diagnostic
         : diagnostic as TrainingDiagnostic?,
@@ -244,6 +253,7 @@ final class TrainingState {
     if (objectiveHistory.isNotEmpty)
       'objectiveHistory': objectiveHistory.map((o) => o.toJson()).toList(),
     if (studyPlan != null) 'studyPlan': studyPlan!.toJson(),
+    if (catalogOnlyPlan != null) 'catalogOnlyPlan': catalogOnlyPlan,
     if (previousStudyPlan != null)
       'previousStudyPlan': previousStudyPlan!.toJson(),
     if (diagnostic != null) 'diagnostic': diagnostic!.toJson(),
@@ -323,6 +333,9 @@ final class TrainingState {
       ],
       studyPlan: StudyPlan.tryFromJson(j['studyPlan']),
       previousStudyPlan: StudyPlan.tryFromJson(j['previousStudyPlan']),
+      catalogOnlyPlan: j['catalogOnlyPlan'] is bool
+          ? j['catalogOnlyPlan'] as bool
+          : null,
       diagnostic: TrainingDiagnostic.tryFromJson(j['diagnostic']),
       tournaments: [
         for (final t in j['tournaments'] as List? ?? const [])

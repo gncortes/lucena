@@ -294,6 +294,10 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
         }
       });
 
+  /// Guarda o filtro do Catálogo: só o plano ou tudo.
+  Future<bool> setCatalogOnlyPlan(bool onlyPlan) =>
+      _change((s) => s.copyWith(catalogOnlyPlan: onlyPlan));
+
   Future<bool> selectOpeningProfile(String profile, {String? startPart}) async {
     final saved = await _change((s) {
       if (profile != 'solido' && profile != 'agressivo') {
