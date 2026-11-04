@@ -474,6 +474,4 @@ List<AnalyticsEvent> trainingAnalyticsSamples(String course) => [
     diasAteTorneio: 20,
   ),
   AnalyticsEvents.treinoDiaPerdido(curso: course, opcao: 'mais_tempo'),
-  AnalyticsEvents.torneioPushAgendado(curso: course),
-  AnalyticsEvents.torneioPushMostrado(curso: course),
 ];

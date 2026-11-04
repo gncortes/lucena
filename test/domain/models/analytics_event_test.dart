@@ -28,6 +28,8 @@ const _campaign = Campaign(
 /// e a prova de que todo evento está na tabela.
 final _samples = <AnalyticsEvent>[
   ...trainingAnalyticsSamples('pilares'),
+  AnalyticsEvents.torneioPushAgendado(curso: 'pilares'),
+  AnalyticsEvents.torneioPushMostrado(curso: 'pilares'),
   AnalyticsEvents.tutorialBegin(entrada: 'primeira_abertura'),
   AnalyticsEvents.tutorialComplete(pulado: false, passosVistos: 4),
   AnalyticsEvents.objetivoDefinido(objetivo: 'finais', trocado: false),
