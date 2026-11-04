@@ -9,6 +9,7 @@ import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/celebracao.dart';
 import '../../core/share/share_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -72,23 +73,26 @@ class _SchoolGraduationScreenState extends State<SchoolGraduationScreen> {
             ),
           ],
         ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    ListView(
-                      padding: scrollPadding(
-                        context,
-                        left: AppSpacing.screen,
-                        top: AppSpacing.sm,
-                        right: AppSpacing.screen,
-                        bottom: AppSpacing.lg,
-                      ),
-                      children: [
-                        if (state.loaded && date != null) ...[
-                          RepaintBoundary(
+        body: Celebracao(
+          // O confete e o diploma entram quando o diploma aparece.
+          key: ValueKey(state.loaded),
+          escalar: false,
+          child: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: scrollPadding(
+                      context,
+                      left: AppSpacing.screen,
+                      top: AppSpacing.sm,
+                      right: AppSpacing.screen,
+                      bottom: AppSpacing.lg,
+                    ),
+                    children: [
+                      if (state.loaded && date != null) ...[
+                        DiplomaDaCelebracao(
+                          child: RepaintBoundary(
                             key: _card,
                             child: ColoredBox(
                               color: theme.scaffoldBackgroundColor,
@@ -113,95 +117,84 @@ class _SchoolGraduationScreenState extends State<SchoolGraduationScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.md),
-                          Column(
-                            key: TrainingKeys.diplomaSummary,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                l10n.schoolGraduationSummary,
-                                style: theme.textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: AppSpacing.xs),
-                              for (final module in state.modules)
-                                Padding(
-                                  key: TrainingKeys.diplomaModule(module.id),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: AppSpacing.xs,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(child: Text(module.title)),
-                                      Text(
-                                        l10n.schoolGraduationModuleCount(
-                                          module.lessons,
-                                        ),
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                              color: colors.onSurfaceVariant,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          Card(
-                            key: TrainingKeys.surveyCard,
-                            margin: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppShape.large,
-                              ),
-                            ),
-                            child: ListTile(
-                              leading: const Icon(Icons.feedback_outlined),
-                              title: Text(l10n.schoolGraduationSurveyTitle),
-                              subtitle: Text(l10n.schoolGraduationSurveyBody),
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: () => context.push(
-                                Routes.survey(SurveyKind.school),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    // O lugar do confete (animação fora desta entrega).
-                    const Positioned.fill(
-                      child: IgnorePointer(
-                        child: SizedBox.shrink(
-                          key: TrainingKeys.diplomaConfetti,
                         ),
-                      ),
+                        const SizedBox(height: AppSpacing.md),
+                        Column(
+                          key: TrainingKeys.diplomaSummary,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              l10n.schoolGraduationSummary,
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            for (final module in state.modules)
+                              Padding(
+                                key: TrainingKeys.diplomaModule(module.id),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: AppSpacing.xs,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(child: Text(module.title)),
+                                    Text(
+                                      l10n.schoolGraduationModuleCount(
+                                        module.lessons,
+                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            color: colors.onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Card(
+                          key: TrainingKeys.surveyCard,
+                          margin: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppShape.large),
+                          ),
+                          child: ListTile(
+                            leading: const Icon(Icons.feedback_outlined),
+                            title: Text(l10n.schoolGraduationSurveyTitle),
+                            subtitle: Text(l10n.schoolGraduationSurveyBody),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () =>
+                                context.push(Routes.survey(SurveyKind.school)),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                ActionsFooter(
+                  stacked: true,
+                  children: [
+                    FilledButton.icon(
+                      key: TrainingKeys.diplomaPilares,
+                      icon: const Icon(Icons.auto_stories),
+                      onPressed: () {
+                        unawaited(
+                          context.read<SchoolGraduationCubit>().pilaresOpened(),
+                        );
+                        unawaited(context.push(Routes.pilaresSale));
+                      },
+                      label: Text(l10n.schoolGraduationPilares),
+                    ),
+                    OutlinedButton(
+                      key: TrainingKeys.diplomaCatalog,
+                      onPressed: () =>
+                          context.go(Routes.trainingCatalog('escola')),
+                      child: Text(l10n.trainingViewCatalog),
                     ),
                   ],
                 ),
-              ),
-              ActionsFooter(
-                stacked: true,
-                children: [
-                  FilledButton.icon(
-                    key: TrainingKeys.diplomaPilares,
-                    icon: const Icon(Icons.auto_stories),
-                    onPressed: () {
-                      unawaited(
-                        context.read<SchoolGraduationCubit>().pilaresOpened(),
-                      );
-                      unawaited(context.push(Routes.pilaresSale));
-                    },
-                    label: Text(l10n.schoolGraduationPilares),
-                  ),
-                  OutlinedButton(
-                    key: TrainingKeys.diplomaCatalog,
-                    onPressed: () =>
-                        context.go(Routes.trainingCatalog('escola')),
-                    child: Text(l10n.trainingViewCatalog),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

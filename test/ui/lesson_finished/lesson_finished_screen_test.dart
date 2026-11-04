@@ -10,6 +10,7 @@ import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
 import 'package:lucena/ui/core/keys/next_steps_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
+import 'package:lucena/ui/core/motion/celebracao.dart';
 import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import 'package:lucena/ui/lesson_finished/widgets/lesson_finished_screen.dart';
@@ -184,6 +185,16 @@ void main() {
     await tester.tap(find.byKey(LessonFinishedKeys.back));
     await tester.pumpAndSettle();
     expect(opened.last, Routes.endgames);
+  });
+
+  testWidgets('H-15: Celebração pequena, só confete, sem escalar a tela', (
+    tester,
+  ) async {
+    await pump(tester, SurveyKind.pilares, 'rook.philidor');
+    final festa = tester.widget<Celebracao>(find.byType(Celebracao));
+    expect(festa.tamanho, TamanhoDaCelebracao.pequena);
+    expect(festa.escalar, isFalse);
+    expect(find.byKey(MotionKeys.diplomaDaCelebracao), findsNothing);
   });
 
   testWidgets('sem próxima aula só há o botão de voltar', (tester) async {

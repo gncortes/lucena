@@ -10,7 +10,6 @@ import '../../core/theme/app_button_text.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/sheet_header.dart';
-import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/skeleton.dart';
 
 import '../../core/widgets/load_error.dart';
@@ -390,10 +389,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               // bronze (1); cada erro ou dica desce um degrau, e a vazia fica
               // vazia até o fim.
               actions: [
-                if (!widget.trainingTest &&
-                    (state.say == ExerciseSay.correct ||
-                        state.say == ExerciseSay.wrong))
-                  ExerciseResultMark(correct: state.say == ExerciseSay.correct),
                 // Regra da app bar (T85): a estrela já aparece no
                 // carregando, apagada.
                 if (!widget.trainingTest)

@@ -32,7 +32,6 @@ abstract final class TrainingKeys {
   static Key diplomaModule(String id) => Key('training.diplomaModule.$id');
   static const diplomaPilares = Key('training.diplomaPilares');
   static const diplomaCatalog = Key('training.diplomaCatalog');
-  static const diplomaConfetti = Key('training.diplomaConfetti');
   static const surveyCard = Key('training.surveyCard');
   static const goalsSummary = Key('training.goalsSummary');
   static Key goalTile(String kind, String ref) =>
@@ -44,7 +43,6 @@ abstract final class TrainingKeys {
   static const exerciseBoard = Key('training.exerciseBoard');
   static const exerciseScreen = Key('training.exerciseScreen');
   static const exerciseHint = Key('training.exerciseHint');
-  static const exerciseResultMark = Key('training.exerciseResultMark');
   static const exerciseRetry = Key('training.exerciseRetry');
   static const exercisePracticeRetry = Key('training.exercisePracticeRetry');
   static const exerciseFeedbackExpand = Key('training.exerciseFeedbackExpand');

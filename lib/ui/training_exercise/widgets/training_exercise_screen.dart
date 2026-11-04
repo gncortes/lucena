@@ -37,7 +37,6 @@ import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
-import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../endgames/widgets/grade_widgets.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -203,10 +202,6 @@ class _ExerciseViewState extends State<_ExerciseView> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          actions: [
-            // Marca única de acerto e de erro (H-LIC-42); sem estrela aqui.
-            if (result) ExerciseResultMark(correct: state.displayedCorrect),
-          ],
         ),
         body: SafeArea(
           child: !ready
@@ -258,7 +253,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
                 child: IgnorePointer(
                   ignoring: loading,
                   child: TrainingCanvasFooter(
-                    leading: result
+                    // A lupa só no acerto (PropV1TreinoAcertou); no erro, o
+                    // rodapé é "Ver a solução" + "Tentar novamente".
+                    leading: result && state.displayedCorrect
                         ? TrainingCanvasFooter.round(
                             key: TrainingKeys.exerciseAnalyze,
                             icon: CanvasSymbols.search,

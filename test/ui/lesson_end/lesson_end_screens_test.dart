@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/lesson_end.dart';
 import 'package:lucena/ui/core/keys/lesson_end_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/celebracao.dart';
 import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/widgets/diploma_card.dart';
 import 'package:lucena/ui/lesson_end/widgets/course_completed_screen.dart';
@@ -249,6 +250,26 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Ana Souza'), findsOneWidget);
+    // H-15: Celebração grande; só o diploma escala, no lugar, e o confete
+    // cai por cima da tela.
+    final festa = tester.widget<Celebracao>(find.byType(Celebracao));
+    expect(festa.tamanho, TamanhoDaCelebracao.grande);
+    expect(festa.escalar, isFalse);
+    expect(
+      find.descendant(
+        of: find.byKey(MotionKeys.diplomaDaCelebracao),
+        matching: find.byType(DiplomaCard),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.ancestor(
+        of: find.text('Você concluiu o Pilares'),
+        matching: find.byKey(MotionKeys.diplomaDaCelebracao),
+      ),
+      findsNothing,
+    );
+    expect(find.byKey(MotionKeys.confeteDaCelebracao), findsOneWidget);
     expect(find.text('Ver o catálogo'), findsOneWidget);
     expect(find.byKey(LessonEndKeys.completedShare), findsOneWidget);
     await tester.tap(find.byKey(LessonEndKeys.completedGoals));

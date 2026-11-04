@@ -162,6 +162,76 @@ void main() {
     expect(find.byKey(_lessonKey), findsOneWidget);
   });
 
+  testWidgets(
+    'H-ANI-31: a barra do anúncio usa o kit e conta 3, 2, 1, Fechar',
+    (t) async {
+      final h = _Harness(seen: true);
+      await h.pump(t);
+      await t.tap(find.byKey(_openKey));
+      await t.pumpAndSettle();
+      // "Conhecer o Pilares" entra com ConhecerQueEntra; o fechar é a contagem.
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.conhecerDoAnuncio),
+          matching: find.byKey(AdsKeys.learnMore),
+        ),
+        findsOneWidget,
+      );
+      final contagem = find.byKey(MotionKeys.contagemParaFechar);
+      expect(
+        find.descendant(of: contagem, matching: find.text('Fechar em 3')),
+        findsOneWidget,
+      );
+      final vistos = <String>[];
+      for (var i = 0; i < 40; i++) {
+        final texto = t
+            .widgetList<Text>(
+              find.descendant(of: contagem, matching: find.byType(Text)),
+            )
+            .last
+            .data!;
+        if (vistos.isEmpty || vistos.last != texto) vistos.add(texto);
+        if (texto != 'Fechar') {
+          // Antes de "Fechar", tocar não fecha.
+          await t.tap(contagem, warnIfMissed: false);
+          await t.pump();
+          expect(find.byKey(AdsKeys.screen), findsOneWidget);
+        }
+        await h.wait(t, const Duration(milliseconds: 100));
+      }
+      expect(vistos, ['Fechar em 3', 'Fechar em 2', 'Fechar em 1', 'Fechar']);
+      await t.pumpAndSettle();
+      await t.tap(contagem);
+      await t.pumpAndSettle();
+      expect(find.byKey(_lessonKey), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'H-ANI-31: movimento reduzido, tudo no lugar no primeiro quadro',
+    (t) async {
+      t.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(t.platformDispatcher.clearAccessibilityFeaturesTestValue);
+      final h = _Harness(seen: true);
+      await h.pump(t);
+      await t.tap(find.byKey(_openKey));
+      await t.pumpAndSettle();
+      final conhecer = find.byKey(MotionKeys.conhecerDoAnuncio);
+      expect(conhecer, findsOneWidget);
+      expect(opacidadeDaParte(t, find.byKey(AdsKeys.learnMore)), 1);
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.contagemParaFechar),
+          matching: find.text('Fechar em 3'),
+        ),
+        findsOneWidget,
+      );
+      await h.wait(t, const Duration(milliseconds: 1100));
+      expect(find.text('Fechar em 2'), findsOneWidget);
+    },
+  );
+
   testWidgets('segunda entrada vai direto ao anúncio, sem aviso', (t) async {
     final h = _Harness(seen: true);
     await h.pump(t);

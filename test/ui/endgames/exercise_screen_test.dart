@@ -229,22 +229,17 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('acerto e erro usam a mesma marca da barra do treino', (
-    tester,
-  ) async {
+  testWidgets('acerto e erro não põem marca na app bar (canvas: selo só na '
+      'peça)', (tester) async {
     setSize(tester, sizes.first);
     await pump(tester, 'e02');
-    expect(find.byKey(TrainingKeys.exerciseResultMark), findsNothing);
+    final bar = find.byType(AppBar);
+    Finder mark(IconData icon) =>
+        find.descendant(of: bar, matching: find.byIcon(icon));
     await move(tester, 'c1', 'c4');
-    expect(
-      tester.widget<Icon>(find.byKey(TrainingKeys.exerciseResultMark)).icon,
-      Icons.check_circle,
-    );
+    expect(mark(Icons.check_circle), findsNothing);
     await move(tester, 'c4', 'c3');
-    expect(
-      tester.widget<Icon>(find.byKey(TrainingKeys.exerciseResultMark)).icon,
-      Icons.cancel,
-    );
+    expect(mark(Icons.cancel), findsNothing);
   });
 
   testWidgets('H-ANI-11/12: acerto e erro pintam a casa e põem o selo na '

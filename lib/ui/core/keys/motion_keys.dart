@@ -96,6 +96,11 @@ abstract final class MotionKeys {
   /// O anel da meta do dia ([AnelDaMeta], H-ANI-28).
   static const anelDaMeta = Key('motion.anelDaMeta');
 
+  /// H-ANI-29: os cartões da meta dobrada, em ordem, e o selo.
+  static Key cartaoDaMetaDobrada(int i) =>
+      Key('motion.cartaoDaMetaDobrada.$i');
+  static const seloDaMetaDobrada = Key('motion.seloDaMetaDobrada');
+
   /// O contador da sequência no [AnelDaMeta].
   static const contadorDaMeta = Key('motion.contadorDaMeta');
 
