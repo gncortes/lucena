@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/clock_settings.dart';
 import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/pace/pace_ui.dart';
@@ -60,13 +61,14 @@ void main() {
     WidgetTester tester, {
     Locale locale = const Locale('en'),
     bool small = false,
+    bool carregar = true,
   }) async {
     tester.view.physicalSize = small
         ? const Size(360, 640)
         : const Size(1080, 4000);
     tester.view.devicePixelRatio = small ? 1 : 2.625;
     addTearDown(tester.view.reset);
-    await cubit.load();
+    if (carregar) await cubit.load();
     final settingsCubit = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -83,8 +85,25 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    // O esqueleto brilha em laço: sem a lista, um quadro só.
+    carregar ? await tester.pumpAndSettle() : await tester.pump();
   }
+
+  // H-ANI-07: o esqueleto se dissolve e a lista sobe no lugar.
+  testWidgets('primeira carga: o esqueleto se dissolve e a lista fica', (
+    tester,
+  ) async {
+    await pump(tester, carregar: false);
+    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsOneWidget);
+    await tester.runAsync(cubit.load);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 125));
+    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsOneWidget);
+    expect(find.byKey(MotionKeys.shimmerConteudo), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsNothing);
+    expect(find.byKey(SpeedrunKeys.pace), findsOneWidget);
+  });
 
   bool chipSelected(WidgetTester tester, String code) => tester
       .widget<ChoiceChip>(find.byKey(SpeedrunKeys.paceOption(code)))

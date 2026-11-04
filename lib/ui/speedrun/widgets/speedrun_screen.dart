@@ -26,6 +26,7 @@ import '../view_models/speedrun_cubit.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
 import '../../core/widgets/skeleton.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// Um speedrun antes de começar (artboards `SpeedrunDetalhe*` e
 /// `MaratonaDetalhe`): quem ou o que é, o ritmo e o nível, o recorde (ou a
@@ -70,7 +71,11 @@ class SpeedrunScreen extends StatelessWidget {
       return Scaffold(
         key: SpeedrunKeys.screen,
         appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
-        body: const SkeletonList(),
+        body: const ShimmerConteudo(
+          carregando: true,
+          esqueleto: SkeletonList(),
+          child: SizedBox.shrink(),
+        ),
       );
     }
     final characters = state.characters;
@@ -128,67 +133,71 @@ class SpeedrunScreen extends StatelessWidget {
                       },
                     ),
             ),
-      body: ListView(
-        padding: scrollPadding(context),
-        children: [
-          SpeedrunHeader(
-            speedrun: speedrun,
-            characters: characters,
-            homeHero: preview?.stages.isNotEmpty == true,
-          ),
-          if (summary != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.lg,
-                0,
-              ),
-              child: _Block(state: state, summary: summary),
+      body: ShimmerConteudo(
+        carregando: false,
+        esqueleto: const SkeletonList(),
+        child: ListView(
+          padding: scrollPadding(context),
+          children: [
+            SpeedrunHeader(
+              speedrun: speedrun,
+              characters: characters,
+              homeHero: preview?.stages.isNotEmpty == true,
             ),
-          if (summary != null)
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.sm,
+            if (summary != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  0,
+                ),
+                child: _Block(state: state, summary: summary),
               ),
-              child: Text(l10n.speedrunStages, style: context.cardTitle),
-            ),
-          // A ordem das etapas, uma embaixo da outra: quem o jogador
-          // enfrenta e, com uma tentativa em andamento, até onde ela chegou
-          // e o tempo das etapas feitas.
-          if (summary != null)
-            for (final (index, stage) in speedrun.stages.indexed)
-              SpeedrunStageRow(
-                key: SpeedrunKeys.stageCard(index),
-                index: index,
-                stage: stage,
-                speedrun: speedrun,
-                last: index == total - 1,
-                status: ongoing == null
-                    ? SpeedrunStageStatus.idle
-                    : index < ongoing.currentStage
-                    ? SpeedrunStageStatus.done
-                    : index == ongoing.currentStage
-                    ? SpeedrunStageStatus.current
-                    : SpeedrunStageStatus.ahead,
-                trailing: ongoing != null && index < ongoing.currentStage
-                    ? TimeDisplay(
-                        value: runTime(context, ongoing.stages[index].time),
-                        semanticsLabel: l10n.speedrunStageTimeValue(
-                          index + 1,
-                          total,
-                          runTime(context, ongoing.stages[index].time),
-                        ),
-                        type: TimeDisplayType.duration,
-                        size: TimeDisplaySize.inline,
-                        textKey: SpeedrunKeys.stageTime(index),
-                      )
-                    : null,
+            if (summary != null)
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Text(l10n.speedrunStages, style: context.cardTitle),
               ),
-        ],
+            // A ordem das etapas, uma embaixo da outra: quem o jogador
+            // enfrenta e, com uma tentativa em andamento, até onde ela chegou
+            // e o tempo das etapas feitas.
+            if (summary != null)
+              for (final (index, stage) in speedrun.stages.indexed)
+                SpeedrunStageRow(
+                  key: SpeedrunKeys.stageCard(index),
+                  index: index,
+                  stage: stage,
+                  speedrun: speedrun,
+                  last: index == total - 1,
+                  status: ongoing == null
+                      ? SpeedrunStageStatus.idle
+                      : index < ongoing.currentStage
+                      ? SpeedrunStageStatus.done
+                      : index == ongoing.currentStage
+                      ? SpeedrunStageStatus.current
+                      : SpeedrunStageStatus.ahead,
+                  trailing: ongoing != null && index < ongoing.currentStage
+                      ? TimeDisplay(
+                          value: runTime(context, ongoing.stages[index].time),
+                          semanticsLabel: l10n.speedrunStageTimeValue(
+                            index + 1,
+                            total,
+                            runTime(context, ongoing.stages[index].time),
+                          ),
+                          type: TimeDisplayType.duration,
+                          size: TimeDisplaySize.inline,
+                          textKey: SpeedrunKeys.stageTime(index),
+                        )
+                      : null,
+                ),
+          ],
+        ),
       ),
     );
   }
