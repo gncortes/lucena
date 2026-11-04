@@ -8,6 +8,7 @@ import '../../analytics/widgets/analytics_opt_in_tile.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/privacy_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/load_error.dart';
@@ -59,7 +60,7 @@ class PrivacyScreen extends StatelessWidget {
         children: [
           _InfoCard(
             key: PrivacyKeys.lgpdCard,
-            icon: Icons.admin_panel_settings_outlined,
+            icon: CanvasSymbols.shieldPerson,
             title: l10n.conPrivLgpdTitle,
             text: l10n.conPrivLgpdText,
           ),
@@ -127,6 +128,7 @@ class PrivacyScreen extends StatelessWidget {
                 icon: Icons.gavel,
                 title: l10n.aboutTerms,
                 value: shownAddress(terms),
+                external: true,
                 onTap: () =>
                     openLegal(context, LegalKind.terms, website: terms),
               ),
@@ -135,6 +137,7 @@ class PrivacyScreen extends StatelessWidget {
                 icon: Icons.policy_outlined,
                 title: l10n.aboutPrivacy,
                 value: shownAddress(policy),
+                external: true,
                 onTap: () =>
                     openLegal(context, LegalKind.privacy, website: policy),
               ),
@@ -197,7 +200,7 @@ class _InfoCard extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.sm),
-                child: Icon(icon, color: colors.primary),
+                child: Icon(icon, fill: 1, color: colors.primary),
               ),
             ),
             const SizedBox(width: AppSpacing.md),

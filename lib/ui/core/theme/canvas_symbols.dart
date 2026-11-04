@@ -55,4 +55,5 @@ abstract final class CanvasSymbols {
   static const syncProblem = IconData(0xe629, fontFamily: family);
   static const folderOpen = IconData(0xe2c8, fontFamily: family);
   static const searchOff = IconData(0xea76, fontFamily: family);
+  static const shieldPerson = IconData(0xf650, fontFamily: family);
 }
