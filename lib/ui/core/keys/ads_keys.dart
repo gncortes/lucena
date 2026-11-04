@@ -24,7 +24,7 @@ abstract final class AdsKeys {
   /// A falha do anúncio (PropV2DemoAnuncioFalhou).
   static const failed = Key('ads.failed');
   static const adFailedRetry = Key('ads.failed.retry');
-  static const adFailedBack = Key('ads.failed.back');
+  static const adFailedLearnMore = Key('ads.failed.learnMore');
 
   /// O aviso do primeiro anúncio (PropV2DemoAviso).
   static const noticeSheet = Key('ads.notice.sheet');
