@@ -8,7 +8,9 @@ import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
 import 'package:lucena/ui/core/keys/next_steps_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import 'package:lucena/ui/lesson_finished/widgets/lesson_finished_screen.dart';
 
@@ -17,6 +19,7 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_race_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_survey_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -36,6 +39,8 @@ void main() {
     String? origin,
     List<RaceProblem> problems = raceTestProblems,
     EndgameTrail? trail,
+    bool settle = true,
+    EntradasVistas? vistas,
   }) async {
     tester.view
       ..physicalSize = const Size(412, 917)
@@ -69,10 +74,15 @@ void main() {
       routes: [
         GoRoute(
           path: '/finished',
-          builder: (context, _) => BlocProvider.value(
-            value: cubit,
-            child: LessonFinishedScreen(kind: kind),
-          ),
+          builder: (context, _) {
+            final screen = BlocProvider.value(
+              value: cubit,
+              child: LessonFinishedScreen(kind: kind),
+            );
+            return vistas == null
+                ? screen
+                : EntradasVistasEscopo(vistas: vistas, child: screen);
+          },
         ),
         stub('/survey/:kind'),
         stub(Routes.school),
@@ -90,8 +100,66 @@ void main() {
         child: const SizedBox.shrink(),
       ),
     );
-    await tester.pumpAndSettle();
+    if (settle) await tester.pumpAndSettle();
   }
+
+  group('H-ANI-25: a aula concluída se monta em ordem', () {
+    const partes = ['estrela', 'titulo', 'viktor', 'botoes'];
+
+    for (final reduced in [false, true]) {
+      testWidgets('selo, título, próximos passos e botões '
+          '(reduzido: $reduced)', (tester) async {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        await pump(
+          tester,
+          SurveyKind.pilares,
+          'rook.lucena',
+          next: 'rook.philidor',
+          settle: false,
+        );
+        expectEntradaDeResultado(tester, partes: partes, animando: !reduced);
+        // Os botões aceitam toque desde o começo.
+        expect(
+          find.descendant(
+            of: find.byKey(MotionKeys.parteDoResultado('botoes')),
+            matching: find.byKey(LessonFinishedKeys.next),
+          ),
+          findsOneWidget,
+        );
+        await tester.pump(const Duration(milliseconds: 1300));
+        await tester.pump();
+        expect(
+          opacidadeDaParte(
+            tester,
+            find.byKey(MotionKeys.parteDoResultado('botoes')),
+          ),
+          1,
+        );
+        await tester.pumpAndSettle();
+      });
+    }
+
+    testWidgets('a mesma aula concluída de novo na sessão abre pronta', (
+      tester,
+    ) async {
+      final vistas = EntradasVistas();
+      await pump(tester, SurveyKind.pilares, 'rook.lucena', vistas: vistas);
+      await tester.pumpWidget(const SizedBox());
+      await pump(
+        tester,
+        SurveyKind.pilares,
+        'rook.lucena',
+        vistas: vistas,
+        settle: false,
+      );
+      expectEntradaDeResultado(tester, partes: partes, animando: false);
+      await tester.pumpAndSettle();
+    });
+  });
 
   testWidgets('finais: título, convite acima dos botões e a próxima aula', (
     tester,

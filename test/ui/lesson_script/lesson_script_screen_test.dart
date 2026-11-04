@@ -20,6 +20,7 @@ import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
@@ -597,12 +598,74 @@ void main() {
           expect(setup.cubit.state.speech, [_neutralSpeeches[i]]);
         }
         expect(setup.cubit.state.phase, ScriptPhase.fimEtapa);
+        // H-ANI-25: ↻ e o botão principal entram por último (até 1,3 s).
+        await tester.pump(const Duration(milliseconds: 1300));
+        _expectGeometry(tester, geometry);
         await tester.tap(find.byKey(LessonScriptKeys.demoRepeat));
         await _sampleGeometry(tester, geometry);
         expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
         expect(setup.cubit.state.phase, ScriptPhase.entrada);
       }
     });
+
+    for (final reduced in [false, true]) {
+      testWidgets('H-ANI-25 $size: no fim da demonstração ↻ e o botão '
+          'principal entram por último (reduzido: $reduced)', (tester) async {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        final json = _geometryScript();
+        final stages = json['etapas'] as List;
+        final idea = ((stages.first as Map)['exemplos'] as List).first as Map;
+        final demo = ((stages[1] as Map)['exemplos'] as List).first as Map;
+        demo['entrada'] = idea['entrada'];
+        demo['linha'] = <dynamic>[];
+        final setup = await _open(
+          tester,
+          size,
+          json: json,
+          stage: 1,
+          autoPlay: false,
+          texts: {
+            for (var i = 0; i < _neutralSpeeches.length; i++)
+              'layout.$i': _neutralSpeeches[i],
+          },
+        );
+        final footer = tester.getRect(find.byKey(LessonScriptKeys.footer));
+        final botoes = find.byKey(MotionKeys.parteDoResultado('botoes'));
+        for (var cycle = 0; cycle < 2; cycle++) {
+          // Durante a demonstração, o rodapé não é resultado.
+          expect(botoes, findsNothing);
+          for (var i = 1; i < _neutralSpeeches.length - 1; i++) {
+            await tester.tap(find.byKey(LessonScriptKeys.primary));
+            await tester.pumpAndSettle();
+          }
+          await tester.tap(find.byKey(LessonScriptKeys.primary));
+          await tester.pump();
+          await tester.pump();
+          expect(setup.cubit.state.phase, ScriptPhase.fimEtapa);
+          expect(opacidadeDaParte(tester, botoes), reduced ? 1 : 0);
+          await tester.pump(const Duration(milliseconds: 1300));
+          await tester.pump();
+          expect(opacidadeDaParte(tester, botoes), 1);
+          expect(
+            find.descendant(
+              of: botoes,
+              matching: find.byKey(LessonScriptKeys.demoRepeat),
+            ),
+            findsOneWidget,
+          );
+          expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
+          // Cada fim é um resultado novo: anima também depois do ↻.
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(LessonScriptKeys.demoRepeat));
+          await tester.pumpAndSettle();
+        }
+        expect(tester.takeException(), isNull);
+      });
+    }
 
     testWidgets('ScriptPage $size: revelação incremental sintética e '
         'pontinhos preservam a posição reservada', (tester) async {
