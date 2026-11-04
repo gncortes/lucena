@@ -28,6 +28,7 @@ import '../../../testing/fakes/fake_speech_input_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 import '../core/motion/entrada_helpers.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   late FakeSpeechInputRepository input;
@@ -620,6 +621,15 @@ void main() {
     expect(input.requests, 0);
     expect(cubit.state.phase, BlindPhase.playerTurn);
     expect(find.byKey(BlindKeys.board), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-10: o tabuleiro do às cegas é o TabuleiroAnimado', (
+    tester,
+  ) async {
+    await pump(tester);
+    cubit.setView(BlindView.board);
+    await tester.pumpAndSettle();
+    expectTabuleiroAnimado(tester, BlindKeys.board);
   });
 
   testWidgets('X externo permanece à direita em RTL', (tester) async {

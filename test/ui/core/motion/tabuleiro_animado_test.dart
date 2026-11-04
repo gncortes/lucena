@@ -179,4 +179,29 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
   });
+
+  testWidgets('a animação desligada nas preferências (duração zero) segue '
+      'desligada', (tester) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      Builder(
+        builder: (c) {
+          context = c;
+          return const SizedBox();
+        },
+      ),
+    );
+    const desligada = ChessboardSettings(animationDuration: Duration.zero);
+    expect(
+      TabuleiroAnimado.ajustes(context, desligada).animationDuration,
+      Duration.zero,
+    );
+    expect(
+      TabuleiroAnimado.ajustes(
+        context,
+        const ChessboardSettings(),
+      ).animationDuration,
+      LucenaMotion.lance,
+    );
+  });
 }

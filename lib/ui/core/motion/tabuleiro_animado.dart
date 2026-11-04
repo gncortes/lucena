@@ -46,11 +46,14 @@ class TabuleiroAnimado extends StatefulWidget {
   static Duration duracaoDoLance(BuildContext context) =>
       MovimentoReduzido.of(context) ? Duration.zero : LucenaMotion.lance;
 
-  /// As [ajustes] do tabuleiro com o tempo do lance do kit.
+  /// As [ajustes] do tabuleiro com o tempo do lance do kit. Quem desligou a
+  /// animação das peças nas preferências (duração zero) continua sem ela.
   static ChessboardSettings ajustes(
     BuildContext context,
     ChessboardSettings ajustes,
-  ) => ajustes.copyWith(animationDuration: duracaoDoLance(context));
+  ) => ajustes.animationDuration == Duration.zero
+      ? ajustes
+      : ajustes.copyWith(animationDuration: duracaoDoLance(context));
 
   /// As peças que o lance de [antes] para [depois] capturou, nas casas em
   /// que estavam: as do lado que não jogou cuja casa foi tomada ou ficou

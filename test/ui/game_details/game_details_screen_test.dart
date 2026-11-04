@@ -27,6 +27,7 @@ import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   late FakeProgressRepository progress;
@@ -141,6 +142,14 @@ void main() {
     expect(panel.bottom, lessThanOrEqualTo(next.top));
     expect(find.byKey(GameDetailsKeys.tabMoves), findsOne);
     expect(find.byKey(GameDetailsKeys.tabEngine), findsOne);
+  });
+
+  testWidgets('H-ANI-10: o tabuleiro dos detalhes é o TabuleiroAnimado', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 2400));
+    expectTabuleiroAnimado(tester, GameDetailsKeys.board);
   });
 
   testWidgets('cada aba tem o próprio conteúdo: Resumo o cartão, Lances a '

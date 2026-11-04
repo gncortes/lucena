@@ -4,6 +4,7 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/placement.dart';
@@ -411,6 +412,24 @@ void main() {
       }
     });
   }
+
+  testWidgets('pergunta (canvas PropV1TesteNivelLance): o enunciado em texto '
+      'normal, à esquerda e colado ao tabuleiro', (tester) async {
+    final (cubit, _) = await pump(tester, size: const Size(412, 915));
+    await cubit.start();
+    await tester.pumpAndSettle();
+    final text = tester.widget<Text>(find.byKey(PlacementKeys.prompt));
+    expect(text.textAlign, TextAlign.start);
+    final style = DefaultTextStyle.of(
+      tester.element(find.byKey(PlacementKeys.prompt)),
+    ).style.merge(text.style);
+    expect(style.fontWeight, anyOf(isNull, FontWeight.w400));
+    expect(style.fontSize, 16);
+    final prompt = tester.getRect(find.byKey(PlacementKeys.prompt));
+    final board = tester.getRect(find.byKey(PlacementKeys.board));
+    expect(prompt.left, closeTo(AppSpacing.screen, 1));
+    expect(board.top - prompt.bottom, closeTo(AppSpacing.md, 1));
+  });
 
   for (final scale in [1.0, 2.0]) {
     testWidgets('B6: rotação e fonte $scale preservam tabuleiro e respostas', (

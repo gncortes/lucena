@@ -13,6 +13,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
@@ -610,19 +611,29 @@ class _ReviewBoardState extends State<ReviewBoard> {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Chessboard(
-                    key: GameDetailsKeys.board,
-                    size: boardSize,
-                    controller: _controller,
-                    orientation: widget.orientation,
-                    settings: settings.chessground.copyWith(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(AppShape.small),
+                  // H-ANI-10: deslize do kit, captura e halo do xeque.
+                  TabuleiroAnimado(
+                    controlador: _controller,
+                    orientacao: widget.orientation,
+                    tamanho: boardSize,
+                    pecas: settings.chessground.pieceAssets,
+                    child: Chessboard(
+                      key: GameDetailsKeys.board,
+                      size: boardSize,
+                      controller: _controller,
+                      orientation: widget.orientation,
+                      settings: TabuleiroAnimado.ajustes(
+                        context,
+                        settings.chessground.copyWith(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(AppShape.small),
+                          ),
+                        ),
                       ),
+                      shapes: shapes,
+                      onMove: (move, {viaDragAndDrop}) =>
+                          context.read<GameDetailsCubit>().play(move),
                     ),
-                    shapes: shapes,
-                    onMove: (move, {viaDragAndDrop}) =>
-                        context.read<GameDetailsCubit>().play(move),
                   ),
                   if (reviewed != null && move is NormalMove)
                     PieceBadgeOverlay(

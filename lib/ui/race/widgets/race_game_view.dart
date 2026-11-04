@@ -10,12 +10,15 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/game_clock.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../../domain/use_cases/race_rules.dart';
+import '../../../domain/use_cases/race_turn.dart';
 import '../view_models/race_cubit.dart';
 import 'race_scoreboard.dart';
 
@@ -71,6 +74,18 @@ class RaceGameView extends StatelessWidget {
                 // Um tabuleiro novo a cada problema, mesmo repetindo o id.
                 turn: run.answers.length,
                 settings: settings,
+                vibrar: context.select(
+                  (SettingsCubit cubit) => cubit.state?.vibration ?? true,
+                ),
+                retornoDe: (move) {
+                  final turn = state.turn;
+                  if (turn == null) return null;
+                  final optimal = turn.judge(move.uci) == RaceMoveKind.optimal;
+                  // Um lance certo que não fecha o problema segue sem sinal:
+                  // a defesa responde e o aluno continua.
+                  if (optimal && !turn.ends(move.uci)) return null;
+                  return optimal ? TipoDeRetorno.acerto : TipoDeRetorno.erro;
+                },
                 onMove: (move) => cubit.answer(move.uci),
               ),
             ),
@@ -141,6 +156,8 @@ class RaceFadingBoard extends StatelessWidget {
     required this.settings,
     required this.onMove,
     this.locked = false,
+    this.vibrar = true,
+    this.retornoDe,
     super.key,
   });
 
@@ -155,6 +172,12 @@ class RaceFadingBoard extends StatelessWidget {
   final int turn;
   final BoardSettings settings;
   final void Function(Move move) onMove;
+
+  /// A vibração ligada nos ajustes do app.
+  final bool vibrar;
+
+  /// O retorno do lance que fecha o problema (H-ANI-11), ou nada.
+  final TipoDeRetorno? Function(Move move)? retornoDe;
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +199,8 @@ class RaceFadingBoard extends StatelessWidget {
           fen: fen,
           locked: locked,
           settings: settings,
+          vibrar: vibrar,
+          retornoDe: retornoDe,
           onMove: onMove,
         ),
       ),
@@ -191,6 +216,8 @@ class _ProblemBoard extends StatefulWidget {
     required this.locked,
     required this.settings,
     required this.onMove,
+    required this.vibrar,
+    this.retornoDe,
     super.key,
   });
 
@@ -198,6 +225,8 @@ class _ProblemBoard extends StatefulWidget {
   final RaceProblem problem;
   final String fen;
   final bool locked;
+  final bool vibrar;
+  final TipoDeRetorno? Function(Move move)? retornoDe;
   final BoardSettings settings;
   final void Function(Move move) onMove;
 
@@ -207,6 +236,19 @@ class _ProblemBoard extends StatefulWidget {
 
 class _ProblemBoardState extends State<_ProblemBoard> {
   late final ChessboardController _controller;
+
+  /// O lance que fechou o problema e o retorno dele: este tabuleiro sai em
+  /// fade com o sinal, e o do problema novo entra limpo.
+  (NormalMove, TipoDeRetorno)? _retorno;
+
+  void _onMove(Move move) {
+    if (move case final NormalMove normal) {
+      if (widget.retornoDe?.call(move) case final tipo?) {
+        setState(() => _retorno = (normal, tipo));
+      }
+    }
+    widget.onMove(move);
+  }
 
   GameData _data({String? last}) {
     final fen = widget.fen;
@@ -245,14 +287,34 @@ class _ProblemBoardState extends State<_ProblemBoard> {
   }
 
   @override
-  Widget build(BuildContext context) => Directionality(
-    textDirection: TextDirection.ltr,
-    child: Chessboard(
-      size: widget.size,
-      controller: _controller,
-      settings: widget.settings.chessground,
-      orientation: widget.problem.side,
-      onMove: (move, {viaDragAndDrop}) => widget.onMove(move),
-    ),
-  );
+  Widget build(BuildContext context) {
+    Widget board = TabuleiroAnimado(
+      controlador: _controller,
+      orientacao: widget.problem.side,
+      tamanho: widget.size,
+      pecas: widget.settings.chessground.pieceAssets,
+      child: Chessboard(
+        size: widget.size,
+        controller: _controller,
+        settings: TabuleiroAnimado.ajustes(
+          context,
+          widget.settings.chessground,
+        ),
+        orientation: widget.problem.side,
+        onMove: (move, {viaDragAndDrop}) => _onMove(move),
+      ),
+    );
+    if (_retorno case (final move, final tipo)) {
+      board = RetornoDoLance(
+        key: ValueKey(move.uci),
+        tipo: tipo,
+        casa: move.to,
+        orientacao: widget.problem.side,
+        tamanho: widget.size,
+        vibrar: widget.vibrar,
+        child: board,
+      );
+    }
+    return Directionality(textDirection: TextDirection.ltr, child: board);
+  }
 }

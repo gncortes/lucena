@@ -316,7 +316,7 @@ class _Intro extends StatelessWidget {
   }
 }
 
-/// Uma pergunta: enunciado no alto, tabuleiro centralizado na área entre
+/// Uma pergunta: enunciado logo acima do tabuleiro, tabuleiro centralizado na área entre
 /// as barras do sistema e respostas no rodapé.
 class _Question extends StatelessWidget {
   const _Question({required this.state, required this.usefulHeight});
@@ -335,8 +335,10 @@ class _Question extends StatelessWidget {
       child: Text(
         placementPrompt(l10n, item),
         key: PlacementKeys.prompt,
-        textAlign: TextAlign.center,
-        style: context.cardTitle,
+        // Canvas PropV1TesteNivelLance: texto normal, à esquerda, colado ao
+        // tabuleiro.
+        textAlign: TextAlign.start,
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
     return LayoutBuilder(
@@ -350,7 +352,7 @@ class _Question extends StatelessWidget {
           centerY: box.maxHeight - usefulHeight / 2,
           gap: AppSpacing.md,
           reserveTop: _promptReserve,
-          topAlignment: Alignment.topCenter,
+          topAlignment: Alignment.bottomLeft,
           top: prompt,
           board: LayoutBuilder(
             builder: (context, box) => _Board(state: state, size: box.maxWidth),

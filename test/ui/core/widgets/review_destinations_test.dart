@@ -20,9 +20,6 @@ import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/routing/review_destinations.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/home/view_models/home_cubit.dart';
-import 'package:lucena/ui/home/widgets/player_card.dart';
 import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/history/view_models/history_cubit.dart';
 import 'package:lucena/ui/history/widgets/history_screen.dart';
@@ -90,14 +87,14 @@ Widget _repositories(
   child: child,
 );
 
+const _openRating = Key('test.openRating');
+
 void main() {
-  for (final (details, player) in [
-    (false, false),
-    (true, false),
-    (false, true),
-  ]) {
+  // A pílula do rating no Início abre "Seu progresso" (H-CON-03, coberta no
+  // main_test); aqui ficam o Histórico e o detalhe da partida.
+  for (final details in [false, true]) {
     testWidgets(
-      'shared destination factory details=$details player=$player: id/locale and provider lifetime',
+      'shared destination factory details=$details: id/locale and provider lifetime',
       (tester) async {
         final progress = _RequestedProgress();
         final lessons = FakeLessonRepository();
@@ -140,13 +137,7 @@ void main() {
             child: TestApp(
               locale: const Locale('pt'),
               child: Builder(
-                builder: (context) => player
-                    ? const Scaffold(
-                        body: PlayerCard(
-                          state: HomeState(ready: true, rating: 1150),
-                        ),
-                      )
-                    : details
+                builder: (context) => details
                     ? gameDetailsDestination(context, 77)
                     : ratingDestination(context, highlightedGame: 77),
               ),
@@ -154,16 +145,6 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        if (player) {
-          // O próprio InkWell do rating no alto leva a key (T83).
-          final ink = find.byKey(HomeKeys.playerCard);
-          expect(ink.hitTestable(), findsOneWidget);
-          final open = tester.widget<InkWell>(ink).onTap!;
-          open();
-          open();
-          await tester.pumpAndSettle();
-          expect(find.byKey(RatingKeys.screen), findsOneWidget);
-        }
         if (details) {
           final cubit = tester
               .element(find.byKey(GameDetailsKeys.notFound))
@@ -180,24 +161,15 @@ void main() {
           final cubit = tester
               .element(find.byKey(RatingKeys.screen))
               .read<HistoryCubit>();
-          expect(cubit.state.highlightedGame, player ? isNull : 77);
+          expect(cubit.state.highlightedGame, 77);
           expect(
             tester
                 .widget<HistoryScreen>(find.byType(HistoryScreen))
                 .gameDestinationBuilder,
             same(gameDetailsDestination),
           );
-          if (player) {
-            await tester.tap(find.byType(BackButton));
-            await tester.pumpAndSettle();
-            expect(
-              find.byKey(HomeKeys.playerCard).hitTestable(),
-              findsOneWidget,
-            );
-          } else {
-            await tester.pumpWidget(const SizedBox.shrink());
-            await tester.pump();
-          }
+          await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pump();
           expect(cubit.isClosed, isTrue);
         }
         expect(tester.takeException(), isNull);
@@ -224,8 +196,12 @@ void main() {
           routes: [
             GoRoute(
               path: '/',
-              builder: (_, _) => const Scaffold(
-                body: PlayerCard(state: HomeState(ready: true, rating: 1150)),
+              builder: (context, _) => Scaffold(
+                body: TextButton(
+                  key: _openRating,
+                  onPressed: () => context.push(Routes.rating),
+                  child: const Text('rating'),
+                ),
               ),
             ),
             GoRoute(
@@ -246,12 +222,11 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(HomeKeys.playerCard));
+        await tester.tap(find.byKey(_openRating));
         await tester.pumpAndSettle();
         final rating = tester
             .element(find.byKey(RatingKeys.screen))
             .read<HistoryCubit>();
-        expect(router.routeInformationProvider.value.uri.path, '/');
         final action = find.byKey(RatingKeys.emptyHistoryAction);
         await tester.scrollUntilVisible(
           action,

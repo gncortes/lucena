@@ -1,8 +1,9 @@
-import 'dart:math' as math;
 import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/keys/my_progress_keys.dart';
 
 import 'package:lucena/ui/core/widgets/skeleton.dart';
 
@@ -534,11 +535,10 @@ void main() {
     // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
     // retrato fora dos dois cartões.
     final screen = tester.getSize(find.byType(MaterialApp)).width;
-    // O maior tabuleiro: as outras miniaturas continuam na home.
-    final flying = [
-      for (final board in find.byType(StaticChessboard).evaluate())
-        tester.getSize(find.byWidget(board.widget)).width,
-    ].reduce(math.max);
+    // H-ANI-02: o tabuleiro em voo é a caixa do TabuleiroHero (o de destino
+    // vai dentro dela no tamanho real, encolhido pelo FittedBox).
+    expect(find.byKey(MotionKeys.tabuleiroEmVoo), findsOneWidget);
+    final flying = tester.getSize(find.byKey(MotionKeys.tabuleiroEmVoo)).width;
     expect(flying, greaterThan(small));
     expect(flying, lessThan(screen));
     expect(
@@ -567,20 +567,30 @@ void main() {
     expect(find.byKey(HomeKeys.goalAction), findsOneWidget);
   });
 
-  testWidgets('tocar no cartão do jogador abre os detalhes do rating, e '
-      'voltar cai na tela inicial', (tester) async {
+  testWidgets('tocar no rating do Início abre "Seu progresso" (H-CON-03); '
+      'o Histórico abre os detalhes, e voltar cai na tela inicial', (
+    tester,
+  ) async {
     await pumpApp(tester);
 
     await tester.tap(find.byKey(HomeKeys.playerCard));
+    await tester.pumpAndSettle();
+    expect(find.byKey(MyProgressKeys.screen), findsOneWidget);
+
+    await tester.tap(find.byKey(MyProgressKeys.history));
     await tester.pumpAndSettle();
     expect(find.byKey(RatingKeys.screen), findsOneWidget);
     // Sem partida nenhuma, o Histórico mostra só o convite (sem cartão).
     expect(find.byKey(HistoryKeys.screen), findsOneWidget);
     expect(find.byKey(HistoryKeys.empty), findsOneWidget);
 
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.byType(BackButton).last);
     await tester.pumpAndSettle();
     expect(find.byKey(RatingKeys.screen), findsNothing);
+    expect(find.byKey(MyProgressKeys.screen), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(MyProgressKeys.screen), findsNothing);
     expect(find.byKey(HomeKeys.playerCard), findsOneWidget);
   });
 

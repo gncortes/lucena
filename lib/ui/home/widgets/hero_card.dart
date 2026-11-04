@@ -92,7 +92,7 @@ class HeroCard extends StatelessWidget {
         // O retrato e o tabuleiro voam até a tela do desafio.
         avatarTag: opponentHeroTag(current.rung.id),
         fen: next.position.fen,
-        boardTag: challengeBoardTag(next.id),
+        boardHeroId: next.position.fen,
         onPressed: () => continueJourney(context, state),
       ),
       HomeHero.train when train != null => _HeroData(
@@ -174,7 +174,6 @@ class _HeroData {
     this.avatar,
     this.avatarTag,
     this.fen,
-    this.boardTag,
     this.boardHeroId,
     this.orientation,
   });
@@ -190,7 +189,6 @@ class _HeroData {
   final Character? avatar;
   final Object? avatarTag;
   final String? fen;
-  final Object? boardTag;
 
   /// O id do [TabuleiroHero] (o FEN que a tela de destino mostra ao abrir).
   final String? boardHeroId;
@@ -268,7 +266,6 @@ class _HeroLayout extends StatelessWidget {
                           fen: fen,
                           orientation: orientation,
                           size: HeroCard.board,
-                          heroTag: data.boardTag,
                         ),
                       ),
                   ],
