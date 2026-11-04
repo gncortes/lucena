@@ -287,7 +287,7 @@ class _PositionCell extends StatelessWidget {
     return PositionCard(
       key: CatalogKeys.position(position.id),
       fen: position.fen,
-      heroTag: catalogBoardTag(position.id),
+      heroId: position.fen,
       doneKey: fulfilled ? CatalogKeys.fulfilled(position.id) : null,
       doneLabel: fulfilled ? l10n.catalogFulfilled : null,
       onTap: () => context.push(
