@@ -311,7 +311,7 @@ void main() {
         Routes.settingsBoardAppearance,
         BoardSettingsKeys.appearanceScreen,
       ),
-      ('TelaConfigPartida', Routes.settingsGame, SettingsKeys.gameScreen),
+      ('PropV1ConfigPartidaAquecimento', Routes.settingsGame, SettingsKeys.gameScreen),
       (
         'TelaConfigRelogio',
         Routes.settingsClock,
