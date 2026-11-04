@@ -193,7 +193,8 @@ class PintorDoConfete extends CustomPainter {
     for (final p in particulas) {
       final t = ((tempo - p.inicio) / queda).clamp(0.0, 1.0);
       if (t == 0 || t == 1) continue;
-      final y = -12 + (size.height + 24) * Curves.easeIn.transform(t);
+      final y =
+          -12 + (size.height + 24) * LucenaMotion.curvaDaQueda.transform(t);
       final x = (p.x + p.deriva * t) * size.width;
       canvas
         ..save()

@@ -780,6 +780,8 @@ class MascotePainter extends CustomPainter {
     // Gota de suor.
     _com(canvas, pose.gotaOpacidade, () {
       const x = 512 + r * .78;
+      // A meia largura da gota, no espaço de 1024 do desenho.
+      const gota = 22.0;
       canvas
         ..save()
         ..translate(0, pose.gotaDesce)
@@ -789,17 +791,17 @@ class MascotePainter extends CustomPainter {
             ..cubicTo(
               x,
               hy - r * .72,
-              x - 22,
+              x - gota,
               hy - r * .48,
-              x - 22,
+              x - gota,
               hy - r * .36,
             )
             ..arcToPoint(
-              const Offset(x + 22, hy - r * .36),
-              radius: const Radius.circular(22),
+              const Offset(x + gota, hy - r * .36),
+              radius: const Radius.circular(gota),
               clockwise: false,
             )
-            ..cubicTo(x + 22, hy - r * .48, x, hy - r * .72, x, hy - r * .72)
+            ..cubicTo(x + gota, hy - r * .48, x, hy - r * .72, x, hy - r * .72)
             ..close(),
           _cheio(MascoteColors.gota),
         )

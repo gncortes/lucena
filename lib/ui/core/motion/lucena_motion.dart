@@ -29,6 +29,9 @@ abstract final class LucenaMotion {
   /// Véu, dissolve e giro do carregando.
   static const linear = Curves.linear;
 
+  /// A queda do confete (H-ANI-14): acelera como coisa que cai.
+  static const curvaDaQueda = Curves.easeIn;
+
   // Reduzir movimento.
 
   /// Com "remover animações", o que sobra é este fade (ou nada).
@@ -235,6 +238,12 @@ abstract final class LucenaMotion {
   /// O tempo máximo do resultado inteiro.
   static const totalDoResultado = Duration(milliseconds: 1300);
 
+  // H-ANI-03: troca de exercício por fade cruzado (regra de 04/11).
+
+  /// O fade cruzado entre exercícios, igual ao das perguntas do teste de nível
+  /// (B7): a posição, a fala e o enunciado trocam juntos; o tabuleiro fica.
+  static const trocaComFade = Duration(milliseconds: 300);
+
   // H-ANI-03: eixo X compartilhado.
 
   /// A troca de passo inteira: sai em 30% (90 ms) e entra no resto (210 ms).
@@ -256,6 +265,13 @@ abstract final class LucenaMotion {
 
   /// O raio do cartão que abre a venda.
   static const raioDaVenda = 21.0;
+
+  /// A curva do cartão que cresce até a tela (a do container transform); na
+  /// volta, invertida.
+  static const curvaDoCartao = Curves.fastOutSlowIn;
+
+  /// O trecho da abertura em que a tela aberta aparece por cima do cartão.
+  static const fadeDaTelaAberta = Interval(.2, .4);
 
   // H-ANI-05: troca de abas.
 

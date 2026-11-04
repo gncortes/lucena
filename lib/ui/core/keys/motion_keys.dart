@@ -65,6 +65,10 @@ abstract final class MotionKeys {
   /// O retângulo que cresce do [CartaoQueAbre] até a tela (H-ANI-04).
   static const cartaoQueAbre = Key('motion.cartaoQueAbre');
 
+  /// O retângulo que cresce da [OrigemQueAbre] até a tela, na [RotaQueAbre]
+  /// (H-ANI-04 por rota).
+  static const rotaQueAbre = Key('motion.rotaQueAbre');
+
   /// O corpo das abas na [AbasFadeThrough] (H-ANI-05).
   static const corpoDasAbas = Key('motion.corpoDasAbas');
 

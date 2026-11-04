@@ -337,7 +337,9 @@ void main() {
       final initial = tester.getRect(find.byKey(PlacementKeys.board));
       await cubit.answer(PlacementOutcome.dontKnow);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 80));
+      // O fade cruzado do TrocaComFade: 300 ms, ou 100 ms com movimento
+      // reduzido; aos 50 ms as duas perguntas estão na tela.
+      await tester.pump(const Duration(milliseconds: 50));
       final boards = find.byKey(PlacementKeys.board);
       for (final element in boards.evaluate()) {
         expect(
@@ -352,12 +354,13 @@ void main() {
         ),
         findsNothing,
       );
+      expect(find.byKey(const ValueKey('q1')), findsOneWidget);
+      expect(boards, findsNWidgets(2));
       if (reducedMotion) {
+        // O relógio do fade começa no quadro dos 50 ms: 100 ms depois dele,
+        // a pergunta velha saiu.
+        await tester.pump(const Duration(milliseconds: 101));
         expect(find.byKey(const ValueKey('q1')), findsNothing);
-        expect(boards, findsOneWidget);
-      } else {
-        expect(find.byKey(const ValueKey('q1')), findsOneWidget);
-        expect(boards, findsNWidgets(2));
       }
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('q2')), findsOneWidget);
