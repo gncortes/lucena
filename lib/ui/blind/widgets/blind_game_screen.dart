@@ -35,6 +35,7 @@ import '../../core/theme/app_shadow.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/opponent_error_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/time_display.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -183,6 +184,19 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     );
   }
 
+  // H-PAR-18: depois da 3ª falha do adversário, a folha sem ✕ (também falada).
+  // Sair mantém a partida gravada: o checkpoint já tem o relógio parado.
+  Future<void> _askOpponentError() async {
+    final cubit = context.read<BlindGameCubit>();
+    final retry = await showOpponentErrorSheet(context);
+    if (!mounted) return;
+    if (retry) {
+      unawaited(cubit.retryOpponent());
+      return;
+    }
+    context.canPop() ? context.pop() : context.go(Routes.allModes);
+  }
+
   void _onState(BuildContext context, BlindState state) {
     if (state.position == null) return;
     final board = _board;
@@ -199,6 +213,9 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       return;
     }
     if (state.mic == MicPermission.asking) _askMic(context);
+    if (state.opponentError && !previous.opponentError) {
+      unawaited(_askOpponentError());
+    }
     // Os avisos sobem no topo, sem mexer na tela.
     final l10n = context.l10n;
     final language = Localizations.localeOf(context).toLanguageTag();
