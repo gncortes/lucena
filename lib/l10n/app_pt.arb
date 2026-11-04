@@ -289,7 +289,7 @@
   "@tourSpeechBoard": {
     "description": "Public onboarding speech, copied verbatim from tour.board."
   },
-  "tourSpeechVoice": "Posso ler em voz alta tudo o que eu disser. Escolha a minha voz; clique em uma delas para ouvir. E diga como devo chamar você.",
+  "tourSpeechVoice": "Posso ler em voz alta tudo o que eu disser. Toque em uma voz para ouvir.",
   "@tourSpeechVoice": {
     "description": "Public onboarding speech, copied verbatim from tour.voice."
   },
@@ -304,18 +304,6 @@
   "tourSpeechVoiceLinkNone": "Bela partida! Eu sou o Viktor, o seu professor. Antes de seguir, diga como devo chamar você.",
   "@tourSpeechVoiceLinkNone": {
     "description": "Public onboarding speech, copied verbatim from tour.voice.link.none."
-  },
-  "tourSpeechSchool": "Nas lições, primeiro eu explico a ideia, lance por lance. Depois mostro exemplos. No fim, você pratica no tabuleiro.",
-  "@tourSpeechSchool": {
-    "description": "Public onboarding speech, copied verbatim from tour.school."
-  },
-  "tourSpeechHelp": "Travou? Na lição, clique em Ver resposta. No exercício, clique na lâmpada, e eu dou uma pista. Errou um lance? Eu mostro por que, e você tenta de novo.",
-  "@tourSpeechHelp": {
-    "description": "Public onboarding speech, copied verbatim from tour.help."
-  },
-  "tourSpeechPlay": "Fora das lições, você joga finais contra adversários que jogam como gente de verdade, do Coco ao Stockfish. As partidas contra eles mexem no seu rating, que fica no alto da tela inicial.",
-  "@tourSpeechPlay": {
-    "description": "Public onboarding speech, copied verbatim from tour.play."
   },
   "tourBack": "Voltar",
   "tourNext": "Continuar",
@@ -730,9 +718,9 @@
   "conclusionHideDetails": "Ocultar detalhes",
   "conclusionPace": "Ritmo",
   "placementTitle": "Teste de nível",
-  "placementIntroSpeech": "Não vale chutar: se não souber, clique em \"Não sei\". No fim eu monto o seu roteiro de estudo.",
+  "placementIntroSpeech": "Se não souber, toque em \"Não sei\". No fim eu monto o seu roteiro de estudo.",
   "placementChipQuestions": "20 perguntas",
-  "placementChipMinutes": "uns 8 minutos",
+  "placementChipMinutes": "uns 8 a 12 minutos",
   "placementChipNoClock": "sem relógio",
   "placementStart": "Começar",
   "placementResume": "Continuar teste",
@@ -742,7 +730,7 @@
   "placementDontKnow": "Não sei",
   "placementConfirm": "Confirmar",
   "placementQuestionOf": "Pergunta {number} de 20",
-  "placementResultTitle": "Seu nível",
+  "placementResultTitle": "Teste de nível",
   "placementBetween": "Entre {low} e {high}",
   "placementMapTitle": "O que você já domina e o que falta",
   "placementMastered": "Já domina",
@@ -1063,37 +1051,9 @@
   "lessonBackToStart": "Voltar ao início",
   "lessonPreviousStep": "Voltar um passo",
   "lessonMoveList": "Lances",
-  "tourVoiceHint": "Os adversários ganham uma voz do aparelho sozinhos. A minha voz muda depois nas Configurações, e o seu nome, no perfil.",
+  "tourVoiceHint": "Os adversários usam uma voz do aparelho. A minha voz muda depois nas Configurações, e o seu nome, no Perfil.",
   "@tourVoiceHint": {
     "description": "Note under the voice choice in the tour."
-  },
-  "tourStageIdea": "Ideia",
-  "@tourStageIdea": {
-    "description": "Tour, lessons step: first stage."
-  },
-  "tourStageIdeaBody": "eu explico,\nlance por lance",
-  "@tourStageIdeaBody": {
-    "description": "Tour, lessons step: what happens in the first stage."
-  },
-  "tourStageExamples": "Exemplos",
-  "@tourStageExamples": {
-    "description": "Tour, lessons step: second stage."
-  },
-  "tourStageExamplesBody": "eu mostro\nno tabuleiro",
-  "@tourStageExamplesBody": {
-    "description": "Tour, lessons step: what happens in the second stage."
-  },
-  "tourStagePractice": "Prática",
-  "@tourStagePractice": {
-    "description": "Tour, lessons step: third stage."
-  },
-  "tourStagePracticeBody": "você joga\nsozinho",
-  "@tourStagePracticeBody": {
-    "description": "Tour, lessons step: what happens in the third stage."
-  },
-  "tourStockfishMax": "máximo",
-  "@tourStockfishMax": {
-    "description": "Tour, games step: rating label under the Stockfish square."
   },
   "exerciseSayCorrect": "Correto.",
   "exerciseSayWrong": "Não.",
@@ -1271,7 +1231,7 @@
   "levelZeroTextHome": "Começa pelos adversários mais fáceis.",
   "levelContinue": "Continuar",
   "levelLichessConnectedTitle": "Lichess conectado",
-  "levelLichessBack": "Voltei do Lichess. O acesso fica só neste celular.",
+  "levelLichessBack": "Voltei do Lichess. O acesso fica só neste celular, e não precisa de conta no Lucena.",
   "levelConnectedAs": "Conectado como {user}",
   "levelRatingBullet": "Bullet",
   "levelRatingBlitz": "Blitz",
@@ -1279,23 +1239,21 @@
   "levelRatingNone": "—",
   "levelRatingProvisional": "{rating}?",
   "levelGamesCount": "{count, plural, =1{1 partida} other{{count} partidas}}",
-  "levelStartsAt": "Pelo seu {mode, select, bullet{bullet} rapid{rating de rápidas} other{blitz}}, a Jornada começa no {rung} e o seu rating no Lucena começa em {rating}.",
+  "levelStartsAt": "Pelo seu {mode, select, bullet{bullet} rapid{rating de rápidas} other{blitz}}, a Jornada começa no {rung} e seu rating no Lucena começa em {rating}.",
   "levelRung": "{name} ({level})",
-  "levelLichessTip": "O rating do Lichess costuma ficar acima do da FIDE e do Chess.com. Se achar fácil ou difícil, o Lucena ajusta sozinho.",
+  "levelLichessTip": "Cada site usa a sua escala: o mesmo jogador tem um número maior no Lichess do que na FIDE ou no Chess.com. O Lucena usa a escala do Lichess.",
   "levelUseRating": "Usar esse rating",
   "levelPreferTest": "Prefiro fazer o teste",
-  "levelProvisionalText": "O Lichess marca o seu rating com ?: ainda é provisório, com poucas partidas. Com o teste eu acerto o seu nível.",
-  "levelProvisionalTip": "Se preferir, começo pelo {rating} e ajusto sozinho depois de algumas partidas.",
+  "levelProvisionalText": "O Lichess marca seu rating com ?: ainda é provisório, com poucas partidas. O teste acerta seu nível.",
+  "levelProvisionalTip": "Com {rating}, o nível se ajusta sozinho depois de algumas partidas.",
   "levelTakeTest": "Fazer o teste",
   "levelUseDefault": "Usar o {rating} mesmo assim",
   "levelChessAppBar": "Rating do Chess.com",
   "levelChessField": "Seu usuário no Chess.com",
   "levelChessHelp": "Lemos o rating público do Chess.com. Sem login e sem senha.",
-  "levelChessNotFound": "Não encontrei esse usuário no Chess.com.",
-  "levelChessOffline": "Não foi possível conectar ao Chess.com. Verifique sua conexão de Internet e tente novamente.",
-  "levelLichessOffline": "Não foi possível conectar ao Lichess. Verifique sua conexão de Internet e tente novamente.",
+  "levelChessNotFound": "Não encontrei esse usuário no Chess.com. Confira como ele está escrito.",
   "levelFoundUser": "Encontrei: {user}",
-  "levelChessTip": "O rating do Chess.com costuma ficar abaixo do Lichess, então eu converto. Se achar fácil ou difícil, o Lucena ajusta sozinho.",
+  "levelChessTip": "Cada site usa sua escala: o mesmo jogador tem um número menor no Chess.com do que no Lichess. O Lucena converte seu rating.",
   "levelManualAppBar": "Informar o rating",
   "levelManualField": "Seu rating",
   "levelManualHelp": "Só o número, de 400 a 3000.",
@@ -1698,11 +1656,11 @@
   "crowdFewYesterday": "Poucas pessoas jogaram ontem",
   "crowdFew": "Poucas pessoas jogaram este final",
   "crowdFewText": "O número aparece a partir de 30 pessoas.",
-  "updateRequiredTitle": "Atualize o Lucena",
-  "updateRequiredBody": "Esta versão parou de funcionar. A nova leva menos de um minuto para instalar, e o seu progresso continua aqui.",
-  "updateRequiredAction": "Atualizar na Play",
-  "updateRecommendedTitle": "Versão nova do Lucena",
-  "updateRecommendedBody": "Tem correções e melhorias. Atualize quando puder.",
+  "updateRequiredTitle": "Atualização necessária",
+  "updateRequiredBody": "A versão instalada tem um erro que precisa ser corrigido. Suas lições e partidas continuam no aparelho.",
+  "updateRequiredAction": "Atualizar",
+  "updateRecommendedTitle": "Nova versão disponível",
+  "updateRecommendedBody": "Traz correções e melhorias para o Lucena.",
   "updateRecommendedAction": "Atualizar",
   "updateRecommendedLater": "Agora não",
   "updateReadyRestart": "Pronto. Reiniciar o Lucena",
@@ -2399,5 +2357,48 @@
   "schoolGraduationSurveyBody": "Leva 1 minuto e ajuda a melhorar as lições.",
   "schoolGraduationPilares": "Conhecer o Pilares",
   "schoolGraduationShareText": "Concluí a Escola do Viktor no Lucena! {link}",
-  "schoolGraduationOpen": "Ver o diploma"
+  "schoolGraduationOpen": "Ver o diploma",
+  "placementPreferRating": "Prefiro informar meu rating",
+  "updateOfflineMessage": "Você precisa de conexão com a internet para atualizar o Lucena.",
+  "tourSpeechTheme": "Agora escolha o tema do app. No padrão do sistema, ele acompanha o do seu celular.",
+  "tourSpeechLevel": "Com sinceridade: em que ponto você está no xadrez?",
+  "tourSpeechRegion": "De onde você joga? Assim eu destaco os finais de torneios da sua região.",
+  "tourSpeechAccount": "Por último: quer salvar seu progresso? Dá para criar a conta depois, no Perfil.",
+  "tourTabColors": "Cores",
+  "tourLevelZeroTitle": "Estou começando",
+  "tourLevelZeroText": "As lições do Viktor, do movimento das peças aos primeiros mates.",
+  "tourLevelBandTitle": "Escolher minha faixa",
+  "tourLevelBandText": "Você indica a sua faixa de rating, e a Jornada começa no adversário certo.",
+  "tourLevelBandStart": "A Jornada começa no Maia {level}",
+  "tourBandTitle": "Rating aproximado",
+  "tourBandHint": "Escolha a faixa mais próxima do seu rating, online ou no tabuleiro.",
+  "tourBandConfirm": "Confirmar",
+  "tourRegionCountry": "País",
+  "tourRegionCountryHelp": "Pelo idioma do celular",
+  "tourRegionState": "Estado (opcional)",
+  "tourRegionCity": "Cidade (opcional)",
+  "tourRegionChoose": "Escolher",
+  "tourRegionBenefitCountry": "Os finais de torneios do seu país aparecem primeiro",
+  "tourRegionBenefitLocal": "Torneios do seu estado e da sua cidade ganham prioridade",
+  "tourRegionBenefitAlerts": "Com os avisos ligados, você sabe quando sai um final de torneio da sua região",
+  "tourRegionSearch": "Buscar",
+  "tourRegionStateTitle": "Estado",
+  "tourRegionCityTitle": "Cidade",
+  "tourRegionNoState": "Nenhum estado com esse nome.",
+  "tourRegionNoCity": "Nenhuma cidade com esse nome.",
+  "tourRegionUseTyped": "Usar “{text}”",
+  "tourAccountSaved": "Seu progresso fica salvo e aparece em qualquer celular",
+  "tourAccountNoAccount": "O app funciona sem conta, só neste celular",
+  "tourAccountGoogle": "Criar conta com Google",
+  "tourAccountEmail": "Criar conta com e-mail",
+  "tourAccountNoNetText": "Você precisa de conexão com a internet para criar a conta.",
+  "tourAccountRetry": "Tentar novamente",
+  "tourAccountBack": "Voltar",
+  "levelLichessProvisionalBack": "O acesso ao Lichess fica só neste celular e não exige conta no Lucena.",
+  "levelLichessCancelled": "Não foi possível concluir a autorização no Lichess",
+  "levelLichessNoNet": "Você precisa de conexão com a internet para acessar o Lichess.",
+  "levelChessNoNet": "Você precisa de conexão com a internet para acessar o Chess.com.",
+  "levelChessSearch": "Buscar",
+  "levelChessNoRatingText": "Essa conta ainda não tem partidas que valem rating no Chess.com. Com o teste, eu encontro o seu nível.",
+  "levelChessNoRatingTip": "Pela faixa de rating, a Jornada também começa no adversário certo."
 }

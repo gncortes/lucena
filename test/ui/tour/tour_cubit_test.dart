@@ -1,42 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/lesson.dart';
-import 'package:lucena/domain/models/lesson_content.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/onboarding.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
-import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
-
-class _UnavailableLessons extends FakeLessonRepository {
-  @override
-  Future<LessonTexts> texts(String language) async =>
-      throw const LessonContentUnavailable();
-}
 
 void main() {
   late FakeOnboardingRepository onboarding;
   late FakeProfileRepository profile;
 
-  TourCubit cubit({bool voices = true, bool unavailable = false}) {
+  TourCubit cubit({bool voices = true}) {
     final cubit = TourCubit(
       onboarding: onboarding,
       profile: profile,
       characters: FakeCharacterRepository(),
       voice: voices ? FakeVoiceRepository() : null,
-      lessons: unavailable
-          ? _UnavailableLessons()
-          : FakeLessonRepository(
-              texts: LessonTexts.fromJson({
-                'tour.board': 'Welcome, my student.',
-                'tour.voice': 'Pick my voice.',
-                'tour.voice.link': 'Nice game!',
-                'tour.voice.link.none': 'Nice game! Tell me your name.',
-                'tour.voice.none': 'Tell me your name.',
-              }),
-            ),
     );
     addTearDown(cubit.close);
     return cubit;
@@ -47,56 +29,64 @@ void main() {
     profile = FakeProfileRepository();
   });
 
-  Future<void> toLast(TourCubit tour) async {
-    while (!tour.state.step.isLast) {
-      await tour.next();
-    }
-  }
-
-  test(
-    'guest without a course package can finish and resume the tour',
-    () async {
-      final tour = cubit(voices: false, unavailable: true);
-      await tour.load('pt');
-      expect(tour.state.ready, isTrue);
-      expect(tour.state.speech, isNull);
-      expect(tour.state.steps, TourStep.values);
-      await tour.next();
-      final reopened = cubit(voices: false, unavailable: true);
-      await reopened.load('pt');
-      expect(reopened.state.step, TourStep.voice);
-      await toLast(reopened);
-      await reopened.finish();
-      expect(reopened.state.finished, isTrue);
-      expect(onboarding.saved.done, isFalse);
-      expect(onboarding.saved.inProgress, isTrue);
-    },
-  );
-
-  test('são cinco passos, na ordem, e o nível não é um deles', () async {
-    expect(TourStep.values, [
-      TourStep.board,
-      TourStep.voice,
-      TourStep.school,
-      TourStep.help,
-      TourStep.play,
-    ]);
-    final tour = cubit(voices: false);
-    await tour.load('en');
+  Future<List<TourStep>> walk(TourCubit tour) async {
     final seen = [tour.state.step];
     while (!tour.state.step.isLast) {
       await tour.next();
       seen.add(tour.state.step);
     }
-    expect(seen, TourStep.values);
-    expect(tour.state.steps.length, 5);
+    return seen;
+  }
+
+  test('são seis passos, na ordem, e a conta é o último', () async {
+    expect(TourStep.values, [
+      TourStep.board,
+      TourStep.theme,
+      TourStep.voice,
+      TourStep.level,
+      TourStep.region,
+      TourStep.account,
+    ]);
+    final tour = cubit(voices: false);
+    await tour.load('pt');
+    expect(await walk(tour), TourStep.values);
     await tour.next();
-    expect(tour.state.step, TourStep.play);
+    expect(tour.state.step, TourStep.account);
+  });
+
+  test('a barra enche 20, 30, 40, 60, 80 e 100%', () async {
+    final tour = cubit();
+    await tour.load('pt');
+    final fractions = <double>[tour.state.progress];
+    while (!tour.state.step.isLast) {
+      await tour.next();
+      fractions.add(tour.state.progress);
+    }
+    expect(fractions, [0.20, 0.30, 0.40, 0.60, 0.80, 1.0]);
+  });
+
+  test('com Aprender a jogar o nível some e a barra anda em quartos', () async {
+    profile.profile = const UserProfile(goal: GoalPreference.learn);
+    final tour = cubit();
+    await tour.load('pt');
+    expect(tour.state.steps, [
+      TourStep.board,
+      TourStep.theme,
+      TourStep.voice,
+      TourStep.region,
+      TourStep.account,
+    ]);
+    final fractions = <double>[tour.state.progress];
+    while (!tour.state.step.isLast) {
+      await tour.next();
+      fractions.add(tour.state.progress);
+    }
+    expect(fractions, [0.25, 0.25, 0.50, 0.75, 1.0]);
   });
 
   test('Voltar não existe no primeiro passo e volta nos outros', () async {
     final tour = cubit();
-    await tour.load('en');
+    await tour.load('pt');
     expect(tour.state.hasPrevious, isFalse);
     await tour.back();
     expect(tour.state.step, TourStep.board);
@@ -108,98 +98,105 @@ void main() {
     expect(tour.state.forward, isFalse);
   });
 
-  test('Pular e Começar saem do tour sem dar o tour por visto', () async {
+  test('Pular pula só o passo atual, sem sair do tour', () async {
     final tour = cubit();
-    await tour.load('en');
+    await tour.load('pt');
     await tour.skip();
-    expect(tour.state.finished, isTrue);
+    expect(tour.state.step, TourStep.theme);
+    await tour.skip();
+    expect(tour.state.step, TourStep.voice);
+    await tour.skip();
+    expect(tour.state.step, TourStep.level);
+    await tour.skip();
+    expect(tour.state.step, TourStep.region);
+    await tour.skip();
+    expect(tour.state.step, TourStep.account);
+    expect(tour.state.finished, isFalse);
+    // Na Conta não há o que pular.
+    await tour.skip();
+    expect(tour.state.step, TourStep.account);
+    expect(tour.state.finished, isFalse);
+  });
+
+  test('Pular a voz com Aprender vai à região', () async {
+    profile.profile = const UserProfile(goal: GoalPreference.learn);
+    onboarding.saved = Onboarding(step: TourStep.voice.index);
+    final tour = cubit();
+    await tour.load('pt');
+    await tour.skip();
+    expect(tour.state.step, TourStep.region);
+  });
+
+  test('o tour só termina ao sair da Conta e então conta como visto', () async {
+    final tour = cubit();
+    await tour.load('pt');
+    await walk(tour);
+    expect(tour.state.finished, isFalse);
     expect(onboarding.saved.done, isFalse);
     expect(onboarding.saved.inProgress, isTrue);
-    // Fechado o app na conta ou no nível, o tour volta no último passo.
-    final reopened = cubit();
-    await reopened.load('en');
-    expect(reopened.state.step, TourStep.play);
-    expect(profile.saved, isEmpty);
+    await tour.finish();
+    expect(tour.state.finished, isTrue);
+    expect(onboarding.saved.done, isTrue);
+    expect(onboarding.saved.inProgress, isFalse);
   });
 
-  test(
-    'vindo de um link, o tabuleiro some e a conta dos passos muda',
-    () async {
-      onboarding.saved = const Onboarding(linkSetupDone: true);
-      final tour = cubit();
-      await tour.load('en');
-      expect(tour.state.step, TourStep.voice);
-      expect(tour.state.steps, [
-        TourStep.voice,
-        TourStep.school,
-        TourStep.help,
-        TourStep.play,
-      ]);
-      expect(tour.state.position, 0);
-      expect(tour.state.hasPrevious, isFalse);
-      expect(tour.state.speech, 'Nice game!');
-      await tour.next();
-      expect(tour.state.position, 1);
-      await tour.back();
-      expect(tour.state.step, TourStep.voice);
-      await toLast(tour);
-      expect(tour.state.position, 3);
-    },
-  );
+  test('fechado o app no meio, o tour volta no mesmo passo', () async {
+    final tour = cubit();
+    await tour.load('pt');
+    await tour.next();
+    await tour.next();
+    await tour.next();
+    await tour.next();
+    final reopened = cubit();
+    await reopened.load('pt');
+    expect(reopened.state.step, TourStep.region);
+    expect(onboarding.saved.done, isFalse);
+  });
 
-  test('sem voz no idioma, vindo de um link, o Viktor se apresenta e pede o '
-      'nome', () async {
+  test('vindo de um link, o tabuleiro some', () async {
     onboarding.saved = const Onboarding(linkSetupDone: true);
-    final tour = cubit(voices: false);
-    await tour.load('en');
-    expect(tour.state.speech, 'Nice game! Tell me your name.');
-  });
-
-  test('a fala é a do passo; sem voz no idioma, a do nome', () async {
     final tour = cubit();
-    await tour.load('en');
-    expect(tour.state.viktor!.name, 'Viktor');
-    expect(tour.state.speech, 'Welcome, my student.');
+    await tour.load('pt');
+    expect(tour.state.step, TourStep.theme);
+    expect(tour.state.steps, [
+      TourStep.theme,
+      TourStep.voice,
+      TourStep.level,
+      TourStep.region,
+      TourStep.account,
+    ]);
+    expect(tour.state.hasPrevious, isFalse);
     await tour.next();
-    expect(tour.state.speech, 'Pick my voice.');
-    onboarding.saved = const Onboarding();
-    final mute = cubit(voices: false);
-    await mute.load('en');
-    expect(mute.state.hasVoices, isFalse);
-    await mute.next();
-    expect(mute.state.speech, 'Tell me your name.');
-    await mute.next();
-    expect(mute.state.speech, isNull);
-  });
-
-  test('cada passo é gravado e volta ao reabrir', () async {
-    final tour = cubit();
-    await tour.load('en');
-    await tour.next();
-    await tour.next();
-    final reopened = cubit();
-    await reopened.load('en');
-    expect(reopened.state.step, TourStep.school);
+    expect(tour.state.position, 1);
+    await tour.back();
+    expect(tour.state.step, TourStep.theme);
   });
 
   test('rever o tour já visto começa do primeiro passo', () async {
     onboarding.saved = const Onboarding(done: true, step: 4);
     final tour = cubit();
-    await tour.load('en');
+    await tour.load('pt');
     expect(tour.state.step, TourStep.board);
     expect(onboarding.saved.done, isTrue);
+  });
+
+  test('sem voz no idioma, o estado diz isso', () async {
+    final tour = cubit(voices: false);
+    await tour.load('pt');
+    expect(tour.state.hasVoices, isFalse);
+    expect(tour.state.viktor!.name, 'Viktor');
   });
 
   test('o nome vai para o perfil na hora, já limpo, e continua ao reabrir '
       'e ao terminar', () async {
     final tour = cubit();
-    await tour.load('en');
+    await tour.load('pt');
     expect(tour.state.nickname, '');
     await tour.setNickname('  Ana   Clara ');
     expect(tour.state.nickname, 'Ana Clara');
     expect((await profile.load()).nickname, 'Ana Clara');
     final reopened = cubit();
-    await reopened.load('en');
+    await reopened.load('pt');
     expect(reopened.state.nickname, 'Ana Clara');
     await reopened.finish();
     expect((await profile.load()).nickname, 'Ana Clara');
@@ -207,9 +204,71 @@ void main() {
 
   test('apagar o nome volta ao apelido padrão', () async {
     final tour = cubit();
-    await tour.load('en');
+    await tour.load('pt');
     await tour.setNickname('Ana');
     await tour.setNickname('');
     expect((await profile.load()).nickname, '');
+  });
+
+  group('região', () {
+    Future<TourCubit> atRegion({String? phone}) async {
+      final tour = cubit();
+      await tour.load('pt', phoneCountry: phone);
+      while (tour.state.step != TourStep.region) {
+        await tour.next();
+      }
+      return tour;
+    }
+
+    test('sem perfil, o país vem do celular e nada é gravado ainda', () async {
+      final tour = await atRegion(phone: 'BR');
+      expect(tour.state.country, 'BR');
+      expect(tour.state.countryFromPhone, isTrue);
+      expect(profile.profile.country, isNull);
+    });
+
+    test('trocar de país limpa estado e cidade', () async {
+      final tour = await atRegion(phone: 'BR');
+      tour.setRegionState('SP');
+      tour.setRegionCity('Campinas');
+      tour.setRegionState('RJ');
+      expect(tour.state.regionCity, isNull);
+      tour.setRegionCity('Niterói');
+      tour.setRegionCountry('pt');
+      expect(tour.state.country, 'PT');
+      expect(tour.state.regionState, isNull);
+      expect(tour.state.regionCity, isNull);
+      expect(tour.state.countryFromPhone, isFalse);
+    });
+
+    test(
+      'Continuar grava país, estado e cidade e segue para a conta',
+      () async {
+        final tour = await atRegion(phone: 'BR');
+        tour.setRegionState('SP');
+        tour.setRegionCity('Campinas');
+        await tour.next();
+        expect(profile.profile.country, 'BR');
+        expect(profile.profile.state, 'SP');
+        expect(profile.profile.city, 'Campinas');
+        expect(tour.state.step, TourStep.account);
+      },
+    );
+
+    test('Pular não grava a região', () async {
+      final tour = await atRegion(phone: 'BR');
+      tour.setRegionState('SP');
+      await tour.skip();
+      expect(profile.profile.state, isNull);
+      expect(tour.state.step, TourStep.account);
+    });
+
+    test('finish(leave: false) grava o tour como visto sem sair', () async {
+      final tour = await atRegion();
+      await tour.next();
+      await tour.finish(leave: false);
+      expect(onboarding.saved.done, isTrue);
+      expect(tour.state.finished, isFalse);
+    });
   });
 }

@@ -36,7 +36,10 @@ class LoadErrorScreen extends StatelessWidget {
     this.onBack,
     this.onFreeSpace,
     this.showAction = true,
-    this.offlineMessage,
+    this.message,
+    this.backLabel,
+    this.actionKey,
+    this.backKey,
     super.key,
   });
 
@@ -46,14 +49,21 @@ class LoadErrorScreen extends StatelessWidget {
   final VoidCallback? onFreeSpace;
   final bool showAction;
 
-  /// Replaces the offline text when the screen belongs to a specific course.
-  final String? offlineMessage;
+  /// Troca o texto padrão do tipo (ex.: "para atualizar o Lucena").
+  final String? message;
+
+  /// Troca o rótulo de [onBack] (ex.: "Agora não").
+  final String? backLabel;
+
+  /// Keys próprias dos botões (padrão: as de [LoadErrorKeys]).
+  final Key? actionKey;
+  final Key? backKey;
 
   @override
   Widget build(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
-    final (title, message, icon) = switch (kind) {
+    final (title, defaultMessage, icon) = switch (kind) {
       LoadErrorKind.generic => (
         t.loadErrorGenericTitle,
         null,
@@ -61,7 +71,7 @@ class LoadErrorScreen extends StatelessWidget {
       ),
       LoadErrorKind.offline => (
         t.loadErrorOfflineTitle,
-        offlineMessage ?? t.loadErrorOfflineMessage,
+        t.loadErrorOfflineMessage,
         CanvasSymbols.wifiOff,
       ),
       LoadErrorKind.noSpace => (
@@ -96,6 +106,7 @@ class LoadErrorScreen extends StatelessWidget {
         CanvasSymbols.error,
       ),
     };
+    final message = this.message ?? defaultMessage;
     final freeSpace = kind == LoadErrorKind.noSpace ? onFreeSpace : null;
     final actionLabel = kind == LoadErrorKind.notFound
         ? t.loadErrorHome
@@ -159,16 +170,16 @@ class LoadErrorScreen extends StatelessWidget {
                     outlined: false,
                   ),
                 _LoadErrorAction(
-                  buttonKey: LoadErrorKeys.action,
+                  buttonKey: actionKey ?? LoadErrorKeys.action,
                   onAction: onAction,
                   label: actionLabel,
                   outlined: freeSpace != null,
                 ),
                 if (kind != LoadErrorKind.notFound && onBack != null)
                   OutlinedButton(
-                    key: LoadErrorKeys.back,
+                    key: backKey ?? LoadErrorKeys.back,
                     onPressed: onBack,
-                    child: Text(t.loadErrorBack),
+                    child: Text(backLabel ?? t.loadErrorBack),
                   ),
               ],
             ),

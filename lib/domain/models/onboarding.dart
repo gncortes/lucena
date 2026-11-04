@@ -1,12 +1,12 @@
-/// As telas da primeira abertura, na ordem da loja (decisão 1a da E1.11):
-/// o tour, "O que você quer fazer?" e "Seu nível". A conta não é mais uma
-/// etapa: o convite vem depois da 1ª vitória (T83 A3).
+/// As telas da primeira abertura, na ordem do canvas (T85): "O que você
+/// quer fazer?" e depois o tour (Tabuleiro, Tema, Voz, Nível, Região, Conta).
+/// O nível deixou de ser tela separada: é um passo do tour.
 enum OnboardingStage {
-  tour,
   goal,
-  level;
+  tour;
 
-  /// `account` (etapa antiga, já gravada em aparelhos) segue como [goal].
+  /// Códigos já gravados em aparelhos: `account` e `level` não existem mais
+  /// como etapa (o repositório leva `level` ao passo Nível do tour).
   static OnboardingStage? fromCode(Object? code) =>
       code == 'account' ? goal : values.asNameMap()[code];
 }
@@ -22,7 +22,7 @@ class Onboarding {
     this.byHand = false,
     this.inProgress = false,
     this.linkSetupDone = false,
-    this.stage = OnboardingStage.tour,
+    this.stage = OnboardingStage.goal,
     this.boardControlsDone = false,
     this.boardControlsOpen = false,
     this.boardControlsFen,

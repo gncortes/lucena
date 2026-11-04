@@ -315,7 +315,6 @@ abstract final class Routes {
     path: nextSteps,
     queryParameters: {'level': ?level?.toString()},
   ).toString();
-  static const nextStepsSchool = '/next/school';
 
   /// A Corrida só de um tipo de final ([subcategory]) ou só de uma família
   /// ([category]).

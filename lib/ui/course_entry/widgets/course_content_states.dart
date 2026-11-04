@@ -130,7 +130,7 @@ class CourseDownloadFailure extends StatelessWidget {
     if (!chapter) {
       return LoadErrorScreen(
         kind: offline ? LoadErrorKind.offline : LoadErrorKind.generic,
-        offlineMessage: t.loadErrorOfflineCourseMessage,
+        message: offline ? t.loadErrorOfflineCourseMessage : null,
         onAction: onRetry,
         onBack: () =>
             context.canPop() ? context.pop() : context.go(Routes.home),

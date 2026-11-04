@@ -397,14 +397,17 @@ GoRouter buildRouter({
         name: RouteNames.tour,
         path: Routes.tour,
         builder: (context, state) => BlocProvider(
-          create: (_) => TourCubit(
-            onboarding: context.read<OnboardingRepository>(),
-            profile: context.read<ProfileRepository>(),
-            characters: context.read<CharacterRepository>(),
-            lessons: context.read<LessonRepository>(),
-            voice: context.read<VoiceRepository>(),
-            analytics: context.analytics,
-          )..load(_language(context)),
+          create: (_) =>
+              TourCubit(
+                onboarding: context.read<OnboardingRepository>(),
+                profile: context.read<ProfileRepository>(),
+                characters: context.read<CharacterRepository>(),
+                voice: context.read<VoiceRepository>(),
+                analytics: context.analytics,
+              )..load(
+                _language(context),
+                phoneCountry: context.read<ProfileCubit>().phoneCountry,
+              ),
           child: const TourScreen(),
         ),
       ),
@@ -644,8 +647,13 @@ GoRouter buildRouter({
             )..load(),
             // Volta com true quando o resultado foi usado.
             child: Builder(
-              builder: (context) =>
-                  PlacementScreen(onDone: () => context.pop(true)),
+              builder: (context) => PlacementScreen(
+                onDone: () => context.pop(true),
+                // Vindo do passo Nível, dá para desistir do teste.
+                onPreferRating: state.uri.queryParameters['from'] == 'level'
+                    ? () => context.pop(false)
+                    : null,
+              ),
             ),
           );
         },
@@ -1454,14 +1462,6 @@ GoRouter buildRouter({
             path: 'next',
             builder: (context, state) =>
                 NextStepsScreen(courseAvailable: _courseAvailable(context)),
-            routes: [
-              _route(
-                name: RouteNames.nextStepsSchool,
-                path: 'school',
-                builder: (context, state) =>
-                    NextStepsScreen(courseAvailable: _courseAvailable(context)),
-              ),
-            ],
           ),
           _route(
             name: RouteNames.race,

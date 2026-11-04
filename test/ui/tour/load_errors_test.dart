@@ -18,7 +18,6 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
-import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../testing/fakes/fake_chesscom_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -69,7 +68,6 @@ void main() {
               onboarding: repository,
               profile: profile,
               characters: characters,
-              lessons: FakeLessonRepository(),
             );
             addTearDown(cubit.close);
             load = () => cubit.load('pt');

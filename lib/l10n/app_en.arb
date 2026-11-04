@@ -1,36 +1,64 @@
 {
   "loadErrorRetry": "Try again",
-  "@loadErrorRetry": {"description": "Standard loading error: Retry."},
+  "@loadErrorRetry": {
+    "description": "Standard loading error: Retry."
+  },
   "loadErrorHome": "Go to home",
-  "@loadErrorHome": {"description": "Standard loading error: Home."},
+  "@loadErrorHome": {
+    "description": "Standard loading error: Home."
+  },
   "loadErrorBack": "Back",
-  "@loadErrorBack": {"description": "Standard loading error: Back."},
+  "@loadErrorBack": {
+    "description": "Standard loading error: Back."
+  },
   "loadErrorFreeSpace": "Free up space",
-  "@loadErrorFreeSpace": {"description": "Standard loading error: FreeSpace."},
+  "@loadErrorFreeSpace": {
+    "description": "Standard loading error: FreeSpace."
+  },
   "loadErrorGenericTitle": "An unexpected error occurred",
-  "@loadErrorGenericTitle": {"description": "Standard loading error: GenericTitle."},
+  "@loadErrorGenericTitle": {
+    "description": "Standard loading error: GenericTitle."
+  },
   "loadErrorOfflineTitle": "No internet",
-  "@loadErrorOfflineTitle": {"description": "Standard loading error: OfflineTitle."},
+  "@loadErrorOfflineTitle": {
+    "description": "Standard loading error: OfflineTitle."
+  },
   "loadErrorOfflineCourseMessage": "You need an internet connection to access this course.",
   "@loadErrorOfflineCourseMessage": {
     "description": "Standard error screen, offline variant shown when a course package cannot be downloaded."
   },
   "loadErrorOfflineMessage": "You need an internet connection to access this feature.",
-  "@loadErrorOfflineMessage": {"description": "Standard loading error: OfflineMessage."},
+  "@loadErrorOfflineMessage": {
+    "description": "Standard loading error: OfflineMessage."
+  },
   "loadErrorNoSpaceTitle": "Not enough space on your phone",
-  "@loadErrorNoSpaceTitle": {"description": "Standard loading error: NoSpaceTitle."},
+  "@loadErrorNoSpaceTitle": {
+    "description": "Standard loading error: NoSpaceTitle."
+  },
   "loadErrorUnavailableTitle": "Content unavailable",
-  "@loadErrorUnavailableTitle": {"description": "Standard loading error: UnavailableTitle."},
+  "@loadErrorUnavailableTitle": {
+    "description": "Standard loading error: UnavailableTitle."
+  },
   "loadErrorNotFoundTitle": "Content not found",
-  "@loadErrorNotFoundTitle": {"description": "Standard loading error: NotFoundTitle."},
+  "@loadErrorNotFoundTitle": {
+    "description": "Standard loading error: NotFoundTitle."
+  },
   "loadErrorNotFoundMessage": "The link may be incorrect or the content has been removed.",
-  "@loadErrorNotFoundMessage": {"description": "Standard loading error: NotFoundMessage."},
+  "@loadErrorNotFoundMessage": {
+    "description": "Standard loading error: NotFoundMessage."
+  },
   "loadErrorLaunchTitle": "Lucena could not open",
-  "@loadErrorLaunchTitle": {"description": "Standard loading error: LaunchTitle."},
+  "@loadErrorLaunchTitle": {
+    "description": "Standard loading error: LaunchTitle."
+  },
   "loadErrorLaunchAgainTitle": "Lucena still cannot open",
-  "@loadErrorLaunchAgainTitle": {"description": "Standard loading error: LaunchAgainTitle."},
+  "@loadErrorLaunchAgainTitle": {
+    "description": "Standard loading error: LaunchAgainTitle."
+  },
   "loadErrorLaunchAgainMessage": "Close the app and open it again. If the problem continues, check the free space on your phone.",
-  "@loadErrorLaunchAgainMessage": {"description": "Standard loading error: LaunchAgainMessage."},
+  "@loadErrorLaunchAgainMessage": {
+    "description": "Standard loading error: LaunchAgainMessage."
+  },
   "@@locale": "en",
   "achievementAllLevelsHint": "Complete this endgame against every character, from the weakest to the strongest",
   "@achievementAllLevelsHint": {
@@ -1418,21 +1446,25 @@
     }
   },
   "tourSpeechBoard": "Hello! I am Viktor, your teacher. Before we start, choose the board colours and the pieces you like best.",
-  "@tourSpeechBoard": {"description": "Public onboarding speech, copied verbatim from tour.board."},
-  "tourSpeechVoice": "I can read aloud everything I say. Choose my voice; tap one to hear it. And tell me what to call you.",
-  "@tourSpeechVoice": {"description": "Public onboarding speech, copied verbatim from tour.voice."},
+  "@tourSpeechBoard": {
+    "description": "Public onboarding speech, copied verbatim from tour.board."
+  },
+  "tourSpeechVoice": "I can read aloud everything I say. Tap a voice to hear it.",
+  "@tourSpeechVoice": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice."
+  },
   "tourSpeechVoiceNone": "Before we go on, tell me what to call you.",
-  "@tourSpeechVoiceNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.none."},
+  "@tourSpeechVoiceNone": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice.none."
+  },
   "tourSpeechVoiceLink": "Nice game! I am Viktor, your teacher. I can read aloud everything I say. Choose my voice, and tell me what to call you.",
-  "@tourSpeechVoiceLink": {"description": "Public onboarding speech, copied verbatim from tour.voice.link."},
+  "@tourSpeechVoiceLink": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice.link."
+  },
   "tourSpeechVoiceLinkNone": "Nice game! I am Viktor, your teacher. Before we go on, tell me what to call you.",
-  "@tourSpeechVoiceLinkNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.link.none."},
-  "tourSpeechSchool": "In the lessons, I first explain the idea, move by move. Then I show examples. At the end, you practise on the board.",
-  "@tourSpeechSchool": {"description": "Public onboarding speech, copied verbatim from tour.school."},
-  "tourSpeechHelp": "Stuck? In a lesson, tap Show answer. In an exercise, tap the bulb and I give you a hint. Wrong move? I show you why, and you try again.",
-  "@tourSpeechHelp": {"description": "Public onboarding speech, copied verbatim from tour.help."},
-  "tourSpeechPlay": "Outside the lessons, you play endgames against opponents who play like real people, from Coco to Stockfish. Games against them change your rating, shown at the top of the home screen.",
-  "@tourSpeechPlay": {"description": "Public onboarding speech, copied verbatim from tour.play."},
+  "@tourSpeechVoiceLinkNone": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice.link.none."
+  },
   "tourBack": "Back",
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
@@ -3626,7 +3658,7 @@
   "@placementTitle": {
     "description": "Title of the placement test screen."
   },
-  "placementIntroSpeech": "No guessing: if you don't know, tap \"I don't know\". At the end I'll build your study plan.",
+  "placementIntroSpeech": "If you don't know, tap \"I don't know\". At the end I'll build your study plan.",
   "@placementIntroSpeech": {
     "description": "Viktor at the start of the placement test."
   },
@@ -3634,7 +3666,7 @@
   "@placementChipQuestions": {
     "description": "Chip on the placement intro."
   },
-  "placementChipMinutes": "about 8 minutes",
+  "placementChipMinutes": "about 8 to 12 minutes",
   "@placementChipMinutes": {
     "description": "Chip on the placement intro: estimated time."
   },
@@ -3687,7 +3719,7 @@
       }
     }
   },
-  "placementResultTitle": "Your level",
+  "placementResultTitle": "Level test",
   "@placementResultTitle": {
     "description": "Title on the placement result."
   },
@@ -5487,37 +5519,9 @@
   "@lessonMoveList": {
     "description": "Accessibility label of the move list below the board in the scripted lesson."
   },
-  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "tourVoiceHint": "Opponents use a device voice. You can change my voice later in Settings, and your name in your Profile.",
   "@tourVoiceHint": {
     "description": "Note under the voice choice in the tour."
-  },
-  "tourStageIdea": "Idea",
-  "@tourStageIdea": {
-    "description": "Tour, lessons step: first stage."
-  },
-  "tourStageIdeaBody": "I explain,\nmove by move",
-  "@tourStageIdeaBody": {
-    "description": "Tour, lessons step: what happens in the first stage."
-  },
-  "tourStageExamples": "Examples",
-  "@tourStageExamples": {
-    "description": "Tour, lessons step: second stage."
-  },
-  "tourStageExamplesBody": "I show\non the board",
-  "@tourStageExamplesBody": {
-    "description": "Tour, lessons step: what happens in the second stage."
-  },
-  "tourStagePractice": "Practice",
-  "@tourStagePractice": {
-    "description": "Tour, lessons step: third stage."
-  },
-  "tourStagePracticeBody": "you play\nalone",
-  "@tourStagePracticeBody": {
-    "description": "Tour, lessons step: what happens in the third stage."
-  },
-  "tourStockfishMax": "maximum",
-  "@tourStockfishMax": {
-    "description": "Tour, games step: rating label under the Stockfish square."
   },
   "exerciseSayCorrect": "Correct.",
   "@exerciseSayCorrect": {
@@ -6335,7 +6339,7 @@
   "@levelLichessConnectedTitle": {
     "description": "Title of the screen shown after signing in with Lichess."
   },
-  "levelLichessBack": "Back from Lichess. The access stays on this phone only.",
+  "levelLichessBack": "Back from Lichess. The access stays on this phone only, and needs no Lucena account.",
   "@levelLichessBack": {
     "description": "Text at the top of the Lichess connected screen."
   },
@@ -6409,7 +6413,7 @@
       }
     }
   },
-  "levelLichessTip": "Lichess ratings tend to be higher than FIDE and Chess.com. If it feels easy or hard, Lucena adjusts by itself.",
+  "levelLichessTip": "Each site has its own scale: the same player has a higher number on Lichess than on FIDE or Chess.com. Lucena uses the Lichess scale.",
   "@levelLichessTip": {
     "description": "Tip on the Lichess connected screen."
   },
@@ -6421,11 +6425,11 @@
   "@levelPreferTest": {
     "description": "Text button: take the placement test instead."
   },
-  "levelProvisionalText": "Lichess marks your rating with ?: it is still provisional, with few games. With the test I get your level right.",
+  "levelProvisionalText": "Lichess marks your rating with ?: it is still provisional, with few games. The test gets your level right.",
   "@levelProvisionalText": {
     "description": "Text when the Lichess rating is provisional."
   },
-  "levelProvisionalTip": "If you prefer, I start at {rating} and adjust by myself after a few games.",
+  "levelProvisionalTip": "With {rating}, the level adjusts by itself after a few games.",
   "@levelProvisionalTip": {
     "description": "Tip when the Lichess rating is provisional.",
     "placeholders": {
@@ -6459,17 +6463,9 @@
   "@levelChessHelp": {
     "description": "Helper under the Chess.com username field."
   },
-  "levelChessNotFound": "I couldn't find this user on Chess.com.",
+  "levelChessNotFound": "I couldn't find this user on Chess.com. Check how it is spelled.",
   "@levelChessNotFound": {
     "description": "Error under the Chess.com username field."
-  },
-  "levelChessOffline": "Couldn't reach Chess.com. Check your connection.",
-  "@levelChessOffline": {
-    "description": "Snack bar when Chess.com cannot be reached."
-  },
-  "levelLichessOffline": "Couldn't reach Lichess. Check your connection.",
-  "@levelLichessOffline": {
-    "description": "Snack bar when Lichess cannot be reached."
   },
   "levelFoundUser": "Found: {user}",
   "@levelFoundUser": {
@@ -6480,7 +6476,7 @@
       }
     }
   },
-  "levelChessTip": "Chess.com ratings tend to be lower than Lichess, so I convert them. If it feels easy or hard, Lucena adjusts by itself.",
+  "levelChessTip": "Each site has its own scale: the same player has a lower number on Chess.com than on Lichess. Lucena converts your rating.",
   "@levelChessTip": {
     "description": "Tip on the Chess.com screen."
   },
@@ -8632,23 +8628,23 @@
   "@crowdFewText": {
     "description": "Text under the \"few people played\" title."
   },
-  "updateRequiredTitle": "Update Lucena",
+  "updateRequiredTitle": "Update required",
   "@updateRequiredTitle": {
     "description": "Required update screen title: this app version no longer works."
   },
-  "updateRequiredBody": "This version stopped working. The new one takes less than a minute to install, and your progress stays here.",
+  "updateRequiredBody": "The installed version has an error that needs to be fixed. Your lessons and games stay on your device.",
   "@updateRequiredBody": {
     "description": "Required update screen text."
   },
-  "updateRequiredAction": "Update on Play",
+  "updateRequiredAction": "Update",
   "@updateRequiredAction": {
     "description": "Required update screen button: opens the app page on Google Play."
   },
-  "updateRecommendedTitle": "New Lucena version",
+  "updateRecommendedTitle": "New version available",
   "@updateRecommendedTitle": {
     "description": "Recommended update screen title, shown once per version."
   },
-  "updateRecommendedBody": "It has fixes and improvements. Update when you can.",
+  "updateRecommendedBody": "Brings fixes and improvements to Lucena.",
   "@updateRecommendedBody": {
     "description": "Recommended update screen text."
   },
@@ -11852,5 +11848,187 @@
   "schoolGraduationOpen": "View the diploma",
   "@schoolGraduationOpen": {
     "description": "Lesson tab button, with the School completed, that reopens the diploma."
+  },
+  "placementPreferRating": "I'd rather enter my rating",
+  "@placementPreferRating": {
+    "description": "Placement intro and result: text button that leaves the test and goes back to the level step to pick a rating range."
+  },
+  "updateOfflineMessage": "You need an internet connection to update Lucena.",
+  "@updateOfflineMessage": {
+    "description": "Message under 'No internet' on the update screens."
+  },
+  "tourSpeechTheme": "Now choose the app theme. With the system default, it follows your phone's theme.",
+  "@tourSpeechTheme": {
+    "description": "Tour, theme step: what Viktor says."
+  },
+  "tourSpeechLevel": "Be honest: where are you in chess?",
+  "@tourSpeechLevel": {
+    "description": "Tour, level step: what Viktor says."
+  },
+  "tourSpeechRegion": "Where do you play from? That way I highlight the tournament endgames from your region.",
+  "@tourSpeechRegion": {
+    "description": "Tour, region step: what Viktor says."
+  },
+  "tourSpeechAccount": "Last one: do you want to save your progress? You can create the account later, in your Profile.",
+  "@tourSpeechAccount": {
+    "description": "Tour, account step: what Viktor says."
+  },
+  "tourTabColors": "Colors",
+  "@tourTabColors": {
+    "description": "Tour, board step: segmented tab that shows the board colour options."
+  },
+  "tourLevelZeroTitle": "I'm just starting",
+  "@tourLevelZeroTitle": {
+    "description": "Tour level step: card for people who are new to chess; they follow the school lessons."
+  },
+  "tourLevelZeroText": "Viktor's lessons, from how the pieces move to your first checkmates.",
+  "@tourLevelZeroText": {
+    "description": "Body of the \"just starting\" card in the tour level step."
+  },
+  "tourLevelBandTitle": "Pick my range",
+  "@tourLevelBandTitle": {
+    "description": "Tour level step: card that opens the rating range sheet."
+  },
+  "tourLevelBandText": "You pick your rating range, and the Journey starts with the right opponent.",
+  "@tourLevelBandText": {
+    "description": "Body of the \"pick my range\" card before a range is chosen."
+  },
+  "tourLevelBandStart": "The Journey starts at Maia {level}",
+  "@tourLevelBandStart": {
+    "description": "Body of the \"pick my range\" card after a range is chosen; level is the Maia level where the Journey starts.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "tourBandTitle": "Approximate rating",
+  "@tourBandTitle": {
+    "description": "Title of the sheet where the player picks a rating range."
+  },
+  "tourBandHint": "Choose the range closest to your rating, online or over the board.",
+  "@tourBandHint": {
+    "description": "Hint under the title of the rating range sheet."
+  },
+  "tourBandConfirm": "Confirm",
+  "@tourBandConfirm": {
+    "description": "Button that saves the chosen rating range."
+  },
+  "tourRegionCountry": "Country",
+  "@tourRegionCountry": {
+    "description": "Tour region step: label of the country field."
+  },
+  "tourRegionCountryHelp": "From your phone language",
+  "@tourRegionCountryHelp": {
+    "description": "Tour region step: help under the country field when it was filled from the phone language."
+  },
+  "tourRegionState": "State (optional)",
+  "@tourRegionState": {
+    "description": "Tour region step: label of the state field."
+  },
+  "tourRegionCity": "City (optional)",
+  "@tourRegionCity": {
+    "description": "Tour region step: label of the city field."
+  },
+  "tourRegionChoose": "Choose",
+  "@tourRegionChoose": {
+    "description": "Tour region step: hint shown in a field with no value."
+  },
+  "tourRegionBenefitCountry": "Tournament endgames from your country come first",
+  "@tourRegionBenefitCountry": {
+    "description": "Tour region step: first benefit line."
+  },
+  "tourRegionBenefitLocal": "Tournaments from your state and city get priority",
+  "@tourRegionBenefitLocal": {
+    "description": "Tour region step: second benefit line."
+  },
+  "tourRegionBenefitAlerts": "With alerts on, you know when a tournament endgame from your region comes out",
+  "@tourRegionBenefitAlerts": {
+    "description": "Tour region step: third benefit line."
+  },
+  "tourRegionSearch": "Search",
+  "@tourRegionSearch": {
+    "description": "Label of the search field in the country, state and city sheets."
+  },
+  "tourRegionStateTitle": "State",
+  "@tourRegionStateTitle": {
+    "description": "Title of the state sheet."
+  },
+  "tourRegionCityTitle": "City",
+  "@tourRegionCityTitle": {
+    "description": "Title of the city sheet."
+  },
+  "tourRegionNoState": "No state with that name.",
+  "@tourRegionNoState": {
+    "description": "Empty search result in the state sheet."
+  },
+  "tourRegionNoCity": "No city with that name.",
+  "@tourRegionNoCity": {
+    "description": "Empty search result in the city sheet."
+  },
+  "tourRegionUseTyped": "Use “{text}”",
+  "@tourRegionUseTyped": {
+    "description": "Row in the state and city sheets that uses the typed text as the value.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "tourAccountSaved": "Your progress is saved and shows up on any phone",
+  "@tourAccountSaved": {
+    "description": "Tour account step: first benefit line."
+  },
+  "tourAccountNoAccount": "The app works without an account, on this phone only",
+  "@tourAccountNoAccount": {
+    "description": "Tour account step: second benefit line."
+  },
+  "tourAccountGoogle": "Create account with Google",
+  "@tourAccountGoogle": {
+    "description": "Tour account step: Google button."
+  },
+  "tourAccountEmail": "Create account with email",
+  "@tourAccountEmail": {
+    "description": "Tour account step: email button."
+  },
+  "tourAccountNoNetText": "You need an internet connection to create the account.",
+  "@tourAccountNoNetText": {
+    "description": "Tour account step: message when there is no internet."
+  },
+  "tourAccountRetry": "Try again",
+  "@tourAccountRetry": {
+    "description": "Tour account step: retry button on the no-internet state."
+  },
+  "tourAccountBack": "Back",
+  "@tourAccountBack": {
+    "description": "Tour account step: back button on the no-internet state."
+  },
+  "levelLichessProvisionalBack": "Lichess access stays on this phone only and needs no Lucena account.",
+  "@levelLichessProvisionalBack": {
+    "description": "Text under the title of the Lichess screen when the rating is provisional."
+  },
+  "levelLichessCancelled": "Could not finish the Lichess authorization",
+  "@levelLichessCancelled": {
+    "description": "Snack bar shown when the player refuses or leaves the Lichess authorization page."
+  },
+  "levelLichessNoNet": "You need an internet connection to reach Lichess.",
+  "@levelLichessNoNet": {
+    "description": "Message of the no-internet screen of the Lichess level step."
+  },
+  "levelChessNoNet": "You need an internet connection to reach Chess.com.",
+  "@levelChessNoNet": {
+    "description": "Message of the no-internet screen of the Chess.com level step."
+  },
+  "levelChessSearch": "Search",
+  "@levelChessSearch": {
+    "description": "Button that looks up the Chess.com username."
+  },
+  "levelChessNoRatingText": "This account has no rated games on Chess.com yet. With the test, I find your level.",
+  "@levelChessNoRatingText": {
+    "description": "Text of the Chess.com result when the user exists but has no rating."
+  },
+  "levelChessNoRatingTip": "By picking a rating range, the Journey also starts with the right opponent.",
+  "@levelChessNoRatingTip": {
+    "description": "Tip of the Chess.com result when the user has no rating."
   }
 }

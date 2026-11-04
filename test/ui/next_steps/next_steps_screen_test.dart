@@ -39,11 +39,6 @@ void main() {
           builder: (context, state) =>
               NextStepsScreen(courseAvailable: available ?? () async => true),
         ),
-        GoRoute(
-          path: Routes.nextStepsSchool,
-          builder: (context, state) =>
-              NextStepsScreen(courseAvailable: available ?? () async => true),
-        ),
         stub(Routes.home),
         stub(Routes.pilaresSale),
         stub(Routes.race),
@@ -90,7 +85,7 @@ void main() {
       ('train', Routes.catalog),
       ('journey', Routes.journey),
     ]) {
-      await pump(tester, Routes.nextStepsSchool);
+      await pump(tester, Routes.nextSteps);
       await tester.tap(find.byKey(NextStepsKeys.option(id)));
       await tester.pumpAndSettle();
       expect(opened.last, route, reason: id);
