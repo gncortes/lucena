@@ -97,12 +97,14 @@ class _ProfileView extends StatelessWidget {
     await showAccountDeleteSheet(context, uid: uid, from: 'profile');
   }
 
-  void _notice(BuildContext context, ProfileAccountState state) =>
-      showLucenaSnackBar(context, switch (state.notice) {
-        ProfileNotice.failed => context.l10n.conPerfilFailed,
-        ProfileNotice.lichessOffline ||
-        null => context.l10n.lichessRefreshFailed,
-      });
+  void _notice(BuildContext context, ProfileAccountState state) {
+    // Com uma folha por cima (Lichess), o aviso aparece nela.
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
+    showLucenaSnackBar(context, switch (state.notice) {
+      ProfileNotice.failed => context.l10n.conPerfilFailed,
+      ProfileNotice.lichessOffline || null => context.l10n.lichessRefreshFailed,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

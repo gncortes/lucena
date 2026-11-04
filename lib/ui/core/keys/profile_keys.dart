@@ -33,6 +33,9 @@ abstract final class ProfileKeys {
   static const lichessRefresh = Key('profile.lichessRefresh');
   static const lichessDisconnect = Key('profile.lichessDisconnect');
 
+  /// O aviso de falha dentro da folha do Lichess.
+  static const lichessNotice = Key('profile.lichessNotice');
+
   /// "Notificações", no segundo grupo: abre a tela dos avisos.
   static const rowNotices = Key('profile.rowNotices');
 

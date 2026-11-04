@@ -272,6 +272,92 @@ void main() {
       expect(profiles.profile.lichessUser, isNull);
       expect(profiles.profile.rating, 1620);
     });
+
+    Future<void> openSheet(WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        profile: const UserProfile(lichessUser: 'ana_finais', rating: 1620),
+      );
+      await tester.tap(find.byKey(ProfileKeys.rowLichess));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('H-CON-17 1. usuário, data da leitura, três ratings e textos', (
+      tester,
+    ) async {
+      lichess.rating = PlatformRating(
+        user: 'gabriel_finais',
+        readAt: DateTime(2026, 10, 20),
+        bullet: const ModeRating(rating: 1588, games: 40),
+        blitz: const ModeRating(rating: 1712, games: 40),
+        rapid: const ModeRating(rating: 1805, games: 40),
+      );
+      await openSheet(tester);
+      final sheet = find.byKey(ProfileKeys.lichessSheet);
+      for (final text in [
+        'Conectado pelo login do Lichess. Só lemos seu perfil e seus ratings.',
+        'gabriel_finais',
+        'lido em 20/10',
+        '1588',
+        '1712',
+        '1805',
+        'Atualizar o rating',
+        'Desconectar',
+        'Desconectar remove o acesso do Lucena ao seu Lichess. Seu rating no '
+            'Lucena não muda.',
+      ]) {
+        expect(
+          find.descendant(of: sheet, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+    });
+
+    testWidgets('gap 5: desconectar falhando avisa e a folha continua', (
+      tester,
+    ) async {
+      await openSheet(tester);
+      lichess.disconnectError = StateError('falhou');
+      await tester.tap(find.byKey(ProfileKeys.lichessDisconnect));
+      await tester.pumpAndSettle();
+      // O aviso vem dentro da folha (o SnackBar ficaria atrás dela).
+      expect(
+        find.descendant(
+          of: find.byKey(ProfileKeys.lichessNotice),
+          matching: find.text('Ocorreu um erro inesperado'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(SnackBar), findsNothing);
+      expect(find.byKey(ProfileKeys.lichessSheet), findsOneWidget);
+      expect(lichess.connected, isTrue);
+      expect(profiles.profile.lichessUser, 'ana_finais');
+    });
+
+    testWidgets('3. sem rede, atualizar avisa e o rating antigo continua', (
+      tester,
+    ) async {
+      await openSheet(tester);
+      lichess.failure = LichessFailure.network;
+      await tester.tap(find.byKey(ProfileKeys.lichessRefresh));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byKey(ProfileKeys.lichessNotice),
+          matching: find.text('Sem internet. O rating continua o de antes.'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(SnackBar), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(ProfileKeys.lichessSheet),
+          matching: find.text('1620'),
+        ),
+        findsOneWidget,
+      );
+    });
   });
 
   group('com conta', () {

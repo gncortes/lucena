@@ -1470,11 +1470,9 @@
   "accountDeleteOffline": "[Wîthöût îñtéŕñét thé åççöûñt çåññöt bé délétéd. Ñöthîñĝ wåš délétéd. one two three four five six]",
   "accountDeleted": "[Åççöûñt délétéd. Öñ thîš phöñé, évéŕýthîñĝ kéépš wöŕkîñĝ wîthöût åñ åççöûñt. one two three four five six seven]",
   "lichessSheetTitle": "[Lîçhéšš one]",
-  "lichessSheetText": "[Çöññéçtéd wîth thé Lîçhéšš šîĝñ-îñ. Wé öñlý ŕéåd ýöûŕ pŕöfîlé åñd ŕåtîñĝš. one two three four five six seven]",
   "lichessReadAt": "[ŕéåd öñ {date} one two]",
   "lichessRefresh": "[Ûpdåté thé ŕåtîñĝ one two]",
   "lichessDisconnect": "[Dîšçöññéçt one]",
-  "lichessDisconnectNote": "[Dîšçöññéçtîñĝ ŕémövéš Lûçéñå'š åççéšš tö ýöûŕ Lîçhéšš. Ýöûŕ Lûçéñå ŕåtîñĝ štåýš åš ît îš. one two three four five six seven eight]",
   "lichessRefreshFailed": "[Ñö îñtéŕñét. Thé ŕåtîñĝ štåýš åš béföŕé. one two three four]",
   "streakTitle": "[Štŕéåk one]",
   "streakDayCount": "{count, plural, =1{[1 dåý one]} other{[{count} dåýš one two]}}",
@@ -2325,5 +2323,7 @@
   "conNivelZero": "[Štåŕt wîth Vîktöŕ'š Šçhööl. one two three]",
   "conRatingHint": "[É.ĝ. 1500 one]",
   "conRatingError": "[Éñtéŕ å ñûmbéŕ fŕöm 400 tö 3000. one two three]",
-  "conNivelZeroHome": "[Štåŕt wîth thé éåšîéšt öppöñéñtš. one two three]"
+  "conNivelZeroHome": "[Štåŕt wîth thé éåšîéšt öppöñéñtš. one two three]",
+  "conLichessText": "[Çöññéçtéd wîth ýöûŕ Lîçhéšš löĝîñ. Wé öñlý ŕéåd ýöûŕ pŕöfîlé åñd ŕåtîñĝš. one two three four five six seven]",
+  "conLichessNote": "[Dîšçöññéçtîñĝ ŕémövéš Lûçéñå'š åççéšš tö ýöûŕ Lîçhéšš. Ýöûŕ Lûçéñå ŕåtîñĝ döéšñ't çhåñĝé. one two three four five six seven eight]"
 }

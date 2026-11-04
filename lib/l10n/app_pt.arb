@@ -1535,11 +1535,9 @@
   "accountDeleteOffline": "Sem internet não dá para excluir a conta. Nada foi excluído.",
   "accountDeleted": "Conta excluída. Neste celular, tudo continua sem conta.",
   "lichessSheetTitle": "Lichess",
-  "lichessSheetText": "Conectado com o login do Lichess. Só lemos o seu perfil e os ratings.",
   "lichessReadAt": "lido em {date}",
   "lichessRefresh": "Atualizar o rating",
   "lichessDisconnect": "Desconectar",
-  "lichessDisconnectNote": "Desconectar tira o acesso do Lucena ao seu Lichess. O seu rating no Lucena fica como está.",
   "lichessRefreshFailed": "Sem internet. O rating continua o de antes.",
   "streakTitle": "Sequência",
   "streakDayCount": "{count, plural, =1{1 dia} other{{count} dias}}",
@@ -2488,5 +2486,7 @@
   "conNivelZero": "Comece pela Escola do Viktor.",
   "conRatingHint": "Ex.: 1500",
   "conRatingError": "Digite um número de 400 a 3000.",
-  "conNivelZeroHome": "Comece pelos adversários mais fáceis."
+  "conNivelZeroHome": "Comece pelos adversários mais fáceis.",
+  "conLichessText": "Conectado pelo login do Lichess. Só lemos seu perfil e seus ratings.",
+  "conLichessNote": "Desconectar remove o acesso do Lucena ao seu Lichess. Seu rating no Lucena não muda."
 }

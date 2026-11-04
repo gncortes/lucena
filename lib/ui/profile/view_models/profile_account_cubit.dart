@@ -153,6 +153,10 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
       }
     } on LichessException {
       _done(ProfileNotice.lichessOffline);
+    } on Object catch (error, stack) {
+      // Outra falha: "Ocorreu um erro inesperado" e a leitura de antes fica.
+      reportHandledError(error, stack);
+      _done(ProfileNotice.failed);
     }
   }
 

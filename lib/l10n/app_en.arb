@@ -7759,10 +7759,6 @@
   "@lichessSheetTitle": {
     "description": "Lichess sheet on the Profile: title."
   },
-  "lichessSheetText": "Connected with the Lichess sign-in. We only read your profile and ratings.",
-  "@lichessSheetText": {
-    "description": "Lichess sheet: text."
-  },
   "lichessReadAt": "read on {date}",
   "@lichessReadAt": {
     "description": "Lichess sheet: when the ratings were read.",
@@ -7779,10 +7775,6 @@
   "lichessDisconnect": "Disconnect",
   "@lichessDisconnect": {
     "description": "Lichess sheet: disconnects Lichess."
-  },
-  "lichessDisconnectNote": "Disconnecting removes Lucena's access to your Lichess. Your Lucena rating stays as it is.",
-  "@lichessDisconnectNote": {
-    "description": "Lichess sheet: note."
   },
   "lichessRefreshFailed": "No internet. The rating stays as before.",
   "@lichessRefreshFailed": {
@@ -12042,5 +12034,13 @@
   "conNivelZeroHome": "Start with the easiest opponents.",
   "@conNivelZeroHome": {
     "description": "Opção 'Não sei jogar' em 'Seu nível' pelo Perfil, com a Escola escondida (H-CON-16)."
+  },
+  "conLichessText": "Connected with your Lichess login. We only read your profile and ratings.",
+  "@conLichessText": {
+    "description": "Folha do Lichess no Perfil (H-CON-17): texto abaixo do título."
+  },
+  "conLichessNote": "Disconnecting removes Lucena's access to your Lichess. Your Lucena rating doesn't change.",
+  "@conLichessNote": {
+    "description": "Folha do Lichess no Perfil (H-CON-17): nota sobre Desconectar."
   }
 }
