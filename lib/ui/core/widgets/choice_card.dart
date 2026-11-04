@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../motion/opcao_selecionavel.dart';
 import '../theme/app_icon_size.dart';
-import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text.dart';
 
 /// Um cartão de escolha única, com ícone, título, texto e o rádio no fim:
-/// os de "O que você quer fazer?" e "Seu nível".
+/// os de "O que você quer fazer?" e "Seu nível". A casca (fundo, borda,
+/// rádio e a troca de 200 ms) é a [OpcaoSelecionavel] (H-ANI-30).
 class ChoiceCard extends StatelessWidget {
   const ChoiceCard({
     required this.title,
@@ -28,64 +29,31 @@ class ChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppShape.medium),
-      side: selected
-          ? BorderSide(color: colors.primary, width: 2)
-          : BorderSide(color: colors.outlineVariant),
-    );
-    return Semantics(
-      selected: selected,
-      button: true,
-      inMutuallyExclusiveGroup: true,
-      child: Material(
-        color: selected
-            ? colors.primaryContainer
-            : colors.surfaceContainerLowest,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.lg,
-              ),
-              child: Row(
-                children: [
-                  if (icon case final icon?) ...[
-                    Icon(icon, size: AppIconSize.large, color: colors.primary),
-                    const SizedBox(width: AppSpacing.md),
-                  ],
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: context.cardTitle),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          body,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+    return OpcaoSelecionavel(
+      selecionada: selected,
+      aoTocar: onTap,
+      child: Row(
+        children: [
+          if (icon case final icon?) ...[
+            Icon(icon, size: AppIconSize.large, color: colors.primary),
+            const SizedBox(width: AppSpacing.md),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: context.cardTitle),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  body,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Icon(
-                    selected
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_unchecked,
-                    color: selected ? colors.primary : colors.onSurfaceVariant,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
