@@ -421,6 +421,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final savedMarks = context.select(
       (SettingsCubit c) => c.state?.lessonMarks ?? true,
     );
+    final vibration = context.select(
+      (SettingsCubit c) => c.state?.vibration ?? true,
+    );
     // The explicit solution must remain visible without rewriting preferences.
     final marks = savedMarks || cubit.showingPracticeSolution;
     final texts =
@@ -568,6 +571,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         settings: settings,
         showMarks: marks,
         flash: _flash,
+        vibrar: vibration,
         onMove: (uci) => unawaited(cubit.onMove(uci)),
         onSquare: (square) => unawaited(cubit.onSquare(square)),
       );
