@@ -17,6 +17,7 @@ import '../testing/fakes/fake_endgame_repositories.dart';
 import '../testing/fakes/fake_now.dart';
 import '../testing/fakes/fake_settings_repository.dart';
 import '../testing/test_app.dart';
+import 'robots/training_capture_robot.dart';
 
 /// Native component regression fixture, not a substitute for acceptance flows.
 /// Run the identical fixture against .3 and .4 with LEGACY_PHASE=before|after.
@@ -56,11 +57,16 @@ void main() {
       );
       final name =
           'legacy-$phase-$state-${size.width.round()}x${size.height.round()}';
+      await TrainingCaptureRobot.semFaixaDoTeste($);
+      const endpoint = String.fromEnvironment(
+        'E2E_CAPTURE_URL',
+        defaultValue: 'http://10.0.2.2:8792',
+      );
       await $.tester.runAsync(() async {
         final client = HttpClient();
         try {
           final request = await client.getUrl(
-            Uri.parse('http://10.0.2.2:8792/shot/$name'),
+            Uri.parse('$endpoint/shot/$name'),
           );
           final response = await request.close();
           if (response.statusCode != 200) {
