@@ -65,7 +65,7 @@ void main() {
         );
         expect(raw.solved, fixture.stars.length);
         expect(cubit.state.testProgress.containsKey('missing'), isFalse);
-        await cubit.selectTab(CourseGuideTab.progress);
+        await cubit.selectTab(CourseGuideTab.stats);
         expect(cubit.state.testScores['rook.lucena'], fixture.score);
         expect(cubit.state.testProgress['rook.lucena'], raw);
         await cubit.markTourSeen();

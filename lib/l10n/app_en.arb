@@ -9852,7 +9852,7 @@
   "@courseGuideTabGoals": {
     "description": "T85 course guide: courseGuideTabGoals."
   },
-  "courseGuideTabProgress": "Progress",
+  "courseGuideTabProgress": "Statistics",
   "@courseGuideTabProgress": {
     "description": "T85 course guide: courseGuideTabProgress."
   },
@@ -11827,5 +11827,19 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "treinoTabGuide": "Guide",
+  "@treinoTabGuide": {
+    "description": "Course bottom bar: Guide tab name (icon only, read by the screen reader)."
+  },
+  "treinoTabBadgeMany": "{max}+",
+  "@treinoTabBadgeMany": {
+    "description": "Goals badge when more than the maximum are missing.",
+    "placeholders": {"max": {"type": "int"}}
+  },
+  "treinoTabGoalsPending": "{count, plural, one{Goals, {count} left} other{Goals, {count} left}}",
+  "@treinoTabGoalsPending": {
+    "description": "Screen reader name of the Goals tab when goals are missing.",
+    "placeholders": {"count": {"type": "int"}}
   }
 }

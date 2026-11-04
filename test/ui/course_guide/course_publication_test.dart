@@ -70,11 +70,11 @@ void main() {
       repo.writeError = StateError('temporary disk failure');
       expect(await cubit.selectTab(CourseGuideTab.goals), false);
       repo.writeError = null;
-      expect(await cubit.selectTab(CourseGuideTab.progress), true);
+      expect(await cubit.selectTab(CourseGuideTab.stats), true);
       await tester.pump(const Duration(seconds: 2));
       expect(
         (await repo.load(TrainingCourse.pilares)).tab,
-        CourseGuideTab.progress,
+        CourseGuideTab.stats,
       );
     },
   );

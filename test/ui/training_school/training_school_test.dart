@@ -136,8 +136,12 @@ void main() {
         expect(find.textContaining(phrase), findsOneWidget);
       }
       expect(find.byKey(CourseGuideKeys.helpAction), findsNothing);
+      // A Escola não tem a aba Guia.
       for (final tab in CourseGuideTab.values) {
-        expect(find.byKey(CourseGuideKeys.tab(tab.name)), findsOneWidget);
+        expect(
+          find.byKey(CourseGuideKeys.tab(tab.name)),
+          tab == CourseGuideTab.guide ? findsNothing : findsOneWidget,
+        );
       }
       await cubit.repository.update(
         scenario.course,
@@ -287,7 +291,7 @@ void main() {
           tester,
           scenario,
           scenario.schoolDayOne().copyWith(
-            tab: CourseGuideTab.progress,
+            tab: CourseGuideTab.stats,
             completedLessons: {
               'pieces.rook': '2026-10-25',
               'hidden': '2026-10-25',

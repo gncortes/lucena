@@ -1990,7 +1990,7 @@
   "trainingPilaresTitle": "Pilares do Xadrez",
   "courseGuideTabLesson": "Lição",
   "courseGuideTabGoals": "Metas",
-  "courseGuideTabProgress": "Progresso",
+  "courseGuideTabProgress": "Estatísticas",
   "courseGuideTabCatalog": "Catálogo",
   "courseGuidePlanAction": "Seu plano",
   "courseGuideHelpAction": "Como funciona",
@@ -2398,5 +2398,10 @@
   "practiceSolutionFollow": "Siga a seta.",
   "practiceSolutionTarget": "Toque na casa marcada.",
   "practiceSolutionUnavailable": "Ocorreu um erro inesperado",
-  "practiceOpponentUnavailable": "Ocorreu um erro inesperado"
+  "practiceOpponentUnavailable": "Ocorreu um erro inesperado",
+  "treinoTabGuide": "Guia",
+  "treinoTabBadgeMany": "{max}+",
+  "@treinoTabBadgeMany": {"placeholders": {"max": {"type": "int"}}},
+  "treinoTabGoalsPending": "{count, plural, one{Metas, falta {count}} other{Metas, faltam {count}}}",
+  "@treinoTabGoalsPending": {"placeholders": {"count": {"type": "int"}}}
 }

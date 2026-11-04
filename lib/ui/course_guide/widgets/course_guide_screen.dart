@@ -27,6 +27,7 @@ import '../../core/widgets/course/course_part_header.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
+import 'training_guide_tab.dart';
 import '../../course_entry/widgets/course_content_states.dart';
 
 class CourseGuideScreen extends StatelessWidget {
@@ -73,13 +74,21 @@ class CourseGuideScreen extends StatelessWidget {
       final config = cubit.config;
       final t = context.l10n;
       final training = state.training;
+      // The School has no Guide tab (no goal or tournament plan there).
+      final tabs = [
+        for (final each in CourseGuideTab.values)
+          if (each != CourseGuideTab.guide ||
+              config.course != TrainingCourse.escola)
+            each,
+      ];
       final tab = training?.tab ?? CourseGuideTab.lesson;
       final title =
           titleOverride ??
           switch (tab) {
             CourseGuideTab.lesson => courseGuideCopy(context, config.titleKey),
             CourseGuideTab.goals => t.trainingGoalsTitle,
-            CourseGuideTab.progress => t.courseGuideTabProgress,
+            CourseGuideTab.guide => t.treinoTabGuide,
+            CourseGuideTab.stats => t.courseGuideTabProgress,
             CourseGuideTab.catalog => t.courseGuideTabCatalog,
           };
       if (!state.loading && state.failed && training == null) {
@@ -136,7 +145,10 @@ class CourseGuideScreen extends StatelessWidget {
                               )
                             : _WelcomeTab(onContinue: onWelcomeContinue),
                       CourseGuideTab.goals => goalsBuilder(context),
-                      CourseGuideTab.progress => progressBuilder(context),
+                      CourseGuideTab.guide => TrainingGuideTab(
+                        course: config.course,
+                      ),
+                      CourseGuideTab.stats => progressBuilder(context),
                       CourseGuideTab.catalog => _CatalogTab(
                         state: state,
                         onChapter: onChapter,
@@ -146,14 +158,15 @@ class CourseGuideScreen extends StatelessWidget {
                     },
         ),
         bottomNavigationBar: CourseNavigationBar(
-          selectedIndex: tab.index,
+          tabs: tabs,
+          selectedIndex: tabs.indexOf(tab).clamp(0, tabs.length - 1),
           remaining: training == null
               ? 0
               : trainingGoalCounts(training).remaining,
           onDestinationSelected: state.saving
               ? null
               : (index) async {
-                  final tab = CourseGuideTab.values[index];
+                  final tab = tabs[index];
                   if (await cubit.selectTab(tab)) onTabChanged?.call(tab);
                 },
         ),

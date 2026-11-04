@@ -455,7 +455,7 @@ void main() {
           ),
         );
         await cubit.load();
-        await cubit.selectTab(CourseGuideTab.progress);
+        await cubit.selectTab(CourseGuideTab.stats);
         await mount(
           tester,
           screen(override: TrainingOpeningProgressScreen(onTrain: (_, _) {})),

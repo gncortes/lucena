@@ -267,7 +267,7 @@ void main() {
       ),
       isEmpty,
     );
-    await capture.tab('progress');
+    await capture.tab('stats');
     await capture.shot('school-rook-three-stars');
   }, tags: ['training-school', 'training-school-levels']);
   patrolTest('T85 Escola Primeiros mates Coco e speedrun', ($) async {
