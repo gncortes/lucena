@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/training/day_goals.dart';
 import 'package:lucena/domain/models/training/goal/study_plan.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
