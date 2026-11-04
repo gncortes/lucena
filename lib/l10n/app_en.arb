@@ -14045,5 +14045,98 @@
   "venDemoCatalogClosing": "Pilares has 105 lessons in 20 chapters and more than 850 exercises.",
   "@venDemoCatalogClosing": {
     "description": "Texto do cartão no fim do Catálogo da demonstração, acima de Conhecer o Pilares."
+  },
+  "venDemoGuideTitle": "Your plan up to the tournament",
+  "@venDemoGuideTitle": {
+    "description": "Título do cartão do Guia na demonstração (PropV2DestinoSemCompraCompra, H-VEN-12)."
+  },
+  "venDemoGuideText": "Enter the date, take the 15-position test and get each week's chapters, picked for you.",
+  "@venDemoGuideText": {
+    "description": "Texto do cartão do Guia na demonstração."
+  },
+  "venDemoGuideEvent": "Campinas Open",
+  "@venDemoGuideEvent": {
+    "description": "Nome do torneio do exemplo do Guia na demonstração (ilustrativo)."
+  },
+  "venDemoGuideDate": "December 14",
+  "@venDemoGuideDate": {
+    "description": "Data do torneio do exemplo do Guia na demonstração (ilustrativa)."
+  },
+  "venDemoGuideExample": "Example",
+  "@venDemoGuideExample": {
+    "description": "Selo que marca o plano do Guia da demonstração como exemplo."
+  },
+  "venDemoGuideWeek": "Week {n}",
+  "@venDemoGuideWeek": {
+    "description": "Rótulo de cada semana na linha do tempo do exemplo do Guia.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "venDemoGuideWeek1": "Chapter 6 · Against the defender",
+  "@venDemoGuideWeek1": {
+    "description": "Semana 1 do exemplo do Guia na demonstração (ilustrativa)."
+  },
+  "venDemoGuideWeek2": "Chapter 7 · Forcing moves",
+  "@venDemoGuideWeek2": {
+    "description": "Semana 2 do exemplo do Guia na demonstração (ilustrativa)."
+  },
+  "venDemoGuideWeek3": "Chapter 8 · Defensive resources",
+  "@venDemoGuideWeek3": {
+    "description": "Semana 3 do exemplo do Guia na demonstração (ilustrativa)."
+  },
+  "venDemoGuideWeek4": "Chapter 18 · Combinations",
+  "@venDemoGuideWeek4": {
+    "description": "Semana 4 do exemplo do Guia na demonstração (ilustrativa)."
+  },
+  "venDemoGuideWeek5": "Chapters 19 and 20",
+  "@venDemoGuideWeek5": {
+    "description": "Semana 5 do exemplo do Guia na demonstração (ilustrativa)."
+  },
+  "venDemoGuideWeek6": "Review",
+  "@venDemoGuideWeek6": {
+    "description": "Semana 6 do exemplo do Guia na demonstração (ilustrativa)."
+  },
+  "venDemoGuideEnd": "{date} · {event}",
+  "@venDemoGuideEnd": {
+    "description": "Última linha do exemplo do Guia: a data e o torneio.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "event": {
+        "type": "String"
+      }
+    }
+  },
+  "venDemoGuideClosing": "In Pilares, the plan builds your training week by week up to the tournament.",
+  "@venDemoGuideClosing": {
+    "description": "Texto da chamada no fim do Guia da demonstração."
+  },
+  "venDemoGuidePlan": "See the plan",
+  "@venDemoGuidePlan": {
+    "description": "Botão fixo do Guia da demonstração; abre a venda do plano."
+  },
+  "venDemoGoalsLesson": "Chapter 1 · Free lesson",
+  "@venDemoGoalsLesson": {
+    "description": "Resumo da lição do dia nas Metas da demonstração."
+  },
+  "venDemoGoalsClosing": "In Pilares, you get several goals, each with today's part: lesson, exercises and opening.",
+  "@venDemoGoalsClosing": {
+    "description": "Texto da chamada no fim das Metas da demonstração."
+  },
+  "venDemoGoalsLockTitle": "Goals are part of Pilares",
+  "@venDemoGoalsLockTitle": {
+    "description": "Título da folha ao tocar numa meta trancada da demonstração (PropV2MetaSemCompraDemoCadeadoFolha)."
+  },
+  "venDemoGoalsLockText": "In Pilares, what you get wrong comes back in your goals until the theme sticks.",
+  "@venDemoGoalsLockText": {
+    "description": "Texto da folha da meta trancada da demonstração."
+  },
+  "venDemoStatsClosing": "In Pilares, statistics show how well you know each theme.",
+  "@venDemoStatsClosing": {
+    "description": "Texto da chamada no fim das Estatísticas da demonstração."
   }
 }

@@ -80,4 +80,16 @@ abstract final class PurchaseKeys {
   static Key demoCatalogLockedChapter(int number) =>
       Key('demo.catalog.lockedChapter.$number');
   static const demoCatalogLearnMore = Key('demo.catalog.learnMore');
+
+  // Guia, Metas e Estatísticas da demonstração (H-VEN-12).
+  static const demoGuide = Key('demo.guide');
+  static const demoGuideLearnMore = Key('demo.guide.learnMore');
+  static const demoGuidePlan = Key('demo.guide.plan');
+  static Key demoGoalsLockedTile(String kind, String ref) =>
+      Key('demo.goals.lockedTile.$kind.$ref');
+  static const demoGoalsLearnMore = Key('demo.goals.learnMore');
+  static const demoGoalsLockSheet = Key('demo.goals.lockSheet');
+  static const demoGoalsLockSheetLearn = Key('demo.goals.lockSheet.learn');
+  static const demoGoalsLockSheetLater = Key('demo.goals.lockSheet.later');
+  static const demoStatsLearnMore = Key('demo.stats.learnMore');
 }

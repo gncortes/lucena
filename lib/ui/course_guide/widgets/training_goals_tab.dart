@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/training/day_goals.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_content.dart';
+import '../../../domain/use_cases/demo_goals.dart';
+import '../../core/keys/purchase_keys.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -27,11 +29,27 @@ class TrainingGoalsTab extends StatelessWidget {
     required this.onGoal,
     required this.onPlan,
     this.onOpening,
+    this.onLockedGoal,
+    this.lessonSummary,
+    this.footer,
     super.key,
   });
   final ValueChanged<TrainingGoal> onGoal;
   final VoidCallback onPlan;
   final ValueChanged<String>? onOpening;
+
+  /// Na demonstração do Pilares (H-VEN-12, frente Venda): só as lições do
+  /// Capítulo 1 ficam abertas ([DemoGoals]); o toque numa meta trancada vem
+  /// para cá, e o resumo "Hoje" conta só as abertas, sem a linha do plano.
+  final ValueChanged<TrainingGoal>? onLockedGoal;
+
+  /// O resumo das lições da demo ("Capítulo 1 · Lição grátis").
+  final String? lessonSummary;
+
+  /// Bloco no fim da lista; na demo, toma o lugar do quadro de boas-vindas.
+  final Widget? footer;
+
+  bool get _demo => onLockedGoal != null;
   @override
   Widget build(
     BuildContext context,
@@ -40,7 +58,9 @@ class TrainingGoalsTab extends StatelessWidget {
       final day = state.training?.day;
       if (day == null) return const SizedBox.shrink();
       final t = context.l10n;
-      final counts = trainingGoalCounts(state.training!);
+      final counts = _demo
+          ? DemoGoals.counts(state.training!)
+          : trainingGoalCounts(state.training!);
       final cubit = context.read<CourseGuideCubit>();
       final extra = day.goals.any((g) => g.kind == GoalKind.extraLesson);
       final offer =
@@ -187,7 +207,7 @@ class TrainingGoalsTab extends StatelessWidget {
                       : (counts.total - counts.remaining) / counts.total,
                 ),
               ),
-              _planLine(context, day),
+              if (!_demo) _planLine(context, day),
             ],
           ),
         );
@@ -277,7 +297,8 @@ class TrainingGoalsTab extends StatelessWidget {
             ),
           );
         }
-        if ((cubit.config.progressKind !=
+        if (!_demo &&
+            (cubit.config.progressKind !=
                     TrainingProgressKind.modulesAndPieces ||
                 state.training!.completedLessons.isEmpty) &&
             state.training!.cycles.isEmpty &&
@@ -290,6 +311,7 @@ class TrainingGoalsTab extends StatelessWidget {
           );
         }
       }
+      if (footer case final footer?) contents.add(footer);
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: CustomScrollView(
@@ -380,7 +402,11 @@ class TrainingGoalsTab extends StatelessWidget {
         lesson == null ? '' : _lessonTitle(context, state, lesson),
       _ => lesson == null ? '' : trainingMasteryLessonTitle(context, lesson),
     };
+    final locked = _demo && !goal.done && DemoGoals.isLocked(goal);
     final summary = switch (goal.kind) {
+      GoalKind.lesson || GoalKind.extraLesson
+          when lessonSummary != null && !goal.done =>
+        lessonSummary!,
       GoalKind.lesson =>
         goal.done
             ? t.trainingLessonDoneToday
@@ -429,13 +455,17 @@ class TrainingGoalsTab extends StatelessWidget {
     return AnimatedSwitcher(
       duration: AppMotion.of(context).component,
       child: CourseItemTile(
-        key: TrainingKeys.goalTile(
-          goal.kind.name,
-          completedCopy
-              ? '${goal.ref}:${goal.itemId ?? goal.kind.name}'
-              : goal.ref,
-        ),
-        state: goal.done
+        key: locked
+            ? PurchaseKeys.demoGoalsLockedTile(goal.kind.name, goal.ref)
+            : TrainingKeys.goalTile(
+                goal.kind.name,
+                completedCopy
+                    ? '${goal.ref}:${goal.itemId ?? goal.kind.name}'
+                    : goal.ref,
+              ),
+        state: locked
+            ? CourseItemState.locked
+            : goal.done
             ? CourseItemState.approved
             : goal.key == training.day?.next?.key
             ? CourseItemState.next
@@ -445,7 +475,9 @@ class TrainingGoalsTab extends StatelessWidget {
         difficulty: goal.kind == GoalKind.stars || goal.stars == 0
             ? null
             : goal.stars,
-        onTap: goal.done ? null : () => onGoal(goal),
+        onTap: goal.done
+            ? null
+            : () => locked ? onLockedGoal!(goal) : onGoal(goal),
       ),
     );
   }

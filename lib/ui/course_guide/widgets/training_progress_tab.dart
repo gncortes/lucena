@@ -34,9 +34,14 @@ class TrainingProgressTab extends StatelessWidget {
     this.onTest,
     this.onLevelTest,
     this.onOpenings,
+    this.footer,
     super.key,
   });
   final ValueChanged<String> onTheme;
+
+  /// Bloco no fim da aba, também no vazio (a chamada da demonstração do
+  /// Pilares, H-VEN-12).
+  final Widget? footer;
 
   /// Percentages from operational test progress. Absence is never a zero score.
   final Map<String, int?> testScores;
@@ -190,17 +195,23 @@ class TrainingProgressTab extends StatelessWidget {
           tracks.isEmpty &&
           tests.isEmpty &&
           levelTest == null) {
+        final empty = EmptyState(
+          key: TrainingKeys.progressEmpty,
+          icon: CanvasSymbols.insights,
+          plainIcon: true,
+          title: t.trainingProgressEmptyTitle,
+          message: t.trainingProgressEmptyBody,
+        );
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Center(
-            child: EmptyState(
-              key: TrainingKeys.progressEmpty,
-              icon: CanvasSymbols.insights,
-              plainIcon: true,
-              title: t.trainingProgressEmptyTitle,
-              message: t.trainingProgressEmptyBody,
-            ),
-          ),
+          child: footer == null
+              ? Center(child: empty)
+              : Column(
+                  children: [
+                    Expanded(child: Center(child: empty)),
+                    footer!,
+                  ],
+                ),
         );
       }
       final themes =
@@ -498,6 +509,10 @@ class TrainingProgressTab extends StatelessWidget {
           ],
           const SizedBox(height: 12),
           const _ProgressLegend(),
+          if (footer case final footer?) ...[
+            const SizedBox(height: 12),
+            footer,
+          ],
         ],
       );
     },

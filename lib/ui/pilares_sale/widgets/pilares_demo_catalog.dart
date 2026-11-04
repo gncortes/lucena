@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/training/training_content.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/ad_policy.dart';
-import '../../../routing/route_names.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/course/course_part_header.dart';
 import '../../course_guide/widgets/course_guide_copy.dart';
+import 'pilares_demo_tabs.dart';
 import 'pilares_sale_parts.dart';
 
 /// O Catálogo de quem está na demonstração do Pilares (H-VEN-11, quadro
@@ -152,39 +149,10 @@ class PilaresDemoCatalog extends StatelessWidget {
               ),
           ],
         const SizedBox(height: AppSpacing.sm),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            borderRadius: BorderRadius.circular(AppShape.large),
-            border: Border.all(color: AppColors.cardOutline),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.md,
-              children: [
-                Text(
-                  l10n.venDemoCatalogClosing,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontSize: 14,
-                    height: 20 / 14,
-                    letterSpacing: 0,
-                    color: colors.onSurface,
-                  ),
-                ),
-                BusyButton(
-                  buttonKey: PurchaseKeys.demoCatalogLearnMore,
-                  label: l10n.licaoAdLearnMore,
-                  style: BusyButtonStyle.outlined,
-                  onPressed: () => context.pushNamed(
-                    RouteNames.pilaresPresentation,
-                    queryParameters: const {'origem': 'catalogo'},
-                  ),
-                ),
-              ],
-            ),
-          ),
+        PilaresDemoCallout(
+          text: l10n.venDemoCatalogClosing,
+          buttonKey: PurchaseKeys.demoCatalogLearnMore,
+          origin: 'catalogo',
         ),
       ],
     );
