@@ -1,6 +1,8 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../theme/app_colors.dart';
+
 /// Onde fica o selo de qualidade do lance (`!!`, `??`...) sobre o tabuleiro.
 ///
 /// O selo nasce no canto de cima à direita da casa, mas nunca sai do
@@ -70,7 +72,7 @@ class PieceBadgeOverlay extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF000000).withValues(alpha: 0.5),
+                      color: AppColors.trainingFabShadow,
                       blurRadius: 1,
                       offset: const Offset(1, 1),
                     ),
@@ -80,7 +82,7 @@ class PieceBadgeOverlay extends StatelessWidget {
                   child: Text(
                     symbol,
                     style: const TextStyle(
-                      color: Color(0xFFFFFFFF),
+                      color: AppColors.chessWhiteColor,
                       fontWeight: FontWeight.w800,
                     ),
                   ),

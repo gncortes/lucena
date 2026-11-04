@@ -9,6 +9,7 @@ import '../../../domain/use_cases/key_moments.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/review/move_quality_ui.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -154,7 +155,7 @@ class _MomentCard extends StatelessWidget {
                   child: Text(
                     quality.symbol,
                     style: theme.textTheme.labelLarge?.copyWith(
-                      color: Colors.white,
+                      color: AppColors.chessWhiteColor,
                     ),
                   ),
                 ),
@@ -325,7 +326,7 @@ class QualityTable extends StatelessWidget {
                     child: Text(
                       quality.symbol,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
+                        color: AppColors.chessWhiteColor,
                       ),
                     ),
                   ),
