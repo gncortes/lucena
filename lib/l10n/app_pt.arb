@@ -2543,5 +2543,6 @@
   "desafiosRaceNewRecord": "Novo recorde de {minutes} min! Antes eram {previous}",
   "desafiosRaceSeeAll": "Ver os {count}",
   "desafiosShareError": "Não foi possível compartilhar o link.",
-  "desafiosSpeedrunEmpty": "Nenhum speedrun neste nível."
+  "desafiosSpeedrunEmpty": "Nenhum speedrun neste nível.",
+  "desafiosSpeedrunRecordHere": "Seu recorde neste speedrun"
 }

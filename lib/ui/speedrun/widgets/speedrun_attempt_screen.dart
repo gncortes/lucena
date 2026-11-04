@@ -738,7 +738,7 @@ class _RecordCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final value = runTime(context, best);
-    final label = l10n.speedrunYourRecord;
+    final label = l10n.desafiosSpeedrunRecordHere;
     final spoken = '$label: $value';
     return _SurfaceCard(
       cardKey: SpeedrunKeys.recordCard,

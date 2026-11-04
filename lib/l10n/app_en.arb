@@ -12579,5 +12579,7 @@
   "desafiosShareError": "Could not share the link.",
   "@desafiosShareError": {},
   "desafiosSpeedrunEmpty": "No speedruns at this level.",
-  "@desafiosSpeedrunEmpty": {}
+  "@desafiosSpeedrunEmpty": {},
+  "desafiosSpeedrunRecordHere": "Your record for this speedrun",
+  "@desafiosSpeedrunRecordHere": {}
 }
