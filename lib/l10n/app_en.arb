@@ -1073,10 +1073,6 @@
   "@profileSave": {
     "description": "Button that saves the profile."
   },
-  "ratingHistory": "Rating history",
-  "@ratingHistory": {
-    "description": "Title above the list of games that changed the player's rating, on the rating details screen."
-  },
   "ratingHistoryEmpty": "Every game that moves your rating shows up here.",
   "@ratingHistoryEmpty": {
     "description": "Shown on the rating details screen when no game has counted for the rating yet."
@@ -3108,7 +3104,7 @@
   "@settingsGame": {
     "description": "Settings menu group: how pieces move, the clock and opponent comments."
   },
-  "settingsGameHint": "Moving pieces, clock and opponent comments",
+  "settingsGameHint": "Moving pieces, clock and comments",
   "@settingsGameHint": {
     "description": "Subtitle of the Game group in the settings menu."
   },
@@ -6432,10 +6428,6 @@
   "@levelManualHelp": {
     "description": "Helper under the rating field while it is empty."
   },
-  "levelManualError": "Type a number from 400 to 3000.",
-  "@levelManualError": {
-    "description": "Error under the rating field when the number is outside 400 to 3000."
-  },
   "levelManualSource": "Where is this number from?",
   "@levelManualSource": {
     "description": "Title above the rating sources."
@@ -6486,20 +6478,8 @@
   "@accountTitle": {
     "description": "Title of the optional account screen after the tour."
   },
-  "accountBenefitSaved": "Your progress stays saved in your account",
-  "@accountBenefitSaved": {
-    "description": "Account screen, first benefit."
-  },
-  "accountBenefitDevices": "Sign in on another device and pick up where you left off",
-  "@accountBenefitDevices": {
-    "description": "Account screen, second benefit."
-  },
   "accountGoogle": "Continue with Google",
   "@accountGoogle": {
-    "description": "Account screen button."
-  },
-  "accountEmail": "Continue with e-mail",
-  "@accountEmail": {
     "description": "Account screen button."
   },
   "accountLater": "Not now",
@@ -7257,10 +7237,6 @@
   "@goalSheetTitle": {
     "description": "Title of the sheet that changes the goal, opened from Profile."
   },
-  "goalSheetText": "Changes the first card on the home screen. The other paths stay there.",
-  "@goalSheetText": {
-    "description": "Text of the goal sheet."
-  },
   "goalSheetSave": "Save",
   "@goalSheetSave": {
     "description": "Saves the goal on the sheet."
@@ -7393,7 +7369,7 @@
   "@profileLocalOnlyTitle": {
     "description": "Profile without account: card title."
   },
-  "profileLocalOnlyText": "With an account, it stays saved and shows up on another device.",
+  "profileLocalOnlyText": "With an account, it stays saved and shows up on any phone.",
   "@profileLocalOnlyText": {
     "description": "Profile without account: card text."
   },
@@ -7465,7 +7441,7 @@
   "@profileSyncedTitle": {
     "description": "Profile with account: sync card title."
   },
-  "profileSyncedAt": "Last sync: {when}",
+  "profileSyncedAt": "Saved {when}",
   "@profileSyncedAt": {
     "description": "Profile with account: when it last synced.",
     "placeholders": {
@@ -7483,11 +7459,11 @@
       }
     }
   },
-  "profileSyncedNever": "not yet",
+  "profileSyncedNever": "Last sync: not yet",
   "@profileSyncedNever": {
     "description": "Profile sync time: never synced."
   },
-  "profileSyncOffline": "Without internet, what you do stays on the phone and goes up by itself when the connection is back.",
+  "profileSyncOffline": "Without internet, what you do stays on the phone and is saved to the account when the connection is back.",
   "@profileSyncOffline": {
     "description": "Profile with account: offline note on the sync card."
   },
@@ -7499,7 +7475,7 @@
   "@profileDeleteAccount": {
     "description": "Profile with account: delete-account button."
   },
-  "profileDeleteWeb": "Without the app, you can ask at playlucena.com/apagar-conta.",
+  "profileDeleteWeb": "Without the app, you can request deletion at playlucena.com/excluir-conta.",
   "@profileDeleteWeb": {
     "description": "Profile with account: note about deleting on the web."
   },
@@ -7526,10 +7502,6 @@
   "accountPasswordHelp": "At least 8 characters.",
   "@accountPasswordHelp": {
     "description": "E-mail account screen: password help."
-  },
-  "accountEmailNote": "We will send an e-mail to confirm the address. You can play in the meantime.",
-  "@accountEmailNote": {
-    "description": "E-mail account screen: note."
   },
   "accountCreate": "Create account",
   "@accountCreate": {
@@ -7576,7 +7548,7 @@
   "@accountNicknameHelp": {
     "description": "Your details screen: name help."
   },
-  "accountCountryFromPhone": "{country} · from the phone",
+  "accountCountryFromPhone": "{country} · from your phone",
   "@accountCountryFromPhone": {
     "description": "Your details screen: the country, read from the phone.",
     "placeholders": {
@@ -7594,10 +7566,6 @@
       }
     }
   },
-  "accountRestoredText": "I found your progress in the account.",
-  "@accountRestoredText": {
-    "description": "Restored progress screen: text."
-  },
   "accountRestoredRating": "Rating",
   "@accountRestoredRating": {
     "description": "Restored progress screen: rating row."
@@ -7614,10 +7582,6 @@
         "type": "int"
       }
     }
-  },
-  "accountRestoredLessons": "Endgame course",
-  "@accountRestoredLessons": {
-    "description": "Restored progress screen: endgame lessons row."
   },
   "accountRestoredLessonsValue": "{count, plural, =0{none done} =1{1 done} other{{count} done}}",
   "@accountRestoredLessonsValue": {
@@ -7641,41 +7605,17 @@
       }
     }
   },
-  "accountRestoredMerged": "If this phone already had progress, I joined both: each item keeps the higher one.",
-  "@accountRestoredMerged": {
-    "description": "Restored progress screen: note."
-  },
   "accountRestoredContinue": "Continue",
   "@accountRestoredContinue": {
     "description": "Restored progress screen: continue button."
-  },
-  "accountDeleteTitle": "Delete the account?",
-  "@accountDeleteTitle": {
-    "description": "Delete account dialog: title."
-  },
-  "accountDeleteText": "Deletes the account and the progress saved in it. It cannot be undone. On this phone, the app keeps working without an account.",
-  "@accountDeleteText": {
-    "description": "Delete account dialog: text."
   },
   "accountDeleteCancel": "Cancel",
   "@accountDeleteCancel": {
     "description": "Delete account dialog: cancel."
   },
-  "accountDeleteConfirm": "Delete",
-  "@accountDeleteConfirm": {
-    "description": "Delete account dialog: confirm."
-  },
   "accountDeleteOffline": "Without internet the account cannot be deleted. Nothing was deleted.",
   "@accountDeleteOffline": {
     "description": "Delete account error: offline."
-  },
-  "accountDeleteRelogin": "For safety, sign in again to delete the account.",
-  "@accountDeleteRelogin": {
-    "description": "Delete account: the provider asks for a recent sign-in."
-  },
-  "accountDeleteFailed": "Could not delete the account now. Try again.",
-  "@accountDeleteFailed": {
-    "description": "Delete account error: other."
   },
   "accountDeleted": "Account deleted. On this phone, everything keeps working without an account.",
   "@accountDeleted": {
@@ -7684,10 +7624,6 @@
   "lichessSheetTitle": "Lichess",
   "@lichessSheetTitle": {
     "description": "Lichess sheet on the Profile: title."
-  },
-  "lichessSheetText": "Connected with the Lichess sign-in. We only read your profile and ratings.",
-  "@lichessSheetText": {
-    "description": "Lichess sheet: text."
   },
   "lichessReadAt": "read on {date}",
   "@lichessReadAt": {
@@ -7705,10 +7641,6 @@
   "lichessDisconnect": "Disconnect",
   "@lichessDisconnect": {
     "description": "Lichess sheet: disconnects Lichess."
-  },
-  "lichessDisconnectNote": "Disconnecting removes Lucena's access to your Lichess. Your Lucena rating stays as it is.",
-  "@lichessDisconnectNote": {
-    "description": "Lichess sheet: note."
   },
   "lichessRefreshFailed": "No internet. The rating stays as before.",
   "@lichessRefreshFailed": {
@@ -7791,14 +7723,6 @@
   "@settingsSectionHelp": {
     "description": "Settings: section title of feedback, rating and about."
   },
-  "profileSectionChess": "Your chess",
-  "@profileSectionChess": {
-    "description": "Profile: section title of goal, level and Lichess."
-  },
-  "profileSectionRegion": "Region",
-  "@profileSectionRegion": {
-    "description": "Profile: section title of country, state and city."
-  },
   "alertsTitle": "Notifications",
   "@alertsTitle": {
     "description": "Alerts screen title and its row in Settings."
@@ -7815,7 +7739,7 @@
       }
     }
   },
-  "alertsIntro": "Choose what Lucena may notify you about. You can change it any time.",
+  "alertsIntro": "Choose which notifications Lucena can send. You can change this anytime.",
   "@alertsIntro": {
     "description": "Alerts: text above the switches."
   },
@@ -7831,11 +7755,11 @@
   "@alertsOffTitle": {
     "description": "Alerts: banner title when the system permission is denied."
   },
-  "alertsOffBody": "Even with the switches below on, nothing reaches this phone. Turn them on in the system settings.",
+  "alertsOffBody": "Even with the options below turned on, no notification reaches this phone.",
   "@alertsOffBody": {
     "description": "Alerts: banner text when the system permission is denied."
   },
-  "alertsOffOpen": "Open Android settings",
+  "alertsOffOpen": "Open settings",
   "@alertsOffOpen": {
     "description": "Alerts: button that opens the Android notification settings."
   },
@@ -7843,7 +7767,7 @@
   "@alertsTournaments": {
     "description": "Alerts switch: a new tournament endgame."
   },
-  "alertsTournamentsBody": "A new endgame from your region, at most one a day.",
+  "alertsTournamentsBody": "A new endgame in your region, at most one a day",
   "@alertsTournamentsBody": {
     "description": "Alerts switch subtitle."
   },
@@ -7851,7 +7775,7 @@
   "@alertsDaily": {
     "description": "Alerts switch: local reminders."
   },
-  "alertsDailyBody": "Streak, continue the chapter and weekly summary.",
+  "alertsDailyBody": "Streak, continue the lesson and weekly summary",
   "@alertsDailyBody": {
     "description": "Alerts switch subtitle."
   },
@@ -7859,7 +7783,7 @@
   "@alertsNews": {
     "description": "Alerts switch: new app features."
   },
-  "alertsNewsBody": "New Lucena features. A few a month.",
+  "alertsNewsBody": "New Lucena features, a few a month",
   "@alertsNewsBody": {
     "description": "Alerts switch subtitle."
   },
@@ -7867,13 +7791,9 @@
   "@alertsLessons": {
     "description": "Alerts switch: a new endgame lesson."
   },
-  "alertsLessonsBody": "When a new endgame lesson comes out.",
+  "alertsLessonsBody": "When a new endgame lesson comes out",
   "@alertsLessonsBody": {
     "description": "Alerts switch subtitle."
-  },
-  "alertsReminder": "Reminder time",
-  "@alertsReminder": {
-    "description": "Alerts: row with the time of local reminders."
   },
   "reminderChannel": "Reminders",
   "@reminderChannel": {
@@ -8116,7 +8036,7 @@
   "@countryAll": {
     "description": "Country picker section: every country in alphabetical order."
   },
-  "countryNotFound": "No country with that name.",
+  "countryNotFound": "No country found",
   "@countryNotFound": {
     "description": "Country picker: the search found nothing."
   },
@@ -8136,21 +8056,9 @@
       }
     }
   },
-  "accountEntryTitle": "Save your progress",
-  "@accountEntryTitle": {
-    "description": "Account entry screen title."
-  },
   "accountEntryText": "It is free and takes less than a minute.",
   "@accountEntryText": {
     "description": "Account entry screen text under the title."
-  },
-  "accountEntryTitleLesson": "Create your account to access the free lesson",
-  "@accountEntryTitleLesson": {
-    "description": "Account entry screen title when opened to reach a free lesson (campaign link)."
-  },
-  "accountEntryTextLesson": "It takes less than a minute.",
-  "@accountEntryTextLesson": {
-    "description": "Account entry screen text under the title when opened to reach a free lesson."
   },
   "accountCreateWithEmail": "Create account with email",
   "@accountCreateWithEmail": {
@@ -8168,30 +8076,6 @@
   "@accountSignIn": {
     "description": "Sign in screen title, button and link."
   },
-  "accountLegalContinue": "By continuing, you agree to the {terms} and the {privacy}.",
-  "@accountLegalContinue": {
-    "description": "Legal notice on the account entry; {terms} and {privacy} are the linked document names.",
-    "placeholders": {
-      "terms": {
-        "type": "String"
-      },
-      "privacy": {
-        "type": "String"
-      }
-    }
-  },
-  "accountLegalCreate": "By creating the account, you agree to the {terms} and the {privacy}.",
-  "@accountLegalCreate": {
-    "description": "Legal notice on the create account screen; {terms} and {privacy} are the linked document names.",
-    "placeholders": {
-      "terms": {
-        "type": "String"
-      },
-      "privacy": {
-        "type": "String"
-      }
-    }
-  },
   "accountShowPassword": "Show password",
   "@accountShowPassword": {
     "description": "Tooltip of the eye button in the password field."
@@ -8208,14 +8092,6 @@
   "@accountResetTitle": {
     "description": "Password reset sheet title."
   },
-  "accountResetText": "We will send you a link to create a new password.",
-  "@accountResetText": {
-    "description": "Password reset sheet text."
-  },
-  "accountResetSend": "Send the link",
-  "@accountResetSend": {
-    "description": "Password reset sheet: sends the email."
-  },
   "accountResetCancel": "Cancel",
   "@accountResetCancel": {
     "description": "Password reset sheet: closes it."
@@ -8223,15 +8099,6 @@
   "accountResetSentTitle": "Check your email",
   "@accountResetSentTitle": {
     "description": "Sheet after the reset link was requested."
-  },
-  "accountResetSentText": "If there is an account with {email}, the link arrives in a few minutes. Check spam too.",
-  "@accountResetSentText": {
-    "description": "Same text whether or not the account exists; {email} is shown in bold.",
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    }
   },
   "accountResetOpenMail": "Open email",
   "@accountResetOpenMail": {
@@ -8249,10 +8116,6 @@
   "@accountPhotoChange": {
     "description": "Under the avatar: opens the profile photo sheet."
   },
-  "accountProfileSaved": "Done: the progress on this phone is already saved in the account.",
-  "@accountProfileSaved": {
-    "description": "Green banner on the profile screen right after creating or entering the account."
-  },
   "accountSaveContinue": "Save and continue",
   "@accountSaveContinue": {
     "description": "Profile edit screen main button."
@@ -8268,10 +8131,6 @@
   "accountPhotoGallery": "Choose from gallery",
   "@accountPhotoGallery": {
     "description": "Profile photo sheet: opens the gallery."
-  },
-  "accountPhotoInitial": "Or your initial, in any color you like",
-  "@accountPhotoInitial": {
-    "description": "Profile photo sheet: label above the initial colors."
   },
   "accountPhotoRemove": "Remove photo",
   "@accountPhotoRemove": {
@@ -8338,136 +8197,21 @@
   "@analyticsOptInTitle": {
     "description": "Switch in Privacy and ads that turns usage statistics on or off."
   },
-  "analyticsOptInBody": "Sends how you use the app: screens, lessons and games. No name, email or anything you type.",
+  "analyticsOptInBody": "Sends usage data and error reports. No name, email or anything you write.",
   "@analyticsOptInBody": {
     "description": "Explains what the usage statistics send."
   },
-  "profileRemoveAds": "Remove ads",
-  "@profileRemoveAds": {
-    "description": "Profile row: the one-time purchase that removes ads."
-  },
-  "profileRemoveAdsValue": "{price}, once, forever",
-  "@profileRemoveAdsValue": {
-    "description": "Profile row value: the Play price of removing ads.",
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "profileRemoveAdsDone": "No ads",
-  "@profileRemoveAdsDone": {
-    "description": "Profile row value after buying \"Remove ads\"."
-  },
-  "profilePrivacy": "Privacy and ads",
-  "@profilePrivacy": {
-    "description": "Profile row that opens the privacy screen."
-  },
-  "profilePrivacyValue": "Ad choices and privacy policy",
-  "@profilePrivacyValue": {
-    "description": "Profile row value under \"Privacy and ads\"."
-  },
-  "profileFeedback": "Send feedback",
-  "@profileFeedback": {
-    "description": "Profile row that opens the feedback screen."
-  },
-  "profileFeedbackValue": "Tell us a problem, an idea or some praise",
-  "@profileFeedbackValue": {
-    "description": "Profile row value under \"Send feedback\"."
-  },
-  "profileRate": "Rate Lucena",
-  "@profileRate": {
-    "description": "Profile row that opens the app page on Google Play."
-  },
-  "profileRateValue": "Opens the app page on Google Play",
-  "@profileRateValue": {
-    "description": "Profile row value under \"Rate Lucena\"."
-  },
-  "privacyTitle": "Privacy and ads",
+  "privacyTitle": "Privacy and data",
   "@privacyTitle": {
     "description": "Privacy screen title."
   },
-  "privacyFreeTitle": "Lucena is free",
-  "@privacyFreeTitle": {
-    "description": "Privacy screen card title, with ads."
-  },
-  "privacyFreeText": "An ad shows when you enter a lesson. Never in the middle of an exercise, a game or a challenge.",
-  "@privacyFreeText": {
-    "description": "Privacy screen card text, with ads."
-  },
-  "privacyAdChoices": "Ad choices",
-  "@privacyAdChoices": {
-    "description": "Privacy screen row that reopens the Google privacy options."
-  },
-  "privacyAdChoicesValue": "Opens the Google window with your options",
-  "@privacyAdChoicesValue": {
-    "description": "Privacy screen row value under \"Ad choices\"."
-  },
-  "privacyPolicy": "Privacy policy",
-  "@privacyPolicy": {
-    "description": "Privacy screen row that opens the privacy policy."
-  },
-  "privacyPolicyValue": "playlucena.com/privacy",
-  "@privacyPolicyValue": {
-    "description": "Privacy screen row value: the policy address."
-  },
-  "privacyDelete": "Delete my account and my data",
+  "privacyDelete": "Delete my account",
   "@privacyDelete": {
     "description": "Privacy screen row that deletes the account."
   },
-  "privacyDeleteValue": "Also in Account, on the Profile",
+  "privacyDeleteValue": "Delete the account and all its data",
   "@privacyDeleteValue": {
     "description": "Privacy screen row value under \"Delete my account\"."
-  },
-  "privacyAdFreeTitle": "No ads",
-  "@privacyAdFreeTitle": {
-    "description": "Privacy screen card title after buying \"Remove ads\"."
-  },
-  "privacyAdFreeText": "Thanks for supporting Lucena. Lessons open right away, forever.",
-  "@privacyAdFreeText": {
-    "description": "Privacy screen card text after buying \"Remove ads\"."
-  },
-  "removeAdsTitle": "Remove ads",
-  "@removeAdsTitle": {
-    "description": "Remove ads sheet title."
-  },
-  "removeAdsText": "A one-time payment of {price} removes the ads forever, on your Google Play account. Everything else stays the same and free.",
-  "@removeAdsText": {
-    "description": "Remove ads sheet text, with the Play price.",
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "removeAdsHelp": "It helps keep Lucena going and make new lessons.",
-  "@removeAdsHelp": {
-    "description": "Remove ads sheet: why buy."
-  },
-  "removeAdsBuy": "Remove for {price}",
-  "@removeAdsBuy": {
-    "description": "Remove ads sheet button that opens the Google Play payment.",
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "removeAdsNo": "Not now",
-  "@removeAdsNo": {
-    "description": "Remove ads sheet button that closes the sheet."
-  },
-  "removeAdsNote": "The button opens the Google Play payment window. Price by country. On another phone with the same account, the purchase comes back by itself.",
-  "@removeAdsNote": {
-    "description": "Remove ads sheet: small note under the buttons."
-  },
-  "removeAdsPending": "Waiting for the payment. As soon as Play confirms it, the ads go away.",
-  "@removeAdsPending": {
-    "description": "Remove ads sheet: the payment is pending."
-  },
-  "removeAdsError": "Couldn't finish the purchase. Try again later.",
-  "@removeAdsError": {
-    "description": "Remove ads sheet: the purchase failed."
   },
   "adsLabel": "Ad",
   "@adsLabel": {
@@ -8590,14 +8334,6 @@
   "feedbackBack": "Back to profile",
   "@feedbackBack": {
     "description": "Thanks screen button back to the profile."
-  },
-  "privacyTitleNoAds": "Privacy",
-  "@privacyTitleNoAds": {
-    "description": "Privacy screen title in a build without ads."
-  },
-  "profilePrivacyNoAdsValue": "Your data and privacy policy",
-  "@profilePrivacyNoAdsValue": {
-    "description": "Profile row subtitle for the privacy screen in a build without ads."
   },
   "alertsBlockedSummary": "Blocked in Android settings",
   "@alertsBlockedSummary": {
@@ -9129,15 +8865,6 @@
   "@courseSaleFaq": {
     "description": "Course sale page tab: frequently asked questions."
   },
-  "courseBuy": "Buy · {price}",
-  "@courseBuy": {
-    "description": "Course sale page fixed button with the price.",
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
   "courseSaleLearn": "What you will learn",
   "@courseSaleLearn": {
     "description": "Course sale page section title."
@@ -9150,30 +8877,9 @@
   "@courseSaleIncluded": {
     "description": "Course sale page section title: what comes with the course."
   },
-  "courseSaleHow": "How you learn",
-  "@courseSaleHow": {
-    "description": "Course sale page section title: how the student learns."
-  },
   "courseSaleSummary": "Contents",
   "@courseSaleSummary": {
     "description": "Course sale page section title: the table of contents."
-  },
-  "courseSalePrice": "Course price",
-  "@courseSalePrice": {
-    "description": "Course sale page price card label."
-  },
-  "courseSaleRefund": "Refund within 7 days",
-  "@courseSaleRefund": {
-    "description": "Course sale page price card note."
-  },
-  "courseLessonsCount": "{count, plural, =1{1 lesson} other{{count} lessons}}",
-  "@courseLessonsCount": {
-    "description": "How many lessons a course has.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "courseExercisesLabel": "exercises",
   "@courseExercisesLabel": {
@@ -9190,10 +8896,6 @@
         "type": "int"
       }
     }
-  },
-  "pilaresPreviewTile": "Pilares do Xadrez (preview)",
-  "@pilaresPreviewTile": {
-    "description": "Settings tile (development builds only) that opens the course layout preview."
   },
   "courseLessonsLabel": "lessons",
   "@courseLessonsLabel": {
@@ -9638,7 +9340,7 @@
   "@trainingReminderSilent": {
     "description": "T85 study plan: trainingReminderSilent"
   },
-  "trainingReminderDenied": "Lucena notifications are disabled on your phone. To receive reminders, allow them in settings.",
+  "trainingReminderDenied": "Lucena notifications are turned off. Turn them on to get the reminder.",
   "@trainingReminderDenied": {
     "description": "T85 study plan: trainingReminderDenied"
   },
@@ -13187,5 +12889,923 @@
   "levelChessNoRatingTip": "By picking a rating range, the Journey also starts with the right opponent.",
   "@levelChessNoRatingTip": {
     "description": "Tip of the Chess.com result when the user has no rating."
+  },
+  "ajuSectionPrivacy": "Privacy",
+  "@ajuSectionPrivacy": {
+    "description": "Settings: section with privacy, feedback and rating rows."
+  },
+  "ajuPrivacyTitle": "Privacy and data",
+  "@ajuPrivacyTitle": {
+    "description": "Settings: row that opens Privacy and data."
+  },
+  "ajuPrivacyHint": "Terms, policy, ads and your data",
+  "@ajuPrivacyHint": {
+    "description": "Settings: subtitle of the Privacy and data row."
+  },
+  "ajuFeedbackTitle": "Send feedback",
+  "@ajuFeedbackTitle": {
+    "description": "Settings: row that opens the feedback form."
+  },
+  "ajuFeedbackHint": "A problem, an idea or a compliment",
+  "@ajuFeedbackHint": {
+    "description": "Settings: subtitle of the feedback row."
+  },
+  "ajuRateTitle": "Rate Lucena",
+  "@ajuRateTitle": {
+    "description": "Settings: row that opens the store page."
+  },
+  "ajuRateHint": "Opens the app page on Google Play",
+  "@ajuRateHint": {
+    "description": "Settings: subtitle of the rate row."
+  },
+  "ajuSaveError": "An unexpected error occurred",
+  "@ajuSaveError": {
+    "description": "Settings: snack bar when a preference could not be saved; the screen goes back to the saved value."
+  },
+  "ajuAlertsAllow": "Allow",
+  "@ajuAlertsAllow": {
+    "description": "Notifications: button in the 'off on Android' banner that shows the system permission request, while it was never asked."
+  },
+  "ajuLinkError": "Couldn't open the link",
+  "@ajuLinkError": {
+    "description": "Aviso quando o navegador não abre um link externo (Sobre, Gap 6)."
+  },
+  "conPrivLgpdTitle": "Your data under the LGPD",
+  "@conPrivLgpdTitle": {
+    "description": "Privacidade e dados: título do cartão sobre os direitos da LGPD (lei de dados do Brasil)."
+  },
+  "conPrivLgpdText": "You can see, download, correct and delete your data at any time.",
+  "@conPrivLgpdText": {
+    "description": "Privacidade e dados: texto do cartão da LGPD."
+  },
+  "conPrivSectionUse": "Usage and ads",
+  "@conPrivSectionUse": {
+    "description": "Privacidade e dados: título da seção do interruptor de estatísticas e da linha de anúncios."
+  },
+  "conPrivAdsTitle": "Non-personalized ads",
+  "@conPrivAdsTitle": {
+    "description": "Privacidade e dados: linha só de leitura sobre os anúncios."
+  },
+  "conPrivAdsText": "We don't use your data to choose ads.",
+  "@conPrivAdsText": {
+    "description": "Privacidade e dados: subtítulo da linha de anúncios."
+  },
+  "conPrivSectionPermissions": "Device permissions",
+  "@conPrivSectionPermissions": {
+    "description": "Privacidade e dados: título da seção de permissões (abrem os ajustes do sistema)."
+  },
+  "conPrivNotifications": "Notifications",
+  "@conPrivNotifications": {
+    "description": "Privacidade e dados: linha que abre os ajustes de notificação do sistema."
+  },
+  "conPrivNotificationsText": "For the training reminders you turned on",
+  "@conPrivNotificationsText": {
+    "description": "Privacidade e dados: subtítulo da linha Notificações."
+  },
+  "conPrivMicrophone": "Microphone",
+  "@conPrivMicrophone": {
+    "description": "Privacidade e dados: linha que abre os ajustes do app no sistema (permissão do microfone)."
+  },
+  "conPrivMicrophoneText": "To recognize the moves you say",
+  "@conPrivMicrophoneText": {
+    "description": "Privacidade e dados: subtítulo da linha Microfone."
+  },
+  "conPrivSectionData": "Your data",
+  "@conPrivSectionData": {
+    "description": "Privacidade e dados: título da seção Baixar e Falar sobre meus dados."
+  },
+  "conPrivDownload": "Download my data",
+  "@conPrivDownload": {
+    "description": "Privacidade e dados: linha que abre a folha para baixar uma cópia dos dados."
+  },
+  "conPrivDownloadText": "Get a copy of your data",
+  "@conPrivDownloadText": {
+    "description": "Privacidade e dados: subtítulo da linha Baixar meus dados."
+  },
+  "conPrivTalk": "Ask about my data",
+  "@conPrivTalk": {
+    "description": "Privacidade e dados: linha que abre o e-mail para o encarregado de dados."
+  },
+  "conPrivTalkText": "With our data protection officer, by email",
+  "@conPrivTalkText": {
+    "description": "Privacidade e dados: subtítulo da linha Falar sobre meus dados."
+  },
+  "conPrivSectionDocuments": "Documents",
+  "@conPrivSectionDocuments": {
+    "description": "Privacidade e dados: título da seção dos Termos e da Política."
+  },
+  "conPrivSectionAccount": "Account",
+  "@conPrivSectionAccount": {
+    "description": "Privacidade e dados: título da seção com Excluir minha conta."
+  },
+  "conDadosAskTitle": "Download your data?",
+  "@conDadosAskTitle": {
+    "description": "Folha Baixar meus dados (H-CON-21): título da pergunta e de Baixando."
+  },
+  "conDadosAskText": "You get a file with your account data.",
+  "@conDadosAskText": {
+    "description": "Folha Baixar meus dados: texto da pergunta."
+  },
+  "conDadosStart": "Download",
+  "@conDadosStart": {
+    "description": "Folha Baixar meus dados: botão que começa."
+  },
+  "conDadosCancel": "Cancel",
+  "@conDadosCancel": {
+    "description": "Folha Baixar meus dados: fecha sem baixar (também durante Baixando)."
+  },
+  "conDadosDownloading": "Downloading",
+  "@conDadosDownloading": {
+    "description": "Folha Baixar meus dados: botão desativado com o indicador de progresso."
+  },
+  "conDadosReadyTitle": "Your data is ready",
+  "@conDadosReadyTitle": {
+    "description": "Folha Baixar meus dados: título quando o arquivo está pronto."
+  },
+  "conDadosReadyText": "The file has your account data.",
+  "@conDadosReadyText": {
+    "description": "Folha Baixar meus dados: texto quando o arquivo está pronto."
+  },
+  "conDadosOpen": "Open file",
+  "@conDadosOpen": {
+    "description": "Folha Baixar meus dados: abre o arquivo pronto (menu do sistema)."
+  },
+  "conDadosClose": "Close",
+  "@conDadosClose": {
+    "description": "Folha Baixar meus dados: fecha a folha."
+  },
+  "conDadosErrorTitle": "An unexpected error occurred",
+  "@conDadosErrorTitle": {
+    "description": "Folha Baixar meus dados: título do erro."
+  },
+  "conDadosErrorText": "Your data is still saved. Try downloading again.",
+  "@conDadosErrorText": {
+    "description": "Folha Baixar meus dados: texto do erro (sem internet, sem espaço)."
+  },
+  "conDadosRetry": "Try again",
+  "@conDadosRetry": {
+    "description": "Folha Baixar meus dados: refaz o download (P6)."
+  },
+  "conApagarTitle": "Delete your account?",
+  "@conApagarTitle": {
+    "description": "Folha Excluir a conta (H-CON-14, PropV1PerfilApagar): título."
+  },
+  "conApagarHint": "All your data will be deleted. This can't be undone.",
+  "@conApagarHint": {
+    "description": "Folha Excluir a conta: dica sob o título."
+  },
+  "conApagarLose": "You lose",
+  "@conApagarLose": {
+    "description": "Folha Excluir a conta: título da lista do que se perde."
+  },
+  "conApagarLoseLessons": "Progress in lessons and the Journey",
+  "@conApagarLoseLessons": {
+    "description": "Folha Excluir a conta: item da lista (ícone school)."
+  },
+  "conApagarLoseRating": "Rating, game history and achievements",
+  "@conApagarLoseRating": {
+    "description": "Folha Excluir a conta: item da lista (ícone trending_up)."
+  },
+  "conApagarLoseProfile": "Profile and photo",
+  "@conApagarLoseProfile": {
+    "description": "Folha Excluir a conta: item da lista (ícone person)."
+  },
+  "conApagarPlay": "If you have a subscription, cancel it on Google Play first. Deleting your account doesn't cancel the subscription.",
+  "@conApagarPlay": {
+    "description": "Folha Excluir a conta: aviso da assinatura (ícone warning)."
+  },
+  "conApagarDevice": "On this phone, the app keeps working without an account.",
+  "@conApagarDevice": {
+    "description": "Folha Excluir a conta: frase antes dos botões."
+  },
+  "conApagarConfirm": "Delete my account",
+  "@conApagarConfirm": {
+    "description": "Folha Excluir a conta: botão destrutivo."
+  },
+  "conApagarRetry": "Try again",
+  "@conApagarRetry": {
+    "description": "Folha Excluir a conta: o botão principal depois de um erro inesperado (gap 4)."
+  },
+  "conApagarFailed": "An unexpected error occurred",
+  "@conApagarFailed": {
+    "description": "Folha Excluir a conta: aviso do erro inesperado, também quando a rede cai no meio (gap 9)."
+  },
+  "conApagarCancelled": "Sign-in canceled. Nothing was deleted.",
+  "@conApagarCancelled": {
+    "description": "Folha Excluir a conta: a pessoa desistiu do novo login pedido para excluir."
+  },
+  "conApagarDifferent": "That isn't the account you were deleting. Nothing was deleted.",
+  "@conApagarDifferent": {
+    "description": "Aviso depois de entrar de novo com outra conta para excluir (gap 1)."
+  },
+  "conPerfilSyncedOn": "on {date}",
+  "@conPerfilSyncedOn": {
+    "description": "Perfil com conta (H-CON-13): o dia da última sincronização quando não foi hoje, depois de \"Salvo\".",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "conPerfilFailed": "An unexpected error occurred",
+  "@conPerfilFailed": {
+    "description": "Perfil (H-CON-13, gap 5): sair da conta ou desconectar o Lichess falhou; nada mudou."
+  },
+  "conAceiteTitle": "Terms and privacy",
+  "@conAceiteTitle": {
+    "description": "Aceite (H-CON-08, PropV1ContaAceite): título da tela logo depois de criar a conta."
+  },
+  "conAceiteSavedTitle": "What the account keeps",
+  "@conAceiteSavedTitle": {
+    "description": "Aceite (H-CON-08): título do primeiro cartão."
+  },
+  "conAceiteSavedIdentity": "Account name, email and photo",
+  "@conAceiteSavedIdentity": {
+    "description": "Aceite (H-CON-08): item com o ícone badge."
+  },
+  "conAceiteSavedProgress": "Progress in lessons, games, rating and achievements",
+  "@conAceiteSavedProgress": {
+    "description": "Aceite (H-CON-08): item com o ícone school."
+  },
+  "conAceiteSavedUsage": "How you use the app, to improve the lessons",
+  "@conAceiteSavedUsage": {
+    "description": "Aceite (H-CON-08): item com o ícone insights."
+  },
+  "conAceiteRightsTitle": "Your rights under the LGPD",
+  "@conAceiteRightsTitle": {
+    "description": "Aceite (H-CON-08): título do cartão de direitos (LGPD, a lei brasileira de dados)."
+  },
+  "conAceiteRightsSee": "See and download your data",
+  "@conAceiteRightsSee": {
+    "description": "Aceite (H-CON-08): direito com o ícone visibility."
+  },
+  "conAceiteRightsEdit": "Correct your data",
+  "@conAceiteRightsEdit": {
+    "description": "Aceite (H-CON-08): direito com o ícone edit."
+  },
+  "conAceiteRightsDelete": "Delete the account whenever you want",
+  "@conAceiteRightsDelete": {
+    "description": "Aceite (H-CON-08): direito com o ícone delete."
+  },
+  "conAceiteRightsWhere": "You'll find all of this in Settings, Privacy and data.",
+  "@conAceiteRightsWhere": {
+    "description": "Aceite (H-CON-08): onde ficam os direitos, no fim do cartão."
+  },
+  "conAceiteUsage": "We use usage data and error reports to improve Lucena. You can turn this off anytime in Settings, Privacy and data.",
+  "@conAceiteUsage": {
+    "description": "Aceite (H-CON-08): aviso obrigatório sobre dados de uso, abaixo dos cartões."
+  },
+  "conAceiteCheck": "I have read and accept the {terms} and the {privacy}",
+  "@conAceiteCheck": {
+    "description": "Aceite (H-CON-08): ao lado da caixa; {terms} e {privacy} viram os links \"Termos de uso\" e \"Política de privacidade\".",
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
+  },
+  "conAceiteContinue": "Continue",
+  "@conAceiteContinue": {
+    "description": "Aceite (H-CON-08): botão do rodapé, só habilitado com a caixa marcada."
+  },
+  "conSemRedeCreate": "You need an internet connection to create the account.",
+  "@conSemRedeCreate": {
+    "description": "Conta sem internet (H-CON-09): texto da tela de erro padrão ao criar a conta sem rede, abaixo de \"Sem internet\"."
+  },
+  "conVoltaText": "Your progress is saved in the account.",
+  "@conVoltaText": {
+    "description": "Bem-vindo de volta (H-CON-10, PropV1PerfilRecuperar): abaixo do título."
+  },
+  "conVoltaJourneyValue": "{name}, {done} of {total, plural, =1{1 challenge} other{{total} challenges}}",
+  "@conVoltaJourneyValue": {
+    "description": "Bem-vindo de volta (H-CON-10): valor da linha Jornada; {name} é o adversário do degrau atual, {done} os desafios cumpridos nele e {total} os do degrau.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conVoltaLessons": "Pilares lessons",
+  "@conVoltaLessons": {
+    "description": "Bem-vindo de volta (H-CON-10): linha das lições concluídas do curso Pilares (nome do curso, não traduzir)."
+  },
+  "conVoltaMerged": "If this phone already had progress, both were merged: each item keeps the higher value.",
+  "@conVoltaMerged": {
+    "description": "Bem-vindo de volta (H-CON-10): nota abaixo dos itens."
+  },
+  "conPerfilSaved": "Your progress on this phone is already saved in the account.",
+  "@conPerfilSaved": {
+    "description": "Seu perfil (H-CON-11, PropV1ContaPerfil): aviso com cloud_done logo depois de criar a conta."
+  },
+  "conFotoInitial": "Or your initial, in the color you like",
+  "@conFotoInitial": {
+    "description": "Foto do perfil (H-CON-11, PropV1ContaFoto): título das cores da inicial na folha."
+  },
+  "conPerfilPhotoHint": "Optional. Your initial in the color you like, or your Google photo.",
+  "@conPerfilPhotoHint": {
+    "description": "Seu perfil pelo lápis do Perfil (H-CON-11, PropV1PerfilDados): abaixo do avatar."
+  },
+  "conPerfilEditSaved": "What you've done on this phone is now saved in the account.",
+  "@conPerfilEditSaved": {
+    "description": "Seu perfil pelo lápis do Perfil (H-CON-11, PropV1PerfilDados): nota com conta, acima do Salvar."
+  },
+  "conEntradaTitle": "Save your progress",
+  "@conEntradaTitle": {
+    "description": "Entrada da conta (H-CON-06, PropV1ContaEntrada): título."
+  },
+  "conEntradaSaved": "Your progress is saved and shows up on any phone",
+  "@conEntradaSaved": {
+    "description": "Entrada da conta (H-CON-06): benefício com cloud_done."
+  },
+  "conEntradaOffline": "The app works without an account, only on this phone",
+  "@conEntradaOffline": {
+    "description": "Entrada da conta (H-CON-06): benefício com wifi_off."
+  },
+  "conEntradaGoogle": "Create account with Google",
+  "@conEntradaGoogle": {
+    "description": "Entrada da conta (H-CON-06): botão do Google."
+  },
+  "conCriarNote": "We'll send an email to confirm your address. In the meantime, you can already play.",
+  "@conCriarNote": {
+    "description": "Criar conta (H-CON-06, PropV1ContaCriar): texto abaixo dos campos."
+  },
+  "conEmailInUse": "This email already has an account.",
+  "@conEmailInUse": {
+    "description": "Criar conta (H-CON-06): aviso com a ação Entrar."
+  },
+  "conUnexpected": "An unexpected error occurred",
+  "@conUnexpected": {
+    "description": "Entrada e e-mail da conta (H-CON-06, gap 4): aviso de erro fora da lista conhecida, com Tentar de novo."
+  },
+  "conRetry": "Try again",
+  "@conRetry": {
+    "description": "Entrada e e-mail da conta (H-CON-06, gap 4): ação do aviso de erro inesperado."
+  },
+  "conSenhaText": "We'll send you a link to create a new password.",
+  "@conSenhaText": {
+    "description": "Esqueci a senha (H-CON-07, PropV1ContaSenha): texto da folha."
+  },
+  "conSenhaSend": "Send link",
+  "@conSenhaSend": {
+    "description": "Esqueci a senha (H-CON-07): botão."
+  },
+  "conSenhaSentText": "If there's an account with {email}, the link arrives in a few minutes.",
+  "@conSenhaSentText": {
+    "description": "Link enviado (H-CON-07, PropV1ContaSenhaEnviada): o e-mail digitado em negrito.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "conObjetivoText": "Changes the first card on Home. The other paths stay there.",
+  "@conObjetivoText": {
+    "description": "Folha 'Seu objetivo' do Perfil (H-CON-15): texto abaixo do título."
+  },
+  "conNivelViktor": "To pick the right opponents: where are you in chess?",
+  "@conNivelViktor": {
+    "description": "Fala do Viktor em 'Seu nível' aberto pelo Perfil (H-CON-16)."
+  },
+  "conNivelLichess": "Log in on the Lichess site. Lucena reads your ratings.",
+  "@conNivelLichess": {
+    "description": "Opção 'Entrar com o Lichess' em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conNivelChess": "Type your username to read your public rating.",
+  "@conNivelChess": {
+    "description": "Opção 'Tenho conta no Chess.com' em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conNivelManual": "Enter my rating",
+  "@conNivelManual": {
+    "description": "Título da opção do número livre em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conNivelZero": "Start with Viktor's School.",
+  "@conNivelZero": {
+    "description": "Opção 'Não sei jogar' em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conRatingHint": "E.g. 1500",
+  "@conRatingHint": {
+    "description": "Dica dentro do campo 'Seu rating' (H-CON-16)."
+  },
+  "conRatingError": "Enter a number from 400 to 3000.",
+  "@conRatingError": {
+    "description": "Erro do campo 'Seu rating' fora de 400 a 3000 (H-CON-16)."
+  },
+  "conNivelZeroHome": "Start with the easiest opponents.",
+  "@conNivelZeroHome": {
+    "description": "Opção 'Não sei jogar' em 'Seu nível' pelo Perfil, com a Escola escondida (H-CON-16)."
+  },
+  "conLichessText": "Connected with your Lichess login. We only read your profile and ratings.",
+  "@conLichessText": {
+    "description": "Folha do Lichess no Perfil (H-CON-17): texto abaixo do título."
+  },
+  "conLichessNote": "Disconnecting removes Lucena's access to your Lichess. Your Lucena rating doesn't change.",
+  "@conLichessNote": {
+    "description": "Folha do Lichess no Perfil (H-CON-17): nota sobre Desconectar."
+  },
+  "conConviteTitle": "Want to save your progress?",
+  "@conConviteTitle": {
+    "description": "Título do convite de conta (link, folha do fim da partida, passo 5/5 do tour) (H-CON-01/02/04)."
+  },
+  "conConviteLater": "You can create the account later, in Profile.",
+  "@conConviteLater": {
+    "description": "Texto do convite de conta do link (H-CON-04)."
+  },
+  "conConviteSheetText": "Your progress is saved and shows up on any phone. The app works without an account, on this phone only.",
+  "@conConviteSheetText": {
+    "description": "Texto da folha de convite de conta depois da partida (PropV1PerfilConvite, H-CON-02)."
+  },
+  "conCartaoTitleWin": "Save your achievements",
+  "@conCartaoTitleWin": {
+    "description": "Título do cartão de convite de conta no fim da partida (PropV2UxConclusaoConta, H-CON-02)."
+  },
+  "conCartaoTitleProgress": "Save your progress",
+  "@conCartaoTitleProgress": {
+    "description": "Título do cartão de convite de conta em Seu progresso (PropV2UxProgresso, H-CON-03)."
+  },
+  "conCartaoGames": "Games, rating and achievements",
+  "@conCartaoGames": {
+    "description": "Benefício do cartão de convite de conta (H-CON-02/03)."
+  },
+  "conCartaoLessons": "Lessons and Journey",
+  "@conCartaoLessons": {
+    "description": "Benefício do cartão de convite de conta (H-CON-02/03)."
+  },
+  "conCartaoDevices": "Everything on any phone",
+  "@conCartaoDevices": {
+    "description": "Benefício do cartão de convite de conta (H-CON-02/03)."
+  },
+  "venOfferBar": "Full course",
+  "@venOfferBar": {
+    "description": "App bar da oferta do Pilares (PropV2CompraA, H-VEN-03)."
+  },
+  "venOfferHeadline": "Train what your game needs",
+  "@venOfferHeadline": {
+    "description": "Título da oferta (H-VEN-03)."
+  },
+  "venOfferIntro": "You take the test, choose your goal and train today's part of each goal every day.",
+  "@venOfferIntro": {
+    "description": "Texto de abertura da oferta (H-VEN-03)."
+  },
+  "venOfferTake": "What you get",
+  "@venOfferTake": {
+    "description": "Seção da oferta (H-VEN-03)."
+  },
+  "venBenefitChapters": "20 chapters and 105 lessons",
+  "@venBenefitChapters": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitChaptersText": "Lessons with Viktor, from the first move to calculating variations.",
+  "@venBenefitChaptersText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitExercises": "Over 850 exercises",
+  "@venBenefitExercises": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitExercisesText": "You play the position right away. Got it wrong? Try again or see the solution.",
+  "@venBenefitExercisesText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitLevel": "Your level in 15 positions",
+  "@venBenefitLevel": {
+    "description": "Item da oferta (H-VEN-03/04)."
+  },
+  "venBenefitLevelText": "Each part of the game shows as Strong, Learn or Review.",
+  "@venBenefitLevelText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitTournament": "Train until tournament day",
+  "@venBenefitTournament": {
+    "description": "Item da oferta (H-VEN-03/04)."
+  },
+  "venBenefitTournamentText": "Set the date and the plan picks the chapters that fit until then. Just want to improve? Follow the course in order.",
+  "@venBenefitTournamentText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitGoals": "Several goals at once",
+  "@venBenefitGoals": {
+    "description": "Item da oferta (H-VEN-03/04)."
+  },
+  "venBenefitGoalsText": "Each with today's part, in the time you have.",
+  "@venBenefitGoalsText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitProgress": "Your progress at a glance",
+  "@venBenefitProgress": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitProgressText": "Each theme is graded by its last 7 exercises.",
+  "@venBenefitProgressText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venOfferChoose": "Choose how to get Pilares",
+  "@venOfferChoose": {
+    "description": "Seção dos planos na oferta (H-VEN-03)."
+  },
+  "venPlanLifetime": "Lifetime access to Pilares",
+  "@venPlanLifetime": {
+    "description": "Cartão do plano vitalício (H-VEN-03)."
+  },
+  "venPlanBest": "Best choice",
+  "@venPlanBest": {
+    "description": "Selo do plano vitalício (H-VEN-03)."
+  },
+  "venPlanLifetimeText": "One-time payment, updates included.",
+  "@venPlanLifetimeText": {
+    "description": "Cartão do plano vitalício (H-VEN-03)."
+  },
+  "venPlanLifetimePrice": "{price} once",
+  "@venPlanLifetimePrice": {
+    "description": "Preço do vitalício no cartão; price vem da Google Play (H-VEN-03).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venPlanMonthly": "Pilares monthly subscription",
+  "@venPlanMonthly": {
+    "description": "Cartão do plano mensal (H-VEN-03)."
+  },
+  "venPlanMonthlyText": "Access to the course while the subscription is active.",
+  "@venPlanMonthlyText": {
+    "description": "Cartão do plano mensal (H-VEN-03)."
+  },
+  "venPerMonth": "{price}/month",
+  "@venPerMonth": {
+    "description": "Preço mensal; price vem da Google Play (H-VEN-03/09).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscriptionInfo": "How the subscription works",
+  "@venSubscriptionInfo": {
+    "description": "Cartão do plano mensal (H-VEN-03)."
+  },
+  "venSubscriptionRenew": "Renews automatically every month, billed by Google Play, until you cancel.",
+  "@venSubscriptionRenew": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venSubscriptionCancel": "Cancel anytime in Google Play › Payments & subscriptions › Subscriptions. Access continues until the end of the paid period.",
+  "@venSubscriptionCancel": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venSubscriptionEnd": "When the subscription ends, your progress stays saved and you go back to Chapter 1, with ads.",
+  "@venSubscriptionEnd": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venSubscriptionRefund": "You can cancel within 7 days of purchase and get a refund, through Google Play or at gncortes.apps@gmail.com.",
+  "@venSubscriptionRefund": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venBuyLifetime": "Buy for {price}",
+  "@venBuyLifetime": {
+    "description": "Botão principal da oferta com o vitalício (H-VEN-03).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venBuyMonthly": "Subscribe for {price}/month",
+  "@venBuyMonthly": {
+    "description": "Botão principal da oferta com o mensal (H-VEN-03).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestore": "Restore purchase",
+  "@venRestore": {
+    "description": "Botão e título de restaurar a compra (H-VEN-03/08/09)."
+  },
+  "venProcessing": "Confirming the purchase",
+  "@venProcessing": {
+    "description": "Rótulo de leitor de tela do botão em carregando (H-VEN-05)."
+  },
+  "venCanceled": "Purchase canceled. You were not charged.",
+  "@venCanceled": {
+    "description": "Aviso ao fechar a folha da loja (H-VEN-06)."
+  },
+  "venErrorBanner": "The purchase could not be completed. If you were charged, the course will be unlocked. If not, you were not charged.",
+  "@venErrorBanner": {
+    "description": "Aviso de erro da compra (H-VEN-06)."
+  },
+  "venOfflineBanner": "You need an internet connection to buy the course.",
+  "@venOfflineBanner": {
+    "description": "Aviso sem internet na compra (H-VEN-06)."
+  },
+  "venDoneTitle": "The full course is yours",
+  "@venDoneTitle": {
+    "description": "Compra concluída (H-VEN-05)."
+  },
+  "venDoneText": "All 20 chapters are unlocked. With your goal, we plan your study routine together.",
+  "@venDoneText": {
+    "description": "Compra concluída (H-VEN-05)."
+  },
+  "venDefineGoal": "Set my goal",
+  "@venDefineGoal": {
+    "description": "Botão da compra concluída e restaurada (H-VEN-05/08, V-gap 10)."
+  },
+  "venSeeCourse": "See the course",
+  "@venSeeCourse": {
+    "description": "Botão da compra concluída (H-VEN-05)."
+  },
+  "venPendingTitle": "Payment pending",
+  "@venPendingTitle": {
+    "description": "Compra pendente (H-VEN-06)."
+  },
+  "venPendingText": "As soon as it's confirmed, the course is unlocked. You won't pay again.",
+  "@venPendingText": {
+    "description": "Compra pendente (H-VEN-06)."
+  },
+  "venPendingOk": "Got it",
+  "@venPendingOk": {
+    "description": "Botão da compra pendente (H-VEN-06)."
+  },
+  "venRestoreText": "Bought on another device or on the website? We look for the purchase in the account {email}.",
+  "@venRestoreText": {
+    "description": "Restaurar compra (H-VEN-08).",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestoreAccount": "Account",
+  "@venRestoreAccount": {
+    "description": "Linha da conta em Restaurar compra (H-VEN-08)."
+  },
+  "venRestoreSearch": "Find my purchase",
+  "@venRestoreSearch": {
+    "description": "Botão de Restaurar compra (H-VEN-08)."
+  },
+  "venRestoredTitle": "Purchase restored",
+  "@venRestoredTitle": {
+    "description": "Compra restaurada (H-VEN-08)."
+  },
+  "venRestoredText": "The full course is unlocked on this device.",
+  "@venRestoredText": {
+    "description": "Compra restaurada (H-VEN-08)."
+  },
+  "venRestoredSite": "You bought on the website. The full course is unlocked on this account.",
+  "@venRestoredSite": {
+    "description": "Compra do site restaurada (H-VEN-08)."
+  },
+  "venContinueCourse": "Continue the course",
+  "@venContinueCourse": {
+    "description": "Botão da compra restaurada (H-VEN-08)."
+  },
+  "venNotFound": "We didn't find any purchase on this account. If you bought with another email, sign in with it.",
+  "@venNotFound": {
+    "description": "Restaurar sem compra (H-VEN-08)."
+  },
+  "venOtherAccount": "Sign in with another account",
+  "@venOtherAccount": {
+    "description": "Botão de Restaurar sem compra (H-VEN-08)."
+  },
+  "venSeeFull": "See the full course",
+  "@venSeeFull": {
+    "description": "Botão que abre a oferta (H-VEN-04/08)."
+  },
+  "venSiteBar": "Sign in",
+  "@venSiteBar": {
+    "description": "App bar de Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteTitle": "Bought on the website?",
+  "@venSiteTitle": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteText": "Sign in with the same email or Google account you used to buy and the course is unlocked.",
+  "@venSiteText": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteGoogle": "Sign in with Google",
+  "@venSiteGoogle": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteEmail": "Sign in with email",
+  "@venSiteEmail": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venEndedBar": "Pilares",
+  "@venEndedBar": {
+    "description": "App bar de Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedTitle": "Your subscription ended",
+  "@venEndedTitle": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedText": "Your progress is still saved.",
+  "@venEndedText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedKeep": "What you keep",
+  "@venEndedKeep": {
+    "description": "Seção de Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedProgress": "Your progress",
+  "@venEndedProgress": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedProgressText": "Lessons, exercises and tests you've done.",
+  "@venEndedProgressText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChapter1": "Chapter 1",
+  "@venEndedChapter1": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChapter1Text": "Unlocked, with an ad when you open each lesson and the exercise list.",
+  "@venEndedChapter1Text": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedPaused": "What's on hold",
+  "@venEndedPaused": {
+    "description": "Seção de Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChapters": "Chapters 2 to 20",
+  "@venEndedChapters": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChaptersText": "Unlocked again with the full course.",
+  "@venEndedChaptersText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedPlan": "Your plan and goals",
+  "@venEndedPlan": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedPlanText": "They come back with the full course.",
+  "@venEndedPlanText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedRenew": "Subscribe again for {price}/month",
+  "@venEndedRenew": {
+    "description": "Botão de Assinatura encerrada (H-VEN-10).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venEndedLifetime": "Lifetime access to Pilares for {price}",
+  "@venEndedLifetime": {
+    "description": "Botão de Assinatura encerrada (H-VEN-10).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venCourseName": "Pilares do Xadrez",
+  "@venCourseName": {
+    "description": "Cartão do curso no Perfil (H-VEN-04/09)."
+  },
+  "venBadgeDemo": "Demo",
+  "@venBadgeDemo": {
+    "description": "Selo do cartão do curso no Perfil (H-VEN-04)."
+  },
+  "venBadgeLifetime": "Lifetime",
+  "@venBadgeLifetime": {
+    "description": "Selo do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venBadgeMonthly": "Monthly",
+  "@venBadgeMonthly": {
+    "description": "Selo do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venDemoText": "You have Chapter 1. The full course has 20 chapters.",
+  "@venDemoText": {
+    "description": "Cartão do curso no Perfil, demonstração (H-VEN-04)."
+  },
+  "venBoughtPlay": "Bought on {date}, through Google Play",
+  "@venBoughtPlay": {
+    "description": "Cartão do curso no Perfil, vitalício (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venBoughtSite": "Bought on {date}, on the website",
+  "@venBoughtSite": {
+    "description": "Cartão do curso no Perfil, compra do site (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscribedPlay": "Subscribed on {date}, through Google Play",
+  "@venSubscribedPlay": {
+    "description": "Cartão do curso no Perfil, mensal (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venYourSubscription": "Your subscription",
+  "@venYourSubscription": {
+    "description": "Linha do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venLifetimeAccess": "Lifetime access",
+  "@venLifetimeAccess": {
+    "description": "Linha do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venMonthlyRenews": "Monthly · {price}/month · renews on {date}",
+  "@venMonthlyRenews": {
+    "description": "Linha do cartão do curso no Perfil (H-VEN-09).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venMonthlyPending": "Monthly · {price}/month · payment pending",
+  "@venMonthlyPending": {
+    "description": "Linha do cartão do curso no Perfil, carência (H-VEN-09).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venGraceWarning": "Fix your payment by {date} to keep access to the course.",
+  "@venGraceWarning": {
+    "description": "Aviso de carência no Perfil (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venManage": "Manage on Google Play",
+  "@venManage": {
+    "description": "Botão do cartão do curso, mensal (H-VEN-09)."
+  },
+  "venFixPayment": "Update payment on Google Play",
+  "@venFixPayment": {
+    "description": "Botão do cartão do curso, carência (H-VEN-09)."
+  },
+  "venDetails": "Course details",
+  "@venDetails": {
+    "description": "Botão do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "conCompraTitle": "Create your account to get Chess Pillars",
+  "@conCompraTitle": {
+    "description": "Título da conta pedida ao comprar o Pilares (PropV2CompraSemConta, H-CON-05)."
+  },
+  "conCompraText": "The account is free.",
+  "@conCompraText": {
+    "description": "Texto da conta pedida ao comprar o Pilares (H-CON-05)."
+  },
+  "conCompraDevices": "Pillars shows up on any phone, even if bought on the website",
+  "@conCompraDevices": {
+    "description": "Benefício da conta pedida ao comprar (H-CON-05)."
+  },
+  "conCompraSaved": "Lessons, Journey, games and achievements stay saved",
+  "@conCompraSaved": {
+    "description": "Benefício da conta pedida ao comprar (H-CON-05)."
+  },
+  "conCompraSync": "What you did on this phone is also saved to the account",
+  "@conCompraSync": {
+    "description": "Benefício da conta pedida ao comprar (H-CON-05)."
+  },
+  "venRefLifetime": "R$ 99.90",
+  "@venRefLifetime": {
+    "description": "Preço de referência do vitalício, mostrado só quando a loja não devolve o preço (H-VEN-03, V-gap 1)."
+  },
+  "venRefMonthly": "R$ 19.90",
+  "@venRefMonthly": {
+    "description": "Preço de referência do mensal, mostrado só quando a loja não devolve o preço (H-VEN-03, V-gap 1)."
+  },
+  "venSaleBuy": "See buying options",
+  "@venSaleBuy": {
+    "description": "Botão fixo da Apresentação do Pilares: abre a oferta (PropV2CursoApresentacao, H-VEN-01)."
+  },
+  "venChapterTest": "Chapter test · {count} exercises",
+  "@venChapterTest": {
+    "description": "Última linha de cada capítulo no Sumário da venda e do Sobre o Pilares (H-VEN-01/02).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

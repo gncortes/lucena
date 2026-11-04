@@ -166,6 +166,9 @@ import '../data/services/firebase/auth_service.dart';
 import '../data/repositories/learning/learning_repository.dart';
 import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/repositories/data_export/data_export_repository.dart';
+import '../data/repositories/data_export/data_export_repository_cloud.dart';
+import '../data/repositories/legal/legal_consent_repository.dart';
 import '../data/repositories/feedback/feedback_draft_repository.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
@@ -289,6 +292,8 @@ class Dependencies {
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
+    this.dataExportRepository = const NoDataExportRepository(),
+    this.legalConsentRepository = const NoLegalConsentRepository(),
     this.feedbackDraftRepository = const NoFeedbackDraftRepository(),
     this.reviewRepository = const NoReviewRepository(),
     this.installReferrerRepository = const NoInstallReferrerRepository(),
@@ -324,7 +329,9 @@ class Dependencies {
     bool firebase = false,
     String? trainingInstallSeed,
   }) {
-    final auth = firebase ? FirebaseAuthService() : const NoAuthService();
+    final auth = firebase
+        ? FirebaseAuthService(now: const SystemNow())
+        : const NoAuthService();
     final preferences = PreferencesService();
     final settings = LocalSettingsRepository(preferences);
     // Um plugin só para os lembretes e o push (o toque tem um dono só).
@@ -612,7 +619,10 @@ class Dependencies {
         positions,
         preferences,
       ),
-      accountInviteRepository: LocalAccountInviteRepository(preferences),
+      accountInviteRepository: LocalAccountInviteRepository(
+        preferences,
+        now: now,
+      ),
       avatarRepository: avatars,
       photoRepository: DevicePhotoRepository(),
       mailAppRepository: const DeviceMailAppRepository(),
@@ -632,6 +642,16 @@ class Dependencies {
               origin: analytics.origin,
             )
           : const NoFeedbackRepository(),
+      dataExportRepository: firebase
+          ? CloudDataExportRepository(
+              cloudStore,
+              directory: getApplicationSupportDirectory,
+              now: now,
+            )
+          : const NoDataExportRepository(),
+      legalConsentRepository: firebase
+          ? LocalLegalConsentRepository(preferences, cloudStore, now: now)
+          : const NoLegalConsentRepository(),
       feedbackDraftRepository: LocalFeedbackDraftRepository(preferences),
       reviewRepository: LocalReviewRepository(
         preferences,
@@ -791,6 +811,13 @@ class Dependencies {
 
   /// "Enviar feedback" (E1.26), em `feedback/{id}`.
   final FeedbackRepository feedbackRepository;
+
+  /// "Baixar meus dados" (H-CON-21): a cópia da conta num JSON.
+  final DataExportRepository dataExportRepository;
+
+  /// O aceite dos Termos e da Política logo depois de criar a conta
+  /// (H-CON-08).
+  final LegalConsentRepository legalConsentRepository;
 
   /// O rascunho do "Enviar feedback" (H-OPI-11), no aparelho.
   final FeedbackDraftRepository feedbackDraftRepository;

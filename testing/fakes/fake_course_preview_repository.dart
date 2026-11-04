@@ -7,20 +7,35 @@ class FakeCoursePreviewRepository implements CoursePreviewRepository {
 
   static CoursePreview example() => CoursePreview.fromJson({
     'sale': {
-      'overline': 'EXEMPLO',
       'title': 'Curso de exemplo',
       'line': 'Uma prévia sintética para testar a interface.',
       'lessons': 30,
-      'exercises': '+10',
-      'price': 'R\$ 10,00',
-      'priceNote': 'Preço ilustrativo.',
+      'chapters': 10,
+      'exercises': '100+',
       'speech': 'Conheça este exemplo de navegação.',
-      'how': [_item('Etapa de exemplo')],
+      'benefitsTitle': 'Benefícios de exemplo',
+      'benefitsLine': 'Linha ilustrativa.',
+      'benefits': [for (var i = 1; i <= 8; i++) _item('Benefício $i')],
+      'plans': {
+        'lifetime': 'Acesso de exemplo',
+        'lifetimeNote': 'Nota ilustrativa.',
+        'monthly': 'Prefere o mensal?',
+        'unlock': 'Tudo liberado',
+      },
+      'cost': {
+        'title': 'Custo de exemplo',
+        'rows': [
+          {'title': 'Opção A', 'value': r'R$ 100'},
+          {'title': 'Opção B', 'value': r'R$ 200', 'summary': 'Nota B.'},
+          {'title': 'Opção A + B', 'value': r'R$ 300 a R$ 1.000'},
+        ],
+        'ours': _item('Linha do curso'),
+        'source': 'Fonte ilustrativa.',
+      },
       'learn': [_item('Conteúdo ilustrativo')],
       'audience': _item('Público de exemplo'),
       'audienceItems': [_item('Uma descrição de público.')],
       'included': [_item('Item de exemplo')],
-      'app': [_item('Recurso de exemplo')],
       'level': {
         ..._item('Nível de exemplo'),
         'examples': [
@@ -40,13 +55,17 @@ class FakeCoursePreviewRepository implements CoursePreviewRepository {
                   'number': n,
                   'title': 'Capítulo de exemplo $n',
                   'lessons': [for (var i = 1; i <= 3; i++) 'Exemplo $n.$i'],
-                  if (n != end) 'exercises': 'Exercícios',
                 },
             ],
           },
       ],
+      'openings': {
+        'title': 'Aberturas',
+        'line': 'Linha de aberturas.',
+        'items': ['Abertura de exemplo'],
+      },
       'faq': [
-        for (var i = 1; i <= 2; i++)
+        for (var i = 1; i <= 8; i++)
           {
             'icon': 'help',
             'question': 'Pergunta de exemplo $i?',
@@ -68,48 +87,6 @@ class FakeCoursePreviewRepository implements CoursePreviewRepository {
         'source': 'Fixture de teste',
         'warning': _item('Aviso de exemplo'),
       },
-    },
-    'map': {
-      'continue': {
-        'part': 'Parte I',
-        'number': 5,
-        'title': 'Capítulo de exemplo 5',
-        'summary': 'Próxima etapa de exemplo.',
-      },
-      'test': 'Teste de exemplo',
-      'part': {
-        'label': 'Parte I',
-        'title': 'Parte de exemplo',
-        'done': 1,
-        'total': 6,
-      },
-      'chapters': [
-        for (var i = 1; i <= 6; i++)
-          {
-            'id': 'example.$i',
-            'state': i == 5 ? 'next' : 'open',
-            'title': 'Capítulo de exemplo $i',
-            'summary': 'Resumo de exemplo $i.',
-          },
-      ],
-    },
-    'chapter': {
-      'part': 'Parte I',
-      'number': 5,
-      'count': 6,
-      'title': 'Capítulo de exemplo 5',
-      'lessons': [
-        for (var i = 1; i <= 3; i++)
-          {
-            'id': 'example.5.$i',
-            'kind': i == 1 ? 'recommended' : 'other',
-            'number': '5.$i',
-            'title': 'Exemplo 5.$i',
-            'summary': 'Resumo ilustrativo.',
-          },
-      ],
-      'exercises': {'number': '5.4', 'count': 3},
-      'start': '5.1',
     },
   });
 

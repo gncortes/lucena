@@ -35,6 +35,12 @@ class MainActivity : FlutterActivity() {
                                     .setData(Uri.fromParts("package", packageName, null))
                             )
                     )
+                    "openAppDetails" -> result.success(
+                        open(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .setData(Uri.fromParts("package", packageName, null))
+                        )
+                    )
                     "hasEmailApp" -> result.success(
                         emailApp().resolveActivity(packageManager) != null
                     )

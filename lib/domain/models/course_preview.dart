@@ -1,24 +1,14 @@
-/// A prévia do curso Pilares do Xadrez (T82): só os textos estáticos das
-/// telas de venda, do mapa e de um capítulo, exportados do canvas por
-/// `tools/export_pilares_preview.py`. Não há lição real nem compra.
+/// Os textos da venda do Pilares do Xadrez (T85-D2, H-VEN-01/02), gerados
+/// por `tools/export_pilares_venda.py` a partir dos quadros do canvas e do
+/// currículo real. Os preços não estão aqui: vêm da loja.
 class CoursePreview {
-  const CoursePreview({
-    required this.sale,
-    required this.map,
-    required this.chapter,
-  });
+  const CoursePreview({required this.sale});
 
   factory CoursePreview.fromJson(Map<String, dynamic> json) => CoursePreview(
     sale: CourseSale.fromJson(json['sale'] as Map<String, dynamic>),
-    map: CourseMapPreview.fromJson(json['map'] as Map<String, dynamic>),
-    chapter: CourseChapterPreview.fromJson(
-      json['chapter'] as Map<String, dynamic>,
-    ),
   );
 
   final CourseSale sale;
-  final CourseMapPreview map;
-  final CourseChapterPreview chapter;
 }
 
 List<T> _list<T>(Object? json, T Function(Map<String, dynamic>) parse) => [
@@ -42,7 +32,7 @@ class CourseSaleItem {
 }
 
 /// Uma parte do sumário: o número romano, o título, quantas lições tem e os
-/// capítulos (o último é o das aberturas).
+/// capítulos de tema (as aberturas vêm no fim, iguais em todas as partes).
 class CourseSalePart {
   const CourseSalePart({
     required this.number,
@@ -67,14 +57,13 @@ class CourseSalePart {
   final List<CourseSaleChapter> chapters;
 }
 
-/// Um capítulo do sumário: o número (no curso todo), o título, as lições
-/// (n.1, n.2…) e, se tiver, os exercícios práticos, o último item numerado.
+/// Um capítulo do sumário: o número (no curso todo) e as lições (n.1,
+/// n.2…). O teste do capítulo, a última linha, vem do ARB.
 class CourseSaleChapter {
   const CourseSaleChapter({
     required this.number,
     required this.title,
     required this.lessons,
-    this.exercises,
   });
 
   factory CourseSaleChapter.fromJson(Map<String, dynamic> json) =>
@@ -84,16 +73,26 @@ class CourseSaleChapter {
         lessons: [
           for (final lesson in json['lessons'] as List) lesson as String,
         ],
-        exercises: json['exercises'] as String?,
       );
 
   final int number;
   final String title;
   final List<String> lessons;
-  final String? exercises;
+}
 
-  /// As linhas numeradas: as lições e, por último, os exercícios.
-  List<String> get items => [...lessons, ?exercises];
+/// Uma linha do comparativo "Quanto custa estudar xadrez por 3 meses".
+class CourseSaleCost {
+  const CourseSaleCost({required this.title, required this.value, this.note});
+
+  factory CourseSaleCost.fromJson(Map<String, dynamic> json) => CourseSaleCost(
+    title: json['title'] as String,
+    value: json['value'] as String,
+    note: json['summary'] as String?,
+  );
+
+  final String title;
+  final String value;
+  final String? note;
 }
 
 /// Uma pergunta da aba Dúvidas.
@@ -161,50 +160,68 @@ class CourseSaleBand {
   final CourseSaleItem warning;
 }
 
-/// A página de venda (canvas `PropV2CursoApresentacao` e as abas).
+/// A venda (canvas `PropV2CursoApresentacao` e as abas).
 class CourseSale {
   const CourseSale({
-    required this.overline,
     required this.title,
     required this.line,
     required this.lessons,
+    required this.chapters,
     required this.exercises,
-    required this.price,
-    required this.priceNote,
     required this.speech,
-    required this.how,
+    required this.benefitsTitle,
+    required this.benefitsLine,
+    required this.benefits,
+    required this.lifetimeTitle,
+    required this.lifetimeNote,
+    required this.monthlyQuestion,
+    required this.unlock,
+    required this.costTitle,
+    required this.costs,
+    required this.ours,
+    required this.costSource,
     required this.learn,
     required this.audience,
     required this.audienceItems,
     required this.included,
-    required this.app,
     required this.level,
     required this.levelExamples,
     required this.summaryNote,
     required this.parts,
+    required this.openings,
     required this.faq,
     required this.band,
   });
 
   factory CourseSale.fromJson(Map<String, dynamic> json) {
     final level = json['level'] as Map<String, dynamic>;
+    final plans = json['plans'] as Map<String, dynamic>;
+    final cost = json['cost'] as Map<String, dynamic>;
+    final openings = json['openings'] as Map<String, dynamic>;
     return CourseSale(
-      overline: json['overline'] as String,
       title: json['title'] as String,
       line: json['line'] as String,
       lessons: json['lessons'] as int,
+      chapters: json['chapters'] as int,
       exercises: json['exercises'] as String,
-      price: json['price'] as String,
-      priceNote: json['priceNote'] as String,
       speech: json['speech'] as String,
-      how: _list(json['how'], CourseSaleItem.fromJson),
+      benefitsTitle: json['benefitsTitle'] as String,
+      benefitsLine: json['benefitsLine'] as String,
+      benefits: _list(json['benefits'], CourseSaleItem.fromJson),
+      lifetimeTitle: plans['lifetime'] as String,
+      lifetimeNote: plans['lifetimeNote'] as String,
+      monthlyQuestion: plans['monthly'] as String,
+      unlock: plans['unlock'] as String,
+      costTitle: cost['title'] as String,
+      costs: _list(cost['rows'], CourseSaleCost.fromJson),
+      ours: CourseSaleItem.fromJson(cost['ours'] as Map<String, dynamic>),
+      costSource: cost['source'] as String,
       learn: _list(json['learn'], CourseSaleItem.fromJson),
       audience: CourseSaleItem.fromJson(
         json['audience'] as Map<String, dynamic>,
       ),
       audienceItems: _list(json['audienceItems'], CourseSaleItem.fromJson),
       included: _list(json['included'], CourseSaleItem.fromJson),
-      app: _list(json['app'], CourseSaleItem.fromJson),
       level: CourseSaleItem.fromJson(level),
       levelExamples: [
         for (final item in level['examples'] as List)
@@ -216,170 +233,54 @@ class CourseSale {
       ],
       summaryNote: json['summaryNote'] as String,
       parts: _list(json['parts'], CourseSalePart.fromJson),
+      openings: (
+        title: openings['title'] as String,
+        line: openings['line'] as String,
+        items: [for (final item in openings['items'] as List) item as String],
+      ),
       faq: _list(json['faq'], CourseSaleFaq.fromJson),
       band: CourseSaleBand.fromJson(json['band'] as Map<String, dynamic>),
     );
   }
 
-  final String overline;
+  /// O nome do curso, na app bar.
   final String title;
   final String line;
   final int lessons;
+  final int chapters;
 
-  /// Já com o sinal ("+750").
+  /// Já com o sinal ("850+").
   final String exercises;
-  final String price;
-  final String priceNote;
   final String speech;
-  final List<CourseSaleItem> how;
+  final String benefitsTitle;
+  final String benefitsLine;
+
+  /// "Mais que um curso de xadrez": os 8 itens, na ordem.
+  final List<CourseSaleItem> benefits;
+  final String lifetimeTitle;
+  final String lifetimeNote;
+  final String monthlyQuestion;
+  final String unlock;
+  final String costTitle;
+  final List<CourseSaleCost> costs;
+
+  /// A linha do Pilares no comparativo (o preço vem da loja).
+  final CourseSaleItem ours;
+  final String costSource;
   final List<CourseSaleItem> learn;
   final CourseSaleItem audience;
   final List<CourseSaleItem> audienceItems;
   final List<CourseSaleItem> included;
-  final List<CourseSaleItem> app;
   final CourseSaleItem level;
 
-  /// O exemplo do teste de nível: a lição, a situação e a cor da pílula
+  /// O exemplo do teste de nível: a parte, a situação e a cor da pílula
   /// (`mastered`, `review` ou `learn`).
   final List<({String title, String status, String tone})> levelExamples;
   final String summaryNote;
   final List<CourseSalePart> parts;
+
+  /// As aberturas no fim de cada parte (as mesmas 4 linhas genéricas).
+  final ({String title, String line, List<String> items}) openings;
   final List<CourseSaleFaq> faq;
   final CourseSaleBand band;
-}
-
-/// Um capítulo do mapa: o estado (nome de `CourseItemState`), título, resumo
-/// e a faixa da medalha (nome de `ExerciseGrade`) ou nada.
-class CourseMapChapter {
-  const CourseMapChapter({
-    required this.id,
-    required this.state,
-    required this.title,
-    required this.summary,
-    this.medal,
-  });
-
-  factory CourseMapChapter.fromJson(Map<String, dynamic> json) =>
-      CourseMapChapter(
-        id: json['id'] as String,
-        state: json['state'] as String,
-        title: json['title'] as String,
-        summary: json['summary'] as String,
-        medal: json['medal'] as String?,
-      );
-
-  final String id;
-  final String state;
-  final String title;
-  final String summary;
-  final String? medal;
-}
-
-/// O mapa do curso (canvas `PropV2CursoMapa`).
-class CourseMapPreview {
-  const CourseMapPreview({
-    required this.continuePart,
-    required this.continueNumber,
-    required this.continueTitle,
-    required this.continueSummary,
-    required this.test,
-    required this.partLabel,
-    required this.partTitle,
-    required this.done,
-    required this.total,
-    required this.chapters,
-  });
-
-  factory CourseMapPreview.fromJson(Map<String, dynamic> json) {
-    final next = json['continue'] as Map<String, dynamic>;
-    final part = json['part'] as Map<String, dynamic>;
-    return CourseMapPreview(
-      continuePart: next['part'] as String,
-      continueNumber: next['number'] as int,
-      continueTitle: next['title'] as String,
-      continueSummary: next['summary'] as String,
-      test: json['test'] as String,
-      partLabel: part['label'] as String,
-      partTitle: part['title'] as String,
-      done: part['done'] as int,
-      total: part['total'] as int,
-      chapters: _list(json['chapters'], CourseMapChapter.fromJson),
-    );
-  }
-
-  final String continuePart;
-  final int continueNumber;
-  final String continueTitle;
-  final String continueSummary;
-  final String test;
-  final String partLabel;
-  final String partTitle;
-  final int done;
-  final int total;
-  final List<CourseMapChapter> chapters;
-}
-
-/// Uma lição do capítulo: o tipo da linha (nome de `ChapterRowKind`).
-class CourseChapterLesson {
-  const CourseChapterLesson({
-    required this.id,
-    required this.kind,
-    required this.number,
-    required this.title,
-    required this.summary,
-  });
-
-  factory CourseChapterLesson.fromJson(Map<String, dynamic> json) =>
-      CourseChapterLesson(
-        id: json['id'] as String,
-        kind: json['kind'] as String,
-        number: json['number'] as String,
-        title: json['title'] as String,
-        summary: json['summary'] as String,
-      );
-
-  final String id;
-  final String kind;
-  final String number;
-  final String title;
-  final String summary;
-}
-
-/// O capítulo (canvas `PropV2CursoLicao`).
-class CourseChapterPreview {
-  const CourseChapterPreview({
-    required this.part,
-    required this.number,
-    required this.count,
-    required this.title,
-    required this.lessons,
-    required this.exercisesNumber,
-    required this.exercisesCount,
-    required this.start,
-  });
-
-  factory CourseChapterPreview.fromJson(Map<String, dynamic> json) {
-    final exercises = json['exercises'] as Map<String, dynamic>;
-    return CourseChapterPreview(
-      part: json['part'] as String,
-      number: json['number'] as int,
-      count: json['count'] as int,
-      title: json['title'] as String,
-      lessons: _list(json['lessons'], CourseChapterLesson.fromJson),
-      exercisesNumber: exercises['number'] as String,
-      exercisesCount: exercises['count'] as int,
-      start: json['start'] as String,
-    );
-  }
-
-  final String part;
-  final int number;
-  final int count;
-  final String title;
-  final List<CourseChapterLesson> lessons;
-  final String exercisesNumber;
-  final int exercisesCount;
-
-  /// O número da lição do botão "Começar a lição".
-  final String start;
 }

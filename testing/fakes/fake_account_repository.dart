@@ -106,8 +106,22 @@ class FakeAccountRepository implements AccountRepository {
     );
   }
 
+  /// Com valor, a próxima saída falha (e a conta fica).
+  Object? signOutError;
+
+  /// Quantas vezes o app pediu para sair.
+  int signOuts = 0;
+
   @override
-  Future<void> signOut() async => _set(null);
+  Future<void> signOut() async {
+    signOuts++;
+    final error = signOutError;
+    if (error != null) {
+      signOutError = null;
+      throw error;
+    }
+    _set(null);
+  }
 
   /// Quantas vezes o app ligou o push da conta na abertura.
   int pushLinks = 0;

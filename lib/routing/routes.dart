@@ -504,6 +504,14 @@ abstract final class Routes {
   ).toString();
 
   /// "Bem-vindo de volta": recebe o `SyncResult` como `extra`.
+  /// "Termos e privacidade" (H-CON-08): o aceite logo depois de criar a
+  /// conta. [offline]: a conta não foi lida (segue direto no fim).
+  static const accountConsent = '/conta/aceite';
+  static String accountConsentFrom(String from, {bool offline = false}) => Uri(
+    path: accountConsent,
+    queryParameters: {'from': from, if (offline) 'offline': '1'},
+  ).toString();
+
   static const accountRestored = '/conta/de-volta';
   static String accountRestoredFrom(String from) =>
       _from(accountRestored, from);
@@ -518,7 +526,7 @@ abstract final class Routes {
 
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
-    'game' => home,
+    'game' || 'home' => home,
     'level' => nextSteps,
     final route? when isRouteFrom(route) => route,
     _ => goal,
@@ -584,7 +592,7 @@ abstract final class Routes {
   static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
 
-  /// Privacidade e anúncios (E1.25), aberta do Perfil.
+  /// Privacidade e dados (H-CON-20), aberta pelas Configurações.
   static const privacy = '/settings/privacy';
 
   static const settingsBoardAppearance = '/settings/appearance/board';
@@ -601,12 +609,9 @@ abstract final class Routes {
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';
 
-  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento): a venda, o
-  /// mapa e um capítulo.
-  static const pilaresSale = '/settings/pilares';
-  static const pilaresBand = '/settings/pilares/faixa';
-  static const pilaresMap = '/settings/pilares/mapa';
-  static const pilaresChapter = '/settings/pilares/mapa/capitulo';
+  /// A apresentação do Pilares do Xadrez (H-VEN-01, rota da D2): os atalhos
+  /// "Conhecer o Pilares" das outras telas abrem aqui.
+  static const pilaresSale = '/pilares';
 
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';

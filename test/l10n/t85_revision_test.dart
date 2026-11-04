@@ -24,17 +24,10 @@ void main() {
       t.trainingDownloadChapterError,
       'Não foi possível baixar o capítulo. Tente novamente.',
     );
-    expect(
-      t.accountDeleteFailed,
-      'Não foi possível excluir a conta. Tente novamente.',
-    );
+    expect(t.conApagarFailed, 'Ocorreu um erro inesperado');
     expect(
       t.accountPhotoFailed,
       'Não foi possível enviar a foto. Tente novamente.',
-    );
-    expect(
-      t.removeAdsError,
-      'Não foi possível concluir a compra. Tente novamente mais tarde.',
     );
   });
 }

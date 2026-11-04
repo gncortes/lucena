@@ -8,16 +8,13 @@ import 'package:intl/intl.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
-import '../../../data/repositories/ads/ads_repository.dart';
-import '../../../data/repositories/purchase/purchase_repository.dart';
-import '../../../data/repositories/store/store_listing_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
-import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/level_source.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../routing/routes.dart';
+import '../../alerts/view_models/alerts_cubit.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -29,20 +26,19 @@ import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
-import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_sheet.dart';
 import '../../goal/widgets/goal_ui.dart';
-import '../../privacy/widgets/remove_ads_sheet.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/profile_account_cubit.dart';
 import '../view_models/profile_cubit.dart';
-import 'account_delete_dialog.dart';
+import 'account_delete_sheet.dart';
 import 'lichess_sheet.dart';
 import 'profile_rows.dart';
 
-/// O Perfil (canvas `PropV1ConfigBPerfil`): só o que é da pessoa, a mesma
-/// tela com e sem conta (muda a linha do cabeçalho e o cartão de cima), com
-/// as seções Seu xadrez e Região. O idioma fica em Aparência.
+/// O Perfil (quadros `PropV1RetencaoPerfil` e `PropV1PerfilConta`): só o
+/// que é da pessoa, a mesma tela com e sem conta (muda a linha do cabeçalho,
+/// o cartão de cima e as ações da conta). Um grupo com país, região, idioma,
+/// objetivo, nível e Lichess; outro com as notificações.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -96,39 +92,17 @@ class _ProfileView extends StatelessWidget {
   }
 
   Future<void> _delete(BuildContext context) async {
-    final cubit = context.read<ProfileAccountCubit>();
-    final uid = cubit.state.account?.uid;
+    final uid = context.read<ProfileAccountCubit>().state.account?.uid;
     if (uid == null) return;
-    if (await showAccountDeleteDialog(context)) {
-      await cubit.deleteAccount(expectedUid: uid);
-    }
-  }
-
-  // Com e-mail, o Firebase pediu um login recente: a pessoa entra de novo e
-  // a conta é apagada em seguida.
-  Future<void> _reauthAndDelete(BuildContext context, Account account) async {
-    final cubit = context.read<ProfileAccountCubit>();
-    final ok = await context.push<bool>(
-      Routes.accountEmailFrom('profile', reauth: true),
-    );
-    if (ok == true) await cubit.deleteAfterSignIn(account.uid);
+    await showAccountDeleteSheet(context, uid: uid, from: 'profile');
   }
 
   void _notice(BuildContext context, ProfileAccountState state) {
-    final l10n = context.l10n;
-    final account = state.account;
-    final notice = state.notice;
-    if (notice == ProfileNotice.deleteRelogin && account != null) {
-      _reauthAndDelete(context, account);
-      return;
-    }
-    showLucenaSnackBar(context, switch (notice) {
-      ProfileNotice.deleteOffline => l10n.accountDeleteOffline,
-      ProfileNotice.deleteRelogin => l10n.accountDeleteRelogin,
-      ProfileNotice.deleteFailed => l10n.accountDeleteFailed,
-      ProfileNotice.deleteDifferentAccount => l10n.accountDeleteRelogin,
-      ProfileNotice.deleted => l10n.accountDeleted,
-      ProfileNotice.lichessOffline || null => l10n.lichessRefreshFailed,
+    // Com uma folha por cima (Lichess), o aviso aparece nela.
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
+    showLucenaSnackBar(context, switch (state.notice) {
+      ProfileNotice.failed => context.l10n.conPerfilFailed,
+      ProfileNotice.lichessOffline || null => context.l10n.lichessRefreshFailed,
     });
   }
 
@@ -161,9 +135,41 @@ class _ProfileView extends StatelessWidget {
               const _LocalCard()
             else
               _SyncCard(syncedAt: state.syncedAt),
-            SectionTitle(l10n.profileSectionChess, inset: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.lg),
             ProfileRowGroup(
               children: [
+                ProfileRow(
+                  key: ProfileKeys.rowCountry,
+                  icon: Icons.public,
+                  title: l10n.profileCountry,
+                  value: profileCountryValue(
+                    l10n,
+                    profile?.country,
+                    phone: context.read<ProfileCubit>().phoneCountry,
+                  ),
+                  onTap: () => context.push(Routes.country),
+                ),
+                ProfileRow(
+                  key: ProfileKeys.rowRegion,
+                  icon: Icons.location_on,
+                  title: l10n.profileRegion,
+                  value:
+                      regionLabel(
+                        l10n,
+                        country: profile?.country,
+                        state: profile?.state,
+                        city: profile?.city,
+                      ) ??
+                      l10n.profileRegionNone,
+                  onTap: () => showRegionSheet(context),
+                ),
+                ProfileRow(
+                  key: ProfileKeys.rowLanguage,
+                  icon: Icons.language,
+                  title: l10n.settingsLanguage,
+                  value: profileLanguageName(context),
+                  onTap: () => context.push(Routes.settingsLanguage),
+                ),
                 // Grava na hora: a folha tem o próprio "Salvar".
                 ProfileRow(
                   key: ProfileKeys.rowGoal,
@@ -193,44 +199,8 @@ class _ProfileView extends StatelessWidget {
                 ),
               ],
             ),
-            SectionTitle(l10n.profileSectionRegion, inset: AppSpacing.xs),
-            ProfileRowGroup(
-              children: [
-                ProfileRow(
-                  key: ProfileKeys.rowCountry,
-                  icon: Icons.public,
-                  title: l10n.profileCountry,
-                  value: profileCountryValue(
-                    l10n,
-                    profile?.country,
-                    phone: context.read<ProfileCubit>().phoneCountry,
-                  ),
-                  onTap: () => context.push(Routes.country),
-                ),
-                ProfileRow(
-                  key: ProfileKeys.rowRegion,
-                  icon: Icons.location_on,
-                  title: l10n.profileRegion,
-                  value:
-                      regionLabel(
-                        l10n,
-                        country: profile?.country,
-                        state: profile?.state,
-                        city: profile?.city,
-                      ) ??
-                      l10n.profileRegionNone,
-                  onTap: () => showRegionSheet(context),
-                ),
-              ],
-            ),
             const SizedBox(height: AppSpacing.lg),
-            // O rating de finais fica no histórico, com os detalhes.
-            OutlinedButton.icon(
-              key: ProfileKeys.ratingCard,
-              onPressed: () => context.push(Routes.rating),
-              icon: const Icon(Icons.show_chart_rounded),
-              label: Text(l10n.ratingHistory),
-            ),
+            const _NoticesGroup(),
             if (account != null) ...[
               const SizedBox(height: AppSpacing.lg),
               _AccountActions(
@@ -239,8 +209,6 @@ class _ProfileView extends StatelessWidget {
                 onDelete: () => _delete(context),
               ),
             ],
-            const SizedBox(height: AppSpacing.lg),
-            _SupportGroups(onDelete: () => _delete(context)),
           ],
         ),
       ),
@@ -405,9 +373,11 @@ class _SyncCard extends StatelessWidget {
     final now = context.read<Now>()().toLocal();
     final today =
         at.year == now.year && at.month == now.month && at.day == now.day;
-    return today
-        ? l10n.profileSyncedToday(DateFormat.Hm(locale).format(at))
-        : DateFormat.Md(locale).format(at);
+    return l10n.profileSyncedAt(
+      today
+          ? l10n.profileSyncedToday(DateFormat.Hm(locale).format(at))
+          : l10n.conPerfilSyncedOn(DateFormat.Md(locale).format(at)),
+    );
   }
 
   @override
@@ -438,7 +408,7 @@ class _SyncCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Text(l10n.profileSyncedAt(_when(context)), style: muted),
+                  Text(_when(context), style: muted),
                 ],
               ),
             ),
@@ -472,7 +442,31 @@ class _Card extends StatelessWidget {
   );
 }
 
-/// "Sair da conta", "Apagar a conta" (vermelho) e a nota da página web.
+/// "Notificações": quantos avisos estão ligados; abre a tela dos avisos.
+class _NoticesGroup extends StatelessWidget {
+  const _NoticesGroup();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final state = context.watch<AlertsCubit>().state;
+    return ProfileRowGroup(
+      children: [
+        ProfileRow(
+          key: ProfileKeys.rowNotices,
+          icon: Icons.notifications,
+          title: l10n.alertsTitle,
+          value: state.permitted
+              ? l10n.alertsCount(state.enabled, state.total)
+              : l10n.alertsBlockedSummary,
+          onTap: () => context.push(Routes.alerts),
+        ),
+      ],
+    );
+  }
+}
+
+/// "Sair da conta", "Excluir a conta" (vermelho) e a nota da página web.
 class _AccountActions extends StatelessWidget {
   const _AccountActions({
     required this.busy,
@@ -514,92 +508,6 @@ class _AccountActions extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Os grupos do fim (E1.25): "Remover anúncios", que some sem preço da Play
-/// e vira "Sem anúncios" depois da compra; Privacidade, feedback e avaliar.
-class _SupportGroups extends StatelessWidget {
-  const _SupportGroups({required this.onDelete});
-
-  /// "Apagar minha conta e meus dados" da Privacidade.
-  final VoidCallback onDelete;
-
-  Future<void> _privacy(BuildContext context) async {
-    final delete = await context.push<bool>(Routes.privacy);
-    if (delete == true) onDelete();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final purchases = context.read<PurchaseRepository>();
-    final ads = context.read<AdsRepository>().enabled;
-    return StreamBuilder<PurchaseState>(
-      stream: purchases.changes,
-      initialData: purchases.state,
-      builder: (context, snapshot) {
-        final purchase = snapshot.data ?? purchases.state;
-        final price = purchase.price;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (purchase.adFree || price != null) ...[
-              ProfileRowGroup(
-                children: [
-                  ProfileRow(
-                    key: ProfileKeys.rowRemoveAds,
-                    icon: Icons.hide_source,
-                    title: l10n.profileRemoveAds,
-                    value: purchase.adFree || price == null
-                        ? l10n.profileRemoveAdsDone
-                        : l10n.profileRemoveAdsValue(price),
-                    onTap: purchase.adFree
-                        ? null
-                        : () => showRemoveAdsSheet(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.lg),
-            ],
-            ProfileRowGroup(
-              children: [
-                ProfileRow(
-                  key: ProfileKeys.rowPrivacy,
-                  icon: Icons.privacy_tip,
-                  title: ads ? l10n.profilePrivacy : l10n.privacyTitleNoAds,
-                  value: ads
-                      ? l10n.profilePrivacyValue
-                      : l10n.profilePrivacyNoAdsValue,
-                  onTap: () => _privacy(context),
-                ),
-                ProfileRow(
-                  key: ProfileKeys.rowFeedback,
-                  icon: Icons.feedback,
-                  title: l10n.profileFeedback,
-                  value: l10n.profileFeedbackValue,
-                  onTap: () => context.push(Routes.feedback),
-                ),
-                ProfileRow(
-                  key: ProfileKeys.rowRate,
-                  icon: Icons.storefront,
-                  title: l10n.profileRate,
-                  value: l10n.profileRateValue,
-                  onTap: () {
-                    unawaited(
-                      context.analytics.log(
-                        AnalyticsEvents.avaliacaoPerfilAberto(),
-                      ),
-                    );
-                    unawaited(context.read<StoreListingRepository>().open());
-                  },
-                ),
-              ],
-            ),
-          ],
-        );
-      },
     );
   }
 }

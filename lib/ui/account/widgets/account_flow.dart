@@ -1,11 +1,13 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/account.dart';
 import '../../../routing/routes.dart';
+import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
 
 /// Depois de entrar: a conta com progresso mostra "Bem-vindo de volta"; a
@@ -20,17 +22,16 @@ void continueAfterSignIn(
   bool replace = false,
 }) {
   final restored = state.restored;
-  // Course entry resumes its authenticated package gate immediately.
-  if (Routes.isRouteFrom(from) &&
-      Uri.tryParse(from)?.path.startsWith('/training/') == true) {
+  // A conta nova aceita os Termos e a Política antes de seguir (H-CON-08).
+  final target = state.needsConsent
+      ? Routes.accountConsentFrom(from, offline: state.offline)
+      : restored != null
+      ? Routes.accountRestoredFrom(from)
+      : afterConsent(from, offline: state.offline);
+  if (_isTraining(from) && !state.needsConsent) {
     context.go(from);
     return;
   }
-  final target = restored != null
-      ? Routes.accountRestoredFrom(from)
-      : state.offline
-      ? Routes.afterAccount(from)
-      : Routes.accountDataFrom(from, welcome: true);
   if (!Routes.isRouteFrom(from)) {
     context.go(target, extra: restored);
     return;
@@ -43,6 +44,30 @@ void continueAfterSignIn(
     unawaited(context.push(target, extra: restored));
   }
 }
+
+/// Para onde a conta nova segue depois do aceite: o treino que abriu a conta
+/// (o portão do pacote retoma na hora); sem rede, o fim da conta; senão,
+/// "Seu perfil" com o aviso de boas-vindas.
+String afterConsent(String from, {required bool offline}) => _isTraining(from)
+    ? from
+    : offline
+    ? Routes.afterAccount(from)
+    : Routes.accountDataFrom(from, welcome: true);
+
+// O portão do pacote de treino e a compra do Pilares (H-CON-05) retomam
+// sozinhos depois da conta.
+bool _isTraining(String from) =>
+    Routes.isRouteFrom(from) &&
+    switch (Uri.tryParse(from)?.path) {
+      final path? => path.startsWith('/training/') || isPurchase(from),
+      null => false,
+    };
+
+/// A conta pedida pela compra do Pilares (H-CON-05): sem "Agora não", com a
+/// seta de voltar para a oferta.
+bool isPurchase(String from) =>
+    Routes.isRouteFrom(from) &&
+    Uri.tryParse(from)?.path.startsWith('/pilares/') == true;
 
 /// O fim da conta (`Routes.afterAccount`): vinda de uma rota, o destino toma
 /// o lugar da tela da conta, e quem abriu a conta fica por baixo.
@@ -67,3 +92,36 @@ String accountFailureText(AppLocalizations l10n, AccountFailure failure) =>
       AccountFailure.tooManyAttempts => l10n.accountTooManyAttempts,
       _ => l10n.accountFailed,
     };
+
+/// O aviso de uma entrada que não deu certo, na Entrada e no e-mail
+/// (H-CON-06): o erro fora da lista conhecida diz "Ocorreu um erro
+/// inesperado" com "Tentar de novo" ([onRetry], gap 4); o e-mail que já tem
+/// conta oferece "Entrar" ([onSignIn]).
+void showAccountFailure(
+  BuildContext context,
+  AccountFailure failure, {
+  required VoidCallback onRetry,
+  VoidCallback? onSignIn,
+}) {
+  final l10n = context.l10n;
+  final (text, action) = switch (failure) {
+    AccountFailure.emailInUse when onSignIn != null => (
+      l10n.conEmailInUse,
+      SnackBarAction(
+        key: AccountKeys.inUseSignIn,
+        label: l10n.accountSignIn,
+        onPressed: onSignIn,
+      ),
+    ),
+    AccountFailure.unknown => (
+      l10n.conUnexpected,
+      SnackBarAction(
+        key: AccountKeys.failureRetry,
+        label: l10n.conRetry,
+        onPressed: onRetry,
+      ),
+    ),
+    _ => (accountFailureText(l10n, failure), null),
+  };
+  showLucenaSnackBar(context, text, action: action);
+}

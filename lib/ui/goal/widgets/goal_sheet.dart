@@ -44,7 +44,7 @@ class _GoalSheetState extends State<_GoalSheet> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SheetHeader(title: l10n.goalSheetTitle, hint: l10n.goalSheetText),
+        SheetHeader(title: l10n.goalSheetTitle, hint: l10n.conObjetivoText),
         Flexible(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),

@@ -45,7 +45,7 @@ void main() {
 
     await HomeRobot($).openSettings();
     await $(SettingsKeys.profileTile).tap();
-    await $(ProfileKeys.ratingCard).scrollTo();
+    await $(ProfileKeys.rowNotices).scrollTo();
     app.expectNoClippedText();
     await $(BackButton).tap();
     await $(BackButton).tap();

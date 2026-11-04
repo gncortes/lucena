@@ -167,6 +167,9 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
           }
           final choice = state.choice;
           final placed = state.placed;
+          // Pelo Perfil, os textos do quadro PropV1PerfilNivel (H-CON-16); a
+          // abertura é da frente da Abertura (H-ABE-08).
+          final profile = cubit.fromProfile;
           Widget card(
             LevelChoice option,
             IconData icon,
@@ -201,7 +204,9 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                   children: [
                     ViktorConversation(
                       viktor: state.viktor,
-                      speech: l10n.levelViktorSay,
+                      speech: profile
+                          ? l10n.conNivelViktor
+                          : l10n.levelViktorSay,
                       viktorKey: LevelKeys.viktor,
                       speechKey: LevelKeys.speech,
                     ),
@@ -220,18 +225,24 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                               LevelChoice.lichess,
                               Icons.link,
                               l10n.levelLichessTitle,
-                              l10n.levelLichessText,
+                              profile
+                                  ? l10n.conNivelLichess
+                                  : l10n.levelLichessText,
                             ),
                             card(
                               LevelChoice.chess,
                               Icons.link,
                               l10n.levelChessTitle,
-                              l10n.levelChessText,
+                              profile
+                                  ? l10n.conNivelChess
+                                  : l10n.levelChessText,
                             ),
                             card(
                               LevelChoice.manual,
                               Icons.trending_up,
-                              l10n.levelManualTitle,
+                              profile
+                                  ? l10n.conNivelManual
+                                  : l10n.levelManualTitle,
                               l10n.levelManualText,
                             ),
                           ] else ...[
@@ -258,8 +269,12 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                               // Com a Escola escondida, quem não sabe jogar cai
                               // na tela inicial: o texto não promete a Escola.
                               VisibleLessons.school
-                                  ? l10n.levelZeroText
-                                  : l10n.levelZeroTextHome,
+                                  ? (profile
+                                        ? l10n.conNivelZero
+                                        : l10n.levelZeroText)
+                                  : (profile
+                                        ? l10n.conNivelZeroHome
+                                        : l10n.levelZeroTextHome),
                             ),
                           ],
                         ],

@@ -99,4 +99,14 @@ class FakeCloudStoreService implements CloudStoreService {
     feedback.add(data);
     return Future.value();
   }
+
+  @override
+  Future<CloudExport> exportUser(String uid) async {
+    if (offline) throw const CloudStoreException('unavailable');
+    return CloudExport(
+      user: users[uid],
+      progress: progress[uid],
+      games: {...?games[uid]},
+    );
+  }
 }

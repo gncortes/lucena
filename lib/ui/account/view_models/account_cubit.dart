@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/legal/legal_consent_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/campaign/campaign_repository.dart';
+import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
@@ -20,7 +22,9 @@ class AccountState {
     this.created = false,
     this.restored,
     this.offline = false,
+    this.needsConsent = false,
     this.failure,
+    this.screenFailure,
   });
 
   final bool busy;
@@ -37,7 +41,15 @@ class AccountState {
 
   /// Entrou, mas sem rede a conta não foi lida (sobe depois, sozinho).
   final bool offline;
+
+  /// Entrou e ainda não aceitou os Termos e a Política: o aceite vem antes
+  /// de seguir (H-CON-08). Quem trouxe progresso da conta já aceitou.
+  final bool needsConsent;
   final AccountFailure? failure;
+
+  /// A tela de erro padrão por cima da entrada (H-CON-09): abre sem rede e
+  /// fica (com o erro novo) enquanto a pessoa tenta de novo. Nula: sem tela.
+  final AccountFailure? screenFailure;
 }
 
 class AccountCubit extends Cubit<AccountState> {
@@ -47,7 +59,21 @@ class AccountCubit extends Cubit<AccountState> {
     this._analytics = const NoAnalyticsRepository(),
     this.moment,
     this._campaigns,
+    this._consent = const NoLegalConsentRepository(),
+    this._onboarding,
   }) : super(const AccountState());
+
+  /// O tour: o "Agora não" do convite do link vai à pergunta do objetivo
+  /// enquanto ele não foi feito (H-CON-04).
+  final OnboardingRepository? _onboarding;
+
+  /// Se quem dispensou o convite ainda não fez o tour (vai ao objetivo).
+  Future<bool> needsGoal() async {
+    final onboarding = await _onboarding?.load();
+    return onboarding != null && !onboarding.done;
+  }
+
+  final LegalConsentRepository _consent;
 
   final AnalyticsRepository _analytics;
 
@@ -126,13 +152,26 @@ class AccountCubit extends Cubit<AccountState> {
     );
   }
 
+  // A última entrada, que "Tentar novamente" repete.
+  Future<void> Function()? _last;
+
+  /// "Tentar novamente" na tela sem internet: repete a última entrada.
+  Future<void> retry() => _last?.call() ?? Future.value();
+
+  /// "Voltar" na tela sem internet: volta à entrada, como estava.
+  void dismissFailure() {
+    if (!state.busy) emit(const AccountState());
+  }
+
   Future<void> _run(
     Future<Account?> Function() signIn, {
     bool created = false,
     String? method,
   }) async {
     if (state.busy) return;
-    emit(const AccountState(busy: true));
+    _last = () => _run(signIn, created: created, method: method);
+    final screen = state.screenFailure;
+    emit(AccountState(busy: true, screenFailure: screen));
     try {
       final account = await signIn();
       if (account == null) {
@@ -140,6 +179,9 @@ class AccountCubit extends Cubit<AccountState> {
         return;
       }
       final (restored, offline) = await _read(account, created: created);
+      final needsConsent =
+          restored == null && !await _consent.accepted(account.uid);
+      if (needsConsent) await _consent.markPending(account.uid);
       if (method != null) {
         unawaited(
           _analytics.log(
@@ -166,11 +208,21 @@ class AccountCubit extends Cubit<AccountState> {
             created: created,
             restored: restored,
             offline: offline,
+            needsConsent: needsConsent,
           ),
         );
       }
     } on AccountException catch (error) {
-      if (!isClosed) emit(AccountState(failure: error.failure));
+      final failure = error.failure;
+      final onScreen = screen != null || failure == AccountFailure.network;
+      if (!isClosed) {
+        emit(
+          AccountState(
+            failure: failure,
+            screenFailure: onScreen ? failure : null,
+          ),
+        );
+      }
     }
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/account/avatar_repository.dart';
 import '../../../data/repositories/photo/photo_repository.dart';
@@ -16,6 +18,7 @@ class AccountPhotoState {
     this.photoUrl,
     this.bytes,
     this.saving = false,
+    this.pickFailed = 0,
   });
 
   final AvatarPhoto photo;
@@ -27,6 +30,10 @@ class AccountPhotoState {
   /// A foto tirada ou escolhida agora: sobe ao salvar.
   final Uint8List? bytes;
   final bool saving;
+
+  /// Muda a cada câmera ou galeria que falha (permissão, sem câmera): a tela
+  /// avisa e fica (H-CON-11, gap 7).
+  final int pickFailed;
 }
 
 /// A foto de "Seu perfil" (§2.12): tirar, escolher da galeria, a do Google
@@ -43,6 +50,10 @@ class AccountPhotoCubit extends Cubit<AccountPhotoState> {
   final PhotoRepository _photos;
   final AvatarRepository _avatars;
   AvatarPhoto _saved = AvatarPhoto.none;
+  AccountPhotoState _initial = const AccountPhotoState();
+
+  /// O avatar gravado: o que fica quando a foto nova não sobe (gap 6).
+  AccountPhotoState get saved => _initial;
 
   /// Tirar ou escolher foto pede conta (a foto fica no Storage dela).
   bool get canUpload => _accounts.current != null;
@@ -58,18 +69,26 @@ class AccountPhotoCubit extends Cubit<AccountPhotoState> {
       AvatarPhoto.upload when !canUpload => AvatarPhoto.none,
       final photo => photo,
     };
-    emit(
-      AccountPhotoState(
-        photo: photo,
-        color: profile.avatarColor,
-        photoUrl: profile.photoUrl,
-      ),
+    _initial = AccountPhotoState(
+      photo: photo,
+      color: profile.avatarColor,
+      photoUrl: profile.photoUrl,
     );
+    emit(_initial);
   }
 
   /// Abre a câmera ou a galeria. Desistir não muda nada.
   Future<void> pick(PhotoSource source) async {
-    final bytes = await _photos.pick(source);
+    final Uint8List? bytes;
+    try {
+      bytes = await _photos.pick(source);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(_copy(state, saving: false, pickFailed: state.pickFailed + 1));
+      }
+      return;
+    }
     if (bytes == null || isClosed) return;
     emit(
       AccountPhotoState(
@@ -103,6 +122,7 @@ class AccountPhotoCubit extends Cubit<AccountPhotoState> {
           photoUrl: url.toString(),
         );
         _saved = AvatarPhoto.upload;
+        _initial = saved;
         emit(saved);
         return saved;
       }
@@ -120,16 +140,21 @@ class AccountPhotoCubit extends Cubit<AccountPhotoState> {
       }
     }
     _saved = chosen.photo;
+    _initial = chosen;
     emit(chosen);
     return chosen;
   }
 
-  static AccountPhotoState _copy(AccountPhotoState s, {required bool saving}) =>
-      AccountPhotoState(
-        photo: s.photo,
-        color: s.color,
-        photoUrl: s.photoUrl,
-        bytes: s.bytes,
-        saving: saving,
-      );
+  static AccountPhotoState _copy(
+    AccountPhotoState s, {
+    required bool saving,
+    int? pickFailed,
+  }) => AccountPhotoState(
+    photo: s.photo,
+    color: s.color,
+    photoUrl: s.photoUrl,
+    bytes: s.bytes,
+    saving: saving,
+    pickFailed: pickFailed ?? s.pickFailed,
+  );
 }

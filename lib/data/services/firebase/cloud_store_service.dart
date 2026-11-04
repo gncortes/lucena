@@ -53,13 +53,31 @@ abstract class CloudStoreService {
   /// Cria um documento em `feedback/{id automático}` com o `createdAt` do
   /// servidor. Termina quando o servidor confirma; sem rede, fica na fila.
   Future<void> addFeedback(Map<String, Object?> data);
+
+  /// Tudo o que a conta [uid] tem na nuvem, do servidor ("Baixar meus
+  /// dados", H-CON-21). Datas viram texto ISO 8601. Lança
+  /// [CloudStoreException] sem rede.
+  Future<CloudExport> exportUser(String uid);
+}
+
+/// A cópia dos dados de uma conta: o perfil (`users/{uid}`), o progresso
+/// (`progress/summary`) e as partidas (`games/{id}`, por id).
+class CloudExport {
+  const CloudExport({this.user, this.progress, this.games = const {}});
+
+  final Map<String, Object?>? user;
+  final Map<String, Object?>? progress;
+  final Map<String, Map<String, Object?>> games;
 }
 
 /// O Firestore não respondeu (sem rede, sem permissão).
 class CloudStoreException implements Exception {
-  const CloudStoreException(this.code);
+  const CloudStoreException(this.code, {this.partial = false});
 
   final String code;
+
+  /// A remoção já tinha apagado parte dos documentos quando falhou.
+  final bool partial;
 
   @override
   String toString() => 'CloudStoreException($code)';
@@ -104,6 +122,9 @@ class NoCloudStoreService implements CloudStoreService {
 
   @override
   Future<void> addFeedback(Map<String, Object?> data) async {}
+
+  @override
+  Future<CloudExport> exportUser(String uid) async => const CloudExport();
 }
 
 class FirestoreCloudStoreService implements CloudStoreService {
@@ -228,25 +249,62 @@ class FirestoreCloudStoreService implements CloudStoreService {
   }
 
   @override
+  Future<CloudExport> exportUser(String uid) async {
+    final user = _user(uid);
+    // Do servidor: a cópia do aparelho pode estar incompleta.
+    const server = GetOptions(source: Source.server);
+    try {
+      final profile = await user.get(server);
+      final summary = await _summary(uid).get(server);
+      final games = await user.collection('games').get(server);
+      return CloudExport(
+        user: _plain(profile.data()),
+        progress: _plain(summary.data()),
+        games: {for (final doc in games.docs) doc.id: _plain(doc.data())!},
+      );
+    } on FirebaseException catch (error) {
+      throw CloudStoreException(error.code);
+    }
+  }
+
+  // Timestamp não vira JSON: datas em ISO 8601.
+  static Map<String, Object?>? _plain(Map<String, Object?>? data) =>
+      data == null
+      ? null
+      : {for (final e in data.entries) e.key: _value(e.value)};
+
+  static Object? _value(Object? value) => switch (value) {
+    Timestamp() => value.toDate().toIso8601String(),
+    DocumentReference() => value.path,
+    Map<String, Object?>() => _plain(value),
+    List<Object?>() => [for (final item in value) _value(item)],
+    _ => value,
+  };
+
+  @override
   Future<void> deleteUser(String uid) async {
     final user = _user(uid);
     // Do servidor: sem rede, o get() comum leria só o cache do aparelho e
     // deixaria partidas na nuvem.
     const server = GetOptions(source: Source.server);
+    // Depois do primeiro documento apagado, a falha é parcial (gap 9).
+    var started = false;
     try {
       await () async {
         for (final name in _subcollections) {
           final docs = await user.collection(name).get(server);
           for (final doc in docs.docs) {
+            started = true;
             await doc.reference.delete();
           }
         }
+        started = true;
         await user.delete();
       }().timeout(_deleteTimeout);
     } on FirebaseException catch (error) {
-      throw CloudStoreException(error.code);
+      throw CloudStoreException(error.code, partial: started);
     } on TimeoutException {
-      throw const CloudStoreException('unavailable');
+      throw CloudStoreException('unavailable', partial: started);
     }
   }
 }

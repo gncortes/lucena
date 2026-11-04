@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/load_failure.dart';
@@ -44,12 +46,15 @@ class LoadErrorScreen extends StatelessWidget {
   });
 
   final LoadErrorKind kind;
-  final VoidCallback onAction;
+
+  /// Assíncrona: o botão fica em carregando até ela terminar.
+  final FutureOr<void> Function() onAction;
   final VoidCallback? onBack;
   final VoidCallback? onFreeSpace;
   final bool showAction;
 
-  /// Troca o texto padrão do tipo (ex.: "para atualizar o Lucena").
+  /// Troca o texto padrão do tipo ("para atualizar o Lucena"; "criar a
+  /// conta", H-CON-09).
   final String? message;
 
   /// Troca o rótulo de [onBack] (ex.: "Agora não").
@@ -195,7 +200,7 @@ class _LoadErrorAction extends StatelessWidget {
     required this.outlined,
   });
   final Key buttonKey;
-  final VoidCallback onAction;
+  final FutureOr<void> Function() onAction;
   final String label;
   final bool outlined;
 

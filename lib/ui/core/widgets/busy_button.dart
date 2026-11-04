@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../keys/core_keys.dart';
 
-/// O estilo do [BusyButton]: os quatro botões do Material.
-enum BusyButtonStyle { filled, tonal, outlined, text }
+/// O estilo do [BusyButton]: os quatro botões do Material e o destrutivo
+/// (preenchido na cor de erro, "Excluir minha conta").
+enum BusyButtonStyle { filled, tonal, outlined, text, destructive }
 
 /// Botão que mostra o carregando dentro dele enquanto a ação roda (T85-D0,
 /// memória carregamento-shimmer). Enquanto carrega, não aceita outro toque e
@@ -80,6 +81,15 @@ class _BusyButtonState extends State<BusyButton> {
       ),
       BusyButtonStyle.text => TextButton(
         key: widget.buttonKey,
+        onPressed: onPressed,
+        child: child,
+      ),
+      BusyButtonStyle.destructive => FilledButton(
+        key: widget.buttonKey,
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          foregroundColor: Theme.of(context).colorScheme.onError,
+        ),
         onPressed: onPressed,
         child: child,
       ),

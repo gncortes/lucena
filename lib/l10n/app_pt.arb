@@ -210,7 +210,6 @@
   "profileRatingSheetHint": "Escolha a faixa mais próxima do seu rating, online ou no tabuleiro.",
   "profileRatingStart": "Ponto de partida: a sua faixa acima",
   "profileSave": "Salvar",
-  "ratingHistory": "Histórico do rating",
   "ratingHistoryEmpty": "Cada partida que mexer no seu rating aparece aqui.",
   "reportRating": "Rating {rating} ({change})",
   "resultFulfilled": "Objetivo cumprido!",
@@ -614,7 +613,7 @@
   "settingsAppearance": "Aparência",
   "settingsAppearanceHint": "Idioma, tema, tabuleiro e tela inicial",
   "settingsGame": "Partida",
-  "settingsGameHint": "Como mover as peças, relógio e comentários",
+  "settingsGameHint": "Mover as peças, relógio e comentários",
   "settingsSoundGroup": "Som, voz e vibração",
   "settingsSoundGroupHint": "Sons das peças, vibração e a voz do professor",
   "settingsAbout": "Sobre o Lucena",
@@ -1231,7 +1230,6 @@
   "levelManualAppBar": "Informar o rating",
   "levelManualField": "Seu rating",
   "levelManualHelp": "Só o número, de 400 a 3000.",
-  "levelManualError": "Digite um número de 400 a 3000.",
   "levelManualSource": "De onde é esse número?",
   "levelSourceLichess": "Lichess",
   "levelSourceChess": "Chess.com",
@@ -1241,10 +1239,7 @@
   "levelManualConverted": "{rating}{source, select, lichess{ do Lichess} chesscom{ do Chess.com} fide{ da FIDE} cbx{ da CBX} other{}} fica perto de {lucena} no Lucena. A Jornada começa no {rung}.",
   "levelManualTip": "O nível se ajusta com as partidas: se ficar fácil ou difícil, o Lucena corrige sozinho.",
   "accountTitle": "Quer guardar o seu progresso?",
-  "accountBenefitSaved": "Seu progresso fica salvo na sua conta",
-  "accountBenefitDevices": "Entre em outro aparelho e continue de onde parou",
   "accountGoogle": "Continuar com Google",
-  "accountEmail": "Continuar com e-mail",
   "accountLater": "Agora não",
   "accountSoon": "Entrar com conta chega em breve.",
   "accountFailedNetwork": "Sem internet. Tente novamente quando a conexão voltar.",
@@ -1385,7 +1380,6 @@
   "goalContinue": "Continuar",
   "goalHaveAccount": "Já tenho conta",
   "goalSheetTitle": "Seu objetivo",
-  "goalSheetText": "Muda o primeiro cartão da home. Os outros caminhos continuam lá.",
   "goalSheetSave": "Salvar",
   "homeGoalLabel": "Seu objetivo",
   "homeResumeLabel": "Continuar de onde parou",
@@ -1406,7 +1400,7 @@
   "profileProviderGoogle": "Google",
   "profileProviderEmail": "E-mail",
   "profileLocalOnlyTitle": "Seu progresso está só neste celular",
-  "profileLocalOnlyText": "Com uma conta, ele fica salvo e aparece em outro aparelho.",
+  "profileLocalOnlyText": "Com uma conta, ele fica salvo e aparece em qualquer celular.",
   "profileCreateOrSignIn": "Criar conta ou entrar",
   "profileCountry": "País",
   "profileCountryNone": "Não informado",
@@ -1422,20 +1416,19 @@
   "profileLichessNone": "Não conectado",
   "profileEditData": "Editar os dados",
   "profileSyncedTitle": "Tudo salvo na conta",
-  "profileSyncedAt": "Última sincronização: {when}",
+  "profileSyncedAt": "Salvo {when}",
   "profileSyncedToday": "hoje, {time}",
-  "profileSyncedNever": "ainda não",
-  "profileSyncOffline": "Sem internet, o que você faz fica no celular e sobe sozinho quando a conexão voltar.",
+  "profileSyncedNever": "Última sincronização: ainda não",
+  "profileSyncOffline": "Sem internet, o que você faz fica no celular e é salvo na conta quando a conexão voltar.",
   "profileSignOut": "Sair da conta",
   "profileDeleteAccount": "Excluir a conta",
-  "profileDeleteWeb": "Sem o app, dá para pedir em playlucena.com/apagar-conta.",
+  "profileDeleteWeb": "Sem o app, dá para pedir a exclusão em playlucena.com/excluir-conta.",
   "accountInviteTextSheet": "Com uma conta, a partida, o rating e os cursos ficam salvos e você recupera tudo em outro aparelho.",
   "accountInviteTextLichess": "Guarde o seu progresso e o vínculo com o Lichess numa conta do Lucena.",
   "accountEmailField": "E-mail",
   "accountEmailHint": "voce@email.com",
   "accountPasswordField": "Senha",
   "accountPasswordHelp": "Pelo menos 8 caracteres.",
-  "accountEmailNote": "Vamos mandar um e-mail para confirmar o endereço. Dá para jogar enquanto isso.",
   "accountCreate": "Criar conta",
   "accountWrongCredentials": "E-mail ou senha errados.",
   "accountEmailInUse": "Esse e-mail já tem conta. Toque em Entrar.",
@@ -1446,32 +1439,22 @@
   "accountAvatarGoogle": "Usar a foto do Google",
   "accountNickname": "Nome ou apelido",
   "accountNicknameHelp": "É como o Viktor vai te chamar.",
-  "accountCountryFromPhone": "{country} · veio do celular",
+  "accountCountryFromPhone": "{country} · do seu celular",
   "accountRestoredTitle": "Bem-vindo de volta, {name}",
-  "accountRestoredText": "Encontrei o seu progresso na conta.",
   "accountRestoredRating": "Rating",
   "accountRestoredJourney": "Jornada",
   "accountRestoredJourneyValue": "{count, plural, =0{nenhum desafio} =1{1 desafio} other{{count} desafios}}",
-  "accountRestoredLessons": "Curso de finais",
   "accountRestoredLessonsValue": "{count, plural, =0{nenhuma concluída} =1{1 concluída} other{{count} concluídas}}",
   "accountRestoredSpeedrun": "Speedrun",
   "accountRestoredSpeedrunValue": "{count, plural, =0{nenhum recorde} =1{1 recorde} other{{count} recordes}}",
-  "accountRestoredMerged": "Se este celular já tinha progresso, juntei os dois: em cada item vale o maior.",
   "accountRestoredContinue": "Continuar",
-  "accountDeleteTitle": "Excluir a conta?",
-  "accountDeleteText": "Apaga a conta e o progresso salvo nela. Não dá para desfazer. Neste celular, o app continua funcionando sem conta.",
   "accountDeleteCancel": "Cancelar",
-  "accountDeleteConfirm": "Excluir",
   "accountDeleteOffline": "Sem internet não dá para excluir a conta. Nada foi excluído.",
-  "accountDeleteRelogin": "Por segurança, entre novamente na conta para excluir.",
-  "accountDeleteFailed": "Não foi possível excluir a conta. Tente novamente.",
   "accountDeleted": "Conta excluída. Neste celular, tudo continua sem conta.",
   "lichessSheetTitle": "Lichess",
-  "lichessSheetText": "Conectado com o login do Lichess. Só lemos o seu perfil e os ratings.",
   "lichessReadAt": "lido em {date}",
   "lichessRefresh": "Atualizar o rating",
   "lichessDisconnect": "Desconectar",
-  "lichessDisconnectNote": "Desconectar tira o acesso do Lucena ao seu Lichess. O seu rating no Lucena fica como está.",
   "lichessRefreshFailed": "Sem internet. O rating continua o de antes.",
   "streakTitle": "Sequência",
   "streakDayCount": "{count, plural, =1{1 dia} other{{count} dias}}",
@@ -1486,25 +1469,22 @@
   "streakDays": "{count, plural, =1{1 dia seguido} other{{count} dias seguidos}}",
   "settingsSectionApp": "App",
   "settingsSectionHelp": "Ajuda e sobre",
-  "profileSectionChess": "Seu xadrez",
-  "profileSectionRegion": "Região",
   "alertsTitle": "Notificações",
-  "alertsCount": "{on} de {total} ligados",
-  "alertsIntro": "Escolha o que o Lucena pode avisar. Dá para mudar quando quiser.",
+  "alertsCount": "{on} de {total} ligadas",
+  "alertsIntro": "Escolha quais notificações o Lucena pode enviar. Dá para mudar quando quiser.",
   "alertsAllowed": "Android: notificações permitidas para o Lucena",
   "alertsAllowedSettings": "Configurações",
   "alertsOffTitle": "As notificações estão desligadas no Android",
-  "alertsOffBody": "Mesmo com as chaves ligadas abaixo, nada chega neste celular. Ligue nas Configurações do Android.",
-  "alertsOffOpen": "Abrir as configurações do Android",
+  "alertsOffBody": "Mesmo com as opções ligadas abaixo, nenhuma notificação chega neste celular.",
+  "alertsOffOpen": "Abrir configurações",
   "alertsTournaments": "Finais de torneios",
-  "alertsTournamentsBody": "Um final novo na sua região, no máximo um por dia.",
+  "alertsTournamentsBody": "Um final novo na sua região, no máximo um por dia",
   "alertsDaily": "Final do dia e lembretes",
-  "alertsDailyBody": "Sequência, continue o capítulo e resumo da semana.",
+  "alertsDailyBody": "Sequência, continue a lição e resumo da semana",
   "alertsNews": "Novidades",
-  "alertsNewsBody": "Recursos novos do Lucena. Poucos por mês.",
-  "alertsLessons": "Capítulos novos",
-  "alertsLessonsBody": "Quando sair um capítulo novo no Curso de finais.",
-  "alertsReminder": "Horário dos lembretes",
+  "alertsNewsBody": "Recursos novos do Lucena, poucos por mês",
+  "alertsLessons": "Lições novas",
+  "alertsLessonsBody": "Quando sair uma lição de finais nova",
   "reminderChannel": "Lembretes",
   "weekChannel": "Resumo da semana",
   "reminderStreakTitle": "Sua sequência de {days} dias acaba hoje",
@@ -1546,38 +1526,28 @@
   "countryFromPhone": "Do seu celular",
   "countryFromPhoneNote": "Escolhido pelo idioma e região do celular",
   "countryAll": "Todos os países",
-  "countryNotFound": "Nenhum país com esse nome.",
+  "countryNotFound": "Nenhum país encontrado",
   "profileRegionNone": "Opcional · para ver torneios perto de você",
   "profileCountryValue": "{flag} {country}",
-  "accountEntryTitle": "Guarde o seu progresso",
   "accountEntryText": "É de graça e leva menos de um minuto.",
-  "accountEntryTitleLesson": "Crie sua conta para ter acesso à lição gratuita",
-  "accountEntryTextLesson": "Leva menos de um minuto.",
   "accountCreateWithEmail": "Criar conta com e-mail",
   "accountHaveAccount": "Já tem conta?",
   "accountNoAccount": "Não tem conta?",
   "accountSignIn": "Entrar",
-  "accountLegalContinue": "Ao continuar, você concorda com os {terms} e a {privacy}.",
-  "accountLegalCreate": "Ao criar a conta, você concorda com os {terms} e a {privacy}.",
   "accountShowPassword": "Mostrar a senha",
   "accountHidePassword": "Ocultar senha",
   "accountForgotPassword": "Esqueci a senha",
   "accountResetTitle": "Esqueceu a senha?",
-  "accountResetText": "Mandamos um link para você criar uma senha nova.",
-  "accountResetSend": "Mandar o link",
   "accountResetCancel": "Cancelar",
   "accountResetSentTitle": "Verifique seu e-mail",
-  "accountResetSentText": "Se existir uma conta com {email}, o link chega em alguns minutos. Veja também o spam.",
   "accountResetOpenMail": "Abrir o e-mail",
   "accountResetOk": "Entendi",
   "accountProfileTitle": "Seu perfil",
   "accountPhotoChange": "Trocar a foto",
-  "accountProfileSaved": "Pronto: o seu progresso deste celular já está salvo na conta.",
   "accountSaveContinue": "Salvar e continuar",
   "accountPhotoTitle": "Foto do perfil",
   "accountPhotoCamera": "Tirar foto",
   "accountPhotoGallery": "Escolher da galeria",
-  "accountPhotoInitial": "Ou a sua inicial, na cor que quiser",
   "accountPhotoRemove": "Remover a foto",
   "accountPhotoFailed": "Não foi possível enviar a foto. Tente novamente.",
   "updateRequiredTitle": "Atualização necessária",
@@ -1593,35 +1563,10 @@
   "teamModeBody": "Para quem faz o Lucena. Suas lições e partidas não entram nas estatísticas, e os anúncios são de teste.",
   "versionTeamMode": "Versão {version} · modo equipe",
   "analyticsOptInTitle": "Ajudar a melhorar o Lucena",
-  "analyticsOptInBody": "Envia como você usa o app: telas, lições e partidas. Sem nome, e-mail nem o que você escreve.",
-  "profileRemoveAds": "Remover anúncios",
-  "profileRemoveAdsValue": "{price}, uma vez só, para sempre",
-  "profileRemoveAdsDone": "Sem anúncios",
-  "profilePrivacy": "Privacidade e anúncios",
-  "profilePrivacyValue": "Escolhas de anúncios e política de privacidade",
-  "profileFeedback": "Enviar feedback",
-  "profileFeedbackValue": "Um problema, uma ideia ou um elogio",
-  "profileRate": "Avaliar o Lucena",
-  "profileRateValue": "Abre a página do app na Play",
-  "privacyTitle": "Privacidade e anúncios",
-  "privacyFreeTitle": "O Lucena é grátis",
-  "privacyFreeText": "Um anúncio aparece quando você entra numa lição. Nunca no meio de um exercício, de uma partida ou de um desafio.",
-  "privacyAdChoices": "Escolhas de anúncios",
-  "privacyAdChoicesValue": "Abre a janela do Google com as suas opções",
-  "privacyPolicy": "Política de privacidade",
-  "privacyPolicyValue": "playlucena.com/privacidade",
-  "privacyDelete": "Excluir minha conta e meus dados",
-  "privacyDeleteValue": "Fica em Conta, no Perfil",
-  "privacyAdFreeTitle": "Sem anúncios",
-  "privacyAdFreeText": "Obrigado por apoiar o Lucena. As lições abrem direto, para sempre.",
-  "removeAdsTitle": "Remover anúncios",
-  "removeAdsText": "Um pagamento único de {price} tira os anúncios para sempre, na sua conta do Google Play. Todo o resto continua igual e grátis.",
-  "removeAdsHelp": "Ajuda a manter o Lucena e a fazer lições novas.",
-  "removeAdsBuy": "Remover por {price}",
-  "removeAdsNo": "Agora não",
-  "removeAdsNote": "O botão abre a janela de pagamento da Google Play. Preço por país. Em outro celular com a mesma conta, a compra volta sozinha.",
-  "removeAdsPending": "Aguardando o pagamento. Assim que a Play confirmar, os anúncios saem.",
-  "removeAdsError": "Não foi possível concluir a compra. Tente novamente mais tarde.",
+  "analyticsOptInBody": "Envia dados de uso e relatórios de erro. Sem nome, e-mail nem o que você escreve.",
+  "privacyTitle": "Privacidade e dados",
+  "privacyDelete": "Excluir minha conta",
+  "privacyDeleteValue": "Exclua a conta e todos os dados dela",
   "adsLabel": "Anúncio",
   "licaoAdLearnMore": "Conhecer o Pilares",
   "licaoAdCloseIn": "Fechar em {seconds}",
@@ -1650,8 +1595,6 @@
   "feedbackAttached": "Vão junto, sem identificar você: a versão do app e o modelo do celular, para acharmos o problema mais rápido.",
   "feedbackSend": "Enviar",
   "feedbackBack": "Voltar ao perfil",
-  "privacyTitleNoAds": "Privacidade",
-  "profilePrivacyNoAdsValue": "Seus dados e política de privacidade",
   "alertsBlockedSummary": "Bloqueados nas Configurações do Android",
   "journeyChangePace": "Alterar ritmo",
   "boardControlsHint": "Toque em uma peça para ver os destinos disponíveis. Depois toque em um destino ou arraste a peça até ele.",
@@ -1786,18 +1729,12 @@
   "courseSaleOverview": "Visão geral",
   "courseSaleContent": "Conteúdo",
   "courseSaleFaq": "Dúvidas",
-  "courseBuy": "Comprar · {price}",
   "courseSaleLearn": "O que você vai aprender",
   "courseSaleAudience": "Para quem é",
   "courseSaleIncluded": "O que vem no curso",
-  "courseSaleHow": "Como você aprende",
   "courseSaleSummary": "Sumário",
-  "courseSalePrice": "Preço do curso",
-  "courseSaleRefund": "Reembolso em até 7 dias",
-  "courseLessonsCount": "{count, plural, =1{1 lição} other{{count} lições}}",
   "courseExercisesLabel": "exercícios",
   "coursePartLessons": "Parte {part} · {count} lições",
-  "pilaresPreviewTile": "Pilares do Xadrez (prévia)",
   "courseLessonsLabel": "lições",
   "lessonsUnavailableMessage": "As lições ainda não estão disponíveis.",
   "homeYourRating": "Seu rating",
@@ -1909,7 +1846,7 @@
   "trainingReminderSub": "Só se faltar meta no dia",
   "trainingReminderTime": "Horário",
   "trainingReminderSilent": "Chega sem som e sem vibração: é só um lembrete.",
-  "trainingReminderDenied": "As notificações do Lucena estão desativadas no celular. Para receber o lembrete, permita nas configurações.",
+  "trainingReminderDenied": "As notificações do Lucena estão desligadas. Ligue-as para receber o lembrete.",
   "trainingOpenSettings": "Abrir configurações",
   "trainingPermissionTitle": "Receber o lembrete?",
   "trainingPermissionBody": "Para avisar na hora do estudo, o Lucena precisa da sua permissão para enviar notificações. O aviso chega sem som e sem vibração.",
@@ -2600,5 +2537,347 @@
   "levelChessNoNet": "Você precisa de conexão com a internet para acessar o Chess.com.",
   "levelChessSearch": "Buscar",
   "levelChessNoRatingText": "Essa conta ainda não tem partidas que valem rating no Chess.com. Com o teste, eu encontro o seu nível.",
-  "levelChessNoRatingTip": "Pela faixa de rating, a Jornada também começa no adversário certo."
+  "levelChessNoRatingTip": "Pela faixa de rating, a Jornada também começa no adversário certo.",
+  "ajuSectionPrivacy": "Privacidade",
+  "ajuPrivacyTitle": "Privacidade e dados",
+  "ajuPrivacyHint": "Termos, política, anúncios e seus dados",
+  "ajuFeedbackTitle": "Enviar feedback",
+  "ajuFeedbackHint": "Um problema, uma ideia ou um elogio",
+  "ajuRateTitle": "Avaliar o Lucena",
+  "ajuRateHint": "Abre a página do app na Play",
+  "ajuSaveError": "Ocorreu um erro inesperado",
+  "ajuAlertsAllow": "Permitir",
+  "ajuLinkError": "Não foi possível abrir o link",
+  "conPrivLgpdTitle": "Seus dados pela LGPD",
+  "conPrivLgpdText": "Você pode ver, baixar, corrigir e excluir seus dados a qualquer momento.",
+  "conPrivSectionUse": "Uso e anúncios",
+  "conPrivAdsTitle": "Anúncios sem personalização",
+  "conPrivAdsText": "Não usamos seus dados para escolher os anúncios.",
+  "conPrivSectionPermissions": "Permissões do aparelho",
+  "conPrivNotifications": "Notificações",
+  "conPrivNotificationsText": "Para os avisos de treino que você ativou",
+  "conPrivMicrophone": "Microfone",
+  "conPrivMicrophoneText": "Para reconhecer suas jogadas faladas",
+  "conPrivSectionData": "Seus dados",
+  "conPrivDownload": "Baixar meus dados",
+  "conPrivDownloadText": "Receba uma cópia dos seus dados",
+  "conPrivTalk": "Falar sobre meus dados",
+  "conPrivTalkText": "Com o encarregado, por e-mail",
+  "conPrivSectionDocuments": "Documentos",
+  "conPrivSectionAccount": "Conta",
+  "conDadosAskTitle": "Baixar seus dados?",
+  "conDadosAskText": "Você recebe um arquivo com os dados da sua conta.",
+  "conDadosStart": "Baixar",
+  "conDadosCancel": "Cancelar",
+  "conDadosDownloading": "Baixando",
+  "conDadosReadyTitle": "Seus dados estão prontos",
+  "conDadosReadyText": "O arquivo tem os dados da sua conta.",
+  "conDadosOpen": "Abrir arquivo",
+  "conDadosClose": "Fechar",
+  "conDadosErrorTitle": "Ocorreu um erro inesperado",
+  "conDadosErrorText": "Seus dados continuam salvos. Tente baixar novamente.",
+  "conDadosRetry": "Tentar de novo",
+  "conApagarTitle": "Excluir sua conta?",
+  "conApagarHint": "Todos os seus dados serão excluídos. Isso não pode ser desfeito.",
+  "conApagarLose": "Você perde",
+  "conApagarLoseLessons": "Progresso nas lições e na Jornada",
+  "conApagarLoseRating": "Rating, histórico de partidas e conquistas",
+  "conApagarLoseProfile": "Perfil e foto",
+  "conApagarPlay": "Se você tem uma assinatura, cancele-a na Google Play antes. Excluir a conta não cancela a assinatura.",
+  "conApagarDevice": "Neste celular, o app continua funcionando sem conta.",
+  "conApagarConfirm": "Excluir minha conta",
+  "conApagarRetry": "Tentar de novo",
+  "conApagarFailed": "Ocorreu um erro inesperado",
+  "conApagarCancelled": "Login cancelado. Nada foi excluído.",
+  "conApagarDifferent": "Essa não é a conta que você ia excluir. Nada foi excluído.",
+  "conPerfilSyncedOn": "em {date}",
+  "@conPerfilSyncedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "conPerfilFailed": "Ocorreu um erro inesperado",
+  "conAceiteTitle": "Termos e privacidade",
+  "conAceiteSavedTitle": "O que fica salvo na conta",
+  "conAceiteSavedIdentity": "Nome, e-mail e foto da conta",
+  "conAceiteSavedProgress": "Progresso nas lições, partidas, rating e conquistas",
+  "conAceiteSavedUsage": "Como você usa o app, para melhorar as lições",
+  "conAceiteRightsTitle": "Seus direitos pela LGPD",
+  "conAceiteRightsSee": "Ver e baixar seus dados",
+  "conAceiteRightsEdit": "Corrigir seus dados",
+  "conAceiteRightsDelete": "Excluir a conta quando quiser",
+  "conAceiteRightsWhere": "Você encontra tudo isso em Configurações, Privacidade e dados.",
+  "conAceiteUsage": "Usamos dados de uso e relatórios de erro para melhorar o Lucena. Você desliga quando quiser em Configurações, Privacidade e dados.",
+  "conAceiteCheck": "Li e aceito os {terms} e a {privacy}",
+  "@conAceiteCheck": {
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
+  },
+  "conAceiteContinue": "Continuar",
+  "conSemRedeCreate": "Você precisa de conexão com a internet para criar a conta.",
+  "conVoltaText": "Seu progresso está salvo na conta.",
+  "conVoltaJourneyValue": "{name}, {done} de {total, plural, =1{1 desafio} other{{total} desafios}}",
+  "@conVoltaJourneyValue": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conVoltaLessons": "Lições do Pilares",
+  "conVoltaMerged": "Se este celular já tinha progresso, os dois foram unidos: em cada item vale o maior.",
+  "conPerfilSaved": "Seu progresso deste celular já está salvo na conta.",
+  "conFotoInitial": "Ou sua inicial, na cor que quiser",
+  "conPerfilPhotoHint": "Opcional. A inicial na cor que quiser ou a foto do Google.",
+  "conPerfilEditSaved": "O que você já fez neste celular agora fica salvo na conta.",
+  "conEntradaTitle": "Salve seu progresso",
+  "conEntradaSaved": "Seu progresso fica salvo e aparece em qualquer celular",
+  "conEntradaOffline": "O app funciona sem conta, só neste celular",
+  "conEntradaGoogle": "Criar conta com Google",
+  "conCriarNote": "Enviaremos um e-mail para confirmar seu endereço. Enquanto isso, você já pode jogar.",
+  "conEmailInUse": "Este e-mail já tem conta.",
+  "conUnexpected": "Ocorreu um erro inesperado",
+  "conRetry": "Tentar de novo",
+  "conSenhaText": "Enviaremos um link para você criar uma senha nova.",
+  "conSenhaSend": "Enviar link",
+  "conSenhaSentText": "Se existir uma conta com {email}, o link chega em alguns minutos.",
+  "@conSenhaSentText": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "conObjetivoText": "Muda o primeiro cartão do Início. Os outros caminhos continuam lá.",
+  "conNivelViktor": "Para escolher os adversários certos: em que ponto você está no xadrez?",
+  "conNivelLichess": "Login no site do Lichess. O Lucena lê seus ratings.",
+  "conNivelChess": "Digite seu usuário para ler o rating público.",
+  "conNivelManual": "Informar meu rating",
+  "conNivelZero": "Comece pela Escola do Viktor.",
+  "conRatingHint": "Ex.: 1500",
+  "conRatingError": "Digite um número de 400 a 3000.",
+  "conNivelZeroHome": "Comece pelos adversários mais fáceis.",
+  "conLichessText": "Conectado pelo login do Lichess. Só lemos seu perfil e seus ratings.",
+  "conLichessNote": "Desconectar remove o acesso do Lucena ao seu Lichess. Seu rating no Lucena não muda.",
+  "conConviteTitle": "Quer salvar seu progresso?",
+  "conConviteLater": "Dá para criar a conta depois, no Perfil.",
+  "conConviteSheetText": "Seu progresso fica salvo e aparece em qualquer celular. O app funciona sem conta, só neste celular.",
+  "conCartaoTitleWin": "Salve suas conquistas",
+  "conCartaoTitleProgress": "Salve seu progresso",
+  "conCartaoGames": "Partidas, rating e conquistas",
+  "conCartaoLessons": "Lições e Jornada",
+  "conCartaoDevices": "Tudo em qualquer celular",
+  "venOfferBar": "Curso completo",
+  "venOfferHeadline": "Treine o que o seu jogo pede",
+  "venOfferIntro": "Você faz o teste, escolhe seu objetivo e treina todo dia a parte de hoje de cada meta.",
+  "venOfferTake": "O que você leva",
+  "venBenefitChapters": "20 capítulos e 105 lições",
+  "venBenefitChaptersText": "Lições com o Viktor, do primeiro lance ao cálculo de variantes.",
+  "venBenefitExercises": "Mais de 850 exercícios",
+  "venBenefitExercisesText": "Você joga a posição na hora. Errou? Tente de novo ou veja a solução.",
+  "venBenefitLevel": "Seu nível em 15 posições",
+  "venBenefitLevelText": "Cada parte do jogo aparece como Forte, Aprender ou Revisar.",
+  "venBenefitTournament": "Treine até o dia do torneio",
+  "venBenefitTournamentText": "Marque a data e o plano escolhe os capítulos que cabem até lá. Quer só melhorar? Siga o curso em ordem.",
+  "venBenefitGoals": "Várias metas ao mesmo tempo",
+  "venBenefitGoalsText": "Cada uma com a parte de hoje, no tempo que você tem.",
+  "venBenefitProgress": "Seu progresso à vista",
+  "venBenefitProgressText": "Cada tema ganha nota pelos últimos 7 exercícios.",
+  "venOfferChoose": "Escolha como ter o Pilares",
+  "venPlanLifetime": "Acesso vitalício ao Pilares",
+  "venPlanBest": "Melhor escolha",
+  "venPlanLifetimeText": "Pagamento único, com as atualizações incluídas.",
+  "venPlanLifetimePrice": "{price} uma vez",
+  "@venPlanLifetimePrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venPlanMonthly": "Assinatura mensal do Pilares",
+  "venPlanMonthlyText": "Acesso ao curso enquanto a assinatura estiver ativa.",
+  "venPerMonth": "{price}/mês",
+  "@venPerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscriptionInfo": "Como funciona a assinatura",
+  "venSubscriptionRenew": "Renova automaticamente todo mês, com cobrança pela Google Play, até você cancelar.",
+  "venSubscriptionCancel": "Cancele quando quiser em Google Play › Pagamentos e assinaturas › Assinaturas. O acesso segue até o fim do período já pago.",
+  "venSubscriptionEnd": "Quando a assinatura terminar, seu progresso fica salvo e você volta ao Capítulo 1, com anúncios.",
+  "venSubscriptionRefund": "Você pode desistir em até 7 dias após a compra e receber o valor de volta, pela Google Play ou por gncortes.apps@gmail.com.",
+  "venBuyLifetime": "Comprar por {price}",
+  "@venBuyLifetime": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venBuyMonthly": "Assinar por {price}/mês",
+  "@venBuyMonthly": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestore": "Restaurar compra",
+  "venProcessing": "Confirmando a compra",
+  "venCanceled": "Compra cancelada. Nada foi cobrado.",
+  "venErrorBanner": "Não foi possível concluir a compra. Se houve cobrança, o curso é liberado. Se não, nada foi cobrado.",
+  "venOfflineBanner": "Você precisa de conexão com a internet para comprar o curso.",
+  "venDoneTitle": "O curso completo é seu",
+  "venDoneText": "Os 20 capítulos estão liberados. Com o seu objetivo, a gente planeja junto a sua rotina de estudos.",
+  "venDefineGoal": "Definir meu objetivo",
+  "venSeeCourse": "Ver o curso",
+  "venPendingTitle": "Pagamento pendente",
+  "venPendingText": "Assim que for confirmado, o curso é liberado. Você não paga de novo.",
+  "venPendingOk": "Entendi",
+  "venRestoreText": "Comprou em outro aparelho ou pelo site? Procuramos a compra na conta {email}.",
+  "@venRestoreText": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestoreAccount": "Conta",
+  "venRestoreSearch": "Procurar minha compra",
+  "venRestoredTitle": "Compra restaurada",
+  "venRestoredText": "O curso completo está liberado neste aparelho.",
+  "venRestoredSite": "Você comprou pelo site. O curso completo está liberado nesta conta.",
+  "venContinueCourse": "Continuar o curso",
+  "venNotFound": "Não encontramos nenhuma compra nesta conta. Se você comprou com outro e-mail, entre com ele.",
+  "venOtherAccount": "Entrar com outra conta",
+  "venSeeFull": "Ver o curso completo",
+  "venSiteBar": "Entrar",
+  "venSiteTitle": "Comprou pelo site?",
+  "venSiteText": "Entre com o mesmo e-mail ou a mesma conta Google da compra e o curso é liberado.",
+  "venSiteGoogle": "Entrar com Google",
+  "venSiteEmail": "Entrar com e-mail",
+  "venEndedBar": "Pilares",
+  "venEndedTitle": "Sua assinatura terminou",
+  "venEndedText": "Seu progresso continua salvo.",
+  "venEndedKeep": "O que continua com você",
+  "venEndedProgress": "Seu progresso",
+  "venEndedProgressText": "Lições, exercícios e testes que você já fez.",
+  "venEndedChapter1": "Capítulo 1",
+  "venEndedChapter1Text": "Liberado, com um anúncio ao entrar em cada lição e na lista de exercícios.",
+  "venEndedPaused": "O que fica em pausa",
+  "venEndedChapters": "Capítulos 2 a 20",
+  "venEndedChaptersText": "Voltam a ser liberados com o curso completo.",
+  "venEndedPlan": "Seu plano e suas metas",
+  "venEndedPlanText": "Voltam junto com o curso completo.",
+  "venEndedRenew": "Assinar de novo por {price}/mês",
+  "@venEndedRenew": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venEndedLifetime": "Acesso vitalício ao Pilares por {price}",
+  "@venEndedLifetime": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venCourseName": "Pilares do Xadrez",
+  "venBadgeDemo": "Demonstração",
+  "venBadgeLifetime": "Vitalício",
+  "venBadgeMonthly": "Mensal",
+  "venDemoText": "Você tem o Capítulo 1. O curso completo tem 20 capítulos.",
+  "venBoughtPlay": "Comprado em {date}, pela Google Play",
+  "@venBoughtPlay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venBoughtSite": "Comprado em {date}, pelo site",
+  "@venBoughtSite": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscribedPlay": "Assinado em {date}, pela Google Play",
+  "@venSubscribedPlay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venYourSubscription": "Sua assinatura",
+  "venLifetimeAccess": "Acesso vitalício",
+  "venMonthlyRenews": "Mensal · {price}/mês · renova em {date}",
+  "@venMonthlyRenews": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venMonthlyPending": "Mensal · {price}/mês · pagamento pendente",
+  "@venMonthlyPending": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venGraceWarning": "Regularize o pagamento até {date} para manter o acesso ao curso.",
+  "@venGraceWarning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venManage": "Gerenciar na Google Play",
+  "venFixPayment": "Atualizar pagamento na Google Play",
+  "venDetails": "Detalhes do curso",
+  "conCompraTitle": "Crie sua conta para ver o Pilares do Xadrez",
+  "conCompraText": "A conta é grátis.",
+  "conCompraDevices": "O Pilares aparece em qualquer celular, mesmo se comprado pelo site",
+  "conCompraSaved": "Lições, Jornada, partidas e conquistas ficam salvos",
+  "conCompraSync": "O que você fez neste celular também fica salvo na conta",
+  "venRefLifetime": "R$ 99,90",
+  "venRefMonthly": "R$ 19,90",
+  "venSaleBuy": "Ver opções de compra",
+  "venChapterTest": "Teste do capítulo · {count} exercícios",
+  "@venChapterTest": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,3 +1,9 @@
+import 'package:lucena/data/repositories/data_export/data_export_repository.dart';
+
+import 'fakes/fake_data_export_repository.dart';
+
+import 'package:lucena/data/repositories/legal/legal_consent_repository.dart';
+
 import 'fakes/fake_activity_repository.dart';
 
 import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
@@ -189,6 +195,8 @@ Dependencies testDependencies({
   RemoteFlagsRepository? remoteFlagsRepository,
   AppUpdateRepository? appUpdateRepository,
   FeedbackRepository? feedbackRepository,
+  DataExportRepository? dataExportRepository,
+  LegalConsentRepository? legalConsentRepository,
   FeedbackDraftRepository? feedbackDraftRepository,
   ReviewRepository? reviewRepository,
   List<AppLanguage>? languages,
@@ -280,6 +288,9 @@ Dependencies testDependencies({
     remoteFlagsRepository: remoteFlagsRepository,
     appUpdateRepository: appUpdateRepository,
     feedbackRepository: feedbackRepository ?? FakeFeedbackRepository(),
+    dataExportRepository: dataExportRepository ?? FakeDataExportRepository(),
+    legalConsentRepository:
+        legalConsentRepository ?? const NoLegalConsentRepository(),
     feedbackDraftRepository:
         feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
     reviewRepository: reviewRepository ?? FakeReviewRepository(),

@@ -9,6 +9,7 @@ import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/domain/models/featured.dart';
 import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/main.dart';
+import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
@@ -72,9 +73,7 @@ void main() {
     Routes.feedback,
     Routes.survey(SurveyKind.school),
     Routes.pilaresSale,
-    Routes.pilaresBand,
-    Routes.pilaresMap,
-    Routes.pilaresChapter,
+    D2Paths.pilaresForWhom,
     Routes.featured,
     Routes.featuredEndgame('a'),
     Routes.featuredTournament('live'),

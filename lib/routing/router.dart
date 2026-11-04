@@ -6,12 +6,6 @@ import '../domain/models/learning_analysis.dart';
 import '../data/repositories/analysis/learning_analysis_repository.dart';
 import '../ui/learning_analysis/view_models/learning_analysis_cubit.dart';
 import '../ui/learning_analysis/widgets/learning_analysis_screen.dart';
-import '../ui/course_preview/view_models/course_preview_cubit.dart';
-import '../ui/course_preview/widgets/course_band_preview_screen.dart';
-import '../ui/course_preview/widgets/course_chapter_preview_screen.dart';
-import '../ui/course_preview/widgets/course_map_preview_screen.dart';
-import '../ui/course_preview/widgets/course_sale_screen.dart';
-import '../data/repositories/course_preview/course_preview_repository.dart';
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../domain/models/training/training_course_config.dart';
@@ -182,6 +176,7 @@ import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
 import '../ui/challenge/view_models/link_setup_cubit.dart';
 import '../ui/challenge/widgets/link_setup_screen.dart';
+import '../ui/account/widgets/account_consent_screen.dart';
 import '../ui/account/widgets/account_data_screen.dart';
 import '../ui/account/widgets/account_email_screen.dart';
 import '../ui/account/widgets/account_restored_screen.dart';
@@ -239,12 +234,11 @@ import 'routes.dart';
 import 'training_routes.dart';
 import '../ui/blind/widgets/blind_entry_screen.dart';
 import '../data/repositories/account/account_repository.dart';
+import '../data/repositories/device/device_settings_repository.dart';
 import '../data/repositories/sync/sync_scheduler.dart';
-import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/lesson_ad/course_access_repository.dart';
 import '../domain/models/course_access.dart';
 import 'locked_chapter_redirect.dart';
-import '../data/repositories/purchase/purchase_repository.dart';
 import '../ui/privacy/view_models/privacy_cubit.dart';
 import '../ui/privacy/widgets/privacy_screen.dart';
 import '../domain/use_cases/game_intro.dart';
@@ -535,6 +529,14 @@ GoRouter buildRouter({
         builder: (context, state) => AccountDataScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
           welcome: state.uri.queryParameters['novo'] == '1',
+        ),
+      ),
+      _route(
+        name: RouteNames.accountConsent,
+        path: Routes.accountConsent,
+        builder: (context, state) => AccountConsentScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+          offline: state.uri.queryParameters['offline'] == '1',
         ),
       ),
       // Sem o resultado da leitura (link aberto de fora), volta ao início.
@@ -1877,9 +1879,8 @@ GoRouter buildRouter({
                 path: 'privacy',
                 builder: (context, state) => BlocProvider(
                   create: (context) => PrivacyCubit(
-                    ads: context.read<AdsRepository>(),
-                    purchases: context.read<PurchaseRepository>(),
                     accounts: context.read<AccountRepository>(),
+                    device: context.read<DeviceSettingsRepository>(),
                   )..load(),
                   child: const PrivacyScreen(),
                 ),
@@ -1983,38 +1984,6 @@ GoRouter buildRouter({
                   child: const MaiaDebugScreen(),
                 ),
               ),
-              _route(
-                name: RouteNames.pilaresSale,
-                path: 'pilares',
-                // A prévia do Pilares do Xadrez (T82): como o Maia, só em
-                // build de desenvolvimento e de teste.
-                redirect: (context, state) =>
-                    showsDevTools ? null : Routes.settings,
-                builder: (context, state) =>
-                    _coursePreview(const CourseSaleScreen()),
-                routes: [
-                  _route(
-                    name: RouteNames.pilaresBand,
-                    path: 'faixa',
-                    builder: (context, state) =>
-                        _coursePreview(const CourseBandPreviewScreen()),
-                  ),
-                  _route(
-                    name: RouteNames.pilaresMap,
-                    path: 'mapa',
-                    builder: (context, state) =>
-                        _coursePreview(const CourseMapPreviewScreen()),
-                    routes: [
-                      _route(
-                        name: RouteNames.pilaresChapter,
-                        path: 'capitulo',
-                        builder: (context, state) =>
-                            _coursePreview(const CourseChapterPreviewScreen()),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
             ],
           ),
         ],
@@ -2097,22 +2066,6 @@ String? updateRedirect(String location, {bool Function()? required}) {
   return null;
 }
 
-/// Uma rota com página Material (com a transição do tema). O go_router 18
-/// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do
-/// Flutter: sem isto, as páginas ficariam sem transição nenhuma.
-///
-/// Com [fade], a tela só aparece (e some) num fade, e a de baixo fica parada:
-/// é a partida, em que o tabuleiro da tela de antes chega voando até o
-/// centro e o resto aparece em volta dele.
-/// As telas da prévia do Pilares com o view model delas.
-Widget _coursePreview(Widget screen) => BlocProvider(
-  create: (context) => CoursePreviewCubit(
-    context.read<CoursePreviewRepository>(),
-    context.read<CharacterRepository>(),
-  )..load(),
-  child: screen,
-);
-
 /// O `GoRoute` padrão do app (transição, escopo da lição do treino), para as
 /// frentes registrarem as telas novas em `frentes/`.
 GoRoute appRoute({
@@ -2133,6 +2086,13 @@ GoRoute appRoute({
   sharedAxis: sharedAxis,
 );
 
+/// Uma rota com página Material (com a transição do tema). O go_router 18
+/// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do
+/// Flutter: sem isto, as páginas ficariam sem transição nenhuma.
+///
+/// Com [fade], a tela só aparece (e some) num fade, e a de baixo fica parada:
+/// é a partida, em que o tabuleiro da tela de antes chega voando até o
+/// centro e o resto aparece em volta dele.
 GoRoute _route({
   required String name,
   required String path,

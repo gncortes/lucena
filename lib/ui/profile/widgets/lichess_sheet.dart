@@ -7,6 +7,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../../level/widgets/level_ui.dart';
@@ -26,13 +27,26 @@ Future<void> showLichessSheet(
   ),
 );
 
-class _LichessSheet extends StatelessWidget {
+class _LichessSheet extends StatefulWidget {
   const _LichessSheet();
+
+  @override
+  State<_LichessSheet> createState() => _LichessSheetState();
+}
+
+class _LichessSheetState extends State<_LichessSheet> {
+  // Os avisos de antes da folha abrir não aparecem nela.
+  late final int _openedAt = context
+      .read<ProfileAccountCubit>()
+      .state
+      .noticeCount;
 
   Future<void> _disconnect(BuildContext context) async {
     final navigator = Navigator.of(context);
-    await context.read<ProfileAccountCubit>().disconnectLichess();
-    navigator.pop();
+    final cubit = context.read<ProfileAccountCubit>();
+    await cubit.disconnectLichess();
+    // Falhando, o aviso aparece e a folha fica, com o Lichess conectado.
+    if (cubit.state.lichess == null) navigator.pop();
   }
 
   @override
@@ -42,6 +56,14 @@ class _LichessSheet extends StatelessWidget {
     final colors = theme.colorScheme;
     final state = context.watch<ProfileAccountCubit>().state;
     final rating = state.lichess;
+    // O aviso do Perfil (SnackBar) ficaria atrás da folha: ele vem aqui.
+    final notice = state.noticeCount > _openedAt
+        ? switch (state.notice) {
+            ProfileNotice.failed => l10n.conPerfilFailed,
+            ProfileNotice.lichessOffline => l10n.lichessRefreshFailed,
+            null => null,
+          }
+        : null;
     final locale = Localizations.localeOf(context).toString();
     final muted = theme.textTheme.bodySmall?.copyWith(
       color: colors.onSurfaceVariant,
@@ -50,7 +72,7 @@ class _LichessSheet extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SheetHeader(title: l10n.lichessSheetTitle, hint: l10n.lichessSheetText),
+        SheetHeader(title: l10n.lichessSheetTitle, hint: l10n.conLichessText),
         Flexible(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
@@ -96,7 +118,26 @@ class _LichessSheet extends StatelessWidget {
                     ),
                   ),
                 const SizedBox(height: AppSpacing.md),
-                Text(l10n.lichessDisconnectNote, style: muted),
+                Text(l10n.conLichessNote, style: muted),
+                if (notice != null) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    key: ProfileKeys.lichessNotice,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.error, color: colors.error),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          notice,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -105,19 +146,22 @@ class _LichessSheet extends StatelessWidget {
           margin: AppSpacing.xl,
           stacked: true,
           children: [
-            OutlinedButton.icon(
+            // O carregando fica dentro do botão tocado (BusyButton).
+            BusyButton(
               key: ProfileKeys.lichessRefresh,
+              style: BusyButtonStyle.outlined,
+              icon: Icons.refresh,
+              label: l10n.lichessRefresh,
               onPressed: state.busy
                   ? null
                   : context.read<ProfileAccountCubit>().refreshLichess,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.lichessRefresh),
             ),
-            TextButton.icon(
+            BusyButton(
               key: ProfileKeys.lichessDisconnect,
+              style: BusyButtonStyle.text,
+              icon: Icons.link_off,
+              label: l10n.lichessDisconnect,
               onPressed: state.busy ? null : () => _disconnect(context),
-              icon: const Icon(Icons.link_off),
-              label: Text(l10n.lichessDisconnect),
             ),
           ],
         ),

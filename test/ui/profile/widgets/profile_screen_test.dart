@@ -27,7 +27,6 @@ import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
-import '../../../../testing/fakes/fake_purchase_service.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_store_listing_repository.dart';
 import '../../../../testing/fakes/fake_sync_repository.dart';
@@ -104,6 +103,14 @@ void main() {
         GoRoute(
           path: Routes.privacy,
           builder: (_, state) => stub('rota-privacidade'),
+        ),
+        GoRoute(
+          path: Routes.settingsLanguage,
+          builder: (_, state) => stub('rota-idioma'),
+        ),
+        GoRoute(
+          path: Routes.alerts,
+          builder: (_, state) => stub('rota-avisos'),
         ),
         GoRoute(
           path: Routes.feedback,
@@ -210,6 +217,20 @@ void main() {
 
     await tester.tap(find.byKey(ProfileKeys.rowGoal));
     await tester.pumpAndSettle();
+    // H-CON-15: o texto do quadro PropV1PerfilObjetivo.
+    expect(
+      find.descendant(
+        of: find.byKey(GoalKeys.sheet),
+        matching: find.text('Seu objetivo'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'Muda o primeiro cartão do Início. Os outros caminhos continuam lá.',
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(GoalKeys.option(GoalPreference.train)));
     await tester.pump();
     await tester.tap(find.byKey(GoalKeys.sheetSave));
@@ -251,6 +272,92 @@ void main() {
       expect(profiles.profile.lichessUser, isNull);
       expect(profiles.profile.rating, 1620);
     });
+
+    Future<void> openSheet(WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        profile: const UserProfile(lichessUser: 'ana_finais', rating: 1620),
+      );
+      await tester.tap(find.byKey(ProfileKeys.rowLichess));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('H-CON-17 1. usuário, data da leitura, três ratings e textos', (
+      tester,
+    ) async {
+      lichess.rating = PlatformRating(
+        user: 'gabriel_finais',
+        readAt: DateTime(2026, 10, 20),
+        bullet: const ModeRating(rating: 1588, games: 40),
+        blitz: const ModeRating(rating: 1712, games: 40),
+        rapid: const ModeRating(rating: 1805, games: 40),
+      );
+      await openSheet(tester);
+      final sheet = find.byKey(ProfileKeys.lichessSheet);
+      for (final text in [
+        'Conectado pelo login do Lichess. Só lemos seu perfil e seus ratings.',
+        'gabriel_finais',
+        'lido em 20/10',
+        '1588',
+        '1712',
+        '1805',
+        'Atualizar o rating',
+        'Desconectar',
+        'Desconectar remove o acesso do Lucena ao seu Lichess. Seu rating no '
+            'Lucena não muda.',
+      ]) {
+        expect(
+          find.descendant(of: sheet, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+    });
+
+    testWidgets('gap 5: desconectar falhando avisa e a folha continua', (
+      tester,
+    ) async {
+      await openSheet(tester);
+      lichess.disconnectError = StateError('falhou');
+      await tester.tap(find.byKey(ProfileKeys.lichessDisconnect));
+      await tester.pumpAndSettle();
+      // O aviso vem dentro da folha (o SnackBar ficaria atrás dela).
+      expect(
+        find.descendant(
+          of: find.byKey(ProfileKeys.lichessNotice),
+          matching: find.text('Ocorreu um erro inesperado'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(SnackBar), findsNothing);
+      expect(find.byKey(ProfileKeys.lichessSheet), findsOneWidget);
+      expect(lichess.connected, isTrue);
+      expect(profiles.profile.lichessUser, 'ana_finais');
+    });
+
+    testWidgets('3. sem rede, atualizar avisa e o rating antigo continua', (
+      tester,
+    ) async {
+      await openSheet(tester);
+      lichess.failure = LichessFailure.network;
+      await tester.tap(find.byKey(ProfileKeys.lichessRefresh));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byKey(ProfileKeys.lichessNotice),
+          matching: find.text('Sem internet. O rating continua o de antes.'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(SnackBar), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(ProfileKeys.lichessSheet),
+          matching: find.text('1620'),
+        ),
+        findsOneWidget,
+      );
+    });
   });
 
   group('com conta', () {
@@ -265,9 +372,45 @@ void main() {
       expect(find.text('teste@example.com · Google'), findsOneWidget);
       expect(find.byKey(ProfileKeys.localCard), findsNothing);
       expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
-      expect(find.text('Última sincronização: hoje, 09:05'), findsOneWidget);
+      expect(find.text('Salvo hoje, 09:05'), findsOneWidget);
       // Abrir o Perfil com conta sobe o que estiver pendente.
       expect(sync.synced, contains('google-uid'));
+    });
+
+    testWidgets('H-CON-13: nunca sincronizou diz "ainda não"', (tester) async {
+      await pumpScreen(tester);
+      expect(find.text('Última sincronização: ainda não'), findsOneWidget);
+      // Critério 4: o cartão diz o que acontece sem internet.
+      expect(
+        find.text(
+          'Sem internet, o que você faz fica no celular e é salvo na conta '
+          'quando a conexão voltar.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('H-CON-13: sincronizou noutro dia mostra a data', (
+      tester,
+    ) async {
+      sync.at = DateTime(2026, 10, 20, 21, 40);
+      await pumpScreen(tester);
+      expect(find.text('Salvo em 20/10'), findsOneWidget);
+    });
+
+    testWidgets('H-CON-13 gap 5: sair falhando avisa e a conta fica', (
+      tester,
+    ) async {
+      accounts.signOutError = Exception('falhou');
+      await pumpScreen(tester);
+      await tester.scrollUntilVisible(find.byKey(ProfileKeys.signOut), 200);
+      await tester.tap(find.byKey(ProfileKeys.signOut));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(accounts.current, isNotNull);
+      expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
+      expect(find.byKey(ProfileKeys.signOut), findsOneWidget);
     });
 
     testWidgets('sair volta ao cartão sem conta', (tester) async {
@@ -279,25 +422,63 @@ void main() {
       expect(find.byKey(ProfileKeys.localCard), findsOneWidget);
     });
 
-    testWidgets('apagar pergunta antes; cancelar não apaga', (tester) async {
-      await pumpScreen(tester);
+    Future<void> openDelete(WidgetTester tester) async {
+      await tester.scrollUntilVisible(find.byKey(ProfileKeys.delete), 200);
       await tester.tap(find.byKey(ProfileKeys.delete));
       await tester.pumpAndSettle();
-      expect(find.byKey(AccountKeys.deleteDialog), findsOneWidget);
+    }
 
+    testWidgets('caso 42: a folha diz o que se perde e avisa da assinatura', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      await openDelete(tester);
+
+      expect(find.byKey(AccountKeys.deleteSheet), findsOneWidget);
+      expect(find.text('Excluir sua conta?'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(AccountKeys.deleteLose),
+          matching: find.byType(Icon),
+        ),
+        findsNWidgets(3),
+      );
+      for (final text in [
+        'Progresso nas lições e na Jornada',
+        'Rating, histórico de partidas e conquistas',
+        'Perfil e foto',
+      ]) {
+        expect(find.text(text), findsOneWidget, reason: text);
+      }
+      expect(
+        find.descendant(
+          of: find.byKey(AccountKeys.deletePlayWarning),
+          matching: find.textContaining('Google Play'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(AccountKeys.deleteNotice), findsNothing);
+    });
+
+    testWidgets('cancelar não apaga', (tester) async {
+      await pumpScreen(tester);
+      await openDelete(tester);
       await tester.tap(find.byKey(AccountKeys.deleteCancel));
       await tester.pumpAndSettle();
-      expect(accounts.current, FakeAccountRepository.google);
+
+      expect(find.byKey(AccountKeys.deleteSheet), findsNothing);
+      expect(accounts.deletedUids, isEmpty);
       expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
     });
 
-    testWidgets('apagar confirmado apaga e avisa', (tester) async {
+    testWidgets('excluir confirmado fecha a folha e avisa', (tester) async {
       await pumpScreen(tester);
-      await tester.tap(find.byKey(ProfileKeys.delete));
-      await tester.pumpAndSettle();
+      await openDelete(tester);
       await tester.tap(find.byKey(AccountKeys.deleteConfirm));
       await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
 
+      expect(find.byKey(AccountKeys.deleteSheet), findsNothing);
       expect(
         find.text('Conta excluída. Neste celular, tudo continua sem conta.'),
         findsOneWidget,
@@ -307,21 +488,19 @@ void main() {
       expect(find.byKey(ProfileKeys.localCard), findsOneWidget);
     });
 
-    testWidgets('Conta1 trocar de conta com confirmação aberta não apaga B', (
+    testWidgets('Conta1 trocar de conta com a folha aberta não apaga B', (
       tester,
     ) async {
       await pumpScreen(tester);
-      await tester.tap(find.byKey(ProfileKeys.delete));
-      await tester.pumpAndSettle();
+      await openDelete(tester);
       await accounts.signInWithEmail('outra@example.com', 'password');
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(AccountKeys.deleteConfirm));
       await tester.pumpAndSettle();
 
       expect(accounts.deletedUids, isEmpty);
-      expect(accounts.current, isNull);
       expect(
-        find.text('Por segurança, entre novamente na conta para excluir.'),
+        find.text('Essa não é a conta que você ia excluir. Nada foi excluído.'),
         findsOneWidget,
       );
       expect(
@@ -330,29 +509,85 @@ void main() {
       );
     });
 
-    testWidgets('apagar sem internet não apaga e avisa', (tester) async {
+    testWidgets('caso 48: sem internet a folha fica e diz que nada saiu', (
+      tester,
+    ) async {
       await pumpScreen(tester);
       accounts.failure = AccountFailure.network;
-      await tester.tap(find.byKey(ProfileKeys.delete));
-      await tester.pumpAndSettle();
+      await openDelete(tester);
       await tester.tap(find.byKey(AccountKeys.deleteConfirm));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
+      expect(find.byKey(AccountKeys.deleteSheet), findsOneWidget);
       expect(
-        find.text(
-          'Sem internet não dá para excluir a conta. Nada foi excluído.',
+        find.descendant(
+          of: find.byKey(AccountKeys.deleteNotice),
+          matching: find.text(
+            'Sem internet não dá para excluir a conta. Nada foi excluído.',
+          ),
         ),
         findsOneWidget,
       );
       expect(accounts.current, FakeAccountRepository.google);
     });
+
+    testWidgets('erro inesperado: Tentar de novo na própria folha', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      accounts.failure = AccountFailure.unknown;
+      await openDelete(tester);
+      await tester.tap(find.byKey(AccountKeys.deleteConfirm));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(find.text('Tentar de novo'), findsOneWidget);
+      accounts.failure = null;
+      await tester.tap(find.byKey(AccountKeys.deleteConfirm));
+      await tester.pumpAndSettle();
+      expect(accounts.current, isNull);
+    });
   });
 
-  testWidgets('o rating de finais fica no histórico: só o botão para ele', (
+  testWidgets('PropV1RetencaoPerfil: um grupo de linhas e um de avisos', (
     tester,
   ) async {
     await pumpScreen(tester);
-    expect(find.byKey(ProfileKeys.ratingCard), findsOneWidget);
+    final order = [
+      ProfileKeys.rowCountry,
+      ProfileKeys.rowRegion,
+      ProfileKeys.rowLanguage,
+      ProfileKeys.rowGoal,
+      ProfileKeys.rowLevel,
+      ProfileKeys.rowLichess,
+      ProfileKeys.rowNotices,
+    ].map((key) => tester.getTopLeft(find.byKey(key)).dy).toList();
+    for (var i = 1; i < order.length; i++) {
+      expect(order[i], greaterThan(order[i - 1]), reason: 'linha $i');
+    }
+    // Sem títulos de seção e sem o botão do histórico do rating (o rating
+    // abre pela Home e por Todos os modos).
+    expect(find.text('Seu xadrez'), findsNothing);
+    expect(find.text('Região'), findsNothing);
+    expect(find.text('Histórico do rating'), findsNothing);
+    expect(inRow(ProfileKeys.rowLanguage, 'Idioma'), findsOneWidget);
+    expect(inRow(ProfileKeys.rowNotices, 'Notificações'), findsOneWidget);
+  });
+
+  testWidgets('Idioma e Notificações abrem as telas dos Ajustes', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.tap(find.byKey(ProfileKeys.rowLanguage));
+    await tester.pumpAndSettle();
+    expect(find.text('rota-idioma'), findsOneWidget);
+    GoRouter.of(tester.element(find.text('rota-idioma'))).pop();
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(find.byKey(ProfileKeys.rowNotices), 200);
+    await tester.tap(find.byKey(ProfileKeys.rowNotices));
+    await tester.pumpAndSettle();
+    expect(find.text('rota-avisos'), findsOneWidget);
   });
 
   testWidgets('"Estado e cidade" mostra o nome do estado e a cidade', (
@@ -366,54 +601,18 @@ void main() {
     expect(inRow(ProfileKeys.rowRegion, 'Paraná · Curitiba'), findsOneWidget);
   });
 
-  group('anúncios e ajuda (E1.25)', () {
-    testWidgets('sem a compra na Play, só privacidade, feedback e avaliar', (
-      tester,
-    ) async {
-      await pumpScreen(tester);
-      expect(find.byKey(ProfileKeys.rowRemoveAds), findsNothing);
-      expect(find.byKey(ProfileKeys.rowPrivacy), findsOneWidget);
-      expect(find.byKey(ProfileKeys.rowFeedback), findsOneWidget);
-      expect(find.byKey(ProfileKeys.rowRate), findsOneWidget);
-    });
-
-    testWidgets('"Remover anúncios" mostra o preço da Play', (tester) async {
-      await pumpScreen(
-        tester,
-        purchases: FakePurchaseRepository(
-          const PurchaseState(price: 'R\$ 9,90'),
-        ),
-      );
-      expect(
-        inRow(ProfileKeys.rowRemoveAds, 'R\$ 9,90, uma vez só, para sempre'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('depois da compra, a linha diz "Sem anúncios"', (tester) async {
-      final purchases = FakePurchaseRepository(
-        const PurchaseState(price: 'R\$ 9,90'),
-      );
-      await pumpScreen(tester, purchases: purchases);
-      purchases.state = const PurchaseState(adFree: true, price: 'R\$ 9,90');
-      await tester.pumpAndSettle();
-      expect(inRow(ProfileKeys.rowRemoveAds, 'Sem anúncios'), findsOneWidget);
-    });
-
-    testWidgets('"Avaliar o Lucena" abre a página na Play', (tester) async {
-      final store = FakeStoreListingRepository();
-      await pumpScreen(tester, store: store);
-      await tester.ensureVisible(find.byKey(ProfileKeys.rowRate));
-      await tester.tap(find.byKey(ProfileKeys.rowRate));
-      expect(store.opened, 1);
-    });
-
-    testWidgets('"Privacidade e anúncios" abre a tela', (tester) async {
-      await pumpScreen(tester);
-      await tester.ensureVisible(find.byKey(ProfileKeys.rowPrivacy));
-      await tester.tap(find.byKey(ProfileKeys.rowPrivacy));
-      await tester.pumpAndSettle();
-      expect(find.text('rota-privacidade'), findsOneWidget);
-    });
+  testWidgets('H-AJU-01: privacidade, feedback e avaliar saem do Perfil', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.scrollUntilVisible(find.byKey(ProfileKeys.rowNotices), 200);
+    for (final text in [
+      'Privacidade e anúncios',
+      'Enviar feedback',
+      'Avaliar o Lucena',
+      'Remover anúncios',
+    ]) {
+      expect(find.text(text), findsNothing, reason: text);
+    }
   });
 }

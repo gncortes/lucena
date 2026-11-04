@@ -7,12 +7,12 @@ import '../../services/asset_service.dart';
 import '../../services/scoped_asset_cache.dart';
 import 'course_preview_repository.dart';
 
-/// A prévia em `assets/courses/pt/pilares_preview.json` (exportada do canvas
+/// A prévia em `assets/courses/pt/pilares_venda.json` (exportada do canvas
 /// por `tools/export_pilares_preview.py`).
 class AssetCoursePreviewRepository implements CoursePreviewRepository {
   AssetCoursePreviewRepository(this._assets);
 
-  static const path = 'assets/courses/pt/pilares_preview.json';
+  static const path = 'assets/courses/pt/pilares_venda.json';
 
   final AssetService _assets;
 

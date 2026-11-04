@@ -2,31 +2,40 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../core/keys/account_keys.dart';
+import '../../../domain/models/legal_document.dart';
+
 import '../../core/l10n/l10n.dart';
 import '../../settings/widgets/about_screen.dart';
+import '../../legal/widgets/legal_sheet.dart';
 
-/// "Ao continuar, você concorda com os Termos de uso e a Política de
-/// privacidade." (§2.12), com os dois nomes abrindo as páginas no site.
-/// Com [create], "Ao criar a conta...".
-class AccountLegalNote extends StatefulWidget {
-  const AccountLegalNote({this.create = false, super.key});
+/// Um texto com "Termos de uso" e "Política de privacidade" em link (azul,
+/// 600, [underline]), cada um abrindo a folha do texto (H-CON-22). O [text]
+/// traduzido marca onde entram os nomes com [terms] e [privacy].
+class LegalLinksText extends StatefulWidget {
+  const LegalLinksText({
+    required this.text,
+    this.style,
+    this.textAlign = TextAlign.start,
+    this.underline = false,
+    super.key,
+  });
 
-  final bool create;
+  static const terms = '\u0001';
+  static const privacy = '\u0002';
+
+  final String text;
+  final TextStyle? style;
+  final TextAlign textAlign;
+  final bool underline;
 
   @override
-  State<AccountLegalNote> createState() => _AccountLegalNoteState();
+  State<LegalLinksText> createState() => _LegalLinksTextState();
 }
 
-class _AccountLegalNoteState extends State<AccountLegalNote> {
+class _LegalLinksTextState extends State<LegalLinksText> {
   final _terms = TapGestureRecognizer();
   final _privacy = TapGestureRecognizer();
-
-  // Marcam onde entram os links no texto traduzido.
-  static const _termsMark = '\u0001';
-  static const _privacyMark = '\u0002';
 
   @override
   void dispose() {
@@ -38,26 +47,32 @@ class _AccountLegalNoteState extends State<AccountLegalNote> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
     final language = Localizations.localeOf(context).languageCode;
-    _terms.onTap = () => launchUrl(
-      AboutScreen.termsFor(language),
-      mode: LaunchMode.externalApplication,
+    _terms.onTap = () => openLegal(
+      context,
+      LegalKind.terms,
+      website: AboutScreen.termsFor(language),
     );
-    _privacy.onTap = () => launchUrl(
-      AboutScreen.privacyFor(language),
-      mode: LaunchMode.externalApplication,
+    _privacy.onTap = () => openLegal(
+      context,
+      LegalKind.privacy,
+      website: AboutScreen.privacyFor(language),
     );
-    final text = widget.create
-        ? l10n.accountLegalCreate(_termsMark, _privacyMark)
-        : l10n.accountLegalContinue(_termsMark, _privacyMark);
-    final link = TextStyle(color: colors.primary, fontWeight: FontWeight.w600);
+    final link = TextStyle(
+      color: colors.primary,
+      fontWeight: FontWeight.w600,
+      decoration: widget.underline ? TextDecoration.underline : null,
+      decorationColor: colors.primary,
+    );
     final spans = <InlineSpan>[];
-    var rest = text;
+    var rest = widget.text;
     while (rest.isNotEmpty) {
-      final terms = rest.indexOf(_termsMark);
-      final marks = [terms, rest.indexOf(_privacyMark)].where((i) => i >= 0);
+      final terms = rest.indexOf(LegalLinksText.terms);
+      final marks = [
+        terms,
+        rest.indexOf(LegalLinksText.privacy),
+      ].where((i) => i >= 0);
       if (marks.isEmpty) {
         spans.add(TextSpan(text: rest));
         break;
@@ -76,11 +91,8 @@ class _AccountLegalNoteState extends State<AccountLegalNote> {
     }
     return Text.rich(
       TextSpan(children: spans),
-      key: AccountKeys.legal,
-      textAlign: TextAlign.center,
-      style: theme.textTheme.bodySmall?.copyWith(
-        color: colors.onSurfaceVariant,
-      ),
+      textAlign: widget.textAlign,
+      style: widget.style,
     );
   }
 }

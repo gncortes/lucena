@@ -5,7 +5,7 @@ import '../domain/models/star_challenge.dart';
 import 'routes.dart';
 
 /// Onde o app abre: no desafio do link que o abriu, na partida ou na aula que estava na tela quando ele foi
-/// fechado, ou no início. Aula escondida não reabre: a da Escola sem
+/// fechado, no aceite dos Termos que ficou pela metade, ou no início. Aula escondida não reabre: a da Escola sem
 /// [showSchool], a de final fora de [visibleEndgameLessons] (nulo: todas).
 String launchLocation({
   int? conclusion,
@@ -19,6 +19,7 @@ String launchLocation({
   ChallengeLink? link,
   Uri? uri,
   bool boardControlsOpen = false,
+  bool consentPending = false,
 }) {
   final lesson = showSchool ? school.ongoing : null;
   final endgameLesson = endgames.ongoing;
@@ -29,6 +30,8 @@ String launchLocation({
     if (route != null) return route;
   }
   if (link != null) return Routes.challenge(link);
+  // O app fechou antes do aceite dos Termos da conta nova (H-CON-08).
+  if (consentPending) return Routes.accountConsentFrom('home');
   if (conclusion != null) return Routes.conclusion(conclusion);
   if (resumeGame) return Routes.freeBoard;
   if (resumeBlind) return Routes.blind;

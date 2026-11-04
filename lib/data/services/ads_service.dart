@@ -13,12 +13,6 @@ abstract class AdsService {
   /// O SDK diz que já pode pedir anúncio (consentimento resolvido).
   Future<bool> canRequestAds();
 
-  /// As opções de privacidade ("Escolhas de anúncios") são exigidas.
-  Future<bool> privacyOptionsRequired();
-
-  /// Reabre as opções de privacidade do Google.
-  Future<void> showPrivacyOptions();
-
   /// Sobe o SDK de anúncios. Só depois disto [preload] carrega.
   Future<void> initialize();
 
@@ -47,12 +41,6 @@ class NoAdsService extends AdsService {
 
   @override
   Future<bool> canRequestAds() async => false;
-
-  @override
-  Future<bool> privacyOptionsRequired() async => false;
-
-  @override
-  Future<void> showPrivacyOptions() async {}
 
   @override
   Future<void> initialize() async {}

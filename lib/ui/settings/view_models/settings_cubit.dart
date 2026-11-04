@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/settings/settings_repository.dart';
@@ -23,7 +25,23 @@ class SettingsCubit extends Cubit<AppSettings?> {
   /// Idiomas oferecidos na tela de idioma.
   final List<AppLanguage> languages;
 
-  Future<void> load() async => emit(await _repository.load());
+  // O que está no disco: a tela volta a ele quando a gravação falha (Gap 1).
+  AppSettings? _saved;
+
+  // As gravações vão uma de cada vez, na ordem das trocas (Gap 2).
+  Future<void> _queue = Future.value();
+  int _last = 0;
+
+  final _failures = StreamController<void>.broadcast();
+
+  /// Avisa a tela de que uma troca não foi gravada (e o valor voltou).
+  Stream<void> get saveFailures => _failures.stream;
+
+  Future<void> load() async {
+    final settings = await _repository.load();
+    _saved = settings;
+    emit(settings);
+  }
 
   /// Troca o idioma do app. Nulo volta a seguir o idioma do sistema.
   Future<void> setLanguage(AppLanguage? language) {
@@ -94,9 +112,27 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return setBoard(settings.board.withDefaultAppearance());
   }
 
-  // O estado muda na hora; a gravação vem em seguida.
-  Future<void> _update(AppSettings settings) async {
+  // O estado muda na hora; a gravação vem em seguida, depois das anteriores.
+  // Falhou a última troca: a tela volta ao que está no disco e avisa. Falhou
+  // uma troca que já tem outra depois: a seguinte grava tudo de novo.
+  Future<void> _update(AppSettings settings) {
     emit(settings);
-    await _repository.save(settings);
+    final turn = ++_last;
+    return _queue = _queue.then((_) async {
+      try {
+        await _repository.save(settings);
+        _saved = settings;
+      } on Object {
+        if (turn != _last || isClosed) return;
+        emit(_saved ?? const AppSettings());
+        _failures.add(null);
+      }
+    });
+  }
+
+  @override
+  Future<void> close() async {
+    await _failures.close();
+    return super.close();
   }
 }

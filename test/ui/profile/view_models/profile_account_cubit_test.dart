@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
-import 'package:lucena/domain/models/account.dart';
-import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/platform_rating.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/profile/view_models/profile_account_cubit.dart';
@@ -18,11 +16,6 @@ void main() {
   late FakeLichessRepository lichess;
   late FakeProfileRepository profiles;
 
-  const email = Account(
-    uid: 'email-uid',
-    provider: AccountProvider.email,
-    email: 'ana@example.com',
-  );
   final rating = PlatformRating(user: 'ana', readAt: DateTime(2026, 10, 20));
 
   setUp(() {
@@ -74,75 +67,40 @@ void main() {
     expect(cubit.state.syncedAt, isNull);
   });
 
-  test('apagar a conta avisa que foi apagada', () async {
-    accounts.account = FakeAccountRepository.google;
-    final cubit = await build();
-    await cubit.deleteAccount();
-    await pumpEventQueue();
+  group('H-CON-13 gap 5', () {
+    test('sair falhando avisa e mantém a conta', () async {
+      accounts.account = FakeAccountRepository.google;
+      final cubit = await build();
+      accounts.signOutError = Exception('falhou');
+      await cubit.signOut();
+      await pumpEventQueue();
 
-    expect(accounts.current, isNull);
-    expect(cubit.state.notice, ProfileNotice.deleted);
-    expect(cubit.state.busy, isFalse);
-  });
+      expect(cubit.state.account, FakeAccountRepository.google);
+      expect(cubit.state.notice, ProfileNotice.failed);
+      expect(cubit.state.busy, isFalse);
+    });
 
-  test('apagar leva junto a foto enviada; sem ela, o Storage fica de '
-      'fora', () async {
-    accounts.account = FakeAccountRepository.google;
-    final cubit = await build();
-    await cubit.deleteAccount();
-    expect(accounts.deletedWithPhoto, isFalse);
+    test('sair trava o segundo toque', () async {
+      accounts.account = FakeAccountRepository.google;
+      final cubit = await build();
+      final first = cubit.signOut();
+      expect(cubit.state.busy, isTrue);
+      await cubit.signOut();
+      await first;
+      expect(accounts.signOuts, 1);
+    });
 
-    await accounts.signInWithGoogle();
-    await pumpEventQueue();
-    await profiles.save(const UserProfile(photo: AvatarPhoto.upload));
-    await cubit.deleteAccount();
-    expect(accounts.deletedWithPhoto, isTrue);
-  });
+    test('desconectar o Lichess falhando avisa e mantém o vínculo', () async {
+      lichess.connected = true;
+      final cubit = await build();
+      lichess.disconnectError = Exception('falhou');
+      await cubit.disconnectLichess();
 
-  test('apagar sem rede não apaga', () async {
-    accounts.account = FakeAccountRepository.google;
-    final cubit = await build();
-    accounts.failure = AccountFailure.network;
-    await cubit.deleteAccount();
-
-    expect(accounts.current, FakeAccountRepository.google);
-    expect(cubit.state.notice, ProfileNotice.deleteOffline);
-  });
-
-  test('com e-mail, o login recente pedido vira aviso para a tela', () async {
-    accounts.account = email;
-    final cubit = await build();
-    accounts.failure = AccountFailure.recentLoginRequired;
-    await cubit.deleteAccount();
-
-    expect(accounts.current, email);
-    expect(cubit.state.notice, ProfileNotice.deleteRelogin);
-  });
-
-  test('depois de entrar de novo, só apaga a mesma conta', () async {
-    accounts.account = email;
-    final cubit = await build();
-    accounts.account = FakeAccountRepository.google;
-    await cubit.deleteAfterSignIn(email.uid);
-
-    expect(accounts.current, isNull);
-    expect(cubit.state.notice, ProfileNotice.deleteDifferentAccount);
-
-    accounts.account = email;
-    await cubit.deleteAfterSignIn(email.uid);
-    expect(accounts.current, isNull);
-    expect(cubit.state.notice, ProfileNotice.deleted);
-  });
-
-  test('o mesmo aviso de novo conta outra vez', () async {
-    accounts.account = FakeAccountRepository.google;
-    final cubit = await build();
-    accounts.failure = AccountFailure.network;
-    await cubit.deleteAccount();
-    final first = cubit.state.noticeCount;
-    await cubit.deleteAccount();
-
-    expect(cubit.state.noticeCount, first + 1);
+      expect(cubit.state.lichess, rating);
+      expect(profiles.profile.lichessUser, 'ana');
+      expect(cubit.state.notice, ProfileNotice.failed);
+      expect(cubit.state.busy, isFalse);
+    });
   });
 
   group('Lichess', () {

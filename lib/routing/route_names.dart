@@ -18,6 +18,7 @@ abstract final class RouteNames {
   static const accountEnter = 'accountEnter';
   static const accountEmail = 'accountEmail';
   static const accountData = 'accountData';
+  static const accountConsent = 'accountConsent';
   static const accountRestored = 'accountRestored';
   static const goal = 'goal';
   static const level = 'level';
@@ -87,10 +88,6 @@ abstract final class RouteNames {
   static const alerts = 'alerts';
   static const settingsAbout = 'settingsAbout';
   static const settingsMaia = 'settingsMaia';
-  static const pilaresSale = 'pilaresSale';
-  static const pilaresBand = 'pilaresBand';
-  static const pilaresMap = 'pilaresMap';
-  static const pilaresChapter = 'pilaresChapter';
   static const trainingGuide = 'trainingGuide';
   static const trainingProfile = 'trainingProfile';
   static const trainingProfileWhy = 'trainingProfileWhy';
@@ -128,6 +125,7 @@ abstract final class RouteNames {
   static const pilaresSubscriptionEnded = 'pilaresSubscriptionEnded';
   static const pilaresBeforeHome = 'pilaresBeforeHome';
   static const pilaresPlan = 'pilaresPlan';
+  static const pilaresRestoreSite = 'pilaresRestoreSite';
   static const accountForgot = 'accountForgot';
   static const accountTerms = 'accountTerms';
   static const accountInvite = 'accountInvite';

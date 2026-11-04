@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -18,6 +20,7 @@ import 'package:lucena/ui/settings/widgets/settings_tiles.dart';
 import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
+import '../../../../testing/fakes/fake_store_listing_repository.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
@@ -184,6 +187,9 @@ void main() {
   testWidgets('o menu principal mostra o perfil, os grupos e o Sobre', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(1080, 5000);
+    tester.view.devicePixelRatio = 2.6;
+    addTearDown(tester.view.reset);
     await pumpScreen(tester, const AppSettings());
 
     for (final key in [
@@ -196,12 +202,215 @@ void main() {
     ]) {
       expect(find.byKey(key), findsOneWidget);
     }
-    // Ferramentas de desenvolvimento (o teste roda em debug): a prévia do
-    // Pilares do Xadrez (T82).
-    expect(find.byKey(SettingsKeys.pilaresPreviewTile), findsOneWidget);
     // As opções ficam dentro dos grupos, não no menu.
     expect(find.byKey(SettingsKeys.languageTile), findsNothing);
     expect(find.byKey(SettingsKeys.soundSwitch), findsNothing);
+  });
+
+  group('H-AJU-01 · lista de Configurações (PT-BR)', () {
+    Future<void> pumpPt(WidgetTester tester) async {
+      final cubit = SettingsCubit(
+        FakeSettingsRepository(const AppSettings()),
+        languages: AppLanguage.selectable,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      final profileCubit = ProfileCubit(
+        FakeProfileRepository(const UserProfile(rating: 1712)),
+      );
+      addTearDown(profileCubit.close);
+      await profileCubit.load();
+      await tester.pumpWidget(
+        RepositoryProvider<AccountRepository>.value(
+          value: FakeAccountRepository(),
+          child: TestApp(
+            locale: const Locale('pt', 'BR'),
+            settingsCubit: cubit,
+            profileCubit: profileCubit,
+            child: const SettingsScreen(version: '1.2.3'),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    String text(WidgetTester tester, Finder finder) =>
+        tester.widget<Text>(finder).data!;
+
+    Finder inTile(Key key, String text) =>
+        find.descendant(of: find.byKey(key), matching: find.text(text));
+
+    testWidgets('três seções na ordem e as 8 linhas com os textos do canvas', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 2.6;
+      addTearDown(tester.view.reset);
+      await pumpPt(tester);
+
+      final app = tester.getTopLeft(find.text('App')).dy;
+      final privacy = tester.getTopLeft(find.text('Privacidade')).dy;
+      final help = tester.getTopLeft(find.text('Ajuda e sobre')).dy;
+      expect(app, lessThan(privacy));
+      expect(privacy, lessThan(help));
+
+      final rows = <Key, (String, String)>{
+        SettingsKeys.appearanceTile: (
+          'Aparência',
+          'Idioma, tema, tabuleiro e tela inicial',
+        ),
+        SettingsKeys.gameTile: (
+          'Partida',
+          'Mover as peças, relógio e comentários',
+        ),
+        SettingsKeys.soundTile: (
+          'Som, voz e vibração',
+          'Sons das peças, vibração e a voz do professor',
+        ),
+        SettingsKeys.privacyTile: (
+          'Privacidade e dados',
+          'Termos, política, anúncios e seus dados',
+        ),
+        SettingsKeys.feedbackTile: (
+          'Enviar feedback',
+          'Um problema, uma ideia ou um elogio',
+        ),
+        SettingsKeys.rateTile: (
+          'Avaliar o Lucena',
+          'Abre a página do app na Play',
+        ),
+        SettingsKeys.aboutTile: (
+          'Sobre o Lucena',
+          'Site, código aberto, licenças e tour',
+        ),
+      };
+      for (final MapEntry(:key, value: (title, hint)) in rows.entries) {
+        expect(inTile(key, title), findsOneWidget, reason: title);
+        expect(inTile(key, hint), findsOneWidget, reason: hint);
+      }
+      expect(inTile(SettingsKeys.alertsTile, 'Notificações'), findsOneWidget);
+      // A seção Privacidade só tem "Privacidade e dados".
+      final privacyRow = tester
+          .getTopLeft(find.byKey(SettingsKeys.privacyTile))
+          .dy;
+      expect(privacyRow, greaterThan(privacy));
+      expect(privacyRow, lessThan(help));
+      // Feedback e avaliar ficam em "Ajuda e sobre", antes do Sobre.
+      final feedbackRow = tester
+          .getTopLeft(find.byKey(SettingsKeys.feedbackTile))
+          .dy;
+      final rateRow = tester.getTopLeft(find.byKey(SettingsKeys.rateTile)).dy;
+      final aboutRow = tester.getTopLeft(find.byKey(SettingsKeys.aboutTile)).dy;
+      expect(feedbackRow, greaterThan(help));
+      expect(feedbackRow, lessThan(rateRow));
+      expect(rateRow, lessThan(aboutRow));
+    });
+
+    testWidgets('a pessoa sem conta: "Jogador" e "Sem conta · 1712"', (
+      tester,
+    ) async {
+      await pumpPt(tester);
+      expect(text(tester, find.byKey(SettingsKeys.profileName)), 'Jogador');
+      expect(
+        text(tester, find.byKey(SettingsKeys.profileValue)),
+        'Sem conta · 1712',
+      );
+    });
+
+    testWidgets('Notificações conta no feminino: "3 de 4 ligadas"', (
+      tester,
+    ) async {
+      await pumpPt(tester);
+      expect(inTile(SettingsKeys.alertsTile, '3 de 4 ligadas'), findsOneWidget);
+    });
+
+    testWidgets('"Avaliar o Lucena" abre a página na Play', (tester) async {
+      final store = FakeStoreListingRepository();
+      final cubit = SettingsCubit(
+        FakeSettingsRepository(const AppSettings()),
+        languages: AppLanguage.selectable,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      await tester.pumpWidget(
+        RepositoryProvider<AccountRepository>.value(
+          value: FakeAccountRepository(),
+          child: TestApp(
+            settingsCubit: cubit,
+            storeListingRepository: store,
+            child: const SettingsScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(SettingsKeys.rateTile));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(SettingsKeys.rateTile));
+      await tester.pump();
+      expect(store.opened, 1);
+    });
+
+    testWidgets('"Privacidade e dados" e "Enviar feedback" abrem as telas', (
+      tester,
+    ) async {
+      final cubit = SettingsCubit(
+        FakeSettingsRepository(const AppSettings()),
+        languages: AppLanguage.selectable,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      Widget stub(String text) => Scaffold(body: Text(text));
+      final router = GoRouter(
+        initialLocation: Routes.settings,
+        routes: [
+          GoRoute(
+            path: Routes.settings,
+            builder: (_, _) => const SettingsScreen(),
+          ),
+          GoRoute(path: Routes.privacy, builder: (_, _) => stub('privacidade')),
+          GoRoute(path: Routes.feedback, builder: (_, _) => stub('feedback')),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        RepositoryProvider<AccountRepository>.value(
+          value: FakeAccountRepository(),
+          child: TestApp(
+            settingsCubit: cubit,
+            router: router,
+            child: const SizedBox(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.byKey(SettingsKeys.privacyTile),
+        200,
+      );
+      await tester.tap(find.byKey(SettingsKeys.privacyTile));
+      await tester.pumpAndSettle();
+      expect(find.text('privacidade'), findsOneWidget);
+      router.pop();
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.byKey(SettingsKeys.feedbackTile),
+        200,
+      );
+      await tester.tap(find.byKey(SettingsKeys.feedbackTile));
+      await tester.pumpAndSettle();
+      expect(find.text('feedback'), findsOneWidget);
+    });
+
+    testWidgets('sem linha "Remover anúncios" nem "Escolhas de anúncios"', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 2.6;
+      addTearDown(tester.view.reset);
+      await pumpPt(tester);
+      expect(find.textContaining('Remover anúncios'), findsNothing);
+      expect(find.textContaining('Escolhas de anúncios'), findsNothing);
+    });
   });
 
   testWidgets('Avisos diz quantas chaves estão ligadas', (tester) async {

@@ -1,3 +1,4 @@
+import 'data/repositories/data_export/data_export_repository.dart';
 import 'data/repositories/training/training_endgame_content.dart';
 import 'data/repositories/training/course_download_repository.dart';
 
@@ -37,6 +38,10 @@ import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
 import 'data/repositories/purchase/purchase_repository.dart';
+import 'data/repositories/legal/legal_consent_repository.dart';
+import 'data/repositories/legal/legal_repository.dart';
+import 'data/repositories/device/device_settings_repository.dart';
+import 'data/repositories/links/link_repository.dart';
 import 'data/repositories/store/store_listing_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
@@ -114,6 +119,8 @@ import 'routing/push_route.dart';
 import 'routing/router.dart';
 import 'routing/screen_tracker.dart';
 import 'routing/stream_refresh.dart';
+import 'ui/pilares_sale/view_models/pilares_purchase_watch_cubit.dart';
+import 'ui/pilares_sale/widgets/pilares_purchase_bridge.dart';
 import 'ui/update/view_models/update_cubit.dart';
 import 'ui/update/widgets/update_bridge.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
@@ -128,6 +135,7 @@ import 'ui/core/widgets/load_error_fallback.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/profile/view_models/profile_cubit.dart';
+import 'ui/settings/widgets/settings_save_failure_listener.dart';
 import 'ui/settings/view_models/settings_cubit.dart';
 import 'ui/voice/view_models/speech_cubit.dart';
 import 'ui/wiki/view_models/wiki_links_cubit.dart';
@@ -393,6 +401,11 @@ class _LucenaAppState extends State<LucenaApp> {
     // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
     // formulário agora.
     final profile = await widget.dependencies.profileRepository.load();
+    final consentUid = await widget.dependencies.legalConsentRepository
+        .pending();
+    final consentPending =
+        consentUid != null &&
+        widget.dependencies.accountRepository.current?.uid == consentUid;
     _startOnce(
       'ads',
       () => widget.dependencies.adsRepository.start(
@@ -442,6 +455,7 @@ class _LucenaAppState extends State<LucenaApp> {
           endgames: endgames,
           stars: stars,
           boardControlsOpen: onboarding.boardControlsOpen,
+          consentPending: consentPending,
           link: link,
           // Erro frio é empilhado sobre a retomada, para Voltar recuperá-la.
           uri: opened != null && Routes.appLink(opened) != Routes.invalidLink
@@ -790,6 +804,12 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<FeedbackRepository>.value(
           value: dependencies.feedbackRepository,
         ),
+        RepositoryProvider<DataExportRepository>.value(
+          value: dependencies.dataExportRepository,
+        ),
+        RepositoryProvider<LegalConsentRepository>.value(
+          value: dependencies.legalConsentRepository,
+        ),
         RepositoryProvider<FeedbackDraftRepository>.value(
           value: dependencies.feedbackDraftRepository,
         ),
@@ -816,6 +836,15 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<StoreListingRepository>.value(
           value: dependencies.storeListingRepository,
+        ),
+        RepositoryProvider<DeviceSettingsRepository>.value(
+          value: const SystemDeviceSettingsRepository(),
+        ),
+        RepositoryProvider<LinkRepository>.value(
+          value: const UrlLauncherLinkRepository(),
+        ),
+        RepositoryProvider<LegalRepository>(
+          create: (_) => AssetLegalRepository(),
         ),
         RepositoryProvider<AppUpdateRepository>.value(
           value: dependencies.appUpdateRepository,
@@ -859,6 +888,14 @@ class _LucenaAppState extends State<LucenaApp> {
               changes: dependencies.localChanges,
               training: dependencies.courseTrainingRepository,
               courses: activeTrainingCourses,
+              analytics: dependencies.analyticsRepository,
+            ),
+          ),
+          BlocProvider(
+            // A compra vigiada no app todo (H-VEN-05/06/10).
+            lazy: false,
+            create: (context) => PilaresPurchaseWatchCubit(
+              purchases: dependencies.purchaseRepository,
               analytics: dependencies.analyticsRepository,
             ),
           ),
@@ -912,14 +949,19 @@ class _LucenaAppState extends State<LucenaApp> {
                 // Abaixo das traduções: os textos dos lembretes vêm delas.
                 builder: (context, child) => UpdateBridge(
                   router: router,
-                  child: RemindersBridge(
-                    onOpen: (route) {
-                      unawaited(
-                        _analytics.alertOpened(route, channel: 'local'),
-                      );
-                      _router?.push(route);
-                    },
-                    child: child ?? const SizedBox.shrink(),
+                  child: PilaresPurchaseBridge(
+                    router: router,
+                    child: RemindersBridge(
+                      onOpen: (route) {
+                        unawaited(
+                          _analytics.alertOpened(route, channel: 'local'),
+                        );
+                        _router?.push(route);
+                      },
+                      child: SettingsSaveFailureListener(
+                        child: child ?? const SizedBox.shrink(),
+                      ),
+                    ),
                   ),
                 ),
               ),

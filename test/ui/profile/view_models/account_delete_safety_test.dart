@@ -4,20 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
-import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/data/services/firebase/auth_service.dart';
+import 'package:lucena/data/services/firebase/cloud_store_service.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/user_profile.dart';
-import 'package:lucena/ui/profile/view_models/profile_account_cubit.dart';
+import 'package:lucena/ui/profile/view_models/account_delete_cubit.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../testing/fakes/fake_avatar_repository.dart';
 import '../../../../testing/fakes/fake_cloud_store_service.dart';
-import '../../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
-import '../../../../testing/fakes/fake_sync_repository.dart';
 
 class _FirebaseAuth extends Mock implements FirebaseAuth {}
 
@@ -32,6 +30,8 @@ class _GoogleAccount extends Mock implements GoogleSignInAccount {}
 class _Authentication extends Mock implements GoogleSignInAuthentication {}
 
 class _UserInfo extends Mock implements UserInfo {}
+
+class _Metadata extends Mock implements UserMetadata {}
 
 class _Preferences extends Mock implements PreferencesService {
   bool fail = false;
@@ -71,8 +71,26 @@ class _Store extends FakeCloudStoreService {
   int pushReads = 0;
   final List<String> order;
   _Store(this.order);
+
+  /// Falha a próxima remoção (uma vez).
+  CloudStoreException? failDelete;
+
+  /// Segura a gravação do perfil (`_touchProfile`) até completar.
+  Completer<void>? mergeGate;
+
+  @override
+  Future<void> mergeUser(String uid, Map<String, Object?> data) async {
+    await mergeGate?.future;
+    await super.mergeUser(uid, data);
+    order.add('merge');
+  }
+
   @override
   Future<void> deleteUser(String uid) async {
+    if (failDelete case final failure?) {
+      failDelete = null;
+      throw failure;
+    }
     await super.deleteUser(uid);
     order.add('cloud');
     await gate?.future;
@@ -94,11 +112,13 @@ class _Store extends FakeCloudStoreService {
 
 class _Profile extends FakeProfileRepository {
   _Profile() : super(const UserProfile(photo: AvatarPhoto.upload));
-  Completer<void>? gate;
+  bool fail = false;
+  bool photoless = false;
   @override
   Future<UserProfile> load() async {
-    await gate?.future;
-    return super.load();
+    if (fail) throw StateError('profile unavailable');
+    final profile = await super.load();
+    return photoless ? const UserProfile() : profile;
   }
 }
 
@@ -120,10 +140,13 @@ void main() {
   late _Avatars avatars;
   late _Profile profile;
   late _Preferences preferences;
-  late ProfileAccountCubit cubit;
+  late AccountDeleteCubit cubit;
   late List<String> authDeleted;
   late List<String> order;
   bool needsRecent = true;
+  final clock = DateTime.utc(2026, 11, 2, 12);
+  late Map<_User, _UserInfo> infos;
+  late Map<_User, _Metadata> metadata;
 
   setUp(() {
     firebase = _FirebaseAuth();
@@ -134,11 +157,16 @@ void main() {
     authDeleted = [];
     order = [];
     needsRecent = true;
+    infos = {};
+    metadata = {};
     for (final (user, uid) in [(a, 'A'), (b, 'B')]) {
       when(() => user.uid).thenReturn(uid);
-      final info = _UserInfo();
+      final info = infos[user] = _UserInfo();
       when(() => info.providerId).thenReturn('google.com');
       when(() => user.providerData).thenReturn([info]);
+      final meta = metadata[user] = _Metadata();
+      when(() => meta.lastSignInTime).thenReturn(clock);
+      when(() => user.metadata).thenReturn(meta);
       when(() => user.delete()).thenAnswer((_) async {
         if (needsRecent) {
           throw FirebaseAuthException(code: 'requires-recent-login');
@@ -178,7 +206,11 @@ void main() {
     when(() => authentication.idToken).thenReturn('selected-token');
     when(() => selected.authentication).thenReturn(authentication);
     when(() => google.authenticate()).thenAnswer((_) async => selected);
-    auth = FirebaseAuthService(auth: firebase, google: google);
+    auth = FirebaseAuthService(
+      auth: firebase,
+      google: google,
+      now: FakeNow(clock),
+    );
     store = _Store(order);
     avatars = _Avatars(order);
     profile = _Profile();
@@ -191,14 +223,7 @@ void main() {
       language: () async => 'pt',
       preferences: preferences,
     );
-    final scheduler = SyncScheduler(accounts, FakeSyncRepository());
-    addTearDown(scheduler.dispose);
-    cubit = ProfileAccountCubit(
-      accounts: accounts,
-      sync: scheduler,
-      lichess: FakeLichessRepository(),
-      profile: profile,
-    );
+    cubit = AccountDeleteCubit(uid: 'A', accounts: accounts, profile: profile);
     addTearDown(cubit.close);
   });
 
@@ -206,7 +231,7 @@ void main() {
     expect(avatars.deleted, isEmpty);
     expect(store.deleted, isEmpty);
     expect(authDeleted, isEmpty);
-    expect(cubit.state.notice, isNot(ProfileNotice.deleted));
+    expect(cubit.state.step, isNot(AccountDeleteStep.deleted));
     expect(cubit.state.busy, isFalse);
   }
 
@@ -215,10 +240,10 @@ void main() {
     () async {
       when(() => a.reauthenticateWithCredential(any()))
           .thenThrow(FirebaseAuthException(code: 'user-mismatch'));
-      await cubit.deleteAccount();
+      await cubit.confirm();
       noDeletion();
       expect(current, isNull);
-      expect(cubit.state.notice, ProfileNotice.deleteDifferentAccount);
+      expect(cubit.state.step, AccountDeleteStep.differentAccount);
       verifyNever(() => firebase.signInWithCredential(any()));
       expect(store.users, isEmpty);
     },
@@ -229,7 +254,7 @@ void main() {
     store.pushTokens.addAll({'A': 'token-a', 'B': 'token-b'});
     when(() => a.reauthenticateWithCredential(any()))
         .thenThrow(FirebaseAuthException(code: 'user-mismatch'));
-    await cubit.deleteAccount();
+    await cubit.confirm();
     noDeletion();
     expect(preferences.saved, isNull);
     expect(store.pushTokens, {'B': 'token-b'});
@@ -245,7 +270,7 @@ void main() {
       store.pushTokens['A'] = 'token-a';
       when(() => a.reauthenticateWithCredential(any()))
           .thenThrow(FirebaseAuthException(code: 'user-mismatch'));
-      await cubit.deleteAccount();
+      await cubit.confirm();
       noDeletion();
       expect(preferences.reads, 1);
       expect(current, isNull);
@@ -262,7 +287,7 @@ void main() {
       final gate = store.pushReadGate = Completer<void>();
       when(() => a.reauthenticateWithCredential(any()))
           .thenThrow(FirebaseAuthException(code: 'user-mismatch'));
-      final deletion = cubit.deleteAccount();
+      final deletion = cubit.confirm();
       await pumpEventQueue();
       expect(store.pushReads, 1);
       final login = auth.signInWithGoogle();
@@ -288,7 +313,7 @@ void main() {
       store.offline = true;
       when(() => a.reauthenticateWithCredential(any()))
           .thenThrow(FirebaseAuthException(code: 'user-mismatch'));
-      await cubit.deleteAccount();
+      await cubit.confirm();
       noDeletion();
       expect(store.pushReads, 1);
       expect(preferences.saved, isNull);
@@ -302,7 +327,7 @@ void main() {
     when(() => google.authenticate()).thenThrow(
       const GoogleSignInException(code: GoogleSignInExceptionCode.canceled),
     );
-    await cubit.deleteAccount();
+    await cubit.confirm();
     noDeletion();
     expect(current, a);
   });
@@ -310,15 +335,15 @@ void main() {
   test('Conta1 erro de reautenticação preserva foto, nuvem e Auth', () async {
     when(() => a.reauthenticateWithCredential(any()))
         .thenThrow(FirebaseAuthException(code: 'network-request-failed'));
-    await cubit.deleteAccount();
+    await cubit.confirm();
     noDeletion();
   });
 
   test('Conta1 mesma conta reautentica antes de foto, nuvem e Auth', () async {
-    await cubit.deleteAccount();
+    await cubit.confirm();
     expect(order, ['reauth', 'photo', 'cloud', 'auth']);
     expect(authDeleted, ['A']);
-    expect(cubit.state.notice, ProfileNotice.deleted);
+    expect(cubit.state.step, AccountDeleteStep.deleted);
     verifyNever(() => firebase.signInWithCredential(any()));
     expect(store.users, isEmpty);
   });
@@ -327,7 +352,7 @@ void main() {
     when(() => google.authenticate()).thenThrow(
       const GoogleSignInException(code: GoogleSignInExceptionCode.unknownError),
     );
-    await cubit.deleteAccount();
+    await cubit.confirm();
     noDeletion();
   });
 
@@ -338,7 +363,7 @@ void main() {
       when(() => result.user).thenReturn(null);
       when(() => a.reauthenticateWithCredential(any()))
           .thenAnswer((_) async => result);
-      await cubit.deleteAccount();
+      await cubit.confirm();
       noDeletion();
       expect(current, isNull);
     },
@@ -371,7 +396,7 @@ void main() {
             case 'preferences':
               preferences.gate = gate;
           }
-          final deletion = cubit.deleteAccount();
+          final deletion = cubit.confirm();
           await pumpEventQueue();
           current = signedOut ? null : b;
           gate.complete();
@@ -379,7 +404,7 @@ void main() {
           expect(avatars.deleted, isNot(contains('B')));
           expect(store.deleted, isNot(contains('B')));
           expect(authDeleted, isEmpty);
-          expect(cubit.state.notice, ProfileNotice.deleteDifferentAccount);
+          expect(cubit.state.step, AccountDeleteStep.differentAccount);
           expect(cubit.state.busy, isFalse);
           if (stage == 'google' || stage == 'reauth') noDeletion();
         },
@@ -424,7 +449,7 @@ void main() {
             return resultB;
           });
           when(() => b.sendEmailVerification()).thenAnswer((_) async {});
-          final deletion = cubit.deleteAccount();
+          final deletion = cubit.confirm();
           await pumpEventQueue();
           final Future<Object?> mutation = switch (action) {
             'google' => auth.signInWithGoogle(),
@@ -455,7 +480,7 @@ void main() {
           expect(avatars.deleted, ['A']);
           expect(store.deleted, ['A']);
           expect(current, action == 'logout' ? isNull : same(b));
-          expect(cubit.state.notice, ProfileNotice.deleted);
+          expect(cubit.state.step, AccountDeleteStep.deleted);
         },
       );
     }
@@ -469,9 +494,9 @@ void main() {
       when(() => firebase.signOut())
           .thenThrow(FirebaseAuthException(code: 'network-request-failed'));
       when(() => google.signOut()).thenThrow(StateError('Google unavailable'));
-      await cubit.deleteAccount();
+      await cubit.confirm();
       noDeletion();
-      expect(cubit.state.notice, ProfileNotice.deleteDifferentAccount);
+      expect(cubit.state.step, AccountDeleteStep.differentAccount);
       verify(() => firebase.signOut()).called(1);
       verify(() => google.signOut()).called(1);
       // Uma falha na operação anterior não envenena a fila.
@@ -484,9 +509,9 @@ void main() {
     () async {
       when(() => google.disconnect())
           .thenThrow(StateError('Google unavailable'));
-      await cubit.deleteAccount();
+      await cubit.confirm();
       expect(authDeleted, ['A']);
-      expect(cubit.state.notice, ProfileNotice.deleted);
+      expect(cubit.state.step, AccountDeleteStep.deleted);
     },
   );
 
@@ -494,8 +519,8 @@ void main() {
     test(
       'Conta1 mudança durante leitura do perfil: logout=$signedOut',
       () async {
-        final gate = profile.gate = Completer<void>();
-        final deletion = cubit.deleteAccount();
+        final gate = profile.loadGate = Completer<void>();
+        final deletion = cubit.confirm();
         await pumpEventQueue();
         current = signedOut ? null : b;
         needsRecent = false;
@@ -531,5 +556,98 @@ void main() {
     }
     expect(current, isNull);
     verify(() => firebase.signOut()).called(1);
+  });
+
+  group('H-CON-14 gaps', () {
+    // Conta de e-mail: sem reautenticação Google; o Firebase pede login
+    // recente (5 min) para apagar.
+    void email(_User user, {required Duration since}) {
+      when(() => infos[user]!.providerId).thenReturn('password');
+      when(() => metadata[user]!.lastSignInTime)
+          .thenReturn(clock.subtract(since));
+      needsRecent = since >= const Duration(minutes: 5);
+    }
+
+    test('Gap2 e-mail sem login recente não apaga nada na nuvem', () async {
+      email(a, since: const Duration(minutes: 30));
+      await cubit.confirm();
+      noDeletion();
+      expect(order, isEmpty);
+      expect(cubit.state.step, AccountDeleteStep.relogin);
+      expect(current, a);
+    });
+
+    test('Gap2 e-mail com login recente apaga na ordem', () async {
+      email(a, since: const Duration(minutes: 1));
+      await cubit.confirm();
+      expect(order, ['photo', 'cloud', 'auth']);
+      expect(cubit.state.step, AccountDeleteStep.deleted);
+    });
+
+    test('Gap8 gravação do perfil do novo login não sobra na nuvem', () async {
+      email(a, since: const Duration(minutes: 1));
+      final result = _Credential();
+      when(() => result.user).thenReturn(a);
+      when(
+        () => firebase.signInWithEmailAndPassword(
+          email: 'a@example.com',
+          password: 'password',
+        ),
+      ).thenAnswer((_) async => result);
+      final gate = store.mergeGate = Completer<void>();
+      await accounts.signInWithEmail('a@example.com', 'password');
+      final deletion = cubit.confirm();
+      await pumpEventQueue();
+      gate.complete();
+      await deletion;
+      await pumpEventQueue();
+      expect(order, ['merge', 'photo', 'cloud', 'auth']);
+      expect(store.users, isEmpty);
+      expect(cubit.state.step, AccountDeleteStep.deleted);
+    });
+
+    test(
+      'Gap9 rede cai no meio: aviso não diz que nada saiu e repetir termina',
+      () async {
+        store.failDelete = const CloudStoreException(
+          'unavailable',
+          partial: true,
+        );
+        await cubit.confirm();
+        expect(cubit.state.busy, isFalse);
+        expect(cubit.state.notice, AccountDeleteNotice.failed);
+        expect(authDeleted, isEmpty);
+
+        needsRecent = true;
+        await cubit.confirm();
+        expect(authDeleted, ['A']);
+        expect(cubit.state.step, AccountDeleteStep.deleted);
+      },
+    );
+
+    test(
+      'Gap9 foto já saiu e a nuvem falha: aviso não é de sem internet',
+      () async {
+        store.failDelete = const CloudStoreException('unavailable');
+        await cubit.confirm();
+        expect(avatars.deleted, ['A']);
+        expect(cubit.state.notice, AccountDeleteNotice.failed);
+      },
+    );
+
+    test('sem internet antes de apagar: "nada foi excluído"', () async {
+      profile.photoless = true;
+      store.failDelete = const CloudStoreException('unavailable');
+      await cubit.confirm();
+      expect(cubit.state.notice, AccountDeleteNotice.offline);
+      expect(authDeleted, isEmpty);
+    });
+
+    test('Gap4 erro genérico libera os botões e avisa', () async {
+      profile.fail = true;
+      await cubit.confirm();
+      noDeletion();
+      expect(cubit.state.notice, AccountDeleteNotice.failed);
+    });
   });
 }

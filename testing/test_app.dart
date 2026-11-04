@@ -1,3 +1,7 @@
+import 'package:lucena/data/repositories/data_export/data_export_repository.dart';
+
+import 'fakes/fake_data_export_repository.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +23,9 @@ import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/store/store_listing_repository.dart';
+import 'package:lucena/data/repositories/links/link_repository.dart';
+import 'package:lucena/data/repositories/legal/legal_consent_repository.dart';
+import 'package:lucena/data/repositories/legal/legal_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -37,6 +44,8 @@ import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_store_listing_repository.dart';
+import 'fakes/fake_legal_repository.dart';
+import 'fakes/fake_link_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 import 'fakes/fake_endgame_repositories.dart';
 import 'fakes/fake_feedback_repositories.dart';
@@ -75,8 +84,12 @@ class TestApp extends StatelessWidget {
     this.demoAdRepository,
     this.purchaseRepository,
     this.storeListingRepository,
+    this.linkRepository,
+    this.legalRepository,
     this.updateCubit,
     this.feedbackRepository,
+    this.dataExportRepository,
+    this.legalConsentRepository,
     this.feedbackDraftRepository,
     this.reviewRepository,
     this.schoolProgressRepository,
@@ -137,10 +150,22 @@ class TestApp extends StatelessWidget {
   /// A página do app na Play. Sem ela, um falso que só conta.
   final StoreListingRepository? storeListingRepository;
 
+  /// Os links externos. Sem ele, um falso que abre tudo.
+  final LinkRepository? linkRepository;
+
+  /// Os Termos e a Política. Sem ele, os textos embarcados lidos do disco.
+  final LegalRepository? legalRepository;
+
   /// A atualização (E1.32), quando a tela testada é uma das duas.
   final UpdateCubit? updateCubit;
 
   final FeedbackRepository? feedbackRepository;
+
+  /// "Baixar meus dados". Sem ele, um falso que baixa na hora.
+  final DataExportRepository? dataExportRepository;
+
+  /// Nulo: toda conta já aceitou os Termos (os testes antigos seguem).
+  final LegalConsentRepository? legalConsentRepository;
   final FeedbackDraftRepository? feedbackDraftRepository;
   final ReviewRepository? reviewRepository;
 
@@ -244,6 +269,12 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<FeedbackRepository>.value(
           value: feedbackRepository ?? FakeFeedbackRepository(),
         ),
+        RepositoryProvider<DataExportRepository>.value(
+          value: dataExportRepository ?? FakeDataExportRepository(),
+        ),
+        RepositoryProvider<LegalConsentRepository>.value(
+          value: legalConsentRepository ?? const NoLegalConsentRepository(),
+        ),
         RepositoryProvider<FeedbackDraftRepository>.value(
           value: feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
         ),
@@ -276,6 +307,12 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<StoreListingRepository>.value(
           value: storeListingRepository ?? FakeStoreListingRepository(),
+        ),
+        RepositoryProvider<LinkRepository>.value(
+          value: linkRepository ?? FakeLinkRepository(),
+        ),
+        RepositoryProvider<LegalRepository>.value(
+          value: legalRepository ?? FakeLegalRepository(),
         ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),

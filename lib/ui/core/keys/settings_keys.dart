@@ -53,8 +53,6 @@ abstract final class SettingsKeys {
   /// Entrada da tela de depuração do Maia (só em build de desenvolvimento).
   static const maiaDebugTile = Key('settings.maiaDebug');
 
-  /// A prévia do Pilares do Xadrez (T82), só nas versões de desenvolvimento.
-  static const pilaresPreviewTile = Key('settings.pilaresPreview');
   static const pilaresTrainingTile = Key('settings.pilaresTraining');
   static const boardBehaviorTile = Key('settings.boardBehavior');
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
@@ -77,6 +75,16 @@ abstract final class SettingsKeys {
 
   /// Sobre o Lucena.
   static const aboutTile = Key('settings.about');
+
+  /// Seção "Privacidade": "Privacidade e dados" (H-AJU-15).
+  static const privacyTile = Key('settings.privacyTile');
+
+  /// "Ajuda e sobre": "Enviar feedback" e "Avaliar o Lucena", antes do Sobre (H-AJU-01).
+  static const feedbackTile = Key('settings.feedbackTile');
+  static const rateTile = Key('settings.rateTile');
+
+  /// Aviso de preferência não gravada (H-AJU-02, Gap 1).
+  static const saveFailure = Key('settings.saveFailure');
   static const aboutScreen = Key('settings.about.screen');
   static const aboutWebsite = Key('settings.about.website');
   static const aboutSource = Key('settings.about.source');

@@ -10,6 +10,10 @@ abstract final class AccountKeys {
   static const enterTitle = Key('account.enter.title');
   static const enterText = Key('account.enter.text');
   static const close = Key('account.close');
+
+  /// A conta pedida pela compra do Pilares (H-CON-05).
+  static const purchaseScreen = Key('purchase.accountRequired');
+  static const purchaseBack = Key('purchase.accountRequired.back');
   static const google = Key('account.google');
   static const email = Key('account.email');
   static const later = Key('account.later');
@@ -17,11 +21,20 @@ abstract final class AccountKeys {
   /// "Já tem conta? Entrar" e "Não tem conta? Criar conta".
   static const toSignIn = Key('account.toSignIn');
   static const toCreate = Key('account.toCreate');
-  static const legal = Key('account.legal');
+
+  /// "Tentar de novo" no aviso de erro inesperado (H-CON-06, gap 4).
+  static const failureRetry = Key('account.failureRetry');
+
+  /// "Entrar" no aviso de e-mail que já tem conta (H-CON-06).
+  static const inUseSignIn = Key('account.inUseSignIn');
 
   /// O convite em folha, no fim da 1ª partida.
   static const inviteSheet = Key('account.inviteSheet');
   static const notNow = Key('account.notNow');
+
+  /// O convite em cartão (fim da partida, Seu progresso; H-CON-02/03) e o X.
+  static const inviteCard = Key('account.inviteCard');
+  static const inviteCardClose = Key('account.inviteCardClose');
 
   /// Criar conta e Entrar, com e-mail e senha.
   static const createScreen = Key('account.create');
@@ -54,10 +67,22 @@ abstract final class AccountKeys {
   static Key avatar(int index) => Key('account.avatar.$index');
   static const photoRemove = Key('account.photoRemove');
 
+  /// "Termos e privacidade" (H-CON-08): o aceite logo depois de criar a conta.
+  static const acceptScreen = Key('account.accept');
+  static const acceptCheck = Key('account.acceptCheck');
+  static const acceptTerms = Key('account.acceptTerms');
+  static const acceptUsage = Key('account.acceptUsage');
+  static const acceptContinue = Key('account.acceptContinue');
+
+  static const editSavedNote = Key('account.editSavedNote');
   static const restoredScreen = Key('account.restored');
   static const restoredContinue = Key('account.restoredContinue');
 
-  static const deleteDialog = Key('account.deleteDialog');
+  static const deleteSheet = Key('account.deleteSheet');
+  static const deleteClose = Key('account.deleteClose');
+  static const deleteLose = Key('account.deleteLose');
+  static const deletePlayWarning = Key('account.deletePlayWarning');
+  static const deleteNotice = Key('account.deleteNotice');
   static const deleteConfirm = Key('account.deleteConfirm');
   static const deleteCancel = Key('account.deleteCancel');
 }

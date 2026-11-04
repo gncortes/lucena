@@ -3,6 +3,7 @@ import 'campaign.dart';
 import 'challenge_link.dart';
 import 'endgame_position.dart';
 import 'game_setup.dart';
+import 'pilares_access.dart';
 
 /// Um evento do Analytics: o nome e os parâmetros da tabela da E1.03.
 ///
@@ -272,8 +273,16 @@ abstract final class AnalyticsCatalog {
     'anuncio_consentimento': ['resultado', 'origem'],
     'anuncio_pedido': ['resultado', 'aula_id', 'licoes_abertas'],
     'anuncio_visto': ['aula_id', 'ate_o_fim', 'tempo_s', 'licoes_abertas'],
-    'anuncio_remocao': ['etapa', 'origem'],
     'purchase': ['value', 'currency', 'item_id'],
+    // Venda do Pilares (H-VEN-17).
+    'pilares_oferta_vista': ['origem', 'destaque'],
+    'pilares_oferta_fechada': ['origem', 'destaque'],
+    'pilares_plano_escolhido': ['plano'],
+    'demo_inicio': ['capitulo_id'],
+    'demo_fim': [],
+    'pilares_compra_resultado': ['resultado', 'plano'],
+    'pilares_restaurar': ['resultado'],
+    'pilares_assinatura_encerrada': [],
     // Corrida de problemas.
     'corrida_aquecimento': ['acao'],
     'corrida_iniciada': ['tema', 'recorde'],
@@ -288,6 +297,9 @@ abstract final class AnalyticsCatalog {
     'atualizacao_acao': ['tipo', 'acao', 'via'],
     // Privacidade.
     'privacidade_analytics': ['ligado'],
+    // Baixar meus dados (H-CON-21): ok, erro ou cancelado.
+    'dados_baixados': ['resultado'],
+    'aceite_termos': ['versao'],
   };
 
   /// Os 3 da página de reserva (stream web, E1.01): o app não os registra.
@@ -1208,7 +1220,7 @@ abstract final class AnalyticsEvents {
   });
 
   /// `resposta`: `permitiu|agora_nao|negou_sistema`; `gatilho`:
-  /// `final_dia|final_destaque|treino`.
+  /// `final_dia|final_destaque|treino|avisos`.
   static AnalyticsEvent avisoPedido({
     required String resposta,
     required String gatilho,
@@ -1348,17 +1360,52 @@ abstract final class AnalyticsEvents {
     'licoes_abertas': licoesAbertas,
   });
 
-  /// `etapa`: `aberto|comprado|pendente|cancelado|restaurado`; `origem`:
-  /// `perfil|anuncio|privacidade`.
-  static AnalyticsEvent anuncioRemocao({
-    required String etapa,
+  /// Uma tela de venda do Pilares abriu. `origem`:
+  /// `abertura_app|home|destino|metas|catalogo|estatisticas|anuncio|perfil|fim_demo`;
+  /// `destaque`: a tela (`apresentacao|oferta|demo_oferta|antes_inicio|...`).
+  static AnalyticsEvent pilaresOfertaVista({
     required String origem,
-  }) => _e('anuncio_remocao', {'etapa': etapa, 'origem': origem});
+    required String destaque,
+  }) => _e('pilares_oferta_vista', {'origem': origem, 'destaque': destaque});
 
-  static AnalyticsEvent purchase({required double value}) => _e('purchase', {
-    'value': value,
-    'currency': 'BRL',
-    'item_id': 'remover_anuncios',
+  static AnalyticsEvent pilaresOfertaFechada({
+    required String origem,
+    required String destaque,
+  }) => _e('pilares_oferta_fechada', {'origem': origem, 'destaque': destaque});
+
+  static AnalyticsEvent pilaresPlanoEscolhido({required PilaresPlan plan}) =>
+      _e('pilares_plano_escolhido', {'plano': plan.analytics});
+
+  static AnalyticsEvent demoInicio({required String capituloId}) =>
+      _e('demo_inicio', {'capitulo_id': capituloId});
+
+  static AnalyticsEvent demoFim() => _e('demo_fim');
+
+  /// `resultado`: `ok|cancelada|erro|pendente|sem_internet`.
+  static AnalyticsEvent pilaresCompraResultado({
+    required String resultado,
+    required PilaresPlan plan,
+  }) => _e('pilares_compra_resultado', {
+    'resultado': resultado,
+    'plano': plan.analytics,
+  });
+
+  /// `resultado`: `achou|nao_achou|erro|sem_internet`.
+  static AnalyticsEvent pilaresRestaurar({required String resultado}) =>
+      _e('pilares_restaurar', {'resultado': resultado});
+
+  static AnalyticsEvent pilaresAssinaturaEncerrada() =>
+      _e('pilares_assinatura_encerrada');
+
+  /// A compra do Pilares (H-VEN-17): o valor e a moeda vêm da loja.
+  static AnalyticsEvent purchase({
+    required PilaresPlan plan,
+    double? value,
+    String? currency,
+  }) => _e('purchase', {
+    'value': ?value,
+    'currency': ?currency,
+    'item_id': plan.itemId,
   });
 
   // Corrida de problemas (E1.31).
@@ -1430,6 +1477,14 @@ abstract final class AnalyticsEvents {
 
   static AnalyticsEvent privacidadeAnalytics({required bool ligado}) =>
       _e('privacidade_analytics', {'ligado': _yn(ligado)});
+
+  /// "Baixar meus dados" terminou: `ok`, `erro` ou `cancelado`.
+  static AnalyticsEvent dadosBaixados({required String resultado}) =>
+      _e('dados_baixados', {'resultado': resultado});
+
+  /// Aceitou os Termos e a Política logo depois de criar a conta (H-CON-08).
+  static AnalyticsEvent aceiteTermos({required int versao}) =>
+      _e('aceite_termos', {'versao': versao});
 
   /// O `screen_view` manual: só o nome da rota (`/featured/:id`), nunca o
   /// caminho com id.
