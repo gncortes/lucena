@@ -23,8 +23,10 @@ import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
+import 'package:lucena/ui/profile/widgets/profile_rows.dart';
 import 'package:lucena/ui/profile/widgets/profile_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
@@ -617,6 +619,43 @@ void main() {
         reason: '$key',
       );
     }
+  });
+
+  // O canvas contorna os cartões e os grupos com 1 px de #E1E5DF.
+  testWidgets('os grupos e o cartão do Perfil têm o contorno do canvas', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    final grupo = tester.widget<Material>(
+      find
+          .descendant(
+            of: find.byType(ProfileRowGroup).first,
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    expect(
+      (grupo.shape! as RoundedRectangleBorder).side,
+      const BorderSide(color: AppColors.cardOutline),
+    );
+    final cartao = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byKey(ProfileKeys.localCard),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect(
+      (cartao.decoration as BoxDecoration).border,
+      Border.all(color: AppColors.cardOutline),
+    );
+  });
+
+  // CompOpcaoLista: linha com subtítulo tem 72 px de altura mínima.
+  testWidgets('a linha com valor tem a altura do canvas', (tester) async {
+    await pumpScreen(tester);
+    expect(tester.getSize(find.byKey(ProfileKeys.rowLanguage)).height, 72);
   });
 
   testWidgets('Idioma e Notificações abrem as telas dos Ajustes', (
