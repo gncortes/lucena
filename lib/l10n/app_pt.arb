@@ -2917,5 +2917,29 @@
   "venBeforeHomeGoalsText": "Lição, exercícios e abertura em cada dia",
   "venBeforeHomeChaptersText": "Capítulo 1 grátis, com 3 lições e o teste",
   "venBeforeHomeLearn": "Conhecer o plano",
-  "venBeforeHomeClose": "Fechar"
+  "venBeforeHomeClose": "Fechar",
+  "venPlanSaleTitle": "Seu plano para evoluir no xadrez",
+  "venPlanSaleText": "Treine o que o seu jogo pede, todo dia. Mais que um curso: {lessons} lições com o Viktor e um plano feito para o seu objetivo.",
+  "@venPlanSaleText": {
+    "placeholders": {
+      "lessons": {
+        "type": "int"
+      }
+    }
+  },
+  "venPlanSaleChapters": "capítulos",
+  "venPlanSaleTake": "O que você leva",
+  "venPlanSaleLevelText": "Cada parte do jogo aparece como Forte, Aprender ou Revisar, e você já sabe por onde começar.",
+  "venPlanSaleGoalsText": "Cada meta tem a parte de hoje: lição, exercício e abertura.",
+  "venPlanSaleFollow": "Treino que acompanha você",
+  "venPlanSaleFollowText": "O que você erra volta nas metas até ficar firme. Perdeu dias? Replaneje.",
+  "venPlanSaleProgressText": "Cada tema ganha nota pelos últimos 7 exercícios. Com 70% ou mais, está firme.",
+  "venPlanSaleReview": "Última semana de revisão",
+  "venPlanSaleReviewText": "A última semana antes do torneio revisa o que você estudou.",
+  "venPlanSaleLearn": "O que você vai aprender",
+  "venPlanSaleTry": "Veja o plano em ação",
+  "venPlanSaleTryText": "O Capítulo 1 está liberado: 3 lições com o Viktor e uma lista de exercícios.",
+  "venPlanSaleClosing": "Treine até o seu objetivo, com o Viktor em cada lição.",
+  "venPlanSaleStart": "Começar pelo Capítulo 1",
+  "venPlanSaleFull": "Ver o curso completo"
 }

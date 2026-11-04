@@ -2669,5 +2669,22 @@
   "venBeforeHomeGoalsText": "[Léššöñ, éxéŕçîšéš åñd öpéñîñĝ évéŕý dåý one two three four]",
   "venBeforeHomeChaptersText": "[Çhåptéŕ 1 fŕéé, wîth 3 léššöñš åñd thé téšt one two three four]",
   "venBeforeHomeLearn": "[Šéé thé plåñ one two]",
-  "venBeforeHomeClose": "[Çlöšé one]"
+  "venBeforeHomeClose": "[Çlöšé one]",
+  "venPlanSaleTitle": "[Ýöûŕ plåñ tö ĝét béttéŕ åt çhéšš one two three]",
+  "venPlanSaleText": "[Tŕåîñ whåt ýöûŕ ĝåmé ñéédš, évéŕý dåý. Möŕé thåñ å çöûŕšé: {lessons} léššöñš wîth Vîktöŕ åñd å plåñ bûîlt föŕ ýöûŕ ĝöål. one two three four five six seven eight nine ten]",
+  "venPlanSaleChapters": "[çhåptéŕš one]",
+  "venPlanSaleTake": "[Whåt ýöû ĝét one two]",
+  "venPlanSaleLevelText": "[Éåçh påŕt öf thé ĝåmé šhöwš åš Štŕöñĝ, Léåŕñ öŕ Ŕévîéw, šö ýöû kñöw whéŕé tö štåŕt. one two three four five six seven]",
+  "venPlanSaleGoalsText": "[Éåçh ĝöål håš tödåý'š šhåŕé: léššöñ, éxéŕçîšé åñd öpéñîñĝ. one two three four five]",
+  "venPlanSaleFollow": "[Tŕåîñîñĝ thåt kéépš ûp wîth ýöû one two three]",
+  "venPlanSaleFollowText": "[Whåt ýöû mîšš çöméš båçk îñ ýöûŕ ĝöålš ûñtîl ît štîçkš. Mîššéd šömé dåýš? Ŕéplåñ. one two three four five six seven]",
+  "venPlanSaleProgressText": "[Éåçh töpîç îš šçöŕéd öñ îtš låšt 7 éxéŕçîšéš. Åt 70% öŕ möŕé, ît'š šölîd. one two three four five six seven]",
+  "venPlanSaleReview": "[Fîñål ŕévîéw wéék one two]",
+  "venPlanSaleReviewText": "[Thé låšt wéék béföŕé thé töûŕñåméñt ŕévîéwš whåt ýöû štûdîéd. one two three four five six]",
+  "venPlanSaleLearn": "[Whåt ýöû'll léåŕñ one two]",
+  "venPlanSaleTry": "[Šéé thé plåñ îñ åçtîöñ one two three]",
+  "venPlanSaleTryText": "[Çhåptéŕ 1 îš ûñlöçkéd: 3 léššöñš wîth Vîktöŕ åñd å šét öf éxéŕçîšéš. one two three four five six]",
+  "venPlanSaleClosing": "[Tŕåîñ ûp tö ýöûŕ ĝöål, wîth Vîktöŕ îñ évéŕý léššöñ. one two three four five]",
+  "venPlanSaleStart": "[Štåŕt wîth Çhåptéŕ 1 one two]",
+  "venPlanSaleFull": "[Šéé thé fûll çöûŕšé one two]"
 }

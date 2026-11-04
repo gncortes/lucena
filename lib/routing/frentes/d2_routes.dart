@@ -16,6 +16,7 @@ import '../../ui/pilares_sale/view_models/pilares_demo_end_cubit.dart';
 import '../../ui/pilares_sale/view_models/pilares_prices_cubit.dart';
 import '../../ui/pilares_sale/widgets/pilares_before_home_sheet.dart';
 import '../../ui/pilares_sale/widgets/pilares_demo_end_screen.dart';
+import '../../ui/pilares_sale/widgets/pilares_plan_sale_screen.dart';
 import '../../data/repositories/campaign/campaign_repository.dart';
 import '../../ui/pilares_sale/widgets/pilares_subscription_ended_screen.dart';
 import '../../ui/pilares_sale/view_models/pilares_offer_cubit.dart';
@@ -89,6 +90,10 @@ abstract final class D2Paths {
 
   /// Plano como venda (H-VEN-14).
   static const pilaresPlan = '/pilares/plan';
+
+  /// A venda do plano com a `origem` da oferta vista.
+  static String plan({String? origin}) =>
+      Uri(path: pilaresPlan, queryParameters: {'origem': ?origin}).toString();
 
   /// Esqueci a senha (H-CON-08).
   static const accountForgot = '/conta/esqueci-senha';
@@ -277,6 +282,26 @@ final List<RouteBase> d2Routes = [
         ),
         child: const PilaresBeforeHomeSheet(),
       ),
+    ),
+  ),
+  // O plano como venda (H-VEN-14): quem tem o curso vai ao Guia.
+  appRoute(
+    name: RouteNames.pilaresPlan,
+    path: D2Paths.pilaresPlan,
+    redirect: (context, state) =>
+        context.read<PurchaseRepository>().state.access.owns
+        ? Routes.training(TrainingCourse.pilares.name)
+        : null,
+    builder: (context, state) => BlocProvider(
+      lazy: false,
+      create: (context) => CoursePreviewCubit(
+        context.read<CoursePreviewRepository>(),
+        context.read<CharacterRepository>(),
+        analytics: context.analytics,
+        origin: state.uri.queryParameters['origem'] ?? 'home',
+        highlight: 'plano',
+      )..load(),
+      child: const PilaresPlanSaleScreen(),
     ),
   ),
   appRoute(

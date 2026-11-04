@@ -124,7 +124,9 @@ class PilaresBeforeHomeSheet extends StatelessWidget {
                     cubit.learn();
                     final router = GoRouter.of(context);
                     Navigator.of(context).pop();
-                    router.push(D2Paths.pilaresPlan);
+                    router.push(
+                      D2Paths.plan(origin: PilaresBeforeHomeCubit.origin),
+                    );
                   },
                 ),
               ],

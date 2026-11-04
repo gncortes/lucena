@@ -13932,5 +13932,78 @@
   "venBeforeHomeClose": "Close",
   "@venBeforeHomeClose": {
     "description": "Dica do X da oferta antes do Início."
+  },
+  "venPlanSaleTitle": "Your plan to get better at chess",
+  "@venPlanSaleTitle": {
+    "description": "Título da venda do plano (PropV2VendaPlano, H-VEN-14)."
+  },
+  "venPlanSaleText": "Train what your game needs, every day. More than a course: {lessons} lessons with Viktor and a plan built for your goal.",
+  "@venPlanSaleText": {
+    "description": "Texto abaixo do título da venda do plano.",
+    "placeholders": {
+      "lessons": {
+        "type": "int"
+      }
+    }
+  },
+  "venPlanSaleChapters": "chapters",
+  "@venPlanSaleChapters": {
+    "description": "Rótulo do número de capítulos na venda do plano."
+  },
+  "venPlanSaleTake": "What you get",
+  "@venPlanSaleTake": {
+    "description": "Rótulo da seção de benefícios da venda do plano."
+  },
+  "venPlanSaleLevelText": "Each part of the game shows as Strong, Learn or Review, so you know where to start.",
+  "@venPlanSaleLevelText": {
+    "description": "Texto do item Seu nível em 15 posições na venda do plano."
+  },
+  "venPlanSaleGoalsText": "Each goal has today's share: lesson, exercise and opening.",
+  "@venPlanSaleGoalsText": {
+    "description": "Texto do item Várias metas ao mesmo tempo na venda do plano."
+  },
+  "venPlanSaleFollow": "Training that keeps up with you",
+  "@venPlanSaleFollow": {
+    "description": "Item da venda do plano."
+  },
+  "venPlanSaleFollowText": "What you miss comes back in your goals until it sticks. Missed some days? Replan.",
+  "@venPlanSaleFollowText": {
+    "description": "Texto do item Treino que acompanha você."
+  },
+  "venPlanSaleProgressText": "Each topic is scored on its last 7 exercises. At 70% or more, it's solid.",
+  "@venPlanSaleProgressText": {
+    "description": "Texto do item Seu progresso à vista na venda do plano."
+  },
+  "venPlanSaleReview": "Final review week",
+  "@venPlanSaleReview": {
+    "description": "Item da venda do plano."
+  },
+  "venPlanSaleReviewText": "The last week before the tournament reviews what you studied.",
+  "@venPlanSaleReviewText": {
+    "description": "Texto do item Última semana de revisão."
+  },
+  "venPlanSaleLearn": "What you'll learn",
+  "@venPlanSaleLearn": {
+    "description": "Rótulo da lista dos 20 capítulos na venda do plano."
+  },
+  "venPlanSaleTry": "See the plan in action",
+  "@venPlanSaleTry": {
+    "description": "Título do cartão do Capítulo 1 grátis na venda do plano."
+  },
+  "venPlanSaleTryText": "Chapter 1 is unlocked: 3 lessons with Viktor and a set of exercises.",
+  "@venPlanSaleTryText": {
+    "description": "Texto do cartão Veja o plano em ação."
+  },
+  "venPlanSaleClosing": "Train up to your goal, with Viktor in every lesson.",
+  "@venPlanSaleClosing": {
+    "description": "Frase final da venda do plano, acima dos botões."
+  },
+  "venPlanSaleStart": "Start with Chapter 1",
+  "@venPlanSaleStart": {
+    "description": "Botão principal da venda do plano: abre o Catálogo da demonstração."
+  },
+  "venPlanSaleFull": "See the full course",
+  "@venPlanSaleFull": {
+    "description": "Botão de texto da venda do plano: abre a oferta do fim da demonstração."
   }
 }

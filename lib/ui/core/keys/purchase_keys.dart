@@ -67,4 +67,11 @@ abstract final class PurchaseKeys {
   static const beforeHomeSheet = Key('offer.beforeHome');
   static const beforeHomeClose = Key('offer.beforeHome.close');
   static const beforeHomeLearn = Key('offer.beforeHome.learn');
+
+  // Plano como venda (H-VEN-14, PropV2VendaPlano).
+  static const planSaleScreen = Key('pilares.plan');
+  static const planSaleChapters = Key('pilares.plan.chapters');
+  static const planSaleCompare = Key('pilares.plan.compare');
+  static const planSaleStart = Key('pilares.plan.start');
+  static const planSaleFull = Key('pilares.plan.full');
 }
