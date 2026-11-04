@@ -13,11 +13,25 @@ import 'home_robot.dart';
 import '../../testing/board_gestures.dart';
 
 /// Native frames from the host handshake, after Flutter has settled.
-/// The host must run tools/capture/t85_capture_server.py on loopback:8792.
+/// The host must run tools/capture/t85_capture_server.py on loopback
+/// (`E2E_CAPTURE_URL`, padrão 8792).
 class TrainingCaptureRobot {
   TrainingCaptureRobot(this.$);
   final PatrolIntegrationTester $;
   final _recordings = <String>{};
+
+  /// Tira o nome do teste que o binding desenha no topo da tela (a faixa
+  /// vermelha sobre a app bar): prints e MP4 mostram só o app.
+  static Future<void> semFaixaDoTeste(PatrolIntegrationTester $) async {
+    final binding = $.tester.binding;
+    if (binding is! LiveTestWidgetsFlutterBinding) return;
+    // ignore: invalid_use_of_protected_member
+    binding.setLabel('');
+    for (final view in binding.renderViews) {
+      view.markNeedsPaint();
+    }
+    await $.pump();
+  }
 
   Future<void> openGuide({bool escola = false}) async {
     await HomeRobot($).openSettings();
@@ -145,12 +159,14 @@ class TrainingCaptureRobot {
         );
       }
     }
+    await semFaixaDoTeste($);
     await _request('shot', name);
   }
 
   /// Await before performing the action whose transition is being captured.
   Future<void> begin(String name) async {
     await $.pumpAndSettle();
+    await semFaixaDoTeste($);
     await _request('begin', name);
     _recordings.add(name);
     addTearDown(() async {
