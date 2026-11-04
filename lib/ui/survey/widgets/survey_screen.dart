@@ -1,4 +1,4 @@
-import '../../core/widgets/load_skeleton.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/load_error.dart';
 
 import 'package:flutter/material.dart';
@@ -67,7 +67,21 @@ class SurveyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final loadState = context.watch<SurveyCubit>().state;
     if (!loadState.ready && loadState.failure == null) {
-      return const LoadSkeletonScreen();
+      // Regra da app bar (T85): o título e o X do passo 1 já no carregando,
+      // o X desabilitado até a pesquisa abrir.
+      return Scaffold(
+        appBar: LucenaAppBar(
+          leading: IconButton(
+            key: SurveyKeys.close,
+            icon: const Icon(Icons.close),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: null,
+          ),
+          title: Text(context.l10n.surveyTitle),
+          toolbarHeight: 64,
+        ),
+        body: const SafeArea(top: false, child: SkeletonList()),
+      );
     }
     if (loadState.failure case final failure?) {
       return LoadErrorScreen(
@@ -109,6 +123,8 @@ class SurveyScreen extends StatelessWidget {
               ),
               // Só o título: o passo já aparece na barra de progresso.
               title: Text(l10n.surveyTitle),
+              // A barra de 4 px fica dentro dos 64 da app bar.
+              toolbarHeight: 64 - AppBarProgress.height,
               bottom: AppBarProgress(
                 key: SurveyKeys.progress,
                 value: (state.step + 1) / state.total,

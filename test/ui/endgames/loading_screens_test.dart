@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/widgets/skeleton.dart';
 import 'package:lucena/ui/endgames/view_models/endgame_lesson_cubit.dart';
 import 'package:lucena/ui/endgames/view_models/endgames_cubit.dart';
@@ -93,5 +94,16 @@ void main() {
       ),
     );
     expect(find.byType(SkeletonBlock), findsWidgets);
+    // Regra da app bar (T85): a estrela já está lá no carregando, apagada.
+    final star = find.descendant(
+      of: find.byType(AppBar),
+      matching: find.byKey(ExerciseKeys.stars),
+    );
+    expect(star, findsOneWidget);
+    expect(
+      tester.widget<Icon>(star).color,
+      Theme.of(tester.element(star)).colorScheme.onSurface
+          .withValues(alpha: 0.38),
+    );
   });
 }

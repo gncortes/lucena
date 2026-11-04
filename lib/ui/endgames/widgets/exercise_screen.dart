@@ -350,23 +350,30 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                     (state.say == ExerciseSay.correct ||
                         state.say == ExerciseSay.wrong))
                   ExerciseResultMark(correct: state.say == ExerciseSay.correct),
-                if (!widget.trainingTest && state.exercise != null)
+                // Regra da app bar (T85): a estrela já aparece no
+                // carregando, apagada.
+                if (!widget.trainingTest)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(
                       end: AppSpacing.md,
                     ),
                     child: Semantics(
-                      label: _starLabel(l10n, state, state.exercise!),
+                      label: state.exercise == null
+                          ? null
+                          : _starLabel(l10n, state, state.exercise!),
                       excludeSemantics: true,
                       // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
                       // ainda vale pontos, vazia se não.
                       child: Icon(
-                        state.worth > 0
+                        state.exercise == null || state.worth > 0
                             ? Icons.star_rounded
                             : Icons.star_outline_rounded,
                         key: ExerciseKeys.stars,
                         size: AppIconSize.large,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: state.exercise == null
+                            ? Theme.of(context).colorScheme.onSurface
+                                  .withValues(alpha: 0.38)
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),

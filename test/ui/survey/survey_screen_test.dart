@@ -84,10 +84,39 @@ void main() {
 
   setUp(() => surveys = FakeSurveyRepository());
 
+  testWidgets('regra da app bar: no carregando, o mesmo título e o X '
+      '(desabilitado) do passo 1, sem subtítulo', (tester) async {
+    final cubit = SurveyCubit(
+      kind: SurveyKind.pilares,
+      surveys: surveys,
+      characters: FakeCharacterRepository(),
+    );
+    addTearDown(cubit.close);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        surveyRepository: surveys,
+        child: BlocProvider.value(value: cubit, child: const SurveyScreen()),
+      ),
+    );
+    await tester.pump();
+    final appBar = find.byType(AppBar);
+    expect(appBar, findsOneWidget);
+    expect(
+      find.descendant(of: appBar, matching: find.text('Sua opinião')),
+      findsOneWidget,
+    );
+    final close = tester.widget<IconButton>(find.byKey(SurveyKeys.close));
+    expect(close.onPressed, isNull);
+    expect(tester.getSize(appBar).height, 64);
+  });
+
   testWidgets('os rostos desenham em 36 x 36 dentro do círculo de 52', (
     tester,
   ) async {
     await pump(tester, SurveyKind.pilares);
+    // Regra da app bar: 64 com a barra de progresso dentro.
+    expect(tester.getSize(find.byType(AppBar)).height, 64);
     for (var n = 1; n <= 5; n++) {
       final face = find.descendant(
         of: find.byKey(SurveyKeys.face(n)),
