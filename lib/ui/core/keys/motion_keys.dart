@@ -65,6 +65,10 @@ abstract final class MotionKeys {
   /// O retângulo que cresce do [CartaoQueAbre] até a tela (H-ANI-04).
   static const cartaoQueAbre = Key('motion.cartaoQueAbre');
 
+  /// O retângulo que cresce da [OrigemQueAbre] até a tela, na [RotaQueAbre]
+  /// (H-ANI-04 por rota).
+  static const rotaQueAbre = Key('motion.rotaQueAbre');
+
   /// O corpo das abas na [AbasFadeThrough] (H-ANI-05).
   static const corpoDasAbas = Key('motion.corpoDasAbas');
 
@@ -88,4 +92,59 @@ abstract final class MotionKeys {
 
   /// A opção [i] do painel de filtro ([OpcoesDoFiltro], H-ANI-23).
   static Key itemDoFiltro(int i) => Key('motion.itemDoFiltro.$i');
+
+  /// O anel da meta do dia ([AnelDaMeta], H-ANI-28).
+  static const anelDaMeta = Key('motion.anelDaMeta');
+
+  /// O contador da sequência no [AnelDaMeta].
+  static const contadorDaMeta = Key('motion.contadorDaMeta');
+
+  /// As faíscas da meta cumprida no [AnelDaMeta].
+  static const faiscasDaMeta = Key('motion.faiscasDaMeta');
+
+  /// O diploma que escala na [Celebracao] (H-ANI-15).
+  static const diplomaDaCelebracao = Key('motion.diplomaDaCelebracao');
+
+  /// O fade do diploma com movimento reduzido na [Celebracao].
+  static const fadeDaCelebracao = Key('motion.fadeDaCelebracao');
+
+  /// O confete da [Celebracao].
+  static const confeteDaCelebracao = Key('motion.confeteDaCelebracao');
+
+  /// A barra do tempo da teoria ([BarraDoCronometro], H-ANI-14).
+  static const barraDoCronometro = Key('motion.barraDoCronometro');
+
+  /// O contorno do [CartaoDePlano] (H-ANI-26).
+  static const contornoDoPlano = Key('motion.contornoDoPlano');
+
+  /// O ponto do rádio do [CartaoDePlano].
+  static const pontoDoPlano = Key('motion.pontoDoPlano');
+
+  /// O círculo do ✓ no [SucessoDaCompra] (H-ANI-27).
+  static const circuloDaCompra = Key('motion.circuloDaCompra');
+
+  /// O ✓ que salta no [SucessoDaCompra].
+  static const checkDaCompra = Key('motion.checkDaCompra');
+
+  /// O anel que se expande uma vez no [SucessoDaCompra].
+  static const anelDaCompra = Key('motion.anelDaCompra');
+
+  /// O corpo que abre no [AvisoQueAbre] (H-ANI-27).
+  static const avisoQueAbre = Key('motion.avisoQueAbre');
+
+  /// O ícone que pulsa no [AvisoQueAbre].
+  static const iconeDoAviso = Key('motion.iconeDoAviso');
+
+  /// O "Conhecer o Pilares" que entra na [BarraDoAnuncio] (H-ANI-31).
+  static const conhecerDoAnuncio = Key('motion.conhecerDoAnuncio');
+
+  /// A [ContagemParaFechar] do anúncio (H-ANI-31).
+  static const contagemParaFechar = Key('motion.contagemParaFechar');
+
+  /// A abertura animada (H-ANI-44): tocar pula para a saída quando a carga
+  /// terminou.
+  static const abertura = Key('motion.abertura');
+
+  /// O peão desenhado da abertura ([MascotePainter]).
+  static const mascote = Key('motion.mascote');
 }

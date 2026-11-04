@@ -40,7 +40,7 @@ import '../ui/core/keys/training_keys.dart';
 import '../ui/course_entry/widgets/course_entry_gate.dart';
 import '../ui/course_preview/widgets/course_details_screen.dart';
 import '../ui/course_entry/widgets/course_content_session.dart';
-import '../ui/core/theme/app_motion.dart';
+import '../ui/core/motion/tabuleiro_hero.dart';
 import '../ui/course_guide/view_models/course_guide_cubit.dart';
 import '../ui/course_guide/view_models/training_plan_cubit.dart';
 import '../ui/course_guide/widgets/course_chapter_screen.dart';
@@ -879,7 +879,6 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
             teacher: data.teacher,
             onNextGoal: _finish,
             preview: widget.launch?.openingPreview,
-            homeHero: widget.launch?.openingPreview != null,
             partId: widget.partId,
             onProgress: () => context.push(
               '${Routes.training(widget.config.course.name)}/opening-progress',
@@ -900,7 +899,6 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
           onNextGoal: _finish,
           onRedoLesson: (id) => context.push(Routes.trainingLesson(id)),
           preview: widget.launch?.exercisePreview,
-          homeHero: widget.launch?.exercisePreview != null,
         );
       },
     ),
@@ -923,16 +921,10 @@ Page<void> _destinationPage(
   if (state.extra is! TrainingLaunch) {
     return MaterialPage<void>(key: state.pageKey, child: child);
   }
-  final duration = AppMotion.of(context).screen;
-  return CustomTransitionPage<void>(
+  // H-ANI-02: o tabuleiro do cartão do Início voa até o da tela.
+  return PaginaComTabuleiro<void>(
+    context: context,
     key: state.pageKey,
-    transitionDuration: duration,
-    reverseTransitionDuration: duration,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        FadeTransition(
-          opacity: animation.drive(CurveTween(curve: AppMotion.enter)),
-          child: child,
-        ),
     child: child,
   );
 }

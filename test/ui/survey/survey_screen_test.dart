@@ -4,8 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/routing/route_names.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
-import 'package:lucena/ui/core/widgets/app_bar_progress.dart';
+import 'package:lucena/ui/core/motion/barra_que_enche.dart';
 import 'package:lucena/ui/survey/view_models/survey_cubit.dart';
 import 'package:lucena/ui/survey/view_models/viktor_thanks_cubit.dart';
 import 'package:lucena/ui/survey/widgets/survey_face.dart';
@@ -109,6 +110,19 @@ void main() {
     final close = tester.widget<IconButton>(find.byKey(SurveyKeys.close));
     expect(close.onPressed, isNull);
     expect(tester.getSize(appBar).height, 64);
+  });
+
+  testWidgets('H-ANI-13: a barra do passo enche e anda do passo anterior', (
+    tester,
+  ) async {
+    await pump(tester, SurveyKind.pilares);
+    expect(
+      find.descendant(
+        of: find.byKey(SurveyKeys.progress),
+        matching: find.byKey(MotionKeys.barraQueEnche),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('os rostos desenham em 36 x 36 dentro do círculo de 52', (
@@ -333,4 +347,4 @@ void main() {
 
 /// O passo da pesquisa na barra de progresso (a app bar leva só o título).
 double _step(WidgetTester tester) =>
-    tester.widget<AppBarProgress>(find.byType(AppBarProgress)).value;
+    tester.widget<BarraQueEnche>(find.byType(BarraQueEnche)).valor;

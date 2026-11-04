@@ -9,6 +9,11 @@ import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
 
 import '../../core/keys/streak_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/numero_que_conta.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -21,6 +26,9 @@ import '../view_models/streak_cubit.dart';
 /// semana de segunda a domingo e o mês com os dias marcados.
 class StreakScreen extends StatelessWidget {
   const StreakScreen({super.key});
+
+  /// Quadro do canvas, para a primeira entrada da sessão.
+  static const streakEntranceId = 'PropV1RetencaoSequencia';
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +46,16 @@ class StreakScreen extends StatelessWidget {
         ),
       );
     }
-    return Scaffold(
-      key: StreakKeys.screen,
-      appBar: LucenaAppBar(title: Text(l10n.streakTitle)),
-      body: BlocBuilder<StreakCubit, StreakState>(
-        builder: (context, state) {
-          if (!state.ready) {
+    return EntradaDaTela(
+      id: StreakScreen.streakEntranceId,
+      child: Scaffold(
+        key: StreakKeys.screen,
+        appBar: LucenaAppBar(title: Text(l10n.streakTitle)),
+        body: BlocBuilder<StreakCubit, StreakState>(
+          builder: (context, state) => ShimmerConteudo(
+            carregando: !state.ready,
             // Canvas `PropV1InicioSequenciaCarregando`.
-            return const KeyedSubtree(
+            esqueleto: const KeyedSubtree(
               key: StreakKeys.loading,
               child: SkeletonBody([
                 SkeletonShape.block(height: 160),
@@ -54,32 +64,34 @@ class StreakScreen extends StatelessWidget {
                 SkeletonShape.block(height: 20, radius: AppShape.small),
                 SkeletonShape.block(height: 20, radius: AppShape.small),
               ]),
-            );
-          }
-          return ListView(
-            padding: scrollPadding(
-              context,
-              left: AppSpacing.screen,
-              top: AppSpacing.sm,
-              right: AppSpacing.screen,
             ),
-            children: [
-              _Hero(state: state),
-              const SizedBox(height: AppSpacing.betweenCards),
-              _Month(state: state),
-              const SizedBox(height: AppSpacing.betweenCards),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                child: Text(
-                  l10n.streakRules,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+            child: ListView(
+              padding: scrollPadding(
+                context,
+                left: AppSpacing.screen,
+                top: AppSpacing.sm,
+                right: AppSpacing.screen,
+              ),
+              children: [
+                _Hero(state: state),
+                const SizedBox(height: AppSpacing.betweenCards),
+                _Month(state: state),
+                const SizedBox(height: AppSpacing.betweenCards),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                  ),
+                  child: Text(
+                    l10n.streakRules,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -128,10 +140,15 @@ class _Hero extends StatelessWidget {
                     key: StreakKeys.current,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        l10n.streakDayCount(streak.current),
-                        style: theme.textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
+                      ValorQueAnima(
+                        valor: streak.current.toDouble(),
+                        duracao: LucenaMotion.numeroConta,
+                        builder: (context, agora) => Text(
+                          l10n.streakDayCount(agora.round()),
+                          style: theme.textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
                         ),
                       ),
                       Text(l10n.streakFollowing(streak.current), style: muted),
@@ -142,9 +159,10 @@ class _Hero extends StatelessWidget {
                   key: StreakKeys.record,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      '${streak.record}',
-                      style: theme.textTheme.titleLarge?.copyWith(
+                    NumeroQueConta(
+                      valor: streak.record,
+                      alinhamento: AlignmentDirectional.centerEnd,
+                      estilo: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),

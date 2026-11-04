@@ -41,6 +41,7 @@
   "achievementsTitle": "Conquistas",
   "achievementsUnlockedOn": "Conquistada em {date}",
   "appTitle": "Lucena",
+  "appTagline": "Seu treino de xadrez de todo dia",
   "attemptDetails": "{opponent} · {date}",
   "attemptDraw": "Empate",
   "attemptLoss": "Derrota",
@@ -1792,6 +1793,15 @@
   "trainingGoalsLeft": "Faltam {n} de {total}",
   "trainingPartLesson": "{part} · lição {n}",
   "trainingCount": "{done} de {total}",
+  "trainingCountOf": " de {total}",
+  "@trainingCountOf": {
+    "description": "Course progress: text after the animated done count (the count itself is a separate number).",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "trainingPartLabel": "Parte {roman}",
   "@trainingPartLabel": {
     "description": "T85 course guide: trainingPartLabel.",

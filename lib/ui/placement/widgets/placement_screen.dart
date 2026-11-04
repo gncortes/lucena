@@ -9,6 +9,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
 
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/botao_carregando.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/tabuleiro_animado.dart';
+import '../../core/motion/troca_com_fade.dart';
+import '../../core/motion/transicao_eixo_x.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/app_bar_height.dart';
@@ -30,7 +36,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
@@ -104,41 +109,71 @@ class PlacementScreen extends StatelessWidget {
               // Quanto do questionário já foi: uma barra contínua na base
               // da barra do app, que anda a cada resposta.
               bottom: state.view == PlacementView.question
-                  ? AppBarProgress(
-                      key: PlacementKeys.progress,
-                      value: (state.number - 1) / 20,
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(
+                        AppBarProgress.height,
+                      ),
+                      // H-ANI-13: enche na primeira entrada e anda a cada
+                      // resposta.
+                      child: KeyedSubtree(
+                        key: PlacementKeys.progress,
+                        child: BarraQueEnche(
+                          valor: (state.number - 1) / 20,
+                          altura: AppBarProgress.height,
+                        ),
+                      ),
                     )
                   : null,
             ),
       body: SafeArea(
         top: state.view != PlacementView.result,
-        child: AnimatedSwitcher(
-          duration: AppMotion.of(context).component,
-          switchInCurve: AppMotion.enter,
-          switchOutCurve: AppMotion.exit,
-          transitionBuilder: (child, animation) =>
-              FadeTransition(opacity: animation, child: child),
-          child: switch (state.view) {
-            PlacementView.loading => const SkeletonList(),
-            PlacementView.intro => _Intro(
-              key: const ValueKey('intro'),
-              state: state,
-              onPreferRating: onPreferRating,
+        // H-ANI-03: o eixo X só na entrada (abertura → 1ª pergunta) e na
+        // saída (última pergunta → resultado); entre as perguntas, o fade
+        // com o tabuleiro parado (B7).
+        child: TransicaoEixoX(
+          child: KeyedSubtree(
+            key: ValueKey(switch (state.view) {
+              PlacementView.loading || PlacementView.intro => 'abertura',
+              PlacementView.question => 'perguntas',
+              PlacementView.result => 'resultado',
+            }),
+            child: TrocaComFade(
+              chave: switch (state.view) {
+                PlacementView.question => 'q${state.number}',
+                final view => view,
+              },
+              child: switch (state.view) {
+                PlacementView.loading => const SkeletonList(),
+                PlacementView.intro => EntradaDaTela(
+                  key: const ValueKey('intro'),
+                  id: state.resuming
+                      ? 'PropV2TesteAberturaRetomada'
+                      : 'PropV2TesteAbertura',
+                  child: _Intro(state: state, onPreferRating: onPreferRating),
+                ),
+                PlacementView.question => EntradaDaTela(
+                  key: ValueKey('q${state.number}'),
+                  id: switch (state.item?.type) {
+                    PlacementItemType.squares => 'PropV1TesteNivelCasas',
+                    PlacementItemType.move => 'PropV1TesteNivelLance',
+                    _ => 'PropV1TesteNivelEscolha',
+                  },
+                  child: _Question(
+                    state: state,
+                    usefulHeight:
+                        MediaQuery.sizeOf(context).height -
+                        MediaQuery.viewPaddingOf(context).vertical,
+                  ),
+                ),
+                PlacementView.result => PlacementResultView(
+                  key: const ValueKey('result'),
+                  state: state,
+                  onDone: onDone,
+                  onPreferRating: onPreferRating,
+                ),
+              },
             ),
-            PlacementView.question => _Question(
-              key: ValueKey('q${state.number}'),
-              state: state,
-              usefulHeight:
-                  MediaQuery.sizeOf(context).height -
-                  MediaQuery.viewPaddingOf(context).vertical,
-            ),
-            PlacementView.result => PlacementResultView(
-              key: const ValueKey('result'),
-              state: state,
-              onDone: onDone,
-              onPreferRating: onPreferRating,
-            ),
-          },
+          ),
         ),
       ),
     );
@@ -147,7 +182,7 @@ class PlacementScreen extends StatelessWidget {
 
 /// A abertura: o Viktor explica, três selos e "Começar" (ou continuar).
 class _Intro extends StatelessWidget {
-  const _Intro({required this.state, this.onPreferRating, super.key});
+  const _Intro({required this.state, this.onPreferRating});
 
   final PlacementViewState state;
   final VoidCallback? onPreferRating;
@@ -251,22 +286,16 @@ class _Intro extends StatelessWidget {
           key: PlacementKeys.footer,
           stacked: true,
           children: [
-            FilledButton(
-              key: state.resuming ? PlacementKeys.resume : PlacementKeys.start,
-              style: FilledButton.styleFrom(
-                textStyle: AppButtonText.footer(context),
-              ),
-              onPressed: state.starting ? null : cubit.start,
-              child: state.starting
-                  ? const SizedBox.square(
-                      dimension: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(
-                      state.resuming
-                          ? l10n.placementResume
-                          : l10n.placementStart,
-                    ),
+            // H-ANI-08: o rótulo sai e o círculo entra no próprio botão.
+            BotaoCarregando(
+              buttonKey: state.resuming
+                  ? PlacementKeys.resume
+                  : PlacementKeys.start,
+              busy: state.starting,
+              onPressed: cubit.start,
+              label: state.resuming
+                  ? l10n.placementResume
+                  : l10n.placementStart,
             ),
             if (state.resuming)
               TextButton(
@@ -290,7 +319,7 @@ class _Intro extends StatelessWidget {
 /// Uma pergunta: enunciado no alto, tabuleiro centralizado na área entre
 /// as barras do sistema e respostas no rodapé.
 class _Question extends StatelessWidget {
-  const _Question({required this.state, required this.usefulHeight, super.key});
+  const _Question({required this.state, required this.usefulHeight});
 
   final PlacementViewState state;
   final double usefulHeight;
@@ -562,13 +591,20 @@ class _BoardState extends State<_Board> {
         controller.updatePosition(game, resetPremove: true);
       }
       _shown = game.fen;
-      child = Chessboard(
-        key: PlacementKeys.board,
-        size: widget.size,
-        controller: controller,
-        settings: board.chessground,
-        orientation: orientation,
-        onMove: (move, {viaDragAndDrop}) => cubit.play(move),
+      // H-ANI-10: deslize de 300 ms, captura que encolhe e halo no xeque.
+      child = TabuleiroAnimado(
+        controlador: controller,
+        orientacao: orientation,
+        tamanho: widget.size,
+        pecas: board.pieces.assets,
+        child: Chessboard(
+          key: PlacementKeys.board,
+          size: widget.size,
+          controller: controller,
+          settings: TabuleiroAnimado.ajustes(context, board.chessground),
+          orientation: orientation,
+          onMove: (move, {viaDragAndDrop}) => cubit.play(move),
+        ),
       );
     } else {
       child = StaticChessboard(

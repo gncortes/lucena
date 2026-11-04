@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lista_em_ordem.dart';
+
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,6 +98,7 @@ class TrainingGoalsTab extends StatelessWidget {
       final schoolFirstLessons =
           cubit.config.progressKind == TrainingProgressKind.modulesAndPieces &&
           state.training!.completedLessons.isEmpty;
+      final escola = cubit.config.course == TrainingCourse.escola;
       final contents = <Widget>[];
       if (hasOfflineLesson) {
         contents.add(const TrainingGoalsOfflineNotice());
@@ -199,13 +203,25 @@ class TrainingGoalsTab extends StatelessWidget {
               ),
               SizedBox(
                 height: 6,
-                child: AnimatedProgress(
-                  roundValue: true,
-                  backgroundColor: Theme.of(context).colorScheme.outlineVariant,
-                  value: counts.total == 0
-                      ? 0
-                      : (counts.total - counts.remaining) / counts.total,
-                ),
+                child: escola
+                    ? BarraQueEnche(
+                        altura: 6,
+                        corDoTrilho: Theme.of(context)
+                            .colorScheme
+                            .outlineVariant,
+                        valor: counts.total == 0
+                            ? 0
+                            : (counts.total - counts.remaining) / counts.total,
+                      )
+                    : AnimatedProgress(
+                        roundValue: true,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .outlineVariant,
+                        value: counts.total == 0
+                            ? 0
+                            : (counts.total - counts.remaining) / counts.total,
+                      ),
               ),
               if (!_demo) _planLine(context, day),
             ],
@@ -256,9 +272,25 @@ class TrainingGoalsTab extends StatelessWidget {
             ],
           ),
         );
-      } else if (day.allDone && !offer) {
-        for (final goal in day.goals) {
-          contents.add(_goal(context, state, goal));
+      } else if (day.allDone && (!offer || escola)) {
+        if (escola) {
+          // Metas feitas (H-ANI-17): 90 ms entre uma e outra.
+          contents.add(
+            ListaEmOrdem.feitos(
+              itens: [
+                for (final goal in day.goals) _goal(context, state, goal),
+              ],
+              montar: (itens) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: goalGap,
+                children: itens,
+              ),
+            ),
+          );
+        } else {
+          for (final goal in day.goals) {
+            contents.add(_goal(context, state, goal));
+          }
         }
       } else {
         for (final section in sections) {

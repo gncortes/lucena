@@ -10,9 +10,11 @@ import '../../../domain/models/account.dart';
 import '../../../routing/routes.dart';
 import '../../account/view_models/account_cubit.dart';
 import '../../account/widgets/account_flow.dart';
+import '../../account/widgets/account_invite.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
@@ -109,7 +111,7 @@ class _AccountBodyState extends State<_AccountBody> {
               busy: context.select((AccountCubit c) => c.state.busy),
               onGoogle: () {
                 cubit.inviteAnswered(accepted: true);
-                unawaited(cubit.signInWithGoogle());
+                return cubit.signInWithGoogle();
               },
               onEmail: _email,
               onLogin: () => _email(signIn: true),
@@ -129,7 +131,7 @@ class _Invite extends StatelessWidget {
   });
 
   final bool busy;
-  final VoidCallback onGoogle;
+  final Future<void> Function() onGoogle;
   final VoidCallback onEmail;
   final VoidCallback onLogin;
   final VoidCallback onLater;
@@ -150,49 +152,38 @@ class _Invite extends StatelessWidget {
         ],
       ),
     );
+    // H-ANI-16: o texto que explica entra em cascata, os botões por último.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          line(Icons.cloud_done, l10n.tourAccountSaved),
-          line(Icons.wifi_off, l10n.tourAccountNoAccount),
-          const SizedBox(height: AppSpacing.md),
-          // O rodapé empilhado do canvas, dentro do passo (o botão da base
-          // do tour é o dos outros passos).
-          ActionsFooter(
-            stacked: true,
-            margin: 0,
-            children: [
-              OutlinedButton.icon(
-                key: TourKeys.accountGoogle,
-                onPressed: busy ? null : onGoogle,
-                icon: const Icon(Icons.account_circle_outlined),
-                label: Text(l10n.tourAccountGoogle),
-              ),
-              OutlinedButton.icon(
-                key: TourKeys.accountEmail,
-                onPressed: busy ? null : onEmail,
-                icon: const Icon(Icons.mail),
-                label: Text(l10n.tourAccountEmail),
-              ),
-              TextButton(
-                key: TourKeys.accountLater,
-                onPressed: busy ? null : onLater,
-                child: Text(l10n.accountLater),
-              ),
-            ],
+      child: EntradaEmCascata(
+        itens: [
+          ItemDaCascata.texto(line(Icons.cloud_done, l10n.tourAccountSaved)),
+          ItemDaCascata.texto(
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: line(Icons.wifi_off, l10n.tourAccountNoAccount),
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(l10n.accountHaveAccount, style: theme.textTheme.bodyMedium),
-              TextButton(
-                key: TourKeys.accountLogin,
-                onPressed: busy ? null : onLogin,
-                child: Text(l10n.accountSignIn),
+          // O rodapé empilhado do canvas, dentro do passo (o botão da base
+          // do tour é o dos outros passos). As ações são as do convite da
+          // Conta (H-CON-01), com as keys do tour.
+          ItemDaCascata.botao(
+            ActionsFooter(
+              stacked: true,
+              margin: 0,
+              children: accountInviteActions(
+                context,
+                onGoogle: onGoogle,
+                onEmail: onEmail,
+                onSignIn: onLogin,
+                onLater: onLater,
+                busy: busy,
+                googleKey: TourKeys.accountGoogle,
+                emailKey: TourKeys.accountEmail,
+                signInKey: TourKeys.accountLogin,
+                laterKey: TourKeys.accountLater,
               ),
-            ],
+            ),
           ),
         ],
       ),

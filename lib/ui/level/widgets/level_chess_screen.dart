@@ -8,6 +8,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/tip_box.dart';
 import '../view_models/level_cubit.dart';
@@ -60,13 +61,16 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
         if (state.chessOffline) {
           return KeyedSubtree(
             key: LevelKeys.chessOfflineScreen,
-            child: LoadErrorScreen(
-              kind: LoadErrorKind.offline,
-              message: l10n.levelChessNoNet,
-              actionKey: LevelKeys.chessRetry,
-              backKey: LevelKeys.chessOfflineBack,
-              onAction: _search,
-              onBack: cubit.dismissOffline,
+            child: EntradaDaTela(
+              id: 'PropV1AbEstChessSemRede',
+              child: LoadErrorScreen(
+                kind: LoadErrorKind.offline,
+                message: l10n.levelChessNoNet,
+                actionKey: LevelKeys.chessRetry,
+                backKey: LevelKeys.chessOfflineBack,
+                onAction: _search,
+                onBack: cubit.dismissOffline,
+              ),
             ),
           );
         }

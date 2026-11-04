@@ -131,6 +131,7 @@ import 'ui/reminders/widgets/reminders_bridge.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
+import 'ui/core/motion/abertura_animada.dart';
 import 'ui/core/motion/entradas_vistas.dart';
 import 'ui/core/widgets/load_error.dart';
 import 'ui/core/widgets/load_skeleton.dart';
@@ -165,15 +166,31 @@ Future<void> main() async {
   );
   // O push que chega com o app fechado: o app monta a notificação.
   if (firebase) listenPushInBackground();
+  // H-ANI-44: a abertura animada cobre o app até a primeira tela (ou o erro
+  // de carga) estar desenhada.
+  final abriu = Completer<void>();
   runApp(
-    LucenaBootstrap(
-      initialize: () async => Dependencies.normal(
-        version: version,
-        firebase: firebase,
-        trainingInstallSeed: await Dependencies.trainingInstallSeed(),
+    AberturaAnimada(
+      carga: abriu.future,
+      child: LucenaBootstrap(
+        aoAbrir: () {
+          if (!abriu.isCompleted) abriu.complete();
+        },
+        initialize: () async => Dependencies.normal(
+          version: version,
+          firebase: firebase,
+          trainingInstallSeed: await Dependencies.trainingInstallSeed(),
+        ),
       ),
     ),
   );
+}
+
+/// Avisa a abertura (H-ANI-44) depois do quadro em que a primeira tela de
+/// verdade foi desenhada.
+void _avisaQueAbriu(VoidCallback? aoAbrir) {
+  if (aoAbrir == null) return;
+  WidgetsBinding.instance.addPostFrameCallback((_) => aoAbrir());
 }
 
 Future<T> _launchValue<T>(Future<T> Function() read, T fallback) async {
@@ -188,8 +205,11 @@ Future<T> _launchValue<T>(Future<T> Function() read, T fallback) async {
 /// Required installation data must be readable before creating production
 /// repositories. A recoverable seed failure cannot silently disable training.
 class LucenaBootstrap extends StatefulWidget {
-  const LucenaBootstrap({required this.initialize, super.key});
+  const LucenaBootstrap({required this.initialize, this.aoAbrir, super.key});
   final Future<Dependencies> Function() initialize;
+
+  /// A primeira tela (ou o erro de carga) está na tela: a abertura pode sair.
+  final VoidCallback? aoAbrir;
   @override
   State<LucenaBootstrap> createState() => _LucenaBootstrapState();
 }
@@ -222,7 +242,10 @@ class _LucenaBootstrapState extends State<LucenaBootstrap> {
   @override
   Widget build(BuildContext context) {
     final dependencies = _dependencies;
-    if (dependencies != null) return LucenaApp(dependencies: dependencies);
+    if (dependencies != null) {
+      return LucenaApp(dependencies: dependencies, aoAbrir: widget.aoAbrir);
+    }
+    if (_failures > 0) _avisaQueAbriu(widget.aoAbrir);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
@@ -241,9 +264,12 @@ class _LucenaBootstrapState extends State<LucenaBootstrap> {
 }
 
 class LucenaApp extends StatefulWidget {
-  const LucenaApp({required this.dependencies, super.key});
+  const LucenaApp({required this.dependencies, this.aoAbrir, super.key});
 
   final Dependencies dependencies;
+
+  /// Ver [LucenaBootstrap.aoAbrir].
+  final VoidCallback? aoAbrir;
 
   @override
   State<LucenaApp> createState() => _LucenaAppState();
@@ -926,6 +952,7 @@ class _LucenaAppState extends State<LucenaApp> {
             // Before preferences and routing are ready, use the localized
             // loading/error shell, without guessing an application route.
             if (settings == null || router == null) {
+              if (_launchFailures > 0) _avisaQueAbriu(widget.aoAbrir);
               final defaults = settings ?? const AppSettings();
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
@@ -943,6 +970,7 @@ class _LucenaAppState extends State<LucenaApp> {
                       ),
               );
             }
+            _avisaQueAbriu(widget.aoAbrir);
             return _QuietInBackground(
               child: MaterialApp.router(
                 onGenerateTitle: (context) => context.l10n.appTitle,

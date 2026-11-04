@@ -10,6 +10,7 @@ import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/test_canvas_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/motion/barra_que_enche.dart';
 import 'package:lucena/ui/core/widgets/app_bar_progress.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/exercise_screen.dart';
@@ -158,10 +159,10 @@ void main() {
           // H-LIC-45: barra de 4 px rente à base da app bar, valendo N/12.
           final bar = find.descendant(
             of: find.byType(AppBar),
-            matching: find.byType(AppBarProgress),
+            matching: find.byType(BarraQueEnche),
           );
           expect(bar, findsOneWidget);
-          expect(tester.widget<AppBarProgress>(bar).value, closeTo(0.25, 1e-9));
+          expect(tester.widget<BarraQueEnche>(bar).valor, closeTo(0.25, 1e-9));
           expect(tester.getSize(bar).height, AppBarProgress.height);
           expect(find.textContaining('Exercício 3 de 12'), findsNothing);
         }

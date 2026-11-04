@@ -1731,6 +1731,7 @@
   "trainingGoalsLeft": "[{n} öf {total} léft one two]",
   "trainingPartLesson": "[{part} · léššöñ {n} one two]",
   "trainingCount": "[{done} öf {total} one two]",
+  "trainingCountOf": "[ öf {total} one two]",
   "trainingPartLabel": "[Påŕt {roman} one two]",
   "trainingChapterTitle": "[{n} · {title} one two]",
   "trainingCourseLevelTest": "[Lévél téšt: šéé whåt ýöû ålŕéådý kñöw. one two three four]",

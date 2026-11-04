@@ -204,6 +204,10 @@
     }
   },
   "appTitle": "Lucena",
+  "appTagline": "Your everyday chess training",
+  "@appTagline": {
+    "description": "Descrição da marca abaixo do nome na abertura animada (H-ANI-44). Provisória."
+  },
   "@appTitle": {
     "description": "Name of the app, shown by the system (task switcher)."
   },
@@ -9190,6 +9194,15 @@
         "type": "int"
       },
       "done": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingCountOf": " of {total}",
+  "@trainingCountOf": {
+    "description": "Course progress: text after the animated done count (the count itself is a separate number).",
+    "placeholders": {
+      "total": {
         "type": "int"
       }
     }

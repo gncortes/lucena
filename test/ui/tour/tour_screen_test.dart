@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/ui/account/widgets/account_widgets.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
@@ -27,7 +30,11 @@ import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/widgets/choice_card.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/transicao_eixo_x.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/viktor_conversation.dart';
@@ -57,6 +64,8 @@ void main() {
   late FakeProfileRepository profile;
 
   /// Abre o tour no passo [step] (o app fechado no meio volta nele), em PT-BR.
+  late FakeAccountRepository accounts;
+
   Future<void> pumpTour(
     WidgetTester tester, {
     TourStep step = TourStep.board,
@@ -64,6 +73,7 @@ void main() {
     bool voices = true,
     bool link = false,
     bool learn = false,
+    bool settle = true,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
@@ -113,7 +123,7 @@ void main() {
         ),
       ],
     );
-    final accounts = FakeAccountRepository();
+    accounts = FakeAccountRepository();
     final sync = SyncScheduler(accounts, FakeSyncRepository());
     addTearDown(sync.dispose);
     await tester.pumpWidget(
@@ -146,7 +156,14 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (settle) {
+      await tester.pumpAndSettle();
+    } else {
+      // Só carrega o passo (o cubit lê o repositório), sem rodar a entrada.
+      for (var i = 0; i < 5; i++) {
+        await tester.pump();
+      }
+    }
   }
 
   Rect rect(WidgetTester tester, Finder finder) => tester.getRect(finder);
@@ -756,6 +773,155 @@ void main() {
       expect(find.byKey(TourKeys.accountEmail), findsOneWidget);
       expect(find.byKey(TourKeys.accountLogin), findsOneWidget);
       expect(find.byKey(TourKeys.skipButton), findsNothing);
+    });
+
+    testWidgets('H-ABE-11: o convite é o da Conta, na ordem do quadro', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.account);
+      double top(Key key) => tester.getTopLeft(find.byKey(key)).dy;
+      expect(top(TourKeys.accountGoogle), lessThan(top(TourKeys.accountEmail)));
+      expect(top(TourKeys.accountEmail), lessThan(top(TourKeys.accountLogin)));
+      expect(top(TourKeys.accountLogin), lessThan(top(TourKeys.accountLater)));
+      expect(find.byType(AccountSwitchLink), findsOneWidget);
+    });
+
+    testWidgets('H-ABE-11: o Google mostra carregando no próprio botão', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.account);
+      final hold = accounts.googleHold = Completer<void>();
+      await tester.tap(find.byKey(TourKeys.accountGoogle));
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: find.byKey(TourKeys.accountGoogle),
+          matching: find.byKey(CoreKeys.busySpinner),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<OutlinedButton>(find.byKey(TourKeys.accountEmail))
+            .onPressed,
+        isNull,
+      );
+      hold.complete();
+      await tester.pumpAndSettle();
+    });
+  });
+
+  group('animações da abertura (T85-D3)', () {
+    double opacidadeDoItem(WidgetTester tester, int i) {
+      final achados = find.descendant(
+        of: find.byKey(MotionKeys.itemDaCascata(i)),
+        matching: find.byType(Opacity),
+      );
+      return achados.evaluate().isEmpty
+          ? 1
+          : tester.widget<Opacity>(achados.first).opacity;
+    }
+
+    testWidgets('H-ANI-13: a barra do tour enche de 0 até o passo', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.region, settle: false);
+      expect(find.byKey(MotionKeys.barraQueEnche), findsOneWidget);
+      expect(barValue(tester), 0);
+      await tester.pump(const Duration(milliseconds: 350));
+      expect(barValue(tester), allOf(greaterThan(0), lessThan(0.8)));
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(barValue(tester), closeTo(0.8, 0.001));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('H-ANI-16: a conta entra em cascata e o toque já vale', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.account, settle: false);
+      expect(opacidadeDoItem(tester, 2), 0);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(opacidadeDoItem(tester, 0), greaterThan(0));
+      expect(opacidadeDoItem(tester, 2), lessThan(1));
+      // O toque fica liberado desde o início.
+      expect(
+        tester
+            .widget<OutlinedButton>(find.byKey(TourKeys.accountGoogle))
+            .onPressed,
+        isNotNull,
+      );
+      await tester.pump(const Duration(milliseconds: 1300));
+      for (var i = 0; i < 3; i++) {
+        expect(opacidadeDoItem(tester, i), 1);
+      }
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('H-ANI-03: avançar desliza o passo novo da direita', (
+      tester,
+    ) async {
+      await pumpTour(tester);
+      expect(find.byType(TransicaoEixoX), findsOneWidget);
+      await tester.tap(find.byKey(TourKeys.nextButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final passo = find.byKey(TourKeys.step(TourStep.theme));
+      final meio = tester.getTopLeft(passo).dx;
+      await tester.pump(const Duration(milliseconds: 300));
+      final fim = tester.getTopLeft(passo).dx;
+      expect(meio, greaterThan(fim));
+      expect(meio - fim, lessThanOrEqualTo(30));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('H-ANI-03: voltar traz o passo anterior da esquerda', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.theme);
+      await tester.tap(find.byKey(TourKeys.backButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final passo = find.byKey(TourKeys.step(TourStep.board));
+      final meio = tester.getTopLeft(passo).dx;
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(meio, lessThan(tester.getTopLeft(passo).dx));
+      expect(
+        tester.widget<TransicaoEixoX>(find.byType(TransicaoEixoX)).voltar,
+        isTrue,
+      );
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('H-ANI-16: a região entra em cascata (campos e benefícios)', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.region, settle: false);
+      expect(opacidadeDoItem(tester, 5), 0);
+      await tester.pump(const Duration(milliseconds: 1300));
+      expect(opacidadeDoItem(tester, 5), 1);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('cada passo é o quadro do canvas na primeira visita', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.theme);
+      final tela = tester.widget<EntradaDaTela>(find.byType(EntradaDaTela));
+      expect(tela.id, 'PropV2TourBTema');
+    });
+
+    testWidgets('movimento reduzido: barra e cascata já prontas', (
+      tester,
+    ) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await pumpTour(tester, step: TourStep.account, settle: false);
+      expect(barValue(tester), 1);
+      expect(opacidadeDoItem(tester, 3), 1);
+      await tester.pumpAndSettle();
     });
   });
 }

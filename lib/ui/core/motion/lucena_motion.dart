@@ -22,8 +22,15 @@ abstract final class LucenaMotion {
   /// Saída curta (eixo X, fade through).
   static const standardAccelerate = Cubic(.3, 0, 1, 1);
 
+  /// A curva standard do Material (.4, 0, .2, 1): a da abertura (H-ANI-43/44),
+  /// igual ao `fast_out_slow_in` do Android.
+  static const standard = Cubic(.4, 0, .2, 1);
+
   /// Véu, dissolve e giro do carregando.
   static const linear = Curves.linear;
+
+  /// A queda do confete (H-ANI-14): acelera como coisa que cai.
+  static const curvaDaQueda = Curves.easeIn;
 
   // Reduzir movimento.
 
@@ -231,6 +238,12 @@ abstract final class LucenaMotion {
   /// O tempo máximo do resultado inteiro.
   static const totalDoResultado = Duration(milliseconds: 1300);
 
+  // H-ANI-03: troca de exercício por fade cruzado (regra de 04/11).
+
+  /// O fade cruzado entre exercícios, igual ao das perguntas do teste de nível
+  /// (B7): a posição, a fala e o enunciado trocam juntos; o tabuleiro fica.
+  static const trocaComFade = Duration(milliseconds: 300);
+
   // H-ANI-03: eixo X compartilhado.
 
   /// A troca de passo inteira: sai em 30% (90 ms) e entra no resto (210 ms).
@@ -252,6 +265,13 @@ abstract final class LucenaMotion {
 
   /// O raio do cartão que abre a venda.
   static const raioDaVenda = 21.0;
+
+  /// A curva do cartão que cresce até a tela (a do container transform); na
+  /// volta, invertida.
+  static const curvaDoCartao = Curves.fastOutSlowIn;
+
+  /// O trecho da abertura em que a tela aberta aparece por cima do cartão.
+  static const fadeDaTelaAberta = Interval(.2, .4);
 
   // H-ANI-05: troca de abas.
 
@@ -315,4 +335,153 @@ abstract final class LucenaMotion {
 
   /// O salto de cada ponto.
   static const saltoDoPonto = Duration(milliseconds: 200);
+
+  // H-ANI-28 · meta do dia (`r2/18_sequencia_meta_do_dia`).
+
+  /// A celebração inteira da meta do dia: anel, ✓, contador e faíscas.
+  static const celebracaoDaMeta = Duration(milliseconds: 1200);
+
+  /// O anel fecha em volta do dia de hoje (`emphasized`).
+  static const anelDaMeta = Duration(milliseconds: 450);
+
+  /// O ✓ e o contador saltam (`elasticOut` curto).
+  static const saltoDaMeta = Duration(milliseconds: 300);
+
+  /// O contador sobe a partir deste instante.
+  static const contadorDaMeta = Duration(milliseconds: 600);
+
+  /// O salto curto do ✓ e do contador.
+  static const Curve salto = ElasticOutCurve(.8);
+
+  // H-ANI-15 · celebração (`r1/19`).
+
+  /// O diploma escala de [escalaDoDiploma] a [picoDoDiploma] e volta a 1.
+  static const diplomaDaCelebracao = Duration(milliseconds: 520);
+  static const escalaDoDiploma = .88;
+  static const picoDoDiploma = 1.03;
+
+  /// A queda de cada partícula do confete.
+  static const quedaDoConfete = Duration(milliseconds: 950);
+
+  /// O atraso máximo entre as partículas.
+  static const atrasoDoConfete = Duration(milliseconds: 420);
+
+  /// Partículas na celebração grande e na pequena.
+  static const confeteGrande = 40;
+  static const confetePequeno = 18;
+
+  /// Com movimento reduzido, o diploma só aparece em fade.
+  static const fadeDaCelebracao = Duration(milliseconds: 100);
+
+  // H-ANI-14 · cronômetro em barra (R3-42).
+
+  /// A partir desta fração do tempo, a barra vai à cor do fim.
+  static const fimDoCronometro = .8;
+
+  // H-ANI-26 · escolha do plano (clipe 06).
+
+  /// O contorno, o fundo e o ponto do rádio trocam de plano.
+  static const selecaoDoPlano = Duration(milliseconds: 250);
+
+  /// O rótulo do botão sai...
+  static const rotuloSai = Duration(milliseconds: 120);
+
+  /// ...e o novo entra.
+  static const rotuloEntra = Duration(milliseconds: 160);
+
+  // H-ANI-27 · compra concluída e compra com falha (clipes 09 e 10).
+
+  /// O círculo do ✓ escala de [escalaDoCirculo] a 1 (DEC); o ✓ salta junto.
+  static const circuloDaCompra = Duration(milliseconds: 380);
+  static const escalaDoCirculo = .6;
+  static const picoDoCheck = 1.18;
+
+  /// O anel vai a [escalaDoAnel] e some.
+  static const anelDaCompra = Duration(milliseconds: 700);
+  static const escalaDoAnel = 1.7;
+
+  /// O título e o texto sobem [subidaDoTitulo] px, um depois do outro.
+  static const tituloDaCompra = Duration(milliseconds: 200);
+  static const textoDaCompra = Duration(milliseconds: 260);
+  static const sobeDaCompra = Duration(milliseconds: 300);
+
+  /// Os botões entram por último, com [intervaloDosBotoes] entre eles.
+  static const botoesDaCompra = Duration(milliseconds: 560);
+  static const intervaloDosBotoes = Duration(milliseconds: 100);
+
+  /// O aviso da falha abre (DEC) e o ícone pulsa uma vez a [escalaDoPulso].
+  static const avisoAbre = Duration(milliseconds: 320);
+  static const pulsoDoAviso = Duration(milliseconds: 400);
+  static const escalaDoPulso = 1.3;
+
+  /// "Conhecer o Pilares" no anúncio (H-ANI-31): entra vindo [deslizeDoAnuncio]
+  /// px da direita em [entradaDoAnuncio] (DEC) e afunda a [apertoDoAnuncio] em
+  /// [afundaDoAnuncio] no toque.
+  static const entradaDoAnuncio = Duration(milliseconds: 320);
+  static const deslizeDoAnuncio = 12.0;
+  static const apertoDoAnuncio = .94;
+  static const afundaDoAnuncio = Duration(milliseconds: 220);
+
+  /// "Fechar em N" aparece com fade de [contagemAparece] e cada troca de número
+  /// tem fade de [trocaDaContagem].
+  static const contagemAparece = Duration(milliseconds: 250);
+  static const trocaDaContagem = Duration(milliseconds: 200);
+
+  // H-ANI-44 · abertura em fases (design/branding/abertura2.html). Os tempos de
+  // cada fase contam do começo dela.
+
+  /// Entrada (uma vez): agacha a (1,04; 0,96) em 180 ms e volta em 380 ms; os
+  /// braços de trás somem de 250 a 420 ms; os da frente crescem de 250 a 520.
+  static const aberturaEntrada = Duration(milliseconds: 520);
+  static const aberturaAgacha = Duration(milliseconds: 180);
+  static const aberturaLevanta = Duration(milliseconds: 380);
+  static const aberturaBracosDe = Duration(milliseconds: 250);
+  static const aberturaAtrasAte = Duration(milliseconds: 420);
+  static const agachaX = 1.04;
+  static const agachaY = .96;
+  static const bracoNasce = .3;
+
+  /// Ciclo de roscas (em laço): esquerda e depois direita, 160 ms para subir e
+  /// 160 para descer; o corpo inclina ±3°. A gota, só no primeiro ciclo,
+  /// aparece em 120 ms, desce 30 px até 640 e some descendo até 46 px em 790.
+  static const aberturaCiclo = Duration(milliseconds: 640);
+  static const aberturaRosca = Duration(milliseconds: 160);
+  static const anguloBaixado = 58.0;
+  static const inclinacaoDaRosca = 3.0;
+  static const gotaAparece = Duration(milliseconds: 120);
+  static const gotaSome = Duration(milliseconds: 790);
+  static const gotaDesce = 30.0;
+  static const gotaSomeEm = 46.0;
+
+  /// Final (uma vez): halteres ao alto em 200 ms; brilho de 150 a 250 ms; o
+  /// nome e a descrição de 150 a 450 ms (sobem 12 px); a piscada de 350 a
+  /// 490 ms, fechando em 410.
+  static const aberturaFinal = Duration(milliseconds: 700);
+  static const halteresAoAlto = Duration(milliseconds: 200);
+  static const brilhoDe = Duration(milliseconds: 150);
+  static const brilhoAte = Duration(milliseconds: 250);
+  static const nomeDe = Duration(milliseconds: 150);
+  static const nomeAte = Duration(milliseconds: 450);
+  static const piscaDe = Duration(milliseconds: 350);
+  static const piscaFecha = Duration(milliseconds: 410);
+  static const piscaAte = Duration(milliseconds: 490);
+  static const olhosFechados = .1;
+  static const subidaDoNome = 12.0;
+  static const luzDaDescricao = .7;
+
+  /// Saída: figura e nome encolhem a 0,9 com fade (ACC) e a primeira tela
+  /// aparece por baixo (DEC); o brilho some nos primeiros 150 ms.
+  static const aberturaSaida = Duration(milliseconds: 300);
+  static const brilhoSai = Duration(milliseconds: 150);
+  static const encolheNaSaida = .9;
+
+  /// Movimento reduzido: o nome em fade de 150 ms e a saída em 100 ms.
+  static const nomeReduzido = Duration(milliseconds: 150);
+  static const saidaReduzida = Duration(milliseconds: 100);
+
+  /// O lado do quadro de 1024 da figura: o mesmo do ícone animado do Android
+  /// 12+ sem fundo (288 dp, visível num círculo de 192), para a passagem da
+  /// tela do sistema não ter pulo. O topo do nome fica a 65% da altura.
+  static const figuraDaAbertura = 288.0;
+  static const topoDoNome = .65;
 }

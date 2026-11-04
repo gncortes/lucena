@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/keys/update_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/busy_button.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/widgets/load_error.dart';
 import '../view_models/update_cubit.dart';
 import 'update_body.dart';
@@ -46,11 +47,14 @@ class _UpdateRequiredScreenState extends State<UpdateRequiredScreen> {
           if (state.offline) {
             return KeyedSubtree(
               key: UpdateKeys.requiredOfflineScreen,
-              child: LoadErrorScreen(
-                kind: LoadErrorKind.offline,
-                message: l10n.updateOfflineMessage,
-                actionKey: UpdateKeys.requiredRetry,
-                onAction: cubit.retry,
+              child: EntradaDaTela(
+                id: 'PropV1AbEstAtualizarObrigatoriaSemRede',
+                child: LoadErrorScreen(
+                  kind: LoadErrorKind.offline,
+                  message: l10n.updateOfflineMessage,
+                  actionKey: UpdateKeys.requiredRetry,
+                  onAction: cubit.retry,
+                ),
               ),
             );
           }

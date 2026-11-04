@@ -8,8 +8,8 @@ import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/theme/app_motion.dart';
-import 'package:lucena/ui/core/widgets/game_board_hero.dart';
+import 'package:lucena/ui/core/motion/lucena_motion.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
@@ -82,11 +82,13 @@ void main() {
               builder: (context, state) => Scaffold(
                 body: Column(
                   children: [
-                    PositionBoard(
-                      fen: preview.fen,
-                      size: 60,
-                      orientation: preview.orientation,
-                      heroTag: gameBoardTag(preview.orientation),
+                    TabuleiroHero(
+                      id: preview.fen,
+                      child: PositionBoard(
+                        fen: preview.fen,
+                        size: 60,
+                        orientation: preview.orientation,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -105,17 +107,14 @@ void main() {
             ),
             GoRoute(
               path: '/lesson',
-              pageBuilder: (context, state) => CustomTransitionPage<void>(
+              pageBuilder: (context, state) => PaginaComTabuleiro<void>(
+                context: context,
                 key: state.pageKey,
-                transitionDuration: AppMotion.screen,
-                transitionsBuilder: (_, animation, _, child) =>
-                    FadeTransition(opacity: animation, child: child),
                 child: BlocProvider.value(
                   value: cubit,
                   child: LessonScriptScreen(
                     title: Future.value('Aula real'),
                     preview: previewEnabled ? preview : null,
-                    homeHero: previewEnabled,
                     previewTeacher: previewEnabled
                         ? FakeCharacterRepository.viktor
                         : null,
@@ -142,7 +141,11 @@ void main() {
         await tester.tap(find.text('Abrir'));
         await tester.pump();
         await tester.pump();
-        final arrival = find.byType(GameBoardHero);
+        // H-ANI-02: o tabuleiro da lição é o TabuleiroHero do cartão.
+        final arrival = find.descendant(
+          of: find.byType(LessonScriptScreen),
+          matching: find.byType(TabuleiroHero),
+        );
         expect(arrival, previewEnabled ? findsOneWidget : findsNothing);
         expect(
           source.checkpoints,
@@ -151,22 +154,21 @@ void main() {
         );
         Rect? previewRect;
         if (previewEnabled) {
-          previewRect = tester.getRect(arrival);
           final hero = tester.widget<Hero>(
             find.descendant(of: arrival, matching: find.byType(Hero)),
           );
-          expect(hero.tag, gameBoardTag(preview.orientation));
+          expect(hero.tag, TabuleiroHero.tag(preview.fen));
         } else {
           expect(find.byKey(LessonScriptKeys.board), findsNothing);
         }
-        await tester.pump(AppMotion.screen);
+        // A tela termina de entrar (fade e subida de 3%) antes de medir.
+        await tester.pump(LucenaMotion.vooDoTabuleiro);
+        if (previewEnabled) previewRect = tester.getRect(arrival);
         scripts.gate.complete();
         await tester.pumpAndSettle();
         expect(find.byKey(LessonScriptKeys.board), findsOneWidget);
         if (previewEnabled) {
-          expect(tester.getRect(find.byType(GameBoardHero)), previewRect);
-        } else {
-          expect(find.byType(GameBoardHero), findsNothing);
+          expect(tester.getRect(arrival), previewRect);
         }
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());

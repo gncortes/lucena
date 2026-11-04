@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gerado por tools/gerar_abertura_peao.py a partir de design/branding/icone_foreground.svg (H-ANI-43). Não editar à mão. -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector android:name="abertura" android:width="108dp" android:height="108dp"
+            android:viewportWidth="1024" android:viewportHeight="1024" android:alpha="0">
+            <group android:name="peao" android:pivotX="512" android:pivotY="512"
+                android:scaleX="0.6" android:scaleY="0.6">
+                <group android:translateX="512" android:translateY="512">
+                    <group android:scaleX="1.04" android:scaleY="1.04">
+                        <group android:translateX="-512" android:translateY="-453">
+                            <path android:pathData="M322,720A190,16 0 1 0 702,720A190,16 0 1 0 322,720Z" android:fillColor="#000000" android:fillAlpha=".18"/>
+                            <path android:pathData="M472 512 Q398 546 416 608" android:strokeColor="#DCE2DC" android:strokeWidth="50" android:strokeLineCap="round"/>
+                            <path android:pathData="M552 512 Q626 546 608 608" android:strokeColor="#DCE2DC" android:strokeWidth="50" android:strokeLineCap="round"/>
+                            <path android:pathData="M454 486 C450 562.5 394 596.5 394 666 L630 666 C630 596.5 574 562.5 570 486 Z" android:fillColor="#F4F6F2"/>
+                            <path android:pathData="M552 492 C582 571 600 605 604 666 L630 666 C630 596.5 574 562.5 570 486 Z" android:fillColor="#DCE2DC"/>
+                            <path android:pathData="M391,648H633A31,31 0 0 1 664,679V679A31,31 0 0 1 633,710H391A31,31 0 0 1 360,679V679A31,31 0 0 1 391,648Z" android:fillColor="#F4F6F2"/>
+                            <path android:pathData="M371,688H653A11,11 0 0 1 664,699V699A11,11 0 0 1 653,710H371A11,11 0 0 1 360,699V699A11,11 0 0 1 371,688Z" android:fillColor="#DCE2DC"/>
+                            <path android:pathData="M448,456H576A20,20 0 0 1 596,476V476A20,20 0 0 1 576,496H448A20,20 0 0 1 428,476V476A20,20 0 0 1 448,456Z" android:fillColor="#F4F6F2"/>
+                            <path android:pathData="M380,330A132,132 0 1 0 644,330A132,132 0 1 0 380,330Z" android:fillColor="#F4F6F2"/>
+                            <path android:pathData="M584.6 220.44 A132 132 0 0 1 584.6 439.56 A151.79999999999998 151.79999999999998 0 0 0 584.6 220.44 Z" android:fillColor="#DCE2DC"/>
+                            <group>
+                                <clip-path android:pathData="M380,330A132,132 0 1 0 644,330A132,132 0 1 0 380,330Z"/>
+                                <path android:pathData="M380,248.16h264v31.68h-264z" android:fillColor="#F5821F"/>
+                            </group>
+                            <group android:rotation="-24" android:pivotX="617.6" android:pivotY="257.4">
+                                <path android:pathData="M624.2,248.16H661.16A9.24,9.24 0 0 1 670.4,257.4V257.4A9.24,9.24 0 0 1 661.16,266.64H624.2A9.24,9.24 0 0 1 614.96,257.4V257.4A9.24,9.24 0 0 1 624.2,248.16Z" android:fillColor="#F5821F"/>
+                            </group>
+                            <group android:rotation="18" android:pivotX="617.6" android:pivotY="270.6">
+                                <path android:pathData="M624.2,264H653.24A9.24,9.24 0 0 1 662.48,273.24V273.24A9.24,9.24 0 0 1 653.24,282.48H624.2A9.24,9.24 0 0 1 614.96,273.24V273.24A9.24,9.24 0 0 1 624.2,264Z" android:fillColor="#F5821F"/>
+                            </group>
+                            <path android:pathData="M407.72,369.6A22.44,13.2 0 1 0 452.6,369.6A22.44,13.2 0 1 0 407.72,369.6Z" android:fillColor="#F2A39A" android:fillAlpha=".75"/>
+                            <path android:pathData="M571.4,369.6A22.44,13.2 0 1 0 616.28,369.6A22.44,13.2 0 1 0 571.4,369.6Z" android:fillColor="#F2A39A" android:fillAlpha=".75"/>
+                            <path android:pathData="M445.8,334A21.32,26 0 1 0 488.44,334A21.32,26 0 1 0 445.8,334Z" android:fillColor="#14211B"/>
+                            <path android:pathData="M535.56,334A21.32,26 0 1 0 578.2,334A21.32,26 0 1 0 535.56,334Z" android:fillColor="#14211B"/>
+                            <path android:pathData="M451,323.6A8.32,8.32 0 1 0 467.64,323.6A8.32,8.32 0 1 0 451,323.6Z" android:fillColor="#FFFFFF"/>
+                            <path android:pathData="M540.76,323.6A8.32,8.32 0 1 0 557.4,323.6A8.32,8.32 0 1 0 540.76,323.6Z" android:fillColor="#FFFFFF"/>
+                            <path android:pathData="M492 377.52 Q512 395.52 532 377.52" android:strokeColor="#14211B" android:strokeWidth="9" android:strokeLineCap="round"/>
+                        </group>
+                    </group>
+                </group>
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="peao">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator android:propertyName="scaleX" android:valueFrom="0.6" android:valueTo="1.06" android:duration="320" android:valueType="floatType" android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                <objectAnimator android:propertyName="scaleY" android:valueFrom="0.6" android:valueTo="1.06" android:duration="320" android:valueType="floatType" android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                <objectAnimator android:propertyName="scaleX" android:valueFrom="1.06" android:valueTo="1" android:duration="180" android:startOffset="320" android:valueType="floatType" android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                <objectAnimator android:propertyName="scaleY" android:valueFrom="1.06" android:valueTo="1" android:duration="180" android:startOffset="320" android:valueType="floatType" android:interpolator="@android:interpolator/fast_out_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="abertura">
+        <aapt:attr name="android:animation">
+            <objectAnimator android:propertyName="alpha" android:valueFrom="0" android:valueTo="1" android:duration="320" android:valueType="floatType" android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+</animated-vector>

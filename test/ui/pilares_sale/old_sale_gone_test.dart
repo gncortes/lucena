@@ -5,11 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 /// H-VEN-18: a prévia de desenvolvimento saiu; o preço antigo não volta ao
 /// código nem aos assets, e nenhuma rota de Ajustes leva a outra venda.
 void main() {
-  Iterable<File> files(String dir) => Directory(dir)
-      .listSync(recursive: true)
-      .whereType<File>()
-      .where((file) => !file.path.endsWith('old_sale_gone_test.dart'))
-      .where((file) => RegExp(r'\.(dart|json|arb)$').hasMatch(file.path));
+  Iterable<File> files(String dir) =>
+      Directory(dir)
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((file) => !file.path.endsWith('old_sale_gone_test.dart'))
+          .where((file) => RegExp(r'\.(dart|json|arb)$').hasMatch(file.path));
 
   test('o preço antigo (R\$ 59,90) não está em lib, assets nem test', () {
     final hits = [

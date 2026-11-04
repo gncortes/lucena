@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../core/motion/barra_que_enche.dart';
+
 import '../../../domain/models/training/lesson_end.dart';
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/actions_footer.dart';
@@ -113,18 +114,14 @@ class DayGoalScreen extends StatelessWidget {
                             Expanded(
                               child: Padding(
                                 padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    AppShape.tiny,
-                                  ),
-                                  child: LinearProgressIndicator(
-                                    value: f.clamp(0, 1),
-                                    minHeight: 6,
-                                    color: f >= 1
-                                        ? AppColors.trainingDayCorrect
-                                        : primary,
-                                    backgroundColor: AppColors.cardOutline,
-                                  ),
+                                // H-ANI-13: enche de 0 na entrada.
+                                child: BarraQueEnche(
+                                  valor: f.clamp(0, 1).toDouble(),
+                                  altura: 6,
+                                  cor: f >= 1
+                                      ? AppColors.trainingDayCorrect
+                                      : primary,
+                                  corDoTrilho: AppColors.cardOutline,
                                 ),
                               ),
                             ),

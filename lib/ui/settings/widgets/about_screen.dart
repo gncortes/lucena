@@ -68,13 +68,12 @@ class AboutScreen extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.xl),
             child: Column(
               children: [
-                // O mascote do app, na versão do tema.
+                // O mascote do app: o ícone B2, com o fundo escuro (a figura
+                // clara sumiria no fundo da tela).
                 ClipRRect(
                   borderRadius: BorderRadius.circular(AppShape.large),
                   child: Image.asset(
-                    theme.brightness == Brightness.dark
-                        ? 'assets/branding/mascot_dark.png'
-                        : 'assets/branding/mascot_light.png',
+                    'assets/branding/mascote.png',
                     width: 96,
                     height: 96,
                   ),
