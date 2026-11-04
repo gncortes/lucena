@@ -403,27 +403,37 @@ Map<String, String> _fixtures(String marker) {
     AssetCoursePreviewRepository.path: jsonEncode({
       'sale': {
         for (final key in [
-          'overline',
           'title',
           'line',
           'exercises',
-          'price',
-          'priceNote',
           'speech',
+          'benefitsTitle',
+          'benefitsLine',
           'summaryNote',
         ])
           key: marker,
         'lessons': 0,
+        'chapters': 0,
         for (final key in [
-          'how',
+          'benefits',
           'learn',
           'audienceItems',
           'included',
-          'app',
           'parts',
           'faq',
         ])
           key: [],
+        'plans': {
+          for (final key in ['lifetime', 'lifetimeNote', 'monthly', 'unlock'])
+            key: marker,
+        },
+        'cost': {
+          'title': marker,
+          'rows': [],
+          'ours': {'title': marker},
+          'source': marker,
+        },
+        'openings': {'title': marker, 'line': marker, 'items': []},
         'audience': {'title': marker},
         'level': {'title': marker, 'examples': []},
         'band': {
@@ -439,26 +449,6 @@ Map<String, String> _fixtures(String marker) {
           'themes': [],
           'warning': {'title': marker},
         },
-      },
-      'map': {
-        'continue': {
-          'part': marker,
-          'number': 0,
-          'title': marker,
-          'summary': marker,
-        },
-        'test': marker,
-        'part': {'label': marker, 'title': marker, 'done': 0, 'total': 0},
-        'chapters': [],
-      },
-      'chapter': {
-        'part': marker,
-        'number': 0,
-        'count': 0,
-        'title': marker,
-        'lessons': [],
-        'exercises': {'number': marker, 'count': 0},
-        'start': marker,
       },
     }),
   };

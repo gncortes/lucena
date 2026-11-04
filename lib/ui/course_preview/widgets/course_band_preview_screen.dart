@@ -44,7 +44,13 @@ class CourseBandPreviewScreen extends StatelessWidget {
         final band = state.preview?.sale.band;
         return Scaffold(
           key: CoursePreviewKeys.band,
-          appBar: LucenaAppBar(title: Text(context.l10n.courseSaleAudience)),
+          appBar: LucenaAppBar(
+            leading: BackButton(
+              onPressed: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            ),
+            title: Text(context.l10n.courseSaleAudience),
+          ),
           body: band == null
               ? const SizedBox.shrink()
               : ListView(

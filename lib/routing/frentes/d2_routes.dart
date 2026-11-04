@@ -3,8 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/repositories/account/account_repository.dart';
+import '../../data/repositories/characters/character_repository.dart';
+import '../../data/repositories/course_preview/course_preview_repository.dart';
 import '../../data/repositories/purchase/purchase_repository.dart';
 import '../../ui/core/analytics/analytics_context.dart';
+import '../../ui/course_preview/view_models/course_preview_cubit.dart';
+import '../../ui/course_preview/widgets/course_band_preview_screen.dart';
+import '../../ui/course_preview/widgets/course_sale_screen.dart';
 import '../../ui/pilares_sale/view_models/pilares_prices_cubit.dart';
 import '../../ui/pilares_sale/widgets/pilares_subscription_ended_screen.dart';
 import '../../ui/pilares_sale/view_models/pilares_offer_cubit.dart';
@@ -23,10 +28,17 @@ import '../routes.dart';
 /// lista [d2Routes] com `appRoute(name: RouteNames.x, path: D2Paths.x, ...)`,
 /// do `router.dart`, e navega por nome. Só esta frente mexe neste arquivo.
 abstract final class D2Paths {
-  /// Apresentação do Pilares (H-VEN-14).
+  /// Apresentação do Pilares (H-VEN-01); quem já comprou vai ao Sobre o
+  /// Pilares.
   static const pilaresPresentation = '/pilares';
 
-  /// Para quem é, a faixa (H-VEN-02).
+  /// A apresentação com a origem do analytics (`?origem=`).
+  static String presentation({String? origin}) => Uri(
+    path: pilaresPresentation,
+    queryParameters: {'origem': ?origin},
+  ).toString();
+
+  /// Para quem é, a faixa (H-VEN-01).
   static const pilaresForWhom = '/pilares/for-whom';
 
   /// Sobre o Pilares, 3 abas (H-VEN-03).
@@ -110,7 +122,49 @@ PilaresRestoreCubit _restoreCubit(BuildContext context) => PilaresRestoreCubit(
   analytics: context.analytics,
 );
 
+CoursePreviewCubit _previewCubit(BuildContext context, {String? origin}) =>
+    CoursePreviewCubit(
+      context.read<CoursePreviewRepository>(),
+      context.read<CharacterRepository>(),
+      analytics: context.analytics,
+      origin: origin,
+    )..load();
+
 final List<RouteBase> d2Routes = [
+  // A apresentação (H-VEN-01): quem tem o curso vai direto ao Sobre o
+  // Pilares; `origem` vai à oferta vista e à oferta.
+  appRoute(
+    name: RouteNames.pilaresPresentation,
+    path: D2Paths.pilaresPresentation,
+    redirect: (context, state) =>
+        context.read<PurchaseRepository>().state.access.owns
+        ? D2Paths.pilaresAbout
+        : null,
+    builder: (context, state) {
+      final origin = state.uri.queryParameters['origem'] ?? 'perfil';
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => _previewCubit(context, origin: origin),
+          ),
+          BlocProvider(
+            create: (context) => PilaresPricesCubit(
+              purchases: context.read<PurchaseRepository>(),
+            ),
+          ),
+        ],
+        child: CourseSaleScreen(origin: origin),
+      );
+    },
+  ),
+  appRoute(
+    name: RouteNames.pilaresForWhom,
+    path: D2Paths.pilaresForWhom,
+    builder: (context, state) => BlocProvider(
+      create: _previewCubit,
+      child: const CourseBandPreviewScreen(),
+    ),
+  ),
   // A oferta (H-VEN-03): `plano=mensal` marca o mensal; `origem` vai ao
   // analytics.
   appRoute(

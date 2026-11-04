@@ -89,10 +89,6 @@ abstract final class RouteNames {
   static const alerts = 'alerts';
   static const settingsAbout = 'settingsAbout';
   static const settingsMaia = 'settingsMaia';
-  static const pilaresSale = 'pilaresSale';
-  static const pilaresBand = 'pilaresBand';
-  static const pilaresMap = 'pilaresMap';
-  static const pilaresChapter = 'pilaresChapter';
   static const trainingGuide = 'trainingGuide';
   static const trainingProfile = 'trainingProfile';
   static const trainingProfileWhy = 'trainingProfileWhy';

@@ -8988,15 +8988,6 @@
   "@courseSaleFaq": {
     "description": "Course sale page tab: frequently asked questions."
   },
-  "courseBuy": "Buy · {price}",
-  "@courseBuy": {
-    "description": "Course sale page fixed button with the price.",
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
   "courseSaleLearn": "What you will learn",
   "@courseSaleLearn": {
     "description": "Course sale page section title."
@@ -9009,30 +9000,9 @@
   "@courseSaleIncluded": {
     "description": "Course sale page section title: what comes with the course."
   },
-  "courseSaleHow": "How you learn",
-  "@courseSaleHow": {
-    "description": "Course sale page section title: how the student learns."
-  },
   "courseSaleSummary": "Contents",
   "@courseSaleSummary": {
     "description": "Course sale page section title: the table of contents."
-  },
-  "courseSalePrice": "Course price",
-  "@courseSalePrice": {
-    "description": "Course sale page price card label."
-  },
-  "courseSaleRefund": "Refund within 7 days",
-  "@courseSaleRefund": {
-    "description": "Course sale page price card note."
-  },
-  "courseLessonsCount": "{count, plural, =1{1 lesson} other{{count} lessons}}",
-  "@courseLessonsCount": {
-    "description": "How many lessons a course has.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "courseExercisesLabel": "exercises",
   "@courseExercisesLabel": {
@@ -9049,10 +9019,6 @@
         "type": "int"
       }
     }
-  },
-  "pilaresPreviewTile": "Pilares do Xadrez (preview)",
-  "@pilaresPreviewTile": {
-    "description": "Settings tile (development builds only) that opens the course layout preview."
   },
   "courseLessonsLabel": "lessons",
   "@courseLessonsLabel": {
@@ -13591,5 +13557,18 @@
   "venRefMonthly": "R$ 19.90",
   "@venRefMonthly": {
     "description": "Preço de referência do mensal, mostrado só quando a loja não devolve o preço (H-VEN-03, V-gap 1)."
+  },
+  "venSaleBuy": "See buying options",
+  "@venSaleBuy": {
+    "description": "Botão fixo da Apresentação do Pilares: abre a oferta (PropV2CursoApresentacao, H-VEN-01)."
+  },
+  "venChapterTest": "Chapter test · {count} exercises",
+  "@venChapterTest": {
+    "description": "Última linha de cada capítulo no Sumário da venda e do Sobre o Pilares (H-VEN-01/02).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

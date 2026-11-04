@@ -6,12 +6,6 @@ import '../domain/models/learning_analysis.dart';
 import '../data/repositories/analysis/learning_analysis_repository.dart';
 import '../ui/learning_analysis/view_models/learning_analysis_cubit.dart';
 import '../ui/learning_analysis/widgets/learning_analysis_screen.dart';
-import '../ui/course_preview/view_models/course_preview_cubit.dart';
-import '../ui/course_preview/widgets/course_band_preview_screen.dart';
-import '../ui/course_preview/widgets/course_chapter_preview_screen.dart';
-import '../ui/course_preview/widgets/course_map_preview_screen.dart';
-import '../ui/course_preview/widgets/course_sale_screen.dart';
-import '../data/repositories/course_preview/course_preview_repository.dart';
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../domain/models/training/training_course_config.dart';
@@ -1982,38 +1976,6 @@ GoRouter buildRouter({
                   child: const MaiaDebugScreen(),
                 ),
               ),
-              _route(
-                name: RouteNames.pilaresSale,
-                path: 'pilares',
-                // A prévia do Pilares do Xadrez (T82): como o Maia, só em
-                // build de desenvolvimento e de teste.
-                redirect: (context, state) =>
-                    showsDevTools ? null : Routes.settings,
-                builder: (context, state) =>
-                    _coursePreview(const CourseSaleScreen()),
-                routes: [
-                  _route(
-                    name: RouteNames.pilaresBand,
-                    path: 'faixa',
-                    builder: (context, state) =>
-                        _coursePreview(const CourseBandPreviewScreen()),
-                  ),
-                  _route(
-                    name: RouteNames.pilaresMap,
-                    path: 'mapa',
-                    builder: (context, state) =>
-                        _coursePreview(const CourseMapPreviewScreen()),
-                    routes: [
-                      _route(
-                        name: RouteNames.pilaresChapter,
-                        path: 'capitulo',
-                        builder: (context, state) =>
-                            _coursePreview(const CourseChapterPreviewScreen()),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
             ],
           ),
         ],
@@ -2096,22 +2058,6 @@ String? updateRedirect(String location, {bool Function()? required}) {
   return null;
 }
 
-/// Uma rota com página Material (com a transição do tema). O go_router 18
-/// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do
-/// Flutter: sem isto, as páginas ficariam sem transição nenhuma.
-///
-/// Com [fade], a tela só aparece (e some) num fade, e a de baixo fica parada:
-/// é a partida, em que o tabuleiro da tela de antes chega voando até o
-/// centro e o resto aparece em volta dele.
-/// As telas da prévia do Pilares com o view model delas.
-Widget _coursePreview(Widget screen) => BlocProvider(
-  create: (context) => CoursePreviewCubit(
-    context.read<CoursePreviewRepository>(),
-    context.read<CharacterRepository>(),
-  )..load(),
-  child: screen,
-);
-
 /// O `GoRoute` padrão do app (transição, escopo da lição do treino), para as
 /// frentes registrarem as telas novas em `frentes/`.
 GoRoute appRoute({
@@ -2132,6 +2078,13 @@ GoRoute appRoute({
   sharedAxis: sharedAxis,
 );
 
+/// Uma rota com página Material (com a transição do tema). O go_router 18
+/// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do
+/// Flutter: sem isto, as páginas ficariam sem transição nenhuma.
+///
+/// Com [fade], a tela só aparece (e some) num fade, e a de baixo fica parada:
+/// é a partida, em que o tabuleiro da tela de antes chega voando até o
+/// centro e o resto aparece em volta dele.
 GoRoute _route({
   required String name,
   required String path,

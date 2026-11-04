@@ -25,6 +25,11 @@ class AppColors extends ThemeExtension<AppColors> {
   static const cardOutline = Color(0xffe1e5df);
   static const sheetSurface = Color(0xfff5f7f4);
 
+  /// Comparativo de custo da venda (T85-D2, H-VEN-01): a barra da soma
+  /// (#8DA6CC) e o texto claro sobre o azul (#DCE6F5).
+  static const costBar = Color(0xff8da6cc);
+  static const onPrimarySoft = Color(0xffdce6f5);
+
   /// Fim de um passo (T85-D2, venda): o círculo verde do concluído, o
   /// amarelo da espera (pagamento pendente) e o fundo do aviso de erro.
   static const successSurface = Color(0xffe2f0e4);

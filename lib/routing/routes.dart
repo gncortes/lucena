@@ -616,12 +616,9 @@ abstract final class Routes {
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';
 
-  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento): a venda, o
-  /// mapa e um capítulo.
-  static const pilaresSale = '/settings/pilares';
-  static const pilaresBand = '/settings/pilares/faixa';
-  static const pilaresMap = '/settings/pilares/mapa';
-  static const pilaresChapter = '/settings/pilares/mapa/capitulo';
+  /// A apresentação do Pilares do Xadrez (H-VEN-01, rota da D2): os atalhos
+  /// "Conhecer o Pilares" das outras telas abrem aqui.
+  static const pilaresSale = '/pilares';
 
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';

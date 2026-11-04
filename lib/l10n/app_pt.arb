@@ -1772,18 +1772,12 @@
   "courseSaleOverview": "Visão geral",
   "courseSaleContent": "Conteúdo",
   "courseSaleFaq": "Dúvidas",
-  "courseBuy": "Comprar · {price}",
   "courseSaleLearn": "O que você vai aprender",
   "courseSaleAudience": "Para quem é",
   "courseSaleIncluded": "O que vem no curso",
-  "courseSaleHow": "Como você aprende",
   "courseSaleSummary": "Sumário",
-  "courseSalePrice": "Preço do curso",
-  "courseSaleRefund": "Reembolso em até 7 dias",
-  "courseLessonsCount": "{count, plural, =1{1 lição} other{{count} lições}}",
   "courseExercisesLabel": "exercícios",
   "coursePartLessons": "Parte {part} · {count} lições",
-  "pilaresPreviewTile": "Pilares do Xadrez (prévia)",
   "courseLessonsLabel": "lições",
   "lessonsUnavailableMessage": "As lições ainda não estão disponíveis.",
   "homeYourRating": "Seu rating",
@@ -2863,5 +2857,14 @@
   "conCompraSaved": "Lições, Jornada, partidas e conquistas ficam salvos",
   "conCompraSync": "O que você fez neste celular também fica salvo na conta",
   "venRefLifetime": "R$ 99,90",
-  "venRefMonthly": "R$ 19,90"
+  "venRefMonthly": "R$ 19,90",
+  "venSaleBuy": "Ver opções de compra",
+  "venChapterTest": "Teste do capítulo · {count} exercícios",
+  "@venChapterTest": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

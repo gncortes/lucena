@@ -1698,18 +1698,12 @@
   "courseSaleOverview": "[Övéŕvîéw one]",
   "courseSaleContent": "[Çöñtéñtš one]",
   "courseSaleFaq": "[Qûéštîöñš one]",
-  "courseBuy": "[Bûý · {price} one two]",
   "courseSaleLearn": "[Whåt ýöû wîll léåŕñ one two]",
   "courseSaleAudience": "[Whö ît îš föŕ one two]",
   "courseSaleIncluded": "[Whåt thé çöûŕšé îñçlûdéš one two three]",
-  "courseSaleHow": "[Höw ýöû léåŕñ one two]",
   "courseSaleSummary": "[Çöñtéñtš one]",
-  "courseSalePrice": "[Çöûŕšé pŕîçé one two]",
-  "courseSaleRefund": "[Ŕéfûñd wîthîñ 7 dåýš one two]",
-  "courseLessonsCount": "{count, plural, =1{[1 léššöñ one]} other{[{count} léššöñš one two]}}",
   "courseExercisesLabel": "[éxéŕçîšéš one]",
   "coursePartLessons": "[Påŕt {part} · {count} léššöñš one two three]",
-  "pilaresPreviewTile": "[Pîlåŕéš dö Xådŕéž (pŕévîéw) one two three]",
   "courseLessonsLabel": "[léššöñš one]",
   "lessonsUnavailableMessage": "[Léššöñš åŕé ñöt åvåîlåblé ýét. one two three]",
   "homeYourRating": "[Ýöûŕ ŕåtîñĝ one two]",
@@ -2622,5 +2616,7 @@
   "conCompraSaved": "[Léššöñš, Jöûŕñéý, ĝåméš åñd åçhîévéméñtš štåý šåvéd one two three four five]",
   "conCompraSync": "[Whåt ýöû dîd öñ thîš phöñé îš ålšö šåvéd tö thé åççöûñt one two three four five]",
   "venRefLifetime": "[Ŕ$ 99.90 one]",
-  "venRefMonthly": "[Ŕ$ 19.90 one]"
+  "venRefMonthly": "[Ŕ$ 19.90 one]",
+  "venSaleBuy": "[Šéé bûýîñĝ öptîöñš one two]",
+  "venChapterTest": "[Çhåptéŕ téšt · {count} éxéŕçîšéš one two three]"
 }
