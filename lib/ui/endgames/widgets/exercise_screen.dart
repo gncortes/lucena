@@ -316,7 +316,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: LucenaAppBar(
-              toolbarHeight: widget.trainingTest ? 64 : null,
               centerTitle: widget.trainingTest ? true : null,
               leading: widget.trainingTest
                   ? BackButton(

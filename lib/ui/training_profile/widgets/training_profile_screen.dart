@@ -54,7 +54,6 @@ class _TrainingProfileScreenState extends State<TrainingProfileScreen> {
       builder: (context, state) => Scaffold(
         key: TrainingProfileKeys.screen,
         appBar: LucenaAppBar(
-          toolbarHeight: 64,
           centerTitle: true,
           title: Text(t.trainingProfileChoiceTitle),
           leading: IconButton(

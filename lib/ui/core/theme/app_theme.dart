@@ -4,6 +4,7 @@ import '../../../domain/models/app_accent.dart';
 import 'app_button.dart';
 import 'app_colors.dart';
 import 'app_shape.dart';
+import 'app_bar_height.dart';
 import 'app_sheet.dart';
 import 'app_spacing.dart';
 import 'app_tokens.dart';
@@ -211,7 +212,9 @@ abstract final class AppTheme {
       colorScheme: colors,
       scaffoldBackgroundColor: background,
       // A barra superior tem o mesmo fundo da tela, sem mudar de cor ao rolar.
+      // A altura do Material 3 (canvas 23fd0701): 64 em todas as telas.
       appBarTheme: AppBarTheme(
+        toolbarHeight: AppBarHeight.standard,
         backgroundColor: background,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,

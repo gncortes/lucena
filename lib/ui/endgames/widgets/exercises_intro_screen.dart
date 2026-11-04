@@ -316,7 +316,6 @@ class TestCanvasIntroPage extends StatelessWidget {
     return Scaffold(
       key: ExercisesIntroKeys.screen,
       appBar: LucenaAppBar(
-        toolbarHeight: 64,
         title: Text(
           t.testCanvasTitle(chapter),
           maxLines: 2,

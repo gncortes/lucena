@@ -24,7 +24,6 @@ class TrainingProfileWhyScreen extends StatelessWidget {
     return Scaffold(
       key: TrainingProfileKeys.why,
       appBar: LucenaAppBar(
-        toolbarHeight: 64,
         centerTitle: true,
         title: Text(
           openingName == null

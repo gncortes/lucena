@@ -37,7 +37,6 @@ class TrainingHelpScreen extends StatelessWidget {
     return Scaffold(
       key: TrainingKeys.helpScreen,
       appBar: LucenaAppBar(
-        toolbarHeight: 64,
         title: Text(t.courseGuideHelpAction),
         leading: IconButton(
           key: TrainingKeys.helpBack,

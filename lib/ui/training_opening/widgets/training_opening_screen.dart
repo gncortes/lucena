@@ -160,7 +160,6 @@ class _OpeningViewState extends State<_OpeningView> {
       return Scaffold(
         key: TrainingKeys.openingScreen,
         appBar: LucenaAppBar(
-          toolbarHeight: 64,
           centerTitle: true,
           leading: IconButton(
             key: TrainingKeys.openingBack,
