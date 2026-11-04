@@ -17,11 +17,13 @@ class EntradaDeEstado extends StatelessWidget {
     required this.texto,
     this.acao,
     this.espaco = 16,
+    this.espacoDaAcao,
     this.animar,
     super.key,
   });
 
-  final Widget icone;
+  /// Nulo: só o texto (o estado que é só uma frase).
+  final Widget? icone;
 
   /// O texto (ou a coluna de título e texto) do estado.
   final Widget texto;
@@ -29,6 +31,9 @@ class EntradaDeEstado extends StatelessWidget {
 
   /// O espaço entre as partes.
   final double espaco;
+
+  /// O espaço antes da ação; nulo: [espaco].
+  final double? espacoDaAcao;
 
   /// Nulo: só na primeira entrada da tela.
   final bool? animar;
@@ -39,6 +44,7 @@ class EntradaDeEstado extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final acao = this.acao;
+    final icone = this.icone;
     return RelogioDeEntrada(
       total: acao == null
           ? LucenaMotion.atrasoDoTextoDoEstado + LucenaMotion.textoEntra
@@ -47,14 +53,16 @@ class EntradaDeEstado extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          EntradaNoTempo(
-            key: MotionKeys.iconeDoEstado,
-            inicio: Duration.zero,
-            duracao: LucenaMotion.iconeDoEstado,
-            escalaDe: LucenaMotion.escalaDoIcone,
-            child: icone,
-          ),
-          SizedBox(height: espaco),
+          if (icone != null) ...[
+            EntradaNoTempo(
+              key: MotionKeys.iconeDoEstado,
+              inicio: Duration.zero,
+              duracao: LucenaMotion.iconeDoEstado,
+              escalaDe: LucenaMotion.escalaDoIcone,
+              child: icone,
+            ),
+            SizedBox(height: espaco),
+          ],
           EntradaNoTempo(
             key: MotionKeys.textoDoEstado,
             inicio: LucenaMotion.atrasoDoTextoDoEstado,
@@ -63,7 +71,7 @@ class EntradaDeEstado extends StatelessWidget {
             child: texto,
           ),
           if (acao != null) ...[
-            SizedBox(height: espaco),
+            SizedBox(height: espacoDaAcao ?? espaco),
             EntradaNoTempo(
               key: MotionKeys.acaoDoEstado,
               inicio: _inicioDaAcao,

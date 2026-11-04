@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../keys/core_keys.dart';
+import '../motion/entrada_de_estado.dart';
 import '../theme/app_icon_size.dart';
 import '../theme/app_spacing.dart';
 
@@ -23,7 +24,8 @@ enum EmptyStateStyle {
 }
 
 /// Uma lista ainda vazia: um desenho simples, uma frase e, quando houver, a
-/// ação que resolve.
+/// ação que resolve. Entra com calma na primeira vez (`EntradaDeEstado`,
+/// H-ANI-24): o desenho, depois a frase, depois a ação.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     required this.message,
@@ -75,52 +77,53 @@ class EmptyState extends StatelessWidget {
           : filters
           ? const EdgeInsets.symmetric(vertical: AppSpacing.xxl)
           : const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (!text && icon != null || filters) ...[
-            if (filters || plainIcon)
-              Icon(
-                icon ?? Icons.filter_list_off,
-                size: AppIconSize.illustration,
-                opticalSize: plainIcon ? AppIconSize.illustration : null,
-                color: plainIcon ? colors.onSurfaceVariant : colors.outline,
-              )
-            else
-              _circle(colors),
-            const SizedBox(height: AppSpacing.md),
-          ],
-          if (title case final title?) ...[
+      child: EntradaDeEstado(
+        espaco: AppSpacing.md,
+        espacoDaAcao: filters ? AppSpacing.md : AppSpacing.lg,
+        icone: !text && icon != null || filters
+            ? filters || plainIcon
+                  ? Icon(
+                      icon ?? Icons.filter_list_off,
+                      size: AppIconSize.illustration,
+                      opticalSize: plainIcon ? AppIconSize.illustration : null,
+                      color: plainIcon
+                          ? colors.onSurfaceVariant
+                          : colors.outline,
+                    )
+                  : _circle(colors)
+            : null,
+        texto: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (title case final title?) ...[
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 0),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
             Text(
-              title,
+              message,
+              key: messageKey,
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 0),
+              style: plainIcon
+                  ? theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurface,
+                      height: 20 / 14,
+                      letterSpacing: 0,
+                    )
+                  : loud
+                  ? theme.textTheme.bodyLarge?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    )
+                  : theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
             ),
-            const SizedBox(height: AppSpacing.md),
           ],
-          Text(
-            message,
-            key: messageKey,
-            textAlign: TextAlign.center,
-            style: plainIcon
-                ? theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurface,
-                    height: 20 / 14,
-                    letterSpacing: 0,
-                  )
-                : loud
-                ? theme.textTheme.bodyLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  )
-                : theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-          ),
-          if (action != null) ...[
-            SizedBox(height: filters ? AppSpacing.md : AppSpacing.lg),
-            action,
-          ],
-        ],
+        ),
+        acao: action,
       ),
     );
   }
