@@ -163,6 +163,8 @@ void main() {
   test('a engine acompanha a variante, sem mexer nas anotações nem na '
       'revisão guardada', () async {
     final cubit = await load(engine: true);
+    // Partida sem revisão guardada: a análise é pedida (H-PAR-17).
+    await cubit.review(speed: ReviewSpeed.quick);
     await settle();
     await cubit.setEngine(on: !cubit.state.engine);
     cubit.select(0);

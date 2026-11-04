@@ -115,7 +115,10 @@ class ReviewSummary extends StatelessWidget {
         ],
       );
     } else if (review == null) {
+      // Partida de antes das análises automáticas (H-PAR-17): o texto da
+      // história e um só botão, que roda a análise rápida.
       child = Column(
+        key: GameDetailsKeys.oldAnalysis,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
@@ -124,21 +127,25 @@ class ReviewSummary extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
-                  l10n.reviewStart,
-                  style: theme.textTheme.titleSmall,
+                  l10n.partidaAnaliseAntiga,
+                  style: theme.textTheme.bodyMedium,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            l10n.reviewSpeedHint,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
           const SizedBox(height: AppSpacing.md),
-          _speedButtons(context, 0),
+          FilledButton(
+            key: GameDetailsKeys.oldAnalysisButton,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
+            ),
+            onPressed: state.moves.isEmpty
+                ? null
+                : () => context.read<GameDetailsCubit>().review(
+                    speed: ReviewSpeed.quick,
+                  ),
+            child: OneLine(l10n.partidaAnaliseAnalisar),
+          ),
         ],
       );
     } else {

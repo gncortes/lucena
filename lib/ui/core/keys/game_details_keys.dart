@@ -30,6 +30,8 @@ abstract final class GameDetailsKeys {
   static Key variationMove(int ply) => Key('gameDetails.variation.$ply');
 
   /// A revisão: o botão, o progresso, o resumo e a precisão de cada lado.
+  static const oldAnalysis = Key('gameDetails.review.oldAnalysis');
+  static const oldAnalysisButton = Key('gameDetails.review.oldAnalysisButton');
   static const reviewButton = Key('gameDetails.review.button');
   static const reviewQuick = Key('gameDetails.review.quick');
   static const reviewDeep = Key('gameDetails.review.deep');

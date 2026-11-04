@@ -110,9 +110,9 @@ void main() {
       'anotação no tabuleiro', (tester) async {
     final id = await progress.addAttempt(game);
     await pump(tester, id);
-    expect(find.byKey(GameDetailsKeys.reviewSummary), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.oldAnalysis), findsOneWidget);
 
-    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pumpAndSettle();
 
     expect(find.byKey(GameDetailsKeys.reviewSummary), findsOneWidget);
@@ -162,7 +162,7 @@ void main() {
     analysis.answer['7k/8/5K2/8/8/8/6Q1/8 b - - 1 1'] = [line('h8h7', cp: 0)];
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
-    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pumpAndSettle();
     expect(cubit.state.review!.moves.first.quality, MoveQuality.blunder);
 
@@ -206,10 +206,10 @@ void main() {
     expect(find.textContaining('Lichess'), findsNothing);
     expect(
       find.byKey(GameDetailsKeys.count('best', white: true)),
-      findsOneWidget,
+      findsNothing,
     );
 
-    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pumpAndSettle();
 
     expect(
@@ -323,6 +323,8 @@ void main() {
     );
     // Como no app: a tela abre carregando e a partida chega depois.
     unawaited(cubit.load());
+    await tester.pump(const Duration(milliseconds: 100));
+    unawaited(cubit.review(speed: ReviewSpeed.quick));
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 500));
     }
@@ -357,8 +359,9 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('ao abrir sem revisão guardada, a Rápida começa sozinha (sem '
-      'tocar em nada); com revisão guardada, nada é refeito', (tester) async {
+  testWidgets('H-PAR-17: partida antiga abre sem análise, com o texto e o '
+      'botão Analisar; tocar roda a Rápida; com revisão guardada, nada é '
+      'refeito', (tester) async {
     final id = await progress.addAttempt(game);
     final hold = Completer<void>();
     analysis.hold = hold;
@@ -381,6 +384,7 @@ void main() {
     await settings.load();
     await tester.pumpWidget(
       TestApp(
+        locale: const Locale('pt'),
         settingsCubit: settings,
         child: BlocProvider.value(
           value: cubit,
@@ -388,6 +392,21 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
+    // Abre sem análise e sem pedir nada à engine.
+    expect(cubit.state.reviewing, isFalse);
+    expect(analysis.requests, isEmpty);
+    expect(find.byKey(GameDetailsKeys.oldAnalysis), findsOneWidget);
+    expect(
+      find.text(
+        'Esta partida é de antes das análises automáticas. A análise rápida '
+        'leva poucos segundos; a profunda, cerca de um minuto.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Analisar'), findsOneWidget);
+
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pump();
     expect(cubit.state.reviewing, isTrue);
     expect(
@@ -449,6 +468,8 @@ void main() {
     (tester) async {
       final id = await progress.addAttempt(game);
       final cubit = await pump(tester, id);
+      await cubit.review(speed: ReviewSpeed.quick);
+      await tester.pumpAndSettle();
       expect(find.byKey(GameDetailsKeys.reviewQuick), findsOneWidget);
       expect(find.byKey(GameDetailsKeys.reviewButton), findsOneWidget);
       expect(find.byKey(GameDetailsKeys.reviewDeep), findsOneWidget);
@@ -506,7 +527,7 @@ void main() {
       final cubit = await pump(tester, id);
       analysis.hold = Completer<void>();
 
-      await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+      await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
       await tester.pump(const Duration(seconds: 3));
 
       expect(cubit.state.reviewing, isTrue);

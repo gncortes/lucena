@@ -2286,10 +2286,6 @@
   "@settingsSoundHint": {
     "description": "Subtitle of the switch that turns the game sounds on or off."
   },
-  "reviewStart": "Review with Stockfish",
-  "@reviewStart": {
-    "description": "Game details: button that analyses every move of the game with the chess engine."
-  },
   "reviewRunning": "Analysing move {done} of {total}",
   "@reviewRunning": {
     "description": "Game details: progress while the engine reviews the game.",
@@ -2475,10 +2471,6 @@
   "reviewDeep": "Deep",
   "@reviewDeep": {
     "description": "Game details: button for a deep (slow, most accurate) engine review of the game."
-  },
-  "reviewSpeedHint": "The deeper, the more accurate and the slower. Accuracy appears when every move has been rated.",
-  "@reviewSpeedHint": {
-    "description": "Game details: note above the review speed buttons."
   },
   "reviewDeeper": "Review deeper",
   "@reviewDeeper": {
@@ -12583,5 +12575,9 @@
   "partidaConclusaoVerAnalise": "View analysis",
   "@partidaConclusaoVerAnalise": {
     "description": "Footer button on the win conclusion that opens the game analysis"
-  }
+  },
+  "partidaAnaliseAntiga": "This game is from before automatic analysis. A quick analysis takes a few seconds; a deep one, about a minute.",
+  "@partidaAnaliseAntiga": {"description": "Game details: explains that an old game has no analysis yet, shown above the Analyze button"},
+  "partidaAnaliseAnalisar": "Analyze",
+  "@partidaAnaliseAnalisar": {"description": "Game details: button that starts the quick analysis of an old game"}
 }

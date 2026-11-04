@@ -405,27 +405,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     );
     // A engine ligada já abre com as linhas da posição no tabuleiro.
     if (engine) unawaited(_analyseShown());
-    if (review == null) {
-      // Partida sem revisão guardada: a rápida começa sozinha, sem bloquear
-      // a abertura (o progresso aparece na folha). Com revisão guardada,
-      // nada é refeito.
-      unawaited(_reviewMissing());
-    } else {
-      unawaited(_annotate(state.shownIndex));
-    }
-  }
-
-  Future<void> _reviewMissing() async {
-    try {
-      await review(speed: ReviewSpeed.quick);
-    } catch (_) {
-      // O histórico continua utilizável quando a engine falha. O botão
-      // existente permite tentar de novo; retomadas não criam outro job.
-      _following = false;
-      if (!isClosed) {
-        emit(state.copyWith(reviewing: false, annotating: const {}));
-      }
-    }
+    // Partida sem revisão guardada (antiga): abrir não gera análise sozinha;
+    // o aluno decide em "Analisar" (H-PAR-17).
+    if (review != null) unawaited(_annotate(state.shownIndex));
   }
 
   /// Mostra a posição depois do lance [index] da partida (-1: a de início),
@@ -529,6 +511,18 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// têm anotação de peso igual ou maior passam direto. A revisão fica
   /// gravada.
   Future<void> review({ReviewSpeed speed = ReviewSpeed.medium}) async {
+    try {
+      await _review(speed);
+    } catch (_) {
+      // A engine falhou: a UI é liberada e "Analisar" tenta de novo.
+      _following = false;
+      if (!isClosed) {
+        emit(state.copyWith(reviewing: false, annotating: const {}));
+      }
+    }
+  }
+
+  Future<void> _review(ReviewSpeed speed) async {
     final weight = reviewWeights[speed]!;
     if (_analysis == null || state.start == null || state.reviewing) return;
     if (state.moves.isEmpty) return;

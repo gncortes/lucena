@@ -452,7 +452,6 @@
   "starChallengeObstacles": "Os peões pretos só atrapalham: não dá para capturá-los. O que você alcança são as estrelas.",
   "settingsSound": "Sons",
   "settingsSoundHint": "Lances das peças e um aviso quando o seu tempo estiver acabando",
-  "reviewStart": "Revisar com o Stockfish",
   "reviewRunning": "Analisando o lance {done} de {total}",
   "reviewAccuracy": "Precisão",
   "reviewYou": "Você",
@@ -495,7 +494,6 @@
   "reviewQuick": "Rápida",
   "reviewMedium": "Média",
   "reviewDeep": "Profunda",
-  "reviewSpeedHint": "Quanto mais profunda, mais precisa e mais demorada. A precisão aparece quando todos os lances forem avaliados.",
   "reviewDeeper": "Revisar mais a fundo",
   "voiceListen": "Ouvir",
   "voiceStop": "Parar",
@@ -2544,5 +2542,7 @@
   "desafiosRaceSeeAll": "Ver os {count}",
   "desafiosShareError": "Não foi possível compartilhar o link.",
   "desafiosSpeedrunEmpty": "Nenhum speedrun neste nível.",
-  "partidaConclusaoVerAnalise": "Ver a análise"
+  "partidaConclusaoVerAnalise": "Ver a análise",
+  "partidaAnaliseAntiga": "Esta partida é de antes das análises automáticas. A análise rápida leva poucos segundos; a profunda, cerca de um minuto.",
+  "partidaAnaliseAnalisar": "Analisar"
 }
