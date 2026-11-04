@@ -5,11 +5,11 @@ abstract final class GameDetailsKeys {
   static const screen = Key('gameDetails.screen');
   static const board = Key('gameDetails.board');
 
-  /// A folha que sobe por cima do tabuleiro, a lista dela (que rola) e o
-  /// "x" que a desce.
-  static const sheet = Key('gameDetails.sheet');
+  /// As abas Resumo, Lances e Motor, e a lista da aba aberta (que rola).
+  static const tabSummary = Key('gameDetails.tab.summary');
+  static const tabMoves = Key('gameDetails.tab.moves');
+  static const tabEngine = Key('gameDetails.tab.engine');
   static const panel = Key('gameDetails.panel');
-  static const closeSheet = Key('gameDetails.sheet.close');
   static const opponent = Key('gameDetails.opponent');
   static const result = Key('gameDetails.result');
 

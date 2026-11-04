@@ -2544,5 +2544,7 @@
   "desafiosSpeedrunEmpty": "Nenhum speedrun neste nível.",
   "partidaConclusaoVerAnalise": "Ver a análise",
   "partidaAnaliseAntiga": "Esta partida é de antes das análises automáticas. A análise rápida leva poucos segundos; a profunda, cerca de um minuto.",
-  "partidaAnaliseAnalisar": "Analisar"
+  "partidaAnaliseAnalisar": "Analisar",
+  "partidaAbaResumo": "Resumo",
+  "partidaAbaLances": "Lances"
 }

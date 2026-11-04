@@ -12579,5 +12579,9 @@
   "partidaAnaliseAntiga": "This game is from before automatic analysis. A quick analysis takes a few seconds; a deep one, about a minute.",
   "@partidaAnaliseAntiga": {"description": "Game details: explains that an old game has no analysis yet, shown above the Analyze button"},
   "partidaAnaliseAnalisar": "Analyze",
-  "@partidaAnaliseAnalisar": {"description": "Game details: button that starts the quick analysis of an old game"}
+  "@partidaAnaliseAnalisar": {"description": "Game details: button that starts the quick analysis of an old game"},
+  "partidaAbaResumo": "Summary",
+  "@partidaAbaResumo": {"description": "Tab of the game analysis screen with the summary"},
+  "partidaAbaLances": "Moves",
+  "@partidaAbaLances": {"description": "Tab of the game analysis screen with the move list and notation"}
 }

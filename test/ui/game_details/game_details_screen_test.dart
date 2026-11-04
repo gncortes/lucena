@@ -17,7 +17,6 @@ import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
-import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -114,6 +113,11 @@ void main() {
     return cubit;
   }
 
+  Future<void> openMoves(WidgetTester tester) async {
+    await tester.tap(find.byKey(GameDetailsKeys.tabMoves));
+    await tester.pumpAndSettle();
+  }
+
   String boardFen(WidgetTester tester) => tester
       .widget<Chessboard>(find.byKey(GameDetailsKeys.board))
       .controller
@@ -124,117 +128,51 @@ void main() {
     return text.data ?? text.textSpan!.toPlainText();
   }
 
-  double sheetTop(WidgetTester tester) =>
-      tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
-
-  testWidgets(
-    'o painel da análise é a folha padrão (`surfaceContainerLow`), sem '
-    'cartões com cor própria',
-    (tester) async {
-      final id = await progress.addAttempt(game);
-      await pump(tester, id, screen: const Size(1080, 2400));
-      final surface = Theme.of(
-        tester.element(find.byKey(GameDetailsKeys.panel)),
-      ).colorScheme.surfaceContainerLow;
-      final sheet = tester.widget<DecoratedBox>(
-        find
-            .ancestor(
-              of: find.byKey(GameDetailsKeys.panel),
-              matching: find.byType(DecoratedBox),
-            )
-            .first,
-      );
-      expect((sheet.decoration as BoxDecoration).color, surface);
-      final cards = tester.widgetList<Card>(find.byType(Card));
-      expect(cards, isNotEmpty);
-      for (final card in cards) {
-        expect(card.color, Colors.transparent);
-        expect(card.elevation, 0);
-      }
-    },
-  );
-
-  testWidgets('a folha: recolhida embaixo do tabuleiro; puxada, sobe por '
-      'cima dele com o x; o x a desce de volta', (tester) async {
+  testWidgets('layout: tabuleiro na largura toda, abas Resumo/Lances/Motor e '
+      'a navegação fixa embaixo', (tester) async {
     final id = await progress.addAttempt(game);
     await pump(tester, id, screen: const Size(1080, 2400));
     final board = tester.getRect(find.byKey(GameDetailsKeys.board));
-    final appBar = tester.getRect(find.byType(AppBar));
-    final collapsed = sheetTop(tester);
-    // Recolhida: o tabuleiro inteiro acima dela, no centro do espaço, e os
-    // botões de lance à vista; o x escondido.
-    expect(board.bottom, lessThanOrEqualTo(collapsed));
-    expect(
-      board.center.dy,
-      closeTo((appBar.bottom + collapsed) / 2, AppSpacing.xxl * 2),
-    );
-    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
-    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
-
-    // Puxada para cima: cobre o tabuleiro e o x aparece.
-    await tester.drag(find.byKey(GameDetailsKeys.panel), const Offset(0, -600));
-    await tester.pumpAndSettle();
-    final open = sheetTop(tester);
-    expect(open, lessThan(board.center.dy));
-    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
-
-    // O x desce a folha de uma vez.
-    await tester.tap(find.byKey(GameDetailsKeys.closeSheet));
-    await tester.pumpAndSettle();
-    expect(sheetTop(tester), closeTo(collapsed, 1));
-    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
-    expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
+    final tabs = tester.getRect(find.byKey(GameDetailsKeys.tabSummary));
+    final next = tester.getRect(find.byKey(GameDetailsKeys.next));
+    final panel = tester.getRect(find.byKey(GameDetailsKeys.panel));
+    expect(board.bottom, lessThanOrEqualTo(tabs.top));
+    expect(tabs.bottom, lessThanOrEqualTo(panel.top));
+    expect(panel.bottom, lessThanOrEqualTo(next.top));
+    expect(find.byKey(GameDetailsKeys.tabMoves), findsOne);
+    expect(find.byKey(GameDetailsKeys.tabEngine), findsOne);
   });
 
-  testWidgets('folha rolada até a legenda e fechada pelo x: o conteúdo volta '
-      'ao topo e puxar de novo abre a folha', (tester) async {
+  testWidgets('cada aba tem o próprio conteúdo: Resumo o cartão, Lances a '
+      'tabela e Motor liga a engine', (tester) async {
     final id = await progress.addAttempt(game);
     await pump(tester, id, screen: const Size(1080, 2400));
-    final collapsed = sheetTop(tester);
-    final panel = find.byKey(GameDetailsKeys.panel);
-    // Abre e rola até a legenda.
-    await tester.drag(panel, const Offset(0, -600));
-    await tester.pumpAndSettle();
-    await tester.fling(panel, const Offset(0, -1500), 3000);
-    await tester.pumpAndSettle();
-    final scroll = tester.state<ScrollableState>(
-      find.descendant(of: panel, matching: find.byType(Scrollable)),
-    );
-    expect(scroll.position.pixels, greaterThan(0));
+    expect(find.byKey(GameDetailsKeys.opponent), findsOne);
+    expect(find.byKey(GameDetailsKeys.move(0)), findsNothing);
 
-    await tester.tap(find.byKey(GameDetailsKeys.closeSheet));
+    await tester.tap(find.byKey(GameDetailsKeys.tabMoves));
     await tester.pumpAndSettle();
-    expect(sheetTop(tester), closeTo(collapsed, 1));
-    expect(scroll.position.pixels, 0);
+    expect(find.byKey(GameDetailsKeys.move(0)), findsOne);
+    expect(find.byKey(GameDetailsKeys.opponent), findsNothing);
 
-    // Puxar o conteúdo (ou a alça) abre de novo, com o x.
-    await tester.drag(panel, const Offset(0, -300));
-    await tester.pumpAndSettle();
-    expect(sheetTop(tester), lessThan(collapsed - 100));
-    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
+    await tester.tap(find.byKey(GameDetailsKeys.tabEngine));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byKey(GameDetailsKeys.move(0)), findsNothing);
+    expect(find.byKey(GameDetailsKeys.engineLines), findsOne);
   });
 
   for (final screen in const [Size(945, 1680), Size(720, 1280)]) {
     testWidgets('tela pequena ($screen) com fonte 1,6: nada estoura, os '
-        'botões de lance ficam à vista e, com a folha aberta, tudo rola até a '
-        'legenda', (tester) async {
+        'botões de lance ficam à vista e a tabela rola até o fim', (
+      tester,
+    ) async {
       final id = await progress.addAttempt(game);
       await pump(tester, id, screen: screen, textScale: 1.6);
       expect(tester.takeException(), isNull);
       expect(find.byKey(GameDetailsKeys.board), findsOne);
       expect(find.byKey(GameDetailsKeys.next).hitTestable(), findsOne);
-      expect(
-        tester.getRect(find.byKey(GameDetailsKeys.next)).bottom,
-        lessThanOrEqualTo(sheetTop(tester)),
-      );
-
-      await tester.drag(
-        find.byKey(GameDetailsKeys.panel),
-        const Offset(0, -400),
-      );
+      await tester.tap(find.byKey(GameDetailsKeys.tabMoves));
       await tester.pumpAndSettle();
-      expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsOne);
-      // Dentro da folha aberta, a tabela inteira chega à vista rolando.
       final last = find.byKey(GameDetailsKeys.move(game.moves.length - 1));
       await tester.scrollUntilVisible(
         last,
@@ -250,28 +188,6 @@ void main() {
     });
   }
 
-  testWidgets('toque na folha abre até 76 dp do topo sem mover o tabuleiro', (
-    tester,
-  ) async {
-    final id = await progress.addAttempt(game);
-    await pump(tester, id, screen: const Size(1080, 2400));
-    final board = tester.getRect(find.byKey(GameDetailsKeys.board));
-    final panel = find.byKey(GameDetailsKeys.panel);
-    await tester.tapAt(tester.getTopLeft(panel) + const Offset(40, 12));
-    await tester.pumpAndSettle();
-    final appBar = tester.getRect(find.byType(AppBar));
-    expect(
-      sheetTop(tester),
-      // Aberta, a folha para 76 dp abaixo do topo da área (LICOES-V2 §5).
-      closeTo(appBar.bottom + 76, 1),
-    );
-    expect(tester.getRect(find.byKey(GameDetailsKeys.board)), board);
-    expect(
-      find.byKey(GameDetailsKeys.closeSheet).hitTestable(),
-      findsOneWidget,
-    );
-  });
-
   testWidgets('o cabeçalho diz contra quem, o resultado e o rating', (
     tester,
   ) async {
@@ -282,15 +198,16 @@ void main() {
     expect(find.byKey(GameDetailsKeys.screen), findsOneWidget);
     expect(plain(tester, GameDetailsKeys.opponent), 'Coco (1000)');
     expect(plain(tester, GameDetailsKeys.result), 'Win · Checkmate');
+    final after = (await rating.history()).single.rating.rounded;
+    expect(find.text('$after'), findsOneWidget);
     // O placar fecha a lista de lances, só com a notação.
+    await openMoves(tester);
     await tester.scrollUntilVisible(
       find.byKey(GameDetailsKeys.score),
       200,
       scrollable: find.byType(Scrollable).last,
     );
     expect(plain(tester, GameDetailsKeys.score), '1–0');
-    final after = (await rating.history()).single.rating.rounded;
-    expect(find.text('$after'), findsOneWidget);
   });
 
   final qualities = [
@@ -335,8 +252,7 @@ void main() {
               reducedMotion: true,
             );
             final panel = find.byKey(GameDetailsKeys.panel);
-            await tester.drag(panel, const Offset(0, -1000));
-            await tester.pumpAndSettle();
+            await openMoves(tester);
             await tester.scrollUntilVisible(
               find.byKey(GameDetailsKeys.move(0)),
               150,
@@ -493,6 +409,7 @@ void main() {
   testWidgets('a tabela traz cada lance com o tempo que levou', (tester) async {
     final id = await progress.addAttempt(game);
     await pump(tester, id);
+    await openMoves(tester);
 
     for (var index = 0; index < game.moves.length; index++) {
       expect(find.byKey(GameDetailsKeys.move(index)), findsOneWidget);
@@ -510,6 +427,7 @@ void main() {
   testWidgets('tocar num lance mostra a posição depois dele', (tester) async {
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
+    await openMoves(tester);
     // Abre na posição de início.
     expect(cubit.state.shownIndex, -1);
     expect(boardFen(tester), cubit.state.start!.fen);
@@ -561,6 +479,7 @@ void main() {
       'lance da partida volta para ela', (tester) async {
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
+    await openMoves(tester);
     await tester.tap(find.byKey(GameDetailsKeys.move(0)));
     await tester.pumpAndSettle();
     expect(find.byKey(GameDetailsKeys.variation), findsNothing);

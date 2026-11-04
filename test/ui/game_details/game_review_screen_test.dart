@@ -103,6 +103,11 @@ void main() {
     return cubit;
   }
 
+  Future<void> openTab(WidgetTester tester, Key tab) async {
+    await tester.tap(find.byKey(tab));
+    await tester.pumpAndSettle();
+  }
+
   String text(WidgetTester tester, Key key) =>
       tester.widget<Text>(find.byKey(key)).data ?? '';
 
@@ -120,6 +125,7 @@ void main() {
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
     // Qg2, com o mate na mão, deixou escapar o mate em um lance: a engine de
     // mentira avalia o resto pelo material (+9), ainda ganho.
+    await openTab(tester, GameDetailsKeys.tabMoves);
     expect(find.byKey(GameDetailsKeys.moveQuality(0)), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.moveQuality(2)), findsOneWidget);
     // O selo do lance é o componente por cima do tabuleiro.
@@ -141,6 +147,7 @@ void main() {
     await tester.tap(find.byKey(GameDetailsKeys.first));
     await tester.pumpAndSettle();
     expect(cubit.state.shownIndex, -1);
+    await openTab(tester, GameDetailsKeys.tabMoves);
     expect(find.text('Starting position'), findsOneWidget);
 
     await tester.tap(find.byKey(GameDetailsKeys.next));
@@ -166,6 +173,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(cubit.state.review!.moves.first.quality, MoveQuality.blunder);
 
+    await openTab(tester, GameDetailsKeys.tabMoves);
     await tester.tap(find.byKey(GameDetailsKeys.move(0)));
     await tester.pumpAndSettle();
 
@@ -186,6 +194,7 @@ void main() {
 
     await tester.tap(find.byKey(GameDetailsKeys.engineButton));
     await tester.pumpAndSettle();
+    await openTab(tester, GameDetailsKeys.tabEngine);
 
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.engineLine(0)), findsOneWidget);
@@ -194,6 +203,7 @@ void main() {
     expect(find.text('M1'), findsNWidgets(2));
     final board = tester.widget<Chessboard>(find.byKey(GameDetailsKeys.board));
     expect(board.shapes.whereType<Arrow>().single.dest, Square.g7);
+    await openTab(tester, GameDetailsKeys.tabSummary);
     expect(text(tester, GameDetailsKeys.result), contains('Win'));
   });
 
@@ -228,6 +238,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(cubit.state.engine, isTrue);
     expect(find.byKey(GameDetailsKeys.evalBar), findsOneWidget);
+    await openTab(tester, GameDetailsKeys.tabEngine);
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);
     final chip = tester.widget<FilterChip>(
       find.byKey(GameDetailsKeys.engineButton),
@@ -351,9 +362,7 @@ void main() {
       GameDetailsKeys.engineButton,
     ]) {
       expect(find.byKey(key).hitTestable(), findsOneWidget);
-      expect(tester.getRect(find.byKey(key)).bottom, lessThan(sheetTop));
     }
-    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
     hold.complete();
     analysis.hold = null;
     await tester.pumpAndSettle();

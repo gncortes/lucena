@@ -17,7 +17,6 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../catalog/widgets/catalog_ui.dart';
-import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -31,7 +30,6 @@ import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/viktor_sheet.dart';
 import '../view_models/game_details_cubit.dart';
 import 'review_widgets.dart';
 import '../../core/theme/app_motion.dart';
@@ -123,14 +121,10 @@ class GameDetailsScreen extends StatelessWidget {
   }
 }
 
-/// A revisão pronta: o tabuleiro e os botões de andar pelos lances fixos, no
-/// centro do espaço acima de uma folha (como a da fala do Viktor nas
-/// lições). Recolhida, a folha mostra o começo: a explicação do lance. O
-/// usuário puxa ou rola para cima e ela sobe por cima do tabuleiro, com a
-/// engine, o cartão da partida, o resumo, a tabela e a legenda; dentro dela
-/// tudo rola, para nada ficar cortado em tela pequena ou com fonte grande.
-/// Aberta, um "x" logo acima dela a desce de uma vez.
-class _ReviewBody extends StatefulWidget {
+/// A revisão pronta: o tabuleiro na largura toda, as abas Resumo, Lances e
+/// Motor (cada uma com a própria lista, que rola) e, fixos embaixo, os botões
+/// de andar pelos lances com a engine e o menu.
+class _ReviewBody extends StatelessWidget {
   const _ReviewBody({
     required this.state,
     required this.attempt,
@@ -141,117 +135,97 @@ class _ReviewBody extends StatefulWidget {
   final Attempt attempt;
   final String opponent;
 
-  @override
-  State<_ReviewBody> createState() => _ReviewBodyState();
-}
-
-class _ReviewBodyState extends State<_ReviewBody> {
-  /// O maior tabuleiro da revisão.
+  /// O maior tabuleiro da revisão, e a fração da altura que ele pode ocupar
+  /// (o resto é das abas e da navegação).
   static const _maxBoard = 480.0;
-
-  /// A linha de botões de andar pelos lances, embaixo do tabuleiro.
-  static const _navigationHeight = 54.0;
-
-  /// O mínimo da folha recolhida, em fração da altura e em pixels lógicos
-  /// (vezes a escala do texto): o começo da explicação sempre à vista.
-  static const _minPeekFraction = 0.26;
-  static const _minPeek = 120.0;
-
-  /// A folha recolhida nunca passa disso: o tabuleiro tem o resto.
-  static const _maxPeekFraction = 0.75;
+  static const _maxBoardFraction = 0.5;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final state = widget.state;
-    final attempt = widget.attempt;
     final user = attempt.userSide;
     final you = l10n.reviewYou;
     final (whiteName, blackName) = switch (user) {
-      Side.white => (you, widget.opponent),
-      Side.black => (widget.opponent, you),
+      Side.white => (you, opponent),
+      Side.black => (opponent, you),
       null => (l10n.sideWhite, l10n.sideBlack),
     };
-    final summary = ReviewSummary(
-      state: state,
-      whiteName: whiteName,
-      blackName: blackName,
-    );
-    final header = [_Header(state: state, attempt: attempt)];
-    final footer = [
-      _MoveTable(state: state, score: _score(attempt)),
+    final summary = [
+      ReviewSummary(state: state, whiteName: whiteName, blackName: blackName),
+      _Header(state: state, attempt: attempt),
       ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
     ];
+    final moves = [
+      MoveExplanation(state: state),
+      _MoveTable(state: state, score: _score(attempt)),
+    ];
+    final engine = [if (state.engine) EngineLinesPanel(state: state)];
     if (state.shownPosition == null) {
       return ColoredBox(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
+          key: GameDetailsKeys.panel,
           padding: scrollPadding(context),
-          children: [summary, ...header, ...footer],
+          children: [...summary, ...moves],
         ),
       );
     }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final height = constraints.maxHeight;
-        final width = constraints.maxWidth;
-        // O tabuleiro ideal e os botões embaixo dele; a folha recolhida
-        // fica com o resto, entre o mínimo e o máximo.
-        final board = math.min(width - 2 * AppSpacing.lg, _maxBoard);
-        final boardRoom =
-            board + 2 * (_navigationHeight + AppSpacing.sm) + AppSpacing.md;
-        final textScale = MediaQuery.textScalerOf(context).scale(1);
-        final minPeek = math.max(
-          _minPeekFraction * height,
-          _minPeek * textScale,
-        );
-        final peek = (height - boardRoom).clamp(
-          math.min(minPeek, _maxPeekFraction * height),
-          _maxPeekFraction * height,
-        );
-        final boardArea = height - peek;
-        return Stack(
-          children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: boardArea,
-              child: CenteredBoardLayout(
-                gutter: AppSpacing.lg,
-                maxBoard: _maxBoard,
-                reserveBottom: _navigationHeight,
-                board: LayoutBuilder(
-                  builder: (context, box) => Center(
-                    child: ReviewBoard(
-                      state: state,
-                      size: box.maxWidth,
-                      orientation: user ?? Side.white,
-                    ),
-                  ),
+    return DefaultTabController(
+      length: 3,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final board = math.min(
+            math.min(constraints.maxWidth, _maxBoard),
+            _maxBoardFraction * constraints.maxHeight,
+          );
+          final controller = DefaultTabController.of(context);
+          return Column(
+            children: [
+              Center(
+                child: ReviewBoard(
+                  state: state,
+                  size: board,
+                  orientation: user ?? Side.white,
                 ),
-                bottom: ReviewNavigation(state: state, attempt: attempt),
               ),
-            ),
-            Positioned.fill(
-              child: ViktorSheet(
-                key: GameDetailsKeys.sheet,
-                top: boardArea,
-                scrollKey: GameDetailsKeys.panel,
-                closeKey: GameDetailsKeys.closeSheet,
-                padding: scrollPadding(context),
-                children: [
-                  summary,
-                  MoveExplanation(state: state),
-                  if (state.engine) EngineLinesPanel(state: state),
-                  ...header,
-                  ...footer,
+              TabBar(
+                onTap: (index) {
+                  // A aba Motor liga a engine; as outras mantêm a escolha.
+                  if (index == 2 && !state.engine) {
+                    context.read<GameDetailsCubit>().setEngine(on: true);
+                  }
+                },
+                tabs: [
+                  Tab(
+                    key: GameDetailsKeys.tabSummary,
+                    text: l10n.partidaAbaResumo,
+                  ),
+                  Tab(
+                    key: GameDetailsKeys.tabMoves,
+                    text: l10n.partidaAbaLances,
+                  ),
+                  Tab(key: GameDetailsKeys.tabEngine, text: l10n.reviewEngine),
                 ],
               ),
-            ),
-          ],
-        );
-      },
+              Expanded(
+                child: AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, _) => ListView(
+                    key: GameDetailsKeys.panel,
+                    padding: scrollPadding(context),
+                    children: switch (controller.index) {
+                      0 => summary,
+                      1 => moves,
+                      _ => engine,
+                    },
+                  ),
+                ),
+              ),
+              ReviewNavigation(state: state, attempt: attempt),
+            ],
+          );
+        },
+      ),
     );
   }
 }
