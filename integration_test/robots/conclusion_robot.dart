@@ -33,6 +33,11 @@ class ConclusionRobot {
       // assentar esperaria por ele.
       await $(FreeBoardKeys.seeResultButton)
           .tap(settlePolicy: SettlePolicy.noSettle);
+      // A conclusão abre por navegação: até ela chegar o botão ainda está
+      // na árvore, e um segundo toque cairia num botão que já não responde.
+      for (var i = 0; i < 100 && screen.evaluate().isEmpty; i++) {
+        await $.pump(const Duration(milliseconds: 100));
+      }
     }
   }
 

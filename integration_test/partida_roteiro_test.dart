@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
+import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/custom_position_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_layout_keys.dart';
@@ -40,7 +41,8 @@ void main() {
     await $.platform.android.pressBack();
 
     await openFromAllModes($, 'blind');
-    await $(BlindKeys.entry).waitUntilExists();
+    // Com voz disponível, a entrada leva ao catálogo de posições.
+    await $(CatalogKeys.screen).waitUntilVisible();
   });
 
   // Roteiro 4 (H-PAR-01): "Escolher os modos da home" abre o layout da home.
@@ -61,9 +63,7 @@ void main() {
     await AppRobot($).open();
     await HomeRobot($).expectVisible();
 
-    await openFromAllModes($, 'blind');
-    await $(BlindKeys.entry).waitUntilExists();
-    await $(BlindKeys.entry).tap();
+    await BlindRobot($).startNewGame();
     await $(BlindKeys.mic).waitUntilVisible();
     await $(BlindKeys.mic).tap();
     await $(BlindKeys.micAllow).waitUntilVisible();
@@ -79,8 +79,7 @@ void main() {
     await AppRobot($).open();
     await HomeRobot($).expectVisible();
     final blind = BlindRobot($);
-    await blind.openEntry();
-    await $(BlindKeys.entry).tap();
+    await blind.startNewGame();
     await blind.allowMic();
     await blind.expectInGame();
   });
@@ -94,10 +93,8 @@ void main() {
     await HomeRobot($).expectVisible();
     await blind.startWithoutMic();
 
+    // Com uma partida às cegas guardada, o app abre direto nela.
     await app.restart();
-    await HomeRobot($).expectVisible();
-    await blind.openEntry();
-    await $(BlindKeys.entry).tap();
     await blind.expectInGame();
   });
 
