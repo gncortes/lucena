@@ -1,3 +1,4 @@
+import '../../core/motion/folha_lucena.dart';
 import '../../core/theme/app_bar_height.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -463,10 +464,10 @@ class LearningAnalysisScreen extends StatelessWidget {
     final cubit = context.read<LearningAnalysisCubit>();
     var showEngine = cubit.state.settings.showEngine;
     var lines = cubit.state.settings.lines;
-    final result = await showModalBottomSheet<LearningAnalysisSettings>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+    final result = await FolhaLucena.mostrar<LearningAnalysisSettings>(
+      context,
+      useSafeArea: false,
+      elevation: null,
       builder: (sheetContext) => StatefulBuilder(
         builder: (context, setState) => Stack(
           clipBehavior: Clip.none,

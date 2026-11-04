@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../keys/sheet_keys.dart';
+import '../motion/folha_lucena.dart';
 import '../theme/app_chip.dart';
 import '../theme/app_sheet.dart';
 import 'sheet_close_button.dart';
@@ -22,15 +23,10 @@ Future<T?> showLucenaSheet<T>(
   bool enableDrag = true,
   bool dismissible = true,
 }) {
-  return showModalBottomSheet<T>(
-    context: context,
-    isScrollControlled: true,
+  return FolhaLucena.mostrar<T>(
+    context,
     enableDrag: dismissible && enableDrag,
     isDismissible: dismissible,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    barrierColor: AppSheet.scrim,
     builder: (context) => LucenaSheetFrame(
       sheetKey: sheetKey,
       closeKey: closeKey,

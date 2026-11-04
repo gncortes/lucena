@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../keys/core_keys.dart';
+import '../motion/circulo_carregando.dart';
+import '../motion/lucena_motion.dart';
+import '../motion/movimento_reduzido.dart';
 
 /// O estilo do [BusyButton]: os quatro botões do Material e o destrutivo
 /// (preenchido na cor de erro, "Excluir minha conta").
@@ -97,8 +100,10 @@ class _BusyButtonState extends State<BusyButton> {
   }
 }
 
-/// Rótulo (e ícone) do botão; carregando, o rótulo some sem perder o espaço
-/// e o círculo aparece no meio, na cor do texto do botão.
+/// Rótulo (e ícone) do botão (H-ANI-08). Carregando, o rótulo sai e o
+/// círculo entra em 120 ms, sem o botão mudar de largura: um rótulo
+/// invisível guarda o espaço. O leitor de tela continua lendo o rótulo.
+/// Com movimento reduzido, a troca é seca.
 class _BusyContent extends StatelessWidget {
   const _BusyContent({
     required this.label,
@@ -110,47 +115,57 @@ class _BusyContent extends StatelessWidget {
   final IconData? icon;
   final bool busy;
 
+  Widget _content(Widget text, {required bool hidden}) => icon == null
+      ? text
+      : Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: hidden ? Colors.transparent : null),
+            const SizedBox(width: 8),
+            Flexible(child: text),
+          ],
+        );
+
   @override
   Widget build(BuildContext context) {
     final style = DefaultTextStyle.of(context).style;
     final color = style.color ?? IconTheme.of(context).color;
-    final text = busy
-        // Invisível e fora do find.text: só guarda a largura.
-        ? RichText(
-            text: TextSpan(
-              text: label,
-              style: style.copyWith(color: Colors.transparent),
-            ),
-            textScaler: MediaQuery.textScalerOf(context),
-            maxLines: 1,
-          )
-        : Text(label);
-    final content = icon == null
-        ? text
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: busy ? Colors.transparent : null),
-              const SizedBox(width: 8),
-              Flexible(child: text),
-            ],
-          );
-    if (!busy) return content;
-    return Semantics(
-      label: label,
-      child: ExcludeSemantics(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            content,
-            SizedBox.square(
-              key: CoreKeys.busySpinner,
-              dimension: 20,
-              child: CircularProgressIndicator(strokeWidth: 2, color: color),
-            ),
-          ],
+    // Invisível e fora do find.text: só guarda a largura.
+    final placeholder = _content(
+      RichText(
+        text: TextSpan(
+          text: label,
+          style: style.copyWith(color: Colors.transparent),
         ),
+        textScaler: MediaQuery.textScalerOf(context),
+        maxLines: 1,
       ),
+      hidden: true,
+    );
+    final reduced = MovimentoReduzido.of(context);
+    final switcher = AnimatedSwitcher(
+      duration: reduced ? Duration.zero : LucenaMotion.trocaRotulo,
+      switchInCurve: LucenaMotion.linear,
+      switchOutCurve: LucenaMotion.linear,
+      child: busy
+          ? CirculoCarregando(key: CoreKeys.busySpinner, cor: color)
+          : KeyedSubtree(
+              key: const ValueKey('busy.label'),
+              child: _content(Text(label), hidden: false),
+            ),
+    );
+    final stack = Stack(
+      alignment: Alignment.center,
+      children: [
+        ExcludeSemantics(child: placeholder),
+        switcher,
+      ],
+    );
+    // A mesma árvore nos dois estados, para a troca não perder o meio.
+    return Semantics(
+      label: busy ? label : null,
+      excludeSemantics: busy,
+      child: stack,
     );
   }
 }

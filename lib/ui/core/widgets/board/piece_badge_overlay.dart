@@ -1,6 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../motion/selo_na_peca.dart';
 import '../../theme/app_colors.dart';
 
 /// Onde fica o selo de qualidade do lance (`!!`, `??`...) sobre o tabuleiro.
@@ -28,7 +29,8 @@ abstract final class PieceBadgeGeometry {
 }
 
 /// O selo de qualidade do lance, por cima do tabuleiro (empilhe sobre ele,
-/// do mesmo tamanho). Não recebe toques.
+/// do mesmo tamanho). Não recebe toques. Desenha o [SeloNaPeca] do kit,
+/// ainda sem o salto (as telas de anotação ligam o salto ao aplicar H-ANI-12).
 class PieceBadgeOverlay extends StatelessWidget {
   const PieceBadgeOverlay({
     required this.square,
@@ -50,48 +52,19 @@ class PieceBadgeOverlay extends StatelessWidget {
   final Color color;
 
   @override
-  Widget build(BuildContext context) {
-    final r = PieceBadgeGeometry.rect(
-      square: square,
-      orientation: orientation,
-      boardSize: size,
-    );
-    return IgnorePointer(
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: Stack(
-          children: [
-            Positioned.fromRect(
-              rect: r,
-              child: Container(
-                key: badgeKey,
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.trainingFabShadow,
-                      blurRadius: 1,
-                      offset: const Offset(1, 1),
-                    ),
-                  ],
-                ),
-                child: FittedBox(
-                  child: Text(
-                    symbol,
-                    style: const TextStyle(
-                      color: AppColors.chessWhiteColor,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+  Widget build(BuildContext context) => SeloNaPeca(
+    casa: square,
+    orientacao: orientation,
+    tamanho: size,
+    cor: color,
+    saltar: false,
+    chave: badgeKey,
+    child: Text(
+      symbol,
+      style: const TextStyle(
+        color: AppColors.chessWhiteColor,
+        fontWeight: FontWeight.w800,
       ),
-    );
-  }
+    ),
+  );
 }

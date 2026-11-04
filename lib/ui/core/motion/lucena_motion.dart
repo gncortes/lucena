@@ -29,4 +29,205 @@ abstract final class LucenaMotion {
 
   /// Com "remover animações", o que sobra é este fade (ou nada).
   static const fadeReduzido = Duration(milliseconds: 100);
+
+  // H-ANI-06 · Folha de baixo sobre véu.
+
+  /// A folha sobe (e desce) sobre o véu.
+  static const folha = Duration(milliseconds: 400);
+
+  // H-ANI-07 · Shimmer na primeira carga.
+
+  /// Uma volta do brilho do esqueleto.
+  static const brilho = Duration(milliseconds: 1100);
+
+  /// O esqueleto se dissolve no conteúdo.
+  static const dissolveEsqueleto = Duration(milliseconds: 250);
+
+  /// O conteúdo sobe até o lugar.
+  static const sobeConteudo = Duration(milliseconds: 300);
+
+  /// Quanto o conteúdo sobe ao chegar, em px.
+  static const distanciaConteudo = 8.0;
+
+  // H-ANI-08 · Botão carregando.
+
+  /// O rótulo sai e o círculo entra.
+  static const trocaRotulo = Duration(milliseconds: 120);
+
+  /// Uma volta do círculo de carregando, em todo o app.
+  static const giroCarregando = Duration(milliseconds: 800);
+
+  // H-ANI-13 e H-ANI-18 · Barra que enche e número que conta.
+
+  /// A barra enche até o valor.
+  static const barraEnche = Duration(milliseconds: 700);
+
+  /// O número conta até o valor.
+  static const numeroConta = Duration(milliseconds: 650);
+
+  // H-ANI-02 · Hero do tabuleiro.
+
+  /// O voo do tabuleiro entre as duas telas (ida e volta).
+  static const vooDoTabuleiro = Duration(milliseconds: 450);
+
+  /// Trecho do voo em que o tabuleiro de A se dissolve no de B.
+  static const dissolveDoVoo = Interval(.2, .65);
+
+  /// A tela B entra: espera 60 ms e sobe até o fim do voo.
+  static const entradaDaTelaB = Interval(
+    60 / 450,
+    1,
+    curve: emphasizedDecelerate,
+  );
+
+  /// Quanto a tela B sobe ao entrar, em fração da altura.
+  static const subidaDaTelaB = .03;
+
+  /// Na volta, a tela que sai desce e some neste tempo.
+  static const saidaDaTela = Duration(milliseconds: 270);
+
+  /// Quanto a tela que sai desce, em px.
+  static const descidaDaTela = 20.0;
+
+  // H-ANI-10 · Lance, captura e xeque.
+
+  /// A peça desliza da casa de origem à de destino.
+  static const lance = Duration(milliseconds: 300);
+
+  /// A capturada encolhe e some depois que a outra peça chega.
+  static const capturaSome = Duration(milliseconds: 160);
+
+  /// Até onde a capturada encolhe.
+  static const escalaDaCapturada = .55;
+
+  /// Os dois pulsos do halo do xeque.
+  static const haloDoXeque = Duration(milliseconds: 700);
+
+  // H-ANI-11 e H-ANI-12 · Retorno do lance e selo na peça.
+
+  /// O selo salta de 0 a 1,2 e volta a 1.
+  static const saltoDoSelo = Duration(milliseconds: 260);
+
+  /// A casa pisca na cor do acerto.
+  static const piscaDaCasa = Duration(milliseconds: 420);
+
+  /// O tabuleiro respira no acerto.
+  static const respiroDoTabuleiro = Duration(milliseconds: 320);
+
+  /// Quanto o tabuleiro cresce no respiro.
+  static const escalaDoRespiro = 1.015;
+
+  /// O tabuleiro treme no erro.
+  static const tremidaDoTabuleiro = Duration(milliseconds: 340);
+
+  /// Quanto o tabuleiro vai para cada lado na tremida, em px.
+  static const amplitudeDaTremida = 7.0;
+
+  /// Do erro até a peça voltar à casa de origem.
+  static const voltaDoErro = Duration(milliseconds: 1100);
+
+  // H-ANI-09 · Balão do Viktor.
+
+  /// O balão entra a partir do bico.
+  static const balaoEntra = Duration(milliseconds: 280);
+
+  /// A escala do balão ao começar a entrar.
+  static const escalaDoBalao = .92;
+
+  /// Quanto o balão sobe ao entrar, em px.
+  static const subidaDoBalao = 8.0;
+
+  /// A fala antiga sai.
+  static const falaSai = Duration(milliseconds: 90);
+
+  /// A fala nova entra.
+  static const falaEntra = Duration(milliseconds: 210);
+
+  // H-ANI-16 · Texto que explica entra em cascata.
+
+  /// O título entra.
+  static const tituloEntra = Duration(milliseconds: 380);
+
+  /// Quanto o título sobe, em px.
+  static const subidaDoTitulo = 14.0;
+
+  /// Os demais textos, números, selos e o botão entram.
+  static const textoEntra = Duration(milliseconds: 320);
+
+  /// Quanto os demais textos sobem, em px.
+  static const subidaDoTexto = 10.0;
+
+  /// O intervalo entre os itens da cascata, quando cabem no total.
+  static const intervaloDaCascata = Duration(milliseconds: 70);
+
+  /// O tempo máximo da cascata inteira.
+  static const totalDaCascata = Duration(milliseconds: 1200);
+
+  /// O número da cascata conta.
+  static const numeroDaCascata = Duration(milliseconds: 620);
+
+  /// A escala de emblemas e selos ao começar a entrar.
+  static const escalaDoEmblema = .6;
+
+  // H-ANI-17 · Listas em ordem estrita e passos com conector.
+
+  /// Cada linha da lista entra.
+  static const itemDaLista = Duration(milliseconds: 300);
+
+  /// O intervalo entre as linhas de uma lista longa.
+  static const intervaloDaLista = Duration(milliseconds: 30);
+
+  /// Numa lista longa, a linha a partir da qual o intervalo para de somar.
+  static const linhasQueEsperam = 12;
+
+  /// O intervalo fixo entre feitos, checks e bolinhas.
+  static const intervaloDosFeitos = Duration(milliseconds: 90);
+
+  /// O passo entra.
+  static const passoEntra = Duration(milliseconds: 300);
+
+  /// O conector desce até o passo seguinte.
+  static const conectorDesce = Duration(milliseconds: 240);
+
+  /// O tempo máximo dos passos com conector.
+  static const totalDosPassos = Duration(milliseconds: 2000);
+
+  // H-ANI-24 · Estado vazio e estado de erro.
+
+  /// O ícone do estado entra.
+  static const iconeDoEstado = Duration(milliseconds: 400);
+
+  /// A escala do ícone ao começar a entrar.
+  static const escalaDoIcone = .8;
+
+  /// O texto do estado começa depois do ícone.
+  static const atrasoDoTextoDoEstado = Duration(milliseconds: 120);
+
+  /// Quanto o texto do estado sobe, em px.
+  static const subidaDoEstado = 8.0;
+
+  // H-ANI-25 · Resultado.
+
+  /// Quando cada parte do resultado começa a entrar, desde o primeiro quadro.
+  static const resultadoTitulo = Duration(milliseconds: 60);
+  static const resultadoSubtitulo = Duration(milliseconds: 120);
+  static const resultadoPlacar = Duration(milliseconds: 180);
+  static const resultadoBolinhas = Duration(milliseconds: 240);
+  static const resultadoViktor = Duration(milliseconds: 560);
+  static const resultadoBotoes = Duration(milliseconds: 620);
+
+  /// O placar do resultado conta (termina antes de os botões entrarem).
+  static const placarConta = Duration(milliseconds: 400);
+
+  /// Cada bolinha do resultado salta.
+  static const bolinhaSalta = Duration(milliseconds: 160);
+
+  /// Os botões do resultado deslizam de baixo.
+  static const botoesDoResultado = Duration(milliseconds: 280);
+
+  /// Quanto os botões do resultado sobem, em px.
+  static const subidaDosBotoes = 24.0;
+
+  /// O tempo máximo do resultado inteiro.
+  static const totalDoResultado = Duration(milliseconds: 1300);
 }
