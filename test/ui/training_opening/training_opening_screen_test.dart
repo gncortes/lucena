@@ -28,6 +28,7 @@ import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/goldens/golden_harness.dart';
 
 void main() {
@@ -325,6 +326,60 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+  for (final reduced in [false, true]) {
+    testWidgets(
+      'H-ANI-11/12: erro e acerto na casa e na peça (reduzido: $reduced)',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(412, 915);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        await prepare();
+        await tester.pumpWidget(
+          TestApp(
+            locale: const Locale('pt'),
+            settingsCubit: settings,
+            child: TrainingOpeningScreen(
+              repository: repository,
+              config: TrainingCourseConfig.pilares,
+              now: now,
+              lessonId: 'one',
+              teacher: teacher,
+              onNextGoal: () {},
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        void move(String uci) => tester
+            .widget<Chessboard>(find.byKey(TrainingKeys.openingBoard))
+            .onMove!(NormalMove.fromUci(uci));
+        expectSemRetornoDoLance();
+        move('d2d4');
+        await tester.pump();
+        expectRetornoDoLance(tester, TrainingKeys.openingBoard, acerto: false);
+        expect(
+          tester
+              .widget<Chessboard>(find.byKey(TrainingKeys.openingBoard))
+              .controller
+              .pieces[Square.d4],
+          isNotNull,
+        );
+        await tester.pumpAndSettle();
+        expectSemRetornoDoLance();
+        move('e2e4');
+        await tester.pump();
+        expectRetornoDoLance(tester, TrainingKeys.openingBoard, acerto: true);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets(
     'completion remains visible until the student chooses the next goal',
     (tester) async {
