@@ -12,6 +12,7 @@ import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
@@ -186,6 +187,35 @@ void main() {
       expect(find.byKey(PurchaseKeys.doneTitle), findsOneWidget);
     },
   );
+
+  // Bug 3 da D2 (PropV2CompraConcluida): círculo verde-claro com ✓ verde e
+  // "Escolher meu objetivo" preso embaixo.
+  testWidgets('a compra concluída segue o quadro', (tester) async {
+    await pump(tester, D2Paths.pilaresPurchaseDone);
+    final circulo = find.descendant(
+      of: find.byKey(MotionKeys.circuloDaCompra),
+      matching: find.byType(Container),
+    );
+    final fundo =
+        (tester.widget<Container>(circulo.first).decoration! as BoxDecoration)
+            .color;
+    expect(fundo, AppColors.successSurface);
+    expect(
+      tester.widget<Icon>(find.byIcon(Icons.check_rounded)).color,
+      AppColors.successOnSurface,
+    );
+    expect(find.text('Escolher meu objetivo'), findsOneWidget);
+    final texto = tester.getRect(
+      find.text(
+        'Os 20 capítulos estão liberados. Com o seu objetivo, a gente planeja '
+        'junto a sua rotina de estudos.',
+      ),
+    );
+    final botao = tester.getRect(find.byKey(PurchaseKeys.doneGoal));
+    // Embaixo da tela, longe do texto (no quadro: 758 de 900).
+    expect(botao.top, greaterThan(915 * .75));
+    expect(botao.top - texto.bottom, greaterThan(100));
+  });
 
   testWidgets('H-ANI-27: o aviso de erro abre empurrando e o ícone pulsa', (
     tester,
