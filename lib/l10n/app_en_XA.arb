@@ -2686,5 +2686,6 @@
   "venPlanSaleTryText": "[Çhåptéŕ 1 îš ûñlöçkéd: 3 léššöñš wîth Vîktöŕ åñd å šét öf éxéŕçîšéš. one two three four five six]",
   "venPlanSaleClosing": "[Tŕåîñ ûp tö ýöûŕ ĝöål, wîth Vîktöŕ îñ évéŕý léššöñ. one two three four five]",
   "venPlanSaleStart": "[Štåŕt wîth Çhåptéŕ 1 one two]",
-  "venPlanSaleFull": "[Šéé thé fûll çöûŕšé one two]"
+  "venPlanSaleFull": "[Šéé thé fûll çöûŕšé one two]",
+  "venAdFailedMessage": "[Thé léššöñ öpéñš åftéŕ thé åd. Çhéçk ýöûŕ çöññéçtîöñ åñd tŕý åĝåîñ, öŕ öpéñ ît ŕîĝht åwåý wîth Pîlåŕéš. one two three four five six seven eight nine]"
 }

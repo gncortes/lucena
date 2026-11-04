@@ -2941,5 +2941,6 @@
   "venPlanSaleTryText": "O Capítulo 1 está liberado: 3 lições com o Viktor e uma lista de exercícios.",
   "venPlanSaleClosing": "Treine até o seu objetivo, com o Viktor em cada lição.",
   "venPlanSaleStart": "Começar pelo Capítulo 1",
-  "venPlanSaleFull": "Ver o curso completo"
+  "venPlanSaleFull": "Ver o curso completo",
+  "venAdFailedMessage": "A lição abre depois do anúncio. Confira a internet e tente de novo, ou abra direto com o Pilares."
 }

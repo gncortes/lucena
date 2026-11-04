@@ -14005,5 +14005,9 @@
   "venPlanSaleFull": "See the full course",
   "@venPlanSaleFull": {
     "description": "Botão de texto da venda do plano: abre a oferta do fim da demonstração."
+  },
+  "venAdFailedMessage": "The lesson opens after the ad. Check your connection and try again, or open it right away with Pilares.",
+  "@venAdFailedMessage": {
+    "description": "Texto da falha do anúncio da demonstração (PropV2DemoAnuncioFalhouCompra, H-VEN-13)."
   }
 }
