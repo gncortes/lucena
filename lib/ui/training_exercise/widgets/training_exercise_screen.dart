@@ -45,6 +45,7 @@ import '../view_models/training_exercise_cubit.dart';
 import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/motion/retorno_do_lance.dart';
 import '../../core/motion/tabuleiro_hero.dart';
+import '../../core/motion/troca_com_fade.dart';
 
 /// Course-neutral destination. Navigation callbacks run only after persistence.
 class TrainingExerciseScreen extends StatelessWidget {
@@ -102,10 +103,14 @@ class _ExerciseView extends StatefulWidget {
 }
 
 class _ExerciseViewState extends State<_ExerciseView> {
-  ChessboardController? _controller;
+  /// Uma posição por tentativa: "Tentar de novo" e "Ver solução" começam
+  /// outra, que entra pronta num fade enquanto a anterior some (H-ANI-03).
+  final _controllers = <int, ChessboardController>{};
+  int _attempt = 0;
+  TrainingExercisePhase? _phase;
 
   /// O tabuleiro guarda o estado quando o retorno do lance o envolve.
-  final _boardKey = GlobalKey();
+  final _boardKeys = <int, GlobalKey>{};
   String? _heroId;
 
   void _cycleAction(
@@ -129,7 +134,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    for (final controller in _controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -354,11 +361,20 @@ class _ExerciseViewState extends State<_ExerciseView> {
           : Move.parse(state.lastMove!),
       kingSquareInCheck: GameRules.checkedKing(position),
     );
-    if (_controller == null) {
-      _controller = ChessboardController(game: data);
-    } else {
-      _controller!.updatePosition(data, animate: true, resetPremove: true);
+    // Do resultado de volta ao jogo: tentativa nova, sem deslize de volta.
+    if (_phase == TrainingExercisePhase.result &&
+        state.phase == TrainingExercisePhase.playing) {
+      _attempt++;
     }
+    _phase = state.phase;
+    final controller = _controllers[_attempt];
+    if (controller == null) {
+      _controllers[_attempt] = ChessboardController(game: data);
+    } else {
+      controller.updatePosition(data, animate: true, resetPremove: true);
+    }
+    final attempt = _attempt;
+    final boardController = _controllers[attempt]!;
     final settings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
@@ -369,14 +385,14 @@ class _ExerciseViewState extends State<_ExerciseView> {
       textDirection: TextDirection.ltr,
       // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
       child: TabuleiroAnimado(
-        controlador: _controller!,
+        controlador: boardController,
         orientacao: side,
         tamanho: size,
         pecas: settings.chessground.pieceAssets,
         child: Chessboard(
           key: TrainingKeys.exerciseBoard,
           size: size,
-          controller: _controller!,
+          controller: boardController,
           orientation: side,
           settings: TabuleiroAnimado.ajustes(context, settings.chessground),
           shapes: {
@@ -399,7 +415,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
         ? null
         : wrongMove ??
               (state.lastMove == null ? null : Move.parse(state.lastMove!));
-    board = KeyedSubtree(key: _boardKey, child: board);
+    board = KeyedSubtree(
+      key: _boardKeys.putIfAbsent(attempt, GlobalKey.new),
+      child: board,
+    );
     if (retornoMove is NormalMove) {
       board = RetornoDoLance(
         key: ValueKey('${state.practicing} $fen ${retornoMove.uci}'),
@@ -411,6 +430,8 @@ class _ExerciseViewState extends State<_ExerciseView> {
         child: board,
       );
     }
+    // H-ANI-03: o tabuleiro fica parado; só a posição troca em fade.
+    board = TrocaComFade(chave: attempt, child: board);
     if (widget.screen.heroTag case final tag?) {
       board = Hero(tag: tag, child: board);
     } else {
