@@ -136,4 +136,11 @@ abstract final class MotionKeys {
 
   /// A [ContagemParaFechar] do anúncio (H-ANI-31).
   static const contagemParaFechar = Key('motion.contagemParaFechar');
+
+  /// A abertura animada (H-ANI-44): tocar pula para a saída quando a carga
+  /// terminou.
+  static const abertura = Key('motion.abertura');
+
+  /// O peão desenhado da abertura ([MascotePainter]).
+  static const mascote = Key('motion.mascote');
 }

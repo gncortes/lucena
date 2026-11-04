@@ -22,6 +22,10 @@ abstract final class LucenaMotion {
   /// Saída curta (eixo X, fade through).
   static const standardAccelerate = Cubic(.3, 0, 1, 1);
 
+  /// A curva standard do Material (.4, 0, .2, 1): a da abertura (H-ANI-43/44),
+  /// igual ao `fast_out_slow_in` do Android.
+  static const standard = Cubic(.4, 0, .2, 1);
+
   /// Véu, dissolve e giro do carregando.
   static const linear = Curves.linear;
 
@@ -406,4 +410,62 @@ abstract final class LucenaMotion {
   /// tem fade de [trocaDaContagem].
   static const contagemAparece = Duration(milliseconds: 250);
   static const trocaDaContagem = Duration(milliseconds: 200);
+
+  // H-ANI-44 · abertura em fases (design/branding/abertura2.html). Os tempos de
+  // cada fase contam do começo dela.
+
+  /// Entrada (uma vez): agacha a (1,04; 0,96) em 180 ms e volta em 380 ms; os
+  /// braços de trás somem de 250 a 420 ms; os da frente crescem de 250 a 520.
+  static const aberturaEntrada = Duration(milliseconds: 520);
+  static const aberturaAgacha = Duration(milliseconds: 180);
+  static const aberturaLevanta = Duration(milliseconds: 380);
+  static const aberturaBracosDe = Duration(milliseconds: 250);
+  static const aberturaAtrasAte = Duration(milliseconds: 420);
+  static const agachaX = 1.04;
+  static const agachaY = .96;
+  static const bracoNasce = .3;
+
+  /// Ciclo de roscas (em laço): esquerda e depois direita, 160 ms para subir e
+  /// 160 para descer; o corpo inclina ±3°. A gota, só no primeiro ciclo,
+  /// aparece em 120 ms, desce 30 px até 640 e some descendo até 46 px em 790.
+  static const aberturaCiclo = Duration(milliseconds: 640);
+  static const aberturaRosca = Duration(milliseconds: 160);
+  static const anguloBaixado = 58.0;
+  static const inclinacaoDaRosca = 3.0;
+  static const gotaAparece = Duration(milliseconds: 120);
+  static const gotaSome = Duration(milliseconds: 790);
+  static const gotaDesce = 30.0;
+  static const gotaSomeEm = 46.0;
+
+  /// Final (uma vez): halteres ao alto em 200 ms; brilho de 150 a 250 ms; o
+  /// nome e a descrição de 150 a 450 ms (sobem 12 px); a piscada de 350 a
+  /// 490 ms, fechando em 410.
+  static const aberturaFinal = Duration(milliseconds: 700);
+  static const halteresAoAlto = Duration(milliseconds: 200);
+  static const brilhoDe = Duration(milliseconds: 150);
+  static const brilhoAte = Duration(milliseconds: 250);
+  static const nomeDe = Duration(milliseconds: 150);
+  static const nomeAte = Duration(milliseconds: 450);
+  static const piscaDe = Duration(milliseconds: 350);
+  static const piscaFecha = Duration(milliseconds: 410);
+  static const piscaAte = Duration(milliseconds: 490);
+  static const olhosFechados = .1;
+  static const subidaDoNome = 12.0;
+  static const luzDaDescricao = .7;
+
+  /// Saída: figura e nome encolhem a 0,9 com fade (ACC) e a primeira tela
+  /// aparece por baixo (DEC); o brilho some nos primeiros 150 ms.
+  static const aberturaSaida = Duration(milliseconds: 300);
+  static const brilhoSai = Duration(milliseconds: 150);
+  static const encolheNaSaida = .9;
+
+  /// Movimento reduzido: o nome em fade de 150 ms e a saída em 100 ms.
+  static const nomeReduzido = Duration(milliseconds: 150);
+  static const saidaReduzida = Duration(milliseconds: 100);
+
+  /// O lado do quadro de 1024 da figura: o mesmo do ícone animado do Android
+  /// 12+ sem fundo (288 dp, visível num círculo de 192), para a passagem da
+  /// tela do sistema não ter pulo. O topo do nome fica a 65% da altura.
+  static const figuraDaAbertura = 288.0;
+  static const topoDoNome = .65;
 }

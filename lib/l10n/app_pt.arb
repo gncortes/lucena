@@ -41,6 +41,7 @@
   "achievementsTitle": "Conquistas",
   "achievementsUnlockedOn": "Conquistada em {date}",
   "appTitle": "Lucena",
+  "appTagline": "Seu treino de xadrez de todo dia",
   "attemptDetails": "{opponent} · {date}",
   "attemptDraw": "Empate",
   "attemptLoss": "Derrota",
