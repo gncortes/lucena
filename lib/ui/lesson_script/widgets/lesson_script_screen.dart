@@ -676,7 +676,11 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final (label, key) = switch (action) {
       ScriptAction.continuar => (l10n.lessonContinue, LessonScriptKeys.primary),
       ScriptAction.proximaEtapa => (
-        cubit.endgame ? stateLabel(cubit.state, context) : l10n.lessonContinue,
+        // Aula de abertura (curso): "Partidas-modelo" no fim da ideia
+        // (PropV1TreinoAbIdeiaFim); nas outras etapas da escola, "Continuar".
+        cubit.endgame || cubit.state.stageId == 'ideia'
+            ? stateLabel(cubit.state, context)
+            : l10n.lessonContinue,
         LessonScriptKeys.primary,
       ),
       ScriptAction.tentarDeNovo => (l10n.lessonRetry, LessonScriptKeys.primary),

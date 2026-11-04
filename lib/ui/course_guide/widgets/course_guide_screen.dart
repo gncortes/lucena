@@ -468,10 +468,10 @@ class _LessonTab extends StatelessWidget {
           label: needsProfile
               ? t.trainingProfileMomentLabel(partLabel)
               : resumed
-              ? t.trainingResumeLabel(sectionLabel, index, resumeStageLabel)
+              ? t.courseGuideResumeLabel(sectionLabel, resumeStageLabel)
               : lesson.kind == TrainingLessonKind.test
               ? sectionLabel
-              : t.trainingPartLesson(index, sectionLabel),
+              : t.courseGuideLessonLabel(sectionLabel, index),
           title: needsProfile
               ? t.trainingProfileMomentTitle
               : trainingMasteryLessonTitle(context, lesson),

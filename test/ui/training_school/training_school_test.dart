@@ -145,7 +145,7 @@ void main() {
       );
       await cubit.load();
       await tester.pumpAndSettle();
-      expect(find.text('Módulo 1 · lição 1'), findsOneWidget);
+      expect(find.text('Módulo 1 · Lição 1'), findsOneWidget);
       await tester.tap(find.byKey(CourseGuideKeys.tab('catalog')));
       await tester.pumpAndSettle();
       expect(find.text('MÓDULO 1 · PEÇAS'), findsOneWidget);

@@ -9726,6 +9726,30 @@
       }
     }
   },
+  "courseGuideLessonLabel": "{part} · Lesson {n}",
+  "@courseGuideLessonLabel": {
+    "description": "Lesson tab card label: part and lesson number.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "courseGuideResumeLabel": "{part} · {stage}",
+  "@courseGuideResumeLabel": {
+    "description": "Lesson tab card label when resuming: part and the stage where the student stopped.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
   "courseGuideStudyTips": "Study tips",
   "@courseGuideStudyTips": {
     "description": "T85 course guide: courseGuideStudyTips."
