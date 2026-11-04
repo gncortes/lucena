@@ -210,7 +210,6 @@
   "profileRatingSheetHint": "Escolha a faixa mais próxima do seu rating, online ou no tabuleiro.",
   "profileRatingStart": "Ponto de partida: a sua faixa acima",
   "profileSave": "Salvar",
-  "ratingHistory": "Histórico do rating",
   "ratingHistoryEmpty": "Cada partida que mexer no seu rating aparece aqui.",
   "reportRating": "Rating {rating} ({change})",
   "resultFulfilled": "Objetivo cumprido!",
@@ -1487,7 +1486,7 @@
   "profileProviderGoogle": "Google",
   "profileProviderEmail": "E-mail",
   "profileLocalOnlyTitle": "Seu progresso está só neste celular",
-  "profileLocalOnlyText": "Com uma conta, ele fica salvo e aparece em outro aparelho.",
+  "profileLocalOnlyText": "Com uma conta, ele fica salvo e aparece em qualquer celular.",
   "profileCreateOrSignIn": "Criar conta ou entrar",
   "profileCountry": "País",
   "profileCountryNone": "Não informado",
@@ -1503,13 +1502,13 @@
   "profileLichessNone": "Não conectado",
   "profileEditData": "Editar os dados",
   "profileSyncedTitle": "Tudo salvo na conta",
-  "profileSyncedAt": "Última sincronização: {when}",
+  "profileSyncedAt": "Salvo {when}",
   "profileSyncedToday": "hoje, {time}",
-  "profileSyncedNever": "ainda não",
-  "profileSyncOffline": "Sem internet, o que você faz fica no celular e sobe sozinho quando a conexão voltar.",
+  "profileSyncedNever": "Última sincronização: ainda não",
+  "profileSyncOffline": "Sem internet, o que você faz fica no celular e é salvo na conta quando a conexão voltar.",
   "profileSignOut": "Sair da conta",
   "profileDeleteAccount": "Excluir a conta",
-  "profileDeleteWeb": "Sem o app, dá para pedir em playlucena.com/excluir-conta.",
+  "profileDeleteWeb": "Sem o app, dá para pedir a exclusão em playlucena.com/excluir-conta.",
   "accountInviteTextSheet": "Com uma conta, a partida, o rating e os cursos ficam salvos e você recupera tudo em outro aparelho.",
   "accountInviteTextLichess": "Guarde o seu progresso e o vínculo com o Lichess numa conta do Lucena.",
   "accountEmailField": "E-mail",
@@ -1527,7 +1526,7 @@
   "accountAvatarGoogle": "Usar a foto do Google",
   "accountNickname": "Nome ou apelido",
   "accountNicknameHelp": "É como o Viktor vai te chamar.",
-  "accountCountryFromPhone": "{country} · veio do celular",
+  "accountCountryFromPhone": "{country} · do seu celular",
   "accountRestoredTitle": "Bem-vindo de volta, {name}",
   "accountRestoredText": "Encontrei o seu progresso na conta.",
   "accountRestoredRating": "Rating",
@@ -1586,8 +1585,6 @@
   "dailyContinue": "Continuar",
   "settingsSectionApp": "App",
   "settingsSectionHelp": "Ajuda e sobre",
-  "profileSectionChess": "Seu xadrez",
-  "profileSectionRegion": "Região",
   "alertsTitle": "Notificações",
   "alertsCount": "{on} de {total} ligadas",
   "alertsIntro": "Escolha quais notificações o Lucena pode enviar. Dá para mudar quando quiser.",
@@ -2425,5 +2422,14 @@
   "conApagarRetry": "Tentar de novo",
   "conApagarFailed": "Ocorreu um erro inesperado",
   "conApagarCancelled": "Login cancelado. Nada foi excluído.",
-  "conApagarDifferent": "Essa não é a conta que você ia excluir. Nada foi excluído."
+  "conApagarDifferent": "Essa não é a conta que você ia excluir. Nada foi excluído.",
+  "conPerfilSyncedOn": "em {date}",
+  "@conPerfilSyncedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "conPerfilFailed": "Ocorreu um erro inesperado"
 }

@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
@@ -17,6 +19,10 @@ import '../../../domain/use_cases/analytics_rules.dart';
 enum ProfileNotice {
   /// "Atualizar o rating" sem rede: fica o de antes.
   lichessOffline,
+
+  /// Sair ou desconectar o Lichess falhou: "Ocorreu um erro inesperado" e
+  /// tudo fica como estava (gap 5).
+  failed,
 }
 
 class ProfileAccountState {
@@ -115,8 +121,22 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     }
   }
 
-  /// O progresso fica no aparelho; a conta continua na nuvem.
-  Future<void> signOut() => _accounts.signOut();
+  /// O progresso fica no aparelho; a conta continua na nuvem. Falhando,
+  /// a conta fica e o aviso aparece (gap 5).
+  Future<void> signOut() => _guard(_accounts.signOut);
+
+  Future<void> _guard(Future<void> Function() action) async {
+    if (state.busy) return;
+    emit(state.copyWith(busy: true));
+    try {
+      await action();
+      _done(null);
+    } on Object catch (error, stack) {
+      debugPrint('profile action failed: $error');
+      reportHandledError(error, stack);
+      _done(ProfileNotice.failed);
+    }
+  }
 
   void _done(ProfileNotice? notice) {
     if (!isClosed) emit(state.copyWith(busy: false, notice: notice));
@@ -137,7 +157,9 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   }
 
   /// Tira o acesso ao Lichess e o vínculo do perfil; o rating fica.
-  Future<void> disconnectLichess() async {
+  Future<void> disconnectLichess() => _guard(_disconnectLichess);
+
+  Future<void> _disconnectLichess() async {
     await _lichess.disconnect();
     final profile = await _profile.load();
     await _profile.save(

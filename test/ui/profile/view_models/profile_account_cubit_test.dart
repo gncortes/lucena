@@ -67,6 +67,42 @@ void main() {
     expect(cubit.state.syncedAt, isNull);
   });
 
+  group('H-CON-13 gap 5', () {
+    test('sair falhando avisa e mantém a conta', () async {
+      accounts.account = FakeAccountRepository.google;
+      final cubit = await build();
+      accounts.signOutError = Exception('falhou');
+      await cubit.signOut();
+      await pumpEventQueue();
+
+      expect(cubit.state.account, FakeAccountRepository.google);
+      expect(cubit.state.notice, ProfileNotice.failed);
+      expect(cubit.state.busy, isFalse);
+    });
+
+    test('sair trava o segundo toque', () async {
+      accounts.account = FakeAccountRepository.google;
+      final cubit = await build();
+      final first = cubit.signOut();
+      expect(cubit.state.busy, isTrue);
+      await cubit.signOut();
+      await first;
+      expect(accounts.signOuts, 1);
+    });
+
+    test('desconectar o Lichess falhando avisa e mantém o vínculo', () async {
+      lichess.connected = true;
+      final cubit = await build();
+      lichess.disconnectError = Exception('falhou');
+      await cubit.disconnectLichess();
+
+      expect(cubit.state.lichess, rating);
+      expect(profiles.profile.lichessUser, 'ana');
+      expect(cubit.state.notice, ProfileNotice.failed);
+      expect(cubit.state.busy, isFalse);
+    });
+  });
+
   group('Lichess', () {
     setUp(() => lichess.connected = true);
 

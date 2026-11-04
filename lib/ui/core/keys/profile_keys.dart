@@ -33,8 +33,8 @@ abstract final class ProfileKeys {
   static const lichessRefresh = Key('profile.lichessRefresh');
   static const lichessDisconnect = Key('profile.lichessDisconnect');
 
-  /// O histórico do rating de finais.
-  static const ratingCard = Key('profile.rating');
+  /// "Notificações", no segundo grupo: abre a tela dos avisos.
+  static const rowNotices = Key('profile.rowNotices');
 
   /// Os grupos do fim (E1.25): "Remover anúncios"; Privacidade, feedback e
   /// avaliar.

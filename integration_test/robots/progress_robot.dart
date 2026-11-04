@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/core/keys/profile_keys.dart';
-import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'home_robot.dart';
@@ -42,9 +40,12 @@ class ProgressRobot {
   }
 
   Future<void> _openRating() async {
-    await $(HomeKeys.settingsButton).tap();
-    await $(SettingsKeys.profileTile).tap();
-    await $(ProfileKeys.ratingCard).scrollTo().tap();
+    // O histórico do rating abre pelo cartão do jogador na Home (o Perfil
+    // não tem mais o botão, quadro PropV1RetencaoPerfil).
+    if (find.byKey(HomeKeys.playerCard).hitTestable().evaluate().isEmpty) {
+      await $(HomeKeys.playerCard).scrollTo(scrollDirection: AxisDirection.up);
+    }
+    await $(HomeKeys.playerCard).tap();
     await $(RatingKeys.value).waitUntilVisible();
   }
 

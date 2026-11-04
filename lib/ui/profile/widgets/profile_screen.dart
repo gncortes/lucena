@@ -14,6 +14,7 @@ import '../../../domain/models/level_source.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../routing/routes.dart';
+import '../../alerts/view_models/alerts_cubit.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -25,7 +26,6 @@ import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
-import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_sheet.dart';
 import '../../goal/widgets/goal_ui.dart';
 import '../../region/widgets/region_sheet.dart';
@@ -35,9 +35,10 @@ import 'account_delete_sheet.dart';
 import 'lichess_sheet.dart';
 import 'profile_rows.dart';
 
-/// O Perfil (canvas `PropV1ConfigBPerfil`): só o que é da pessoa, a mesma
-/// tela com e sem conta (muda a linha do cabeçalho e o cartão de cima), com
-/// as seções Seu xadrez e Região. O idioma fica em Aparência.
+/// O Perfil (quadros `PropV1RetencaoPerfil` e `PropV1PerfilConta`): só o
+/// que é da pessoa, a mesma tela com e sem conta (muda a linha do cabeçalho,
+/// o cartão de cima e as ações da conta). Um grupo com país, região, idioma,
+/// objetivo, nível e Lichess; outro com as notificações.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -97,7 +98,11 @@ class _ProfileView extends StatelessWidget {
   }
 
   void _notice(BuildContext context, ProfileAccountState state) =>
-      showLucenaSnackBar(context, context.l10n.lichessRefreshFailed);
+      showLucenaSnackBar(context, switch (state.notice) {
+        ProfileNotice.failed => context.l10n.conPerfilFailed,
+        ProfileNotice.lichessOffline ||
+        null => context.l10n.lichessRefreshFailed,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +133,41 @@ class _ProfileView extends StatelessWidget {
               const _LocalCard()
             else
               _SyncCard(syncedAt: state.syncedAt),
-            SectionTitle(l10n.profileSectionChess, inset: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.lg),
             ProfileRowGroup(
               children: [
+                ProfileRow(
+                  key: ProfileKeys.rowCountry,
+                  icon: Icons.public,
+                  title: l10n.profileCountry,
+                  value: profileCountryValue(
+                    l10n,
+                    profile?.country,
+                    phone: context.read<ProfileCubit>().phoneCountry,
+                  ),
+                  onTap: () => context.push(Routes.country),
+                ),
+                ProfileRow(
+                  key: ProfileKeys.rowRegion,
+                  icon: Icons.location_on,
+                  title: l10n.profileRegion,
+                  value:
+                      regionLabel(
+                        l10n,
+                        country: profile?.country,
+                        state: profile?.state,
+                        city: profile?.city,
+                      ) ??
+                      l10n.profileRegionNone,
+                  onTap: () => showRegionSheet(context),
+                ),
+                ProfileRow(
+                  key: ProfileKeys.rowLanguage,
+                  icon: Icons.language,
+                  title: l10n.settingsLanguage,
+                  value: profileLanguageName(context),
+                  onTap: () => context.push(Routes.settingsLanguage),
+                ),
                 // Grava na hora: a folha tem o próprio "Salvar".
                 ProfileRow(
                   key: ProfileKeys.rowGoal,
@@ -160,44 +197,8 @@ class _ProfileView extends StatelessWidget {
                 ),
               ],
             ),
-            SectionTitle(l10n.profileSectionRegion, inset: AppSpacing.xs),
-            ProfileRowGroup(
-              children: [
-                ProfileRow(
-                  key: ProfileKeys.rowCountry,
-                  icon: Icons.public,
-                  title: l10n.profileCountry,
-                  value: profileCountryValue(
-                    l10n,
-                    profile?.country,
-                    phone: context.read<ProfileCubit>().phoneCountry,
-                  ),
-                  onTap: () => context.push(Routes.country),
-                ),
-                ProfileRow(
-                  key: ProfileKeys.rowRegion,
-                  icon: Icons.location_on,
-                  title: l10n.profileRegion,
-                  value:
-                      regionLabel(
-                        l10n,
-                        country: profile?.country,
-                        state: profile?.state,
-                        city: profile?.city,
-                      ) ??
-                      l10n.profileRegionNone,
-                  onTap: () => showRegionSheet(context),
-                ),
-              ],
-            ),
             const SizedBox(height: AppSpacing.lg),
-            // O rating de finais fica no histórico, com os detalhes.
-            OutlinedButton.icon(
-              key: ProfileKeys.ratingCard,
-              onPressed: () => context.push(Routes.rating),
-              icon: const Icon(Icons.show_chart_rounded),
-              label: Text(l10n.ratingHistory),
-            ),
+            const _NoticesGroup(),
             if (account != null) ...[
               const SizedBox(height: AppSpacing.lg),
               _AccountActions(
@@ -370,9 +371,11 @@ class _SyncCard extends StatelessWidget {
     final now = context.read<Now>()().toLocal();
     final today =
         at.year == now.year && at.month == now.month && at.day == now.day;
-    return today
-        ? l10n.profileSyncedToday(DateFormat.Hm(locale).format(at))
-        : DateFormat.Md(locale).format(at);
+    return l10n.profileSyncedAt(
+      today
+          ? l10n.profileSyncedToday(DateFormat.Hm(locale).format(at))
+          : l10n.conPerfilSyncedOn(DateFormat.Md(locale).format(at)),
+    );
   }
 
   @override
@@ -403,7 +406,7 @@ class _SyncCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Text(l10n.profileSyncedAt(_when(context)), style: muted),
+                  Text(_when(context), style: muted),
                 ],
               ),
             ),
@@ -437,7 +440,31 @@ class _Card extends StatelessWidget {
   );
 }
 
-/// "Sair da conta", "Apagar a conta" (vermelho) e a nota da página web.
+/// "Notificações": quantos avisos estão ligados; abre a tela dos avisos.
+class _NoticesGroup extends StatelessWidget {
+  const _NoticesGroup();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final state = context.watch<AlertsCubit>().state;
+    return ProfileRowGroup(
+      children: [
+        ProfileRow(
+          key: ProfileKeys.rowNotices,
+          icon: Icons.notifications,
+          title: l10n.alertsTitle,
+          value: state.permitted
+              ? l10n.alertsCount(state.enabled, state.total)
+              : l10n.alertsBlockedSummary,
+          onTap: () => context.push(Routes.alerts),
+        ),
+      ],
+    );
+  }
+}
+
+/// "Sair da conta", "Excluir a conta" (vermelho) e a nota da página web.
 class _AccountActions extends StatelessWidget {
   const _AccountActions({
     required this.busy,

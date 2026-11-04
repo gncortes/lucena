@@ -77,7 +77,7 @@ String profileCountryValue(
 /// O idioma escolhido nas Configurações, no próprio idioma.
 String profileLanguageName(BuildContext context) {
   final code = context.select(
-    (SettingsCubit cubit) => cubit.state?.languageCode,
+    (SettingsCubit? cubit) => cubit?.state?.languageCode,
   );
   return AppLanguage.fromCode(code)?.nativeName ??
       context.l10n.settingsLanguageSystem;

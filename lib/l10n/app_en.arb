@@ -1045,10 +1045,6 @@
   "@profileSave": {
     "description": "Button that saves the profile."
   },
-  "ratingHistory": "Rating history",
-  "@ratingHistory": {
-    "description": "Title above the list of games that changed the player's rating, on the rating details screen."
-  },
   "ratingHistoryEmpty": "Every game that moves your rating shows up here.",
   "@ratingHistoryEmpty": {
     "description": "Shown on the rating details screen when no game has counted for the rating yet."
@@ -7519,7 +7515,7 @@
   "@profileLocalOnlyTitle": {
     "description": "Profile without account: card title."
   },
-  "profileLocalOnlyText": "With an account, it stays saved and shows up on another device.",
+  "profileLocalOnlyText": "With an account, it stays saved and shows up on any phone.",
   "@profileLocalOnlyText": {
     "description": "Profile without account: card text."
   },
@@ -7591,7 +7587,7 @@
   "@profileSyncedTitle": {
     "description": "Profile with account: sync card title."
   },
-  "profileSyncedAt": "Last sync: {when}",
+  "profileSyncedAt": "Saved {when}",
   "@profileSyncedAt": {
     "description": "Profile with account: when it last synced.",
     "placeholders": {
@@ -7609,11 +7605,11 @@
       }
     }
   },
-  "profileSyncedNever": "not yet",
+  "profileSyncedNever": "Last sync: not yet",
   "@profileSyncedNever": {
     "description": "Profile sync time: never synced."
   },
-  "profileSyncOffline": "Without internet, what you do stays on the phone and goes up by itself when the connection is back.",
+  "profileSyncOffline": "Without internet, what you do stays on the phone and is saved to the account when the connection is back.",
   "@profileSyncOffline": {
     "description": "Profile with account: offline note on the sync card."
   },
@@ -7625,7 +7621,7 @@
   "@profileDeleteAccount": {
     "description": "Profile with account: delete-account button."
   },
-  "profileDeleteWeb": "Without the app, you can ask at playlucena.com/excluir-conta.",
+  "profileDeleteWeb": "Without the app, you can request deletion at playlucena.com/excluir-conta.",
   "@profileDeleteWeb": {
     "description": "Profile with account: note about deleting on the web."
   },
@@ -7702,7 +7698,7 @@
   "@accountNicknameHelp": {
     "description": "Your details screen: name help."
   },
-  "accountCountryFromPhone": "{country} · from the phone",
+  "accountCountryFromPhone": "{country} · from your phone",
   "@accountCountryFromPhone": {
     "description": "Your details screen: the country, read from the phone.",
     "placeholders": {
@@ -8052,14 +8048,6 @@
   "settingsSectionHelp": "Help and about",
   "@settingsSectionHelp": {
     "description": "Settings: section title of feedback, rating and about."
-  },
-  "profileSectionChess": "Your chess",
-  "@profileSectionChess": {
-    "description": "Profile: section title of goal, level and Lichess."
-  },
-  "profileSectionRegion": "Region",
-  "@profileSectionRegion": {
-    "description": "Profile: section title of country, state and city."
   },
   "alertsTitle": "Notifications",
   "@alertsTitle": {
@@ -11930,5 +11918,18 @@
   "conApagarDifferent": "That isn't the account you were deleting. Nothing was deleted.",
   "@conApagarDifferent": {
     "description": "Aviso depois de entrar de novo com outra conta para excluir (gap 1)."
+  },
+  "conPerfilSyncedOn": "on {date}",
+  "@conPerfilSyncedOn": {
+    "description": "Perfil com conta (H-CON-13): o dia da última sincronização quando não foi hoje, depois de \"Salvo\".",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "conPerfilFailed": "An unexpected error occurred",
+  "@conPerfilFailed": {
+    "description": "Perfil (H-CON-13, gap 5): sair da conta ou desconectar o Lichess falhou; nada mudou."
   }
 }

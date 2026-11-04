@@ -105,6 +105,14 @@ void main() {
           builder: (_, state) => stub('rota-privacidade'),
         ),
         GoRoute(
+          path: Routes.settingsLanguage,
+          builder: (_, state) => stub('rota-idioma'),
+        ),
+        GoRoute(
+          path: Routes.alerts,
+          builder: (_, state) => stub('rota-avisos'),
+        ),
+        GoRoute(
           path: Routes.feedback,
           builder: (_, state) => stub('rota-feedback'),
         ),
@@ -264,9 +272,45 @@ void main() {
       expect(find.text('teste@example.com · Google'), findsOneWidget);
       expect(find.byKey(ProfileKeys.localCard), findsNothing);
       expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
-      expect(find.text('Última sincronização: hoje, 09:05'), findsOneWidget);
+      expect(find.text('Salvo hoje, 09:05'), findsOneWidget);
       // Abrir o Perfil com conta sobe o que estiver pendente.
       expect(sync.synced, contains('google-uid'));
+    });
+
+    testWidgets('H-CON-13: nunca sincronizou diz "ainda não"', (tester) async {
+      await pumpScreen(tester);
+      expect(find.text('Última sincronização: ainda não'), findsOneWidget);
+      // Critério 4: o cartão diz o que acontece sem internet.
+      expect(
+        find.text(
+          'Sem internet, o que você faz fica no celular e é salvo na conta '
+          'quando a conexão voltar.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('H-CON-13: sincronizou noutro dia mostra a data', (
+      tester,
+    ) async {
+      sync.at = DateTime(2026, 10, 20, 21, 40);
+      await pumpScreen(tester);
+      expect(find.text('Salvo em 20/10'), findsOneWidget);
+    });
+
+    testWidgets('H-CON-13 gap 5: sair falhando avisa e a conta fica', (
+      tester,
+    ) async {
+      accounts.signOutError = Exception('falhou');
+      await pumpScreen(tester);
+      await tester.scrollUntilVisible(find.byKey(ProfileKeys.signOut), 200);
+      await tester.tap(find.byKey(ProfileKeys.signOut));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(accounts.current, isNotNull);
+      expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
+      expect(find.byKey(ProfileKeys.signOut), findsOneWidget);
     });
 
     testWidgets('sair volta ao cartão sem conta', (tester) async {
@@ -405,11 +449,45 @@ void main() {
     });
   });
 
-  testWidgets('o rating de finais fica no histórico: só o botão para ele', (
+  testWidgets('PropV1RetencaoPerfil: um grupo de linhas e um de avisos', (
     tester,
   ) async {
     await pumpScreen(tester);
-    expect(find.byKey(ProfileKeys.ratingCard), findsOneWidget);
+    final order = [
+      ProfileKeys.rowCountry,
+      ProfileKeys.rowRegion,
+      ProfileKeys.rowLanguage,
+      ProfileKeys.rowGoal,
+      ProfileKeys.rowLevel,
+      ProfileKeys.rowLichess,
+      ProfileKeys.rowNotices,
+    ].map((key) => tester.getTopLeft(find.byKey(key)).dy).toList();
+    for (var i = 1; i < order.length; i++) {
+      expect(order[i], greaterThan(order[i - 1]), reason: 'linha $i');
+    }
+    // Sem títulos de seção e sem o botão do histórico do rating (o rating
+    // abre pela Home e por Todos os modos).
+    expect(find.text('Seu xadrez'), findsNothing);
+    expect(find.text('Região'), findsNothing);
+    expect(find.text('Histórico do rating'), findsNothing);
+    expect(inRow(ProfileKeys.rowLanguage, 'Idioma'), findsOneWidget);
+    expect(inRow(ProfileKeys.rowNotices, 'Notificações'), findsOneWidget);
+  });
+
+  testWidgets('Idioma e Notificações abrem as telas dos Ajustes', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    await tester.tap(find.byKey(ProfileKeys.rowLanguage));
+    await tester.pumpAndSettle();
+    expect(find.text('rota-idioma'), findsOneWidget);
+    GoRouter.of(tester.element(find.text('rota-idioma'))).pop();
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(find.byKey(ProfileKeys.rowNotices), 200);
+    await tester.tap(find.byKey(ProfileKeys.rowNotices));
+    await tester.pumpAndSettle();
+    expect(find.text('rota-avisos'), findsOneWidget);
   });
 
   testWidgets('"Estado e cidade" mostra o nome do estado e a cidade', (
@@ -427,7 +505,7 @@ void main() {
     tester,
   ) async {
     await pumpScreen(tester);
-    await tester.scrollUntilVisible(find.byKey(ProfileKeys.ratingCard), 200);
+    await tester.scrollUntilVisible(find.byKey(ProfileKeys.rowNotices), 200);
     for (final text in [
       'Privacidade e anúncios',
       'Enviar feedback',
