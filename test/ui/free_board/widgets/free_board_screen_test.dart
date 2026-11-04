@@ -2615,6 +2615,42 @@ void main() {
       });
     }
 
+    testWidgets(
+      'H-PAR-05: sem relógio o detalhe leva o lado ("1164 · brancas"); '
+      'com relógio, não',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating · brancas',
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.black)),
+          'Pretas',
+        );
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+          clock: ClockConfig.same(
+            const TimeControl(initial: Duration(minutes: 5)),
+          ),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating',
+        );
+      },
+    );
+
     testWidgets('desafio de link sem rating ainda: "No rating" no lugar do '
         'número', (tester) async {
       await pumpScreen(
@@ -2624,7 +2660,7 @@ void main() {
       );
       expect(
         textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
-        'No rating',
+        'No rating · white',
       );
     });
 
@@ -3506,8 +3542,10 @@ void main() {
       await cubit.open();
       await tester.pumpAndSettle();
       final detail = textOf(tester, FreeBoardKeys.playerDetail(Side.white));
-      expect(detail, isNot('Sem rating'));
-      expect(int.tryParse(detail), isNotNull);
+      expect(detail, isNot(startsWith('Sem rating')));
+      // Sem relógio: "1164 · brancas" (PropV1PartidaSemRelogio).
+      expect(int.tryParse(detail.split(' · ').first), isNotNull);
+      expect(detail, endsWith(' · brancas'));
     });
   });
   group('Resultado persistente por modo e motivo', () {

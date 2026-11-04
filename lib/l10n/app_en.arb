@@ -12758,5 +12758,11 @@
     }
   },
   "partidaContra": "Against {name}",
-  "@partidaContra": {"description": "Game summary card: opponent line", "placeholders": {"name": {"type": "String"}}}
+  "@partidaContra": {"description": "Game summary card: opponent line", "placeholders": {"name": {"type": "String"}}},
+  "playerDetailWithSide": "{detail} · {side}",
+  "@playerDetailWithSide": {"description": "Line under a player's name in a game without a clock: the level or rating, then the side. E.g. 'Level 1000 · black'.", "placeholders": {"detail": {"type": "String", "example": "Level 1000"}, "side": {"type": "String", "example": "black"}}},
+  "playerSideWhiteLower": "white",
+  "@playerSideWhiteLower": {"description": "Lowercase name of the white side, used after a dot in the player line of a game without a clock."},
+  "playerSideBlackLower": "black",
+  "@playerSideBlackLower": {"description": "Lowercase name of the black side, used after a dot in the player line of a game without a clock."}
 }

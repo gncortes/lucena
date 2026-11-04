@@ -2441,5 +2441,8 @@
   "partidaMotorDica": "[Tåp å lîñé tö šéé ît öñ thé böåŕd: ît éñtéŕš åš å våŕîåtîöñ îñ Mövéš. one two three four five six]",
   "partidaMotorForcado": "[Föŕçéd mövé: thé öñlý öñé îš {move}. one two three four]",
   "partidaMotorLinhas": "{count, plural, =1{[1 lîñé one]} other{[{count} lîñéš one two]}}",
-  "partidaContra": "[Åĝåîñšt {name} one two]"
+  "partidaContra": "[Åĝåîñšt {name} one two]",
+  "playerDetailWithSide": "[{detail} · {side} one two]",
+  "playerSideWhiteLower": "[whîté one]",
+  "playerSideBlackLower": "[blåçk one]"
 }
