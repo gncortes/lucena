@@ -8153,10 +8153,6 @@
   "@alertsLessonsBody": {
     "description": "Alerts switch subtitle."
   },
-  "alertsReminder": "Reminder time",
-  "@alertsReminder": {
-    "description": "Alerts: row with the time of local reminders."
-  },
   "reminderChannel": "Reminders",
   "@reminderChannel": {
     "description": "Android notification channel: streak and lesson reminders."

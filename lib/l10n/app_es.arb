@@ -1586,7 +1586,6 @@
   "alertsNewsBody": "New Lucena features. A few a month.",
   "alertsLessons": "New lessons",
   "alertsLessonsBody": "When a new endgame lesson comes out.",
-  "alertsReminder": "Reminder time",
   "reminderChannel": "Reminders",
   "weekChannel": "Weekly summary",
   "reminderStreakTitle": "Your {days}-day streak ends today",

@@ -1609,7 +1609,6 @@
   "alertsNewsBody": "Recursos novos do Lucena, poucos por mês",
   "alertsLessons": "Lições novas",
   "alertsLessonsBody": "Quando sair uma lição de finais nova",
-  "alertsReminder": "Horário dos lembretes",
   "reminderChannel": "Lembretes",
   "weekChannel": "Resumo da semana",
   "reminderStreakTitle": "Sua sequência de {days} dias acaba hoje",

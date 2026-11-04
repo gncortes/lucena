@@ -15,7 +15,7 @@ import '../../../domain/models/alert_settings.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/alerts_rules.dart';
 
-/// Perfil > Avisos (E1.21): as chaves, a hora dos lembretes e o estado da
+/// Configurações > Notificações (E1.21, H-AJU-09): as chaves e o estado da
 /// permissão no Android.
 class AlertsState {
   const AlertsState({
@@ -27,9 +27,16 @@ class AlertsState {
     this.state,
     this.language,
     this.failure,
+    this.asked = false,
   });
 
   final bool ready;
+
+  /// A permissão já foi pedida nesta sessão pela tela (Gap 7).
+  final bool asked;
+
+  /// A faixa desligada mostra "Permitir": ainda não pedimos nesta sessão.
+  bool get canAsk => !permitted && !asked;
   final LoadFailure? failure;
   final AlertSettings settings;
 
@@ -57,6 +64,7 @@ class AlertsState {
     String? language,
     LoadFailure? failure,
     bool clearFailure = false,
+    bool? asked,
   }) => AlertsState(
     ready: ready,
     settings: settings ?? this.settings,
@@ -66,6 +74,7 @@ class AlertsState {
     state: state,
     language: language ?? this.language,
     failure: clearFailure ? null : failure ?? this.failure,
+    asked: asked ?? this.asked,
   );
 }
 
@@ -132,8 +141,10 @@ class AlertsCubit extends Cubit<AlertsState> {
         state: place.state,
         language: state.language,
         failure: state.failure,
+        asked: state.asked,
       ),
     );
+    _saved = settings;
     if (await _follow() && !isClosed) emit(state.copyWith(clearFailure: true));
   }
 
@@ -155,13 +166,63 @@ class AlertsCubit extends Cubit<AlertsState> {
     }
   }
 
-  /// Grava na hora e acerta os tópicos.
+  /// O que está no disco: a tela volta a ele se a gravação falhar.
+  AlertSettings? _saved;
+
+  final _failures = StreamController<void>.broadcast();
+
+  /// Uma chave não foi gravada (Gap 1): a tela já voltou ao valor salvo.
+  Stream<void> get saveFailures => _failures.stream;
+
+  /// Grava na hora e acerta os tópicos. Se a gravação falha, a chave volta
+  /// ao valor salvo e [saveFailures] avisa.
   Future<void> change(AlertSettings settings) async {
     if (settings == state.settings) return;
     _logSwitches(state.settings, settings);
     emit(state.copyWith(settings: settings));
-    await _alerts.save(settings);
+    try {
+      await _alerts.save(settings);
+    } on Object catch (error) {
+      debugPrint('alerts save failed: $error');
+      if (isClosed || state.settings != settings) return;
+      emit(state.copyWith(settings: _saved ?? const AlertSettings()));
+      _failures.add(null);
+      return;
+    }
+    _saved = settings;
     await _follow();
+  }
+
+  /// "Permitir" na faixa desligada (Gap 7): pede a permissão do Android uma
+  /// vez por sessão; depois só resta abrir os ajustes do sistema.
+  Future<void> requestPermission() async {
+    if (!state.canAsk) return;
+    emit(state.copyWith(asked: true));
+    final bool granted;
+    try {
+      granted = await _push.requestPermission();
+    } on Object catch (error) {
+      // Sem resposta do sistema: fica "Abrir configurações".
+      debugPrint('alerts permission request failed: $error');
+      return;
+    }
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.avisoPedido(
+          resposta: granted ? 'permitiu' : 'negou_sistema',
+          gatilho: 'avisos',
+        ),
+      ),
+    );
+    if (isClosed) return;
+    emit(state.copyWith(permitted: granted));
+    if (granted) await _follow();
+  }
+
+  @override
+  Future<void> close() async {
+    await _failures.close();
+    return super.close();
   }
 
   // Cada chave que virou: `aviso_chave` (a hora do lembrete não é chave).
@@ -179,10 +240,6 @@ class AlertsCubit extends Cubit<AlertsState> {
     }
   }
 
-  /// A hora dos lembretes, em minutos desde a meia-noite.
-  Future<void> setReminder(int minutes) =>
-      change(state.settings.copyWith(reminderMinutes: minutes));
-
   /// Os ajustes de notificação do Lucena no Android.
   Future<bool> openSystemSettings() => _push.openSystemSettings();
 
@@ -199,6 +256,7 @@ class AlertsCubit extends Cubit<AlertsState> {
         country: place.country,
         state: place.state,
         language: state.language,
+        asked: state.asked,
       ),
     );
     await _follow();

@@ -1198,7 +1198,7 @@ abstract final class AnalyticsEvents {
   });
 
   /// `resposta`: `permitiu|agora_nao|negou_sistema`; `gatilho`:
-  /// `final_dia|final_destaque|treino`.
+  /// `final_dia|final_destaque|treino|avisos`.
   static AnalyticsEvent avisoPedido({
     required String resposta,
     required String gatilho,

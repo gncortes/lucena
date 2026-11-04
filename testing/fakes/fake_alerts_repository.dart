@@ -8,11 +8,29 @@ class FakeAlertsRepository implements AlertsRepository {
   AlertSettings settings;
   int saves = 0;
 
+  /// Quando não nulo, a próxima gravação lança este erro (e nada é gravado).
+  Object? saveError;
+
+  /// Quando não nulo, a próxima leitura lança este erro.
+  Object? loadError;
+
   @override
-  Future<AlertSettings> load() async => settings;
+  Future<AlertSettings> load() async {
+    final error = loadError;
+    if (error != null) {
+      loadError = null;
+      throw error;
+    }
+    return settings;
+  }
 
   @override
   Future<void> save(AlertSettings settings) async {
+    final error = saveError;
+    if (error != null) {
+      saveError = null;
+      throw error;
+    }
     saves++;
     this.settings = settings;
   }

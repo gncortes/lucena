@@ -15,13 +15,16 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/load_error.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/alerts_cubit.dart';
 
-/// Perfil > Avisos (canvas `PropV1RetencaoAvisos` e `AvisosOff`): o estado
-/// do Android em cima, uma chave por tipo e a hora dos lembretes. Nunca pede
-/// a permissão: sem ela, explica e abre os ajustes do sistema.
+/// Configurações > Notificações (canvas `PropV1RetencaoAvisos` e
+/// `AvisosOff`, H-AJU-09): o estado do Android em cima e uma chave por tipo.
+/// Sem a permissão, explica e abre os ajustes do sistema; enquanto a tela não
+/// pediu nesta sessão, oferece "Permitir" (Gap 7).
 class AlertsScreen extends StatefulWidget {
   const AlertsScreen({super.key});
 
@@ -35,16 +38,32 @@ class _AlertsScreenState extends State<AlertsScreen> {
     onResume: () => unawaited(context.read<AlertsCubit>().refresh()),
   );
 
+  // Chave não gravada: a tela já voltou; o aviso só conta (Gap 1).
+  late final StreamSubscription<void> _failures = context
+      .read<AlertsCubit>()
+      .saveFailures
+      .listen((_) {
+        if (!mounted) return;
+        showLucenaSnackBar(
+          context,
+          context.l10n.ajuSaveError,
+          icon: Icons.error_outline,
+          key: AlertsKeys.saveFailure,
+        );
+      });
+
   @override
   void initState() {
     super.initState();
     _lifecycle;
+    _failures;
     unawaited(context.read<AlertsCubit>().refresh());
   }
 
   @override
   void dispose() {
     _lifecycle.dispose();
+    unawaited(_failures.cancel());
     super.dispose();
   }
 
@@ -55,11 +74,21 @@ class _AlertsScreenState extends State<AlertsScreen> {
     final state = context.watch<AlertsCubit>().state;
     final cubit = context.read<AlertsCubit>();
     if (state.failure case final failure?) {
-      return LoadErrorScreen(
-        kind: LoadErrorKind.fromFailure(failure),
-        onAction: cubit.load,
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
+      return KeyedSubtree(
+        key: AlertsKeys.error,
+        child: LoadErrorScreen(
+          kind: LoadErrorKind.fromFailure(failure),
+          onAction: cubit.load,
+          onBack: () =>
+              context.canPop() ? context.pop() : context.go(Routes.home),
+        ),
+      );
+    }
+    if (!state.ready) {
+      return Scaffold(
+        key: AlertsKeys.screen,
+        appBar: LucenaAppBar(title: Text(l10n.alertsTitle)),
+        body: const SkeletonList(),
       );
     }
     final settings = state.settings;
@@ -101,10 +130,6 @@ class _AlertsScreenState extends State<AlertsScreen> {
         ),
       ],
     ];
-    final reminder = TimeOfDay(
-      hour: settings.reminderMinutes ~/ 60,
-      minute: settings.reminderMinutes % 60,
-    );
     return Scaffold(
       key: AlertsKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.alertsTitle)),
@@ -119,7 +144,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
           // A permissão Android também vale para os lembretes sem Firebase.
           state.permitted
               ? _Allowed(onSettings: cubit.openSystemSettings)
-              : _Denied(onSettings: cubit.openSystemSettings),
+              : _Denied(
+                  onSettings: cubit.openSystemSettings,
+                  onAllow: state.canAsk ? cubit.requestPermission : null,
+                ),
           const SizedBox(height: AppSpacing.lg),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
@@ -138,27 +166,6 @@ class _AlertsScreenState extends State<AlertsScreen> {
           ),
           if (state.push && state.country != null)
             _RegionRow(country: state.country!, state: state.state),
-          const SizedBox(height: AppSpacing.lg),
-          ProfileRowGroup(
-            children: [
-              ProfileRow(
-                key: AlertsKeys.reminder,
-                icon: Icons.schedule,
-                title: l10n.alertsReminder,
-                value: MaterialLocalizations.of(context)
-                    .formatTimeOfDay(reminder, alwaysUse24HourFormat: true),
-                onTap: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: reminder,
-                    helpText: l10n.alertsReminder,
-                  );
-                  if (picked == null) return;
-                  await cubit.setReminder(picked.hour * 60 + picked.minute);
-                },
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -301,9 +308,12 @@ class _Allowed extends StatelessWidget {
 
 /// A faixa vermelha: os avisos estão desligados no Android.
 class _Denied extends StatelessWidget {
-  const _Denied({required this.onSettings});
+  const _Denied({required this.onSettings, this.onAllow});
 
   final Future<bool> Function() onSettings;
+
+  /// "Permitir": só enquanto a tela não pediu nesta sessão.
+  final Future<void> Function()? onAllow;
 
   @override
   Widget build(BuildContext context) {
@@ -362,6 +372,12 @@ class _Denied extends StatelessWidget {
                 ),
               ],
             ),
+            if (onAllow case final allow?)
+              FilledButton(
+                key: AlertsKeys.offAllow,
+                onPressed: () => unawaited(allow()),
+                child: Text(l10n.ajuAlertsAllow),
+              ),
             OutlinedButton.icon(
               key: AlertsKeys.offOpen,
               onPressed: () => unawaited(onSettings()),
