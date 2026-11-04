@@ -42,6 +42,7 @@ import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/sheet_header.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// Os detalhes de uma partida: o resultado e contra quem; a revisão pela
 /// engine (precisão e qualidade de cada lance); o tabuleiro com a anotação
@@ -78,33 +79,24 @@ class GameDetailsScreen extends StatelessWidget {
               : l10n.gameDetailsTitle,
         ),
       ),
-      body: !state.ready
-          // Carregando: o tabuleiro e os lances em esqueleto.
-          ? ListView(
-              key: GameDetailsKeys.loading,
-              children: const [
-                Padding(
-                  padding: EdgeInsets.all(AppSpacing.screen),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: SkeletonBlock(height: double.infinity),
-                  ),
+      body: ShimmerConteudo(
+        carregando: !state.ready,
+        esqueleto: const _DetailsLoading(),
+        child: !state.ready
+            ? const SizedBox.shrink()
+            : attempt == null
+            ? Center(
+                child: ErrorState(
+                  message: l10n.gameDetailsNotFound,
+                  messageKey: GameDetailsKeys.notFound,
                 ),
-                SkeletonList(rows: 3),
-              ],
-            )
-          : attempt == null
-          ? Center(
-              child: ErrorState(
-                message: l10n.gameDetailsNotFound,
-                messageKey: GameDetailsKeys.notFound,
+              )
+            : _ReviewBody(
+                state: state,
+                attempt: attempt,
+                opponent: _opponentName(context, state, attempt),
               ),
-            )
-          : _ReviewBody(
-              state: state,
-              attempt: attempt,
-              opponent: _opponentName(context, state, attempt),
-            ),
+      ),
     );
   }
 
@@ -984,4 +976,24 @@ class _VariationHint extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Carregando: o tabuleiro e os lances em esqueleto.
+class _DetailsLoading extends StatelessWidget {
+  const _DetailsLoading();
+
+  @override
+  Widget build(BuildContext context) => ListView(
+    key: GameDetailsKeys.loading,
+    children: const [
+      Padding(
+        padding: EdgeInsets.all(AppSpacing.screen),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: SkeletonBlock(height: double.infinity),
+        ),
+      ),
+      SkeletonList(rows: 3),
+    ],
+  );
 }

@@ -22,6 +22,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// A lista dos desafios das estrelas: uma peça por cartão, três níveis em
 /// cada, com a melhor marca.
@@ -44,31 +45,37 @@ class StarChallengesScreen extends StatelessWidget {
       key: StarChallengeKeys.listScreen,
       appBar: LucenaAppBar(title: Text(l10n.starChallengesTitle)),
       body: BlocBuilder<StarChallengesCubit, StarChallengesState>(
-        builder: (context, state) {
-          if (!state.ready) return const SkeletonList();
-          return ListView(
-            padding: scrollPadding(
-              context,
-              left: 16,
-              top: 8,
-              right: 16,
-              bottom: 32,
-            ),
-            children: [
-              Text(
-                l10n.starChallengesIntro,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+        builder: (context, state) => ShimmerConteudo(
+          carregando: !state.ready,
+          esqueleto: const SkeletonList(),
+          child: Builder(
+            builder: (context) {
+              if (!state.ready) return const SizedBox.shrink();
+              return ListView(
+                padding: scrollPadding(
+                  context,
+                  left: 16,
+                  top: 8,
+                  right: 16,
+                  bottom: 32,
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              for (final piece in ChallengePiece.values) ...[
-                _PieceCard(piece: piece, progress: state.progress),
-                const SizedBox(height: AppSpacing.sm),
-              ],
-            ],
-          );
-        },
+                children: [
+                  Text(
+                    l10n.starChallengesIntro,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  for (final piece in ChallengePiece.values) ...[
+                    _PieceCard(piece: piece, progress: state.progress),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

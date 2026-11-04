@@ -44,20 +44,22 @@ List<PlanChapter> planChapters(TrainingResources resources) {
   }
   return [
     for (final id in order)
-      PlanChapter(
-        id: id,
-        title: groups[id]!.first.group,
-        partId: groups[id]!.first.partId,
-        partTitle: groups[id]!.first.partTitle,
-        lessonIds: [
-          for (final l in groups[id]!)
-            if (l.kind != TrainingLessonKind.test) l.id,
-        ],
-        testId: groups[id]!
-            .where((l) => l.kind == TrainingLessonKind.test)
-            .map((l) => l.id)
-            .firstOrNull,
-      ),
+      // Grupo só com teste (sem lição de tema) não é capítulo do plano.
+      if (groups[id]!.any((l) => l.kind != TrainingLessonKind.test))
+        PlanChapter(
+          id: id,
+          title: groups[id]!.first.group,
+          partId: groups[id]!.first.partId,
+          partTitle: groups[id]!.first.partTitle,
+          lessonIds: [
+            for (final l in groups[id]!)
+              if (l.kind != TrainingLessonKind.test) l.id,
+          ],
+          testId: groups[id]!
+              .where((l) => l.kind == TrainingLessonKind.test)
+              .map((l) => l.id)
+              .firstOrNull,
+        ),
   ];
 }
 

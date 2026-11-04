@@ -27,6 +27,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speech_input_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
 
 void main() {
   late FakeSpeechInputRepository input;
@@ -45,6 +46,7 @@ void main() {
     ClockConfig? clock,
     FakeOpponentRepository? opponent,
     bool startGame = true,
+    bool assentar = true,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
@@ -125,10 +127,37 @@ void main() {
         child: const SizedBox.shrink(),
       ),
     );
-    await tester.pumpAndSettle();
+    if (assentar) await tester.pumpAndSettle();
   }
 
   group('H-PAR-08 introdução', () {
+    testWidgets('o painel entra em cascata e o Começar vem por último', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        startGame: false,
+        locale: const Locale('pt'),
+        assentar: false,
+      );
+      final ouvir = find.byKey(BlindKeys.introListen);
+      var voltas = 0;
+      while ((ouvir.evaluate().isEmpty ||
+              opacidadeAcima(tester, ouvir) < 0.3) &&
+          voltas++ < 200) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      expect(opacidadeAcima(tester, ouvir), greaterThanOrEqualTo(0.3));
+      expect(
+        opacidadeAcima(tester, find.byKey(BlindKeys.start)),
+        lessThan(opacidadeAcima(tester, ouvir)),
+      );
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(opacidadeAcima(tester, ouvir), 1);
+      expect(opacidadeAcima(tester, find.byKey(BlindKeys.start)), 1);
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('textos, segmentado só com ícone e Começar abre a partida', (
       tester,
     ) async {
@@ -250,6 +279,24 @@ void main() {
         ),
         findsOneWidget,
       );
+    });
+  });
+
+  group('aviso do microfone aberto', () {
+    testWidgets('outra mudança de estado não empilha outro aviso', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.micAllow), findsOneWidget);
+
+      cubit.setView(BlindView.empty);
+      await tester.pumpAndSettle();
+      cubit.setView(BlindView.board);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(BlindKeys.micAllow), findsOneWidget);
     });
   });
 

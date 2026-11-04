@@ -15,6 +15,7 @@ import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
+import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -31,6 +32,14 @@ const _mateInOne = '3k4/8/3K4/8/8/8/8/7Q w - - 0 1';
 /// Roteiro de validação da frente Desafios (`docs/tasks/T85-historias/
 /// desafios.md`), casos "Patrol". Escrito e NÃO executado: rodar no aparelho
 /// antes da PR (`patrol test -t integration_test/desafios_roteiro_test.dart`).
+/// Qualquer título de seção da lista de finais em destaque.
+Finder _anySection() => find.byWidgetPredicate(
+  (widget) =>
+      widget.key == FeaturedKeys.ongoingTitle ||
+      widget.key == FeaturedKeys.recentTitle ||
+      widget.key == FeaturedKeys.historicTitle,
+);
+
 void main() {
   patrolTest('caso 21: a lista de finais em destaque tem o sino e as seções', (
     $,
@@ -40,7 +49,8 @@ void main() {
     await $(FeaturedKeys.homeSeeAll).scrollTo().tap();
     await $(FeaturedKeys.listScreen).waitUntilVisible();
     expect(find.byKey(FeaturedKeys.bell), findsOneWidget);
-    expect(find.byKey(FeaturedKeys.recentTitle), findsOneWidget);
+    // As seções dependem das datas do catálogo: ao menos uma aparece.
+    expect(_anySection(), findsAtLeastNWidgets(1));
   });
 
   patrolTest('caso 26: o sino ligado continua ligado ao reabrir a lista', (
@@ -51,8 +61,16 @@ void main() {
     await $(FeaturedKeys.homeSeeAll).scrollTo().tap();
     await $(FeaturedKeys.bell).tap();
     await $(FeaturedKeys.bellNotice).waitUntilVisible();
-    // A permissão de notificação, se pedida, é concedida pelo sistema.
-    await $.tester.pageBack();
+    // A permissão de notificação, se pedida, é concedida antes de voltar:
+    // sem isso o "voltar" fecharia só o diálogo do sistema.
+    final mobile = $.platform.mobile;
+    if (await mobile.isPermissionDialogVisible(
+      timeout: const Duration(seconds: 3),
+    )) {
+      await mobile.grantPermissionWhenInUse();
+    }
+    await $.platform.android.pressBack();
+    await $(HomeKeys.screen).waitUntilVisible();
     await $(HomeKeys.featuredTitle).scrollTo();
     await $(FeaturedKeys.homeSeeAll).scrollTo().tap();
     await $(FeaturedKeys.listScreen).waitUntilVisible();
@@ -137,10 +155,10 @@ void main() {
     if (carousel.evaluate().isNotEmpty) {
       await $(carousel).$(InkWell).first.tap();
       await $(FeaturedKeys.tournamentScreen).waitUntilVisible();
-      await $.tester.pageBack();
+      await $.platform.android.pressBack();
       await $(FeaturedKeys.listScreen).waitUntilVisible();
     }
-    await $(FeaturedKeys.recentTitle).scrollTo();
+    await $(_anySection().first).scrollTo();
   });
 
   patrolTest('caso 39: ganhar o final em destaque mostra o fim em destaque', (
@@ -236,7 +254,15 @@ void main() {
     await $(JourneyKeys.continueButton).scrollTo().tap();
     await $(JourneyKeys.rungScreen).waitUntilVisible();
     expect(find.byKey(JourneyKeys.rungHeader), findsOneWidget);
-    await $(JourneyKeys.nextChallengePlay).scrollTo().tap();
+    // O cartão do próximo desafio abre a tela do desafio (o Jogar dele vai
+    // direto à partida).
+    await $(JourneyKeys.nextChallengePlay).scrollTo();
+    await $(
+      find.descendant(
+        of: find.byKey(JourneyKeys.nextChallenge),
+        matching: find.byType(PositionBoard),
+      ),
+    ).tap();
     await $(JourneyKeys.challengeScreen).waitUntilVisible();
     expect(find.byKey(JourneyKeys.opponentCard), findsOneWidget);
     await $(JourneyKeys.emptyHistory).scrollTo();

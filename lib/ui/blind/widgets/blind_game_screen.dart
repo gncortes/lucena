@@ -51,6 +51,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 
 /// As frases do modo às cegas no idioma da tela.
 BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(
@@ -213,7 +215,11 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       _conclude(context, state);
       return;
     }
-    if (state.mic == MicPermission.asking) _askMic(context);
+    // Um aviso só: cada mudança de estado com o pedido aberto empilhava outro.
+    if (state.mic == MicPermission.asking &&
+        previous.mic != MicPermission.asking) {
+      _askMic(context);
+    }
     if (state.opponentError && !previous.opponentError) {
       unawaited(_askOpponentError());
     }
@@ -420,141 +426,147 @@ class _BlindGameScreenState extends State<BlindGameScreen>
             ],
           ],
         ),
-        body: !state.ready || state.position == null
-            ? const SafeArea(child: SkeletonList())
-            : BoardViewport(
-                usefulHeight: BoardViewport.usefulHeightOf(context),
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            // Os relógios como na partida (T51, A1), na posição
-                            // escolhida nas configurações.
-                            final rows = !state.started || !state.hasClock
-                                ? 0
-                                : clocks == ClockPosition.sides
-                                ? 2
-                                : 1;
-                            final above =
-                                rows > 0 && clocks != ClockPosition.bottom;
-                            final below =
-                                rows > 0 && clocks != ClockPosition.top;
-                            // Com o teclado aberto, a altura some: fica a versão
-                            // compacta (relógios, mini tabuleiro, "Sua vez").
-                            if (constraints.maxHeight < _minBoardArea) {
-                              return _compactArea(
-                                context,
-                                state,
-                                height: constraints.maxHeight,
-                                hasClock: rows > 0,
-                              );
-                            }
-                            // O seletor (e o relógio do adversário), o
-                            // tabuleiro e "Sua vez" (e o relógio do jogador)
-                            // formam um bloco centrado entre a barra do app e
-                            // o painel de baixo, com o mesmo vão em cima e
-                            // embaixo (T65), como na partida.
-                            return CenteredBoardLayout(
-                              key: BlindKeys.boardArea,
-                              balanced: true,
-                              measureBlock: true,
-                              top: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: AppSpacing.xs,
-                                    ),
-                                    child: _ViewPicker(state: state),
-                                  ),
-                                  if (above)
-                                    const SizedBox(height: AppSpacing.sm),
-                                  if (above)
-                                    _Clocks(
-                                      state: state,
-                                      sides: clocks == ClockPosition.sides
-                                          ? [state.userSide.opposite]
-                                          : [
-                                              state.userSide.opposite,
-                                              state.userSide,
-                                            ],
-                                    ),
-                                ],
-                              ),
-                              board: LayoutBuilder(
-                                builder: (context, box) => _boardArea(
+        body: ShimmerConteudo(
+          carregando: !state.ready || state.position == null,
+          esqueleto: const SafeArea(child: SkeletonList()),
+          child: !state.ready || state.position == null
+              ? const SizedBox.shrink()
+              : BoardViewport(
+                  usefulHeight: BoardViewport.usefulHeightOf(context),
+                  child: SafeArea(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              // Os relógios como na partida (T51, A1), na posição
+                              // escolhida nas configurações.
+                              final rows = !state.started || !state.hasClock
+                                  ? 0
+                                  : clocks == ClockPosition.sides
+                                  ? 2
+                                  : 1;
+                              final above =
+                                  rows > 0 && clocks != ClockPosition.bottom;
+                              final below =
+                                  rows > 0 && clocks != ClockPosition.top;
+                              // Com o teclado aberto, a altura some: fica a versão
+                              // compacta (relógios, mini tabuleiro, "Sua vez").
+                              if (constraints.maxHeight < _minBoardArea) {
+                                return _compactArea(
                                   context,
                                   state,
-                                  size: box.maxWidth,
+                                  height: constraints.maxHeight,
+                                  hasClock: rows > 0,
+                                );
+                              }
+                              // O seletor (e o relógio do adversário), o
+                              // tabuleiro e "Sua vez" (e o relógio do jogador)
+                              // formam um bloco centrado entre a barra do app e
+                              // o painel de baixo, com o mesmo vão em cima e
+                              // embaixo (T65), como na partida.
+                              return CenteredBoardLayout(
+                                key: BlindKeys.boardArea,
+                                balanced: true,
+                                measureBlock: true,
+                                top: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: AppSpacing.xs,
+                                      ),
+                                      child: _ViewPicker(state: state),
+                                    ),
+                                    if (above)
+                                      const SizedBox(height: AppSpacing.sm),
+                                    if (above)
+                                      _Clocks(
+                                        state: state,
+                                        sides: clocks == ClockPosition.sides
+                                            ? [state.userSide.opposite]
+                                            : [
+                                                state.userSide.opposite,
+                                                state.userSide,
+                                              ],
+                                      ),
+                                  ],
+                                ),
+                                board: LayoutBuilder(
+                                  builder: (context, box) => _boardArea(
+                                    context,
+                                    state,
+                                    size: box.maxWidth,
+                                  ),
+                                ),
+                                bottom: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (below)
+                                      _Clocks(
+                                        state: state,
+                                        sides: clocks == ClockPosition.sides
+                                            ? [state.userSide]
+                                            : [
+                                                state.userSide.opposite,
+                                                state.userSide,
+                                              ],
+                                      ),
+                                    // "Sua vez" fica à vista (sem tabuleiro, é
+                                    // o que orienta), fora da fileira do relógio.
+                                    if (state.started) ...[
+                                      if (below)
+                                        const SizedBox(height: AppSpacing.sm),
+                                      _Status(state: state),
+                                    ],
+                                    if (state.offlineMissing)
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          AppSpacing.lg,
+                                          AppSpacing.sm,
+                                          AppSpacing.lg,
+                                          0,
+                                        ),
+                                        child: Text(
+                                          l10n.blindOfflineMissing,
+                                          key: BlindKeys.offlineMissing,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        if (state.held)
+                          const SizedBox.shrink()
+                        else if (state.phase == BlindPhase.intro)
+                          _IntroPanel(state: state, cubit: cubit)
+                        else if (state.phase == BlindPhase.finished)
+                          _BottomSheetFrame(
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                minimumSize: const Size.fromHeight(
+                                  kButtonHeight,
                                 ),
                               ),
-                              bottom: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (below)
-                                    _Clocks(
-                                      state: state,
-                                      sides: clocks == ClockPosition.sides
-                                          ? [state.userSide]
-                                          : [
-                                              state.userSide.opposite,
-                                              state.userSide,
-                                            ],
-                                    ),
-                                  // "Sua vez" fica à vista (sem tabuleiro, é
-                                  // o que orienta), fora da fileira do relógio.
-                                  if (state.started) ...[
-                                    if (below)
-                                      const SizedBox(height: AppSpacing.sm),
-                                    _Status(state: state),
-                                  ],
-                                  if (state.offlineMissing)
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        AppSpacing.lg,
-                                        AppSpacing.sm,
-                                        AppSpacing.lg,
-                                        0,
-                                      ),
-                                      child: Text(
-                                        l10n.blindOfflineMissing,
-                                        key: BlindKeys.offlineMissing,
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                            ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      if (state.held)
-                        const SizedBox.shrink()
-                      else if (state.phase == BlindPhase.intro)
-                        _IntroPanel(state: state, cubit: cubit)
-                      else if (state.phase == BlindPhase.finished)
-                        _BottomSheetFrame(
-                          child: FilledButton(
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size.fromHeight(kButtonHeight),
+                              onPressed: () => Navigator.of(context).maybePop(),
+                              child: Text(l10n.tourBack),
                             ),
-                            onPressed: () => Navigator.of(context).maybePop(),
-                            child: Text(l10n.tourBack),
-                          ),
-                        )
-                      else
-                        _TalkBar(state: state, cubit: cubit),
-                    ],
+                          )
+                        else
+                          _TalkBar(state: state, cubit: cubit),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -910,49 +922,62 @@ class _IntroPanel extends StatelessWidget {
     final l10n = context.l10n;
     final showing = state.view == BlindView.board;
     return _BottomSheetFrame(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.blindIntro,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  key: BlindKeys.introListen,
-                  icon: const Icon(Icons.hearing),
-                  label: Text(l10n.blindListenPosition),
-                  onPressed: cubit.narratePosition,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: OutlinedButton.icon(
-                  key: BlindKeys.introBoard,
-                  icon: Icon(showing ? Icons.grid_4x4 : Icons.grid_on),
-                  label: Text(
-                    showing ? l10n.blindViewEmpty : l10n.blindShowBoard,
-                  ),
-                  onPressed: () => cubit.setView(
-                    showing ? BlindView.empty : BlindView.board,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          FilledButton(
-            key: BlindKeys.start,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
+      child: EntradaEmCascata(
+        montar: (itens) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: itens,
+        ),
+        itens: [
+          ItemDaCascata.texto(
+            Text(
+              l10n.blindIntro,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
-            onPressed: cubit.start,
-            child: Text(l10n.blindStart),
+          ),
+          ItemDaCascata.texto(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: BlindKeys.introListen,
+                      icon: const Icon(Icons.hearing),
+                      label: Text(l10n.blindListenPosition),
+                      onPressed: cubit.narratePosition,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: BlindKeys.introBoard,
+                      icon: Icon(showing ? Icons.grid_4x4 : Icons.grid_on),
+                      label: Text(
+                        showing ? l10n.blindViewEmpty : l10n.blindShowBoard,
+                      ),
+                      onPressed: () => cubit.setView(
+                        showing ? BlindView.empty : BlindView.board,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ItemDaCascata.botao(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.sm),
+              child: FilledButton(
+                key: BlindKeys.start,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(kButtonHeight),
+                ),
+                onPressed: cubit.start,
+                child: Text(l10n.blindStart),
+              ),
+            ),
           ),
         ],
       ),
