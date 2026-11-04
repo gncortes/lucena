@@ -13,6 +13,7 @@ import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 
 import '../training_exercise/training_exercise_screen_test.dart'
@@ -435,6 +436,68 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  for (final reduced in [false, true]) {
+    testWidgets(
+      'H-ANI-25: no fim da abertura os botões entram por último, com o '
+      'tabuleiro parado (reduzido: $reduced)',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(412, 915);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        await prepare();
+        await tester.pumpWidget(
+          TestApp(
+            locale: const Locale('pt'),
+            settingsCubit: settings,
+            child: TrainingOpeningScreen(
+              repository: repository,
+              config: TrainingCourseConfig.pilares,
+              now: now,
+              lessonId: 'one',
+              teacher: teacher,
+              onNextGoal: () {},
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final cubit = tester
+            .element(find.byKey(TrainingKeys.openingBoard))
+            .read<TrainingOpeningCubit>();
+        // Jogando, o rodapé não é resultado.
+        expect(find.byKey(MotionKeys.parteDoResultado('botoes')), findsNothing);
+        final tabuleiro = tester.getRect(find.byKey(TrainingKeys.openingBoard));
+        await cubit.play('e2e4');
+        await cubit.play('g1f3');
+        await tester.pump();
+        expect(cubit.state.phase, TrainingOpeningPhase.complete);
+        final botoes = find.byKey(MotionKeys.parteDoResultado('botoes'));
+        expect(
+          find.descendant(
+            of: botoes,
+            matching: find.byKey(TrainingKeys.nextGoal),
+          ),
+          findsOneWidget,
+        );
+        expect(opacidadeDaParte(tester, botoes), reduced ? 1 : 0);
+        expect(
+          tester.getRect(find.byKey(TrainingKeys.openingBoard)),
+          tabuleiro,
+        );
+        await tester.pump(const Duration(milliseconds: 1300));
+        await tester.pump();
+        expect(opacidadeDaParte(tester, botoes), 1);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   for (final twoParts in [true, false]) {
     testWidgets(
       'H-LIC-38/39: texts and footer of a finished part (two parts: $twoParts)',

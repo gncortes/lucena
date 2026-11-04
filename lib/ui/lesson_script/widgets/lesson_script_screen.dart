@@ -35,6 +35,7 @@ import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -839,6 +840,22 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         ),
       );
     }
+    final acoes = Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 12,
+      children: [
+        if (demo?.ended == true) repeat,
+        if (secondary != null) Flexible(child: actionButton(secondary)),
+        if (primary != null) Flexible(child: actionButton(primary)),
+      ],
+    );
+    // H-ANI-25: no fim da demonstração, o tabuleiro e a fala ficam e ↻ e o
+    // botão principal entram por último; cada fim (também depois do ↻) é um
+    // resultado novo.
+    final fimDaDemo = EntradaDeResultado(
+      id: 'demo-${cubit.lessonId}-${state.stageId}-${demo?.tick}',
+      botoes: acoes,
+    );
     return SizedBox(
       key: LessonScriptKeys.footer,
       height: 96,
@@ -865,19 +882,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             Expanded(
               child: Align(
                 alignment: Alignment.centerRight,
-                child:
-                    controls ??
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 12,
-                      children: [
-                        if (demo?.ended == true) repeat,
-                        if (secondary != null)
-                          Flexible(child: actionButton(secondary)),
-                        if (primary != null)
-                          Flexible(child: actionButton(primary)),
-                      ],
-                    ),
+                child: controls ?? (demo?.ended == true ? fimDaDemo : acoes),
               ),
             ),
           ],
