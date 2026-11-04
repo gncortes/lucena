@@ -61,8 +61,16 @@ void main() {
     await $(FeaturedKeys.homeSeeAll).scrollTo().tap();
     await $(FeaturedKeys.bell).tap();
     await $(FeaturedKeys.bellNotice).waitUntilVisible();
-    // A permissão de notificação, se pedida, é concedida pelo sistema.
+    // A permissão de notificação, se pedida, é concedida antes de voltar:
+    // sem isso o "voltar" fecharia só o diálogo do sistema.
+    final mobile = $.platform.mobile;
+    if (await mobile.isPermissionDialogVisible(
+      timeout: const Duration(seconds: 3),
+    )) {
+      await mobile.grantPermissionWhenInUse();
+    }
     await $.platform.android.pressBack();
+    await $(HomeKeys.screen).waitUntilVisible();
     await $(HomeKeys.featuredTitle).scrollTo();
     await $(FeaturedKeys.homeSeeAll).scrollTo().tap();
     await $(FeaturedKeys.listScreen).waitUntilVisible();

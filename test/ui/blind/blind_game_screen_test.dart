@@ -253,6 +253,24 @@ void main() {
     });
   });
 
+  group('aviso do microfone aberto', () {
+    testWidgets('outra mudança de estado não empilha outro aviso', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.micAllow), findsOneWidget);
+
+      cubit.setView(BlindView.empty);
+      await tester.pumpAndSettle();
+      cubit.setView(BlindView.board);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(BlindKeys.micAllow), findsOneWidget);
+    });
+  });
+
   group('H-PAR-18 adversário que falha', () {
     Future<void> failThreeTimes(WidgetTester tester) async {
       final opponent = FakeOpponentRepository()..failTimes = 3;

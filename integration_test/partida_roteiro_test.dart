@@ -93,9 +93,8 @@ void main() {
     await HomeRobot($).expectVisible();
     await blind.startWithoutMic();
 
+    // Com uma partida às cegas guardada, o app abre direto nela.
     await app.restart();
-    await HomeRobot($).expectVisible();
-    await blind.openEntry();
     await blind.expectInGame();
   });
 

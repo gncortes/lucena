@@ -66,6 +66,7 @@ void main() {
     await reopenGuide($);
     await $(TrainingGoalKeys.guideDefine).tap();
     await $(TrainingGoalKeys.diagnosticScreen).waitUntilVisible();
+    await $(TrainingGoalKeys.diagnosticTest).scrollTo();
     await $(TrainingGoalKeys.diagnosticTest).tap();
     await $(TrainingGoalKeys.testResume).waitUntilVisible();
     await $(TrainingGoalKeys.testResumeContinue).tap();
@@ -109,7 +110,12 @@ void main() {
     await service.start(const [channel]);
     if (!await service.permitted()) {
       final permission = service.requestPermission();
-      await $.platform.mobile.grantPermissionWhenInUse();
+      // Se o aparelho já concedeu antes, o pedido nem abre o diálogo.
+      if (await $.platform.mobile.isPermissionDialogVisible(
+        timeout: const Duration(seconds: 5),
+      )) {
+        await $.platform.mobile.grantPermissionWhenInUse();
+      }
       expect(await permission, true);
     }
     const title = 'Como foi o torneio?';
