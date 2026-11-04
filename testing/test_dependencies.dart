@@ -6,9 +6,9 @@ import 'package:lucena/data/repositories/legal/legal_consent_repository.dart';
 
 import 'fakes/fake_activity_repository.dart';
 
+import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/repositories/review/review_repository.dart';
-import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
 
 import 'fakes/fake_feedback_repositories.dart';
 import 'fakes/fake_daily_final_repository.dart';
@@ -111,6 +111,7 @@ import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_placement_repository.dart';
 import 'fakes/fake_conclusion_repository.dart';
 import 'fakes/fake_analysis_repository.dart';
+import 'fakes/fake_deep_analysis_repository.dart';
 import 'fakes/fake_game_review_repository.dart';
 import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_home_layout_repository.dart';
@@ -196,7 +197,7 @@ Dependencies testDependencies({
   FeedbackRepository? feedbackRepository,
   DataExportRepository? dataExportRepository,
   LegalConsentRepository? legalConsentRepository,
-  WouldPayRepository? wouldPayRepository,
+  FeedbackDraftRepository? feedbackDraftRepository,
   ReviewRepository? reviewRepository,
   List<AppLanguage>? languages,
 }) {
@@ -219,6 +220,7 @@ Dependencies testDependencies({
     soundRepository: FakeSoundRepository(),
     analysisRepository: FakeAnalysisRepository(),
     gameReviewRepository: FakeGameReviewRepository(),
+    deepAnalysisRepository: FakeDeepAnalysisRepository(),
     ongoingGameRepository: ongoingGameRepository ?? FakeOngoingGameRepository(),
     conclusionRepository: conclusionRepository ?? FakeConclusionRepository(),
     positionsRepository: positionsRepository ?? FakePositionsRepository(),
@@ -289,7 +291,8 @@ Dependencies testDependencies({
     dataExportRepository: dataExportRepository ?? FakeDataExportRepository(),
     legalConsentRepository:
         legalConsentRepository ?? const NoLegalConsentRepository(),
-    wouldPayRepository: wouldPayRepository ?? const NoWouldPayRepository(),
+    feedbackDraftRepository:
+        feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
     reviewRepository: reviewRepository ?? FakeReviewRepository(),
     languages: languages ?? AppLanguage.selectable,
   );

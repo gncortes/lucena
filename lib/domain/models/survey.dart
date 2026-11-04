@@ -2,20 +2,24 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'survey.freezed.dart';
 
-/// Qual questionário: o das aulas de finais (2 passos) ou o da Escola
+/// Qual questionário: o das lições do Pilares (2 passos) ou o da Escola
 /// (3 passos). Vem da origem, a pessoa nunca escolhe.
 enum SurveyKind {
-  endgames,
+  pilares,
   school;
 
   /// O nome na rota e nas chaves gravadas.
   String get code => name;
 
+  /// O nome antigo do Pilares (`endgames`, antes da T85) ainda abre o
+  /// Pilares: links e rotas salvos continuam valendo.
+  static const _legacy = {'endgames': pilares};
+
   static SurveyKind? byCode(String code) {
     for (final kind in values) {
       if (kind.code == code) return kind;
     }
-    return null;
+    return _legacy[code];
   }
 }
 
@@ -35,7 +39,7 @@ enum SurveyInterest {
 
 /// Os ids estáveis dos chips (o texto vem do .arb).
 abstract final class SurveyOptions {
-  static const improveEndgames = [
+  static const improvePilares = [
     'viktor',
     'voice',
     'examples',
@@ -76,7 +80,7 @@ abstract final class SurveyOptions {
   ];
 
   static List<String> improveOf(SurveyKind kind) => switch (kind) {
-    SurveyKind.endgames => improveEndgames,
+    SurveyKind.pilares => improvePilares,
     SurveyKind.school => improveSchool,
   };
 }

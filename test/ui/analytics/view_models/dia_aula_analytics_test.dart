@@ -77,7 +77,7 @@ void main() {
   });
 
   test('LessonFinishedCubit load nunca conclui aula', () async {
-    for (final kind in [SurveyKind.school, SurveyKind.endgames]) {
+    for (final kind in [SurveyKind.school, SurveyKind.pilares]) {
       analytics.events.clear();
       final cubit = LessonFinishedCubit(
         kind: kind,

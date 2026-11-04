@@ -61,6 +61,8 @@ final class TrainingExercise {
     Map<int, List<String>> alternativesByPosition = const {},
     this.lastMove,
     this.mock = false,
+    this.statement,
+    this.hintText,
   }) : assert(stars >= 1 && stars <= 3),
        solution = List.unmodifiable(solution),
        alternatives = List.unmodifiable(alternatives),
@@ -75,6 +77,10 @@ final class TrainingExercise {
   final int stars;
   final bool mock;
   final List<String> solution, alternatives;
+
+  /// Author's statement (`enunciado`) and hint (`dica`); null when the author
+  /// wrote none, in which case the screen shows no speech at all.
+  final String? statement, hintText;
 
   /// Student turn, starting at one. Accepted branches have no exported reply.
   final Map<int, List<String>> alternativesByPosition;
@@ -94,6 +100,8 @@ final class TrainingExercise {
         (position, moves) => MapEntry('$position', moves),
       ),
     'mock': mock,
+    if (statement != null) 'enunciado': statement,
+    if (hintText != null) 'dica': hintText,
   };
   factory TrainingExercise.fromJson(Map<String, dynamic> j) => TrainingExercise(
     id: j['id'] as String,
@@ -109,6 +117,8 @@ final class TrainingExercise {
       ),
     ),
     mock: j['mock'] as bool? ?? false,
+    statement: j['enunciado'] as String?,
+    hintText: j['dica'] as String?,
   );
 }
 

@@ -355,7 +355,6 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
             key: TrainingKeys.planScreen,
             appBar: LucenaAppBar(
               centerTitle: true,
-              toolbarHeight: 64,
               title: Text(t.trainingPlanTitle),
               leading: IconButton(
                 key: TrainingKeys.planBack,

@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
 
+import 'speech_keys.dart';
+import 'voice_keys.dart';
+
 /// A tela da lição roteirizada (T70).
 abstract final class LessonScriptKeys {
   static Key answerChoice(int index) => Key('lessonScript.answerChoice.$index');
@@ -57,4 +60,29 @@ abstract final class LessonScriptKeys {
   /// O resultado depois do lance que acabou a partida.
   static Key moveResult(String nodeId) =>
       Key('lessonScript.moveResult.$nodeId');
+
+  // Nomes das histórias H-LIC (T85-D1): os mesmos botões, com o nome do canvas.
+  /// "Continuar" da lição (e "Praticar", "Próxima etapa").
+  static const lessonContinue = primary;
+  static const lessonPractice = primary;
+
+  /// Pausar e tocar a fala ou a demonstração.
+  static const lessonPauseToggle = demoToggle;
+  static const demoPlayPause = demoToggle;
+
+  /// Lance anterior e próximo da demonstração (o próximo é o botão com anel).
+  static const demoPrev = demoStepBack;
+  static const demoNext = primary;
+
+  /// O `search` do rodapé: analisar a posição.
+  static const lessonAnalyze = analyze;
+
+  /// A lâmpada da armadilha.
+  static const trapHint = hint;
+
+  /// O "… Ver mais" do balão da lição.
+  static const balloonSeeMore = SpeechKeys.balloonSeeMore;
+
+  /// O som e a voz do Viktor no cabeçalho da fala.
+  static const lessonVoiceToggle = VoiceKeys.speakButton;
 }

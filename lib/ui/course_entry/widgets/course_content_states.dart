@@ -14,7 +14,6 @@ import '../../core/theme/canvas_symbols.dart';
 import '../../../domain/models/lesson_content.dart';
 import '../../core/keys/training_entry_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/theme/app_icon_size.dart';
 
@@ -127,41 +126,18 @@ class CourseDownloadFailure extends StatelessWidget {
       );
     }
     final offline = failure is LessonContentNetworkUnavailable;
-    if (!chapter) {
-      return LoadErrorScreen(
-        kind: offline ? LoadErrorKind.offline : LoadErrorKind.generic,
-        message: offline ? t.loadErrorOfflineCourseMessage : null,
-        onAction: onRetry,
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
-      );
-    }
-    final message = offline
-        ? t.trainingDownloadChapterOffline
-        : t.trainingDownloadChapterError;
-    return Center(
-      key: TrainingEntryKeys.failure,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              EmptyState(
-                style: EmptyStateStyle.error,
-                iconFill: 1,
-                icon: offline ? CanvasSymbols.wifiOff : CanvasSymbols.error,
-                usePrimaryErrorColor: true,
-                message: message,
-                actionLabel: t.lessonRetry,
-                actionKey: TrainingEntryKeys.retry,
-                onAction: onRetry,
-              ),
-            ],
-          ),
-        ),
-      ),
+    final screen = LoadErrorScreen(
+      kind: offline ? LoadErrorKind.offline : LoadErrorKind.generic,
+      message: offline
+          ? (chapter ? t.licaoSemInternetCapitulo : t.licaoSemInternetCurso)
+          : null,
+      onAction: onRetry,
+      onBack: () => context.canPop() ? context.pop() : context.go(Routes.home),
     );
+    // O curso usa só o erro padrão (D3); o capítulo mantém a key da entrada.
+    return chapter
+        ? KeyedSubtree(key: TrainingEntryKeys.failure, child: screen)
+        : screen;
   }
 }
 

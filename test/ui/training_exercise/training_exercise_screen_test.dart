@@ -463,6 +463,18 @@ void main() {
             tester.getSize(find.byKey(TrainingKeys.endPrimary)).height,
             52,
           );
+          // H-LIC-50: os rótulos do fim do ciclo são os da história.
+          expect(
+            find.descendant(
+              of: find.byKey(TrainingKeys.endPrimary),
+              matching: find.text(switch (ending) {
+                'firm' => 'Continuar',
+                'reinforce' => 'Fazer o reforço',
+                _ => 'Refazer a lição',
+              }),
+            ),
+            findsOneWidget,
+          );
           final circles = tester.widgetList<CircleAvatar>(
             find.byType(CircleAvatar),
           );

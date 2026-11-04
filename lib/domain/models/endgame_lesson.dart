@@ -119,9 +119,14 @@ class Exercise {
     required this.goal,
     required this.line,
     this.origin = 'own',
+    this.theme,
   });
 
   final String id;
+
+  /// O tema do exercício (id da parte, ex.: `outpost`); o título vem do texto
+  /// `part.<tema>.title`. Nulo quando a lição não informa.
+  final String? theme;
 
   /// A dificuldade, de 1 a 3: o que o acerto de primeira vale.
   final int stars;

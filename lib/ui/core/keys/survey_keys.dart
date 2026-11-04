@@ -9,6 +9,9 @@ abstract final class SurveyKeys {
   static Key inviteAction(SurveyKind kind) =>
       Key('survey.invite.${kind.code}.action');
 
+  /// A linha "O que você achou do Pilares/da Escola?" do diploma.
+  static Key inviteRow(SurveyKind kind) => Key('survey.inviteRow.${kind.code}');
+
   static const screen = Key('survey.screen');
   static const progress = Key('survey.progress');
 
@@ -36,7 +39,11 @@ abstract final class SurveyKeys {
   static const back = Key('survey.back');
   static const close = Key('survey.close');
 
-  /// O agradecimento e o botão que volta à origem.
+  /// O aviso de erro no envio, com "Tentar novamente".
+  static const sendError = Key('survey.sendError');
+
+  /// O agradecimento, o X e o botão que voltam à origem.
   static const thanks = Key('survey.thanks');
+  static const thanksClose = Key('survey.thanksClose');
   static const thanksBack = Key('survey.thanksBack');
 }

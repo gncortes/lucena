@@ -453,7 +453,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   bool get canAnalyze =>
-      endgame &&
+      // Também na abertura do curso (PropV1TreinoAbModeloFim,
+      // AbValeAquiAcertou, AbArmadilhaAcertou); só o fim da ideia dela não
+      // tem a lupa (PropV1TreinoAbIdeiaFim).
+      (endgame ||
+          !(state.phase == ScriptPhase.fimEtapa && state.stageId == 'ideia')) &&
       state.ready &&
       !state.machineThinking &&
       (state.tone == ScriptTone.bad ||

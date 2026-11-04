@@ -47,14 +47,25 @@ void leaveForNoFinal(BuildContext context) {
 }
 
 /// O carregando do final do dia (canvas PropV1DesDiaCarregando): o título,
-/// um jogador, o tabuleiro e o outro jogador, sem o compartilhar.
+/// um jogador, o tabuleiro e o outro jogador. O Compartilhar já fica no lugar,
+/// desabilitado (H-DES-04, "ícones fixos entre estados").
 class DailyLoadingScreen extends StatelessWidget {
   const DailyLoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(
     key: DailyKeys.loading,
-    appBar: LucenaAppBar(title: Text(context.l10n.dailyTitle)),
+    appBar: LucenaAppBar(
+      title: Text(context.l10n.dailyTitle),
+      actions: [
+        IconButton(
+          key: DailyKeys.appBarShare,
+          tooltip: context.l10n.desafiosDailyShareTooltip,
+          icon: const Icon(Icons.share_outlined),
+          onPressed: null,
+        ),
+      ],
+    ),
     body: const SingleChildScrollView(
       physics: NeverScrollableScrollPhysics(),
       child: Column(

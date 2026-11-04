@@ -5,11 +5,12 @@ import '../../../domain/models/feedback_entry.dart';
 import '../../services/device_service.dart';
 import '../../services/firebase/cloud_store_service.dart';
 
-/// O "Enviar feedback" do Perfil e as respostas do "Você pagaria?" (E1.26),
-/// em `feedback/{id}`, sem identificar quem mandou.
+/// O "Enviar feedback" do Perfil (E1.26), em `feedback/{id}`, sem
+/// identificar quem mandou.
 abstract class FeedbackRepository {
-  /// Manda [entry] e devolve se aceitou. Não espera a rede: sem ela, o
-  /// Firestore guarda e manda quando voltar. Texto livre vazio não vai.
+  /// Manda [entry] e devolve se aceitou (texto vazio não vai). Sem rede, o
+  /// Firestore guarda e manda quando voltar; recusa do servidor ou falha
+  /// local lançam erro, para a tela avisar e deixar tentar de novo.
   /// [level] é o nível ou rating do perfil, quando a pessoa já definiu.
   Future<bool> send(FeedbackEntry entry, {String? level});
 }
@@ -20,6 +21,7 @@ class CloudFeedbackRepository implements FeedbackRepository {
     this._device,
     this._version, {
     this.origin,
+    this.wait = const Duration(seconds: 4),
   });
 
   final CloudStoreService _store;
@@ -29,10 +31,13 @@ class CloudFeedbackRepository implements FeedbackRepository {
   /// De onde a pessoa veio na 1ª abertura (a `origem_primeira` da E1.03).
   final Future<String?> Function()? origin;
 
+  /// Quanto espera a resposta do servidor. Passado o tempo (sem rede), a
+  /// gravação já está na fila local do Firestore e conta como aceita.
+  final Duration wait;
+
   @override
   Future<bool> send(FeedbackEntry entry, {String? level}) async {
-    final text = entry.text;
-    if (text != null && FeedbackEntry.clip(text).isEmpty) return false;
+    if (FeedbackEntry.clip(entry.text).isEmpty) return false;
     final device = await _device.model();
     final data = entry.toJson(
       level: level,
@@ -41,12 +46,9 @@ class CloudFeedbackRepository implements FeedbackRepository {
       manufacturer: device.manufacturer,
       origin: await origin?.call(),
     );
-    // Sem esperar o servidor: a pessoa já vê o agradecimento.
-    unawaited(
-      _store.addFeedback(data).catchError((Object _) {
-        // Recusado (regra, sem permissão): não há o que mostrar.
-      }),
-    );
+    // Recusa (regra, sem permissão) chega rápido e lança; sem rede, a
+    // resposta não vem e o tempo esgota com o documento na fila.
+    await _store.addFeedback(data).timeout(wait, onTimeout: () {});
     return true;
   }
 }
@@ -57,7 +59,6 @@ class NoFeedbackRepository implements FeedbackRepository {
 
   @override
   Future<bool> send(FeedbackEntry entry, {String? level}) async {
-    final text = entry.text;
-    return text == null || FeedbackEntry.clip(text).isNotEmpty;
+    return FeedbackEntry.clip(entry.text).isNotEmpty;
   }
 }

@@ -5,6 +5,8 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/app_bar_progress.dart';
+import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/skeleton.dart';
 
 import '../../core/widgets/load_error.dart';
@@ -23,6 +25,7 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_bar_height.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
@@ -316,7 +319,15 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: LucenaAppBar(
-              toolbarHeight: widget.trainingTest ? 64 : null,
+              // H-LIC-45: a app bar de progresso, como no teste de nível. A
+              // barra de 4 px fica dentro da altura padrão (CompTopBar
+              // "progresso"), sem roubar altura do tabuleiro.
+              toolbarHeight: widget.trainingTest
+                  ? AppBarHeight.standard - AppBarProgress.height
+                  : null,
+              bottom: widget.trainingTest && lesson != null && state.count > 0
+                  ? AppBarProgress(value: state.number / state.count)
+                  : null,
               centerTitle: widget.trainingTest ? true : null,
               leading: widget.trainingTest
                   ? BackButton(
@@ -336,23 +347,34 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               // bronze (1); cada erro ou dica desce um degrau, e a vazia fica
               // vazia até o fim.
               actions: [
-                if (!widget.trainingTest && state.exercise != null)
+                if (!widget.trainingTest &&
+                    (state.say == ExerciseSay.correct ||
+                        state.say == ExerciseSay.wrong))
+                  ExerciseResultMark(correct: state.say == ExerciseSay.correct),
+                // Regra da app bar (T85): a estrela já aparece no
+                // carregando, apagada.
+                if (!widget.trainingTest)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(
                       end: AppSpacing.md,
                     ),
                     child: Semantics(
-                      label: _starLabel(l10n, state, state.exercise!),
+                      label: state.exercise == null
+                          ? null
+                          : _starLabel(l10n, state, state.exercise!),
                       excludeSemantics: true,
                       // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
                       // ainda vale pontos, vazia se não.
                       child: Icon(
-                        state.worth > 0
+                        state.exercise == null || state.worth > 0
                             ? Icons.star_rounded
                             : Icons.star_outline_rounded,
                         key: ExerciseKeys.stars,
                         size: AppIconSize.large,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: state.exercise == null
+                            ? Theme.of(context).colorScheme.onSurface
+                                  .withValues(alpha: 0.38)
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),

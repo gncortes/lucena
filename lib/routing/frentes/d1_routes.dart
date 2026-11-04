@@ -1,4 +1,26 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../data/repositories/characters/character_repository.dart';
+import '../../data/repositories/lesson_ad/demo_ad_repository.dart';
+import '../../domain/models/character.dart';
+import '../../domain/use_cases/now.dart';
+import '../../domain/models/survey.dart';
+import '../../domain/models/training/lesson_end.dart';
+import '../../ui/core/widgets/load_skeleton.dart';
+import '../../ui/lesson_end/widgets/course_completed_screen.dart';
+import '../../ui/lesson_end/widgets/lesson_soon_screen.dart';
+import '../../ui/lesson_end/widgets/week_review_screen.dart';
+import '../../ui/feedback/widgets/feedback_sent_screen.dart';
+import '../../ui/lesson_ad/view_models/lesson_ad_cubit.dart';
+import '../../ui/lesson_ad/widgets/lesson_ad_screen.dart';
+import '../../ui/lesson_ad/widgets/lesson_entry.dart';
+import '../../ui/survey/view_models/viktor_thanks_cubit.dart';
+import '../../ui/survey/widgets/survey_thanks_screen.dart';
+import '../route_names.dart';
+import '../routes.dart';
+import '../router.dart';
 
 /// Telas novas da frente D1 (Lição + Opinião, T85). A frente registra as rotas na
 /// lista [d1Routes] com `appRoute(name: RouteNames.x, path: D1Paths.x, ...)`,
@@ -19,8 +41,115 @@ abstract final class D1Paths {
   /// Obrigado da pesquisa (H-OPI-09).
   static const surveyThanks = '/survey/:kind/thanks';
 
-  /// Feedback enviado (H-OPI-14).
+  /// Feedback enviado (H-OPI-12).
   static const feedbackSent = '/settings/feedback/sent';
 }
 
-final List<RouteBase> d1Routes = [];
+/// Carrega o Viktor e só então monta a tela (esqueleto enquanto carrega).
+Widget _withViktor(Widget Function(Character teacher) build) => BlocProvider(
+  create: (context) =>
+      ViktorThanksCubit(characters: context.read<CharacterRepository>())
+        ..load(),
+  child: BlocBuilder<ViktorThanksCubit, Character?>(
+    builder: (context, teacher) =>
+        teacher == null ? const LoadSkeletonScreen() : build(teacher),
+  ),
+);
+
+String _courseHome(GoRouterState state) =>
+    Routes.training(state.pathParameters['course'] ?? 'pilares');
+
+final List<RouteBase> d1Routes = [
+  // O anúncio só abre pela entrada da lição (extra); aberto sem ela
+  // (link, fechar à força) volta ao início, sem lição aberta (H-LIC-10).
+  appRoute(
+    name: RouteNames.lessonAd,
+    path: D1Paths.lessonAd,
+    redirect: (context, state) =>
+        state.extra is LessonAdArgs ? null : Routes.home,
+    builder: (context, state) => BlocProvider(
+      create: (_) => LessonAdCubit(
+        ads: context.read<DemoAdRepository>(),
+        now: context.read<Now>(),
+      )..load(),
+      child: LessonAdScreen(
+        lessonTitle: (state.extra! as LessonAdArgs).lessonTitle,
+      ),
+    ),
+  ),
+  appRoute(
+    name: RouteNames.trainingReview,
+    path: D1Paths.trainingReview,
+    // Sem os dados da semana (por exemplo, link solto), volta ao treino.
+    redirect: (context, state) =>
+        state.extra is WeekReview ? null : _courseHome(state),
+    builder: (context, state) {
+      final review = state.extra! as WeekReview;
+      return _withViktor(
+        (teacher) => WeekReviewScreen(
+          review: review,
+          teacher: teacher,
+          onOpen: context.push<void>,
+          onStart: () => context.push<void>(
+            review.isTournamentDay
+                ? review.warmups.first.path
+                : review.items.first.path,
+          ),
+          onBack: () =>
+              context.canPop() ? context.pop() : context.go(_courseHome(state)),
+        ),
+      );
+    },
+  ),
+  appRoute(
+    name: RouteNames.trainingCompleted,
+    path: D1Paths.trainingCompleted,
+    redirect: (context, state) =>
+        state.extra is CourseCompletion ? null : _courseHome(state),
+    builder: (context, state) {
+      final completion = state.extra! as CourseCompletion;
+      return _withViktor(
+        (teacher) => CourseCompletedScreen(
+          completion: completion,
+          teacher: teacher,
+          onGoals: () => context.go(_courseHome(state)),
+          onCatalog: () => context.go(Routes.catalog),
+          onClose: () => context.go(_courseHome(state)),
+        ),
+      );
+    },
+  ),
+  appRoute(
+    name: RouteNames.lessonSoon,
+    path: D1Paths.lessonSoon,
+    builder: (context, state) => LessonSoonScreen(
+      onBack: () => context.canPop() ? context.pop() : context.go(Routes.home),
+    ),
+  ),
+  appRoute(
+    name: RouteNames.surveyThanks,
+    path: D1Paths.surveyThanks,
+    redirect: (context, state) =>
+        SurveyKind.byCode(state.pathParameters['kind'] ?? '') == null
+        ? Routes.home
+        : null,
+    builder: (context, state) => BlocProvider(
+      create: (_) =>
+          ViktorThanksCubit(characters: context.read<CharacterRepository>())
+            ..load(),
+      child: SurveyThanksScreen(
+        kind: SurveyKind.byCode(state.pathParameters['kind']!)!,
+      ),
+    ),
+  ),
+  appRoute(
+    name: RouteNames.feedbackSent,
+    path: D1Paths.feedbackSent,
+    builder: (context, state) => BlocProvider(
+      create: (_) =>
+          ViktorThanksCubit(characters: context.read<CharacterRepository>())
+            ..load(),
+      child: const FeedbackSentScreen(),
+    ),
+  ),
+];

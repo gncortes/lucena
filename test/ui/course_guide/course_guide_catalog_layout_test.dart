@@ -192,7 +192,7 @@ void main() {
         tester
             .widget<CourseContinueCard>(find.byType(CourseContinueCard))
             .label,
-        'Parte I · lição 3',
+        'Parte I · Lição 3',
       );
       await tester.scrollUntilVisible(
         find.byKey(CourseGuideKeys.seeCatalog),
@@ -212,7 +212,7 @@ void main() {
         tester
             .widget<CourseContinueCard>(find.byType(CourseContinueCard))
             .label,
-        'Parte II · lição 1',
+        'Parte II · Lição 1',
       );
       expect(tester.takeException(), isNull);
     });

@@ -29,6 +29,8 @@ import '../data/repositories/analytics/analytics_repository.dart';
 import '../data/services/firebase/analytics_service.dart';
 import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/lesson_ad/course_access_repository.dart';
+import '../data/repositories/lesson_ad/demo_ad_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../data/repositories/store/store_listing_repository.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
@@ -95,6 +97,7 @@ import '../data/repositories/speedrun/speedrun_repository_local.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
 import '../data/repositories/analysis/analysis_repository.dart';
 import '../data/repositories/analysis/analysis_repository_stockfish.dart';
+import '../data/repositories/deep_analysis/deep_analysis_repository.dart';
 import '../data/repositories/review/game_review_repository.dart';
 import '../data/repositories/sound/sound_repository.dart';
 import '../data/repositories/sound/sound_repository_device.dart';
@@ -166,9 +169,9 @@ import '../data/services/firebase/cloud_store_service.dart';
 import '../data/repositories/data_export/data_export_repository.dart';
 import '../data/repositories/data_export/data_export_repository_cloud.dart';
 import '../data/repositories/legal/legal_consent_repository.dart';
+import '../data/repositories/feedback/feedback_draft_repository.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
-import '../data/repositories/would_pay/would_pay_repository.dart';
 import '../data/services/device_service.dart';
 import '../data/services/review_service.dart';
 import '../data/services/firebase/file_store_service.dart';
@@ -226,6 +229,7 @@ class Dependencies {
     required this.analysisRepository,
     this.learningAnalysisRepository,
     required this.gameReviewRepository,
+    required this.deepAnalysisRepository,
     required this.ongoingGameRepository,
     required this.conclusionRepository,
     required this.positionsRepository,
@@ -283,12 +287,14 @@ class Dependencies {
     this.mailAppRepository = const NoMailAppRepository(),
     this.analyticsRepository = const NoAnalyticsRepository(),
     this.adsRepository = const NoAdsRepository(),
+    this.courseAccessRepository = const FullCourseAccessRepository(),
+    this.demoAdRepository = const NoDemoAdRepository(),
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
     this.dataExportRepository = const NoDataExportRepository(),
     this.legalConsentRepository = const NoLegalConsentRepository(),
-    this.wouldPayRepository = const NoWouldPayRepository(),
+    this.feedbackDraftRepository = const NoFeedbackDraftRepository(),
     this.reviewRepository = const NoReviewRepository(),
     this.installReferrerRepository = const NoInstallReferrerRepository(),
     this._campaignRepository,
@@ -353,6 +359,8 @@ class Dependencies {
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     final stockfish = StockfishService();
+    final analysisRepository = StockfishAnalysisRepository(stockfish);
+    final reviewRepository = LocalGameReviewRepository(preferences);
     final pace = AssetPaceRepository(assets);
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
@@ -526,9 +534,14 @@ class Dependencies {
       regionPromptRepository: LocalRegionPromptRepository(preferences),
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
-      analysisRepository: StockfishAnalysisRepository(stockfish),
+      analysisRepository: analysisRepository,
       learningAnalysisRepository: LearningAnalysisRepository(preferences),
-      gameReviewRepository: LocalGameReviewRepository(preferences),
+      gameReviewRepository: reviewRepository,
+      deepAnalysisRepository: EngineDeepAnalysisRepository(
+        analysis: analysisRepository,
+        reviews: reviewRepository,
+        now: now,
+      ),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       conclusionRepository: LocalConclusionRepository(preferences),
       positionsRepository: positions,
@@ -615,6 +628,7 @@ class Dependencies {
       mailAppRepository: const DeviceMailAppRepository(),
       analyticsRepository: analytics,
       adsRepository: ads,
+      demoAdRepository: LocalDemoAdRepository(preferences),
       purchaseRepository: purchases,
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
@@ -638,7 +652,7 @@ class Dependencies {
       legalConsentRepository: firebase
           ? LocalLegalConsentRepository(preferences, cloudStore, now: now)
           : const NoLegalConsentRepository(),
-      wouldPayRepository: LocalWouldPayRepository(preferences),
+      feedbackDraftRepository: LocalFeedbackDraftRepository(preferences),
       reviewRepository: LocalReviewRepository(
         preferences,
         firebase ? PlayReviewService() : const NoReviewService(),
@@ -701,6 +715,7 @@ class Dependencies {
   final AnalysisRepository analysisRepository;
   final LearningAnalysisRepository? learningAnalysisRepository;
   final GameReviewRepository gameReviewRepository;
+  final DeepAnalysisRepository deepAnalysisRepository;
   final OngoingGameRepository ongoingGameRepository;
   final ConclusionRepository conclusionRepository;
   final PositionsRepository positionsRepository;
@@ -787,10 +802,14 @@ class Dependencies {
   /// Os anúncios antes das aulas, a compra que os tira e a página do app na
   /// Play (E1.25). Fora da Play, nenhum.
   final AdsRepository adsRepository;
+
+  /// O que a pessoa tem do Pilares e o anúncio da demonstração (T85-D1).
+  final CourseAccessRepository courseAccessRepository;
+  final DemoAdRepository demoAdRepository;
   final PurchaseRepository purchaseRepository;
   final StoreListingRepository storeListingRepository;
 
-  /// "Enviar feedback" e o "Você pagaria?" (E1.26), em `feedback/{id}`.
+  /// "Enviar feedback" (E1.26), em `feedback/{id}`.
   final FeedbackRepository feedbackRepository;
 
   /// "Baixar meus dados" (H-CON-21): a cópia da conta num JSON.
@@ -799,7 +818,9 @@ class Dependencies {
   /// O aceite dos Termos e da Política logo depois de criar a conta
   /// (H-CON-08).
   final LegalConsentRepository legalConsentRepository;
-  final WouldPayRepository wouldPayRepository;
+
+  /// O rascunho do "Enviar feedback" (H-OPI-11), no aparelho.
+  final FeedbackDraftRepository feedbackDraftRepository;
 
   /// O pedido de avaliação da Play (E1.26).
   final ReviewRepository reviewRepository;

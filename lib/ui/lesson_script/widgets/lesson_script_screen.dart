@@ -7,6 +7,7 @@ import 'dart:async';
 
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../domain/models/load_failure.dart';
+import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/load_error.dart';
 
 import '../../../domain/models/lesson_content.dart';
@@ -250,7 +251,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       // Os capítulos todos feitos: a aula concluída, antes do teste final.
       context.pushReplacement(
         Routes.lessonFinished(
-          SurveyKind.endgames,
+          SurveyKind.pilares,
           cubit.lessonId,
           next: outcome.next,
           origin: cubit.origin,
@@ -299,7 +300,6 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               onPressed: () => unawaited(_leave()),
               icon: const Icon(CanvasSymbols.arrowBack),
             ),
-            toolbarHeight: 64,
             centerTitle: state.curiosities == null,
             title: FutureBuilder<String?>(
               future: _safeTitle(),
@@ -318,6 +318,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               ),
             ),
             actions: [
+              // A mesma marca de acerto e erro do treino (H-LIC-42).
+              if (state.tone != ScriptTone.neutral)
+                ExerciseResultMark(correct: state.tone == ScriptTone.good),
               if (state.curiosities != null)
                 IconButton(
                   key: LessonScriptKeys.bookButton,
@@ -673,7 +676,11 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final (label, key) = switch (action) {
       ScriptAction.continuar => (l10n.lessonContinue, LessonScriptKeys.primary),
       ScriptAction.proximaEtapa => (
-        cubit.endgame ? stateLabel(cubit.state, context) : l10n.lessonContinue,
+        // Aula de abertura (curso): "Partidas-modelo" no fim da ideia
+        // (PropV1TreinoAbIdeiaFim); nas outras etapas da escola, "Continuar".
+        cubit.endgame || cubit.state.stageId == 'ideia'
+            ? stateLabel(cubit.state, context)
+            : l10n.lessonContinue,
         LessonScriptKeys.primary,
       ),
       ScriptAction.tentarDeNovo => (l10n.lessonRetry, LessonScriptKeys.primary),
