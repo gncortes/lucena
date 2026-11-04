@@ -10,10 +10,22 @@ import 'movimento_reduzido.dart';
 ///
 /// Responde ao dedo na hora, sem esperar o atraso do toque do Flutter. Com
 /// movimento reduzido, não escala: sobra a ondulação.
+///
+/// O botão "Conhecer o Pilares" do anúncio (H-ANI-31) usa o mesmo aperto com
+/// [escala] 0,94 e 220 ms.
 class CartaoPressionavel extends StatefulWidget {
-  const CartaoPressionavel({required this.child, super.key});
+  const CartaoPressionavel({
+    required this.child,
+    this.escala = LucenaMotion.escalaDoToque,
+    this.afunda = LucenaMotion.cartaoAfunda,
+    this.volta = LucenaMotion.cartaoVolta,
+    super.key,
+  });
 
   final Widget child;
+  final double escala;
+  final Duration afunda;
+  final Duration volta;
 
   @override
   State<CartaoPressionavel> createState() => _CartaoPressionavelState();
@@ -35,12 +47,12 @@ class _CartaoPressionavelState extends State<CartaoPressionavel> {
       onPointerCancel: (_) => _apertar(false),
       child: AnimatedScale(
         key: MotionKeys.cartaoPressionado,
-        scale: _apertado && !reduzido ? LucenaMotion.escalaDoToque : 1,
+        scale: _apertado && !reduzido ? widget.escala : 1,
         duration: reduzido
             ? Duration.zero
             : _apertado
-            ? LucenaMotion.cartaoAfunda
-            : LucenaMotion.cartaoVolta,
+            ? widget.afunda
+            : widget.volta,
         curve: LucenaMotion.emphasized,
         child: widget.child,
       ),

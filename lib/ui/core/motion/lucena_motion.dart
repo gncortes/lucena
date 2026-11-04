@@ -315,4 +315,95 @@ abstract final class LucenaMotion {
 
   /// O salto de cada ponto.
   static const saltoDoPonto = Duration(milliseconds: 200);
+
+  // H-ANI-28 · meta do dia (`r2/18_sequencia_meta_do_dia`).
+
+  /// A celebração inteira da meta do dia: anel, ✓, contador e faíscas.
+  static const celebracaoDaMeta = Duration(milliseconds: 1200);
+
+  /// O anel fecha em volta do dia de hoje (`emphasized`).
+  static const anelDaMeta = Duration(milliseconds: 450);
+
+  /// O ✓ e o contador saltam (`elasticOut` curto).
+  static const saltoDaMeta = Duration(milliseconds: 300);
+
+  /// O contador sobe a partir deste instante.
+  static const contadorDaMeta = Duration(milliseconds: 600);
+
+  /// O salto curto do ✓ e do contador.
+  static const Curve salto = ElasticOutCurve(.8);
+
+  // H-ANI-15 · celebração (`r1/19`).
+
+  /// O diploma escala de [escalaDoDiploma] a [picoDoDiploma] e volta a 1.
+  static const diplomaDaCelebracao = Duration(milliseconds: 520);
+  static const escalaDoDiploma = .88;
+  static const picoDoDiploma = 1.03;
+
+  /// A queda de cada partícula do confete.
+  static const quedaDoConfete = Duration(milliseconds: 950);
+
+  /// O atraso máximo entre as partículas.
+  static const atrasoDoConfete = Duration(milliseconds: 420);
+
+  /// Partículas na celebração grande e na pequena.
+  static const confeteGrande = 40;
+  static const confetePequeno = 18;
+
+  /// Com movimento reduzido, o diploma só aparece em fade.
+  static const fadeDaCelebracao = Duration(milliseconds: 100);
+
+  // H-ANI-14 · cronômetro em barra (R3-42).
+
+  /// A partir desta fração do tempo, a barra vai à cor do fim.
+  static const fimDoCronometro = .8;
+
+  // H-ANI-26 · escolha do plano (clipe 06).
+
+  /// O contorno, o fundo e o ponto do rádio trocam de plano.
+  static const selecaoDoPlano = Duration(milliseconds: 250);
+
+  /// O rótulo do botão sai...
+  static const rotuloSai = Duration(milliseconds: 120);
+
+  /// ...e o novo entra.
+  static const rotuloEntra = Duration(milliseconds: 160);
+
+  // H-ANI-27 · compra concluída e compra com falha (clipes 09 e 10).
+
+  /// O círculo do ✓ escala de [escalaDoCirculo] a 1 (DEC); o ✓ salta junto.
+  static const circuloDaCompra = Duration(milliseconds: 380);
+  static const escalaDoCirculo = .6;
+  static const picoDoCheck = 1.18;
+
+  /// O anel vai a [escalaDoAnel] e some.
+  static const anelDaCompra = Duration(milliseconds: 700);
+  static const escalaDoAnel = 1.7;
+
+  /// O título e o texto sobem [subidaDoTitulo] px, um depois do outro.
+  static const tituloDaCompra = Duration(milliseconds: 200);
+  static const textoDaCompra = Duration(milliseconds: 260);
+  static const sobeDaCompra = Duration(milliseconds: 300);
+
+  /// Os botões entram por último, com [intervaloDosBotoes] entre eles.
+  static const botoesDaCompra = Duration(milliseconds: 560);
+  static const intervaloDosBotoes = Duration(milliseconds: 100);
+
+  /// O aviso da falha abre (DEC) e o ícone pulsa uma vez a [escalaDoPulso].
+  static const avisoAbre = Duration(milliseconds: 320);
+  static const pulsoDoAviso = Duration(milliseconds: 400);
+  static const escalaDoPulso = 1.3;
+
+  /// "Conhecer o Pilares" no anúncio (H-ANI-31): entra vindo [deslizeDoAnuncio]
+  /// px da direita em [entradaDoAnuncio] (DEC) e afunda a [apertoDoAnuncio] em
+  /// [afundaDoAnuncio] no toque.
+  static const entradaDoAnuncio = Duration(milliseconds: 320);
+  static const deslizeDoAnuncio = 12.0;
+  static const apertoDoAnuncio = .94;
+  static const afundaDoAnuncio = Duration(milliseconds: 220);
+
+  /// "Fechar em N" aparece com fade de [contagemAparece] e cada troca de número
+  /// tem fade de [trocaDaContagem].
+  static const contagemAparece = Duration(milliseconds: 250);
+  static const trocaDaContagem = Duration(milliseconds: 200);
 }
