@@ -7716,10 +7716,6 @@
       }
     }
   },
-  "accountRestoredText": "I found your progress in the account.",
-  "@accountRestoredText": {
-    "description": "Restored progress screen: text."
-  },
   "accountRestoredRating": "Rating",
   "@accountRestoredRating": {
     "description": "Restored progress screen: rating row."
@@ -7736,10 +7732,6 @@
         "type": "int"
       }
     }
-  },
-  "accountRestoredLessons": "Endgame course",
-  "@accountRestoredLessons": {
-    "description": "Restored progress screen: endgame lessons row."
   },
   "accountRestoredLessonsValue": "{count, plural, =0{none done} =1{1 done} other{{count} done}}",
   "@accountRestoredLessonsValue": {
@@ -7762,10 +7754,6 @@
         "type": "int"
       }
     }
-  },
-  "accountRestoredMerged": "If this phone already had progress, I joined both: each item keeps the higher one.",
-  "@accountRestoredMerged": {
-    "description": "Restored progress screen: note."
   },
   "accountRestoredContinue": "Continue",
   "@accountRestoredContinue": {
@@ -11995,5 +11983,32 @@
   "conSemRedeCreate": "You need an internet connection to create the account.",
   "@conSemRedeCreate": {
     "description": "Conta sem internet (H-CON-09): texto da tela de erro padrão ao criar a conta sem rede, abaixo de \"Sem internet\"."
+  },
+  "conVoltaText": "Your progress is saved in the account.",
+  "@conVoltaText": {
+    "description": "Bem-vindo de volta (H-CON-10, PropV1PerfilRecuperar): abaixo do título."
+  },
+  "conVoltaJourneyValue": "{name}, {done} of {total, plural, =1{1 challenge} other{{total} challenges}}",
+  "@conVoltaJourneyValue": {
+    "description": "Bem-vindo de volta (H-CON-10): valor da linha Jornada; {name} é o adversário do degrau atual, {done} os desafios cumpridos nele e {total} os do degrau.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "conVoltaLessons": "Pilares lessons",
+  "@conVoltaLessons": {
+    "description": "Bem-vindo de volta (H-CON-10): linha das lições concluídas do curso Pilares (nome do curso, não traduzir)."
+  },
+  "conVoltaMerged": "If this phone already had progress, both were merged: each item keeps the higher value.",
+  "@conVoltaMerged": {
+    "description": "Bem-vindo de volta (H-CON-10): nota abaixo dos itens."
   }
 }

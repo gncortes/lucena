@@ -21,10 +21,14 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_data_screen.dart';
 import 'package:lucena/ui/account/widgets/account_email_screen.dart';
 import 'package:lucena/ui/account/widgets/account_restored_screen.dart';
+import 'package:lucena/data/repositories/journey/journey_repository.dart';
+import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_avatar_repository.dart';
 import '../../../testing/fakes/fake_mail_app_repository.dart';
@@ -124,6 +128,12 @@ void main() {
           RepositoryProvider<AvatarRepository>.value(value: avatars),
           RepositoryProvider<PhotoRepository>.value(value: photos),
           RepositoryProvider<MailAppRepository>.value(value: mail),
+          RepositoryProvider<JourneyRepository>.value(
+            value: FakeJourneyRepository(),
+          ),
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
         ],
         child: TestApp(
           router: router,
@@ -211,10 +221,55 @@ void main() {
 
       expect(find.byKey(AccountKeys.restoredScreen), findsOneWidget);
       expect(find.text('Bem-vindo de volta, Ana'), findsOneWidget);
-      expect(find.text('2 desafios'), findsOneWidget);
+      expect(find.text('nenhum desafio'), findsOneWidget);
 
       await tester.tap(find.byKey(AccountKeys.restoredContinue));
       await tester.pumpAndSettle();
+      expect(find.text('rota-perfil'), findsOneWidget);
+    });
+
+    testWidgets('H-CON-10: os textos do quadro e a Jornada no degrau atual', (
+      tester,
+    ) async {
+      sync.remote = const ProgressSummary(
+        profile: UserProfile(nickname: 'Gabriel', rating: 1712),
+        challenges: {'1000/basic.queen.0001'},
+        speedruns: {'a': 1000, 'b': 2000, 'c': 3000},
+      );
+      await pump(tester, signIn('profile'));
+      await fill(tester, 'ana@example.com', 'segredo123');
+
+      expect(find.text('Bem-vindo de volta, Gabriel'), findsOneWidget);
+      expect(find.text('Seu progresso está salvo na conta.'), findsOneWidget);
+      for (final text in [
+        'Rating',
+        '1712',
+        'Jornada',
+        'Coco, 1 de 2 desafios',
+        'Lições do Pilares',
+        'nenhuma concluída',
+        'Speedrun',
+        '3 recordes',
+        'Se este celular já tinha progresso, os dois foram unidos: em cada '
+            'item vale o maior.',
+      ]) {
+        expect(find.text(text), findsOneWidget, reason: text);
+      }
+    });
+
+    testWidgets('H-CON-10: voltar do sistema é igual a Continuar', (
+      tester,
+    ) async {
+      sync.remote = const ProgressSummary(
+        profile: UserProfile(nickname: 'Ana', rating: 1500),
+        challenges: {'a'},
+      );
+      await pump(tester, signIn('profile'));
+      await fill(tester, 'ana@example.com', 'segredo123');
+      expect(find.byKey(AccountKeys.restoredScreen), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byKey(AccountKeys.restoredScreen), findsNothing);
       expect(find.text('rota-perfil'), findsOneWidget);
     });
 

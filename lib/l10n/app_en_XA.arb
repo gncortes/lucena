@@ -1463,15 +1463,12 @@
   "accountNicknameHelp": "[Ît îš whåt Vîktöŕ wîll çåll ýöû. one two three]",
   "accountCountryFromPhone": "[{country} · fŕöm ýöûŕ phöñé one two three]",
   "accountRestoredTitle": "[Wélçömé båçk, {name} one two]",
-  "accountRestoredText": "[Î föûñd ýöûŕ pŕöĝŕéšš îñ thé åççöûñt. one two three four]",
   "accountRestoredRating": "[Ŕåtîñĝ one]",
   "accountRestoredJourney": "[Jöûŕñéý one]",
   "accountRestoredJourneyValue": "{count, plural, =0{[ñö çhålléñĝéš one two]} =1{[1 çhålléñĝé one two]} other{[{count} çhålléñĝéš one two]}}",
-  "accountRestoredLessons": "[Éñdĝåmé çöûŕšé one two]",
   "accountRestoredLessonsValue": "{count, plural, =0{[ñöñé döñé one]} =1{[1 döñé one]} other{[{count} döñé one two]}}",
   "accountRestoredSpeedrun": "[Špéédŕûñ one]",
   "accountRestoredSpeedrunValue": "{count, plural, =0{[ñö ŕéçöŕdš one]} =1{[1 ŕéçöŕd one]} other{[{count} ŕéçöŕdš one two]}}",
-  "accountRestoredMerged": "[Îf thîš phöñé ålŕéådý håd pŕöĝŕéšš, Î jöîñéd böth: éåçh îtém kéépš thé hîĝhéŕ öñé. one two three four five six seven]",
   "accountRestoredContinue": "[Çöñtîñûé one]",
   "accountDeleteCancel": "[Çåñçél one]",
   "accountDeleteOffline": "[Wîthöût îñtéŕñét thé åççöûñt çåññöt bé délétéd. Ñöthîñĝ wåš délétéd. one two three four five six]",
@@ -2312,5 +2309,9 @@
   "conAceiteUsage": "[Wé ûšé ûšåĝé dåtå åñd éŕŕöŕ ŕépöŕtš tö împŕövé Lûçéñå. Ýöû çåñ tûŕñ thîš öff åñýtîmé îñ Šéttîñĝš, Pŕîvåçý åñd dåtå. one two three four five six seven eight nine ten]",
   "conAceiteCheck": "[Î håvé ŕéåd åñd åççépt thé {terms} åñd thé {privacy} one two three four five]",
   "conAceiteContinue": "[Çöñtîñûé one]",
-  "conSemRedeCreate": "[Ýöû ñééd åñ îñtéŕñét çöññéçtîöñ tö çŕéåté thé åççöûñt. one two three four five]"
+  "conSemRedeCreate": "[Ýöû ñééd åñ îñtéŕñét çöññéçtîöñ tö çŕéåté thé åççöûñt. one two three four five]",
+  "conVoltaText": "[Ýöûŕ pŕöĝŕéšš îš šåvéd îñ thé åççöûñt. one two three four]",
+  "conVoltaJourneyValue": "[{name}, {done} öf {total, plural, =1{1 çhålléñĝé} other{{total} çhålléñĝéš}} one two three four five six seven]",
+  "conVoltaLessons": "[Pîlåŕéš léššöñš one two]",
+  "conVoltaMerged": "[Îf thîš phöñé ålŕéådý håd pŕöĝŕéšš, böth wéŕé méŕĝéd: éåçh îtém kéépš thé hîĝhéŕ vålûé. one two three four five six seven eight]"
 }
