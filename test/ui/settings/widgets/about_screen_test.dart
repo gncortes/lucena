@@ -95,6 +95,16 @@ void main() {
     });
   });
 
+  testWidgets('H-ANI-42 · o mascote é o ícone B2', (tester) async {
+    await pumpAbout(tester);
+    final imagens = tester
+        .widgetList<Image>(find.byType(Image))
+        .map((i) => i.image)
+        .whereType<AssetImage>()
+        .map((a) => a.assetName);
+    expect(imagens, contains('assets/branding/mascote.png'));
+  });
+
   group('H-AJU-14 · folhas dos Termos e da Política', () {
     Future<void> scrollToEnd(WidgetTester tester) async {
       for (var i = 0; i < 60; i++) {

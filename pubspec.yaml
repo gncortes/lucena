@@ -74,8 +74,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/branding/launcher_icon.png
-    - assets/branding/mascot_light.png
-    - assets/branding/mascot_dark.png
+    - assets/branding/mascote.png
     - assets/branding/stockfish.png
     # Sons do jogo: conjunto "sfx" do Lichess (ver THIRD-PARTY-NOTICES.md).
     - assets/sounds/
@@ -126,6 +125,7 @@ flutter_launcher_icons:
   image_path: assets/branding/launcher_icon.png
   adaptive_icon_background: "#14211B"
   adaptive_icon_foreground: assets/branding/launcher_icon_foreground.png
+  adaptive_icon_monochrome: assets/branding/launcher_icon_monochrome.png
 
 patrol:
   app_name: Lucena
