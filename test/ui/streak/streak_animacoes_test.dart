@@ -174,6 +174,51 @@ void main() {
       expect(tempoDoAnel(tester), 1);
     });
 
+    testWidgets('a festa espera a tela chegar: durante a transição da rota '
+        'tudo fica no começo', (tester) async {
+      final cubit = StreakCubit(
+        activity: _Atividade(days: seguidos),
+        now: now,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      tester.view
+        ..devicePixelRatio = 1
+        ..physicalSize = const Size(412, 915);
+      addTearDown(tester.view.reset);
+      late BuildContext origem;
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          child: Builder(
+            builder: (context) {
+              origem = context;
+              return const SizedBox.expand();
+            },
+          ),
+        ),
+      );
+      unawaited(
+        Navigator.of(origem).push(
+          MaterialPageRoute<void>(
+            builder: (_) =>
+                BlocProvider.value(value: cubit, child: const StreakScreen()),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      // A rota ainda entra: nenhum ✓ saiu, o anel não andou.
+      expect(check(tester, 1), 0);
+      expect(tempoDoAnel(tester), 0);
+      expect(contador('2 dias'), findsOneWidget);
+      await tester.pumpAndSettle();
+      for (final i in [1, 2, 3]) {
+        expect(check(tester, i), 1);
+      }
+      expect(contador('3 dias'), findsOneWidget);
+    });
+
     testWidgets('movimento reduzido: tudo no estado final no primeiro quadro', (
       tester,
     ) async {
