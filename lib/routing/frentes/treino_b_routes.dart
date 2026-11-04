@@ -53,6 +53,7 @@ Map<String, String> _params(GoRouterState state) => {'course': _course(state)};
 List<RouteBase> treinoBRoutes() => [
   appRoute(
     name: RouteNames.trainingGoal,
+    eixoX: true,
     path: D4Paths.trainingGoal,
     builder: (context, state) => _goal(
       state,
@@ -68,6 +69,7 @@ List<RouteBase> treinoBRoutes() => [
   ),
   appRoute(
     name: RouteNames.trainingDiagnostic,
+    eixoX: true,
     path: D4Paths.trainingDiagnostic,
     builder: (context, state) => _goal(
       state,
@@ -86,6 +88,7 @@ List<RouteBase> treinoBRoutes() => [
   ),
   appRoute(
     name: RouteNames.trainingDiagnosticTest,
+    eixoX: true,
     path: D4Paths.trainingDiagnosticTest,
     builder: (context, state) => _goal(
       state,
@@ -100,6 +103,7 @@ List<RouteBase> treinoBRoutes() => [
   ),
   appRoute(
     name: RouteNames.trainingQuestionnaire,
+    eixoX: true,
     path: D4Paths.trainingQuestionnaire,
     builder: (context, state) => _goal(
       state,
@@ -114,6 +118,7 @@ List<RouteBase> treinoBRoutes() => [
   ),
   appRoute(
     name: RouteNames.trainingPlanPresentation,
+    eixoX: true,
     path: D4Paths.trainingPlanPresentation,
     builder: (context, state) => _goal(
       state,

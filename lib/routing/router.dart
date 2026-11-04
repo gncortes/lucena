@@ -2085,6 +2085,7 @@ GoRoute appRoute({
   List<RouteBase> routes = const [],
   bool fade = false,
   bool sharedAxis = false,
+  bool eixoX = false,
 }) => _route(
   name: name,
   path: path,
@@ -2093,6 +2094,7 @@ GoRoute appRoute({
   routes: routes,
   fade: fade,
   sharedAxis: sharedAxis,
+  eixoX: eixoX,
 );
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18
@@ -2124,7 +2126,7 @@ GoRoute _route({
           : lessonScopeId(state),
       (scoped) => builder(scoped, state),
     );
-    // H-ANI-03: os passos da Conta deslizam no eixo X.
+    // H-ANI-03: os passos da Conta e da Meta deslizam no eixo X.
     if (eixoX) {
       return PaginaEixoX<void>(
         context: context,

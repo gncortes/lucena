@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../routing/route_names.dart';
 import '../../../routing/abre_do_cartao.dart';
+import '../../core/motion/segmentado_lucena.dart';
 import '../../core/motion/rota_que_abre.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/widgets/lucena_sheet.dart';
@@ -830,27 +831,20 @@ class _CatalogHeader extends StatelessWidget {
             children: [
               if (hasPlan)
                 Expanded(
-                  child: SegmentedButton<bool>(
+                  child: SegmentadoLucena<bool>(
                     key: TrainingGoalKeys.catalogFilter,
-                    showSelectedIcon: false,
-                    segments: [
-                      ButtonSegment(
-                        value: true,
-                        label: Text(
-                          t.treinoCatalogFilterPlan,
-                          key: TrainingGoalKeys.catalogFilterPlan,
-                        ),
-                      ),
-                      ButtonSegment(
-                        value: false,
-                        label: Text(
-                          t.treinoCatalogFilterAll,
-                          key: TrainingGoalKeys.catalogFilterAll,
-                        ),
-                      ),
-                    ],
-                    selected: {onlyPlan},
-                    onSelectionChanged: (value) => onChanged(value.first),
+                    valores: const [true, false],
+                    selecionado: onlyPlan,
+                    rotulo: (plano) => plano
+                        ? Text(
+                            t.treinoCatalogFilterPlan,
+                            key: TrainingGoalKeys.catalogFilterPlan,
+                          )
+                        : Text(
+                            t.treinoCatalogFilterAll,
+                            key: TrainingGoalKeys.catalogFilterAll,
+                          ),
+                    aoEscolher: onChanged,
                   ),
                 )
               else

@@ -66,8 +66,8 @@ void main() {
     await reopenGuide($);
     await $(TrainingGoalKeys.guideDefine).tap();
     await $(TrainingGoalKeys.diagnosticScreen).waitUntilVisible();
-    // O centro da coluna do cartão cai num vazio entre os textos: toca no título.
-    await $(TrainingGoalKeys.diagnosticTest).$(Text).first.tap();
+    // O teste começado já vem marcado (H-TRE-04): segue no Continuar.
+    await $(TrainingGoalKeys.diagnosticContinue).tap();
     await $(TrainingGoalKeys.testResume).waitUntilVisible();
     await $(TrainingGoalKeys.testResumeContinue).tap();
     await $(TrainingGoalKeys.testBoard).waitUntilVisible();
@@ -95,6 +95,7 @@ void main() {
     await $(TrainingGoalKeys.guideDefine).tap();
     await $(TrainingGoalKeys.diagnosticScreen).waitUntilVisible();
     await $(TrainingGoalKeys.diagnosticQuestionnaire).tap();
+    await $(TrainingGoalKeys.diagnosticContinue).tap();
     await $(TrainingGoalKeys.questResume).waitUntilVisible();
   });
 
