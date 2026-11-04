@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 
+import 'treino_b_routes.dart';
+
 /// Telas novas da frente D4 (Treino + Desafios + Partida, T85). A frente registra as rotas na
 /// lista [d4Routes] com `appRoute(name: RouteNames.x, path: D4Paths.x, ...)`,
 /// do `router.dart`, e navega por nome. Só esta frente mexe neste arquivo.
@@ -37,4 +39,4 @@ abstract final class D4Paths {
   static const dailyEmpty = '/daily/empty';
 }
 
-final List<RouteBase> d4Routes = [];
+final List<RouteBase> d4Routes = [...treinoBRoutes()];
