@@ -447,6 +447,9 @@ Future<Dependencies> e2eDependencies({
   }
   return Dependencies(
     now: clock,
+    // Como no app de verdade (`main.dart`): a versão instalada aparece nas
+    // Configurações e no Sobre (PropV1ConfigB, PropV1LegalSobre).
+    version: await Dependencies.installedVersion(),
     remoteFlagsRepository: flags,
     courseAccessRepository: purchases != null
         ? PurchaseCourseAccessRepository(purchases)
