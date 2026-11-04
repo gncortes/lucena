@@ -88,6 +88,24 @@ class FakeCoursePreviewRepository implements CoursePreviewRepository {
         'warning': _item('Aviso de exemplo'),
       },
     },
+    'details': {
+      'steps': [for (var i = 1; i <= 5; i++) _item('Passo $i')],
+      'coverLine': 'Linha da cobertura.',
+      'parts': [_item('Parte I de exemplo'), _item('Parte II de exemplo')],
+      'openings': [_item('Repertório de exemplo')],
+      'progress': [_item('Progresso de exemplo')],
+      'audience': _item('Público dos detalhes'),
+      'result': _item('Resultado de exemplo'),
+      'summaryLine': 'Sumário de exemplo.',
+      'faq': [
+        for (var i = 1; i <= 9; i++)
+          {
+            'icon': 'help',
+            'question': 'Dúvida de exemplo $i?',
+            'answer': 'Resposta de exemplo $i.',
+          },
+      ],
+    },
   });
 
   static Map<String, String> _item(String title) => {

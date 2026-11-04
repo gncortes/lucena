@@ -2,13 +2,65 @@
 /// por `tools/export_pilares_venda.py` a partir dos quadros do canvas e do
 /// currículo real. Os preços não estão aqui: vêm da loja.
 class CoursePreview {
-  const CoursePreview({required this.sale});
+  const CoursePreview({required this.sale, required this.details});
 
   factory CoursePreview.fromJson(Map<String, dynamic> json) => CoursePreview(
     sale: CourseSale.fromJson(json['sale'] as Map<String, dynamic>),
+    details: CourseDetails.fromJson(json['details'] as Map<String, dynamic>),
   );
 
   final CourseSale sale;
+
+  /// "Sobre o Pilares" (H-VEN-02).
+  final CourseDetails details;
+}
+
+/// Os textos do "Sobre o Pilares" (H-VEN-02, quadros `PropV1CursoDetalhes`,
+/// `…Conteudo` e `…Duvidas`). O sumário e as aberturas do Conteúdo são os da
+/// venda.
+class CourseDetails {
+  const CourseDetails({
+    required this.steps,
+    required this.coverLine,
+    required this.parts,
+    required this.openings,
+    required this.progress,
+    required this.audience,
+    required this.result,
+    required this.summaryLine,
+    required this.faq,
+  });
+
+  factory CourseDetails.fromJson(Map<String, dynamic> json) => CourseDetails(
+    steps: _list(json['steps'], CourseSaleItem.fromJson),
+    coverLine: json['coverLine'] as String,
+    parts: _list(json['parts'], CourseSaleItem.fromJson),
+    openings: _list(json['openings'], CourseSaleItem.fromJson),
+    progress: _list(json['progress'], CourseSaleItem.fromJson),
+    audience: CourseSaleItem.fromJson(json['audience'] as Map<String, dynamic>),
+    result: CourseSaleItem.fromJson(json['result'] as Map<String, dynamic>),
+    summaryLine: json['summaryLine'] as String,
+    faq: _list(json['faq'], CourseSaleFaq.fromJson),
+  );
+
+  /// "Como o curso funciona": os 5 passos, na ordem.
+  final List<CourseSaleItem> steps;
+
+  /// A frase de abertura de "O que o curso cobre".
+  final String coverLine;
+
+  /// Uma linha por parte, com o ícone e as lições.
+  final List<CourseSaleItem> parts;
+  final List<CourseSaleItem> openings;
+
+  /// "Testes e progresso".
+  final List<CourseSaleItem> progress;
+  final CourseSaleItem audience;
+
+  /// O cartão "Resultado do seu teste" do Conteúdo.
+  final CourseSaleItem result;
+  final String summaryLine;
+  final List<CourseSaleFaq> faq;
 }
 
 List<T> _list<T>(Object? json, T Function(Map<String, dynamic>) parse) => [

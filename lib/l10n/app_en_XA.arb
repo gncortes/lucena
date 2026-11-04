@@ -2637,5 +2637,11 @@
   "venRefLifetime": "[Ŕ$ 99.90 one]",
   "venRefMonthly": "[Ŕ$ 19.90 one]",
   "venSaleBuy": "[Šéé bûýîñĝ öptîöñš one two]",
-  "venChapterTest": "[Çhåptéŕ téšt · {count} éxéŕçîšéš one two three]"
+  "venChapterTest": "[Çhåptéŕ téšt · {count} éxéŕçîšéš one two three]",
+  "venAboutTitle": "[Åböût Pîlåŕéš one two]",
+  "venAboutCardLine": "[Çöñtéñt, plåñ åñd qûéštîöñš åböût Pîlåŕéš dö Xådŕéž. one two three four five]",
+  "venAboutHow": "[Höw thé çöûŕšé wöŕkš one two]",
+  "venAboutCovers": "[Whåt thé çöûŕšé çövéŕš one two three]",
+  "venAboutOpenings": "[Öpéñîñĝš one]",
+  "venAboutProgress": "[Téštš åñd pŕöĝŕéšš one two]"
 }
