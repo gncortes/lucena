@@ -29,9 +29,12 @@ class GameDetailsRobot {
       .state;
 
   Future<void> review() async {
-    // A rápida começa sozinha ao abrir (T65): a média só depois dela.
+    // A partida antiga abre sem análise (H-PAR-17): Analisar roda a rápida; a média vem depois pela folha.
+    await $(GameDetailsKeys.oldAnalysisButton).tap();
     await _waitReview((s) => s.review != null);
-    await $(GameDetailsKeys.reviewButton).scrollTo().tap();
+    await $(GameDetailsKeys.levelDeepen).scrollTo().tap();
+    await $(GameDetailsKeys.depthMedium).tap();
+    await $(GameDetailsKeys.depthConfirm).tap();
     // Com a engine de verdade a revisão leva um tempo.
     await _waitReview((s) => (s.review?.depth ?? 0) >= 2);
     await $.pumpAndSettle();

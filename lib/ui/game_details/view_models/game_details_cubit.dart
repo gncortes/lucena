@@ -297,9 +297,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// lance); 4 e 5 ficando parado no lance.
   static const budgets = <AnalysisBudget>[
     (depth: 10, time: Duration(milliseconds: 500)),
-    (depth: 14, time: Duration(milliseconds: 1500)),
-    (depth: 20, time: Duration(seconds: 5)),
-    (depth: 26, time: Duration(seconds: 10)),
+    (depth: 14, time: Duration(milliseconds: 400)),
+    (depth: 16, time: Duration(milliseconds: 600)),
+    (depth: 22, time: Duration(milliseconds: 1500)),
     (depth: 32, time: Duration(seconds: 20)),
     (depth: 40, time: Duration(seconds: 45)),
   ];
@@ -526,7 +526,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     final weight = reviewWeights[speed]!;
     if (_analysis == null || state.start == null || state.reviewing) return;
     if (state.moves.isEmpty) return;
-    _following = true;
+    // Só a primeira análise leva o tabuleiro junto; aprofundar uma já feita
+    // roda sem mexer no que o usuário está vendo.
+    _following = state.review == null;
     emit(
       state.copyWith(reviewing: true, reviewProgress: 0, reviewWeight: weight),
     );

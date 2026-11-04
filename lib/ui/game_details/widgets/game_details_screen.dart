@@ -151,7 +151,12 @@ class _ReviewBody extends StatelessWidget {
       null => (l10n.sideWhite, l10n.sideBlack),
     };
     final summary = [
-      ReviewSummary(state: state, whiteName: whiteName, blackName: blackName),
+      ReviewSummary(
+        state: state,
+        whiteName: whiteName,
+        blackName: blackName,
+        userIsWhite: user == null ? null : user == Side.white,
+      ),
       _Header(state: state, attempt: attempt),
       ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
     ];

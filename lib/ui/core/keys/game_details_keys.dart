@@ -33,9 +33,17 @@ abstract final class GameDetailsKeys {
   static const pieceBadge = Key('gameDetails.board.pieceBadge');
   static const oldAnalysis = Key('gameDetails.review.oldAnalysis');
   static const oldAnalysisButton = Key('gameDetails.review.oldAnalysisButton');
-  static const reviewButton = Key('gameDetails.review.button');
-  static const reviewQuick = Key('gameDetails.review.quick');
-  static const reviewDeep = Key('gameDetails.review.deep');
+
+  /// O cartão do nível da análise, o botão de analisar a fundo, a nota da
+  /// análise rápida e a folha de profundidade com as duas opções e o botão.
+  static const levelCard = Key('gameDetails.level.card');
+  static const levelDeepen = Key('gameDetails.level.deepen');
+  static const levelNote = Key('gameDetails.level.note');
+  static const depthSheet = Key('gameDetails.depth.sheet');
+  static const depthSheetClose = Key('gameDetails.depth.sheet.close');
+  static const depthMedium = Key('gameDetails.depth.medium');
+  static const depthDeep = Key('gameDetails.depth.deep');
+  static const depthConfirm = Key('gameDetails.depth.confirm');
   static const reviewProgress = Key('gameDetails.review.progress');
 
   /// A história que o Viktor conta enquanto a revisão roda.

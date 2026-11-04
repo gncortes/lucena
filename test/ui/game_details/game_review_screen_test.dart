@@ -61,6 +61,7 @@ void main() {
     int id, {
     Size? viewport,
     FakeSettingsRepository? preferences,
+    Locale locale = const Locale('en'),
   }) async {
     tester.view.physicalSize = viewport ?? const Size(1080, 5000);
     tester.view.devicePixelRatio = viewport == null ? 2.625 : 1;
@@ -93,6 +94,7 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         settingsCubit: settings,
+        locale: locale,
         child: BlocProvider.value(
           value: cubit,
           child: const GameDetailsScreen(),
@@ -121,7 +123,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(GameDetailsKeys.reviewSummary), findsOneWidget);
-    expect(find.text('Accuracy'), findsOneWidget);
+    expect(find.text('Your accuracy'), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
     // Qg2, com o mate na mão, deixou escapar o mate em um lance: a engine de
     // mentira avalia o resto pelo material (+9), ainda ganho.
@@ -446,54 +448,95 @@ void main() {
     expect(analysis.requests, isEmpty);
   });
 
-  testWidgets('revisão rápida feita: ela aparece marcada e sem toque; a '
-      'média e a profunda continuam', (tester) async {
+  testWidgets('H-PAR-13: análise rápida feita: cartão da rápida com o botão '
+      'Analisar a fundo; a folha oferece Média e Profunda (recomendada, já '
+      'escolhida)', (tester) async {
     final id = await progress.addAttempt(game);
-    final cubit = await pump(tester, id);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
     await cubit.review(speed: ReviewSpeed.quick);
     await tester.pumpAndSettle();
 
-    final quick = tester.widget<ButtonStyleButton>(
-      find.byKey(GameDetailsKeys.reviewQuick),
+    expect(find.text('Análise rápida'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+    await tester.tap(find.byKey(GameDetailsKeys.levelDeepen));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(GameDetailsKeys.depthSheet), findsOneWidget);
+    expect(find.text('Média'), findsOneWidget);
+    expect(find.text('Profunda (recomendada)'), findsOneWidget);
+    final deep = tester.widget<RadioListTile<ReviewSpeed>>(
+      find.byKey(GameDetailsKeys.depthDeep),
     );
-    expect(quick.onPressed, isNull);
+    expect(deep.value, ReviewSpeed.deep);
     expect(
-      find.descendant(
-        of: find.byKey(GameDetailsKeys.reviewQuick),
-        matching: find.byIcon(Icons.check_rounded),
-      ),
-      findsOneWidget,
+      RadioGroup.maybeOf<ReviewSpeed>(
+        tester.element(find.byKey(GameDetailsKeys.depthDeep)),
+      )?.groupValue,
+      ReviewSpeed.deep,
     );
+
+    await tester.tap(find.byKey(GameDetailsKeys.depthConfirm));
+    await tester.pumpAndSettle();
     expect(
-      tester
-          .widget<ButtonStyleButton>(find.byKey(GameDetailsKeys.reviewButton))
-          .onPressed,
-      isNotNull,
+      cubit.state.review!.depth,
+      GameDetailsCubit.reviewWeights[ReviewSpeed.deep],
     );
+    expect(find.text('Análise profunda'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.levelDeepen), findsNothing);
   });
 
-  testWidgets(
-    'ao abrir: precisão da Rápida e opções Média/Profunda sob demanda',
-    (tester) async {
-      final id = await progress.addAttempt(game);
-      final cubit = await pump(tester, id);
-      await cubit.review(speed: ReviewSpeed.quick);
-      await tester.pumpAndSettle();
-      expect(find.byKey(GameDetailsKeys.reviewQuick), findsOneWidget);
-      expect(find.byKey(GameDetailsKeys.reviewButton), findsOneWidget);
-      expect(find.byKey(GameDetailsKeys.reviewDeep), findsOneWidget);
-      expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+  testWidgets('H-PAR-13: escolher a Média na folha roda a análise média', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
+    await cubit.review(speed: ReviewSpeed.quick);
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(GameDetailsKeys.reviewDeep));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.levelDeepen));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.depthMedium));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.depthConfirm));
+    await tester.pumpAndSettle();
 
-      expect(
-        cubit.state.review!.depth,
-        GameDetailsCubit.reviewWeights[ReviewSpeed.deep],
-      );
-      expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
-    },
-  );
+    expect(
+      cubit.state.review!.depth,
+      GameDetailsCubit.reviewWeights[ReviewSpeed.medium],
+    );
+    expect(find.text('Análise média'), findsOneWidget);
+  });
+
+  testWidgets('H-PAR-13: aprofundando, o tabuleiro não se mexe, os números '
+      'ficam em esqueleto e a nota explica; o progresso diz o lance e o '
+      'tempo', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
+    await cubit.review(speed: ReviewSpeed.quick);
+    await tester.pumpAndSettle();
+    cubit.first();
+    await tester.pumpAndSettle();
+
+    final hold = Completer<void>();
+    analysis.hold = hold;
+    addTearDown(() {
+      if (!hold.isCompleted) hold.complete();
+    });
+    unawaited(cubit.review(speed: ReviewSpeed.deep));
+    await tester.pump(const Duration(seconds: 3));
+
+    expect(cubit.state.reviewing, isTrue);
+    expect(cubit.state.shownIndex, -1);
+    expect(find.text('Analisando a fundo'), findsOneWidget);
+    expect(find.textContaining('falta cerca de'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsNothing);
+    expect(find.byKey(GameDetailsKeys.levelNote), findsOneWidget);
+    hold.complete();
+    analysis.hold = null;
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.levelNote), findsNothing);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+  });
 
   for (final viewport in [
     const Size(360, 640),

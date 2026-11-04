@@ -193,8 +193,25 @@ void main() {
     expect(reviews.reviews[id], isNotNull);
   });
 
-  test('a revisão anda com o tabuleiro, anota lance a lance com o peso dela '
-      'e guarda', () async {
+  test('H-PAR-13: a primeira análise de uma partida sem análise anda com o '
+      'tabuleiro', () async {
+    analysis.answer[start] = [line('g1g7', mate: 1)];
+    final id = await save(['g1g2', 'h8h7', 'g2g7']);
+    final cubit = build(id, previouslyReviewed: false);
+    await cubit.load();
+    expect(cubit.state.review, isNull);
+    final shown = <int>[];
+    final listening = cubit.stream.listen((s) {
+      if (shown.lastOrNull != s.shownIndex) shown.add(s.shownIndex);
+    });
+    await cubit.review(speed: ReviewSpeed.quick);
+    await settle();
+    await listening.cancel();
+    expect(shown, containsAllInOrder([-1, 0, 1, 2]));
+  });
+
+  test('H-PAR-13: aprofundar uma análise já feita não mexe no tabuleiro; anota '
+      'lance a lance com o peso dela e guarda', () async {
     analysis.answer[start] = [line('g1g7', mate: 1)];
     final id = await save(['g1g2', 'h8h7', 'g2g7']);
     final cubit = build(id);
@@ -217,7 +234,7 @@ void main() {
     await settle();
     await listening.cancel();
 
-    expect(shown, containsAllInOrder([-1, 0, 1, 2]));
+    expect(shown, [2]);
     expect(unscored, isEmpty);
     expect(progress, containsAllInOrder([1 / 3, 2 / 3, 1.0]));
     expect(cubit.state.reviewing, isFalse);
