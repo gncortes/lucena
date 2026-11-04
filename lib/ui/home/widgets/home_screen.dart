@@ -11,6 +11,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
 import '../../core/motion/entradas_vistas.dart';
 import '../../core/motion/lista_em_ordem.dart';
 import '../../core/motion/shimmer_conteudo.dart';
@@ -269,12 +270,15 @@ class _HomeScreenState extends State<HomeScreen>
           seeMoreKey: FeaturedKeys.homeSeeAll,
           onSeeMore: () => context.go(Routes.featured),
         ),
-        FeaturedCard(
-          key: FeaturedKeys.homeCard,
-          item: item,
-          compact: true,
-          // Por cima da tela inicial: voltar cai nela, não na lista.
-          onTap: () => context.push(Routes.featuredEndgame(item.id)),
+        // H-ANI-20: o destaque afunda no toque.
+        CartaoPressionavel(
+          child: FeaturedCard(
+            key: FeaturedKeys.homeCard,
+            item: item,
+            compact: true,
+            // Por cima da tela inicial: voltar cai nela, não na lista.
+            onTap: () => context.push(Routes.featuredEndgame(item.id)),
+          ),
         ),
       ],
     );

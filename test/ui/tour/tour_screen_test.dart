@@ -32,6 +32,7 @@ import 'package:lucena/ui/core/widgets/choice_card.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/transicao_eixo_x.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
@@ -853,6 +854,41 @@ void main() {
       for (var i = 0; i < 3; i++) {
         expect(opacidadeDoItem(tester, i), 1);
       }
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('H-ANI-03: avançar desliza o passo novo da direita', (
+      tester,
+    ) async {
+      await pumpTour(tester);
+      expect(find.byType(TransicaoEixoX), findsOneWidget);
+      await tester.tap(find.byKey(TourKeys.nextButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final passo = find.byKey(TourKeys.step(TourStep.theme));
+      final meio = tester.getTopLeft(passo).dx;
+      await tester.pump(const Duration(milliseconds: 300));
+      final fim = tester.getTopLeft(passo).dx;
+      expect(meio, greaterThan(fim));
+      expect(meio - fim, lessThanOrEqualTo(30));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('H-ANI-03: voltar traz o passo anterior da esquerda', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.theme);
+      await tester.tap(find.byKey(TourKeys.backButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final passo = find.byKey(TourKeys.step(TourStep.board));
+      final meio = tester.getTopLeft(passo).dx;
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(meio, lessThan(tester.getTopLeft(passo).dx));
+      expect(
+        tester.widget<TransicaoEixoX>(find.byType(TransicaoEixoX)).voltar,
+        isTrue,
+      );
       await tester.pumpAndSettle();
     });
 

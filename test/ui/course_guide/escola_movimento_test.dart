@@ -14,6 +14,8 @@ import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/motion/cartao_pressionavel.dart';
+import 'package:lucena/ui/core/widgets/course/course_item_tile.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
 import 'package:lucena/ui/course_guide/widgets/training_goals_tab.dart';
@@ -147,6 +149,64 @@ void main() {
       expect(opacidade(tester, quarta), lessThan(1));
       await tester.pump(const Duration(milliseconds: 1200));
       expect(opacidade(tester, quarta), 1);
+    });
+  });
+
+  group('troca de aba (H-ANI-05)', () {
+    testWidgets('o corpo troca por fade through; a barra de baixo fica', (
+      tester,
+    ) async {
+      final cubit = await mount(
+        tester,
+        (s) => s.schoolDayOne(),
+        tab: CourseGuideTab.catalog,
+      );
+      await tester.pumpAndSettle();
+      final corpo = find.byKey(MotionKeys.corpoDasAbas);
+      expect(corpo, findsOneWidget);
+      final barra = find.byType(NavigationBar);
+      final antes = tester.getRect(barra);
+      await cubit.selectTab(CourseGuideTab.goals);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      // No meio da troca as duas abas estão no corpo (a velha some, a nova
+      // cresce).
+      expect(
+        find.descendant(
+          of: corpo,
+          matching: find.byKey(const ValueKey(CourseGuideTab.catalog)),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: corpo,
+          matching: find.byKey(const ValueKey(CourseGuideTab.goals)),
+        ),
+        findsOneWidget,
+      );
+      expect(tester.getRect(barra), antes);
+      await tester.pumpAndSettle();
+      expect(find.byType(TrainingGoalsTab), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('cartões do catálogo (H-ANI-20)', () {
+    testWidgets('cada item afunda no toque', (tester) async {
+      await mount(tester, (s) => s.schoolDayOne(), tab: CourseGuideTab.catalog);
+      await tester.pumpAndSettle();
+      final itens = find.byType(CourseItemTile);
+      expect(itens, findsWidgets);
+      for (final each in itens.evaluate()) {
+        expect(
+          find.descendant(
+            of: find.byElementPredicate((e) => e == each),
+            matching: find.byType(CartaoPressionavel),
+          ),
+          findsOneWidget,
+        );
+      }
     });
   });
 

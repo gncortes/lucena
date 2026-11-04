@@ -13,12 +13,21 @@ import 'movimento_reduzido.dart';
 /// Cada passo precisa de uma key própria no [child]. Com movimento reduzido,
 /// fade de 100 ms sem deslocamento.
 class TransicaoEixoX extends StatelessWidget {
-  const TransicaoEixoX({required this.child, this.voltar = false, super.key});
+  const TransicaoEixoX({
+    required this.child,
+    this.voltar = false,
+    this.alinhamento = Alignment.center,
+    super.key,
+  });
 
   final Widget child;
 
   /// O passo anterior: o novo vem da esquerda.
   final bool voltar;
+
+  /// Onde os dois passos se alinham durante a troca: no alto, quando os
+  /// passos têm alturas diferentes dentro de uma rolagem (o tour).
+  final AlignmentGeometry alinhamento;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +35,8 @@ class TransicaoEixoX extends StatelessWidget {
     return PageTransitionSwitcher(
       duration: reduzido ? LucenaMotion.fadeReduzido : LucenaMotion.eixoX,
       reverse: voltar,
-      layoutBuilder: _pilha,
+      layoutBuilder: (filhos) =>
+          Stack(alignment: alinhamento, children: filhos),
       transitionBuilder: reduzido
           ? _fade
           : (filho, primaria, secundaria) => _Lado(
@@ -38,9 +48,6 @@ class TransicaoEixoX extends StatelessWidget {
     );
   }
 }
-
-Widget _pilha(List<Widget> filhos) =>
-    Stack(alignment: Alignment.center, children: filhos);
 
 Widget _fade(
   Widget filho,
