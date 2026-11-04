@@ -1,3 +1,4 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../domain/models/analytics_event.dart';
 
@@ -12,6 +13,7 @@ import '../../../data/repositories/week/week_repository.dart';
 import '../../../data/repositories/training/course_training_repository.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/models/training/training_course.dart';
+import '../../../domain/models/training/training_resources.dart';
 import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/future_training_reminders.dart';
@@ -153,13 +155,21 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     if (repository == null) return [];
     final notifications = <ScheduledNotification>[];
     for (final config in courses) {
-      final before = await repository.load(config.course);
-      if (!before.onboardingDone || !before.plan.reminderOn) continue;
-      final resources = await repository.resources(config.course);
-      final training = await repository.update(
-        config.course,
-        (s) => BuildDayGoals(now, config)(s, resources),
-      );
+      final TrainingState before, training;
+      final TrainingResources resources;
+      try {
+        before = await repository.load(config.course);
+        if (!before.onboardingDone || !before.plan.reminderOn) continue;
+        resources = await repository.resources(config.course);
+        training = await repository.update(
+          config.course,
+          (s) => BuildDayGoals(now, config)(s, resources),
+        );
+      } on Object catch (error, stack) {
+        // Estado ilegível de um curso: sem lembrete dele, e os demais seguem.
+        reportHandledError(error, stack);
+        continue;
+      }
       void add(TrainingReminder request, int id, {bool repeatWeekly = false}) {
         final lessonId = request.text.arguments['aula'];
         final lesson = resources.lessons
@@ -214,40 +224,45 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
           .where((n) => n.id == trainingFirstId + config.course.index)
           .firstOrNull;
       AnalyticsEvent? scheduled, shown;
-      await repository.transact(config.course, (current) {
-        final old = current.analyticsReminderAt;
-        final at = notification?.at;
-        var next = current;
-        if (old != null &&
-            !old.isAfter(now) &&
-            current.analyticsReminderShownAt != old) {
-          next = next.copyWith(analyticsReminderShownAt: old);
-          shown = AnalyticsEvents.treinoLembreteMostrado(
-            curso: config.course.name,
-            atrasoMin: now.difference(old).inMinutes.clamp(0, 2147483647),
-          );
-        }
-        if (old != at) {
-          next = next.copyWith(analyticsReminderAt: at);
-          if (at != null) {
-            scheduled = AnalyticsEvents.treinoLembreteAgendado(
+      try {
+        await repository.transact(config.course, (current) {
+          final old = current.analyticsReminderAt;
+          final at = notification?.at;
+          var next = current;
+          if (old != null &&
+              !old.isAfter(now) &&
+              current.analyticsReminderShownAt != old) {
+            next = next.copyWith(analyticsReminderShownAt: old);
+            shown = AnalyticsEvents.treinoLembreteMostrado(
               curso: config.course.name,
-              hora: at.hour,
-              metas: trainingGoalCounts(current).remaining,
-              aulaPendente:
-                  current.day?.goals.any(
-                    (g) =>
-                        !g.done &&
-                        (g.kind == GoalKind.lesson ||
-                            g.kind == GoalKind.redo ||
-                            g.kind == GoalKind.extraLesson),
-                  ) ??
-                  false,
+              atrasoMin: now.difference(old).inMinutes.clamp(0, 2147483647),
             );
           }
-        }
-        return next;
-      });
+          if (old != at) {
+            next = next.copyWith(analyticsReminderAt: at);
+            if (at != null) {
+              scheduled = AnalyticsEvents.treinoLembreteAgendado(
+                curso: config.course.name,
+                hora: at.hour,
+                metas: trainingGoalCounts(current).remaining,
+                aulaPendente:
+                    current.day?.goals.any(
+                      (g) =>
+                          !g.done &&
+                          (g.kind == GoalKind.lesson ||
+                              g.kind == GoalKind.redo ||
+                              g.kind == GoalKind.extraLesson),
+                    ) ??
+                    false,
+              );
+            }
+          }
+          return next;
+        });
+      } on Object catch (error, stack) {
+        reportHandledError(error, stack);
+        continue;
+      }
       if (shown != null) unawaited(_log(shown!));
       if (scheduled != null) unawaited(_log(scheduled!));
     }
