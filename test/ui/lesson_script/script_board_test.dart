@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/motion/lucena_motion.dart';
 import 'package:lucena/ui/core/widgets/square_flash.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
 import 'package:lucena/ui/lesson_script/widgets/board_coordinates.dart';
@@ -368,6 +369,32 @@ void main() {
       expect(find.byType(AnimatedRotation), findsNothing);
       await tester.pumpAndSettle();
       expect(find.byKey(LessonScriptKeys.crossfade), findsNothing);
+    });
+
+    // H-ANI-03: exercício ou posição nova = tabuleiro parado e troca em fade,
+    // no tempo do kit (TrocaComFade).
+    test('H-ANI-03: o fade da posição nova usa o tempo do kit', () {
+      expect(ScriptBoard.fade, LucenaMotion.trocaComFade);
+    });
+
+    testWidgets('H-ANI-03 reduzido: fade curto do kit, não troca seca', (
+      tester,
+    ) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await tester.pumpWidget(at(scene(start, TransitionKind.none, id: 0)));
+      await tester.pumpWidget(at(scene(other, TransitionKind.jump)));
+      // Não é troca seca: a cópia antiga está por cima no primeiro quadro
+      // (o Flutter ainda encurta o fade com "remover animações").
+      expect(board(tester).controller.game.fen, other);
+      expect(ghostOpacity(tester), 1);
+      await tester.pump(LucenaMotion.fadeReduzido);
+      await tester.pump();
+      expect(find.byKey(LessonScriptKeys.crossfade), findsNothing);
+      await tester.pumpAndSettle();
     });
 
     testWidgets('troca de lado: crossfade, já com as pretas embaixo', (
