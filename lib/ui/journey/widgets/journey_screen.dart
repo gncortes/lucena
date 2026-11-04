@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -47,46 +48,52 @@ class JourneyScreen extends StatelessWidget {
     return Scaffold(
       key: JourneyKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.journeyTitle)),
-      body: progress == null
-          ? const SkeletonList()
-          : EntradaDaTela(
-              id: 'Jornada',
-              child: ListaEmOrdem(
-                montar: (itens) =>
-                    ListView(padding: scrollPadding(context), children: itens),
-                itens: [
-                  // Para quem chega: a Jornada é o passo seguinte às aulas.
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.xs,
-                      AppSpacing.lg,
-                      AppSpacing.md,
-                    ),
-                    child: Text(
-                      l10n.journeyIntro,
-                      key: JourneyKeys.intro,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      body: ShimmerConteudo(
+        carregando: progress == null,
+        esqueleto: const SkeletonList(),
+        child: progress == null
+            ? const SizedBox.shrink()
+            : EntradaDaTela(
+                id: 'Jornada',
+                child: ListaEmOrdem(
+                  montar: (itens) => ListView(
+                    padding: scrollPadding(context),
+                    children: itens,
+                  ),
+                  itens: [
+                    // Para quem chega: a Jornada é o passo seguinte às aulas.
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.xs,
+                        AppSpacing.lg,
+                        AppSpacing.md,
+                      ),
+                      child: Text(
+                        l10n.journeyIntro,
+                        key: JourneyKeys.intro,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: _Summary(progress: progress),
-                  ),
-                  // A trilha vai do mais fraco ao mais forte: o Stockfish no
-                  // fim, como chefe final.
-                  for (final (index, rung) in progress.rungs.indexed)
-                    _TrailNode(
-                      rung: rung,
-                      progress: progress,
-                      first: index == 0,
-                      last: index == progress.rungs.length - 1,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: _Summary(progress: progress),
                     ),
-                ],
+                    // A trilha vai do mais fraco ao mais forte: o Stockfish no
+                    // fim, como chefe final.
+                    for (final (index, rung) in progress.rungs.indexed)
+                      _TrailNode(
+                        rung: rung,
+                        progress: progress,
+                        first: index == 0,
+                        last: index == progress.rungs.length - 1,
+                      ),
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

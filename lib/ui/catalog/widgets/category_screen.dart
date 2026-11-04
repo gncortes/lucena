@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -71,17 +72,21 @@ class CategoryScreen extends StatelessWidget {
             ),
           const GoalFilterBar(),
           Expanded(
-            child: sections == null
-                ? const SkeletonList()
-                : sections.isEmpty
-                ? const CatalogEmpty()
-                : ListView.builder(
-                    key: CatalogKeys.positionList,
-                    padding: scrollPadding(context),
-                    itemCount: sections.length,
-                    itemBuilder: (context, index) =>
-                        _Section(section: sections[index], blind: blind),
-                  ),
+            child: ShimmerConteudo(
+              carregando: sections == null,
+              esqueleto: const SkeletonList(),
+              child: sections == null
+                  ? const SizedBox.shrink()
+                  : sections.isEmpty
+                  ? const CatalogEmpty()
+                  : ListView.builder(
+                      key: CatalogKeys.positionList,
+                      padding: scrollPadding(context),
+                      itemCount: sections.length,
+                      itemBuilder: (context, index) =>
+                          _Section(section: sections[index], blind: blind),
+                    ),
+            ),
           ),
         ],
       ),

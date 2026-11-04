@@ -10,6 +10,7 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -80,99 +81,105 @@ class RungScreen extends StatelessWidget {
               : opponentName(l10n, characters, rung.rung.opponent),
         ),
       ),
-      body: rung == null
-          ? const SkeletonList()
-          : LayoutBuilder(
-              builder: (context, constraints) => ListView(
-                padding: scrollPadding(context),
-                children: [
-                  _Header(rung: rung),
-                  if (teacher != null && reunion != null)
-                    Card(
-                      key: JourneyKeys.reunion,
-                      margin: const EdgeInsets.fromLTRB(
-                        AppSpacing.lg,
-                        AppSpacing.sm,
-                        AppSpacing.lg,
-                        AppSpacing.sm,
-                      ),
-                      color: colors.primaryContainer,
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.rungReunionTitle(teacher.name),
-                              style: context.cardTitle?.copyWith(
-                                color: colors.onPrimaryContainer,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.md),
-                            TeacherSpeech(
-                              speechContext: SpeechContext.teaching,
-                              teacher: teacher,
-                              text: reunion,
-                              avatarSize: CharacterAvatar.speech,
-                            ),
-                          ],
+      body: ShimmerConteudo(
+        carregando: rung == null,
+        esqueleto: const SkeletonList(),
+        child: rung == null
+            ? const SizedBox.shrink()
+            : LayoutBuilder(
+                builder: (context, constraints) => ListView(
+                  padding: scrollPadding(context),
+                  children: [
+                    _Header(rung: rung),
+                    if (teacher != null && reunion != null)
+                      Card(
+                        key: JourneyKeys.reunion,
+                        margin: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                          AppSpacing.lg,
+                          AppSpacing.sm,
                         ),
-                      ),
-                    ),
-                  if (next != null) ...[
-                    SectionTitle(l10n.journeyNextChallenge),
-                    _NextChallenge(rungId: rungId, challenge: next),
-                  ],
-                  SectionTitle(l10n.journeyAllChallenges),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
-                    ),
-                    child: Builder(
-                      builder: (context) {
-                        // Duas colunas no celular, três em tela larga; cada
-                        // cartão com a altura do próprio conteúdo.
-                        final columns = constraints.maxWidth >= 600 ? 3 : 2;
-                        const gap = 12.0;
-                        final width =
-                            (constraints.maxWidth - 32 - gap * (columns - 1)) /
-                            columns;
-                        return ListaEmOrdem(
-                          montar: (itens) => Wrap(
-                            spacing: gap,
-                            runSpacing: gap,
-                            children: itens,
-                          ),
-                          itens: [
-                            for (final challenge in rung.rung.challenges)
-                              SizedBox(
-                                width: width,
-                                child: _ChallengeCell(
-                                  rungId: rungId,
-                                  challenge: challenge,
-                                  done: rung.completed.contains(challenge.id),
-                                  // O do próximo voa do destaque.
-                                  flies: challenge.id != next?.id,
+                        color: colors.primaryContainer,
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.rungReunionTitle(teacher.name),
+                                style: context.cardTitle?.copyWith(
+                                  color: colors.onPrimaryContainer,
                                 ),
                               ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  // O mesmo final de outro jeito: às cegas. Vale como extra.
-                  if (rung.rung.specials.isNotEmpty) ...[
-                    SectionTitle(l10n.journeySpecialSection),
-                    for (final special in rung.rung.specials)
-                      _SpecialChallenge(
-                        special: special,
-                        open: rung.specialOpen(special),
-                        done: rung.specialsDone.contains(special.id),
+                              const SizedBox(height: AppSpacing.md),
+                              TeacherSpeech(
+                                speechContext: SpeechContext.teaching,
+                                teacher: teacher,
+                                text: reunion,
+                                avatarSize: CharacterAvatar.speech,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
+                    if (next != null) ...[
+                      SectionTitle(l10n.journeyNextChallenge),
+                      _NextChallenge(rungId: rungId, challenge: next),
+                    ],
+                    SectionTitle(l10n.journeyAllChallenges),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          // Duas colunas no celular, três em tela larga; cada
+                          // cartão com a altura do próprio conteúdo.
+                          final columns = constraints.maxWidth >= 600 ? 3 : 2;
+                          const gap = 12.0;
+                          final width =
+                              (constraints.maxWidth -
+                                  32 -
+                                  gap * (columns - 1)) /
+                              columns;
+                          return ListaEmOrdem(
+                            montar: (itens) => Wrap(
+                              spacing: gap,
+                              runSpacing: gap,
+                              children: itens,
+                            ),
+                            itens: [
+                              for (final challenge in rung.rung.challenges)
+                                SizedBox(
+                                  width: width,
+                                  child: _ChallengeCell(
+                                    rungId: rungId,
+                                    challenge: challenge,
+                                    done: rung.completed.contains(challenge.id),
+                                    // O do próximo voa do destaque.
+                                    flies: challenge.id != next?.id,
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    // O mesmo final de outro jeito: às cegas. Vale como extra.
+                    if (rung.rung.specials.isNotEmpty) ...[
+                      SectionTitle(l10n.journeySpecialSection),
+                      for (final special in rung.rung.specials)
+                        _SpecialChallenge(
+                          special: special,
+                          open: rung.specialOpen(special),
+                          done: rung.specialsDone.contains(special.id),
+                        ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }
