@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/route_names.dart';
+import '../../../routing/abre_do_cartao.dart';
+import '../../core/motion/rota_que_abre.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../training_goal/widgets/training_goal_card.dart';
@@ -586,36 +588,39 @@ class _LessonTab extends StatelessWidget {
           course: cubit.config.course,
           place: TrainingGoalCardPlace.home,
         ),
-        CourseContinueCard(
-          key: needsProfile ? TrainingProfileKeys.moment : null,
-          label: needsProfile
-              ? t.trainingProfileMomentLabel(partLabel)
-              : resumed
-              ? t.courseGuideResumeLabel(sectionLabel, resumeStageLabel)
-              : lesson.kind == TrainingLessonKind.test
-              ? sectionLabel
-              : t.courseGuideLessonLabel(sectionLabel, index),
-          title: needsProfile
-              ? t.trainingProfileMomentTitle
-              : trainingMasteryLessonTitle(context, lesson),
-          summary: needsProfile
-              ? t.trainingProfileMomentBody
-              : resumed
-              ? switch (resumeStage) {
-                  0 => t.trainingResumeTheoryBody,
-                  1 => t.trainingResumeDemoBody,
-                  _ => t.trainingResumePracticeBody,
-                }
-              : lesson.summary,
-          buttonLabel: needsProfile
-              ? t.trainingProfileChoose
-              : resumed
-              ? t.homeContinue
-              : state.training!.completedLessons.isEmpty
-              ? t.homeHeroStart
-              : t.homeContinue,
-          buttonKey: CourseGuideKeys.continueButton,
-          onPressed: () => onLesson(lesson),
+        OrigemQueAbre(
+          id: AbreDoCartao.daAula(lesson.id),
+          child: CourseContinueCard(
+            key: needsProfile ? TrainingProfileKeys.moment : null,
+            label: needsProfile
+                ? t.trainingProfileMomentLabel(partLabel)
+                : resumed
+                ? t.courseGuideResumeLabel(sectionLabel, resumeStageLabel)
+                : lesson.kind == TrainingLessonKind.test
+                ? sectionLabel
+                : t.courseGuideLessonLabel(sectionLabel, index),
+            title: needsProfile
+                ? t.trainingProfileMomentTitle
+                : trainingMasteryLessonTitle(context, lesson),
+            summary: needsProfile
+                ? t.trainingProfileMomentBody
+                : resumed
+                ? switch (resumeStage) {
+                    0 => t.trainingResumeTheoryBody,
+                    1 => t.trainingResumeDemoBody,
+                    _ => t.trainingResumePracticeBody,
+                  }
+                : lesson.summary,
+            buttonLabel: needsProfile
+                ? t.trainingProfileChoose
+                : resumed
+                ? t.homeContinue
+                : state.training!.completedLessons.isEmpty
+                ? t.homeHeroStart
+                : t.homeContinue,
+            buttonKey: CourseGuideKeys.continueButton,
+            onPressed: () => onLesson(lesson),
+          ),
         ),
         const SizedBox(height: 12),
         _studyTips(context, cubit),
@@ -747,22 +752,26 @@ class _CatalogTabState extends State<_CatalogTab> {
           for (final lesson in data.where((l) => l.groupId == group.key))
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: CourseItemTile(
-                key: CourseGuideKeys.chapterLesson(lesson.id),
-                state: completed.containsKey(lesson.id)
-                    ? CourseItemState.approved
-                    : widget.state.nextLesson?.id == lesson.id
-                    ? modules
-                          ? CourseItemState.next
-                          : CourseItemState.started
-                    : CourseItemState.open,
-                title: modules
-                    ? lesson.title
-                    : lesson.kind == TrainingLessonKind.test
-                    ? context.l10n.trainingChapterTestTitle
-                    : lesson.title,
-                summary: modules ? lesson.summary : null,
-                onTap: () => widget.onLesson(lesson),
+              // H-ANI-04: a aula aberta pelo item cresce dele.
+              child: OrigemQueAbre(
+                id: AbreDoCartao.daAula(lesson.id),
+                child: CourseItemTile(
+                  key: CourseGuideKeys.chapterLesson(lesson.id),
+                  state: completed.containsKey(lesson.id)
+                      ? CourseItemState.approved
+                      : widget.state.nextLesson?.id == lesson.id
+                      ? modules
+                            ? CourseItemState.next
+                            : CourseItemState.started
+                      : CourseItemState.open,
+                  title: modules
+                      ? lesson.title
+                      : lesson.kind == TrainingLessonKind.test
+                      ? context.l10n.trainingChapterTestTitle
+                      : lesson.title,
+                  summary: modules ? lesson.summary : null,
+                  onTap: () => widget.onLesson(lesson),
+                ),
               ),
             ),
         ] else

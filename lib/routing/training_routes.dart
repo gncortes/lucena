@@ -1,4 +1,5 @@
 import 'training_lesson_scope.dart';
+import 'abre_do_cartao.dart';
 import '../data/repositories/placement/placement_repository.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 
@@ -115,20 +116,24 @@ GoRoute trainingRoute() => GoRoute(
     GoRoute(
       name: RouteNames.trainingContent,
       path: 'content/:chapter',
-      builder: (context, state) =>
-          state.uri.queryParameters['destination'] == null
-          ? trainingLoadError(context, LoadFailure.notFound, () {})
-          : CourseEntryGate(
-              config: _config(state),
-              chapterId: state.pathParameters['chapter'] == 'entry'
-                  ? null
-                  : state.pathParameters['chapter'],
-              title: state.uri.queryParameters['title'],
-              child: _DownloadedLesson(
-                destination: state.uri.queryParameters['destination']!,
-                lesson: state.extra,
-              ),
-            ),
+      pageBuilder: (context, state) {
+        final child = state.uri.queryParameters['destination'] == null
+            ? trainingLoadError(context, LoadFailure.notFound, () {})
+            : CourseEntryGate(
+                config: _config(state),
+                chapterId: state.pathParameters['chapter'] == 'entry'
+                    ? null
+                    : state.pathParameters['chapter'],
+                title: state.uri.queryParameters['title'],
+                // O extra segue inteiro: a aula também cresce do cartão.
+                child: _DownloadedLesson(
+                  destination: state.uri.queryParameters['destination']!,
+                  lesson: state.extra,
+                ),
+              );
+        return paginaQueAbre(context, state, child) ??
+            MaterialPage<void>(key: state.pageKey, child: child);
+      },
     ),
     GoRoute(
       name: RouteNames.trainingHelp,
@@ -413,10 +418,14 @@ void _lesson(
       lessonId: lesson.id,
       lessonTitle: lesson.title,
       open: () {
+        // H-ANI-04: na Escola a aula cresce do cartão tocado.
+        final extra = guide.config.course == TrainingCourse.escola && !replace
+            ? AbreDoCartao(id: AbreDoCartao.daAula(lesson.id), lesson: lesson)
+            : lesson;
         if (replace) {
-          context.pushReplacement(destination, extra: lesson);
+          context.pushReplacement(destination, extra: extra);
         } else {
-          context.push(destination, extra: lesson);
+          context.push(destination, extra: extra);
         }
       },
     ),
@@ -918,6 +927,8 @@ Page<void> _destinationPage(
   GoRouterState state,
   Widget child,
 ) {
+  final doCartao = paginaQueAbre(context, state, child);
+  if (doCartao != null) return doCartao;
   if (state.extra is! TrainingLaunch) {
     return MaterialPage<void>(key: state.pageKey, child: child);
   }

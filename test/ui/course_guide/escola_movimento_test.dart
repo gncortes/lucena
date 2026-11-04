@@ -14,7 +14,10 @@ import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/routing/abre_do_cartao.dart';
 import 'package:lucena/ui/core/motion/cartao_pressionavel.dart';
+import 'package:lucena/ui/core/motion/rota_que_abre.dart';
+import 'package:lucena/ui/core/widgets/course/course_continue_card.dart';
 import 'package:lucena/ui/core/widgets/course/course_item_tile.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
@@ -207,6 +210,43 @@ void main() {
           findsOneWidget,
         );
       }
+    });
+  });
+
+  group('a aula cresce do cartão (H-ANI-04)', () {
+    String? origemDe(WidgetTester tester, Finder cartao) {
+      final acima = find.ancestor(
+        of: cartao,
+        matching: find.byType(OrigemQueAbre),
+      );
+      if (acima.evaluate().isEmpty) return null;
+      return tester.widget<OrigemQueAbre>(acima.first).id;
+    }
+
+    testWidgets('cada item do catálogo é a origem da sua aula', (tester) async {
+      await mount(tester, (s) => s.schoolDayOne(), tab: CourseGuideTab.catalog);
+      await tester.pumpAndSettle();
+      final ids = escola.lessons.where((l) => l.visible).map((l) => l.id);
+      var vistos = 0;
+      for (final id in ids) {
+        final item = find.byKey(CourseGuideKeys.chapterLesson(id));
+        if (item.evaluate().isEmpty) continue;
+        vistos++;
+        expect(origemDe(tester, item), AbreDoCartao.daAula(id), reason: id);
+      }
+      expect(vistos, greaterThan(0));
+    });
+
+    testWidgets('o cartão "continuar" é a origem da próxima aula', (
+      tester,
+    ) async {
+      final cubit = await mount(tester, (s) => s.schoolDayOne());
+      await tester.pumpAndSettle();
+      final proxima = cubit.state.nextLesson!;
+      expect(
+        origemDe(tester, find.byType(CourseContinueCard)),
+        AbreDoCartao.daAula(proxima.id),
+      );
     });
   });
 

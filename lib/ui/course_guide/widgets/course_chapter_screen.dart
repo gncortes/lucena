@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/training/training_content.dart';
 import '../../../domain/models/training/training_course.dart';
+import '../../../routing/abre_do_cartao.dart';
+import '../../core/motion/rota_que_abre.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/course/chapter_lesson_list.dart';
@@ -93,27 +95,33 @@ class CourseChapterScreen extends StatelessWidget {
                   list: ChapterLessonList(
                     rows: [
                       for (final (index, lesson) in rows.indexed)
-                        ChapterLessonRow(
-                          key: CourseGuideKeys.chapterLesson(lesson.id),
-                          kind: completed.containsKey(lesson.id)
-                              ? ChapterRowKind.done
-                              : lesson == next
-                              ? ChapterRowKind.recommended
-                              : ChapterRowKind.other,
-                          number: '$number.${index + 1}',
-                          title: lesson.title,
-                          summary: lesson.summary,
-                          onTap: () => onLesson(lesson),
+                        _origem(
+                          lesson,
+                          ChapterLessonRow(
+                            key: CourseGuideKeys.chapterLesson(lesson.id),
+                            kind: completed.containsKey(lesson.id)
+                                ? ChapterRowKind.done
+                                : lesson == next
+                                ? ChapterRowKind.recommended
+                                : ChapterRowKind.other,
+                            number: '$number.${index + 1}',
+                            title: lesson.title,
+                            summary: lesson.summary,
+                            onTap: () => onLesson(lesson),
+                          ),
                         ),
                     ],
                     exercises: exercises == null
                         ? null
-                        : ChapterLessonRow(
-                            key: CourseGuideKeys.chapterLesson(exercises.id),
-                            kind: ChapterRowKind.exercises,
-                            number: '$number.${rows.length + 1}',
-                            title: context.l10n.chapterExercisesTitle,
-                            onTap: () => onLesson(exercises),
+                        : _origem(
+                            exercises,
+                            ChapterLessonRow(
+                              key: CourseGuideKeys.chapterLesson(exercises.id),
+                              kind: ChapterRowKind.exercises,
+                              number: '$number.${rows.length + 1}',
+                              title: context.l10n.chapterExercisesTitle,
+                              onTap: () => onLesson(exercises),
+                            ),
                           ),
                   ),
                   footer: CourseContinueFooter(
@@ -127,3 +135,7 @@ class CourseChapterScreen extends StatelessWidget {
     },
   );
 }
+
+/// H-ANI-04: a aula aberta pela linha cresce dela.
+Widget _origem(TrainingLesson lesson, Widget row) =>
+    OrigemQueAbre(id: AbreDoCartao.daAula(lesson.id), child: row);
