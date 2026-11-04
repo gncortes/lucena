@@ -293,9 +293,7 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
                 curso: config.course.name,
               );
             } else if (!tournamentScheduled && marked != null) {
-              final registered = current.tournaments.any(
-                (t) => t.date == date,
-              );
+              final registered = current.tournaments.any((t) => t.date == date);
               if (marked == date && !registered) {
                 pushEvent = AnalyticsEvents.torneioPushMostrado(
                   curso: config.course.name,

@@ -12697,5 +12697,9 @@
   "treinoAboutBody": "Pilares teaches endgames in chapters, from basic to advanced. My plan gathers the chapters that fit your time; the full catalog shows them all.",
   "@treinoAboutBody": {
     "description": "Training goal flow copy."
+  },
+  "treinoUndoAdjust": "Back to the previous plan",
+  "@treinoUndoAdjust": {
+    "description": "Training goal flow copy."
   }
 }

@@ -47,8 +47,6 @@ abstract final class TrainingGoalKeys {
   static Key presentationWeek(int index) => Key('treinoPresent.week.$index');
   static const weekScreen = Key('treinoWeek.screen');
   static Key weekChapter(String id) => Key('treinoWeek.chapter.$id');
-  static const adjustSheet = Key('treinoAdjust.sheet');
-  static const adjustConfirm = Key('treinoAdjust.confirm');
   static const adjustUndo = Key('treinoAdjust.undo');
 
   // Aba Guia.

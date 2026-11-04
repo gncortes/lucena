@@ -225,6 +225,8 @@ final class TrainingGoalCubit extends Cubit<TrainingGoalState> {
 
   Future<bool> replanNow() => _apply((s) => replan(s, _resources!, today));
 
+  Future<bool> undoLastAdjust() => _apply(undoAdjust);
+
   Future<bool> dismissLateChapters() {
     final keys = [
       for (final l in view?.late ?? const <LateChapter>[])

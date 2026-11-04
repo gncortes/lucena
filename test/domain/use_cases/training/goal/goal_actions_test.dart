@@ -93,6 +93,29 @@ void main() {
     expect(back.studyPlan!.weeks, isNotEmpty);
   });
 
+  test('H-TRE-09: voltar ao plano anterior desfaz o último ajuste', () {
+    var s = applyObjective(base(), tournament('2026-11-25'));
+    s = s.copyWith(plan: const TrainingPlan(minutes: 60));
+    s = startQuestionnaire(s);
+    s = answerQuestionnaire(s, 'p1', TopicLevel.mastered);
+    s = finishDiagnostic(s, resources, '2026-11-04');
+    expect(s.previousStudyPlan, isNull);
+    expect(undoAdjust(s), same(s));
+    final original = s.studyPlan!;
+    s = roundTrip(
+      replan(
+        s.copyWith(plan: const TrainingPlan(minutes: 30)),
+        resources,
+        '2026-11-06',
+      ),
+    );
+    expect(s.previousStudyPlan!.toJson(), original.toJson());
+    expect(s.studyPlan!.toJson(), isNot(original.toJson()));
+    final back = roundTrip(undoAdjust(s));
+    expect(back.studyPlan!.toJson(), original.toJson());
+    expect(back.previousStudyPlan, isNull);
+  });
+
   test('caso 23: Agora não não muda o plano', () {
     var s = applyObjective(base(), tournament('2026-11-25'));
     s = s.copyWith(

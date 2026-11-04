@@ -24,6 +24,7 @@ Future<void> pump(
   required CourseGuideTab tab,
   TrainingObjective? objective,
   StudyPlan? plan,
+  StudyPlan? previous,
 }) async {
   setPhoneSize(tester, const Size(412, 917));
   const config = TrainingCourseConfig.pilares;
@@ -45,6 +46,7 @@ Future<void> pump(
         tab: tab,
         objective: objective,
         studyPlan: plan,
+        previousStudyPlan: previous,
       ),
     },
   );
@@ -148,5 +150,34 @@ void main() {
     await tester.tap(find.byKey(TrainingGoalKeys.catalogAbout));
     await tester.pumpAndSettle();
     expect(find.text('Sobre o Pilares'), findsOneWidget);
+  });
+
+  testWidgets('H-TRE-09: Voltar ao plano anterior troca o plano e some', (
+    tester,
+  ) async {
+    StudyPlan plan(String id) => StudyPlan(
+      createdOn: '2026-11-04',
+      chapterIds: [id],
+      weeks: [
+        PlanWeek(start: '2026-11-04', end: '2026-11-10', chapterIds: [id]),
+      ],
+    );
+    const objective = TrainingObjective(
+      kind: ObjectiveKind.tournament,
+      setOn: '2026-11-04',
+      tournamentDate: '2026-11-14',
+    );
+    await pump(
+      tester,
+      tab: CourseGuideTab.guide,
+      objective: objective,
+      plan: plan('beta'),
+      previous: plan('alpha'),
+    );
+    expect(find.byKey(TrainingGoalKeys.adjustUndo), findsOneWidget);
+    expect(find.text('Voltar ao plano anterior'), findsOneWidget);
+    await tester.tap(find.byKey(TrainingGoalKeys.adjustUndo));
+    await tester.pumpAndSettle();
+    expect(find.byKey(TrainingGoalKeys.adjustUndo), findsNothing);
   });
 }

@@ -65,6 +65,7 @@ final class TrainingState {
     this.objective,
     Iterable<TrainingObjective> objectiveHistory = const [],
     this.studyPlan,
+    this.previousStudyPlan,
     this.diagnostic,
     Iterable<TournamentRecord> tournaments = const [],
     this.tournamentDraft,
@@ -109,6 +110,9 @@ final class TrainingState {
   final TrainingObjective? objective;
   final List<TrainingObjective> objectiveHistory;
   final StudyPlan? studyPlan;
+
+  /// Plano de antes do último ajuste (H-TRE-09); só um nível de desfazer.
+  final StudyPlan? previousStudyPlan;
   final TrainingDiagnostic? diagnostic;
 
   /// Torneios registrados, do mais recente ao mais antigo.
@@ -149,6 +153,7 @@ final class TrainingState {
     Object? objective = _keep,
     Iterable<TrainingObjective>? objectiveHistory,
     Object? studyPlan = _keep,
+    Object? previousStudyPlan = _keep,
     Object? diagnostic = _keep,
     Iterable<TournamentRecord>? tournaments,
     Object? tournamentDraft = _keep,
@@ -191,6 +196,9 @@ final class TrainingState {
     studyPlan: identical(studyPlan, _keep)
         ? this.studyPlan
         : studyPlan as StudyPlan?,
+    previousStudyPlan: identical(previousStudyPlan, _keep)
+        ? this.previousStudyPlan
+        : previousStudyPlan as StudyPlan?,
     diagnostic: identical(diagnostic, _keep)
         ? this.diagnostic
         : diagnostic as TrainingDiagnostic?,
@@ -236,6 +244,8 @@ final class TrainingState {
     if (objectiveHistory.isNotEmpty)
       'objectiveHistory': objectiveHistory.map((o) => o.toJson()).toList(),
     if (studyPlan != null) 'studyPlan': studyPlan!.toJson(),
+    if (previousStudyPlan != null)
+      'previousStudyPlan': previousStudyPlan!.toJson(),
     if (diagnostic != null) 'diagnostic': diagnostic!.toJson(),
     if (tournaments.isNotEmpty)
       'tournaments': tournaments.map((t) => t.toJson()).toList(),
@@ -312,6 +322,7 @@ final class TrainingState {
           ?TrainingObjective.tryFromJson(o),
       ],
       studyPlan: StudyPlan.tryFromJson(j['studyPlan']),
+      previousStudyPlan: StudyPlan.tryFromJson(j['previousStudyPlan']),
       diagnostic: TrainingDiagnostic.tryFromJson(j['diagnostic']),
       tournaments: [
         for (final t in j['tournaments'] as List? ?? const [])
