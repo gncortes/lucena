@@ -613,12 +613,17 @@ void main() {
     expect(find.byKey(GameDetailsKeys.variation), findsNothing);
   });
 
-  testWidgets('partida que não existe mais: o aviso', (tester) async {
-    await pump(tester, 99);
+  testWidgets(
+    'H-PAR-17 partida que não existe mais: título e aviso do quadro',
+    (tester) async {
+      await pump(tester, 99);
+      final t = lookupAppLocalizations(const Locale('en'));
 
-    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
-    expect(find.byKey(LoadErrorKeys.action), findsOneWidget);
-    expect(find.byKey(LoadErrorKeys.back), findsNothing);
-    expect(find.byKey(GameDetailsKeys.board), findsNothing);
-  });
+      expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+      expect(find.text(t.partidaAnaliseTitulo), findsOneWidget);
+      expect(find.text(t.gameDetailsNotFound), findsOneWidget);
+      expect(find.byKey(GameDetailsKeys.notFound), findsOneWidget);
+      expect(find.byKey(GameDetailsKeys.board), findsNothing);
+    },
+  );
 }

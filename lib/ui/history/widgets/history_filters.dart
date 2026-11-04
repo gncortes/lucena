@@ -3,113 +3,11 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_chip.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../../core/widgets/empty_state.dart';
-
-/// Um chip da faixa de filtros: [name] é o grupo (`period`, `result`...),
-/// [label] o que ele diz e [active] se há um valor escolhido.
-class HistoryChipData {
-  const HistoryChipData({
-    required this.name,
-    required this.label,
-    required this.active,
-  });
-
-  final String name;
-  final String label;
-  final bool active;
-}
-
-/// A faixa de filtros no alto de cada aba: o botão `tune` e um chip por
-/// dimensão. Qualquer um abre a mesma folha ([onOpen]).
-class HistoryFilterBar extends StatelessWidget {
-  const HistoryFilterBar({
-    required this.chips,
-    required this.onOpen,
-    super.key,
-  });
-
-  final List<HistoryChipData> chips;
-  final VoidCallback onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      // Início 16, topo 12, fim 16 (artboard PropV2HistoricoAbaPartidasP360).
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.lg,
-        AppSpacing.md,
-        AppSpacing.lg,
-        0,
-      ),
-      child: Row(
-        children: [
-          // O botão tem 32 dp no desenho; o alvo de toque é de 48.
-          Tooltip(
-            message: context.l10n.historyFiltersAll,
-            child: InkResponse(
-              key: HistoryKeys.filterChip('all'),
-              onTap: onOpen,
-              radius: 24,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
-                child: Center(
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(AppShape.small),
-                      border: Border.all(color: colors.outline),
-                    ),
-                    child: Icon(
-                      Icons.tune,
-                      size: AppIconSize.button,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          for (final chip in chips) ...[
-            const SizedBox(width: AppSpacing.sm),
-            _MenuChip(chip: chip, onTap: onOpen),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _MenuChip extends StatelessWidget {
-  const _MenuChip({required this.chip, required this.onTap});
-
-  final HistoryChipData chip;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilterChip(
-      materialTapTargetSize: AppChip.tapTarget,
-      visualDensity: AppChip.density,
-      key: HistoryKeys.filterChip(chip.name),
-      label: Text(chip.label, maxLines: 1),
-      selected: chip.active,
-      onSelected: (_) => onTap(),
-      // A seta é o ícone de apagar do chip: abre a mesma folha.
-      deleteIcon: const Icon(Icons.arrow_drop_down),
-      deleteButtonTooltipMessage: '',
-      onDeleted: onTap,
-    );
-  }
-}
 
 /// Uma opção de um grupo da folha: o [value] (da key) e o [label].
 class HistoryOption {

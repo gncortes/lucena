@@ -331,9 +331,13 @@ void main() {
         BlocProvider.value(value: cubit, child: const GameDetailsScreen()),
       );
       if (missing) {
-        expect(find.text('Conteúdo não encontrado'), findsOneWidget);
-        expect(find.text('Ir para o início'), findsOneWidget);
-        expect(find.byKey(LoadErrorKeys.back), findsNothing);
+        // H-PAR-17: título e aviso do quadro, sem os botões do erro padrão.
+        expect(find.text('Análise da partida'), findsOneWidget);
+        expect(
+          find.text('Esta partida não está mais gravada.'),
+          findsOneWidget,
+        );
+        expect(find.byType(LoadErrorScreen), findsNothing);
       } else {
         generic();
         progress.broken = false;

@@ -508,6 +508,31 @@ void main() {
     });
   });
 
+  group('H-PAR-12 repetir a partida', () {
+    for (final outcome in [AttemptOutcome.win, AttemptOutcome.loss]) {
+      testWidgets('${outcome.name}: o botão se chama "Jogar novamente"', (
+        tester,
+      ) async {
+        await open(
+          tester,
+          outcome: outcome,
+          locale: const Locale('pt'),
+          moves: _longMoves,
+          played: const Duration(minutes: 5),
+        );
+        final again = find.byKey(
+          ConclusionKeys.action(ConclusionAction.playAgain),
+        );
+        expect(again, findsOneWidget);
+        expect(
+          find.descendant(of: again, matching: find.text('Jogar novamente')),
+          findsOneWidget,
+        );
+        expect(find.text('Jogar de novo'), findsNothing);
+      });
+    }
+  });
+
   group('aviso de conquista', () {
     for (final size in const [Size(360, 740), Size(412, 917)]) {
       testWidgets('fica no alto, acima do título (${size.width.toInt()})', (
@@ -605,6 +630,23 @@ void main() {
       expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
       expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
       expect(invite.shown, isFalse);
+    });
+
+    testWidgets('H-PAR-20 sem conta e com conquista nova: aviso e convite', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        fresh: true,
+        settled: false,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+        invite: FakeAccountInviteRepository(),
+      );
+      await tester.pump(AchievementToasts.duration * 0.3);
+      expect(cubit.state.conclusion!.achievements, isNotEmpty);
+      expect(find.byKey(AchievementsKeys.toast), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
     });
 
     testWidgets('com conta, não convida', (tester) async {

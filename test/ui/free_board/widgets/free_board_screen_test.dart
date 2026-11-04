@@ -35,6 +35,9 @@ import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
@@ -705,6 +708,60 @@ void main() {
       ['Cf3', 'Re7', 'Bc4', 'Rf6', 'Dd4+', 'Re7', 'Ta7+'],
     );
     expect(tester.getSemantics(find.byKey(FreeBoardKeys.move(0))).label, 'Cf3');
+  });
+
+  group('H-PAR-18 adversário que falha', () {
+    const vsMachine = GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+    );
+
+    // Três falhas seguidas, 2 s entre elas, como a tela faz a cada tique.
+    Future<void> failThreeTimes(WidgetTester tester) async {
+      opponent.failTimes = 3;
+      await move(tester, 'e2', 'e4');
+      await tester.pump();
+      for (var i = 0; i < 2; i++) {
+        now.advance(const Duration(seconds: 2));
+        cubit.tick();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('na 3ª falha abre a folha, sem ✕', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsOneWidget);
+      expect(find.byKey(SheetKeys.close), findsNothing);
+      expect(cubit.state.opponentError, isTrue);
+    });
+
+    testWidgets('Tentar novamente fecha a folha e o adversário joga', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.retry));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsNothing);
+      expect(cubit.state.moves, hasLength(2));
+    });
+
+    testWidgets('Sair mantém a partida gravada', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.leave));
+      await tester.pumpAndSettle();
+
+      final saved = await games.load();
+      expect(saved, isNotNull);
+      expect(saved!.moves, ['e2e4']);
+    });
   });
 
   testWidgets('pré-lance: marcado na vez do adversário e jogado em seguida', (
@@ -2365,6 +2422,66 @@ void main() {
       expect(find.byType(FreeBoardScreen), findsNothing);
       expect(progress.attempts.single.fulfilled, isFalse);
       expect(progress.attempts.single.endReason, GameEndReason.resign);
+    });
+
+    /// Desiste sem mexer na rolagem (a tela de erro pode trocar o tabuleiro).
+    Future<void> resignOnly(WidgetTester tester) async {
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('H-PAR-19: sem espaço ao gravar mostra o erro; Tentar '
+        'novamente grava e abre a conclusão', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+
+      await resignOnly(tester);
+
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.text('Not enough space on your phone'), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.freeSpace), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.back), findsOneWidget);
+      expect(progress.attempts, isEmpty);
+
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+
+      final id = await cubit.savedGameId();
+      expect(id, 1);
+      expect(find.text('conclusion $id'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
+    });
+
+    testWidgets('H-PAR-19: Voltar leva ao fim da partida e Ver o resultado '
+        'grava de novo', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+      await resignOnly(tester);
+
+      await tester.tap(find.byKey(LoadErrorKeys.back));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+      expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.pumpAndSettle();
+      expect(find.text('conclusion 1'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
     });
 
     testWidgets(

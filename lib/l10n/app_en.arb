@@ -1913,7 +1913,7 @@
   },
   "gameDetailsNotFound": "This game is no longer saved.",
   "@gameDetailsNotFound": {
-    "description": "Game details: shown when the game was not found."
+    "description": "Game details: the game was deleted between the list and opening it"
   },
   "homeEndgames": "Endgame course",
   "@homeEndgames": {
@@ -2619,9 +2619,9 @@
   "@blindMicTitle": {
     "description": "Blindfold mode (T40 spike): blindMicTitle"
   },
-  "blindMicBody": "To play blindfold, the app listens to the move you say. Your speech is recognized by the device and is not recorded.",
+  "blindMicBody": "The microphone is only used so you can say your moves, when you tap to speak. Speech is recognised by your phone's speech service (Google). Lucena does not record or keep your voice.",
   "@blindMicBody": {
-    "description": "Blindfold mode (T40 spike): blindMicBody"
+    "description": "Body of the microphone notice sheet in blindfold games"
   },
   "blindMicAllow": "Allow",
   "@blindMicAllow": {
@@ -3015,34 +3015,6 @@
   "@allModesPlaySection": {
     "description": "All modes section: playing."
   },
-  "allModesProgressSection": "Progress",
-  "@allModesProgressSection": {
-    "description": "All modes section: rating and achievements."
-  },
-  "allModesBlindBody": "Play without seeing the pieces: say, type or tap your moves. Pick an endgame and choose Blindfold.",
-  "@allModesBlindBody": {
-    "description": "All modes card: blindfold play; it is chosen in the game setup after picking an endgame."
-  },
-  "allModesSpeedrunBody": "Against the clock: Classic, each game with its own clock, or the Marathon, one clock for the whole run.",
-  "@allModesSpeedrunBody": {
-    "description": "All modes card: speedrun, Classic or Marathon."
-  },
-  "allModesFreeBoardBody": "Play both sides, with or without a clock.",
-  "@allModesFreeBoardBody": {
-    "description": "All modes card: free board."
-  },
-  "allModesCustomBody": "Set up any position and play it.",
-  "@allModesCustomBody": {
-    "description": "All modes card: custom position."
-  },
-  "allModesRatingBody": "Your rating over time and every game that counted.",
-  "@allModesRatingBody": {
-    "description": "All modes card: rating history."
-  },
-  "allModesAchievementsBody": "The medals you have earned and the ones still waiting.",
-  "@allModesAchievementsBody": {
-    "description": "All modes card: achievements."
-  },
   "speechShowOnBoard": "Show {square} on the board",
   "@speechShowOnBoard": {
     "description": "Screen reader action on a square or move named in the teacher's speech bubble: highlights it on the board.",
@@ -3096,14 +3068,6 @@
   "homeUnlockedBlindAction": "Pick an endgame",
   "@homeUnlockedBlindAction": {
     "description": "Button of the new-mode card: opens the endgame catalog."
-  },
-  "lichessInviteTitle": "Play against people",
-  "@lichessInviteTitle": {
-    "description": "Invite to play against people on Lichess (after the beginner tricks and at graduation)."
-  },
-  "lichessInviteBody": "Create a free account on Lichess (lichess.org), practice these tricks in real games, and come back here to train endgames.",
-  "@lichessInviteBody": {
-    "description": "Body of the Lichess invite: create an account, practice, come back to train endgames."
   },
   "journeySpecialSpeedrunTitle": "Short speedrun",
   "@journeySpecialSpeedrunTitle": {
@@ -12697,5 +12661,57 @@
   "treinoAboutBody": "Pilares teaches endgames in chapters, from basic to advanced. My plan gathers the chapters that fit your time; the full catalog shows them all.",
   "@treinoAboutBody": {
     "description": "Training goal flow copy."
+  },
+  "partidaOpponentErrorTitle": "An unexpected error occurred",
+  "@partidaOpponentErrorTitle": {
+    "description": "Title of the sheet shown when the opponent engine keeps failing."
+  },
+  "partidaOpponentErrorHint": "Your clock is stopped. If you leave, the game continues where it stopped.",
+  "@partidaOpponentErrorHint": {
+    "description": "Explains the clock is stopped and leaving keeps the game saved."
+  },
+  "partidaOpponentErrorRetry": "Try again",
+  "@partidaOpponentErrorRetry": {
+    "description": "Button that asks the opponent again."
+  },
+  "partidaOpponentErrorLeave": "Leave",
+  "@partidaOpponentErrorLeave": {
+    "description": "Button that leaves the game; it stays saved."
+  },
+  "partidaModosPilaresBody": "Your training guide, made for your game",
+  "@partidaModosPilaresBody": {
+    "description": "Subtitle of the Pilares card in All modes."
+  },
+  "partidaModosJourneyBody": "From Coco to Stockfish",
+  "@partidaModosJourneyBody": {
+    "description": "Subtitle of the Journey row in All modes."
+  },
+  "partidaModosTrainBody": "Any endgame, as many times as you like",
+  "@partidaModosTrainBody": {
+    "description": "Subtitle of the Train endgames row in All modes."
+  },
+  "partidaModosSpeedrunBody": "A series against the clock",
+  "@partidaModosSpeedrunBody": {
+    "description": "Subtitle of the Speedrun row in All modes."
+  },
+  "partidaModosBlindBody": "Without seeing the pieces",
+  "@partidaModosBlindBody": {
+    "description": "Subtitle of the Blindfold row in All modes."
+  },
+  "partidaModosFreeBoardBody": "Play any position",
+  "@partidaModosFreeBoardBody": {
+    "description": "Subtitle of the Free board row in All modes."
+  },
+  "partidaModosCustomBody": "Set up the position piece by piece",
+  "@partidaModosCustomBody": {
+    "description": "Subtitle of the Custom position row in All modes."
+  },
+  "partidaModosChooseHome": "Choose the home modes",
+  "@partidaModosChooseHome": {
+    "description": "Footer button of All modes that opens the home layout."
+  },
+  "partidaAnaliseTitulo": "Game analysis",
+  "@partidaAnaliseTitulo": {
+    "description": "Title of the game details screen when the game is not found"
   }
 }

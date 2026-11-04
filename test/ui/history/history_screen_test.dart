@@ -64,6 +64,10 @@ void main() {
           ),
         ),
         GoRoute(
+          path: Routes.settingsProfile,
+          builder: (_, _) => const Scaffold(body: Text('perfil')),
+        ),
+        GoRoute(
           path: '/speedruns/:id/history',
           builder: (_, state) {
             pushed?.add(state.pathParameters['id']!);
@@ -96,9 +100,8 @@ void main() {
     String group,
     String value,
   ) async {
-    // A fileira de chips rola: o chip pode estar fora da tela.
-    await tester.ensureVisible(find.byKey(HistoryKeys.filterChip(chip)));
-    await tester.tap(find.byKey(HistoryKeys.filterChip(chip)));
+    // H-PAR-16: o filtro é o ícone da barra de cima; não há chips soltos.
+    await tester.tap(find.byKey(HistoryKeys.filterIcon));
     await tester.pumpAndSettle();
     final option = find.byKey(HistoryKeys.filterOption(group, value));
     await tester.ensureVisible(option);
@@ -364,19 +367,21 @@ void main() {
                 expect(tester.takeException(), isNull);
                 final tabBox = tester.getSize(find.byKey(HistoryKeys.tab(tab)));
                 expect(tabBox.height, greaterThanOrEqualTo(48));
-                // A Maratona está vazia: sem filtros.
-                for (final name in switch (tab) {
-                  0 => ['period', 'result', 'pace'],
-                  1 => ['level', 'pace'],
-                  _ => <String>[],
-                }) {
-                  final chip = find.byKey(HistoryKeys.filterChip(name));
-                  expect(chip, findsOneWidget);
-                  // CompChip: 32 de altura visual (E1.08, QA r1).
-                  expect(tester.getSize(chip).height, greaterThanOrEqualTo(32));
-                }
+                // O filtro é o ícone da barra; nenhum chip solto.
+                // A Maratona está vazia: nada a filtrar.
+                expect(
+                  find.byKey(HistoryKeys.filterIcon),
+                  tab == 2 ? findsNothing : findsOneWidget,
+                );
+                expect(find.byType(FilterChip), findsNothing);
               }
               await openTab(tester, 1);
+              // O gráfico ocupa o alto: a lista rola até a primeira linha.
+              await tester.dragUntilVisible(
+                find.byKey(HistoryKeys.row(0)),
+                find.byType(TabBarView),
+                const Offset(0, -80),
+              );
               final row = tester.getSize(find.byKey(HistoryKeys.row(0)));
               expect(row.height, greaterThanOrEqualTo(48));
               // A lista tem 16 dp de margem de cada lado (artboard).
@@ -399,13 +404,104 @@ void main() {
       expect(tabs[0].width, closeTo(120, 1));
       expect(tabs[1].width, closeTo(120, 1));
       expect(tabs.map((r) => r.top).toSet(), hasLength(1));
-      // O botão de filtros e os chips ficam na mesma linha.
-      final tune = tester.getRect(find.byKey(HistoryKeys.filterChip('all')));
-      final period = tester.getRect(
-        find.byKey(HistoryKeys.filterChip('period')),
+      // O filtro fica na barra de cima, à direita, com alvo de 48.
+      final tune = tester.getRect(find.byKey(HistoryKeys.filterIcon));
+      expect(tune.width, greaterThanOrEqualTo(48));
+      expect(tune.height, greaterThanOrEqualTo(48));
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byKey(HistoryKeys.filterIcon),
+        ),
+        findsOneWidget,
       );
-      expect(tune.center.dy, closeTo(period.center.dy, 1));
-      expect(tune.left, greaterThanOrEqualTo(0));
+      expect(find.byType(FilterChip), findsNothing);
+    });
+  });
+
+  group('H-PAR-16 filtro na barra e gráfico que rola', () {
+    testWidgets('com o filtro fechado não há chip; o ícone abre a folha', (
+      tester,
+    ) async {
+      await populate();
+      await pump(tester);
+
+      expect(find.byType(FilterChip), findsNothing);
+      expect(find.byKey(HistoryKeys.filterSheet), findsNothing);
+      await tester.tap(find.byKey(HistoryKeys.filterIcon));
+      await tester.pumpAndSettle();
+      expect(find.byKey(HistoryKeys.filterSheet), findsOneWidget);
+    });
+
+    testWidgets('"Vitória" na folha: o rodapé conta as partidas', (
+      tester,
+    ) async {
+      await populate();
+      await pump(tester);
+
+      await tester.tap(find.byKey(HistoryKeys.filterIcon));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(HistoryKeys.filterOption('result', 'win')));
+      await tester.pumpAndSettle();
+      // 3 vitórias recentes e 1 de 60 dias atrás (período: todas).
+      expect(find.text('Ver 4 partidas'), findsOneWidget);
+    });
+
+    testWidgets('o gráfico sai ao rolar e as abas ficam presas', (
+      tester,
+    ) async {
+      await populate();
+      await world.play([
+        win,
+        loss,
+        draw,
+        win,
+        win,
+        win,
+        loss,
+        win,
+      ], time: blitz);
+      await pump(tester);
+
+      final card = find.byKey(RatingKeys.value);
+      final tabBefore = tester.getTopLeft(find.byKey(HistoryKeys.tab(0)));
+      expect(card, findsOneWidget);
+      await tester.drag(
+        find.byKey(RatingKeys.screen).first,
+        const Offset(0, -600),
+      );
+      await tester.pumpAndSettle();
+      final tabAfter = tester.getTopLeft(find.byKey(HistoryKeys.tab(0)));
+      expect(tabAfter.dy, lessThan(tabBefore.dy));
+      expect(
+        tabAfter.dy,
+        closeTo(tester.getBottomLeft(find.byType(AppBar)).dy, 1),
+      );
+      expect(find.byKey(HistoryKeys.tab(2)), findsOneWidget);
+    });
+
+    testWidgets('leitura que falha: erro e Voltar leva ao Perfil', (
+      tester,
+    ) async {
+      world.rating.failHistory = true;
+      await pump(tester);
+
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(find.text('Tentar novamente'), findsOneWidget);
+      await tester.tap(find.text('Voltar'));
+      await tester.pumpAndSettle();
+      expect(find.text('perfil'), findsOneWidget);
+    });
+
+    testWidgets('o mesmo gráfico aparece nas três abas', (tester) async {
+      await populate();
+      await world.speedrun(time: blitz);
+      await pump(tester);
+
+      for (var tab = 0; tab < 3; tab++) {
+        await openTab(tester, tab);
+        expect(find.byKey(RatingKeys.value), findsOneWidget, reason: '$tab');
+      }
     });
   });
 }

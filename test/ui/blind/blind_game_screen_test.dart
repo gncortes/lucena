@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +14,6 @@ import 'package:dartchess/dartchess.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/blind/widgets/blind_game_screen.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
-import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/core/theme/app_icon_size.dart';
@@ -41,6 +42,7 @@ void main() {
     double textScale = 1,
     String fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1',
     ClockConfig? clock,
+    FakeOpponentRepository? opponent,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
@@ -55,12 +57,13 @@ void main() {
     cubit = BlindGameCubit(
       restartDelay: Duration.zero,
       releaseWait: Duration.zero,
-      opponent: FakeOpponentRepository(),
+      opponent: opponent ?? FakeOpponentRepository(),
       voice: FakeVoiceRepository()..autoFinish = true,
       input: input,
       log: FakeBlindLogRepository(),
       now: FakeNow(DateTime.utc(2026, 10, 7)),
       thinkTime: Duration.zero,
+      retryInterval: Duration.zero,
     );
     addTearDown(cubit.close);
     final settings = SettingsCubit(
@@ -120,6 +123,64 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  group('H-PAR-09 aviso do microfone', () {
+    testWidgets('texto exato do quadro, antes do pedido do sistema', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Usar o microfone?'), findsOneWidget);
+      expect(
+        find.text(
+          'O microfone é usado só para você falar suas jogadas, quando toca '
+          'para falar. O reconhecimento é feito pelo serviço de fala do seu '
+          'celular (Google). O Lucena não grava nem guarda sua voz.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.mic_none), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(BlindKeys.micAllow),
+          matching: find.byIcon(Icons.mic),
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('H-PAR-18 adversário que falha', () {
+    Future<void> failThreeTimes(WidgetTester tester) async {
+      final opponent = FakeOpponentRepository()..failTimes = 3;
+      await pump(tester, opponent: opponent, locale: const Locale('pt'));
+      await tester.runAsync(() => cubit.playTyped('Ta7'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('na 3ª falha abre a folha, sem ✕', (tester) async {
+      await failThreeTimes(tester);
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsOneWidget);
+      expect(find.byKey(SheetKeys.close), findsNothing);
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+    });
+
+    testWidgets('Tentar novamente fecha a folha e o adversário joga', (
+      tester,
+    ) async {
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.retry));
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsNothing);
+      expect(cubit.state.sans, hasLength(2));
+    });
+  });
 
   for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
     testWidgets('seletor do canvas 111×36 tem três alvos em $direction', (

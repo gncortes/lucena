@@ -43,8 +43,14 @@ class FakeRatingRepository implements RatingRepository {
     return PlayerRating.start(initial);
   }
 
+  /// Faz a leitura do histórico falhar (a tela de erro do Histórico).
+  bool failHistory = false;
+
   @override
-  Future<List<RatingEntry>> history() async => [...entries];
+  Future<List<RatingEntry>> history() async {
+    if (failHistory) throw StateError('histórico ilegível');
+    return [...entries];
+  }
 
   @override
   Future<List<SpeedrunBonus>> speedrunBonuses() async {

@@ -27,6 +27,7 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/free_space_action.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_button.dart';
@@ -35,6 +36,7 @@ import '../../core/theme/app_shadow.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/opponent_error_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/time_display.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -72,6 +74,9 @@ BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(
   illegal: (move) => l10n.blindSayIllegal(_capitalized(move)),
   drawAgreed: l10n.freeBoardDrawAgreed,
   drawDeclined: l10n.gameDrawDeclined,
+  opponentError:
+      '${l10n.partidaOpponentErrorTitle}. '
+      '${l10n.partidaOpponentErrorHint}',
 );
 
 /// Jogar às cegas, falando os lances (spike da T40): o estado em letras
@@ -180,6 +185,19 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     );
   }
 
+  // H-PAR-18: depois da 3ª falha do adversário, a folha sem ✕ (também falada).
+  // Sair mantém a partida gravada: o checkpoint já tem o relógio parado.
+  Future<void> _askOpponentError() async {
+    final cubit = context.read<BlindGameCubit>();
+    final retry = await showOpponentErrorSheet(context);
+    if (!mounted) return;
+    if (retry) {
+      unawaited(cubit.retryOpponent());
+      return;
+    }
+    context.canPop() ? context.pop() : context.go(Routes.allModes);
+  }
+
   void _onState(BuildContext context, BlindState state) {
     if (state.position == null) return;
     final board = _board;
@@ -196,6 +214,9 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       return;
     }
     if (state.mic == MicPermission.asking) _askMic(context);
+    if (state.opponentError && !previous.opponentError) {
+      unawaited(_askOpponentError());
+    }
     // Os avisos sobem no topo, sem mexer na tela.
     final l10n = context.l10n;
     final language = Localizations.localeOf(context).toLanguageTag();
@@ -314,14 +335,21 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final allow = await showLucenaSheet<bool>(
       context,
       builder: (context) => _BlindSheetBody(
-        icon: Icons.mic_none,
+        icon: Icons.mic,
         title: l10n.blindMicTitle,
         message: l10n.blindMicBody,
         actions: [
           FilledButton(
             key: BlindKeys.micAllow,
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.blindMicAllow),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.mic),
+                const SizedBox(width: AppSpacing.sm),
+                Text(l10n.blindMicAllow),
+              ],
+            ),
           ),
           OutlinedButton(
             key: BlindKeys.micDeny,
@@ -343,6 +371,14 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<BlindGameCubit>();
+    if (context.watch<BlindGameCubit>().state.recordFailed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.noSpace,
+        onAction: () => unawaited(cubit.retryRecord()),
+        onBack: cubit.dismissRecordError,
+        onFreeSpace: freeSpaceAction(context),
+      );
+    }
     if (context.watch<BlindGameCubit>().state.failed) {
       return LoadErrorScreen(
         kind: LoadErrorKind.generic,
