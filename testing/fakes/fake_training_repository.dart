@@ -42,7 +42,11 @@ class FakeTrainingRepository implements TrainingRepository {
   }
 
   @override
-  Future<CustomPositionDraft?> loadCustomDraft() async => draft;
+  Future<CustomPositionDraft?> loadCustomDraft() async {
+    await gate?.future;
+    if (failLoad) throw StateError('falha de leitura');
+    return draft;
+  }
 
   @override
   Future<void> saveCustomDraft(CustomPositionDraft draft) async =>
