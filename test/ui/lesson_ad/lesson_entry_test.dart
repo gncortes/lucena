@@ -252,6 +252,48 @@ void main() {
     },
   );
 
+  testWidgets(
+    'H-ANI-24: a falha do anúncio entra com calma só na primeira vez',
+    (t) async {
+      final h = _Harness(seen: true);
+      h.ads.loads = [false, false, true];
+      await h.pump(t);
+      await t.tap(find.byKey(_openKey));
+      for (
+        var i = 0;
+        i < 20 && find.byKey(AdsKeys.failed).evaluate().isEmpty;
+        i++
+      ) {
+        await t.pump(const Duration(milliseconds: 16));
+      }
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.textoDoEstado),
+          matching: find.text('Ocorreu um erro inesperado'),
+        ),
+        findsOneWidget,
+      );
+      expect(opacidadeDaParte(t, find.byKey(MotionKeys.textoDoEstado)), 0);
+      await t.pumpAndSettle();
+      expect(opacidadeDaParte(t, find.byKey(MotionKeys.textoDoEstado)), 1);
+      // Os botões ficam no rodapé, fora da entrada.
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.acaoDoEstado),
+          matching: find.byKey(AdsKeys.adFailedRetry),
+        ),
+        findsNothing,
+      );
+      // Falhou de novo: o estado volta pronto.
+      await t.tap(find.byKey(AdsKeys.adFailedRetry));
+      await t.pump();
+      await t.pump();
+      expect(find.byKey(AdsKeys.failed), findsOneWidget);
+      expect(opacidadeDaParte(t, find.byKey(MotionKeys.textoDoEstado)), 1);
+      await t.pumpAndSettle();
+    },
+  );
+
   testWidgets('capítulo trancado mostra a folha; Comprar abre a oferta', (
     t,
   ) async {

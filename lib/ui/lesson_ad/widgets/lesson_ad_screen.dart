@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/route_names.dart';
 import '../../core/keys/ads_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_de_estado.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -263,6 +265,14 @@ class _AdFailed extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    // H-ANI-24: o erro aparece com calma na primeira vez da sessão.
+    return EntradaDaTela(
+      id: 'PropV2DemoAnuncioFalhou',
+      child: _scaffold(l10n, theme),
+    );
+  }
+
+  Widget _scaffold(AppLocalizations l10n, ThemeData theme) {
     return Scaffold(
       key: AdsKeys.failed,
       body: SafeArea(
@@ -275,37 +285,39 @@ class _AdFailed extends StatelessWidget {
                     horizontal: AppSpacing.xxl,
                     vertical: AppSpacing.xl,
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        CanvasSymbols.error,
-                        size: 64,
-                        fill: 0,
-                        weight: 300,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-                      Text(
-                        l10n.loadErrorGenericTitle,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontSize: 22,
-                          height: 28 / 22,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0,
+                  child: EntradaDeEstado(
+                    espaco: AppSpacing.xl,
+                    icone: Icon(
+                      CanvasSymbols.error,
+                      size: 64,
+                      fill: 0,
+                      weight: 300,
+                      color: theme.colorScheme.primary,
+                    ),
+                    texto: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: AppSpacing.sm,
+                      children: [
+                        Text(
+                          l10n.loadErrorGenericTitle,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontSize: 22,
+                            height: 28 / 22,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        l10n.venAdFailedMessage,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          letterSpacing: 0,
+                        Text(
+                          l10n.venAdFailedMessage,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            letterSpacing: 0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
