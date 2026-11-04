@@ -9,7 +9,9 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
+import 'package:lucena/ui/core/keys/featured_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
@@ -18,10 +20,13 @@ import 'package:lucena/ui/core/keys/week_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
+import '../testing/e2e_dependencies.dart';
+import '../testing/e2e_prints_fixtures.dart';
 import '../testing/training/e2e_training.dart';
 import 'robots/app_robot.dart';
 import 'robots/blind_robot.dart';
 import 'robots/free_board_robot.dart';
+import 'robots/game_details_robot.dart';
 import 'robots/placement_robot.dart';
 import 'robots/race_robot.dart';
 import 'robots/tour_robot.dart';
@@ -139,5 +144,26 @@ void main() {
       ready: RaceKeys.gameView,
     );
     await capture.record('D3CorridaErro', race.miss, ready: RaceKeys.gameView);
+  });
+
+  patrolTest('D3 prints: Ache o lance do final em destaque', ($) async {
+    await AppRobot($).open(systemLocale: ptBr, lightDevice: true);
+    await $(HomeKeys.screen).waitUntilVisible();
+    unawaited(
+      GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+          .push<void>(Routes.featuredEndgame(e2eFindMoveFeaturedId)),
+    );
+    await $(FeaturedKeys.findBoard).waitUntilVisible();
+    await $.pumpAndSettle();
+    await TrainingCaptureRobot($)
+        .shot('D3AcheOLance', ready: FeaturedKeys.findBoard);
+  });
+
+  patrolTest('D3 prints: Detalhes da partida salva', ($) async {
+    await AppRobot($).open(systemLocale: ptBr, lightDevice: true);
+    final id = await seedAttempt(e2eSavedGame);
+    await GameDetailsRobot($).open(id);
+    await TrainingCaptureRobot($)
+        .shot('D3DetalhesPartida', ready: GameDetailsKeys.screen);
   });
 }
