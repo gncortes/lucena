@@ -15,6 +15,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -242,15 +243,21 @@ class _FindBoardState extends State<_FindBoard> {
         ignoring: !active,
         child: Directionality(
           textDirection: TextDirection.ltr,
-          child: Chessboard(
-            key: FeaturedKeys.findBoard,
-            size: size,
-            controller: _controller!,
-            shapes: _answer(context),
-            settings: board.chessground,
-            orientation: widget.endgame.userSide,
-            onMove: (move, {viaDragAndDrop}) =>
-                context.read<FindMoveCubit>().play(move),
+          child: TabuleiroAnimado(
+            controlador: _controller!,
+            orientacao: widget.endgame.userSide,
+            tamanho: size,
+            pecas: board.chessground.pieceAssets,
+            child: Chessboard(
+              key: FeaturedKeys.findBoard,
+              size: size,
+              controller: _controller!,
+              shapes: _answer(context),
+              settings: TabuleiroAnimado.ajustes(context, board.chessground),
+              orientation: widget.endgame.userSide,
+              onMove: (move, {viaDragAndDrop}) =>
+                  context.read<FindMoveCubit>().play(move),
+            ),
           ),
         ),
       ),
