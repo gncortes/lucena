@@ -368,7 +368,9 @@ class TourCubit extends Cubit<TourState> {
     try {
       await _nicknameSaved;
       await _onboardingSaved;
-      await _save(_saved.copyWith(done: true, step: 0, inProgress: false));
+      await _update(
+        (saved) => saved.copyWith(done: true, step: 0, inProgress: false),
+      );
       if (!isClosed && leave) emit(state.copyWith(finished: true));
     } finally {
       _finishing = false;
@@ -385,7 +387,17 @@ class TourCubit extends Cubit<TourState> {
         forward: requested.index > state.step.index,
       ),
     );
-    await _save(_saved.copyWith(step: requested.index));
+    await _update((saved) => saved.copyWith(step: requested.index));
+  }
+
+  /// Muda só o que o tour é dono (passo, fim) sobre o que está gravado agora:
+  /// o passo Nível grava o degrau e o rating por outro view model, e uma
+  /// cópia velha daqui os apagaria.
+  Future<void> _update(Onboarding Function(Onboarding saved) change) {
+    return _onboardingSaved = _onboardingSaved.then((_) async {
+      _saved = change(await _onboarding.load());
+      await _onboarding.save(_saved);
+    });
   }
 
   Future<void> _save(Onboarding onboarding) {
