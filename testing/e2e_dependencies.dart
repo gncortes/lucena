@@ -84,7 +84,6 @@ import 'package:lucena/data/repositories/positions/positions_repository_asset.da
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
 import 'package:lucena/data/services/stockfish_service.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
-import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/repositories/training/training_repository_local.dart';
@@ -532,7 +531,6 @@ Future<Dependencies> e2eDependencies({
     talkRepository: LocalTalkRepository(PreferencesService()),
     onboardingRepository: LocalOnboardingRepository(PreferencesService()),
     homeLayoutRepository: LocalHomeLayoutRepository(PreferencesService()),
-    unlockRepository: LocalUnlockRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
     lessonRepository: VisibleLessonRepository(lessons),

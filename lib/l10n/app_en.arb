@@ -3041,18 +3041,6 @@
   "@journeySpecialLocked": {
     "description": "Special challenge still locked: win the same endgame normally first."
   },
-  "homeUnlockedBlindTitle": "New mode unlocked: blindfold",
-  "@homeUnlockedBlindTitle": {
-    "description": "Home card shown once after the first blindfold special challenge is won."
-  },
-  "homeUnlockedBlindBody": "You won without seeing the pieces. Now you can play any endgame blindfold: pick the endgame and choose Blindfold.",
-  "@homeUnlockedBlindBody": {
-    "description": "Body of the new-mode card: how to play blindfold from now on."
-  },
-  "homeUnlockedBlindAction": "Pick an endgame",
-  "@homeUnlockedBlindAction": {
-    "description": "Button of the new-mode card: opens the endgame catalog."
-  },
   "lichessInviteTitle": "Play against people",
   "@lichessInviteTitle": {
     "description": "Invite to play against people on Lichess (after the beginner tricks and at graduation)."

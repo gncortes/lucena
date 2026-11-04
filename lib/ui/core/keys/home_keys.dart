@@ -16,9 +16,6 @@ abstract final class HomeKeys {
   static const forYouButton = Key('home.forYou');
 
   /// O cartão "Novo modo desbloqueado" (às cegas).
-  static const unlockedCard = Key('home.unlocked');
-  static const unlockedClose = Key('home.unlocked.close');
-  static const unlockedAction = Key('home.unlocked.action');
 
   /// O cartão azul do alto (T83), o título e o botão dele.
   static const goalCard = Key('home.goalCard');

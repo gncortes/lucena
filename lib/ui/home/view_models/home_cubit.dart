@@ -26,7 +26,6 @@ import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/featured/featured_progress_repository.dart';
 import '../../../data/repositories/featured/featured_repository.dart';
 import '../../../data/repositories/home/home_layout_repository.dart';
-import '../../../data/repositories/home/unlock_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
@@ -82,7 +81,6 @@ class HomeState {
     this.level,
     this.ratingChange,
     this.layout,
-    this.unlockedBlind = false,
     this.featured,
     this.goal,
     this.courseDone = false,
@@ -137,7 +135,6 @@ class HomeState {
 
   /// O cartão "Novo modo desbloqueado: às cegas", depois do primeiro desafio
   /// às cegas vencido na Jornada. Aparece uma vez.
-  final bool unlockedBlind;
 
   /// O final em destaque da seção "Finais em destaque". Nulo: a seção some.
   final FeaturedItem? featured;
@@ -220,7 +217,7 @@ class HomeState {
     );
   }
 
-  HomeState copyWith({bool? unlockedBlind, Streak? streak}) => HomeState(
+  HomeState copyWith({Streak? streak}) => HomeState(
     ready: ready,
     failed: failed,
     tourPending: tourPending,
@@ -237,7 +234,6 @@ class HomeState {
     level: level,
     ratingChange: ratingChange,
     layout: layout,
-    unlockedBlind: unlockedBlind ?? this.unlockedBlind,
     featured: featured,
     goal: goal,
     courseDone: courseDone,
@@ -428,7 +424,6 @@ class HomeCubit extends Cubit<HomeState> {
     required this._endgameLessons,
     required this._endgameProgress,
     this._homeLayout,
-    this._unlocks,
     this._placement,
     this._featured,
     this._featuredProgress,
@@ -465,11 +460,9 @@ class HomeCubit extends Cubit<HomeState> {
   final FeaturedProgressRepository? _featuredProgress;
   final Now? _now;
 
-  final UnlockRepository? _unlocks;
   final PlacementRepository? _placement;
 
   /// O modo às cegas, para o cartão de modo novo.
-  static const blindMode = 'blind';
 
   // Os caminhos escolhidos. Nulo: sempre a sugestão do nível.
   final HomeLayoutRepository? _homeLayout;
@@ -503,17 +496,6 @@ class HomeCubit extends Cubit<HomeState> {
       fulfilled,
       startRung: onboarding.startRung,
     );
-    // O primeiro especial às cegas vencido destrava o modo (o anúncio sai
-    // uma vez só).
-    final blindWon = progress.rungs.any(
-      (rung) => rung.rung.specials.any(
-        (special) =>
-            special.mode == ChallengeMode.blind &&
-            rung.specialsDone.contains(special.id),
-      ),
-    );
-    final unlockedBlind =
-        blindWon && _unlocks != null && !await _unlocks.seen(blindMode);
     final current = progress.current;
     Challenge? next;
     for (final challenge in current?.rung.challenges ?? const <Challenge>[]) {
@@ -593,7 +575,6 @@ class HomeCubit extends Cubit<HomeState> {
             : history.last.rating.rounded -
                   history[history.length - 2].rating.rounded,
         layout: layout,
-        unlockedBlind: unlockedBlind,
         featured: featured,
         goal: goal,
         courseDone: courseDone,
@@ -776,11 +757,6 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   /// O cartão do modo novo saiu (fechado ou tocado): não volta.
-  Future<void> dismissUnlocked() async {
-    emit(state.copyWith(unlockedBlind: false));
-    await _unlocks?.markSeen(blindMode);
-  }
-
   Future<T?> _optionalContent<T>(Future<T> Function() read) async {
     try {
       return await read();

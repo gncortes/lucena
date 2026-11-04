@@ -195,10 +195,6 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if (state.unlockedBlind) ...[
-                              const _UnlockedCard(),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
                             if (state.hero != null) ...[
                               HeroCard(state: state),
                               const SizedBox(height: AppSpacing.xl),
@@ -281,86 +277,6 @@ class _HomeScreenState extends State<HomeScreen>
             ],
           ),
       ],
-    );
-  }
-}
-
-/// O modo novo destravado na Jornada (às cegas): entra crescendo, uma vez.
-class _UnlockedCard extends StatelessWidget {
-  const _UnlockedCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final cubit = context.read<HomeCubit>();
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.85, end: 1),
-      duration: AppMotion.of(context).celebrate,
-      curve: AppMotion.bounce,
-      builder: (context, value, child) =>
-          Transform.scale(scale: value, child: child),
-      child: Card(
-        key: HomeKeys.unlockedCard,
-        color: colors.primaryContainer,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.md,
-            AppSpacing.sm,
-            AppSpacing.md,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.record_voice_over,
-                    color: colors.onPrimaryContainer,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Text(
-                      l10n.homeUnlockedBlindTitle,
-                      style: context.cardTitle?.copyWith(
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    key: HomeKeys.unlockedClose,
-                    icon: const Icon(Icons.close),
-                    tooltip: MaterialLocalizations.of(context)
-                        .closeButtonTooltip,
-                    onPressed: cubit.dismissUnlocked,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-                child: Text(
-                  l10n.homeUnlockedBlindBody,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onPrimaryContainer,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              FilledButton.icon(
-                key: HomeKeys.unlockedAction,
-                icon: const Icon(Icons.grid_view_rounded),
-                label: Text(l10n.homeUnlockedBlindAction),
-                onPressed: () {
-                  unawaited(cubit.dismissUnlocked());
-                  context.go(Routes.catalog);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
