@@ -11991,5 +11991,9 @@
   "conAceiteContinue": "Continue",
   "@conAceiteContinue": {
     "description": "Aceite (H-CON-08): botão do rodapé, só habilitado com a caixa marcada."
+  },
+  "conSemRedeCreate": "You need an internet connection to create the account.",
+  "@conSemRedeCreate": {
+    "description": "Conta sem internet (H-CON-09): texto da tela de erro padrão ao criar a conta sem rede, abaixo de \"Sem internet\"."
   }
 }

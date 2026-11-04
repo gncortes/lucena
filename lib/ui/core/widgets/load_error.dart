@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/load_failure.dart';
@@ -36,11 +38,17 @@ class LoadErrorScreen extends StatelessWidget {
     this.onBack,
     this.onFreeSpace,
     this.showAction = true,
+    this.message,
     super.key,
   });
 
   final LoadErrorKind kind;
-  final VoidCallback onAction;
+
+  /// O texto do caso no lugar do padrão do [kind] ("criar a conta", H-CON-09).
+  final String? message;
+
+  /// Assíncrona: o botão fica em carregando até ela terminar.
+  final FutureOr<void> Function() onAction;
   final VoidCallback? onBack;
   final VoidCallback? onFreeSpace;
   final bool showAction;
@@ -49,7 +57,7 @@ class LoadErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
-    final (title, message, icon) = switch (kind) {
+    final (title, kindMessage, icon) = switch (kind) {
       LoadErrorKind.generic => (
         t.loadErrorGenericTitle,
         null,
@@ -92,6 +100,7 @@ class LoadErrorScreen extends StatelessWidget {
         CanvasSymbols.error,
       ),
     };
+    final message = this.message ?? kindMessage;
     final freeSpace = kind == LoadErrorKind.noSpace ? onFreeSpace : null;
     final actionLabel = kind == LoadErrorKind.notFound
         ? t.loadErrorHome
@@ -180,7 +189,7 @@ class _LoadErrorAction extends StatelessWidget {
     required this.outlined,
   });
   final Key buttonKey;
-  final VoidCallback onAction;
+  final FutureOr<void> Function() onAction;
   final String label;
   final bool outlined;
 

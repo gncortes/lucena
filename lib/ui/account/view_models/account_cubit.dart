@@ -23,6 +23,7 @@ class AccountState {
     this.offline = false,
     this.needsConsent = false,
     this.failure,
+    this.screenFailure,
   });
 
   final bool busy;
@@ -44,6 +45,10 @@ class AccountState {
   /// de seguir (H-CON-08). Quem trouxe progresso da conta já aceitou.
   final bool needsConsent;
   final AccountFailure? failure;
+
+  /// A tela de erro padrão por cima da entrada (H-CON-09): abre sem rede e
+  /// fica (com o erro novo) enquanto a pessoa tenta de novo. Nula: sem tela.
+  final AccountFailure? screenFailure;
 }
 
 class AccountCubit extends Cubit<AccountState> {
@@ -135,13 +140,26 @@ class AccountCubit extends Cubit<AccountState> {
     );
   }
 
+  // A última entrada, que "Tentar novamente" repete.
+  Future<void> Function()? _last;
+
+  /// "Tentar novamente" na tela sem internet: repete a última entrada.
+  Future<void> retry() => _last?.call() ?? Future.value();
+
+  /// "Voltar" na tela sem internet: volta à entrada, como estava.
+  void dismissFailure() {
+    if (!state.busy) emit(const AccountState());
+  }
+
   Future<void> _run(
     Future<Account?> Function() signIn, {
     bool created = false,
     String? method,
   }) async {
     if (state.busy) return;
-    emit(const AccountState(busy: true));
+    _last = () => _run(signIn, created: created, method: method);
+    final screen = state.screenFailure;
+    emit(AccountState(busy: true, screenFailure: screen));
     try {
       final account = await signIn();
       if (account == null) {
@@ -183,7 +201,16 @@ class AccountCubit extends Cubit<AccountState> {
         );
       }
     } on AccountException catch (error) {
-      if (!isClosed) emit(AccountState(failure: error.failure));
+      final failure = error.failure;
+      final onScreen = screen != null || failure == AccountFailure.network;
+      if (!isClosed) {
+        emit(
+          AccountState(
+            failure: failure,
+            screenFailure: onScreen ? failure : null,
+          ),
+        );
+      }
     }
   }
 

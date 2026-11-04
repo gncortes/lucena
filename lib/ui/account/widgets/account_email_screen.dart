@@ -16,6 +16,7 @@ import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
+import 'account_failure_gate.dart';
 import 'account_flow.dart';
 import 'account_password_sheets.dart';
 import 'account_widgets.dart';
@@ -108,100 +109,107 @@ class _EmailViewState extends State<_EmailView> {
       listener: (context, state) {
         if (state.done) return _done(state);
         final failure = state.failure;
-        if (failure != null) {
+        if (failure != null && state.screenFailure == null) {
           showLucenaSnackBar(context, accountFailureText(l10n, failure));
         }
       },
-      child: Scaffold(
-        key: create ? AccountKeys.createScreen : AccountKeys.signInScreen,
-        appBar: LucenaAppBar(
-          title: Text(create ? l10n.accountCreate : l10n.accountSignIn),
-        ),
-        body: ListView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          children: [
-            TextField(
-              key: AccountKeys.emailField,
-              controller: _email,
-              keyboardType: TextInputType.emailAddress,
-              autocorrect: false,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.email],
-              decoration: InputDecoration(
-                labelText: l10n.accountEmailField,
-                hintText: l10n.accountEmailHint,
-                prefixIcon: const Icon(Icons.mail),
-              ),
-            ),
-            SizedBox(height: create ? AppSpacing.lg : AppSpacing.md),
-            TextField(
-              key: AccountKeys.passwordField,
-              controller: _password,
-              obscureText: _hidden,
-              autocorrect: false,
-              enableSuggestions: false,
-              textInputAction: TextInputAction.done,
-              autofillHints: [
-                create ? AutofillHints.newPassword : AutofillHints.password,
-              ],
-              onSubmitted: busy ? null : (_) => _submit(),
-              decoration: InputDecoration(
-                labelText: l10n.accountPasswordField,
-                helperText: create ? l10n.accountPasswordHelp : null,
-                prefixIcon: const Icon(Icons.lock),
-                suffixIcon: IconButton(
-                  key: AccountKeys.passwordEye,
-                  tooltip: _hidden
-                      ? l10n.accountShowPassword
-                      : l10n.accountHidePassword,
-                  icon: Icon(_hidden ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () => setState(() => _hidden = !_hidden),
+      child: AccountFailureGate(
+        message: create ? l10n.conSemRedeCreate : null,
+        child: Scaffold(
+          key: create ? AccountKeys.createScreen : AccountKeys.signInScreen,
+          appBar: LucenaAppBar(
+            title: Text(create ? l10n.accountCreate : l10n.accountSignIn),
+          ),
+          body: ListView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            children: [
+              TextField(
+                key: AccountKeys.emailField,
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.email],
+                decoration: InputDecoration(
+                  labelText: l10n.accountEmailField,
+                  hintText: l10n.accountEmailHint,
+                  prefixIcon: const Icon(Icons.mail),
                 ),
               ),
-            ),
-            if (create) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                l10n.accountEmailNote,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+              SizedBox(height: create ? AppSpacing.lg : AppSpacing.md),
+              TextField(
+                key: AccountKeys.passwordField,
+                controller: _password,
+                obscureText: _hidden,
+                autocorrect: false,
+                enableSuggestions: false,
+                textInputAction: TextInputAction.done,
+                autofillHints: [
+                  create ? AutofillHints.newPassword : AutofillHints.password,
+                ],
+                onSubmitted: busy ? null : (_) => _submit(),
+                decoration: InputDecoration(
+                  labelText: l10n.accountPasswordField,
+                  helperText: create ? l10n.accountPasswordHelp : null,
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    key: AccountKeys.passwordEye,
+                    tooltip: _hidden
+                        ? l10n.accountShowPassword
+                        : l10n.accountHidePassword,
+                    icon: Icon(
+                      _hidden ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () => setState(() => _hidden = !_hidden),
+                  ),
                 ),
               ),
-            ] else
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: TextButton(
-                  key: AccountKeys.forgotPassword,
-                  onPressed: busy
-                      ? null
-                      : () =>
-                            showPasswordResetSheet(context, email: _email.text),
-                  child: Text(l10n.accountForgotPassword),
+              if (create) ...[
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  l10n.accountEmailNote,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
+              ] else
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: TextButton(
+                    key: AccountKeys.forgotPassword,
+                    onPressed: busy
+                        ? null
+                        : () => showPasswordResetSheet(
+                            context,
+                            email: _email.text,
+                          ),
+                    child: Text(l10n.accountForgotPassword),
+                  ),
+                ),
+            ],
+          ),
+          bottomNavigationBar: ActionsFooter(
+            stacked: true,
+            // "Ao criar a conta, você concorda...": colado no botão (§2.12).
+            note: create ? const AccountLegalNote(create: true) : null,
+            noteAfter: 0,
+            children: [
+              FilledButton(
+                key: AccountKeys.emailSubmit,
+                onPressed: busy ? null : _submit,
+                child: Text(create ? l10n.accountCreate : l10n.accountSignIn),
               ),
-          ],
-        ),
-        bottomNavigationBar: ActionsFooter(
-          stacked: true,
-          // "Ao criar a conta, você concorda...": colado no botão (§2.12).
-          note: create ? const AccountLegalNote(create: true) : null,
-          noteAfter: 0,
-          children: [
-            FilledButton(
-              key: AccountKeys.emailSubmit,
-              onPressed: busy ? null : _submit,
-              child: Text(create ? l10n.accountCreate : l10n.accountSignIn),
-            ),
-            if (!widget.reauth)
-              AccountSwitchLink(
-                key: create ? AccountKeys.toSignIn : AccountKeys.toCreate,
-                question: create
-                    ? l10n.accountHaveAccount
-                    : l10n.accountNoAccount,
-                action: create ? l10n.accountSignIn : l10n.accountCreate,
-                onPressed: busy ? null : _switch,
-              ),
-          ],
+              if (!widget.reauth)
+                AccountSwitchLink(
+                  key: create ? AccountKeys.toSignIn : AccountKeys.toCreate,
+                  question: create
+                      ? l10n.accountHaveAccount
+                      : l10n.accountNoAccount,
+                  action: create ? l10n.accountSignIn : l10n.accountCreate,
+                  onPressed: busy ? null : _switch,
+                ),
+            ],
+          ),
         ),
       ),
     );

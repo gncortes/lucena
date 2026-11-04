@@ -2311,5 +2311,6 @@
   "conAceiteRightsWhere": "[Ýöû'll fîñd åll öf thîš îñ Šéttîñĝš, Pŕîvåçý åñd dåtå. one two three four five]",
   "conAceiteUsage": "[Wé ûšé ûšåĝé dåtå åñd éŕŕöŕ ŕépöŕtš tö împŕövé Lûçéñå. Ýöû çåñ tûŕñ thîš öff åñýtîmé îñ Šéttîñĝš, Pŕîvåçý åñd dåtå. one two three four five six seven eight nine ten]",
   "conAceiteCheck": "[Î håvé ŕéåd åñd åççépt thé {terms} åñd thé {privacy} one two three four five]",
-  "conAceiteContinue": "[Çöñtîñûé one]"
+  "conAceiteContinue": "[Çöñtîñûé one]",
+  "conSemRedeCreate": "[Ýöû ñééd åñ îñtéŕñét çöññéçtîöñ tö çŕéåté thé åççöûñt. one two three four five]"
 }

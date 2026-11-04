@@ -19,6 +19,7 @@ import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
+import 'account_failure_gate.dart';
 import 'account_flow.dart';
 import 'account_widgets.dart';
 
@@ -78,113 +79,118 @@ class _AccountView extends StatelessWidget {
           return continueAfterSignIn(context, state, from, replace: fromRoute);
         }
         final failure = state.failure;
-        if (failure == null) return;
+        if (failure == null || state.screenFailure != null) return;
         showLucenaSnackBar(context, accountFailureText(l10n, failure));
       },
-      child: Scaffold(
-        key: AccountKeys.enterScreen,
-        appBar: LucenaAppBar(
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            key: AccountKeys.close,
-            icon: const Icon(Icons.close),
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: next,
+      child: AccountFailureGate(
+        message: l10n.conSemRedeCreate,
+        child: Scaffold(
+          key: AccountKeys.enterScreen,
+          appBar: LucenaAppBar(
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              key: AccountKeys.close,
+              icon: const Icon(Icons.close),
+              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+              onPressed: next,
+            ),
           ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xl,
-            vertical: AppSpacing.lg,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(AppShape.large),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Icon(
-                      Icons.cloud_sync,
-                      size: AppIconSize.illustration,
-                      color: colors.primary,
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xl,
+              vertical: AppSpacing.lg,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: colors.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppShape.large),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Icon(
+                        Icons.cloud_sync,
+                        size: AppIconSize.illustration,
+                        color: colors.primary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              Text(
-                fromRoute
-                    ? l10n.accountEntryTitleLesson
-                    : l10n.accountEntryTitle,
-                key: AccountKeys.enterTitle,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                fromRoute ? l10n.accountEntryTextLesson : l10n.accountEntryText,
-                key: AccountKeys.enterText,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              for (final (icon, text) in benefits)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                  child: Row(
-                    children: [
-                      Icon(
-                        icon,
-                        size: AppIconSize.standard,
-                        color: colors.primary,
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Text(text, style: theme.textTheme.bodyLarge),
-                      ),
-                    ],
+                const SizedBox(height: AppSpacing.xl),
+                Text(
+                  fromRoute
+                      ? l10n.accountEntryTitleLesson
+                      : l10n.accountEntryTitle,
+                  key: AccountKeys.enterTitle,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  fromRoute
+                      ? l10n.accountEntryTextLesson
+                      : l10n.accountEntryText,
+                  key: AccountKeys.enterText,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                for (final (icon, text) in benefits)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                    child: Row(
+                      children: [
+                        Icon(
+                          icon,
+                          size: AppIconSize.standard,
+                          color: colors.primary,
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Text(text, style: theme.textTheme.bodyLarge),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: ActionsFooter(
+            stacked: true,
+            note: const AccountLegalNote(),
+            children: [
+              FilledButton.icon(
+                key: AccountKeys.google,
+                onPressed: busy
+                    ? null
+                    : () => context.read<AccountCubit>().signInWithGoogle(),
+                icon: const Icon(Icons.account_circle),
+                label: Text(l10n.accountGoogle),
+              ),
+              OutlinedButton.icon(
+                key: AccountKeys.email,
+                onPressed: busy
+                    ? null
+                    : () => open(Routes.accountEmailFrom(from)),
+                icon: const Icon(Icons.mail),
+                label: Text(l10n.accountCreateWithEmail),
+              ),
+              AccountSwitchLink(
+                key: AccountKeys.toSignIn,
+                question: l10n.accountHaveAccount,
+                action: l10n.accountSignIn,
+                onPressed: busy
+                    ? null
+                    : () => open(Routes.accountEmailFrom(from, signIn: true)),
+              ),
             ],
           ),
-        ),
-        bottomNavigationBar: ActionsFooter(
-          stacked: true,
-          note: const AccountLegalNote(),
-          children: [
-            FilledButton.icon(
-              key: AccountKeys.google,
-              onPressed: busy
-                  ? null
-                  : () => context.read<AccountCubit>().signInWithGoogle(),
-              icon: const Icon(Icons.account_circle),
-              label: Text(l10n.accountGoogle),
-            ),
-            OutlinedButton.icon(
-              key: AccountKeys.email,
-              onPressed: busy
-                  ? null
-                  : () => open(Routes.accountEmailFrom(from)),
-              icon: const Icon(Icons.mail),
-              label: Text(l10n.accountCreateWithEmail),
-            ),
-            AccountSwitchLink(
-              key: AccountKeys.toSignIn,
-              question: l10n.accountHaveAccount,
-              action: l10n.accountSignIn,
-              onPressed: busy
-                  ? null
-                  : () => open(Routes.accountEmailFrom(from, signIn: true)),
-            ),
-          ],
         ),
       ),
     );

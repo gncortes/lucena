@@ -11,6 +11,8 @@ import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
@@ -170,11 +172,69 @@ void main() {
     expect(find.byType(SnackBar), findsNothing);
   });
 
+  group('H-CON-09: criar conta sem internet', () {
+    testWidgets('1. Google sem rede abre a tela de erro padrão', (
+      tester,
+    ) async {
+      accounts.failure = AccountFailure.network;
+      await pumpAccount(tester);
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.byIcon(CanvasSymbols.wifiOff), findsOneWidget);
+      expect(
+        find.text('You need an internet connection to create the account.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(LoadErrorKeys.action), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.back), findsOneWidget);
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('2. a rede volta: "Tentar novamente" abre o Google e segue', (
+      tester,
+    ) async {
+      accounts.failure = AccountFailure.network;
+      await pumpAccount(tester);
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pumpAndSettle();
+      accounts.failure = null;
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+      expect(accounts.current, FakeAccountRepository.google);
+      expect(
+        find.text('rota-dados /conta/dados?from=tour&novo=1'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('outro erro na nova tentativa vira o erro genérico', (
+      tester,
+    ) async {
+      accounts.failure = AccountFailure.network;
+      await pumpAccount(tester);
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pumpAndSettle();
+      accounts.failure = AccountFailure.unknown;
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.text('An unexpected error occurred'), findsOneWidget);
+    });
+
+    testWidgets('3. "Voltar" volta à tela do convite', (tester) async {
+      accounts.failure = AccountFailure.network;
+      await pumpAccount(tester);
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(LoadErrorKeys.back));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+      expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
+    });
+  });
+
   for (final (failure, message) in [
-    (
-      AccountFailure.network,
-      'No internet. Try again when the connection is back.',
-    ),
     (AccountFailure.unknown, 'Could not sign in now. Try again.'),
     (AccountFailure.unavailable, 'Signing in is coming soon.'),
   ]) {

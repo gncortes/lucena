@@ -2454,5 +2454,6 @@
       }
     }
   },
-  "conAceiteContinue": "Continuar"
+  "conAceiteContinue": "Continuar",
+  "conSemRedeCreate": "Você precisa de conexão com a internet para criar a conta."
 }
