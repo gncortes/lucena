@@ -1463,7 +1463,6 @@
   "goalContinue": "Continuar",
   "goalHaveAccount": "Já tenho conta",
   "goalSheetTitle": "Seu objetivo",
-  "goalSheetText": "Muda o primeiro cartão da home. Os outros caminhos continuam lá.",
   "goalSheetSave": "Salvar",
   "homeGoalLabel": "Seu objetivo",
   "homeResumeLabel": "Continuar de onde parou",
@@ -2480,5 +2479,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "conObjetivoText": "Muda o primeiro cartão do Início. Os outros caminhos continuam lá.",
+  "conNivelViktor": "Para escolher os adversários certos: em que ponto você está no xadrez?",
+  "conNivelLichess": "Login no site do Lichess. O Lucena lê seus ratings.",
+  "conNivelChess": "Digite seu usuário para ler o rating público.",
+  "conNivelManual": "Informar meu rating",
+  "conNivelZero": "Comece pela Escola do Viktor.",
+  "conRatingHint": "Ex.: 1500",
+  "conRatingError": "Digite um número de 400 a 3000.",
+  "conNivelZeroHome": "Comece pelos adversários mais fáceis."
 }

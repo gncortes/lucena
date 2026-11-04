@@ -82,6 +82,7 @@ void main() {
     bool fromProfile = false,
     FakeAccountRepository? accounts,
     FakeAnalyticsRepository? analytics,
+    Locale locale = const Locale('en'),
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
@@ -169,6 +170,7 @@ void main() {
             speechCubit: speech,
             router: router,
             analytics: analytics,
+            locale: locale,
             child: const SizedBox(),
           ),
         ),
@@ -453,5 +455,105 @@ void main() {
     await tester.tap(find.byKey(LevelKeys.back));
     await tester.pumpAndSettle();
     expect(find.text('rota-perfil'), findsOneWidget);
+  });
+
+  group('H-CON-16 (PT)', () {
+    const pt = Locale('pt');
+
+    Future<void> openProfile(WidgetTester tester) async {
+      onboarding = FakeOnboardingRepository(const Onboarding(done: true));
+      await pumpLevel(tester, fromProfile: true, locale: pt);
+    }
+
+    testWidgets(
+      '1. Seu nível pelo Perfil: textos do quadro e o teste marcado',
+      (tester) async {
+        await openProfile(tester);
+        expect(find.text('Seu nível'), findsOneWidget);
+        expect(
+          find.text(
+            'Para escolher os adversários certos: em que ponto você está no '
+            'xadrez?',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .element(find.byKey(LevelKeys.screen))
+              .read<LevelCubit>()
+              .state
+              .choice,
+          LevelChoice.test,
+        );
+        // Com a Escola escondida, o texto não promete a Escola.
+        expect(
+          find.text(
+            VisibleLessons.school
+                ? 'Comece pela Escola do Viktor.'
+                : 'Comece pelos adversários mais fáceis.',
+          ),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(LevelKeys.option(LevelChoice.known)));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(LevelKeys.continueButton));
+        await tester.pumpAndSettle();
+        for (final text in [
+          'Login no site do Lichess. O Lucena lê seus ratings.',
+          'Digite seu usuário para ler o rating público.',
+          'Informar meu rating',
+        ]) {
+          expect(find.text(text), findsOneWidget, reason: text);
+        }
+      },
+    );
+
+    testWidgets('2. FIDE 1450: "fica perto de 1650"; campo com ícone e dica', (
+      tester,
+    ) async {
+      await openProfile(tester);
+      await choose(tester, LevelChoice.manual);
+      expect(find.text('Informar o rating'), findsOneWidget);
+      final field = find.byKey(LevelKeys.ratingField);
+      expect(
+        find.descendant(of: field, matching: find.byIcon(Icons.trending_up)),
+        findsOneWidget,
+      );
+      expect(find.text('Ex.: 1500'), findsOneWidget);
+      await tester.enterText(field, '1450');
+      await tester.tap(find.byKey(LevelKeys.ratingSource(RatingOrigin.fide)));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('1450 da FIDE fica perto de 1650 no Lucena'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('3. limites: 399 e 3001 recusados, 400 e 3000 aceitos', (
+      tester,
+    ) async {
+      await openProfile(tester);
+      await choose(tester, LevelChoice.manual);
+      bool enabled() =>
+          tester
+              .widget<FilledButton>(find.byKey(LevelKeys.ratingUse))
+              .onPressed !=
+          null;
+      for (final (typed, ok) in [
+        ('399', false),
+        ('400', true),
+        ('3000', true),
+        ('3001', false),
+      ]) {
+        await tester.enterText(find.byKey(LevelKeys.ratingField), typed);
+        await tester.pumpAndSettle();
+        expect(enabled(), ok, reason: typed);
+        expect(
+          find.text('Digite um número de 400 a 3000.'),
+          ok ? findsNothing : findsOneWidget,
+          reason: typed,
+        );
+      }
+    });
   });
 }

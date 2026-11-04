@@ -68,10 +68,11 @@ class _LevelRatingScreenState extends State<LevelRatingScreen> {
                 onChanged: (text) => cubit.setManual(int.tryParse(text)),
                 decoration: InputDecoration(
                   labelText: l10n.levelManualField,
+                  hintText: l10n.conRatingHint,
+                  prefixIcon: const Icon(Icons.trending_up),
                   helperText: l10n.levelManualHelp,
-                  // Fora de 400 a 3000, a ajuda vira o erro.
                   errorText: typed != null && !state.manualValid
-                      ? l10n.levelManualHelp
+                      ? l10n.conRatingError
                       : null,
                 ),
               ),

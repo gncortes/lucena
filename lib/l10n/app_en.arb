@@ -7371,10 +7371,6 @@
   "@goalSheetTitle": {
     "description": "Title of the sheet that changes the goal, opened from Profile."
   },
-  "goalSheetText": "Changes the first card on the home screen. The other paths stay there.",
-  "@goalSheetText": {
-    "description": "Text of the goal sheet."
-  },
   "goalSheetSave": "Save",
   "@goalSheetSave": {
     "description": "Saves the goal on the sheet."
@@ -12010,5 +12006,41 @@
         "type": "String"
       }
     }
+  },
+  "conObjetivoText": "Changes the first card on Home. The other paths stay there.",
+  "@conObjetivoText": {
+    "description": "Folha 'Seu objetivo' do Perfil (H-CON-15): texto abaixo do título."
+  },
+  "conNivelViktor": "To pick the right opponents: where are you in chess?",
+  "@conNivelViktor": {
+    "description": "Fala do Viktor em 'Seu nível' aberto pelo Perfil (H-CON-16)."
+  },
+  "conNivelLichess": "Log in on the Lichess site. Lucena reads your ratings.",
+  "@conNivelLichess": {
+    "description": "Opção 'Entrar com o Lichess' em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conNivelChess": "Type your username to read your public rating.",
+  "@conNivelChess": {
+    "description": "Opção 'Tenho conta no Chess.com' em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conNivelManual": "Enter my rating",
+  "@conNivelManual": {
+    "description": "Título da opção do número livre em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conNivelZero": "Start with Viktor's School.",
+  "@conNivelZero": {
+    "description": "Opção 'Não sei jogar' em 'Seu nível' pelo Perfil (H-CON-16)."
+  },
+  "conRatingHint": "E.g. 1500",
+  "@conRatingHint": {
+    "description": "Dica dentro do campo 'Seu rating' (H-CON-16)."
+  },
+  "conRatingError": "Enter a number from 400 to 3000.",
+  "@conRatingError": {
+    "description": "Erro do campo 'Seu rating' fora de 400 a 3000 (H-CON-16)."
+  },
+  "conNivelZeroHome": "Start with the easiest opponents.",
+  "@conNivelZeroHome": {
+    "description": "Opção 'Não sei jogar' em 'Seu nível' pelo Perfil, com a Escola escondida (H-CON-16)."
   }
 }

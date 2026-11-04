@@ -1398,7 +1398,6 @@
   "goalContinue": "[Çöñtîñûé one]",
   "goalHaveAccount": "[Î ålŕéådý håvé åñ åççöûñt one two three]",
   "goalSheetTitle": "[Ýöûŕ ĝöål one]",
-  "goalSheetText": "[Çhåñĝéš thé fîŕšt çåŕd öñ thé hömé šçŕééñ. Thé öthéŕ påthš štåý théŕé. one two three four five six]",
   "goalSheetSave": "[Šåvé one]",
   "homeGoalLabel": "[Ýöûŕ ĝöål one]",
   "homeResumeLabel": "[Pîçk ûp whéŕé ýöû léft öff one two three]",
@@ -2317,5 +2316,14 @@
   "conRetry": "[Tŕý åĝåîñ one]",
   "conSenhaText": "[Wé'll šéñd ýöû å lîñk tö çŕéåté å ñéw påššwöŕd. one two three four]",
   "conSenhaSend": "[Šéñd lîñk one]",
-  "conSenhaSentText": "[Îf théŕé'š åñ åççöûñt wîth {email}, thé lîñk åŕŕîvéš îñ å féw mîñûtéš. one two three four five six]"
+  "conSenhaSentText": "[Îf théŕé'š åñ åççöûñt wîth {email}, thé lîñk åŕŕîvéš îñ å féw mîñûtéš. one two three four five six]",
+  "conObjetivoText": "[Çhåñĝéš thé fîŕšt çåŕd öñ Hömé. Thé öthéŕ påthš štåý théŕé. one two three four five]",
+  "conNivelViktor": "[Tö pîçk thé ŕîĝht öppöñéñtš: whéŕé åŕé ýöû îñ çhéšš? one two three four five]",
+  "conNivelLichess": "[Löĝ îñ öñ thé Lîçhéšš šîté. Lûçéñå ŕéådš ýöûŕ ŕåtîñĝš. one two three four five]",
+  "conNivelChess": "[Týpé ýöûŕ ûšéŕñåmé tö ŕéåd ýöûŕ pûblîç ŕåtîñĝ. one two three four]",
+  "conNivelManual": "[Éñtéŕ mý ŕåtîñĝ one two]",
+  "conNivelZero": "[Štåŕt wîth Vîktöŕ'š Šçhööl. one two three]",
+  "conRatingHint": "[É.ĝ. 1500 one]",
+  "conRatingError": "[Éñtéŕ å ñûmbéŕ fŕöm 400 tö 3000. one two three]",
+  "conNivelZeroHome": "[Štåŕt wîth thé éåšîéšt öppöñéñtš. one two three]"
 }

@@ -217,6 +217,20 @@ void main() {
 
     await tester.tap(find.byKey(ProfileKeys.rowGoal));
     await tester.pumpAndSettle();
+    // H-CON-15: o texto do quadro PropV1PerfilObjetivo.
+    expect(
+      find.descendant(
+        of: find.byKey(GoalKeys.sheet),
+        matching: find.text('Seu objetivo'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'Muda o primeiro cartão do Início. Os outros caminhos continuam lá.',
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(GoalKeys.option(GoalPreference.train)));
     await tester.pump();
     await tester.tap(find.byKey(GoalKeys.sheetSave));
