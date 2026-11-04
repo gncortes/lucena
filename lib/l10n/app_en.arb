@@ -7900,134 +7900,6 @@
   "@dailyTitle": {
     "description": "Daily endgame: title of the game, the home strip and the result."
   },
-  "dailyGoal": "{side, select, white{White} other{Black}} to play and {goal, select, win{win} other{draw}}",
-  "@dailyGoal": {
-    "description": "Subtitle of the daily endgame game, before the first move: whose move it is and the goal.",
-    "placeholders": {
-      "side": {
-        "type": "String",
-        "example": "white"
-      },
-      "goal": {
-        "type": "String",
-        "example": "win"
-      }
-    }
-  },
-  "dailyBadge": "TODAY",
-  "@dailyBadge": {
-    "description": "Daily endgame: badge on the home card (in place of NEW)."
-  },
-  "dailyOpenResult": "See the result",
-  "@dailyOpenResult": {
-    "description": "Daily endgame game: button at the end of the game."
-  },
-  "dailyWon": "You won",
-  "@dailyWon": {
-    "description": "Daily endgame result: title when the person won."
-  },
-  "dailyDrew": "You drew",
-  "@dailyDrew": {
-    "description": "Daily endgame result: title for a draw when the goal was to win."
-  },
-  "dailyHeld": "You held the draw",
-  "@dailyHeld": {
-    "description": "Daily endgame result: title for a draw when the goal was to draw."
-  },
-  "dailyLost": "Not this time",
-  "@dailyLost": {
-    "description": "Daily endgame result: title when the goal was not met."
-  },
-  "dailyMeta": "{date} · {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyMeta": {
-    "description": "Daily endgame result: date and number of the person's moves.",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyLegendRight": "right move",
-  "@dailyLegendRight": {
-    "description": "Daily endgame result: legend of the green square."
-  },
-  "dailyLegendSlow": "still wins, but slower",
-  "@dailyLegendSlow": {
-    "description": "Daily endgame result: legend of the yellow square."
-  },
-  "dailyLegendBad": "spoiled the endgame",
-  "@dailyLegendBad": {
-    "description": "Daily endgame result: legend of the red square."
-  },
-  "dailyShareTitle": "Share",
-  "@dailyShareTitle": {
-    "description": "Daily endgame: share button and title of the share preview."
-  },
-  "dailyShareImageDate": "Daily endgame · {date}",
-  "@dailyShareImageDate": {
-    "description": "Daily endgame share image: header with the date.",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "dailyShareImageWon": "Won in {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyShareImageWon": {
-    "description": "Daily endgame share image: the result when the person won.",
-    "placeholders": {
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyShareImageDrew": "Drew in {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyShareImageDrew": {
-    "description": "Daily endgame share image: the result when the person drew.",
-    "placeholders": {
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyShareImageLost": "Played {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyShareImageLost": {
-    "description": "Daily endgame share image: the result when the goal was not met.",
-    "placeholders": {
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyShareTextLabel": "TEXT THAT GOES WITH IT",
-  "@dailyShareTextLabel": {
-    "description": "Daily endgame share preview: label above the message text."
-  },
-  "dailyShareText": "Lucena daily endgame, {date}: {result} and my streak is at {days, plural, =1{1 day} other{{days} days}}. Can you find the move? {link}",
-  "@dailyShareText": {
-    "description": "Daily endgame: message shared with the image. {result} is the lowercase result line (for example \"ganhei em 12 lances\").",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "result": {
-        "type": "String"
-      },
-      "days": {
-        "type": "int"
-      },
-      "link": {
-        "type": "String"
-      }
-    }
-  },
-  "dailyShareNote": "The image only has the result: it does not show the position or the moves, so nobody sees the answer before playing.",
-  "@dailyShareNote": {
-    "description": "Daily endgame share preview: note under the image."
-  },
   "streakDays": "{count, plural, =1{1 day in a row} other{{count} days in a row}}",
   "@streakDays": {
     "description": "Streak: number of days in a row, in one line.",
@@ -8036,34 +7908,6 @@
         "type": "int"
       }
     }
-  },
-  "streakToRecord": "{left, plural, =1{1 day} other{{left} days}} to go for your record of {record}.",
-  "@streakToRecord": {
-    "description": "Daily endgame result, streak card: days left to beat the record.",
-    "placeholders": {
-      "left": {
-        "type": "int"
-      },
-      "record": {
-        "type": "int"
-      }
-    }
-  },
-  "streakAtRecord": "This is your record.",
-  "@streakAtRecord": {
-    "description": "Daily endgame result, streak card: the current streak is the record."
-  },
-  "crowdTomorrowTitle": "How many got it? Tomorrow.",
-  "@crowdTomorrowTitle": {
-    "description": "Daily endgame result: card title; the number comes the next day."
-  },
-  "crowdTomorrowText": "The number comes out when the day is over, and you see it here.",
-  "@crowdTomorrowText": {
-    "description": "Daily endgame result: card text."
-  },
-  "dailyContinue": "Continue",
-  "@dailyContinue": {
-    "description": "Daily endgame result: button that goes back home."
   },
   "settingsSectionApp": "App",
   "@settingsSectionApp": {
@@ -8563,38 +8407,12 @@
   "@accountPhotoFailed": {
     "description": "Snack bar when the photo upload fails."
   },
-  "dailyYesterdayTitle": "Yesterday's endgame",
-  "@dailyYesterdayTitle": {
-    "description": "Daily endgame result screen title, the day after."
-  },
-  "dailyWonYesterday": "You won yesterday",
-  "@dailyWonYesterday": {
-    "description": "Daily endgame result title the day after, when the player won."
-  },
-  "dailyDrewYesterday": "You drew yesterday",
-  "@dailyDrewYesterday": {
-    "description": "Daily endgame result title the day after, when the player drew."
-  },
-  "dailyHeldYesterday": "You held the draw yesterday",
-  "@dailyHeldYesterday": {
-    "description": "Daily endgame result title the day after, when the goal was to draw and the player drew."
-  },
   "crowdPercent": "{percent}% got it right",
   "@crowdPercent": {
     "description": "How many players met the endgame goal on the first try.",
     "placeholders": {
       "percent": {
         "type": "int"
-      }
-    }
-  },
-  "crowdPlayers": "{count} played",
-  "@crowdPlayers": {
-    "description": "Daily endgame: how many people played it.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
       }
     }
   },
@@ -8607,14 +8425,6 @@
         "format": "decimalPattern"
       }
     }
-  },
-  "crowdYouAre": "You are one of them.",
-  "@crowdYouAre": {
-    "description": "Daily endgame: the player got it right on the first try."
-  },
-  "crowdFewYesterday": "Few people played yesterday",
-  "@crowdFewYesterday": {
-    "description": "Daily endgame: too few players to show the percentage."
   },
   "crowdFew": "Few people played this endgame",
   "@crowdFew": {
@@ -11827,5 +11637,25 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
-  }
+  },
+  "desafiosDailyShareTooltip": "Share",
+  "@desafiosDailyShareTooltip": {"description": "Daily endgame: desafiosDailyShareTooltip"},
+  "desafiosDailyShareSheetTitle": "Share today's endgame",
+  "@desafiosDailyShareSheetTitle": {"description": "Daily endgame: desafiosDailyShareSheetTitle"},
+  "desafiosDailyShareButton": "Share",
+  "@desafiosDailyShareButton": {"description": "Daily endgame: desafiosDailyShareButton"},
+  "desafiosDailyShareText": "Lucena endgame of the day: {side, select, white{White to move} other{Black to move}} and {goal, select, win{win} other{draw}}. Can you do it? {link}",
+  "@desafiosDailyShareText": {"description": "Daily endgame: desafiosDailyShareText", "placeholders": {"side": {"type": "String"}, "goal": {"type": "String"}, "link": {"type": "String"}}},
+  "desafiosDailyShareTextWon": "I won Lucena's endgame of the day ({side, select, white{White to move} other{Black to move}} and {goal, select, win{win} other{draw}}). Try it too: {link}",
+  "@desafiosDailyShareTextWon": {"description": "Daily endgame: desafiosDailyShareTextWon", "placeholders": {"side": {"type": "String"}, "goal": {"type": "String"}, "link": {"type": "String"}}},
+  "desafiosDailyWinTitle": "Congratulations!",
+  "@desafiosDailyWinTitle": {"description": "Daily endgame: desafiosDailyWinTitle"},
+  "desafiosDailyWinBody": "You won today's endgame.",
+  "@desafiosDailyWinBody": {"description": "Daily endgame: desafiosDailyWinBody"},
+  "desafiosDailyWinShare": "Share",
+  "@desafiosDailyWinShare": {"description": "Daily endgame: desafiosDailyWinShare"},
+  "desafiosDailyWinLater": "Not now",
+  "@desafiosDailyWinLater": {"description": "Daily endgame: desafiosDailyWinLater"},
+  "desafiosDailyNone": "There is no endgame today. Come back tomorrow.",
+  "@desafiosDailyNone": {"description": "Daily endgame: desafiosDailyNone"}
 }

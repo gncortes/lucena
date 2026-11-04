@@ -23,7 +23,6 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../../routing/routes.dart';
-import '../../core/keys/daily_keys.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/load_error.dart';
@@ -63,7 +62,7 @@ import '../../core/widgets/sheet_header.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../../daily/view_models/daily_game_cubit.dart';
-import '../../daily/widgets/daily_end_bar.dart';
+import '../../daily/widgets/daily_game_actions.dart';
 import '../../featured/view_models/featured_endgame_cubit.dart';
 import '../../featured/widgets/featured_game_bar.dart';
 
@@ -436,7 +435,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     return Scaffold(
       key: FreeBoardKeys.screen,
       appBar: LucenaAppBar(
-        actions: featured
+        actions: state.mode.dailyDate != null
+            ? const [DailyGameActions()]
+            : featured
             ? [
                 FeaturedGameActions(
                   boundary: _shareBoundary,
@@ -459,16 +460,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         ),
         title: state.mode.fromLink
             ? Text(context.l10n.journeyChallengeTitle, key: FreeBoardKeys.title)
-            // Final do dia: a meta é o título (só título, T85-D0), como nos
-            // problemas do Lichess e do chess.com.
-            : state.mode.dailyDate != null
-            ? Text(
-                context.l10n.dailyGoal(
-                  (state.mode.userSide ?? state.start.turn).name,
-                  state.mode.goal?.code ?? 'win',
-                ),
-                key: DailyKeys.goalSubtitle,
-              )
             : Text(_title(context, state, talk), key: FreeBoardKeys.title),
       ),
       body: RepaintBoundary(
@@ -625,8 +616,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       reserveBottom: clocksBelow,
                       footer: machineEnded && featured
                           ? FeaturedEndBar(onAgain: cubit.newGame)
-                          : machineEnded && state.mode.dailyDate != null
-                          ? DailyEndBar(onAgain: cubit.newGame)
                           : machineEnded && state.mode.fromLink
                           ? _LinkEndBar(
                               onLesson: offer == LinkLessonOffer.none

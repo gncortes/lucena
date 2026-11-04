@@ -270,14 +270,6 @@ abstract final class Routes {
   /// O final do dia aberto de [entry] (`aviso|lembrete|link`; sem ele, da
   /// home): vai para o `final_dia_aberto` do Analytics.
   static String dailyFrom(String entry) => '$daily?entrada=$entry';
-  static const dailyResult = '/daily/result';
-  static const dailyShare = '/daily/share';
-
-  /// O resultado do final do dia [date] (`aaaa-mm-dd`).
-  static String dailyResultOf(String date) =>
-      Uri(path: dailyResult, queryParameters: {'date': date}).toString();
-  static String dailyShareOf(String date) =>
-      Uri(path: dailyShare, queryParameters: {'date': date}).toString();
 
   /// A partida do final do dia: sem relógio, contra o Maia no nível
   /// [level], com o lado e o objetivo do próprio final.
