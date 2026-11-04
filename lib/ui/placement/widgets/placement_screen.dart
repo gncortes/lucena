@@ -11,6 +11,7 @@ import '../../../routing/routes.dart';
 
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/theme/app_bar_height.dart';
 import '../../core/theme/app_icon_size.dart';
 
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
@@ -95,6 +96,11 @@ class PlacementScreen extends StatelessWidget {
                       key: PlacementKeys.counter,
                     )
                   : Text(l10n.placementTitle),
+              // A barra de progresso entra nos 64 da app bar (regra da T85),
+              // como no teste do capítulo e na Opinião.
+              toolbarHeight: state.view == PlacementView.question
+                  ? AppBarHeight.standard - AppBarProgress.height
+                  : null,
               // Quanto do questionário já foi: uma barra contínua na base
               // da barra do app, que anda a cada resposta.
               bottom: state.view == PlacementView.question

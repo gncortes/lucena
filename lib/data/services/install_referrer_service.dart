@@ -3,8 +3,21 @@ import 'package:play_install_referrer/play_install_referrer.dart';
 /// O `referrer` da Play Store: o texto que o link de instalação levou
 /// (`play.google.com/store/apps/details?id=...&referrer=<texto>`), T84.
 abstract class InstallReferrerService {
-  /// O texto do referrer, ou nulo (sem Play, iOS, demorou, erro).
+  /// O texto do referrer, ou nulo se a Play respondeu sem referrer.
+  ///
+  /// Se a leitura falhou (sem Play Services, tempo esgotado, API fora do ar),
+  /// lança [InstallReferrerFailure]: falhar não é o mesmo que "sem campanha".
   Future<String?> referrer();
+}
+
+/// A leitura do referrer não terminou (diferente de "não há referrer").
+class InstallReferrerFailure implements Exception {
+  const InstallReferrerFailure(this.message);
+
+  final String message;
+
+  @override
+  String toString() => 'InstallReferrerFailure: $message';
 }
 
 /// Lê pela Play Install Referrer API (`com.android.installreferrer`). Não
@@ -22,10 +35,10 @@ class PlayInstallReferrerService implements InstallReferrerService {
         timeout,
       );
       return details.installReferrer;
-    } on Object {
-      // iOS, sem Play Services, tempo esgotado ou a API fora do ar: segue
-      // sem referrer.
-      return null;
+    } on Object catch (error) {
+      // iOS, sem Play Services, tempo esgotado ou a API fora do ar: quem
+      // chama decide se tenta de novo na próxima abertura.
+      throw InstallReferrerFailure('$error');
     }
   }
 }

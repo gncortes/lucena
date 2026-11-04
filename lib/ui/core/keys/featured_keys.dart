@@ -85,6 +85,11 @@ abstract final class FeaturedKeys {
   static const nextMore = Key('featured.next.more');
   static const nextAgain = Key('featured.next.again');
 
+  // O cartão do aviso de final novo de torneio, sobre o rodapé do fim.
+  static const alertCard = Key('featured.alert.card');
+  static const alertAccept = Key('featured.alert.accept');
+  static const alertDecline = Key('featured.alert.decline');
+
   // Ache o lance.
   static const findScreen = Key('featured.find.screen');
   static const findBoard = Key('featured.find.board');

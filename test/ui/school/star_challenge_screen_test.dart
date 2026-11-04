@@ -188,16 +188,10 @@ void main() {
   ) async {
     final cubit = await pump(tester);
     expect(find.textContaining('Rook challenge'), findsOneWidget);
-    // Só o título, com o nível (T85-D0).
-    expect(find.text('Rook challenge · Easy'), findsOneWidget);
+    // Só o título, sem o nível (regra da app bar da T85).
+    expect(find.text('Rook challenge'), findsOneWidget);
+    expect(find.textContaining('Rook challenge ·'), findsNothing);
     expect(tester.widget<AppBar>(find.byType(AppBar)).bottom, isNull);
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.byKey(StarChallengeKeys.levelChip),
-      ),
-      findsOneWidget,
-    );
     expect(find.text('1:00'), findsOneWidget);
     final boardWidget = tester.widget<Chessboard>(
       find.byKey(StarChallengeKeys.board),
@@ -337,7 +331,6 @@ void main() {
             tester.widget<AppBar>(find.byType(AppBar)).centerTitle,
             isTrue,
           );
-          expect(find.byKey(StarChallengeKeys.levelChip), findsOneWidget);
           await tester.tap(find.byKey(StarChallengeKeys.goButton));
           await tester.pumpAndSettle();
           final running = tester.getRect(find.byKey(StarChallengeKeys.board));

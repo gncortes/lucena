@@ -6426,7 +6426,7 @@
   },
   "levelManualHelp": "Just the number, from 400 to 3000.",
   "@levelManualHelp": {
-    "description": "Helper (and error) under the rating field."
+    "description": "Helper under the rating field while it is empty."
   },
   "levelManualSource": "Where is this number from?",
   "@levelManualSource": {
@@ -6764,6 +6764,22 @@
   "featuredContinue": "Continue",
   "@featuredContinue": {
     "description": "Button that opens the next steps after a featured endgame."
+  },
+  "featuredAlertTitle": "Want to know when another endgame like this comes out?",
+  "@featuredAlertTitle": {
+    "description": "Title of the card at the end of a featured endgame that offers the new-tournament-endgame alert."
+  },
+  "featuredAlertBody": "One alert per new tournament endgame, at most one a day. You can turn it off in Profile, alert by alert.",
+  "@featuredAlertBody": {
+    "description": "Body of the featured endgame alert card: frequency and where to turn it off."
+  },
+  "featuredAlertAccept": "Yes, notify me",
+  "@featuredAlertAccept": {
+    "description": "Filled button of the featured endgame alert card: turns the tournament alert on and asks the system permission."
+  },
+  "featuredAlertDecline": "Not now",
+  "@featuredAlertDecline": {
+    "description": "Text button of the featured endgame alert card: dismisses it for this endgame."
   },
   "featuredShare": "Share this endgame",
   "@featuredShare": {

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
+import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
@@ -178,6 +179,29 @@ void main() {
     await tour.load('pt');
     expect(tour.state.step, TourStep.board);
     expect(onboarding.saved.done, isTrue);
+  });
+
+  test('rever o tour (Sobre) percorre os seis passos sem apagar objetivo, '
+      'nível e região já gravados', () async {
+    const saved = UserProfile(
+      goal: GoalPreference.improve,
+      rating: 1650,
+      levelSource: LevelSource.manual,
+      country: 'BR',
+      state: 'PR',
+      city: 'Curitiba',
+    );
+    profile.profile = saved;
+    onboarding.saved = const Onboarding(done: true, step: 4);
+    final tour = cubit();
+    await tour.load('pt');
+    expect(tour.state.step, TourStep.board);
+    expect(await walk(tour), TourStep.values);
+    await tour.finish();
+    expect(profile.profile, saved);
+    expect(onboarding.saved.done, isTrue);
+    expect(onboarding.saved.inProgress, isFalse);
+    expect(onboarding.saved.step, 0);
   });
 
   test('sem voz no idioma, o estado diz isso', () async {
