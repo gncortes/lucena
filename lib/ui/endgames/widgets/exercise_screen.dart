@@ -61,6 +61,7 @@ import '../../../domain/use_cases/wiki_markup.dart';
 import 'move_sentence.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 
 /// Um exercício (T72): como a lição roteirizada, o balão do Viktor em cima,
 /// o tabuleiro e, embaixo, a notação dos lances. O feedback do lance vem na
@@ -778,43 +779,53 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 // comentado (canvas PropV2ExA3/A8).
                 child: ListenableBuilder(
                   listenable: _flash,
-                  builder: (context, _) => Chessboard(
-                    key: ExerciseKeys.board,
-                    size: size,
-                    controller: board,
-                    settings: boardSettings.chessground,
-                    orientation: state.side,
-                    shapes: {
-                      // A casa tocada na fala do professor.
-                      if (_flash.square case final flashed?)
-                        Circle(
-                          color: ScriptShapes.arrow(
-                            Theme.of(context).colorScheme,
-                            'b',
+                  // H-ANI-10: deslize do kit, captura e halo do xeque.
+                  builder: (context, _) => TabuleiroAnimado(
+                    controlador: board,
+                    orientacao: state.side,
+                    tamanho: size,
+                    pecas: boardSettings.chessground.pieceAssets,
+                    child: Chessboard(
+                      key: ExerciseKeys.board,
+                      size: size,
+                      controller: board,
+                      settings: TabuleiroAnimado.ajustes(
+                        context,
+                        boardSettings.chessground,
+                      ),
+                      orientation: state.side,
+                      shapes: {
+                        // A casa tocada na fala do professor.
+                        if (_flash.square case final flashed?)
+                          Circle(
+                            color: ScriptShapes.arrow(
+                              Theme.of(context).colorScheme,
+                              'b',
+                            ),
+                            orig: Square.fromName(flashed),
                           ),
-                          orig: Square.fromName(flashed),
-                        ),
-                      if (hint is NormalMove)
-                        Arrow(
-                          color: AppColors.successColor.withValues(
-                            alpha: AppColors.boardMarkAlpha,
+                        if (hint is NormalMove)
+                          Arrow(
+                            color: AppColors.successColor.withValues(
+                              alpha: AppColors.boardMarkAlpha,
+                            ),
+                            orig: hint.from,
+                            dest: hint.to,
                           ),
-                          orig: hint.from,
-                          dest: hint.to,
-                        ),
-                      if (wrong is NormalMove)
-                        Arrow(
-                          color: AppColors.errorColor.withValues(
-                            alpha: AppColors.boardMarkAlpha,
+                        if (wrong is NormalMove)
+                          Arrow(
+                            color: AppColors.errorColor.withValues(
+                              alpha: AppColors.boardMarkAlpha,
+                            ),
+                            orig: wrong.from,
+                            dest: wrong.to,
                           ),
-                          orig: wrong.from,
-                          dest: wrong.to,
-                        ),
-                    },
-                    onMove: (move, {viaDragAndDrop}) =>
-                        widget.trainingTest && !state.locked
-                        ? _submitTestMove(move)
-                        : context.read<ExerciseCubit>().play(move),
+                      },
+                      onMove: (move, {viaDragAndDrop}) =>
+                          widget.trainingTest && !state.locked
+                          ? _submitTestMove(move)
+                          : context.read<ExerciseCubit>().play(move),
+                    ),
                   ),
                 ),
               ),

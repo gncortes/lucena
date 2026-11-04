@@ -26,6 +26,7 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/goldens/golden_harness.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   setUpAll(Goldens.loadFonts);
@@ -116,6 +117,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.exerciseBoard), findsOneWidget);
+      expectTabuleiroAnimado(tester, TrainingKeys.exerciseBoard);
       void expectCenteredBoard() {
         expectTrainingSpeechFont(tester);
         final board = tester.getRect(find.byKey(TrainingKeys.exerciseBoard));

@@ -43,6 +43,7 @@ import '../../core/widgets/teacher_speech.dart';
 import '../../endgames/widgets/grade_widgets.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_exercise_cubit.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 
 /// Course-neutral destination. Navigation callbacks run only after persistence.
 class TrainingExerciseScreen extends StatelessWidget {
@@ -363,23 +364,30 @@ class _ExerciseViewState extends State<_ExerciseView> {
         : null;
     Widget board = Directionality(
       textDirection: TextDirection.ltr,
-      child: Chessboard(
-        key: TrainingKeys.exerciseBoard,
-        size: size,
-        controller: _controller!,
-        orientation: side,
-        settings: settings.chessground,
-        shapes: {
-          if (hint is NormalMove)
-            Arrow(
-              color: state.solving
-                  ? AppColors.trainingSolutionArrow
-                  : Theme.of(context).colorScheme.primary,
-              orig: hint.from,
-              dest: hint.to,
-            ),
-        },
-        onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
+      // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
+      child: TabuleiroAnimado(
+        controlador: _controller!,
+        orientacao: side,
+        tamanho: size,
+        pecas: settings.chessground.pieceAssets,
+        child: Chessboard(
+          key: TrainingKeys.exerciseBoard,
+          size: size,
+          controller: _controller!,
+          orientation: side,
+          settings: TabuleiroAnimado.ajustes(context, settings.chessground),
+          shapes: {
+            if (hint is NormalMove)
+              Arrow(
+                color: state.solving
+                    ? AppColors.trainingSolutionArrow
+                    : Theme.of(context).colorScheme.primary,
+                orig: hint.from,
+                dest: hint.to,
+              ),
+          },
+          onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
+        ),
       ),
     );
     if (widget.screen.homeHero) {

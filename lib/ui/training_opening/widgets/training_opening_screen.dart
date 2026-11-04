@@ -34,6 +34,7 @@ import '../../lesson_script/view_models/lesson_script_state.dart';
 import '../../lesson_script/widgets/script_move_list.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_opening_cubit.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 
 class TrainingOpeningScreen extends StatelessWidget {
   const TrainingOpeningScreen({
@@ -375,21 +376,28 @@ class _OpeningViewState extends State<_OpeningView> {
         : null;
     Widget board = Directionality(
       textDirection: TextDirection.ltr,
-      child: Chessboard(
-        key: TrainingKeys.openingBoard,
-        size: size,
-        controller: _controller!,
-        orientation: state.trecho!.black ? Side.black : Side.white,
-        settings: settings.chessground,
-        shapes: {
-          if (hint is NormalMove)
-            Arrow(
-              color: Theme.of(context).colorScheme.primary,
-              orig: hint.from,
-              dest: hint.to,
-            ),
-        },
-        onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
+      // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
+      child: TabuleiroAnimado(
+        controlador: _controller!,
+        orientacao: state.trecho!.black ? Side.black : Side.white,
+        tamanho: size,
+        pecas: settings.chessground.pieceAssets,
+        child: Chessboard(
+          key: TrainingKeys.openingBoard,
+          size: size,
+          controller: _controller!,
+          orientation: state.trecho!.black ? Side.black : Side.white,
+          settings: TabuleiroAnimado.ajustes(context, settings.chessground),
+          shapes: {
+            if (hint is NormalMove)
+              Arrow(
+                color: Theme.of(context).colorScheme.primary,
+                orig: hint.from,
+                dest: hint.to,
+              ),
+          },
+          onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
+        ),
       ),
     );
     if (widget.screen.homeHero) {

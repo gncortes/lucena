@@ -29,6 +29,7 @@ import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/script_fixture.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 const matrixPath = 'docs/qa/T85-integral/lesson-snapshots.json';
 const capturePath = String.fromEnvironment('T85_CAPTURE');
@@ -372,6 +373,7 @@ void main() {
           });
         }
         expect(find.byKey(LessonScriptKeys.board), findsOneWidget);
+        expectTabuleiroAnimado(tester, LessonScriptKeys.board);
         if ((data['id'] as String).endsWith('AbValeAqui')) {
           final boardRect = tester.getRect(find.byKey(LessonScriptKeys.board));
           final expectedTop =

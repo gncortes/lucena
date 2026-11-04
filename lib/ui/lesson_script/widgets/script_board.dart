@@ -14,6 +14,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/widgets/square_flash.dart';
 import '../view_models/lesson_script_state.dart';
 import 'board_coordinates.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 
 /// As cores das setas e das marcas do professor (protótipo T70: verde
 /// `0xcc15781b` como as marcas de `lesson_screen.dart`, azul = primária a 75%
@@ -377,19 +378,29 @@ class _ScriptBoardState extends State<ScriptBoard> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Chessboard(
-            key: LessonScriptKeys.board,
-            size: widget.size,
-            controller: _controller,
-            settings: coordinates
-                ? settings.copyWith(enableCoordinates: false)
-                : settings,
-            orientation: _orientation,
-            shapes: _drawn,
-            onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
-            onTouchedSquare: widget.state.touching && widget.onSquare != null
-                ? (square) => widget.onSquare!(square.name)
-                : null,
+          // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
+          TabuleiroAnimado(
+            controlador: _controller,
+            orientacao: _orientation,
+            tamanho: widget.size,
+            pecas: settings.pieceAssets,
+            child: Chessboard(
+              key: LessonScriptKeys.board,
+              size: widget.size,
+              controller: _controller,
+              settings: TabuleiroAnimado.ajustes(
+                context,
+                coordinates
+                    ? settings.copyWith(enableCoordinates: false)
+                    : settings,
+              ),
+              orientation: _orientation,
+              shapes: _drawn,
+              onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
+              onTouchedSquare: widget.state.touching && widget.onSquare != null
+                  ? (square) => widget.onSquare!(square.name)
+                  : null,
+            ),
           ),
           if (ghost != null)
             Positioned.fill(

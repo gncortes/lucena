@@ -23,6 +23,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_wiki.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   Future<ExerciseCubit> pump(
@@ -100,6 +101,7 @@ void main() {
       await tester.tap(find.byKey(TrainingKeys.testContinue));
       await tester.pumpAndSettle();
       expect(find.byKey(ExerciseKeys.board), findsOneWidget);
+      expectTabuleiroAnimado(tester, ExerciseKeys.board);
     },
   );
 
