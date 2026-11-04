@@ -91,11 +91,13 @@ class _HomeScreenState extends State<HomeScreen>
       },
       child: BlocListener<HomeCubit, HomeState>(
         // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
-        // Tour primeiro: a folha só sai sem tour pendente (uma por abertura).
+        // Tour e oferta primeiro: a folha só sai quando é a vez dela (uma por
+        // abertura).
         listenWhen: (previous, current) =>
-            current.streak.lost > 0 &&
-            (previous.streak.lost == 0 || previous.tourPending) &&
-            !current.tourPending,
+            current.lostSheetTurn &&
+            (previous.streak.lost == 0 ||
+                previous.tourPending ||
+                previous.offerPending),
         listener: (context, state) {
           final cubit = context.read<HomeCubit>();
           var played = false;

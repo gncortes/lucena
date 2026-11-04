@@ -6,6 +6,10 @@ import 'dart:async';
 
 import 'package:lucena/domain/models/find_move_checkpoint.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/featured/view_models/featured_alert_cubit.dart';
+
+import '../../../testing/fakes/fake_alerts_repository.dart';
+
 import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -142,6 +146,14 @@ void main() {
                   if (load) cubit.load();
                   return cubit;
                 },
+              ),
+              BlocProvider(
+                create: (_) => FeaturedAlertCubit(
+                  id: state.pathParameters['id'] ?? 'a',
+                  prompts: FakeFeaturedAlertsRepository(),
+                  alerts: FakeAlertsRepository(),
+                  push: FakePushRepository(),
+                ),
               ),
               RepositoryProvider<FeaturedProgressRepository>.value(
                 value: progress,

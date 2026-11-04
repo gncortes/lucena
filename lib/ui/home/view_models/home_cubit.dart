@@ -57,6 +57,7 @@ import '../../../domain/use_cases/home_shortcuts.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/mastery.dart';
+import '../../../domain/use_cases/opening_overlay.dart';
 import '../../../domain/use_cases/streak_rules.dart';
 import '../../../domain/use_cases/train_suggestion.dart';
 
@@ -67,6 +68,7 @@ class HomeState {
     this.ready = false,
     this.failed = false,
     this.tourPending = false,
+    this.offerPending = false,
     this.boardControlsDone = false,
     this.stage = OnboardingStage.tour,
     this.current,
@@ -97,6 +99,19 @@ class HomeState {
 
   /// A primeira abertura: o tour ainda não foi visto.
   final bool tourPending;
+
+  /// Só a folha da sequência perdida está na vez (nem tour, nem oferta).
+  bool get lostSheetTurn =>
+      OpeningOverlay.of(
+        tourPending: tourPending,
+        offerPending: offerPending,
+        streakLost: streak.lost > 0,
+      ) ==
+      OpeningOverlay.lostStreak;
+
+  /// A oferta (tela de venda) está na vez de abrir por cima do Início. Fica
+  /// falso até a frente D2 ligar a oferta.
+  final bool offerPending;
   final bool boardControlsDone;
 
   /// Com [tourPending], a tela da primeira abertura em que a pessoa parou.
@@ -211,6 +226,7 @@ class HomeState {
     ready: ready,
     failed: failed,
     tourPending: tourPending,
+    offerPending: offerPending,
     boardControlsDone: boardControlsDone,
     stage: stage,
     current: current,

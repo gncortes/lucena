@@ -72,6 +72,15 @@ class FakeFeaturedAlertsRepository implements FeaturedAlertsRepository {
 
   @override
   Future<void> setEnabled({required bool value}) async => all = value;
+
+  /// Os finais cujo cartão de aviso já foi respondido.
+  final prompted = <String>{};
+
+  @override
+  Future<bool> promptAnswered(String id) async => prompted.contains(id);
+
+  @override
+  Future<void> markPromptAnswered(String id) async => prompted.add(id);
 }
 
 /// Três finais em dois torneios: um em andamento em 1/1/2026 e outro passado.
