@@ -28,3 +28,20 @@ double escala(WidgetTester tester, Finder parte) {
   if (transforms.evaluate().length < 2) return 1;
   return tester.widget<Transform>(transforms.at(1)).transform.storage[0];
 }
+
+/// A opacidade que chega ao [alvo]: o produto de todos os `Opacity` e
+/// `FadeTransition` acima dele.
+double opacidadeAcima(WidgetTester tester, Finder alvo) {
+  var o = 1.0;
+  for (final e
+      in find.ancestor(of: alvo, matching: find.byType(Opacity)).evaluate()) {
+    o *= (e.widget as Opacity).opacity;
+  }
+  for (final e
+      in find
+          .ancestor(of: alvo, matching: find.byType(FadeTransition))
+          .evaluate()) {
+    o *= (e.widget as FadeTransition).opacity.value;
+  }
+  return o;
+}

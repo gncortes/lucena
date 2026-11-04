@@ -65,4 +65,19 @@ void main() {
     await tester.pumpWidget(tela(850, reduzir: true));
     expect(texto(tester), '850');
   });
+
+  testWidgets('rating sem separador de milhar: 1200, não 1.200', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MediaQuery(
+        data: MediaQueryData(disableAnimations: true),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: NumeroQueConta(valor: 1200, agrupar: false),
+        ),
+      ),
+    );
+    expect(texto(tester), '1200');
+  });
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/theme/app_colors.dart';
@@ -107,6 +108,20 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(CoreKeys.busySpinner), findsNothing);
       expect(find.text('Salvar'), findsOneWidget);
+    });
+
+    testWidgets('o estilo de texto chega ao rótulo', (tester) async {
+      await tester.pumpWidget(
+        app(
+          BusyButton(
+            label: 'Salvar',
+            textStyle: const TextStyle(fontSize: 13),
+            onPressed: () {},
+          ),
+        ),
+      );
+      final rotulo = tester.renderObject<RenderParagraph>(find.text('Salvar'));
+      expect(rotulo.text.style?.fontSize, 13);
     });
 
     testWidgets('busy de fora também liga o carregando', (tester) async {
