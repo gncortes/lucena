@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../routing/review_destinations.dart';
-import '../../../routing/routes.dart';
+import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/lucena_motion.dart';
@@ -16,7 +15,7 @@ import '../view_models/home_cubit.dart';
 
 /// O rating no alto da tela inicial, ao lado do nome do app (T83): o número
 /// com a variação da última partida e a seta, solto, sem pílula. Antes de ter
-/// rating, "Começando". Tocar abre os detalhes do rating (o gráfico e o histórico).
+/// rating, "Começando". Tocar abre "Seu progresso" (H-CON-03).
 class PlayerCard extends StatelessWidget {
   const PlayerCard({required this.state, super.key});
 
@@ -37,10 +36,11 @@ class PlayerCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppShape.full),
       ),
-      routeName: Routes.rating,
-      openBuilder: ratingDestination,
+      // H-CON-03: a pílula abre "Seu progresso" (o Histórico fica lá).
+      routeName: D2Paths.progress,
+      openBuilder: progressDestination,
       onFallback: () async {
-        await context.push<void>(Routes.rating);
+        await context.push<void>(D2Paths.progress);
       },
       closedBuilder: (context, open) => InkWell(
         key: HomeKeys.playerCard,
