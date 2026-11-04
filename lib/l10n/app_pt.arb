@@ -2673,5 +2673,195 @@
   "conCartaoTitleProgress": "Salve seu progresso",
   "conCartaoGames": "Partidas, rating e conquistas",
   "conCartaoLessons": "Lições e Jornada",
-  "conCartaoDevices": "Tudo em qualquer celular"
+  "conCartaoDevices": "Tudo em qualquer celular",
+  "venOfferBar": "Curso completo",
+  "venOfferHeadline": "Treine o que o seu jogo pede",
+  "venOfferIntro": "Você faz o teste, escolhe seu objetivo e treina todo dia a parte de hoje de cada meta.",
+  "venOfferTake": "O que você leva",
+  "venBenefitChapters": "20 capítulos e 105 lições",
+  "venBenefitChaptersText": "Lições com o Viktor, do primeiro lance ao cálculo de variantes.",
+  "venBenefitExercises": "Mais de 850 exercícios",
+  "venBenefitExercisesText": "Você joga a posição na hora. Errou? Tente de novo ou veja a solução.",
+  "venBenefitLevel": "Seu nível em 15 posições",
+  "venBenefitLevelText": "Cada parte do jogo aparece como Forte, Aprender ou Revisar.",
+  "venBenefitTournament": "Treine até o dia do torneio",
+  "venBenefitTournamentText": "Marque a data e o plano escolhe os capítulos que cabem até lá. Quer só melhorar? Siga o curso em ordem.",
+  "venBenefitGoals": "Várias metas ao mesmo tempo",
+  "venBenefitGoalsText": "Cada uma com a parte de hoje, no tempo que você tem.",
+  "venBenefitProgress": "Seu progresso à vista",
+  "venBenefitProgressText": "Cada tema ganha nota pelos últimos 7 exercícios.",
+  "venOfferChoose": "Escolha como ter o Pilares",
+  "venPlanLifetime": "Acesso vitalício ao Pilares",
+  "venPlanBest": "Melhor escolha",
+  "venPlanLifetimeText": "Pagamento único, com as atualizações incluídas.",
+  "venPlanLifetimePrice": "{price} uma vez",
+  "@venPlanLifetimePrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venPlanMonthly": "Assinatura mensal do Pilares",
+  "venPlanMonthlyText": "Acesso ao curso enquanto a assinatura estiver ativa.",
+  "venPerMonth": "{price}/mês",
+  "@venPerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscriptionInfo": "Como funciona a assinatura",
+  "venSubscriptionRenew": "Renova automaticamente todo mês, com cobrança pela Google Play, até você cancelar.",
+  "venSubscriptionCancel": "Cancele quando quiser em Google Play › Pagamentos e assinaturas › Assinaturas. O acesso segue até o fim do período já pago.",
+  "venSubscriptionEnd": "Quando a assinatura terminar, seu progresso fica salvo e você volta ao Capítulo 1, com anúncios.",
+  "venSubscriptionRefund": "Você pode desistir em até 7 dias após a compra e receber o valor de volta, pela Google Play ou por gncortes.apps@gmail.com.",
+  "venBuyLifetime": "Comprar por {price}",
+  "@venBuyLifetime": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venBuyMonthly": "Assinar por {price}/mês",
+  "@venBuyMonthly": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestore": "Restaurar compra",
+  "venProcessing": "Confirmando a compra",
+  "venCanceled": "Compra cancelada. Nada foi cobrado.",
+  "venErrorBanner": "Não foi possível concluir a compra. Se houve cobrança, o curso é liberado. Se não, nada foi cobrado.",
+  "venOfflineBanner": "Você precisa de conexão com a internet para comprar o curso.",
+  "venDoneTitle": "O curso completo é seu",
+  "venDoneText": "Os 20 capítulos estão liberados. Com o seu objetivo, a gente planeja junto a sua rotina de estudos.",
+  "venDefineGoal": "Definir meu objetivo",
+  "venSeeCourse": "Ver o curso",
+  "venPendingTitle": "Pagamento pendente",
+  "venPendingText": "Assim que for confirmado, o curso é liberado. Você não paga de novo.",
+  "venPendingOk": "Entendi",
+  "venRestoreText": "Comprou em outro aparelho ou pelo site? Procuramos a compra na conta {email}.",
+  "@venRestoreText": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestoreAccount": "Conta",
+  "venRestoreSearch": "Procurar minha compra",
+  "venRestoredTitle": "Compra restaurada",
+  "venRestoredText": "O curso completo está liberado neste aparelho.",
+  "venRestoredSite": "Você comprou pelo site. O curso completo está liberado nesta conta.",
+  "venContinueCourse": "Continuar o curso",
+  "venNotFound": "Não encontramos nenhuma compra nesta conta. Se você comprou com outro e-mail, entre com ele.",
+  "venOtherAccount": "Entrar com outra conta",
+  "venSeeFull": "Ver o curso completo",
+  "venSiteBar": "Entrar",
+  "venSiteTitle": "Comprou pelo site?",
+  "venSiteText": "Entre com o mesmo e-mail ou a mesma conta Google da compra e o curso é liberado.",
+  "venSiteGoogle": "Entrar com Google",
+  "venSiteEmail": "Entrar com e-mail",
+  "venEndedBar": "Pilares",
+  "venEndedTitle": "Sua assinatura terminou",
+  "venEndedText": "Seu progresso continua salvo.",
+  "venEndedKeep": "O que continua com você",
+  "venEndedProgress": "Seu progresso",
+  "venEndedProgressText": "Lições, exercícios e testes que você já fez.",
+  "venEndedChapter1": "Capítulo 1",
+  "venEndedChapter1Text": "Liberado, com um anúncio ao entrar em cada lição e na lista de exercícios.",
+  "venEndedPaused": "O que fica em pausa",
+  "venEndedChapters": "Capítulos 2 a 20",
+  "venEndedChaptersText": "Voltam a ser liberados com o curso completo.",
+  "venEndedPlan": "Seu plano e suas metas",
+  "venEndedPlanText": "Voltam junto com o curso completo.",
+  "venEndedRenew": "Assinar de novo por {price}/mês",
+  "@venEndedRenew": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venEndedLifetime": "Acesso vitalício ao Pilares por {price}",
+  "@venEndedLifetime": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venCourseName": "Pilares do Xadrez",
+  "venBadgeDemo": "Demonstração",
+  "venBadgeLifetime": "Vitalício",
+  "venBadgeMonthly": "Mensal",
+  "venDemoText": "Você tem o Capítulo 1. O curso completo tem 20 capítulos.",
+  "venBoughtPlay": "Comprado em {date}, pela Google Play",
+  "@venBoughtPlay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venBoughtSite": "Comprado em {date}, pelo site",
+  "@venBoughtSite": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscribedPlay": "Assinado em {date}, pela Google Play",
+  "@venSubscribedPlay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venYourSubscription": "Sua assinatura",
+  "venLifetimeAccess": "Acesso vitalício",
+  "venMonthlyRenews": "Mensal · {price}/mês · renova em {date}",
+  "@venMonthlyRenews": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venMonthlyPending": "Mensal · {price}/mês · pagamento pendente",
+  "@venMonthlyPending": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venGraceWarning": "Regularize o pagamento até {date} para manter o acesso ao curso.",
+  "@venGraceWarning": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venManage": "Gerenciar na Google Play",
+  "venFixPayment": "Atualizar pagamento na Google Play",
+  "venDetails": "Detalhes do curso",
+  "conCompraTitle": "Crie sua conta para ver o Pilares do Xadrez",
+  "conCompraText": "A conta é grátis.",
+  "conCompraDevices": "O Pilares aparece em qualquer celular, mesmo se comprado pelo site",
+  "conCompraSaved": "Lições, Jornada, partidas e conquistas ficam salvos",
+  "conCompraSync": "O que você fez neste celular também fica salvo na conta",
+  "venRefLifetime": "R$ 99,90",
+  "venRefMonthly": "R$ 19,90"
 }

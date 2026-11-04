@@ -25,6 +25,14 @@ class AppColors extends ThemeExtension<AppColors> {
   static const cardOutline = Color(0xffe1e5df);
   static const sheetSurface = Color(0xfff5f7f4);
 
+  /// Fim de um passo (T85-D2, venda): o círculo verde do concluído, o
+  /// amarelo da espera (pagamento pendente) e o fundo do aviso de erro.
+  static const successSurface = Color(0xffe2f0e4);
+  static const successOnSurface = Color(0xff2e6b45);
+  static const waitingSurface = Color(0xfffff1cc);
+  static const waitingOnSurface = Color(0xff7a5900);
+  static const errorSurface = Color(0xfffce4e1);
+
   /// O verde do recorde novo (texto e ícone do troféu).
   static const record = Color(0xff2e6b3a);
 

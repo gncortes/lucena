@@ -54,10 +54,20 @@ String afterConsent(String from, {required bool offline}) => _isTraining(from)
     ? Routes.afterAccount(from)
     : Routes.accountDataFrom(from, welcome: true);
 
-// O portão do pacote de treino retoma sozinho depois da conta.
+// O portão do pacote de treino e a compra do Pilares (H-CON-05) retomam
+// sozinhos depois da conta.
 bool _isTraining(String from) =>
     Routes.isRouteFrom(from) &&
-    Uri.tryParse(from)?.path.startsWith('/training/') == true;
+    switch (Uri.tryParse(from)?.path) {
+      final path? => path.startsWith('/training/') || isPurchase(from),
+      null => false,
+    };
+
+/// A conta pedida pela compra do Pilares (H-CON-05): sem "Agora não", com a
+/// seta de voltar para a oferta.
+bool isPurchase(String from) =>
+    Routes.isRouteFrom(from) &&
+    Uri.tryParse(from)?.path.startsWith('/pilares/') == true;
 
 /// O fim da conta (`Routes.afterAccount`): vinda de uma rota, o destino toma
 /// o lugar da tela da conta, e quem abriu a conta fica por baixo.

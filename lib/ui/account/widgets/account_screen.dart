@@ -71,7 +71,8 @@ class _AccountView extends StatelessWidget {
     // Aberta de uma rota (o link, H-CON-04): é o convite, com "Agora não";
     // a tela seguinte toma o lugar desta, e voltar do fim volta para quem
     // abriu a conta.
-    final invite = Routes.isRouteFrom(from);
+    final purchase = isPurchase(from);
+    final invite = Routes.isRouteFrom(from) && !purchase;
     // Aberta por cima (Perfil ou "Já tenho conta"), fechar volta.
     void close() => context.canPop()
         ? context.pop()
@@ -111,31 +112,60 @@ class _AccountView extends StatelessWidget {
             if (!didPop && !busy) unawaited(later());
           },
           child: Scaffold(
-            key: AccountKeys.enterScreen,
-            appBar: LucenaAppBar(
-              automaticallyImplyLeading: false,
-              leading: IconButton(
-                key: AccountKeys.close,
-                icon: const Icon(Icons.close),
-                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                onPressed: invite ? () => unawaited(later()) : close,
-              ),
-            ),
+            key: purchase
+                ? AccountKeys.purchaseScreen
+                : AccountKeys.enterScreen,
+            appBar: purchase
+                // A compra exige conta: voltar leva à oferta (H-CON-05).
+                ? LucenaAppBar(
+                    leading: BackButton(
+                      key: AccountKeys.purchaseBack,
+                      onPressed: close,
+                    ),
+                    title: Text(l10n.accountCreate),
+                  )
+                : LucenaAppBar(
+                    automaticallyImplyLeading: false,
+                    leading: IconButton(
+                      key: AccountKeys.close,
+                      icon: const Icon(Icons.close),
+                      tooltip: MaterialLocalizations.of(context)
+                          .closeButtonTooltip,
+                      onPressed: invite ? () => unawaited(later()) : close,
+                    ),
+                  ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.xl,
                 vertical: AppSpacing.lg,
               ),
-              child: AccountInviteHeader(
-                title: invite ? l10n.conConviteTitle : l10n.conEntradaTitle,
-                text: invite ? l10n.conConviteLater : l10n.accountEntryText,
-                titleKey: AccountKeys.enterTitle,
-                textKey: AccountKeys.enterText,
-                benefits: [
-                  (Icons.cloud_done, l10n.conEntradaSaved),
-                  (Icons.wifi_off, l10n.conEntradaOffline),
-                ],
-              ),
+              child: purchase
+                  ? AccountInviteHeader(
+                      icon: Icons.school,
+                      title: l10n.conCompraTitle,
+                      text: l10n.conCompraText,
+                      titleKey: AccountKeys.enterTitle,
+                      textKey: AccountKeys.enterText,
+                      benefits: [
+                        (Icons.devices, l10n.conCompraDevices),
+                        (Icons.cloud_done, l10n.conCompraSaved),
+                        (Icons.sync, l10n.conCompraSync),
+                      ],
+                    )
+                  : AccountInviteHeader(
+                      title: invite
+                          ? l10n.conConviteTitle
+                          : l10n.conEntradaTitle,
+                      text: invite
+                          ? l10n.conConviteLater
+                          : l10n.accountEntryText,
+                      titleKey: AccountKeys.enterTitle,
+                      textKey: AccountKeys.enterText,
+                      benefits: [
+                        (Icons.cloud_done, l10n.conEntradaSaved),
+                        (Icons.wifi_off, l10n.conEntradaOffline),
+                      ],
+                    ),
             ),
             bottomNavigationBar: ActionsFooter(
               stacked: true,

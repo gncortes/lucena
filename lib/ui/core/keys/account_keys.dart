@@ -10,6 +10,10 @@ abstract final class AccountKeys {
   static const enterTitle = Key('account.enter.title');
   static const enterText = Key('account.enter.text');
   static const close = Key('account.close');
+
+  /// A conta pedida pela compra do Pilares (H-CON-05).
+  static const purchaseScreen = Key('purchase.accountRequired');
+  static const purchaseBack = Key('purchase.accountRequired.back');
   static const google = Key('account.google');
   static const email = Key('account.email');
   static const later = Key('account.later');

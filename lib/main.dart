@@ -115,6 +115,8 @@ import 'routing/push_route.dart';
 import 'routing/router.dart';
 import 'routing/screen_tracker.dart';
 import 'routing/stream_refresh.dart';
+import 'ui/pilares_sale/view_models/pilares_purchase_watch_cubit.dart';
+import 'ui/pilares_sale/widgets/pilares_purchase_bridge.dart';
 import 'ui/update/view_models/update_cubit.dart';
 import 'ui/update/widgets/update_bridge.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
@@ -874,6 +876,14 @@ class _LucenaAppState extends State<LucenaApp> {
             ),
           ),
           BlocProvider(
+            // A compra vigiada no app todo (H-VEN-05/06/10).
+            lazy: false,
+            create: (context) => PilaresPurchaseWatchCubit(
+              purchases: dependencies.purchaseRepository,
+              analytics: dependencies.analyticsRepository,
+            ),
+          ),
+          BlocProvider(
             create: (context) =>
                 WikiLinksCubit(dependencies.wikiLinksRepository)..load(),
           ),
@@ -923,15 +933,18 @@ class _LucenaAppState extends State<LucenaApp> {
                 // Abaixo das traduções: os textos dos lembretes vêm delas.
                 builder: (context, child) => UpdateBridge(
                   router: router,
-                  child: RemindersBridge(
-                    onOpen: (route) {
-                      unawaited(
-                        _analytics.alertOpened(route, channel: 'local'),
-                      );
-                      _router?.push(route);
-                    },
-                    child: SettingsSaveFailureListener(
-                      child: child ?? const SizedBox.shrink(),
+                  child: PilaresPurchaseBridge(
+                    router: router,
+                    child: RemindersBridge(
+                      onOpen: (route) {
+                        unawaited(
+                          _analytics.alertOpened(route, channel: 'local'),
+                        );
+                        _router?.push(route);
+                      },
+                      child: SettingsSaveFailureListener(
+                        child: child ?? const SizedBox.shrink(),
+                      ),
                     ),
                   ),
                 ),

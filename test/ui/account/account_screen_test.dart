@@ -363,4 +363,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('rota-objetivo'), findsOneWidget);
   });
+
+  group('H-CON-05: a conta pedida na compra do Pilares', () {
+    const offer = '/pilares/offer?plano=mensal';
+
+    testWidgets('1. "Criar conta" na app bar, o porquê da conta e sem '
+        '"Agora não"', (tester) async {
+      await pumpAccount(tester, from: offer, locale: const Locale('pt'));
+      expect(find.byKey(AccountKeys.purchaseScreen), findsOneWidget);
+      final bar = tester.widget<AppBar>(find.byType(AppBar).last);
+      expect(bar.bottom, isNull);
+      expect(
+        find.descendant(
+          of: find.byType(AppBar).last,
+          matching: find.text('Criar conta'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Crie sua conta para ver o Pilares do Xadrez'),
+        findsOneWidget,
+      );
+      expect(find.text('Agora não'), findsNothing);
+      expect(find.byKey(AccountKeys.purchaseBack), findsOneWidget);
+    });
+
+    testWidgets('2. voltar fecha a conta e volta para a oferta', (
+      tester,
+    ) async {
+      await pumpAccount(tester, from: offer, locale: const Locale('pt'));
+      await tester.tap(find.byKey(AccountKeys.purchaseBack));
+      await tester.pumpAndSettle();
+      expect(find.byKey(AccountKeys.purchaseScreen), findsNothing);
+      expect(find.text('base'), findsOneWidget);
+    });
+  });
 }

@@ -13139,5 +13139,457 @@
   "conCartaoDevices": "Everything on any phone",
   "@conCartaoDevices": {
     "description": "Benefício do cartão de convite de conta (H-CON-02/03)."
+  },
+  "venOfferBar": "Full course",
+  "@venOfferBar": {
+    "description": "App bar da oferta do Pilares (PropV2CompraA, H-VEN-03)."
+  },
+  "venOfferHeadline": "Train what your game needs",
+  "@venOfferHeadline": {
+    "description": "Título da oferta (H-VEN-03)."
+  },
+  "venOfferIntro": "You take the test, choose your goal and train today's part of each goal every day.",
+  "@venOfferIntro": {
+    "description": "Texto de abertura da oferta (H-VEN-03)."
+  },
+  "venOfferTake": "What you get",
+  "@venOfferTake": {
+    "description": "Seção da oferta (H-VEN-03)."
+  },
+  "venBenefitChapters": "20 chapters and 105 lessons",
+  "@venBenefitChapters": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitChaptersText": "Lessons with Viktor, from the first move to calculating variations.",
+  "@venBenefitChaptersText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitExercises": "Over 850 exercises",
+  "@venBenefitExercises": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitExercisesText": "You play the position right away. Got it wrong? Try again or see the solution.",
+  "@venBenefitExercisesText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitLevel": "Your level in 15 positions",
+  "@venBenefitLevel": {
+    "description": "Item da oferta (H-VEN-03/04)."
+  },
+  "venBenefitLevelText": "Each part of the game shows as Strong, Learn or Review.",
+  "@venBenefitLevelText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitTournament": "Train until tournament day",
+  "@venBenefitTournament": {
+    "description": "Item da oferta (H-VEN-03/04)."
+  },
+  "venBenefitTournamentText": "Set the date and the plan picks the chapters that fit until then. Just want to improve? Follow the course in order.",
+  "@venBenefitTournamentText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitGoals": "Several goals at once",
+  "@venBenefitGoals": {
+    "description": "Item da oferta (H-VEN-03/04)."
+  },
+  "venBenefitGoalsText": "Each with today's part, in the time you have.",
+  "@venBenefitGoalsText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitProgress": "Your progress at a glance",
+  "@venBenefitProgress": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venBenefitProgressText": "Each theme is graded by its last 7 exercises.",
+  "@venBenefitProgressText": {
+    "description": "Item da oferta (H-VEN-03)."
+  },
+  "venOfferChoose": "Choose how to get Pilares",
+  "@venOfferChoose": {
+    "description": "Seção dos planos na oferta (H-VEN-03)."
+  },
+  "venPlanLifetime": "Lifetime access to Pilares",
+  "@venPlanLifetime": {
+    "description": "Cartão do plano vitalício (H-VEN-03)."
+  },
+  "venPlanBest": "Best choice",
+  "@venPlanBest": {
+    "description": "Selo do plano vitalício (H-VEN-03)."
+  },
+  "venPlanLifetimeText": "One-time payment, updates included.",
+  "@venPlanLifetimeText": {
+    "description": "Cartão do plano vitalício (H-VEN-03)."
+  },
+  "venPlanLifetimePrice": "{price} once",
+  "@venPlanLifetimePrice": {
+    "description": "Preço do vitalício no cartão; price vem da Google Play (H-VEN-03).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venPlanMonthly": "Pilares monthly subscription",
+  "@venPlanMonthly": {
+    "description": "Cartão do plano mensal (H-VEN-03)."
+  },
+  "venPlanMonthlyText": "Access to the course while the subscription is active.",
+  "@venPlanMonthlyText": {
+    "description": "Cartão do plano mensal (H-VEN-03)."
+  },
+  "venPerMonth": "{price}/month",
+  "@venPerMonth": {
+    "description": "Preço mensal; price vem da Google Play (H-VEN-03/09).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscriptionInfo": "How the subscription works",
+  "@venSubscriptionInfo": {
+    "description": "Cartão do plano mensal (H-VEN-03)."
+  },
+  "venSubscriptionRenew": "Renews automatically every month, billed by Google Play, until you cancel.",
+  "@venSubscriptionRenew": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venSubscriptionCancel": "Cancel anytime in Google Play › Payments & subscriptions › Subscriptions. Access continues until the end of the paid period.",
+  "@venSubscriptionCancel": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venSubscriptionEnd": "When the subscription ends, your progress stays saved and you go back to Chapter 1, with ads.",
+  "@venSubscriptionEnd": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venSubscriptionRefund": "You can cancel within 7 days of purchase and get a refund, through Google Play or at gncortes.apps@gmail.com.",
+  "@venSubscriptionRefund": {
+    "description": "Linha de Como funciona a assinatura (H-VEN-03)."
+  },
+  "venBuyLifetime": "Buy for {price}",
+  "@venBuyLifetime": {
+    "description": "Botão principal da oferta com o vitalício (H-VEN-03).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venBuyMonthly": "Subscribe for {price}/month",
+  "@venBuyMonthly": {
+    "description": "Botão principal da oferta com o mensal (H-VEN-03).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestore": "Restore purchase",
+  "@venRestore": {
+    "description": "Botão e título de restaurar a compra (H-VEN-03/08/09)."
+  },
+  "venProcessing": "Confirming the purchase",
+  "@venProcessing": {
+    "description": "Rótulo de leitor de tela do botão em carregando (H-VEN-05)."
+  },
+  "venCanceled": "Purchase canceled. You were not charged.",
+  "@venCanceled": {
+    "description": "Aviso ao fechar a folha da loja (H-VEN-06)."
+  },
+  "venErrorBanner": "The purchase could not be completed. If you were charged, the course will be unlocked. If not, you were not charged.",
+  "@venErrorBanner": {
+    "description": "Aviso de erro da compra (H-VEN-06)."
+  },
+  "venOfflineBanner": "You need an internet connection to buy the course.",
+  "@venOfflineBanner": {
+    "description": "Aviso sem internet na compra (H-VEN-06)."
+  },
+  "venDoneTitle": "The full course is yours",
+  "@venDoneTitle": {
+    "description": "Compra concluída (H-VEN-05)."
+  },
+  "venDoneText": "All 20 chapters are unlocked. With your goal, we plan your study routine together.",
+  "@venDoneText": {
+    "description": "Compra concluída (H-VEN-05)."
+  },
+  "venDefineGoal": "Set my goal",
+  "@venDefineGoal": {
+    "description": "Botão da compra concluída e restaurada (H-VEN-05/08, V-gap 10)."
+  },
+  "venSeeCourse": "See the course",
+  "@venSeeCourse": {
+    "description": "Botão da compra concluída (H-VEN-05)."
+  },
+  "venPendingTitle": "Payment pending",
+  "@venPendingTitle": {
+    "description": "Compra pendente (H-VEN-06)."
+  },
+  "venPendingText": "As soon as it's confirmed, the course is unlocked. You won't pay again.",
+  "@venPendingText": {
+    "description": "Compra pendente (H-VEN-06)."
+  },
+  "venPendingOk": "Got it",
+  "@venPendingOk": {
+    "description": "Botão da compra pendente (H-VEN-06)."
+  },
+  "venRestoreText": "Bought on another device or on the website? We look for the purchase in the account {email}.",
+  "@venRestoreText": {
+    "description": "Restaurar compra (H-VEN-08).",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "venRestoreAccount": "Account",
+  "@venRestoreAccount": {
+    "description": "Linha da conta em Restaurar compra (H-VEN-08)."
+  },
+  "venRestoreSearch": "Find my purchase",
+  "@venRestoreSearch": {
+    "description": "Botão de Restaurar compra (H-VEN-08)."
+  },
+  "venRestoredTitle": "Purchase restored",
+  "@venRestoredTitle": {
+    "description": "Compra restaurada (H-VEN-08)."
+  },
+  "venRestoredText": "The full course is unlocked on this device.",
+  "@venRestoredText": {
+    "description": "Compra restaurada (H-VEN-08)."
+  },
+  "venRestoredSite": "You bought on the website. The full course is unlocked on this account.",
+  "@venRestoredSite": {
+    "description": "Compra do site restaurada (H-VEN-08)."
+  },
+  "venContinueCourse": "Continue the course",
+  "@venContinueCourse": {
+    "description": "Botão da compra restaurada (H-VEN-08)."
+  },
+  "venNotFound": "We didn't find any purchase on this account. If you bought with another email, sign in with it.",
+  "@venNotFound": {
+    "description": "Restaurar sem compra (H-VEN-08)."
+  },
+  "venOtherAccount": "Sign in with another account",
+  "@venOtherAccount": {
+    "description": "Botão de Restaurar sem compra (H-VEN-08)."
+  },
+  "venSeeFull": "See the full course",
+  "@venSeeFull": {
+    "description": "Botão que abre a oferta (H-VEN-04/08)."
+  },
+  "venSiteBar": "Sign in",
+  "@venSiteBar": {
+    "description": "App bar de Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteTitle": "Bought on the website?",
+  "@venSiteTitle": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteText": "Sign in with the same email or Google account you used to buy and the course is unlocked.",
+  "@venSiteText": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteGoogle": "Sign in with Google",
+  "@venSiteGoogle": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venSiteEmail": "Sign in with email",
+  "@venSiteEmail": {
+    "description": "Comprou pelo site (H-VEN-08)."
+  },
+  "venEndedBar": "Pilares",
+  "@venEndedBar": {
+    "description": "App bar de Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedTitle": "Your subscription ended",
+  "@venEndedTitle": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedText": "Your progress is still saved.",
+  "@venEndedText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedKeep": "What you keep",
+  "@venEndedKeep": {
+    "description": "Seção de Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedProgress": "Your progress",
+  "@venEndedProgress": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedProgressText": "Lessons, exercises and tests you've done.",
+  "@venEndedProgressText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChapter1": "Chapter 1",
+  "@venEndedChapter1": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChapter1Text": "Unlocked, with an ad when you open each lesson and the exercise list.",
+  "@venEndedChapter1Text": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedPaused": "What's on hold",
+  "@venEndedPaused": {
+    "description": "Seção de Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChapters": "Chapters 2 to 20",
+  "@venEndedChapters": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedChaptersText": "Unlocked again with the full course.",
+  "@venEndedChaptersText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedPlan": "Your plan and goals",
+  "@venEndedPlan": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedPlanText": "They come back with the full course.",
+  "@venEndedPlanText": {
+    "description": "Assinatura encerrada (H-VEN-10)."
+  },
+  "venEndedRenew": "Subscribe again for {price}/month",
+  "@venEndedRenew": {
+    "description": "Botão de Assinatura encerrada (H-VEN-10).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venEndedLifetime": "Lifetime access to Pilares for {price}",
+  "@venEndedLifetime": {
+    "description": "Botão de Assinatura encerrada (H-VEN-10).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venCourseName": "Pilares do Xadrez",
+  "@venCourseName": {
+    "description": "Cartão do curso no Perfil (H-VEN-04/09)."
+  },
+  "venBadgeDemo": "Demo",
+  "@venBadgeDemo": {
+    "description": "Selo do cartão do curso no Perfil (H-VEN-04)."
+  },
+  "venBadgeLifetime": "Lifetime",
+  "@venBadgeLifetime": {
+    "description": "Selo do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venBadgeMonthly": "Monthly",
+  "@venBadgeMonthly": {
+    "description": "Selo do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venDemoText": "You have Chapter 1. The full course has 20 chapters.",
+  "@venDemoText": {
+    "description": "Cartão do curso no Perfil, demonstração (H-VEN-04)."
+  },
+  "venBoughtPlay": "Bought on {date}, through Google Play",
+  "@venBoughtPlay": {
+    "description": "Cartão do curso no Perfil, vitalício (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venBoughtSite": "Bought on {date}, on the website",
+  "@venBoughtSite": {
+    "description": "Cartão do curso no Perfil, compra do site (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venSubscribedPlay": "Subscribed on {date}, through Google Play",
+  "@venSubscribedPlay": {
+    "description": "Cartão do curso no Perfil, mensal (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venYourSubscription": "Your subscription",
+  "@venYourSubscription": {
+    "description": "Linha do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venLifetimeAccess": "Lifetime access",
+  "@venLifetimeAccess": {
+    "description": "Linha do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "venMonthlyRenews": "Monthly · {price}/month · renews on {date}",
+  "@venMonthlyRenews": {
+    "description": "Linha do cartão do curso no Perfil (H-VEN-09).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venMonthlyPending": "Monthly · {price}/month · payment pending",
+  "@venMonthlyPending": {
+    "description": "Linha do cartão do curso no Perfil, carência (H-VEN-09).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "venGraceWarning": "Fix your payment by {date} to keep access to the course.",
+  "@venGraceWarning": {
+    "description": "Aviso de carência no Perfil (H-VEN-09).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venManage": "Manage on Google Play",
+  "@venManage": {
+    "description": "Botão do cartão do curso, mensal (H-VEN-09)."
+  },
+  "venFixPayment": "Update payment on Google Play",
+  "@venFixPayment": {
+    "description": "Botão do cartão do curso, carência (H-VEN-09)."
+  },
+  "venDetails": "Course details",
+  "@venDetails": {
+    "description": "Botão do cartão do curso no Perfil (H-VEN-09)."
+  },
+  "conCompraTitle": "Create your account to get Chess Pillars",
+  "@conCompraTitle": {
+    "description": "Título da conta pedida ao comprar o Pilares (PropV2CompraSemConta, H-CON-05)."
+  },
+  "conCompraText": "The account is free.",
+  "@conCompraText": {
+    "description": "Texto da conta pedida ao comprar o Pilares (H-CON-05)."
+  },
+  "conCompraDevices": "Pillars shows up on any phone, even if bought on the website",
+  "@conCompraDevices": {
+    "description": "Benefício da conta pedida ao comprar (H-CON-05)."
+  },
+  "conCompraSaved": "Lessons, Journey, games and achievements stay saved",
+  "@conCompraSaved": {
+    "description": "Benefício da conta pedida ao comprar (H-CON-05)."
+  },
+  "conCompraSync": "What you did on this phone is also saved to the account",
+  "@conCompraSync": {
+    "description": "Benefício da conta pedida ao comprar (H-CON-05)."
+  },
+  "venRefLifetime": "R$ 99.90",
+  "@venRefLifetime": {
+    "description": "Preço de referência do vitalício, mostrado só quando a loja não devolve o preço (H-VEN-03, V-gap 1)."
+  },
+  "venRefMonthly": "R$ 19.90",
+  "@venRefMonthly": {
+    "description": "Preço de referência do mensal, mostrado só quando a loja não devolve o preço (H-VEN-03, V-gap 1)."
   }
 }

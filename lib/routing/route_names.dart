@@ -130,6 +130,7 @@ abstract final class RouteNames {
   static const pilaresSubscriptionEnded = 'pilaresSubscriptionEnded';
   static const pilaresBeforeHome = 'pilaresBeforeHome';
   static const pilaresPlan = 'pilaresPlan';
+  static const pilaresRestoreSite = 'pilaresRestoreSite';
   static const accountForgot = 'accountForgot';
   static const accountTerms = 'accountTerms';
   static const accountInvite = 'accountInvite';
