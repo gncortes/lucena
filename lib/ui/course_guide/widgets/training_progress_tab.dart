@@ -272,7 +272,7 @@ class TrainingProgressTab extends StatelessWidget {
                             child: SizedBox(
                               height: 14,
                               child: LayoutBuilder(
-                                builder: (context, box) {
+                                builder: (context, _) {
                                   final cycle = cycles[lesson.id]!;
                                   final incomplete = cycle.cycleDays.length < 7;
                                   final color = incomplete
@@ -282,31 +282,19 @@ class TrainingProgressTab extends StatelessWidget {
                                       : cycle.score >= 30
                                       ? AppColors.trainingMasteryDeveloping
                                       : colors.error;
-                                  return Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: 8,
-                                        child: AnimatedProgress(
-                                          roundValue: true,
-                                          value: incomplete
-                                              ? cycle.cycleDays.length / 7
-                                              : cycle.score / 100,
-                                          color: color,
-                                          backgroundColor: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                        ),
+                                  return Center(
+                                    child: SizedBox(
+                                      height: 8,
+                                      child: AnimatedProgress(
+                                        roundValue: true,
+                                        value: incomplete
+                                            ? cycle.cycleDays.length / 7
+                                            : cycle.score / 100,
+                                        color: color,
+                                        backgroundColor: Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                       ),
-                                      Positioned(
-                                        left: .7 * box.maxWidth,
-                                        top: 0,
-                                        child: Container(
-                                          width: 2,
-                                          height: 14,
-                                          color: colors.outline,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   );
                                 },
                               ),

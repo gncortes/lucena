@@ -110,6 +110,21 @@ void main() {
     return cubit;
   }
 
+  Future<CourseGuideCubit> emptyCubit() async {
+    final repository = FakeTrainingRepository(
+      content: {TrainingCourse.pilares: resources},
+    );
+    final cubit = CourseGuideCubit(
+      repository: repository,
+      config: TrainingCourseConfig.pilares,
+      now: FakeNow(DateTime(2026, 10, 28)),
+    );
+    addTearDown(cubit.close);
+    addTearDown(repository.dispose);
+    await cubit.load();
+    return cubit;
+  }
+
   for (final size in phoneSizes) {
     testWidgets(
       'detalhe embedded reutiliza shell e fase firme sem reforço em $size',
@@ -152,7 +167,7 @@ void main() {
       ),
     ]) {
       testWidgets(
-        'Canvas mastery ${sample.score} color and 70 percent marker at $size',
+        'Canvas mastery ${sample.score} color and no 70 percent marker at $size',
         (tester) async {
           setPhoneSize(tester, size);
           final subject = ThemeCycle(
@@ -203,10 +218,7 @@ void main() {
               (w) => w is Container && w.constraints?.maxWidth == 2,
             ),
           );
-          final mark = tester.getRect(marker);
-          expect(mark.size, const Size(2, 14));
-          expect(mark.left, closeTo(bar.left + .7 * bar.width, .001));
-          expect(mark.center.dy, bar.center.dy);
+          expect(marker, findsNothing);
           expect(tester.takeException(), isNull);
         },
       );
@@ -301,6 +313,45 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+
+    testWidgets('legenda e estado vazio das Estatísticas em $size', (
+      tester,
+    ) async {
+      setPhoneSize(tester, size);
+      final cubit = await load();
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          child: BlocProvider.value(
+            value: cubit,
+            child: Scaffold(body: TrainingProgressTab(onTheme: (_) {})),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final t = tester.element(find.byType(TrainingProgressTab)).l10n;
+      expect(
+        t.trainingProgressLegendTestPassed,
+        'Você passou · 9 de 12, o mínimo para passar',
+      );
+      expect(t.trainingProgressLegendTestBelow, 'Não passou · 8 ou menos');
+      expect(t.trainingMasteryNote, isNot(contains('marca')));
+      expect(t.courseGuideTabProgress, 'Estatísticas');
+      expect(t.trainingProgressEmptyTitle, 'Seu progresso aparece aqui');
+      final empty = await emptyCubit();
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          child: BlocProvider.value(
+            value: empty,
+            child: Scaffold(body: TrainingProgressTab(onTheme: (_) {})),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.progressEmpty), findsOneWidget);
+      expect(find.text('Seu progresso aparece aqui'), findsOneWidget);
+    });
 
     testWidgets(
       'detalhe lista histórico e reforço sem inventar tempo em $size',

@@ -10745,7 +10745,7 @@
   "@trainingCycleScore": {
     "description": "T85 progress, help and guided tour: trainingCycleScore."
   },
-  "trainingMasteryNote": "Score from the last 7 exercises. The marker is the 70% threshold.",
+  "trainingMasteryNote": "Score from the last 7 exercises.",
   "@trainingMasteryNote": {
     "description": "T85 daily goals and progress: trainingMasteryNote."
   },
@@ -11414,7 +11414,7 @@
   "@trainingProgressLegendTestGood": {
     "description": "Training progress copy matching the approved Canvas."
   },
-  "trainingProgressLegendTestPassed": "Pass · 9 of 12, the minimum to pass",
+  "trainingProgressLegendTestPassed": "You passed · 9 of 12, the minimum to pass",
   "@trainingProgressLegendTestPassed": {
     "description": "Training progress copy matching the approved Canvas."
   },
