@@ -78,8 +78,9 @@ class _HomeScreenState extends State<HomeScreen>
       // Primeira abertura: o tour antes de tudo (ou a tela em que a pessoa
       // parou). Com outra tela por cima (o desafio de um link), o tour
       // espera: "Conhecer o app" volta aqui.
-      listenWhen: (previous, current) =>
-          current.ready && current.tourPending && !previous.tourPending,
+      // A cada carga pronta: se o tour ficou esperando (outra tela por cima),
+      // ele abre quando o Início volta a ser a tela de cima.
+      listenWhen: (previous, current) => current.ready && current.tourPending,
       listener: (context, state) {
         if (ModalRoute.of(context)?.isCurrent ?? true) {
           context.go(switch (state.stage) {
@@ -91,8 +92,11 @@ class _HomeScreenState extends State<HomeScreen>
       },
       child: BlocListener<HomeCubit, HomeState>(
         // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
+        // Tour primeiro: a folha só sai sem tour pendente (uma por abertura).
         listenWhen: (previous, current) =>
-            current.streak.lost > 0 && previous.streak.lost == 0,
+            current.streak.lost > 0 &&
+            (previous.streak.lost == 0 || previous.tourPending) &&
+            !current.tourPending,
         listener: (context, state) {
           final cubit = context.read<HomeCubit>();
           var played = false;

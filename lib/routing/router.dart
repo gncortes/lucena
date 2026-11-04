@@ -683,6 +683,7 @@ GoRouter buildRouter({
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
+              onResume: true,
               onReturn: () =>
                   context.read<HomeCubit>().load(_language(context)),
               child: const HomeScreen(),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:lucena/domain/models/attempt.dart';
@@ -110,6 +112,41 @@ void main() {
       expect(identical(home.state, loaded), isTrue);
     },
   );
+
+  test(
+    'cargas em sequência não se acumulam: só a última emite (H-INI-01)',
+    () async {
+      final home = cubit();
+      final emitted = <HomeState>[];
+      final sub = home.stream.listen(emitted.add);
+      addTearDown(sub.cancel);
+      final first = home.load();
+      final second = home.load();
+      await Future.wait([first, second]);
+      await Future<void>.delayed(Duration.zero);
+      expect(emitted.where((each) => each.ready), hasLength(1));
+    },
+  );
+
+  test('ler o treino no Início não grava o estado (H-INI-01)', () async {
+    final scenario = TrainingScenarioBuilder(
+      TrainingCourse.pilares,
+      date: now(),
+    );
+    final training = FakeTrainingRepository(
+      states: {TrainingCourse.pilares: scenario.large()},
+      content: {TrainingCourse.pilares: scenario.content},
+    );
+    addTearDown(training.dispose);
+    final before = jsonEncode(
+      (await training.load(TrainingCourse.pilares)).toJson(),
+    );
+    final home = cubit(courseTraining: training);
+    await home.load();
+    expect(home.state.training, isNotNull);
+    final after = await training.load(TrainingCourse.pilares);
+    expect(jsonEncode(after.toJson()), before);
+  });
 
   test(
     'started daily course has priority and follows durable goal completion',

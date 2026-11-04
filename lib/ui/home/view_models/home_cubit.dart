@@ -455,16 +455,24 @@ class HomeCubit extends Cubit<HomeState> {
   final EndgameProgressRepository _endgameProgress;
 
   /// [language] escolhe as falas das aulas de finais (o título da aula).
+  ///
+  /// Cargas em sequência (voltar ao Início, segundo plano, "Tentar de novo")
+  /// não se acumulam: só a última responde, a mais velha termina sem emitir.
   Future<void> load([String language = 'en']) async {
+    final serial = ++_loadSerial;
     try {
-      await _load(language);
+      await _load(language, serial);
     } on Object catch (error, stack) {
       reportHandledError(error, stack);
-      if (!isClosed && !state.ready) emit(const HomeState(failed: true));
+      if (!isClosed && serial == _loadSerial && !state.ready) {
+        emit(const HomeState(failed: true));
+      }
     }
   }
 
-  Future<void> _load(String language) async {
+  int _loadSerial = 0;
+
+  Future<void> _load(String language, int serial) async {
     final onboarding = await _onboarding.load();
     final fulfilled = await _progress.fulfilledChallenges();
     final progress = Mastery.of(
@@ -519,7 +527,7 @@ class HomeCubit extends Cubit<HomeState> {
     final placementDone =
         _placement == null || await _placement.result() != null;
     final training = await _optionalContent(_trainingSummary);
-    if (isClosed) return;
+    if (isClosed || serial != _loadSerial) return;
     emit(
       HomeState(
         ready: true,
@@ -573,10 +581,8 @@ class HomeCubit extends Cubit<HomeState> {
       final before = await repository.load(config.course);
       if (!before.onboardingDone) continue;
       final resources = await repository.resources(config.course);
-      final state = await repository.update(
-        config.course,
-        (s) => BuildDayGoals(now, config)(s, resources),
-      );
+      // Só leitura: o Início calcula as metas do dia em memória e não grava.
+      final state = BuildDayGoals(now, config)(before, resources);
       active.add((config: config, state: state, resources: resources));
     }
     final latest = latestTrainingCourse(active.map((e) => e.state));
