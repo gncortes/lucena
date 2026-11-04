@@ -8,11 +8,18 @@ class FakeProfileRepository implements ProfileRepository {
   UserProfile profile;
   final saved = <UserProfile>[];
 
+  /// A próxima gravação falha (uma vez).
+  bool failNextSave = false;
+
   @override
   Future<UserProfile> load() async => profile;
 
   @override
   Future<void> save(UserProfile profile) async {
+    if (failNextSave) {
+      failNextSave = false;
+      throw StateError('save failed');
+    }
     this.profile = profile;
     saved.add(profile);
   }

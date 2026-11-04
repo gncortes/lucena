@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/goal/view_models/goal_cubit.dart';
 import 'package:lucena/ui/goal/widgets/goal_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -104,7 +105,7 @@ void main() {
     });
   }
 
-  testWidgets('Continuar com um objetivo de finais vai para o nível', (
+  testWidgets('Continuar com um objetivo de finais vai para o tour', (
     tester,
   ) async {
     await pumpGoal(tester);
@@ -112,26 +113,36 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(GoalKeys.continueButton));
     await tester.pumpAndSettle();
-    expect(find.text('rota-nivel'), findsOneWidget);
+    expect(find.text('rota-tour'), findsOneWidget);
     expect(profile.profile.goal, GoalPreference.train);
   });
 
-  testWidgets('aprender a jogar pula o nível', (tester) async {
+  testWidgets('aprender a jogar também segue para o tour', (tester) async {
     await pumpGoal(tester);
     await tester.tap(find.byKey(GoalKeys.option(GoalPreference.learn)));
     await tester.pump();
     await tester.tap(find.byKey(GoalKeys.continueButton));
     await tester.pumpAndSettle();
-    expect(find.text('rota-nivel'), findsNothing);
     expect(profile.profile.goal, GoalPreference.learn);
-    expect(find.text('rota-controles'), findsOneWidget);
+    expect(find.text('rota-tour'), findsOneWidget);
   });
 
-  testWidgets('a seta de voltar leva ao tour', (tester) async {
+  testWidgets('é a primeira tela: sem seta de voltar', (tester) async {
     await pumpGoal(tester);
-    await tester.tap(find.byKey(GoalKeys.back));
+    expect(find.byType(BackButton), findsNothing);
+  });
+
+  testWidgets('erro ao gravar: só "Tentar novamente"', (tester) async {
+    await pumpGoal(tester);
+    profile.failNextSave = true;
+    await tester.tap(find.byKey(GoalKeys.continueButton));
     await tester.pumpAndSettle();
-    expect(find.text('rota-tour'), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.action), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.back), findsNothing);
+    await tester.tap(find.byKey(LoadErrorKeys.action));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GoalKeys.screen), findsOneWidget);
   });
 
   testWidgets('"Já tenho conta" abre a conta', (tester) async {
