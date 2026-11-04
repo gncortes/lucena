@@ -16,6 +16,7 @@ import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
+import 'package:lucena/ui/course_guide/widgets/course_guide_copy.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
 import 'package:lucena/ui/course_guide/widgets/training_progress_tab.dart';
 
@@ -193,5 +194,26 @@ void main() {
     expect(find.text('Formatura'), findsOneWidget);
     expect(find.text('0 de 1'), findsWidgets);
     expect(find.byKey(TrainingKeys.pieceStars('rook')), findsOneWidget);
+  });
+
+  testWidgets('oferta de dobrar escreve o número por extenso', (tester) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: Builder(
+          builder: (c) {
+            context = c;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+    String body(int n) =>
+        courseGuideCopy(context, 'trainingEscolaDoubleBody', count: n);
+    expect(body(2), 'Entram hoje mais duas lições e os desafios delas.');
+    expect(body(4), 'Entram hoje mais quatro lições e os desafios delas.');
+    expect(body(8), 'Entram hoje mais oito lições e os desafios delas.');
+    expect(body(12), 'Entram hoje mais doze lições e os desafios delas.');
   });
 }

@@ -2233,7 +2233,7 @@
   "trainingSpeedrunGoalTitle": "Speedrun: os dois mates",
   "trainingBotGoal": "Contra o {bot} · {rating}",
   "trainingEscolaTabsCatalog": "todas as lições do curso.",
-  "trainingEscolaDoubleBody": "Entram hoje mais {words, select, w1{uma lição} w2{duas lições} w3{três lições} w4{quatro lições} w5{cinco lições} w6{seis lições} other{{n} lições}} e os desafios delas.",
+  "trainingEscolaDoubleBody": "Entram hoje mais {words, select, w1{uma lição} w2{duas lições} w3{três lições} w4{quatro lições} w5{cinco lições} w6{seis lições} w8{oito lições} w12{doze lições} other{{n} lições}} e os desafios delas.",
   "trainingEscolaTips3Title": "Diga o nome das casas",
   "trainingSectionBots": "CONTRA OS BOTS",
   "trainingEscolaTips3Body": "Ao mover, fale a casa: e4, d5. Logo você lê qualquer partida.",

@@ -24,7 +24,7 @@ String courseGuideCopy(BuildContext context, String key, {int count = 0}) {
   final t = context.l10n;
   if (key == 'trainingEscolaDoubleBody') {
     return t.trainingEscolaDoubleBody(
-      count >= 1 && count <= 6 ? 'w$count' : 'other',
+      const {1, 2, 3, 4, 5, 6, 8, 12}.contains(count) ? 'w$count' : 'other',
       count,
     );
   }

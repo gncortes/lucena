@@ -2107,7 +2107,7 @@
   "trainingSpeedrunGoalTitle": "[Špéédŕûñ: böth çhéçkmåtéš one two three]",
   "trainingBotGoal": "[Åĝåîñšt {bot} · {rating} one two three]",
   "trainingEscolaTabsCatalog": "[åll thé léššöñš îñ thé çöûŕšé. one two three]",
-  "trainingEscolaDoubleBody": "[Åñöthéŕ {words, select, w1{öñé léššöñ} w2{twö léššöñš} w3{thŕéé léššöñš} w4{föûŕ léššöñš} w5{fîvé léššöñš} w6{šîx léššöñš} other{{n} léššöñš}} åñd théîŕ çhålléñĝéš åŕé åddéd tödåý. one two three four five six seven eight nine ten one two three four five]",
+  "trainingEscolaDoubleBody": "[Åñöthéŕ {words, select, w1{öñé léššöñ} w2{twö léššöñš} w3{thŕéé léššöñš} w4{föûŕ léššöñš} w5{fîvé léššöñš} w6{šîx léššöñš} w8{éîĝht léššöñš} w12{twélvé léššöñš} other{{n} léššöñš}} åñd théîŕ çhålléñĝéš åŕé åddéd tödåý. one two three four five six seven eight nine ten one two three four five six seven eight]",
   "trainingEscolaTips3Title": "[Šåý thé šqûåŕé ñåméš one two]",
   "trainingSectionBots": "[ÅĜÅÎÑŠT THÉ BÖTŠ one two]",
   "trainingEscolaTips3Body": "[Whéñ ýöû mövé, šåý thé šqûåŕé: é4, d5. Šööñ ýöû wîll bé åblé tö ŕéåd åñý ĝåmé. one two three four five six seven]",
