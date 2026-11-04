@@ -770,9 +770,17 @@ class HomeCubit extends Cubit<HomeState> {
     final progress = _featuredProgress;
     final now = _now;
     if (repository == null || progress == null || now == null) return null;
-    final catalog = await repository.catalog();
-    final played = await progress.played();
-    return FeaturedRules.home(FeaturedRules.items(catalog, played, now: now()));
+    try {
+      final catalog = await repository.catalog();
+      final played = await progress.played();
+      return FeaturedRules.home(
+        FeaturedRules.items(catalog, played, now: now()),
+      );
+    } on Object {
+      // O catálogo ilegível é erro na lista de finais; na tela inicial o
+      // destaque só não aparece.
+      return null;
+    }
   }
 
   /// O cartão do modo novo saiu (fechado ou tocado): não volta.

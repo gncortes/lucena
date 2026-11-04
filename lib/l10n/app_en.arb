@@ -6638,10 +6638,6 @@
   "@featuredOriginChallenge": {
     "description": "Origin of a featured endgame: a challenge from the community."
   },
-  "featuredOriginAll": "All",
-  "@featuredOriginAll": {
-    "description": "Origin filter chip that shows every origin."
-  },
   "featuredThemeEscapedWin": "Win that slipped away",
   "@featuredThemeEscapedWin": {
     "description": "Theme label of a featured endgame where a won position was not converted."
@@ -6666,14 +6662,6 @@
         "type": "String"
       }
     }
-  },
-  "featuredCountryAll": "All countries",
-  "@featuredCountryAll": {
-    "description": "Country filter chip that shows every country."
-  },
-  "featuredFilterCountry": "Filter by country",
-  "@featuredFilterCountry": {
-    "description": "Tooltip of the country filter chip."
   },
   "featuredPlayers": "{white} × {black}",
   "@featuredPlayers": {
@@ -6729,14 +6717,6 @@
   "@featuredEmpty": {
     "description": "Empty state of the featured endgames list."
   },
-  "featuredEmptyFilters": "No endgames match these filters.",
-  "@featuredEmptyFilters": {
-    "description": "Empty state when the filters hide every featured endgame."
-  },
-  "featuredClearFilters": "Clear filters",
-  "@featuredClearFilters": {
-    "description": "Button that removes the country and origin filters."
-  },
   "featuredOngoing": "Happening now",
   "@featuredOngoing": {
     "description": "List section with the tournaments in progress."
@@ -6748,14 +6728,6 @@
   "featuredLive": "In progress",
   "@featuredLive": {
     "description": "Chip on a tournament that is happening now."
-  },
-  "featuredTournamentMissing": "This tournament is no longer available.",
-  "@featuredTournamentMissing": {
-    "description": "Message when a tournament id is not in the catalog."
-  },
-  "featuredTournamentFinals": "Endgames from this tournament",
-  "@featuredTournamentFinals": {
-    "description": "Section of the tournament screen with its featured endgames."
   },
   "featuredTournamentNoFinals": "Endgames show up here when the games finish.",
   "@featuredTournamentNoFinals": {
@@ -6801,17 +6773,9 @@
   "@featuredLinkInfo": {
     "description": "Link to a page about a tournament."
   },
-  "featuredAlertTournament": "Notify me about new endgames from this tournament",
-  "@featuredAlertTournament": {
-    "description": "Switch on the tournament screen to receive a notice for each new endgame of the tournament."
-  },
   "featuredEndgameTitle": "Featured endgame",
   "@featuredEndgameTitle": {
     "description": "App bar title of a featured endgame (before and during the game)."
-  },
-  "featuredEndgameMissing": "This endgame is no longer available.",
-  "@featuredEndgameMissing": {
-    "description": "Message when a featured endgame id is not in the catalog."
   },
   "featuredPromptWhite": "White to move. What would you play?",
   "@featuredPromptWhite": {
@@ -6964,15 +6928,6 @@
   "@featuredFindHintButton": {
     "description": "Button that shows a hint."
   },
-  "featuredOriginFilter": "{origin, select, tournament{Tournaments} video{Videos} online{Online games} historical{Historic} challenge{Challenges} other{Other}}",
-  "@featuredOriginFilter": {
-    "description": "Origin filter chip on the featured list (plural).",
-    "placeholders": {
-      "origin": {
-        "type": "String"
-      }
-    }
-  },
   "featuredNextLessonSub": "Chapter: {title}",
   "@featuredNextLessonSub": {
     "description": "Subtitle of \"Learn this endgame\": the lesson name.",
@@ -7117,27 +7072,6 @@
   "raceFeedbackWrong": "Wrong",
   "@raceFeedbackWrong": {
     "description": "Accessibility label of the wrong-move icon."
-  },
-  "raceEndTime": "Time is up",
-  "@raceEndTime": {
-    "description": "Result title when the clock ran out."
-  },
-  "raceEndErrors": "Three mistakes",
-  "@raceEndErrors": {
-    "description": "Result title when the third mistake ended the race."
-  },
-  "raceEndQuit": "Race ended",
-  "@raceEndQuit": {
-    "description": "Result title when the player left the race."
-  },
-  "raceNewRecord": "New record! It was {previous}",
-  "@raceNewRecord": {
-    "description": "Result: the player beat the record.",
-    "placeholders": {
-      "previous": {
-        "type": "int"
-      }
-    }
   },
   "raceStatErrors": "{count, plural, =1{mistake} other{mistakes}}",
   "@raceStatErrors": {
@@ -7908,134 +7842,6 @@
   "@dailyTitle": {
     "description": "Daily endgame: title of the game, the home strip and the result."
   },
-  "dailyGoal": "{side, select, white{White} other{Black}} to play and {goal, select, win{win} other{draw}}",
-  "@dailyGoal": {
-    "description": "Subtitle of the daily endgame game, before the first move: whose move it is and the goal.",
-    "placeholders": {
-      "side": {
-        "type": "String",
-        "example": "white"
-      },
-      "goal": {
-        "type": "String",
-        "example": "win"
-      }
-    }
-  },
-  "dailyBadge": "TODAY",
-  "@dailyBadge": {
-    "description": "Daily endgame: badge on the home card (in place of NEW)."
-  },
-  "dailyOpenResult": "See the result",
-  "@dailyOpenResult": {
-    "description": "Daily endgame game: button at the end of the game."
-  },
-  "dailyWon": "You won",
-  "@dailyWon": {
-    "description": "Daily endgame result: title when the person won."
-  },
-  "dailyDrew": "You drew",
-  "@dailyDrew": {
-    "description": "Daily endgame result: title for a draw when the goal was to win."
-  },
-  "dailyHeld": "You held the draw",
-  "@dailyHeld": {
-    "description": "Daily endgame result: title for a draw when the goal was to draw."
-  },
-  "dailyLost": "Not this time",
-  "@dailyLost": {
-    "description": "Daily endgame result: title when the goal was not met."
-  },
-  "dailyMeta": "{date} · {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyMeta": {
-    "description": "Daily endgame result: date and number of the person's moves.",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyLegendRight": "right move",
-  "@dailyLegendRight": {
-    "description": "Daily endgame result: legend of the green square."
-  },
-  "dailyLegendSlow": "still wins, but slower",
-  "@dailyLegendSlow": {
-    "description": "Daily endgame result: legend of the yellow square."
-  },
-  "dailyLegendBad": "spoiled the endgame",
-  "@dailyLegendBad": {
-    "description": "Daily endgame result: legend of the red square."
-  },
-  "dailyShareTitle": "Share",
-  "@dailyShareTitle": {
-    "description": "Daily endgame: share button and title of the share preview."
-  },
-  "dailyShareImageDate": "Daily endgame · {date}",
-  "@dailyShareImageDate": {
-    "description": "Daily endgame share image: header with the date.",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "dailyShareImageWon": "Won in {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyShareImageWon": {
-    "description": "Daily endgame share image: the result when the person won.",
-    "placeholders": {
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyShareImageDrew": "Drew in {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyShareImageDrew": {
-    "description": "Daily endgame share image: the result when the person drew.",
-    "placeholders": {
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyShareImageLost": "Played {moves, plural, =1{1 move} other{{moves} moves}}",
-  "@dailyShareImageLost": {
-    "description": "Daily endgame share image: the result when the goal was not met.",
-    "placeholders": {
-      "moves": {
-        "type": "int"
-      }
-    }
-  },
-  "dailyShareTextLabel": "TEXT THAT GOES WITH IT",
-  "@dailyShareTextLabel": {
-    "description": "Daily endgame share preview: label above the message text."
-  },
-  "dailyShareText": "Lucena daily endgame, {date}: {result} and my streak is at {days, plural, =1{1 day} other{{days} days}}. Can you find the move? {link}",
-  "@dailyShareText": {
-    "description": "Daily endgame: message shared with the image. {result} is the lowercase result line (for example \"ganhei em 12 lances\").",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "result": {
-        "type": "String"
-      },
-      "days": {
-        "type": "int"
-      },
-      "link": {
-        "type": "String"
-      }
-    }
-  },
-  "dailyShareNote": "The image only has the result: it does not show the position or the moves, so nobody sees the answer before playing.",
-  "@dailyShareNote": {
-    "description": "Daily endgame share preview: note under the image."
-  },
   "streakDays": "{count, plural, =1{1 day in a row} other{{count} days in a row}}",
   "@streakDays": {
     "description": "Streak: number of days in a row, in one line.",
@@ -8044,34 +7850,6 @@
         "type": "int"
       }
     }
-  },
-  "streakToRecord": "{left, plural, =1{1 day} other{{left} days}} to go for your record of {record}.",
-  "@streakToRecord": {
-    "description": "Daily endgame result, streak card: days left to beat the record.",
-    "placeholders": {
-      "left": {
-        "type": "int"
-      },
-      "record": {
-        "type": "int"
-      }
-    }
-  },
-  "streakAtRecord": "This is your record.",
-  "@streakAtRecord": {
-    "description": "Daily endgame result, streak card: the current streak is the record."
-  },
-  "crowdTomorrowTitle": "How many got it? Tomorrow.",
-  "@crowdTomorrowTitle": {
-    "description": "Daily endgame result: card title; the number comes the next day."
-  },
-  "crowdTomorrowText": "The number comes out when the day is over, and you see it here.",
-  "@crowdTomorrowText": {
-    "description": "Daily endgame result: card text."
-  },
-  "dailyContinue": "Continue",
-  "@dailyContinue": {
-    "description": "Daily endgame result: button that goes back home."
   },
   "settingsSectionApp": "App",
   "@settingsSectionApp": {
@@ -8570,67 +8348,6 @@
   "accountPhotoFailed": "Could not upload the photo. Check the internet and try again.",
   "@accountPhotoFailed": {
     "description": "Snack bar when the photo upload fails."
-  },
-  "dailyYesterdayTitle": "Yesterday's endgame",
-  "@dailyYesterdayTitle": {
-    "description": "Daily endgame result screen title, the day after."
-  },
-  "dailyWonYesterday": "You won yesterday",
-  "@dailyWonYesterday": {
-    "description": "Daily endgame result title the day after, when the player won."
-  },
-  "dailyDrewYesterday": "You drew yesterday",
-  "@dailyDrewYesterday": {
-    "description": "Daily endgame result title the day after, when the player drew."
-  },
-  "dailyHeldYesterday": "You held the draw yesterday",
-  "@dailyHeldYesterday": {
-    "description": "Daily endgame result title the day after, when the goal was to draw and the player drew."
-  },
-  "crowdPercent": "{percent}% got it right",
-  "@crowdPercent": {
-    "description": "How many players met the endgame goal on the first try.",
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "crowdPlayers": "{count} played",
-  "@crowdPlayers": {
-    "description": "Daily endgame: how many people played it.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
-  "crowdPlayersFinal": "{count} people played this endgame.",
-  "@crowdPlayersFinal": {
-    "description": "Featured endgame end: how many people played it.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
-  "crowdYouAre": "You are one of them.",
-  "@crowdYouAre": {
-    "description": "Daily endgame: the player got it right on the first try."
-  },
-  "crowdFewYesterday": "Few people played yesterday",
-  "@crowdFewYesterday": {
-    "description": "Daily endgame: too few players to show the percentage."
-  },
-  "crowdFew": "Few people played this endgame",
-  "@crowdFew": {
-    "description": "Featured endgame: too few players to show the percentage."
-  },
-  "crowdFewText": "The number shows from 30 people on.",
-  "@crowdFewText": {
-    "description": "Text under the \"few people played\" title."
   },
   "updateRequiredTitle": "Update Lucena",
   "@updateRequiredTitle": {
@@ -12713,5 +12430,154 @@
   "partidaAnaliseTitulo": "Game analysis",
   "@partidaAnaliseTitulo": {
     "description": "Title of the game details screen when the game is not found"
-  }
+  },
+  "desafiosDailyShareTooltip": "Share",
+  "@desafiosDailyShareTooltip": {
+    "description": "Daily endgame: desafiosDailyShareTooltip"
+  },
+  "desafiosDailyShareSheetTitle": "Share today's endgame",
+  "@desafiosDailyShareSheetTitle": {
+    "description": "Daily endgame: desafiosDailyShareSheetTitle"
+  },
+  "desafiosDailyShareButton": "Share",
+  "@desafiosDailyShareButton": {
+    "description": "Daily endgame: desafiosDailyShareButton"
+  },
+  "desafiosDailyShareText": "Lucena endgame of the day: {side, select, white{White to move} other{Black to move}} and {goal, select, win{win} other{draw}}. Can you do it? {link}",
+  "@desafiosDailyShareText": {
+    "description": "Daily endgame: desafiosDailyShareText",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "desafiosDailyShareTextWon": "I won Lucena's endgame of the day ({side, select, white{White to move} other{Black to move}} and {goal, select, win{win} other{draw}}). Try it too: {link}",
+  "@desafiosDailyShareTextWon": {
+    "description": "Daily endgame: desafiosDailyShareTextWon",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "desafiosDailyWinTitle": "Congratulations!",
+  "@desafiosDailyWinTitle": {
+    "description": "Daily endgame: desafiosDailyWinTitle"
+  },
+  "desafiosDailyWinBody": "You won today's endgame.",
+  "@desafiosDailyWinBody": {
+    "description": "Daily endgame: desafiosDailyWinBody"
+  },
+  "desafiosDailyWinShare": "Share",
+  "@desafiosDailyWinShare": {
+    "description": "Daily endgame: desafiosDailyWinShare"
+  },
+  "desafiosDailyWinLater": "Not now",
+  "@desafiosDailyWinLater": {
+    "description": "Daily endgame: desafiosDailyWinLater"
+  },
+  "desafiosDailyNone": "There is no endgame today. Come back tomorrow.",
+  "@desafiosDailyNone": {
+    "description": "Daily endgame: desafiosDailyNone"
+  },
+  "desafiosFeaturedBellTooltip": "New endgame notifications",
+  "@desafiosFeaturedBellTooltip": {
+    "description": "Featured: desafiosFeaturedBellTooltip"
+  },
+  "desafiosFeaturedBellOn": "New endgame notifications on",
+  "@desafiosFeaturedBellOn": {
+    "description": "Featured: desafiosFeaturedBellOn"
+  },
+  "desafiosFeaturedBellOff": "New endgame notifications off",
+  "@desafiosFeaturedBellOff": {
+    "description": "Featured: desafiosFeaturedBellOff"
+  },
+  "desafiosFeaturedBellDenied": "Notifications are turned off on this device. Turn them on in settings to get the alert.",
+  "@desafiosFeaturedBellDenied": {
+    "description": "Featured: desafiosFeaturedBellDenied"
+  },
+  "desafiosFeaturedBellSettings": "Open settings",
+  "@desafiosFeaturedBellSettings": {
+    "description": "Featured: desafiosFeaturedBellSettings"
+  },
+  "desafiosFeaturedHistoric": "Historic endgames",
+  "@desafiosFeaturedHistoric": {
+    "description": "Featured: desafiosFeaturedHistoric"
+  },
+  "desafiosFeaturedPractice": "Endgames to practice",
+  "@desafiosFeaturedPractice": {
+    "description": "Featured: desafiosFeaturedPractice"
+  },
+  "desafiosFeaturedTournamentFinals": "{count, plural, =1{One endgame to practice} other{{count} endgames to practice}}",
+  "@desafiosFeaturedTournamentFinals": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "desafiosTournamentDates": "{start} to {end}",
+  "@desafiosTournamentDates": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "desafiosRaceHeadline": "{minutes}-min race · {reason}",
+  "@desafiosRaceHeadline": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "desafiosRaceEndTime": "time is up",
+  "@desafiosRaceEndTime": {},
+  "desafiosRaceEndErrors": "3 mistakes",
+  "@desafiosRaceEndErrors": {},
+  "desafiosRaceEndQuit": "quit",
+  "@desafiosRaceEndQuit": {},
+  "desafiosRaceNewRecord": "New {minutes}-min record! It was {previous}",
+  "@desafiosRaceNewRecord": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "desafiosRaceSeeAll": "See all {count}",
+  "@desafiosRaceSeeAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "desafiosShareError": "Could not share the link.",
+  "@desafiosShareError": {},
+  "desafiosSpeedrunEmpty": "No speedruns at this level.",
+  "@desafiosSpeedrunEmpty": {}
 }

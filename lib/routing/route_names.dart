@@ -16,8 +16,6 @@ abstract final class RouteNames {
   static const streak = 'streak';
   static const week = 'week';
   static const daily = 'daily';
-  static const dailyResult = 'dailyResult';
-  static const dailyShare = 'dailyShare';
   static const accountEnter = 'accountEnter';
   static const accountEmail = 'accountEmail';
   static const accountData = 'accountData';

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../../home/widgets/path_card.dart';
 import '../view_models/race_cubit.dart';
+import 'race_problems_screen.dart';
 import 'race_progress_card.dart';
 
 /// O resultado (canvas V2 · Ligações, L5 e L6): por que acabou, quantos
@@ -30,6 +32,9 @@ class RaceResultView extends StatelessWidget {
   const RaceResultView({required this.state, super.key});
 
   final RaceState state;
+
+  /// Quantas miniaturas a grade mostra; o resto fica em "Ver os N".
+  static const shownProblems = 8;
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +70,14 @@ class RaceResultView extends StatelessWidget {
             ),
             children: [
               Text(
-                switch (result.end) {
-                  RaceEnd.time => l10n.raceEndTime,
-                  RaceEnd.errors => l10n.raceEndErrors,
-                  RaceEnd.quit => l10n.raceEndQuit,
-                },
+                l10n.desafiosRaceHeadline(
+                  run.duration.minutes,
+                  switch (result.end) {
+                    RaceEnd.time => l10n.desafiosRaceEndTime,
+                    RaceEnd.errors => l10n.desafiosRaceEndErrors,
+                    RaceEnd.quit => l10n.desafiosRaceEndQuit,
+                  },
+                ),
                 key: RaceKeys.resultTitle,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -98,7 +106,10 @@ class RaceResultView extends StatelessWidget {
                     child: InfoChip(
                       key: RaceKeys.newRecord,
                       icon: Icons.emoji_events,
-                      label: l10n.raceNewRecord(outcome.previous.corrects),
+                      label: l10n.desafiosRaceNewRecord(
+                        run.duration.minutes,
+                        outcome.previous.corrects,
+                      ),
                       background: ChangeColors.of(
                         context,
                         up: true,
@@ -146,11 +157,31 @@ class RaceResultView extends StatelessWidget {
               const SizedBox(height: AppSpacing.lg),
               const ResultsInfoLine(),
               // O título sem o recuo próprio: alinhado aos cartões de cima.
-              SectionTitle(l10n.raceProblemsTitle, inset: 0),
-              _ProblemGrid(
+              SectionTitle(
+                l10n.raceProblemsTitle,
+                inset: 0,
+                action: run.answers.length > shownProblems
+                    ? SectionAction(
+                        key: RaceKeys.seeAllProblems,
+                        label: l10n.desafiosRaceSeeAll(run.answers.length),
+                        onPressed: () => unawaited(
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => RaceProblemsScreen(
+                                answers: run.answers,
+                                problems: state.problems,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+              RaceProblemGrid(
                 tiles: (size) => [
-                  for (final (index, answer) in run.answers.indexed)
-                    _ProblemTile(
+                  for (final (index, answer)
+                      in run.answers.take(shownProblems).indexed)
+                    RaceProblemTile(
                       key: RaceKeys.problemTile(index),
                       size: size,
                       answer: answer,
@@ -227,8 +258,8 @@ class _Stat extends StatelessWidget {
 
 /// A grade dos problemas (canvas): 4 colunas de 88 dp, espalhadas pela largura
 /// e com a última linha alinhada ao início.
-class _ProblemGrid extends StatelessWidget {
-  const _ProblemGrid({required this.tiles});
+class RaceProblemGrid extends StatelessWidget {
+  const RaceProblemGrid({required this.tiles, super.key});
 
   static const _columns = 4;
 
@@ -243,7 +274,7 @@ class _ProblemGrid extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final size = math.min(
-        _ProblemTile.maxSize,
+        RaceProblemTile.maxSize,
         ((box.maxWidth - (_columns - 1) * _minGap) / _columns).floorToDouble(),
       );
       final gap = ((box.maxWidth - _columns * size) / (_columns - 1))
@@ -260,8 +291,8 @@ class _ProblemGrid extends StatelessWidget {
 
 /// A miniatura de um problema: o selo de certo ou de errado e o nível
 /// embaixo.
-class _ProblemTile extends StatelessWidget {
-  const _ProblemTile({
+class RaceProblemTile extends StatelessWidget {
+  const RaceProblemTile({
     required this.size,
     required this.answer,
     required this.problem,

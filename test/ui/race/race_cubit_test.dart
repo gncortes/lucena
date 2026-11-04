@@ -87,6 +87,18 @@ void main() {
     await cubit.close();
   });
 
+  test('banco ilegível: falha de carregamento e tentar de novo abre '
+      '(H-DES-12 gap 1)', () async {
+    repository.loadError = const FormatException('banco ilegível');
+    await cubit.load();
+    expect(cubit.state.failure, isNotNull);
+
+    repository.loadError = null;
+    await cubit.load();
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.phase, RacePhase.intro);
+  });
+
   test('começar abre o problema mais fácil e guarda a Corrida', () async {
     await cubit.load();
     await cubit.start();
@@ -160,6 +172,22 @@ void main() {
     expect(reopened.state.run!.corrects, 1);
     expect(reopened.state.remaining, const Duration(seconds: 150));
     expect(reopened.state.problem!.level, 350);
+    await reopened.close();
+  });
+
+  test('retomada sem o próximo problema no banco volta à abertura, sem '
+      'tabuleiro vazio (H-DES-12 gap 7)', () async {
+    final changed = FakeRaceRepository(
+      now: now,
+      problems: const [],
+      ongoing: RaceRun(startedAt: now()),
+    );
+    final reopened = RaceCubit(changed, now, replyDelay: Duration.zero);
+    await reopened.load();
+
+    expect(reopened.state.phase, RacePhase.intro);
+    expect(reopened.state.turn, isNull);
+    expect(await changed.ongoing(), isNull);
     await reopened.close();
   });
 

@@ -12,8 +12,14 @@ class FakeFeaturedRepository implements FeaturedRepository {
 
   FeaturedCatalog value;
 
+  /// Catálogo ilegível ou ausente: [catalog] lança isto.
+  Object? failure;
+
   @override
-  Future<FeaturedCatalog> catalog() async => value;
+  Future<FeaturedCatalog> catalog() async {
+    if (failure case final error?) throw error;
+    return value;
+  }
 }
 
 class FakeFeaturedProgressRepository implements FeaturedProgressRepository {
@@ -57,32 +63,15 @@ class FakeFeaturedProgressRepository implements FeaturedProgressRepository {
       choices[id] = choice;
 }
 
-/// Um canal de aviso que existe, para testar o interruptor.
+/// O aviso geral de finais novos (o sino), em memória.
 class FakeFeaturedAlertsRepository implements FeaturedAlertsRepository {
-  FakeFeaturedAlertsRepository({this.available = true});
-
-  @override
-  final bool available;
   var all = false;
-  final tournaments = <String>{};
 
   @override
   Future<bool> enabled() async => all;
 
   @override
   Future<void> setEnabled({required bool value}) async => all = value;
-
-  @override
-  Future<bool> tournamentEnabled(String tournamentId) async =>
-      tournaments.contains(tournamentId);
-
-  @override
-  Future<void> setTournamentEnabled(
-    String tournamentId, {
-    required bool value,
-  }) async {
-    value ? tournaments.add(tournamentId) : tournaments.remove(tournamentId);
-  }
 }
 
 /// Três finais em dois torneios: um em andamento em 1/1/2026 e outro passado.

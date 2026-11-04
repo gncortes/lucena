@@ -33,7 +33,6 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
-import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
@@ -3409,7 +3408,7 @@ void main() {
       goal: PositionGoal.win,
     );
 
-    testWidgets('a meta aparece antes do primeiro lance', (tester) async {
+    testWidgets('o título é "Final do dia", sem a meta', (tester) async {
       await pumpScreen(
         tester,
         locale: const Locale('pt'),
@@ -3417,17 +3416,7 @@ void main() {
         fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
       );
       expect(cubit.state.ucis, isEmpty);
-      expect(textOf(tester, DailyKeys.goalSubtitle), 'Brancas jogam e ganham');
-    });
-
-    testWidgets('empate: "e empatam"', (tester) async {
-      await pumpScreen(
-        tester,
-        locale: const Locale('pt'),
-        mode: daily.copyWith(goal: PositionGoal.draw, userSide: Side.black),
-        fen: '3k4/8/3K4/8/8/8/8/7Q b - - 0 1',
-      );
-      expect(textOf(tester, DailyKeys.goalSubtitle), 'Pretas jogam e empatam');
+      expect(textOf(tester, FreeBoardKeys.title), 'Final do dia');
     });
 
     testWidgets('o jogador mostra o rating, não "Sem rating"', (tester) async {

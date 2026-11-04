@@ -36,10 +36,17 @@ class FakeRaceRepository implements RaceRepository {
   RaceRun? _ongoing;
   RaceFilter _filter;
   bool offers;
+
+  /// Quando preenchido, a leitura do banco de problemas falha com ele.
+  Object? loadError;
   final _history = <RaceResult>[];
 
   @override
-  Future<List<RaceProblem>> problems() async => _problems;
+  Future<List<RaceProblem>> problems() async {
+    final error = loadError;
+    if (error != null) throw error;
+    return _problems;
+  }
 
   @override
   Future<RaceRecord> record({

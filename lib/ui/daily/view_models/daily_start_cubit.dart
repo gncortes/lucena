@@ -17,7 +17,7 @@ import '../../../routing/routes.dart';
 
 /// Para onde vai o `/daily` (o toque da home e do lembrete): a partida do
 /// final de hoje, com o Maia no nível do rating da pessoa. Sem final hoje,
-/// volta à home.
+/// o estado é [DailyStartEmpty] (volta ao Início com um aviso).
 sealed class DailyStartState {
   const DailyStartState();
 }
@@ -29,6 +29,11 @@ class DailyStartLoading extends DailyStartState {
 class DailyStartFailed extends DailyStartState {
   const DailyStartFailed(this.failure);
   final LoadFailure failure;
+}
+
+/// Não há final publicado para hoje (H-DES-03).
+class DailyStartEmpty extends DailyStartState {
+  const DailyStartEmpty();
 }
 
 class DailyStartReady extends DailyStartState {
@@ -74,14 +79,14 @@ class DailyStartCubit extends Cubit<DailyStartState> {
       }
       if (isClosed) return;
       emit(
-        DailyStartReady(
-          daily == null
-              ? Routes.home
-              : Routes.dailyGame(
+        daily == null
+            ? const DailyStartEmpty()
+            : DailyStartReady(
+                Routes.dailyGame(
                   daily,
                   level: MaiaLevels.nearest(rating.rounded),
                 ),
-        ),
+              ),
       );
     } on Object catch (error, stack) {
       reportHandledError(error, stack);

@@ -22,7 +22,6 @@ import 'training_launch.dart';
 import 'training_goal_return.dart';
 import '../data/repositories/training/training_school_content.dart';
 import '../ui/home/view_models/training_lesson_preview.dart';
-import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/survey/survey_repository.dart';
 import '../domain/models/survey.dart';
 import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
@@ -51,6 +50,7 @@ import 'package:go_router/go_router.dart';
 import '../data/repositories/featured/featured_alerts_repository.dart';
 import '../data/repositories/featured/featured_progress_repository.dart';
 import '../data/repositories/featured/featured_repository.dart';
+import '../data/repositories/push/push_repository.dart';
 import '../ui/featured/view_models/featured_catalog_cubit.dart';
 import '../ui/featured/view_models/featured_endgame_cubit.dart';
 import '../ui/featured/view_models/featured_tournament_cubit.dart';
@@ -85,7 +85,6 @@ import 'review_destinations.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/course_availability.dart';
 import '../domain/use_cases/game_rules.dart';
-import '../domain/models/daily_final.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
@@ -128,10 +127,7 @@ import '../data/repositories/activity/activity_repository.dart';
 import '../ui/streak/view_models/streak_cubit.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
 import '../ui/daily/view_models/daily_game_cubit.dart';
-import '../ui/daily/view_models/daily_result_cubit.dart';
 import '../ui/daily/view_models/daily_start_cubit.dart';
-import '../ui/daily/widgets/daily_result_screen.dart';
-import '../ui/daily/widgets/daily_share_screen.dart';
 import '../ui/daily/widgets/daily_start_screen.dart';
 import '../ui/streak/widgets/streak_screen.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
@@ -518,18 +514,6 @@ GoRouter buildRouter({
           )..load(),
           child: const DailyStartScreen(),
         ),
-      ),
-      _route(
-        name: RouteNames.dailyResult,
-        path: Routes.dailyResult,
-        builder: (context, state) =>
-            _daily(context, state, child: const DailyResultScreen()),
-      ),
-      _route(
-        name: RouteNames.dailyShare,
-        path: Routes.dailyShare,
-        builder: (context, state) =>
-            _daily(context, state, child: const DailyShareScreen()),
       ),
       _route(
         name: RouteNames.accountEnter,
@@ -1598,6 +1582,8 @@ GoRouter buildRouter({
               create: (context) => FeaturedCatalogCubit(
                 featured: context.read<FeaturedRepository>(),
                 progress: context.read<FeaturedProgressRepository>(),
+                alerts: context.read<FeaturedAlertsRepository>(),
+                push: context.read<PushRepository>(),
                 now: context.read<Now>(),
                 country: context.read<ProfileCubit>().state?.country,
               )..load(),
@@ -1612,7 +1598,6 @@ GoRouter buildRouter({
                     id: state.pathParameters['id']!,
                     featured: context.read<FeaturedRepository>(),
                     progress: context.read<FeaturedProgressRepository>(),
-                    alerts: context.read<FeaturedAlertsRepository>(),
                     now: context.read<Now>(),
                   )..load(),
                   child: const FeaturedTournamentScreen(),
@@ -2091,37 +2076,6 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
 
 /// Uma tela ligada a "Seu nível", com o `LevelCubit` dela no `extra`. Sem ele
 /// (o app reaberto nesse endereço), volta para "Seu nível".
-// O resultado e a imagem do final do dia `?date=` (sem ele, o de hoje), com a
-// sequência de agora.
-Widget _daily(
-  BuildContext context,
-  GoRouterState state, {
-  required Widget child,
-}) {
-  final date =
-      state.uri.queryParameters['date'] ??
-      DailyRecord.dayCode(context.read<Now>()());
-  return MultiBlocProvider(
-    providers: [
-      BlocProvider(
-        create: (context) => DailyResultCubit(
-          date: date,
-          daily: context.read<DailyFinalRepository>(),
-          crowd: context.read<CrowdRepository>(),
-          now: context.read<Now>(),
-        )..load(),
-      ),
-      BlocProvider(
-        create: (context) => StreakCubit(
-          activity: context.read<ActivityRepository>(),
-          now: context.read<Now>(),
-        )..load(),
-      ),
-    ],
-    child: child,
-  );
-}
-
 GoRoute _levelPart(String name, String path, Widget screen) => _route(
   name: name,
   path: path,

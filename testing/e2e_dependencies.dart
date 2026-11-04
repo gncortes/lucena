@@ -134,6 +134,7 @@ import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
 import 'package:lucena/data/repositories/course_preview/course_preview_repository_asset.dart';
+import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_repository_asset.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
@@ -581,6 +582,9 @@ Future<Dependencies> e2eDependencies({
     featuredProgressRepository: ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(PreferencesService()),
       activity,
+    ),
+    featuredAlertsRepository: LocalFeaturedAlertsRepository(
+      PreferencesService(),
     ),
     activityRepository: activity,
     dailyFinalRepository: LocalDailyFinalRepository(

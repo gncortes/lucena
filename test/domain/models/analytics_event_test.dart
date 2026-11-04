@@ -169,20 +169,12 @@ final _samples = <AnalyticsEvent>[
   AnalyticsEvents.finalBusca(tamanhoTermo: 5, resultados: 3),
   AnalyticsEvents.finalFiltro(tipo: 'grupo', valor: 'torre', resultados: 9),
   AnalyticsEvents.finalDestaqueAberto(finalId: 'f1', entrada: 'home'),
-  AnalyticsEvents.finalDestaqueFiltro(
-    tipo: 'ritmo',
-    valor: 'classico',
-    resultados: 4,
-  ),
   AnalyticsEvents.finalDestaqueTorneio(
     torneioId: 'candidatos_2026',
     emAndamento: true,
     entrada: 'home',
   ),
-  AnalyticsEvents.finalDestaqueAviso(
-    torneioId: 'candidatos_2026',
-    ligado: true,
-  ),
+  AnalyticsEvents.finalDestaqueAviso(ligado: true),
   AnalyticsEvents.finalDestaqueAcheLance(
     finalId: 'f1',
     acertou: true,
@@ -284,9 +276,9 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test('tem os 100 eventos (97 do app, com o treino e o funil de campanha da '
+    test('tem os 99 eventos (96 do app, com o treino e o funil de campanha da '
         'T84, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(97));
+      expect(AnalyticsCatalog.app, hasLength(96));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(
