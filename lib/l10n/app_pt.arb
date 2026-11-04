@@ -389,7 +389,7 @@
   "ratingPeriodEmpty": "Nenhuma partida contada neste período.",
   "ratingHighest": "Mais alto",
   "gameDetailsTitle": "Detalhes da partida",
-  "gameDetailsNotFound": "Esta partida não está disponível.",
+  "gameDetailsNotFound": "Esta partida não está mais gravada.",
   "homeEndgames": "Curso de finais",
   "homeEndgamesBody": "Lucena, Philidor, bispo e cavalo: os finais que todo jogador precisa dominar.",
   "homeForYou": "Finais para você",
@@ -2401,5 +2401,6 @@
   "partidaModosBlindBody": "Sem ver as peças",
   "partidaModosFreeBoardBody": "Jogue qualquer posição",
   "partidaModosCustomBody": "Monte a posição peça por peça",
-  "partidaModosChooseHome": "Escolher os modos da home"
+  "partidaModosChooseHome": "Escolher os modos da home",
+  "partidaAnaliseTitulo": "Análise da partida"
 }

@@ -1913,7 +1913,7 @@
   },
   "gameDetailsNotFound": "This game is no longer saved.",
   "@gameDetailsNotFound": {
-    "description": "Game details: shown when the game was not found."
+    "description": "Game details: the game was deleted between the list and opening it"
   },
   "homeEndgames": "Endgame course",
   "@homeEndgames": {
@@ -11883,5 +11883,9 @@
   "partidaModosChooseHome": "Choose the home modes",
   "@partidaModosChooseHome": {
     "description": "Footer button of All modes that opens the home layout."
+  },
+  "partidaAnaliseTitulo": "Game analysis",
+  "@partidaAnaliseTitulo": {
+    "description": "Title of the game details screen when the game is not found"
   }
 }

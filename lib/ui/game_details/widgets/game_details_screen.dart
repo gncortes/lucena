@@ -53,15 +53,12 @@ class GameDetailsScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<GameDetailsCubit>().state;
     final attempt = state.attempt;
-    if (state.failed || (state.ready && attempt == null)) {
-      final missing = state.ready && attempt == null;
+    if (state.failed) {
       return LoadErrorScreen(
-        kind: missing ? LoadErrorKind.notFound : LoadErrorKind.generic,
-        onAction: missing
-            ? () => context.go(Routes.home)
-            : () => context.read<GameDetailsCubit>().load(
-                language: Localizations.localeOf(context).languageCode,
-              ),
+        kind: LoadErrorKind.generic,
+        onAction: () => context.read<GameDetailsCubit>().load(
+          language: Localizations.localeOf(context).languageCode,
+        ),
         onBack: () =>
             context.canPop() ? context.pop() : context.go(Routes.home),
       );
@@ -72,7 +69,11 @@ class GameDetailsScreen extends StatelessWidget {
         leading: ContainerNavigation.canClose(context)
             ? BackButton(onPressed: () => ContainerNavigation.close(context))
             : null,
-        title: Text(l10n.gameDetailsTitle),
+        title: Text(
+          state.ready && attempt == null
+              ? l10n.partidaAnaliseTitulo
+              : l10n.gameDetailsTitle,
+        ),
       ),
       body: !state.ready
           // Carregando: o tabuleiro e os lances em esqueleto.
