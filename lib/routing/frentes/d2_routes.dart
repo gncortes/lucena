@@ -20,7 +20,7 @@ import '../../ui/course_preview/widgets/course_sale_screen.dart';
 import '../../ui/pilares_sale/view_models/pilares_before_home_cubit.dart';
 import '../../ui/pilares_sale/view_models/pilares_demo_end_cubit.dart';
 import '../../ui/pilares_sale/view_models/pilares_prices_cubit.dart';
-import '../../ui/pilares_sale/widgets/pilares_before_home_sheet.dart';
+import '../../ui/pilares_sale/widgets/pilares_before_home_screen.dart';
 import '../../ui/pilares_sale/widgets/pilares_demo_end_screen.dart';
 import '../../ui/pilares_sale/widgets/pilares_plan_sale_screen.dart';
 import '../../data/repositories/campaign/campaign_repository.dart';
@@ -312,24 +312,19 @@ final List<RouteBase> d2Routes = [
       child: const PilaresDemoEndScreen(),
     ),
   ),
-  // A oferta antes do Início (H-VEN-15): folha sobre o Início; quantas vezes
+  // A oferta antes do Início (H-VEN-15): tela cheia com X; quantas vezes
   // aparece é do Início (H-INI-14).
-  GoRoute(
+  appRoute(
     name: RouteNames.pilaresBeforeHome,
     path: D2Paths.pilaresBeforeHome,
-    pageBuilder: (context, state) => PilaresSheetPage<void>(
-      key: state.pageKey,
-      name: state.name,
-      child: BlocProvider(
-        create: (context) => PilaresBeforeHomeCubit(
-          analytics: context.analytics,
-          characters: context.read<CharacterRepository>(),
-        ),
-        child: const PilaresBeforeHomeSheet(),
+    builder: (context, state) => BlocProvider(
+      create: (context) => PilaresBeforeHomeCubit(
+        analytics: context.analytics,
+        characters: context.read<CharacterRepository>(),
       ),
+      child: const PilaresBeforeHomeScreen(),
     ),
   ),
-  // O plano como venda (H-VEN-14): quem tem o curso vai ao Guia.
   appRoute(
     name: RouteNames.pilaresPlan,
     path: D2Paths.pilaresPlan,
@@ -368,20 +363,3 @@ final List<RouteBase> d2Routes = [
     ),
   ),
 ];
-
-/// Uma rota que abre como folha (a de baixo continua atrás, com o véu): a
-/// oferta antes do Início (H-VEN-15). O toque fora e o voltar fecham.
-class PilaresSheetPage<T> extends Page<T> {
-  const PilaresSheetPage({required this.child, super.key, super.name});
-
-  final Widget child;
-
-  @override
-  Route<T> createRoute(BuildContext context) => ModalBottomSheetRoute<T>(
-    settings: this,
-    isScrollControlled: true,
-    showDragHandle: true,
-    useSafeArea: true,
-    builder: (_) => child,
-  );
-}

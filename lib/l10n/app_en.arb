@@ -13924,7 +13924,7 @@
   },
   "venBeforeHomeTitle": "More than a course",
   "@venBeforeHomeTitle": {
-    "description": "Título da oferta antes do Início (PropV2OfertaAntesInicioFolha, H-VEN-15)."
+    "description": "Título da oferta antes do Início (PropV2OfertaAntesInicio, H-VEN-15)."
   },
   "venBeforeHomePlan": "A plan up to your tournament",
   "@venBeforeHomePlan": {
