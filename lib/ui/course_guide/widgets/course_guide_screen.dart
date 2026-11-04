@@ -122,7 +122,13 @@ class CourseGuideScreen extends StatelessWidget {
     bool aulaVista,
     Widget corpo,
   ) {
-    final id = course == TrainingCourse.escola ? _quadro(tab, aulaVista) : null;
+    // Nos outros cursos só a aba Aula é da Lição (D1); as demais seguem o
+    // Treino.
+    final id = course == TrainingCourse.escola
+        ? _quadro(tab, aulaVista)
+        : tab == CourseGuideTab.lesson
+        ? (aulaVista ? 'PropV1TreinoAula' : 'PropV1TreinoAulaBoasVindas')
+        : null;
     if (id == null) return corpo;
     return EntradaDaTela(key: ValueKey(id), id: id, child: corpo);
   }
@@ -280,9 +286,7 @@ class _WelcomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = context.read<CourseGuideCubit>().config;
     final t = context.l10n;
-    final escola = config.course == TrainingCourse.escola;
     return EntradaEmCascata(
-      animar: escola ? null : false,
       montar: (itens) => ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         children: [
