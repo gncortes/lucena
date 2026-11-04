@@ -21,6 +21,8 @@ import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_list_screen.dart';
+import 'package:lucena/ui/speedrun/widgets/speedrun_screen.dart';
+import 'package:lucena/ui/core/widgets/load_error.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
@@ -287,6 +289,23 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(SpeedrunKeys.helpScreen), findsNothing);
     expect(find.byKey(SpeedrunKeys.listScreen), findsOneWidget);
+  });
+
+  testWidgets('detalhe sem speedrun escolhido: erro explícito, não corpo em '
+      'branco', (tester) async {
+    await cubit.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: BlocProvider.value(
+          value: cubit,
+          child: const SpeedrunScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(LoadErrorScreen), findsOneWidget);
+    expect(find.text('Conteúdo não encontrado'), findsOneWidget);
   });
 
   testWidgets('quem está começando vê o ritmo numa linha, que abre o '

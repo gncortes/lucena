@@ -2545,5 +2545,6 @@
   "partidaConclusaoVerAnalise": "Ver a análise",
   "treinoUndoAdjust": "Voltar ao plano anterior",
   "treinoFieldPace": "Ritmo",
-  "treinoFieldEntity": "Valeu rating de"
+  "treinoFieldEntity": "Valeu rating de",
+  "desafiosSpeedrunRecordHere": "Seu recorde neste speedrun"
 }

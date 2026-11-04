@@ -12587,5 +12587,7 @@
   "treinoFieldEntity": "Counts for rating with",
   "@treinoFieldEntity": {
     "description": "Training goal flow copy."
-  }
+  },
+  "desafiosSpeedrunRecordHere": "Your record for this speedrun",
+  "@desafiosSpeedrunRecordHere": {}
 }

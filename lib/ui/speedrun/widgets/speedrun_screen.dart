@@ -1,4 +1,5 @@
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 import '../../journey/widgets/challenge_load_error.dart';
 
 import 'package:flutter/material.dart';
@@ -57,10 +58,19 @@ class SpeedrunScreen extends StatelessWidget {
     final summary = state.selected;
     final speedrun = summary?.speedrun ?? preview;
     if (speedrun == null) {
+      // Lista lida, mas sem o speedrun pedido: erro explícito, não tela em
+      // branco.
+      if (state.all != null) {
+        return challengeLoadError(
+          context,
+          LoadFailure.notFound,
+          context.read<SpeedrunCubit>().retry,
+        );
+      }
       return Scaffold(
         key: SpeedrunKeys.screen,
         appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
-        body: state.all != null ? null : const SkeletonList(),
+        body: const SkeletonList(),
       );
     }
     final characters = state.characters;
