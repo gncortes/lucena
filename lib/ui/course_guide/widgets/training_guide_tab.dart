@@ -19,6 +19,7 @@ import '../../core/widgets/lucena_card.dart';
 import '../../reminders/view_models/reminders_cubit.dart';
 import '../../training_goal/view_models/training_goal_cubit.dart';
 import '../../training_goal/widgets/goal_format.dart';
+import '../../training_goal/widgets/goal_page.dart';
 import '../../training_goal/widgets/plan_widgets.dart';
 import 'training_load_error.dart';
 
@@ -110,13 +111,12 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
           }
           return const LoadSkeletonScreen();
         }
+        if (!view.hasObjective) return _empty(context);
         return ListView(
           key: TrainingGoalKeys.guideTab,
           padding: const EdgeInsets.all(AppSpacing.screen),
           children: [
-            if (!view.hasObjective)
-              ..._empty(context)
-            else if (!view.hasPlan)
+            if (!view.hasPlan)
               ..._noPlan(context)
             else if (!view.hasTournament)
               ..._improve(context, view)
@@ -129,30 +129,51 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
     );
   }
 
-  List<Widget> _empty(BuildContext context) {
+  /// PropV2GuiaSemObjetivo: o convite num cartão e o botão fixo embaixo.
+  Widget _empty(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
-    return [
-      Column(
-        key: TrainingGoalKeys.guideEmpty,
-        children: [
-          const SizedBox(height: AppSpacing.xl),
-          Text(
-            t.treinoNoGoalTitle,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleLarge,
+    return Column(
+      key: TrainingGoalKeys.guideTab,
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(AppSpacing.screen),
+            children: [
+              LucenaCard(
+                key: TrainingGoalKeys.guideEmpty,
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 12,
+                  children: [
+                    Icon(
+                      Icons.stadium_outlined,
+                      size: 32,
+                      color: theme.colorScheme.primary,
+                    ),
+                    Text(
+                      t.treinoNoGoalTitle,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(t.treinoNoGoalGuideBody),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(t.treinoNoGoalGuideBody, textAlign: TextAlign.center),
-          const SizedBox(height: AppSpacing.xl),
-          BusyButton(
+        ),
+        GoalFooter(
+          child: BusyButton(
             buttonKey: TrainingGoalKeys.guideDefine,
             label: t.treinoDefineGoal,
             onPressed: () => _go(RouteNames.trainingGoal),
           ),
-        ],
-      ),
-    ];
+        ),
+      ],
+    );
   }
 
   List<Widget> _noPlan(BuildContext context) {

@@ -91,6 +91,22 @@ void main() {
     expect(find.text('Definir meu objetivo'), findsOneWidget);
   });
 
+  testWidgets('PropV2GuiaSemObjetivo: cartão com o estádio e o botão fixo '
+      'embaixo, na largura toda', (tester) async {
+    await pump(tester, tab: CourseGuideTab.guide);
+    final card = find.byKey(TrainingGoalKeys.guideEmpty).first;
+    expect(
+      find.descendant(of: card, matching: find.byIcon(Icons.stadium_outlined)),
+      findsOneWidget,
+    );
+    final button = tester.getRect(find.byKey(TrainingGoalKeys.guideDefine));
+    expect(button.width, 412 - 32);
+    expect(button.height, 52);
+    expect(button.top, greaterThan(tester.getRect(card).bottom + 200));
+    final title = tester.getRect(find.text('Qual é o seu objetivo?'));
+    expect(title.left, tester.getRect(card).left + 24);
+  });
+
   testWidgets('com torneio, o Início mostra os dias que faltam', (
     tester,
   ) async {

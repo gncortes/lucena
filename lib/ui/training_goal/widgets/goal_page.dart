@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/use_cases/training/goal/goal_view.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -81,16 +82,7 @@ class GoalPage extends StatelessWidget {
                     children: builder(context, view),
                   ),
                 ),
-                if (footer != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.screen,
-                      0,
-                      AppSpacing.screen,
-                      AppSpacing.lg,
-                    ),
-                    child: footer!(context, view),
-                  ),
+                if (footer != null) GoalFooter(child: footer!(context, view)),
               ],
             ),
           ),
@@ -98,4 +90,36 @@ class GoalPage extends StatelessWidget {
       },
     );
   }
+}
+
+/// O rodapé fixo dos quadros do objetivo e do Guia: botão de 52 na largura
+/// toda, 16 nas laterais e embaixo.
+class GoalFooter extends StatelessWidget {
+  const GoalFooter({required this.child, super.key});
+  final Widget child;
+
+  static const _size = WidgetStatePropertyAll(Size.fromHeight(kButtonHeight));
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      AppSpacing.screen,
+      0,
+      AppSpacing.screen,
+      AppSpacing.screen,
+    ),
+    child: FilledButtonTheme(
+      data: FilledButtonThemeData(
+        style: FilledButtonTheme.of(context).style
+            ?.copyWith(minimumSize: _size),
+      ),
+      child: OutlinedButtonTheme(
+        data: OutlinedButtonThemeData(
+          style: OutlinedButtonTheme.of(context).style
+              ?.copyWith(minimumSize: _size),
+        ),
+        child: child,
+      ),
+    ),
+  );
 }
