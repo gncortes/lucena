@@ -10,6 +10,8 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/numero_que_conta.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -47,11 +49,26 @@ class _PlacementResultViewState extends State<PlacementResultView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final result = widget.state.result;
     if (result == null) return const SizedBox.shrink();
     final chosen = _chosen ?? result.level;
     final levels = result.levels;
+    // Os dois quadros do canvas: uma faixa ou duas (H-ANI-25).
+    return EntradaDaTela(
+      id: levels.length > 1
+          ? 'TelaTesteResultadoDuasFaixas'
+          : 'TelaTesteResultado',
+      child: _content(context, result, chosen, levels),
+    );
+  }
+
+  Widget _content(
+    BuildContext context,
+    PlacementResult result,
+    RatingLevel chosen,
+    List<RatingLevel> levels,
+  ) {
+    final l10n = context.l10n;
     return Column(
       key: PlacementKeys.result,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -169,11 +186,12 @@ class _LevelCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: AppSpacing.sm),
-                            Text(
-                              shown == result.level
-                                  ? '${result.theta}'
-                                  : '${shown.rating}',
-                              style: theme.textTheme.titleLarge?.copyWith(
+                            // H-ANI-18: o rating conta até o valor.
+                            NumeroQueConta(
+                              valor: shown == result.level
+                                  ? result.theta
+                                  : shown.rating,
+                              estilo: theme.textTheme.titleLarge?.copyWith(
                                 color: colors.onPrimaryContainer,
                               ),
                             ),

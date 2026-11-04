@@ -18,6 +18,8 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/viktor_conversation.dart';
@@ -122,9 +124,13 @@ class TourScreen extends StatelessWidget {
               ],
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(AppBarProgress.height),
-                child: AppBarProgress(
+                // H-ANI-13: enche na primeira entrada e segue a cada passo.
+                child: KeyedSubtree(
                   key: TourKeys.progress,
-                  value: state.progress,
+                  child: BarraQueEnche(
+                    valor: state.progress,
+                    altura: AppBarProgress.height,
+                  ),
                 ),
               ),
             ),
@@ -192,14 +198,19 @@ class TourScreen extends StatelessWidget {
                                 padding: const EdgeInsets.only(
                                   top: AppSpacing.lg,
                                 ),
-                                child: switch (step) {
-                                  TourStep.board => const _BoardStep(),
-                                  TourStep.theme => const _ThemeStep(),
-                                  TourStep.voice => _VoiceStep(state: state),
-                                  TourStep.level => const TourLevelStep(),
-                                  TourStep.region => const TourRegionStep(),
-                                  TourStep.account => const TourAccountStep(),
-                                },
+                                // Cada passo é um quadro do canvas: a entrada
+                                // (H-ANI-13/16) só roda na primeira visita.
+                                child: EntradaDaTela(
+                                  id: tourQuadro(step),
+                                  child: switch (step) {
+                                    TourStep.board => const _BoardStep(),
+                                    TourStep.theme => const _ThemeStep(),
+                                    TourStep.voice => _VoiceStep(state: state),
+                                    TourStep.level => const TourLevelStep(),
+                                    TourStep.region => const TourRegionStep(),
+                                    TourStep.account => const TourAccountStep(),
+                                  },
+                                ),
                               ),
                             ),
                           ),
@@ -217,6 +228,16 @@ class TourScreen extends StatelessWidget {
     );
   }
 }
+
+/// O id do quadro do canvas de cada passo do tour.
+String tourQuadro(TourStep step) => switch (step) {
+  TourStep.board => 'PropV2TourBTabuleiro',
+  TourStep.theme => 'PropV2TourBTema',
+  TourStep.voice => 'PropV2TourBVoz',
+  TourStep.level => 'PropV2TourBNivel',
+  TourStep.region => 'PropV2TourBRegiao',
+  TourStep.account => 'PropV2TourBConta',
+};
 
 String _speech(AppLocalizations l10n, TourState state) => switch (state.step) {
   TourStep.board => l10n.tourSpeechBoard,

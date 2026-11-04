@@ -12,6 +12,7 @@ import 'package:lucena/domain/models/platform_rating.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
@@ -434,6 +435,12 @@ void main() {
     expect(find.byKey(LevelKeys.lichessScreen), findsNothing);
     expect(find.byKey(LevelKeys.lichessOfflineScreen), findsOneWidget);
     expect(
+      find.byWidgetPredicate(
+        (w) => w is EntradaDaTela && w.id == 'PropV1AbEstLichessSemRede',
+      ),
+      findsOneWidget,
+    );
+    expect(
       find.text('You need an internet connection to reach Lichess.'),
       findsOneWidget,
     );
@@ -517,6 +524,12 @@ void main() {
     await tester.tap(find.byKey(LevelKeys.chessSearch));
     await tester.pumpAndSettle();
     expect(find.byKey(LevelKeys.chessOfflineScreen), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is EntradaDaTela && w.id == 'PropV1AbEstChessSemRede',
+      ),
+      findsOneWidget,
+    );
     expect(
       find.text('You need an internet connection to reach Chess.com.'),
       findsOneWidget,

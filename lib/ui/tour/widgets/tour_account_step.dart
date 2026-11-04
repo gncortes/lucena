@@ -13,6 +13,7 @@ import '../../account/widgets/account_flow.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
@@ -150,49 +151,60 @@ class _Invite extends StatelessWidget {
         ],
       ),
     );
+    // H-ANI-16: o texto que explica entra em cascata, os botões por último.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          line(Icons.cloud_done, l10n.tourAccountSaved),
-          line(Icons.wifi_off, l10n.tourAccountNoAccount),
-          const SizedBox(height: AppSpacing.md),
+      child: EntradaEmCascata(
+        itens: [
+          ItemDaCascata.texto(line(Icons.cloud_done, l10n.tourAccountSaved)),
+          ItemDaCascata.texto(
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: line(Icons.wifi_off, l10n.tourAccountNoAccount),
+            ),
+          ),
           // O rodapé empilhado do canvas, dentro do passo (o botão da base
           // do tour é o dos outros passos).
-          ActionsFooter(
-            stacked: true,
-            margin: 0,
-            children: [
-              OutlinedButton.icon(
-                key: TourKeys.accountGoogle,
-                onPressed: busy ? null : onGoogle,
-                icon: const Icon(Icons.account_circle_outlined),
-                label: Text(l10n.tourAccountGoogle),
-              ),
-              OutlinedButton.icon(
-                key: TourKeys.accountEmail,
-                onPressed: busy ? null : onEmail,
-                icon: const Icon(Icons.mail),
-                label: Text(l10n.tourAccountEmail),
-              ),
-              TextButton(
-                key: TourKeys.accountLater,
-                onPressed: busy ? null : onLater,
-                child: Text(l10n.accountLater),
-              ),
-            ],
+          ItemDaCascata.botao(
+            ActionsFooter(
+              stacked: true,
+              margin: 0,
+              children: [
+                OutlinedButton.icon(
+                  key: TourKeys.accountGoogle,
+                  onPressed: busy ? null : onGoogle,
+                  icon: const Icon(Icons.account_circle_outlined),
+                  label: Text(l10n.tourAccountGoogle),
+                ),
+                OutlinedButton.icon(
+                  key: TourKeys.accountEmail,
+                  onPressed: busy ? null : onEmail,
+                  icon: const Icon(Icons.mail),
+                  label: Text(l10n.tourAccountEmail),
+                ),
+                TextButton(
+                  key: TourKeys.accountLater,
+                  onPressed: busy ? null : onLater,
+                  child: Text(l10n.accountLater),
+                ),
+              ],
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(l10n.accountHaveAccount, style: theme.textTheme.bodyMedium),
-              TextButton(
-                key: TourKeys.accountLogin,
-                onPressed: busy ? null : onLogin,
-                child: Text(l10n.accountSignIn),
-              ),
-            ],
+          ItemDaCascata.texto(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.accountHaveAccount,
+                  style: theme.textTheme.bodyMedium,
+                ),
+                TextButton(
+                  key: TourKeys.accountLogin,
+                  onPressed: busy ? null : onLogin,
+                  child: Text(l10n.accountSignIn),
+                ),
+              ],
+            ),
           ),
         ],
       ),
