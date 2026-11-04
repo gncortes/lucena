@@ -61,6 +61,7 @@ abstract final class AccountKeys {
   static const acceptUsage = Key('account.acceptUsage');
   static const acceptContinue = Key('account.acceptContinue');
 
+  static const editSavedNote = Key('account.editSavedNote');
   static const restoredScreen = Key('account.restored');
   static const restoredContinue = Key('account.restoredContinue');
 

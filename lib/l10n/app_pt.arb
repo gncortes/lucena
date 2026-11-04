@@ -1665,12 +1665,10 @@
   "accountResetOk": "Entendi",
   "accountProfileTitle": "Seu perfil",
   "accountPhotoChange": "Trocar a foto",
-  "accountProfileSaved": "Pronto: o seu progresso deste celular já está salvo na conta.",
   "accountSaveContinue": "Salvar e continuar",
   "accountPhotoTitle": "Foto do perfil",
   "accountPhotoCamera": "Tirar foto",
   "accountPhotoGallery": "Escolher da galeria",
-  "accountPhotoInitial": "Ou a sua inicial, na cor que quiser",
   "accountPhotoRemove": "Remover a foto",
   "accountPhotoFailed": "Não foi possível enviar a foto. Tente novamente.",
   "dailyYesterdayTitle": "Final de ontem",
@@ -2469,5 +2467,9 @@
     }
   },
   "conVoltaLessons": "Lições do Pilares",
-  "conVoltaMerged": "Se este celular já tinha progresso, os dois foram unidos: em cada item vale o maior."
+  "conVoltaMerged": "Se este celular já tinha progresso, os dois foram unidos: em cada item vale o maior.",
+  "conPerfilSaved": "Seu progresso deste celular já está salvo na conta.",
+  "conFotoInitial": "Ou sua inicial, na cor que quiser",
+  "conPerfilPhotoHint": "Opcional. A inicial na cor que quiser ou a foto do Google.",
+  "conPerfilEditSaved": "O que você já fez neste celular agora fica salvo na conta."
 }

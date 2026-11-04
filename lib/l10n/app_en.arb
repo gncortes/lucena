@@ -8483,10 +8483,6 @@
   "@accountPhotoChange": {
     "description": "Under the avatar: opens the profile photo sheet."
   },
-  "accountProfileSaved": "Done: the progress on this phone is already saved in the account.",
-  "@accountProfileSaved": {
-    "description": "Green banner on the profile screen right after creating or entering the account."
-  },
   "accountSaveContinue": "Save and continue",
   "@accountSaveContinue": {
     "description": "Profile edit screen main button."
@@ -8502,10 +8498,6 @@
   "accountPhotoGallery": "Choose from gallery",
   "@accountPhotoGallery": {
     "description": "Profile photo sheet: opens the gallery."
-  },
-  "accountPhotoInitial": "Or your initial, in any color you like",
-  "@accountPhotoInitial": {
-    "description": "Profile photo sheet: label above the initial colors."
   },
   "accountPhotoRemove": "Remove photo",
   "@accountPhotoRemove": {
@@ -12010,5 +12002,21 @@
   "conVoltaMerged": "If this phone already had progress, both were merged: each item keeps the higher value.",
   "@conVoltaMerged": {
     "description": "Bem-vindo de volta (H-CON-10): nota abaixo dos itens."
+  },
+  "conPerfilSaved": "Your progress on this phone is already saved in the account.",
+  "@conPerfilSaved": {
+    "description": "Seu perfil (H-CON-11, PropV1ContaPerfil): aviso com cloud_done logo depois de criar a conta."
+  },
+  "conFotoInitial": "Or your initial, in the color you like",
+  "@conFotoInitial": {
+    "description": "Foto do perfil (H-CON-11, PropV1ContaFoto): título das cores da inicial na folha."
+  },
+  "conPerfilPhotoHint": "Optional. Your initial in the color you like, or your Google photo.",
+  "@conPerfilPhotoHint": {
+    "description": "Seu perfil pelo lápis do Perfil (H-CON-11, PropV1PerfilDados): abaixo do avatar."
+  },
+  "conPerfilEditSaved": "What you've done on this phone is now saved in the account.",
+  "@conPerfilEditSaved": {
+    "description": "Seu perfil pelo lápis do Perfil (H-CON-11, PropV1PerfilDados): nota com conta, acima do Salvar."
   }
 }

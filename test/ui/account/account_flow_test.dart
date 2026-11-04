@@ -24,6 +24,7 @@ import 'package:lucena/ui/account/widgets/account_restored_screen.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
+import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
@@ -498,7 +499,60 @@ void main() {
         findsOneWidget,
       );
       expect(find.byKey(AccountKeys.dataScreen), findsOneWidget);
-      expect(profiles.saved, isEmpty);
+      // H-CON-11 critério 4 (gap 6): o apelido é salvo, a foto antiga fica.
+      expect(profiles.saved, hasLength(1));
+      expect(profiles.profile.nickname, 'Teste');
+      expect(profiles.profile.photo, AvatarPhoto.none);
+    });
+
+    testWidgets('H-CON-11 gap 7: a câmera que falha avisa e a tela fica', (
+      tester,
+    ) async {
+      accounts.account = FakeAccountRepository.google;
+      photos.error = Exception('permissão negada');
+      await pump(tester, Routes.accountDataFrom('profile'));
+      await tester.tap(find.byKey(AccountKeys.photo));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(AccountKeys.photoCamera));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(find.byKey(AccountKeys.dataScreen), findsOneWidget);
+    });
+
+    testWidgets('H-CON-11: conta nova mostra os textos do quadro', (
+      tester,
+    ) async {
+      accounts.account = FakeAccountRepository.google;
+      await pump(tester, Routes.accountDataFrom('tour', welcome: true));
+      expect(
+        find.text('Seu progresso deste celular já está salvo na conta.'),
+        findsOneWidget,
+      );
+      expect(find.text('Salvar e continuar'), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowRegion), findsOneWidget);
+      await tester.tap(find.byKey(AccountKeys.photo));
+      await tester.pumpAndSettle();
+      expect(find.text('Ou sua inicial, na cor que quiser'), findsOneWidget);
+    });
+
+    testWidgets('H-CON-11: pelo lápis do Perfil, a edição do quadro', (
+      tester,
+    ) async {
+      accounts.account = FakeAccountRepository.google;
+      await pump(tester, Routes.accountDataFrom('profile'));
+      expect(
+        find.text('Opcional. A inicial na cor que quiser ou a foto do Google.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(ProfileKeys.rowCountry), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowLanguage), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowRegion), findsNothing);
+      expect(
+        find.text('O que você já fez neste celular agora fica salvo na conta.'),
+        findsOneWidget,
+      );
+      expect(find.text('Salvar'), findsOneWidget);
     });
 
     testWidgets('remover a foto enviada apaga a do Storage', (tester) async {

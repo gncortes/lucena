@@ -1600,12 +1600,10 @@
   "accountResetOk": "[Ĝöt ît one]",
   "accountProfileTitle": "[Ýöûŕ pŕöfîlé one two]",
   "accountPhotoChange": "[Çhåñĝé phötö one two]",
-  "accountProfileSaved": "[Döñé: thé pŕöĝŕéšš öñ thîš phöñé îš ålŕéådý šåvéd îñ thé åççöûñt. one two three four five six]",
   "accountSaveContinue": "[Šåvé åñd çöñtîñûé one two]",
   "accountPhotoTitle": "[Pŕöfîlé phötö one two]",
   "accountPhotoCamera": "[Tåké phötö one]",
   "accountPhotoGallery": "[Çhööšé fŕöm ĝålléŕý one two]",
-  "accountPhotoInitial": "[Öŕ ýöûŕ îñîtîål, îñ åñý çölöŕ ýöû lîké one two three four]",
   "accountPhotoRemove": "[Ŕémövé phötö one two]",
   "accountPhotoFailed": "[Çöûld ñöt ûplöåd thé phötö. Çhéçk thé îñtéŕñét åñd tŕý åĝåîñ. one two three four five six]",
   "dailyYesterdayTitle": "[Ýéštéŕdåý'š éñdĝåmé one two]",
@@ -2313,5 +2311,9 @@
   "conVoltaText": "[Ýöûŕ pŕöĝŕéšš îš šåvéd îñ thé åççöûñt. one two three four]",
   "conVoltaJourneyValue": "[{name}, {done} öf {total, plural, =1{1 çhålléñĝé} other{{total} çhålléñĝéš}} one two three four five six seven]",
   "conVoltaLessons": "[Pîlåŕéš léššöñš one two]",
-  "conVoltaMerged": "[Îf thîš phöñé ålŕéådý håd pŕöĝŕéšš, böth wéŕé méŕĝéd: éåçh îtém kéépš thé hîĝhéŕ vålûé. one two three four five six seven eight]"
+  "conVoltaMerged": "[Îf thîš phöñé ålŕéådý håd pŕöĝŕéšš, böth wéŕé méŕĝéd: éåçh îtém kéépš thé hîĝhéŕ vålûé. one two three four five six seven eight]",
+  "conPerfilSaved": "[Ýöûŕ pŕöĝŕéšš öñ thîš phöñé îš ålŕéådý šåvéd îñ thé åççöûñt. one two three four five]",
+  "conFotoInitial": "[Öŕ ýöûŕ îñîtîål, îñ thé çölöŕ ýöû lîké one two three four]",
+  "conPerfilPhotoHint": "[Öptîöñål. Ýöûŕ îñîtîål îñ thé çölöŕ ýöû lîké, öŕ ýöûŕ Ĝööĝlé phötö. one two three four five six]",
+  "conPerfilEditSaved": "[Whåt ýöû'vé döñé öñ thîš phöñé îš ñöw šåvéd îñ thé åççöûñt. one two three four five]"
 }
