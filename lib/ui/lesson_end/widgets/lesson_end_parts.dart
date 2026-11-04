@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/canvas_symbols.dart';
 
@@ -45,9 +46,13 @@ class LessonEndBadge extends StatelessWidget {
     height: 80,
     decoration: const BoxDecoration(
       shape: BoxShape.circle,
-      color: Color(0xffe2f0e4),
+      color: AppColors.goalWinBg,
     ),
-    child: Icon(icon, size: 48, color: AppColors.trainingDayCorrect),
+    child: Icon(
+      icon,
+      size: AppIconSize.illustration,
+      color: AppColors.trainingDayCorrect,
+    ),
   );
 }
 

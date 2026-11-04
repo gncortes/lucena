@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/training/plan_event.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 
 /// A faixa do plano acima do cartão da lição (canvas `PropV2LicaoEntradaPlano`):
@@ -74,7 +75,7 @@ class LicaoPlanBand extends StatelessWidget {
                 for (final fraction in event.weekFractions(now))
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
+                      borderRadius: BorderRadius.circular(AppShape.tiny),
                       child: LinearProgressIndicator(
                         value: fraction,
                         minHeight: 6,

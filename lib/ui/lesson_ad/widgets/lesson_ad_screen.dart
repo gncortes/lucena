@@ -157,7 +157,7 @@ class _AdBody extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppShape.card),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -195,7 +195,7 @@ class _AdBody extends StatelessWidget {
                     style: theme.textTheme.bodyMedium,
                   ),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(3),
+                    borderRadius: BorderRadius.circular(AppShape.tiny),
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 6,

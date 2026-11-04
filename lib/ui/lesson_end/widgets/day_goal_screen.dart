@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/training/lesson_end.dart';
 import '../../core/keys/lesson_end_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/canvas_symbols.dart';
@@ -40,7 +41,7 @@ class DayGoalScreen extends StatelessWidget {
     );
     Widget row(IconData icon, String text, {bool strong = false}) => Row(
       children: [
-        Icon(icon, size: 20, color: strong ? primary : null),
+        Icon(icon, size: AppIconSize.button, color: strong ? primary : null),
         const SizedBox(width: 12),
         Expanded(
           child: Text(

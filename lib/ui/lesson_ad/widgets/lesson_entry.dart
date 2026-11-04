@@ -10,6 +10,7 @@ import '../../../domain/use_cases/ad_policy.dart';
 import '../../../routing/route_names.dart';
 import '../../core/keys/ads_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/lucena_sheet.dart';
@@ -148,7 +149,11 @@ class _SheetBody extends StatelessWidget {
           Row(
             spacing: AppSpacing.sm,
             children: [
-              Icon(icon, size: 24, color: theme.colorScheme.primary),
+              Icon(
+                icon,
+                size: AppIconSize.standard,
+                color: theme.colorScheme.primary,
+              ),
               Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
             ],
           ),
