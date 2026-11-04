@@ -665,26 +665,27 @@ void main() {
     expect(settings.animationDuration, Duration.zero);
   });
 
-  testWidgets('H-PAR-07: a barra tem Virar, Relógio, Nova partida, nesta ordem', (
-    tester,
-  ) async {
-    await pumpScreen(tester, locale: const Locale('pt'));
+  testWidgets(
+    'H-PAR-07: a barra tem Virar, Relógio, Nova partida, nesta ordem',
+    (tester) async {
+      await pumpScreen(tester, locale: const Locale('pt'));
 
-    String label(Key key) => tester
-        .widget<Text>(
-          find.descendant(of: find.byKey(key), matching: find.byType(Text)),
-        )
-        .data!;
-    expect(label(FreeBoardKeys.flipButton), 'Virar');
-    expect(label(FreeBoardKeys.clockButton), 'Relógio');
-    expect(label(FreeBoardKeys.newGameButton), 'Nova partida');
-    final x = [
-      FreeBoardKeys.flipButton,
-      FreeBoardKeys.clockButton,
-      FreeBoardKeys.newGameButton,
-    ].map((k) => tester.getTopLeft(find.byKey(k)).dx).toList();
-    expect(x[0] < x[1] && x[1] < x[2], isTrue);
-  });
+      String label(Key key) => tester
+          .widget<Text>(
+            find.descendant(of: find.byKey(key), matching: find.byType(Text)),
+          )
+          .data!;
+      expect(label(FreeBoardKeys.flipButton), 'Virar');
+      expect(label(FreeBoardKeys.clockButton), 'Relógio');
+      expect(label(FreeBoardKeys.newGameButton), 'Nova partida');
+      final x = [
+        FreeBoardKeys.flipButton,
+        FreeBoardKeys.clockButton,
+        FreeBoardKeys.newGameButton,
+      ].map((k) => tester.getTopLeft(find.byKey(k)).dx).toList();
+      expect(x[0] < x[1] && x[1] < x[2], isTrue);
+    },
+  );
 
   testWidgets('virar o tabuleiro inverte a orientação e mantém a lista', (
     tester,
@@ -2245,6 +2246,60 @@ void main() {
         expect(cubit.state.drawOffer, isNot(DrawOffer.none));
       },
     );
+
+    testWidgets('H-PAR-06: textos das folhas de desistir e de empate', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: machine, locale: const Locale('pt'));
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      final resign = find.byKey(FreeBoardKeys.resignSheet);
+      for (final t in [
+        'Desistir da partida?',
+        'A partida termina agora e conta como derrota.',
+        'Desistir',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: resign, matching: find.text(t)),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationClose));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.drawButton));
+      await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+      await tester.pumpAndSettle();
+      final draw = find.byKey(FreeBoardKeys.drawSheet);
+      for (final t in [
+        'Oferecer empate?',
+        'Oferecer empate',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: draw, matching: find.text(t)),
+          findsOneWidget,
+          reason: t,
+        );
+      }
+      // A dica traz o nome do personagem, não "o adversário".
+      final hint = tester
+          .widgetList<Text>(
+            find.descendant(
+              of: draw,
+              matching: find.textContaining('pode aceitar ou recusar'),
+            ),
+          )
+          .single
+          .data!;
+      expect(
+        hint,
+        endsWith(' pode aceitar ou recusar. Se recusar, a partida continua.'),
+      );
+      expect(hint, isNot(contains('adversário')));
+    });
 
     testWidgets('X de desistir fica fora da folha e cancela sem perda', (
       tester,
