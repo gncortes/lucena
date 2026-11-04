@@ -118,16 +118,19 @@ class _AberturaAnimadaState extends State<AberturaAnimada>
 
   @override
   Widget build(BuildContext context) {
-    final app = widget.child;
-    if (_acabou) return app;
-    final camada = MediaQuery.maybeOf(context) == null
-        ? MediaQuery.fromView(view: View.of(context), child: _camada())
-        : _camada();
+    // A árvore não muda de forma quando a abertura sai: o app fica no mesmo
+    // lugar do Stack e não monta de novo (só a camada de cima some).
     return Stack(
       textDirection: TextDirection.ltr,
+      fit: StackFit.expand,
       children: [
-        app,
-        Positioned.fill(child: camada),
+        widget.child,
+        if (!_acabou)
+          Positioned.fill(
+            child: MediaQuery.maybeOf(context) == null
+                ? MediaQuery.fromView(view: View.of(context), child: _camada())
+                : _camada(),
+          ),
       ],
     );
   }
