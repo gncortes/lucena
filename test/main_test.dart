@@ -1,8 +1,8 @@
-import 'dart:math' as math;
 import 'dart:async';
 
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 
 import 'package:lucena/ui/core/widgets/skeleton.dart';
 
@@ -534,11 +534,10 @@ void main() {
     // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
     // retrato fora dos dois cartões.
     final screen = tester.getSize(find.byType(MaterialApp)).width;
-    // O maior tabuleiro: as outras miniaturas continuam na home.
-    final flying = [
-      for (final board in find.byType(StaticChessboard).evaluate())
-        tester.getSize(find.byWidget(board.widget)).width,
-    ].reduce(math.max);
+    // H-ANI-02: o tabuleiro em voo é a caixa do TabuleiroHero (o de destino
+    // vai dentro dela no tamanho real, encolhido pelo FittedBox).
+    expect(find.byKey(MotionKeys.tabuleiroEmVoo), findsOneWidget);
+    final flying = tester.getSize(find.byKey(MotionKeys.tabuleiroEmVoo)).width;
     expect(flying, greaterThan(small));
     expect(flying, lessThan(screen));
     expect(
