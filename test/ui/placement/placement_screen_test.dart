@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/placement.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
@@ -209,6 +210,17 @@ void main() {
       findsOneWidget,
     );
     expect(tester.widget<AppBar>(bar).bottom, isNull);
+  });
+
+  testWidgets('pergunta (regra da app bar): com a barra de progresso, o total '
+      'fica em 64, como no teste do capítulo e na Opinião', (tester) async {
+    await pump(tester);
+    await tester.tap(find.byKey(PlacementKeys.start));
+    await tester.pumpAndSettle();
+    expect(find.byKey(PlacementKeys.progress), findsOneWidget);
+    final bar = find.byType(AppBar);
+    expect(tester.getTopLeft(bar).dy, 0);
+    expect(tester.getSize(bar).height, AppBarHeight.standard);
   });
 
   testWidgets('abertura sem a saída: o botão não aparece', (tester) async {
