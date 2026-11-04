@@ -32,7 +32,7 @@ void main() {
     await tourAs($, RatingLevel.master);
     await $(HomeKeys.shortcutsTitle).waitUntilExists();
     final speedrun = $.tester.getTopLeft(find.byKey(HomeKeys.speedrunButton));
-    final endgames = $.tester.getTopLeft(find.byKey(HomeKeys.endgamesButton));
+    final endgames = $.tester.getTopLeft(find.byKey(HomeKeys.pillarsButton));
     expect(speedrun.dy, lessThan(endgames.dy));
     expect(find.byKey(HomeKeys.schoolButton), findsNothing);
     await openAllModes($);

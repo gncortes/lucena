@@ -37,9 +37,9 @@ void main() {
     await $(HomeKeys.goalTitle).waitUntilVisible();
     final before = $.tester.widget<Text>(find.byKey(HomeKeys.goalTitle)).data;
     // "Aprender finais": o Curso de finais é o primeiro atalho.
-    await $(HomeKeys.endgamesButton).scrollTo();
+    await $(HomeKeys.pillarsButton).scrollTo();
     double top(Key key) => $.tester.getTopLeft(find.byKey(key)).dy;
-    expect(top(HomeKeys.endgamesButton), lessThan(top(HomeKeys.catalogButton)));
+    expect(top(HomeKeys.pillarsButton), lessThan(top(HomeKeys.catalogButton)));
 
     await home.openSettings();
     final profile = ProfileRobot($);
@@ -54,7 +54,7 @@ void main() {
     );
     // "Treinar finais": agora o treino vem antes do curso.
     await $(HomeKeys.catalogButton).scrollTo();
-    expect(top(HomeKeys.catalogButton), lessThan(top(HomeKeys.endgamesButton)));
+    expect(top(HomeKeys.catalogButton), lessThan(top(HomeKeys.pillarsButton)));
   });
 
   patrolTest('editar apelido e rating e reiniciar: mantidos', ($) async {

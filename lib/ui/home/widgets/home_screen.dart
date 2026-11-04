@@ -12,10 +12,12 @@ import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import '../../featured/widgets/featured_card.dart';
@@ -76,8 +78,9 @@ class _HomeScreenState extends State<HomeScreen>
       // Primeira abertura: o tour antes de tudo (ou a tela em que a pessoa
       // parou). Com outra tela por cima (o desafio de um link), o tour
       // espera: "Conhecer o app" volta aqui.
-      listenWhen: (previous, current) =>
-          current.ready && current.tourPending && !previous.tourPending,
+      // A cada carga pronta: se o tour ficou esperando (outra tela por cima),
+      // ele abre quando o Início volta a ser a tela de cima.
+      listenWhen: (previous, current) => current.ready && current.tourPending,
       listener: (context, state) {
         if (ModalRoute.of(context)?.isCurrent ?? true) {
           context.go(switch (state.stage) {
@@ -89,8 +92,11 @@ class _HomeScreenState extends State<HomeScreen>
       },
       child: BlocListener<HomeCubit, HomeState>(
         // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
+        // Tour primeiro: a folha só sai sem tour pendente (uma por abertura).
         listenWhen: (previous, current) =>
-            current.streak.lost > 0 && previous.streak.lost == 0,
+            current.streak.lost > 0 &&
+            (previous.streak.lost == 0 || previous.tourPending) &&
+            !current.tourPending,
         listener: (context, state) {
           final cubit = context.read<HomeCubit>();
           var played = false;
@@ -108,10 +114,14 @@ class _HomeScreenState extends State<HomeScreen>
         },
         child: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) => state.failed && !state.ready
-              ? LoadErrorScreen(
-                  kind: LoadErrorKind.generic,
-                  onAction: () => context.read<HomeCubit>().load(
-                    Localizations.localeOf(context).languageCode,
+              // O Início é a raiz: o erro não tem "Voltar".
+              ? KeyedSubtree(
+                  key: HomeKeys.error,
+                  child: LoadErrorScreen(
+                    kind: LoadErrorKind.generic,
+                    onAction: () => context.read<HomeCubit>().load(
+                      Localizations.localeOf(context).languageCode,
+                    ),
                   ),
                 )
               : _scaffold(context, theme),
@@ -162,7 +172,11 @@ class _HomeScreenState extends State<HomeScreen>
                       BlocBuilder<HomeCubit, HomeState>(
                         builder: (context, state) => state.ready
                             ? PlayerCard(state: state)
-                            : const SizedBox.shrink(),
+                            : const SkeletonBlock(
+                                width: 96,
+                                height: 32,
+                                radius: AppShape.large,
+                              ),
                       ),
                       IconButton(
                         key: HomeKeys.settingsButton,
@@ -181,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen>
             Expanded(
               child: BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
-                  if (!state.ready) return const SizedBox.shrink();
+                  if (!state.ready) return const _HomeSkeleton();
                   return ListView(
                     padding: scrollPadding(
                       context,
@@ -195,10 +209,6 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            if (state.unlockedBlind) ...[
-                              const _UnlockedCard(),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
                             if (state.hero != null) ...[
                               HeroCard(state: state),
                               const SizedBox(height: AppSpacing.xl),
@@ -274,7 +284,10 @@ class _HomeScreenState extends State<HomeScreen>
                   child: column < shortcuts.length
                       ? StaggeredEntrance(
                           index: column,
-                          child: ModeTile(shortcut: shortcuts[column]),
+                          child: ModeTile(
+                            shortcut: shortcuts[column],
+                            hasPlan: state.training != null,
+                          ),
                         )
                       : const SizedBox.shrink(),
                 ),
@@ -285,82 +298,47 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-/// O modo novo destravado na Jornada (às cegas): entra crescendo, uma vez.
-class _UnlockedCard extends StatelessWidget {
-  const _UnlockedCard();
+/// O esqueleto do primeiro carregamento (canvas `PropV1InicioCarregando`): o
+/// cartão de cima, os títulos das duas seções, o destaque e os quatro
+/// atalhos. A rolagem fica parada.
+class _HomeSkeleton extends StatelessWidget {
+  const _HomeSkeleton();
+
+  static Widget _section() => const Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      SkeletonBlock(width: 140, height: 20, radius: 6),
+      SkeletonBlock(width: 64, height: 20, radius: 6),
+    ],
+  );
+
+  static Widget _tile() =>
+      const Expanded(child: SkeletonBlock(height: 144, radius: AppShape.large));
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final cubit = context.read<HomeCubit>();
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.85, end: 1),
-      duration: AppMotion.of(context).celebrate,
-      curve: AppMotion.bounce,
-      builder: (context, value, child) =>
-          Transform.scale(scale: value, child: child),
-      child: Card(
-        key: HomeKeys.unlockedCard,
-        color: colors.primaryContainer,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.md,
-            AppSpacing.sm,
-            AppSpacing.md,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.record_voice_over,
-                    color: colors.onPrimaryContainer,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Text(
-                      l10n.homeUnlockedBlindTitle,
-                      style: context.cardTitle?.copyWith(
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    key: HomeKeys.unlockedClose,
-                    icon: const Icon(Icons.close),
-                    tooltip: MaterialLocalizations.of(context)
-                        .closeButtonTooltip,
-                    onPressed: cubit.dismissUnlocked,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-                child: Text(
-                  l10n.homeUnlockedBlindBody,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onPrimaryContainer,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              FilledButton.icon(
-                key: HomeKeys.unlockedAction,
-                icon: const Icon(Icons.grid_view_rounded),
-                label: Text(l10n.homeUnlockedBlindAction),
-                onPressed: () {
-                  unawaited(cubit.dismissUnlocked());
-                  context.go(Routes.catalog);
-                },
-              ),
-            ],
-          ),
-        ),
+    return ListView(
+      key: HomeKeys.loading,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
       ),
+      children: [
+        const SkeletonBlock(height: 148, radius: 24),
+        const SizedBox(height: AppSpacing.xl),
+        _section(),
+        const SizedBox(height: AppSpacing.md),
+        const SkeletonBlock(height: 72, radius: AppShape.large),
+        const SizedBox(height: AppSpacing.xl),
+        _section(),
+        const SizedBox(height: AppSpacing.md),
+        Row(spacing: AppSpacing.md, children: [_tile(), _tile()]),
+        const SizedBox(height: AppSpacing.md),
+        Row(spacing: AppSpacing.md, children: [_tile(), _tile()]),
+      ],
     );
   }
 }

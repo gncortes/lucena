@@ -27,11 +27,13 @@ Future<void> tapHomePath(PatrolIntegrationTester $, HomePath path) async {
   await $(HomeKeys.shortcutsTitle).waitUntilExists();
   final key = switch (path) {
     HomePath.journey => HomeKeys.journeyButton,
-    HomePath.endgames || HomePath.forYou => HomeKeys.endgamesButton,
+    HomePath.endgames || HomePath.forYou => HomeKeys.pillarsButton,
     HomePath.train => HomeKeys.catalogButton,
     HomePath.speedrun => HomeKeys.speedrunButton,
     HomePath.race => HomeKeys.raceButton,
     HomePath.stars => HomeKeys.starsButton,
+    HomePath.board => HomeKeys.boardButton,
+    HomePath.position => HomeKeys.positionButton,
     HomePath.learn => null,
   };
   if (key != null && find.byKey(key).evaluate().isNotEmpty) {

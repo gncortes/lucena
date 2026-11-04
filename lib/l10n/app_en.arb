@@ -1871,11 +1871,11 @@
   "@gameDetailsNotFound": {
     "description": "Game details: shown when the game was not found."
   },
-  "homeEndgames": "Endgame course",
+  "homeEndgames": "Pilares do Xadrez",
   "@homeEndgames": {
     "description": "Home card that opens the endgame lessons trail."
   },
-  "homeEndgamesBody": "Lucena, Philidor, bishop and knight: the endgames every player must master.",
+  "homeEndgamesBody": "Your training guide, built around your game",
   "@homeEndgamesBody": {
     "description": "One line under the endgame lessons card on the home screen."
   },
@@ -3040,18 +3040,6 @@
   "journeySpecialLocked": "Win this endgame in normal mode first.",
   "@journeySpecialLocked": {
     "description": "Special challenge still locked: win the same endgame normally first."
-  },
-  "homeUnlockedBlindTitle": "New mode unlocked: blindfold",
-  "@homeUnlockedBlindTitle": {
-    "description": "Home card shown once after the first blindfold special challenge is won."
-  },
-  "homeUnlockedBlindBody": "You won without seeing the pieces. Now you can play any endgame blindfold: pick the endgame and choose Blindfold.",
-  "@homeUnlockedBlindBody": {
-    "description": "Body of the new-mode card: how to play blindfold from now on."
-  },
-  "homeUnlockedBlindAction": "Pick an endgame",
-  "@homeUnlockedBlindAction": {
-    "description": "Button of the new-mode card: opens the endgame catalog."
   },
   "lichessInviteTitle": "Play against people",
   "@lichessInviteTitle": {
@@ -9364,66 +9352,13 @@
       }
     }
   },
-  "nextStepsReadyBar": "All set",
-  "@nextStepsReadyBar": {
-    "description": "Next steps after the level: app bar title (and hero title without a level)."
-  },
-  "nextStepsLevel": "Your level: {level}",
-  "@nextStepsLevel": {
-    "description": "Next steps after the level: hero title with the rating.",
-    "placeholders": {
-      "level": {
-        "type": "int"
-      }
-    }
-  },
-  "nextStepsReadyBody": "Now we know where to start. Where would you like to begin?",
-  "@nextStepsReadyBody": {
-    "description": "Next steps after the level: hero text."
-  },
-  "nextStepsLessonsBody": "Learn Opposition, Bishop and knight, Queen vs rook and Lucena.",
-  "@nextStepsLessonsBody": {
-    "description": "Next steps: what the endgame lessons cover."
-  },
-  "nextStepsRaceBody": "Solve endgame puzzles against the clock.",
-  "@nextStepsRaceBody": {
-    "description": "Next steps: what the endgame race is for."
-  },
-  "nextStepsTrainTitle": "Practice endgames",
-  "@nextStepsTrainTitle": {
-    "description": "Next steps: option to play an endgame against the engine."
-  },
-  "nextStepsTrainBody": "Pick a position in the catalog and play.",
-  "@nextStepsTrainBody": {
-    "description": "Next steps: text of the training option."
-  },
   "nextStepsHome": "Go to home",
   "@nextStepsHome": {
     "description": "Next steps: footer button to the home screen."
   },
-  "nextStepsSchoolBar": "School completed",
-  "@nextStepsSchoolBar": {
-    "description": "Next steps after the School: app bar title."
-  },
-  "nextStepsSchoolTitle": "You completed the School!",
-  "@nextStepsSchoolTitle": {
-    "description": "Next steps after the School: hero title."
-  },
-  "nextStepsSchoolBody": "The rules and the first mates are yours. What would you like to do now?",
-  "@nextStepsSchoolBody": {
-    "description": "Next steps after the School: hero text."
-  },
   "nextStepsRecommended": "Recommended",
   "@nextStepsRecommended": {
     "description": "Next steps: badge on the recommended option."
-  },
-  "nextStepsLessonsFirst": "Start with the Opposition, the endgame that comes up most.",
-  "@nextStepsLessonsFirst": {
-    "description": "Next steps after the School: endgame lessons text."
-  },
-  "nextStepsJourneyBody": "Beat opponents, one step at a time.",
-  "@nextStepsJourneyBody": {
-    "description": "Next steps after the School: journey text."
   },
   "lessonFinishedRaceOnly": "{name} Race",
   "@lessonFinishedRaceOnly": {
@@ -9767,10 +9702,6 @@
   "@homeRatingStarting": {
     "description": "Home top bar, in place of the rating number while the beginner has played too few games."
   },
-  "homeHeroFirstSteps": "First steps",
-  "@homeHeroFirstSteps": {
-    "description": "Small label on the home hero card before the first game: where the player is."
-  },
   "homeHeroSchool": "School",
   "@homeHeroSchool": {
     "description": "Small label on the home hero card: the beginner school."
@@ -9783,14 +9714,6 @@
         "type": "int"
       }
     }
-  },
-  "homeHeroCourseDone": "Course completed",
-  "@homeHeroCourseDone": {
-    "description": "Home hero card title when every endgame chapter is passed."
-  },
-  "homeHeroSpeedrun": "From Coco to Stockfish",
-  "@homeHeroSpeedrun": {
-    "description": "Home hero card title for the speedrun: the whole Journey."
   },
   "homeHeroStart": "Start",
   "@homeHeroStart": {
@@ -9816,7 +9739,7 @@
   "@homeShortcutJourneyBody": {
     "description": "Two-line description on the Journey shortcut tile."
   },
-  "homeShortcutEndgamesBody": "Learn theoretical endgames like Lucena and Philidor",
+  "homeShortcutEndgamesBody": "Your training guide, built around your game",
   "@homeShortcutEndgamesBody": {
     "description": "Two-line description on the endgame course shortcut tile."
   },
@@ -11843,5 +11766,21 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "homeShortcutPosition": "Set up a position",
+  "@homeShortcutPosition": {
+    "description": "Title of the Home shortcut that opens the custom position editor."
+  },
+  "homeShortcutBoardBody": "Play both sides, with or without a clock",
+  "@homeShortcutBoardBody": {
+    "description": "Description of the Home shortcut for the free board."
+  },
+  "homeShortcutPositionBody": "Set up any position and play it",
+  "@homeShortcutPositionBody": {
+    "description": "Description of the Home shortcut for the custom position editor."
+  },
+  "homeHeroLastPosition": "Your last position",
+  "@homeHeroLastPosition": {
+    "description": "Home top card for the Explore positions goal: the title, the saved free board position."
   }
 }

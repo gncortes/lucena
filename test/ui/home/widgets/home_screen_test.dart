@@ -120,6 +120,37 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(HomeKeys.screen), findsOneWidget);
   });
+  testWidgets('carregando: barra fixa e esqueleto, sem erro nem rating', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(locale: const Locale('pt'), child: _Home(const HomeScreen())),
+    );
+    // Antes da carga terminar: o nome, a engrenagem e o esqueleto.
+    expect(find.byKey(HomeKeys.title), findsOneWidget);
+    expect(find.byKey(HomeKeys.settingsButton), findsOneWidget);
+    expect(find.byKey(HomeKeys.loading), findsOneWidget);
+    expect(find.byKey(HomeKeys.playerCard), findsNothing);
+    expect(find.byKey(HomeKeys.error), findsNothing);
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.loading), findsNothing);
+    expect(find.byKey(HomeKeys.shortcutsTitle), findsOneWidget);
+  });
+
+  testWidgets('falha no início: a tela de erro leva a chave do Início', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: _Home(const HomeScreen(), progress: _FailingProgress()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.error), findsOneWidget);
+    expect(find.byKey(HomeKeys.loading), findsNothing);
+  });
+
   double opacityOf(WidgetTester tester, Key key) {
     final fade = tester.widget<FadeTransition>(
       find
@@ -238,9 +269,8 @@ void main() {
       'Escola, Jornada, Problemas e Estrelas', (tester) async {
     await pumpHome(tester, profile: learner);
 
-    expect(text(tester, HomeKeys.heroLabel), 'Primeiros passos');
-    expect(text(tester, HomeKeys.goalTitle), 'Como mover as peças');
-    expect(action(tester), 'Começar');
+    // Aprender a jogar: a Jornada no cartão (H-INI-02).
+    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
     expect(tiles(tester), [
       HomeKeys.schoolButton,
       HomeKeys.journeyButton,
@@ -281,11 +311,9 @@ void main() {
       locale: const Locale('en'),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Endgame course');
-    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
-    expect(action(tester), 'Start');
+    expect(text(tester, HomeKeys.heroLabel), 'Journey');
     expect(tiles(tester), [
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.journeyButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
@@ -294,8 +322,8 @@ void main() {
     ]);
   });
 
-  testWidgets('aula de final aberta: Continuar, a barra e o exercício em '
-      'miniatura', (tester) async {
+  testWidgets('lição de final aberta: o Início mostra a Jornada, '
+      'não a lição (H-INI-02)', (tester) async {
     await pumpHome(
       tester,
       locale: const Locale('en'),
@@ -310,10 +338,9 @@ void main() {
       ),
     );
 
-    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
-    expect(action(tester), 'Continue');
-    expect(find.byKey(HomeKeys.heroProgress), findsOneWidget);
-    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
+    // A lição aberta não vira cartão no Início (H-INI-02): sem objetivo,
+    // o cartão é o da Jornada.
+    expect(text(tester, HomeKeys.heroLabel), 'Journey');
   });
 
   testWidgets('treinar finais: o final da faixa no cartão e Treinar primeiro '
@@ -328,7 +355,7 @@ void main() {
     expect(tiles(tester), [
       HomeKeys.catalogButton,
       HomeKeys.journeyButton,
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
       HomeKeys.starsButton,
@@ -343,7 +370,7 @@ void main() {
     final shown = tiles(tester);
     expect(shown, [
       HomeKeys.journeyButton,
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
@@ -357,18 +384,21 @@ void main() {
     }
   });
 
-  testWidgets('sem aula liberada: nem o Curso de finais nos atalhos', (
-    tester,
-  ) async {
+  testWidgets('os Pilares do Xadrez ficam nos atalhos, com ou sem aula de '
+      'final: nunca o Curso de finais', (tester) async {
     await pumpHome(
       tester,
       profile: const UserProfile(rating: 1450, goal: GoalPreference.improve),
       trail: const EndgameTrail(modules: []),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Treinar finais');
-    expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
-    expect(find.byKey(HomeKeys.forYouButton), findsNothing);
+    expect(find.byKey(HomeKeys.pillarsButton), findsOneWidget);
+    expect(find.text('Pilares do Xadrez'), findsOneWidget);
+    expect(
+      find.text('Seu guia de treino, feito para o seu jogo'),
+      findsWidgets,
+    );
+    expect(find.text('Curso de finais'), findsNothing);
     expect(tiles(tester).last, HomeKeys.starsButton);
   });
 

@@ -92,7 +92,6 @@ import '../ui/board_settings/widgets/board_behavior_screen.dart';
 import '../ui/board_settings/widgets/clock_settings_screen.dart';
 import '../ui/voice/widgets/voice_settings_screen.dart';
 import '../data/repositories/home/home_layout_repository.dart';
-import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/journey/journey_repository.dart';
 import '../data/repositories/maia/maia_repository.dart';
 import '../data/repositories/speedrun/speedrun_repository.dart';
@@ -668,7 +667,6 @@ GoRouter buildRouter({
             endgameProgress: context.read<EndgameProgressRepository>(),
             placement: context.read<PlacementRepository>(),
             homeLayout: context.read<HomeLayoutRepository>(),
-            unlocks: context.read<UnlockRepository>(),
             featured: context.read<FeaturedRepository>(),
             featuredProgress: context.read<FeaturedProgressRepository>(),
             now: context.read<Now>(),
@@ -685,6 +683,7 @@ GoRouter buildRouter({
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
+              onResume: true,
               onReturn: () =>
                   context.read<HomeCubit>().load(_language(context)),
               child: const HomeScreen(),
@@ -1453,18 +1452,14 @@ GoRouter buildRouter({
           _route(
             name: RouteNames.nextSteps,
             path: 'next',
-            builder: (context, state) => NextStepsScreen(
-              level: int.tryParse(state.uri.queryParameters['level'] ?? ''),
-              courseAvailable: _courseAvailable(context),
-            ),
+            builder: (context, state) =>
+                NextStepsScreen(courseAvailable: _courseAvailable(context)),
             routes: [
               _route(
                 name: RouteNames.nextStepsSchool,
                 path: 'school',
-                builder: (context, state) => NextStepsScreen(
-                  graduated: true,
-                  courseAvailable: _courseAvailable(context),
-                ),
+                builder: (context, state) =>
+                    NextStepsScreen(courseAvailable: _courseAvailable(context)),
               ),
             ],
           ),

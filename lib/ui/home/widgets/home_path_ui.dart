@@ -22,6 +22,8 @@ extension HomePathUi on HomePath {
     HomePath.train => CanvasSymbols.gridView,
     HomePath.race => CanvasSymbols.extensionIcon,
     HomePath.stars => CanvasSymbols.star,
+    HomePath.board => Icons.grid_on,
+    HomePath.position => Icons.edit,
   };
 
   String title(AppLocalizations l10n) => switch (this) {
@@ -33,6 +35,8 @@ extension HomePathUi on HomePath {
     HomePath.train => l10n.homeTrain,
     HomePath.race => l10n.homeRace,
     HomePath.stars => l10n.homeShortcutStars,
+    HomePath.board => l10n.freeBoardTitle,
+    HomePath.position => l10n.homeShortcutPosition,
   };
 
   /// O texto para o nível [level] (sem nível, o de quem começa). [tested]:
@@ -53,6 +57,8 @@ extension HomePathUi on HomePath {
       (HomePath.train, _) => l10n.homeTrainBody,
       (HomePath.race, _) => l10n.homeRaceBody,
       (HomePath.stars, _) => l10n.homeShortcutStarsBody,
+      (HomePath.board, _) => l10n.homeShortcutBoardBody,
+      (HomePath.position, _) => l10n.homeShortcutPositionBody,
     };
   }
 
@@ -67,6 +73,8 @@ extension HomePathUi on HomePath {
     HomePath.train => Routes.catalog,
     HomePath.race => Routes.race,
     HomePath.stars => Routes.starChallenges,
+    HomePath.board => Routes.freeBoard,
+    HomePath.position => Routes.customPosition,
   };
 
   /// A key do cartão na tela inicial (a mesma de antes de dar para
@@ -75,10 +83,12 @@ extension HomePathUi on HomePath {
     HomePath.learn => HomeKeys.schoolButton,
     HomePath.journey => HomeKeys.journeyButton,
     HomePath.forYou => HomeKeys.forYouButton,
-    HomePath.endgames => HomeKeys.endgamesButton,
+    HomePath.endgames => HomeKeys.pillarsButton,
     HomePath.speedrun => HomeKeys.speedrunButton,
     HomePath.train => HomeKeys.catalogButton,
     HomePath.race => HomeKeys.raceButton,
     HomePath.stars => HomeKeys.starsButton,
+    HomePath.board => HomeKeys.boardButton,
+    HomePath.position => HomeKeys.positionButton,
   };
 }

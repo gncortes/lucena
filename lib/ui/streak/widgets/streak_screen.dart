@@ -12,6 +12,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/streak_cubit.dart';
@@ -27,11 +28,14 @@ class StreakScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final cubit = context.watch<StreakCubit>();
     if (cubit.state.failure case final failure?) {
-      return LoadErrorScreen(
-        kind: LoadErrorKind.fromFailure(failure),
-        onAction: cubit.load,
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
+      return KeyedSubtree(
+        key: StreakKeys.error,
+        child: LoadErrorScreen(
+          kind: LoadErrorKind.fromFailure(failure),
+          onAction: cubit.load,
+          onBack: () =>
+              context.canPop() ? context.pop() : context.go(Routes.home),
+        ),
       );
     }
     return Scaffold(
@@ -39,7 +43,19 @@ class StreakScreen extends StatelessWidget {
       appBar: LucenaAppBar(title: Text(l10n.streakTitle)),
       body: BlocBuilder<StreakCubit, StreakState>(
         builder: (context, state) {
-          if (!state.ready) return const SizedBox.shrink();
+          if (!state.ready) {
+            // Canvas `PropV1InicioSequenciaCarregando`.
+            return const KeyedSubtree(
+              key: StreakKeys.loading,
+              child: SkeletonBody([
+                SkeletonShape.block(height: 160),
+                SkeletonShape.block(height: 64),
+                SkeletonShape.block(height: 20, radius: AppShape.small),
+                SkeletonShape.block(height: 20, radius: AppShape.small),
+                SkeletonShape.block(height: 20, radius: AppShape.small),
+              ]),
+            );
+          }
           return ListView(
             padding: scrollPadding(
               context,
