@@ -7,8 +7,8 @@ import '../../services/asset_service.dart';
 import '../../services/scoped_asset_cache.dart';
 import 'course_preview_repository.dart';
 
-/// A prévia em `assets/courses/pt/pilares_venda.json` (exportada do canvas
-/// por `tools/export_pilares_preview.py`).
+/// A venda do Pilares em `assets/courses/pt/pilares_venda.json` (exportada
+/// do canvas por `tools/export_pilares_venda.py`).
 class AssetCoursePreviewRepository implements CoursePreviewRepository {
   AssetCoursePreviewRepository(this._assets);
 

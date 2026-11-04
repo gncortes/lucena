@@ -7,6 +7,7 @@ import '../../core/keys/training_goal_keys.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../training_goal/widgets/training_goal_card.dart';
 import '../../core/widgets/course/course_navigation_bar.dart';
+import '../../../domain/use_cases/demo_goals.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../domain/use_cases/training/needs_opening_profile.dart';
 import '../../core/keys/training_profile_keys.dart';
@@ -45,6 +46,8 @@ import 'course_guide_copy.dart';
 import 'licao_plan_band.dart';
 import 'training_guide_tab.dart';
 import '../../course_entry/widgets/course_content_states.dart';
+import '../../pilares_sale/widgets/pilares_demo_catalog.dart';
+import '../../pilares_sale/widgets/pilares_demo_tabs.dart';
 
 class CourseGuideScreen extends StatelessWidget {
   const CourseGuideScreen({
@@ -171,7 +174,13 @@ class CourseGuideScreen extends StatelessWidget {
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: const Icon(CanvasSymbols.arrowBack),
           ),
-          actions: showHeaderActions
+          // O Catálogo da demonstração (H-VEN-11) não tem plano nem ajuda.
+          // Na demo, Catálogo e Estatísticas vêm sem as ações (H-VEN-11/12).
+          actions:
+              showHeaderActions &&
+                  !_demoCatalog(context, tab) &&
+                  !(tab == CourseGuideTab.stats &&
+                      PilaresDemo.isActive(context, config.course))
               ? [
                   IconButton(
                     key: CourseGuideKeys.planAction,
@@ -213,10 +222,13 @@ class CourseGuideScreen extends StatelessWidget {
                                   )
                                 : _WelcomeTab(onContinue: onWelcomeContinue),
                           CourseGuideTab.goals => goalsBuilder(context),
-                          CourseGuideTab.guide => TrainingGuideTab(
-                            key: CourseGuideKeys.guideTab,
-                            course: config.course,
-                          ),
+                          CourseGuideTab.guide =>
+                            PilaresDemo.isActive(context, config.course)
+                                ? const PilaresDemoGuide()
+                                : TrainingGuideTab(
+                                    key: CourseGuideKeys.guideTab,
+                                    course: config.course,
+                                  ),
                           CourseGuideTab.stats => progressBuilder(context),
                           CourseGuideTab.catalog => _CatalogTab(
                             state: state,
@@ -233,6 +245,8 @@ class CourseGuideScreen extends StatelessWidget {
           selectedIndex: tabs.indexOf(tab).clamp(0, tabs.length - 1),
           remaining: training == null
               ? 0
+              : PilaresDemo.isActive(context, config.course)
+              ? DemoGoals.counts(training).remaining
               : trainingGoalCounts(training).remaining,
           onDestinationSelected: state.saving
               ? null
@@ -610,6 +624,18 @@ class _LessonTab extends StatelessWidget {
   }
 }
 
+/// Quem está na demonstração do Pilares vê o Catálogo da Venda (H-VEN-11).
+bool _demoCatalog(
+  BuildContext context,
+  CourseGuideTab tab, [
+  TrainingCourse? course,
+]) =>
+    tab == CourseGuideTab.catalog &&
+    PilaresDemo.isActive(
+      context,
+      course ?? context.read<CourseGuideCubit>().config.course,
+    );
+
 class _CatalogTab extends StatefulWidget {
   const _CatalogTab({
     required this.state,
@@ -649,6 +675,16 @@ class _CatalogTabState extends State<_CatalogTab> {
 
   @override
   Widget build(BuildContext context) {
+    final config = context.read<CourseGuideCubit>().config;
+    if (_demoCatalog(context, CourseGuideTab.catalog, config.course)) {
+      return PilaresDemoCatalog(
+        lessons: widget.state.resources!.lessons,
+        completed: widget.state.training!.completedLessons.keys.toSet(),
+        nextLessonId: widget.state.nextLesson?.id,
+        onLesson: widget.onLesson,
+        onChapter: widget.onChapter,
+      );
+    }
     final planIds = _planIds;
     final filtered = _onlyPlan && planIds != null;
     final data = widget.state.resources!.lessons
@@ -660,7 +696,6 @@ class _CatalogTabState extends State<_CatalogTab> {
         )
         .toList();
     final completed = widget.state.training!.completedLessons;
-    final config = context.read<CourseGuideCubit>().config;
     final modules =
         config.progressKind == TrainingProgressKind.modulesAndPieces;
     final groups = {for (final lesson in data) lesson.groupId: lesson.group};

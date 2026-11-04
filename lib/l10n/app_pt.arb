@@ -2951,5 +2951,59 @@
   "venPlanSaleClosing": "Treine até o seu objetivo, com o Viktor em cada lição.",
   "venPlanSaleStart": "Começar pelo Capítulo 1",
   "venPlanSaleFull": "Ver o curso completo",
-  "venAdFailedMessage": "A lição abre depois do anúncio. Confira a internet e tente de novo, ou abra direto com o Pilares."
+  "venAdFailedMessage": "A lição abre depois do anúncio. Confira a internet e tente de novo, ou abra direto com o Pilares.",
+  "venDemoCatalogTitle": "Capítulo 1 liberado para você",
+  "venDemoCatalogDone": "{done} de {total} concluídos",
+  "@venDemoCatalogDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "venDemoCatalogText": "Cada lição e a lista de exercícios começam com um anúncio. No Pilares, você tem seu plano e suas metas de cada dia.",
+  "venDemoCatalogFree": "Grátis",
+  "venDemoCatalogAdFirst": "Começa com um anúncio",
+  "venDemoCatalogFull": "No curso completo",
+  "venDemoCatalogClosing": "O Pilares tem 105 lições em 20 capítulos e mais de 850 exercícios.",
+  "venDemoGuideTitle": "Seu plano até o torneio",
+  "venDemoGuideText": "Informe a data, faça o teste de 15 posições e receba os capítulos de cada semana, escolhidos para você.",
+  "venDemoGuideEvent": "Torneio Aberto de Campinas",
+  "venDemoGuideDate": "14 de dezembro",
+  "venDemoGuideExample": "Exemplo",
+  "venDemoGuideWeek": "Semana {n}",
+  "@venDemoGuideWeek": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "venDemoGuideWeek1": "Capítulo 6 · Contra o defensor",
+  "venDemoGuideWeek2": "Capítulo 7 · Lances forçados",
+  "venDemoGuideWeek3": "Capítulo 8 · Recursos defensivos",
+  "venDemoGuideWeek4": "Capítulo 18 · Combinações",
+  "venDemoGuideWeek5": "Capítulos 19 e 20",
+  "venDemoGuideWeek6": "Revisão",
+  "venDemoGuideEnd": "{date} · {event}",
+  "@venDemoGuideEnd": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "event": {
+        "type": "String"
+      }
+    }
+  },
+  "venDemoGuideClosing": "No Pilares, o plano monta seu treino semana a semana até o torneio.",
+  "venDemoGuidePlan": "Conhecer o plano",
+  "venDemoGoalsLesson": "Capítulo 1 · Lição grátis",
+  "venDemoGoalsClosing": "No Pilares, você tem várias metas, cada uma com a parte de hoje: lição, exercícios e abertura.",
+  "venDemoGoalsLockTitle": "Metas fazem parte do Pilares",
+  "venDemoGoalsLockText": "No Pilares, o que você erra volta nas metas, até o tema ficar firme.",
+  "venDemoStatsClosing": "No Pilares, as estatísticas mostram o domínio de cada tema."
 }

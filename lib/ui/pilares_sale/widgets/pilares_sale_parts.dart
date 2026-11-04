@@ -430,3 +430,38 @@ class PilaresResultScreen extends StatelessWidget {
     );
   }
 }
+
+/// O selo em pílula (24 de altura, 12/16 peso 500): "Vitalício", "Mensal" e
+/// "Demonstração" no cartão do curso; "Grátis" no Catálogo da demo.
+class PilaresBadge extends StatelessWidget {
+  const PilaresBadge({
+    required this.text,
+    this.background = AppColors.successSurface,
+    this.foreground = AppColors.successOnSurface,
+    super.key,
+  });
+
+  final String text;
+  final Color background;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    constraints: const BoxConstraints(minHeight: 24),
+    alignment: Alignment.center,
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    decoration: BoxDecoration(
+      color: background,
+      borderRadius: BorderRadius.circular(AppShape.extraLarge),
+    ),
+    child: Text(
+      text,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 12,
+        height: 16 / 12,
+        fontWeight: FontWeight.w500,
+        color: foreground,
+      ),
+    ),
+  );
+}
