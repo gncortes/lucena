@@ -12119,5 +12119,7 @@
   "treinoTournamentsEmptyBody": "The tournaments you play are saved here.",
   "@treinoTournamentsEmptyBody": {"description": "Training goal flow copy."},
   "treinoTournamentRow": "{points} of {rounds}",
-  "@treinoTournamentRow": {"description": "Training goal flow copy.", "placeholders": {"points": {"type": "String"}, "rounds": {"type": "String"}}}
+  "@treinoTournamentRow": {"description": "Training goal flow copy.", "placeholders": {"points": {"type": "String"}, "rounds": {"type": "String"}}},
+  "treinoAboutBody": "Pilares teaches endgames in chapters, from basic to advanced. My plan gathers the chapters that fit your time; the full catalog shows them all.",
+  "@treinoAboutBody": {"description": "Training goal flow copy."}
 }

@@ -2544,5 +2544,6 @@
   "treinoNextGoalTitle": "Qual é o seu próximo objetivo?",
   "treinoTournamentsEmptyTitle": "Nenhum torneio registrado",
   "treinoTournamentsEmptyBody": "Os torneios que você jogar ficam salvos aqui.",
-  "treinoTournamentRow": "{points} de {rounds}"
+  "treinoTournamentRow": "{points} de {rounds}",
+  "treinoAboutBody": "O Pilares ensina os finais em capítulos, do básico ao avançado. O Meu plano reúne os capítulos que cabem no seu tempo; o Catálogo completo mostra todos."
 }
