@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/theme/app_bar_height.dart';
@@ -608,7 +607,8 @@ void main() {
           .data!;
       final comeco = texto();
       await tester.pumpAndSettle();
-      final fim = NumberFormat.decimalPattern('pt_BR').format(result.theta);
+      // O rating sai sem separador, como no resto do app ("1200").
+      final fim = '${result.theta}';
       expect(texto(), fim);
       expect(comeco, isNot(fim));
     });

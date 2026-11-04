@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/ui/account/widgets/account_widgets.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
@@ -27,6 +30,7 @@ import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/widgets/choice_card.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/motion/entradas_vistas.dart';
@@ -59,6 +63,8 @@ void main() {
   late FakeProfileRepository profile;
 
   /// Abre o tour no passo [step] (o app fechado no meio volta nele), em PT-BR.
+  late FakeAccountRepository accounts;
+
   Future<void> pumpTour(
     WidgetTester tester, {
     TourStep step = TourStep.board,
@@ -116,7 +122,7 @@ void main() {
         ),
       ],
     );
-    final accounts = FakeAccountRepository();
+    accounts = FakeAccountRepository();
     final sync = SyncScheduler(accounts, FakeSyncRepository());
     addTearDown(sync.dispose);
     await tester.pumpWidget(
@@ -767,6 +773,41 @@ void main() {
       expect(find.byKey(TourKeys.accountLogin), findsOneWidget);
       expect(find.byKey(TourKeys.skipButton), findsNothing);
     });
+
+    testWidgets('H-ABE-11: o convite é o da Conta, na ordem do quadro', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.account);
+      double top(Key key) => tester.getTopLeft(find.byKey(key)).dy;
+      expect(top(TourKeys.accountGoogle), lessThan(top(TourKeys.accountEmail)));
+      expect(top(TourKeys.accountEmail), lessThan(top(TourKeys.accountLogin)));
+      expect(top(TourKeys.accountLogin), lessThan(top(TourKeys.accountLater)));
+      expect(find.byType(AccountSwitchLink), findsOneWidget);
+    });
+
+    testWidgets('H-ABE-11: o Google mostra carregando no próprio botão', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.account);
+      final hold = accounts.googleHold = Completer<void>();
+      await tester.tap(find.byKey(TourKeys.accountGoogle));
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: find.byKey(TourKeys.accountGoogle),
+          matching: find.byKey(CoreKeys.busySpinner),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<OutlinedButton>(find.byKey(TourKeys.accountEmail))
+            .onPressed,
+        isNull,
+      );
+      hold.complete();
+      await tester.pumpAndSettle();
+    });
   });
 
   group('animações da abertura (T85-D3)', () {
@@ -797,10 +838,10 @@ void main() {
       tester,
     ) async {
       await pumpTour(tester, step: TourStep.account, settle: false);
-      expect(opacidadeDoItem(tester, 3), 0);
+      expect(opacidadeDoItem(tester, 2), 0);
       await tester.pump(const Duration(milliseconds: 100));
       expect(opacidadeDoItem(tester, 0), greaterThan(0));
-      expect(opacidadeDoItem(tester, 3), lessThan(1));
+      expect(opacidadeDoItem(tester, 2), lessThan(1));
       // O toque fica liberado desde o início.
       expect(
         tester
@@ -809,7 +850,7 @@ void main() {
         isNotNull,
       );
       await tester.pump(const Duration(milliseconds: 1300));
-      for (var i = 0; i < 4; i++) {
+      for (var i = 0; i < 3; i++) {
         expect(opacidadeDoItem(tester, i), 1);
       }
       await tester.pumpAndSettle();

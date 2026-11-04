@@ -191,6 +191,7 @@ class _LevelCard extends StatelessWidget {
                               valor: shown == result.level
                                   ? result.theta
                                   : shown.rating,
+                              agrupar: false,
                               estilo: theme.textTheme.titleLarge?.copyWith(
                                 color: colors.onPrimaryContainer,
                               ),
