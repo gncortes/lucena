@@ -167,6 +167,63 @@ void main() {
     });
   });
 
+  group('H-PAR-10 em jogo', () {
+    testWidgets('"Ouvir de novo" depois do lance do adversário', (
+      tester,
+    ) async {
+      await pump(tester, locale: const Locale('pt'));
+      await tester.runAsync(() => cubit.playTyped('Ta7'));
+      await tester.pumpAndSettle();
+      expect(find.text('Ouvir de novo'), findsOneWidget);
+    });
+
+    testWidgets('folha de desistir: Desistir destrutivo com flag; X só fecha', (
+      tester,
+    ) async {
+      await pump(tester, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.resign));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Desistir da partida?'), findsOneWidget);
+      expect(
+        find.text('A partida termina agora e conta como derrota.'),
+        findsOneWidget,
+      );
+      final confirm = find.byKey(BlindKeys.resignConfirm);
+      expect(
+        find.descendant(of: confirm, matching: find.byIcon(Icons.flag)),
+        findsOneWidget,
+      );
+      final style = tester.widget<FilledButton>(confirm).style!;
+      expect(
+        style.backgroundColor!.resolve({}),
+        Theme.of(tester.element(confirm)).colorScheme.error,
+      );
+      // PropV1ParCegasDesistir não tem botão secundário: fecha-se pelo X.
+      expect(find.text('Cancelar'), findsNothing);
+      await tester.tap(find.byKey(SheetKeys.close));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.resignConfirm), findsNothing);
+      expect(cubit.state.phase, isNot(BlindPhase.finished));
+    });
+
+    testWidgets('folha "Qual peça?": linhas de 56 de altura', (tester) async {
+      await pump(
+        tester,
+        locale: const Locale('pt'),
+        fen: '4k3/8/8/8/8/5N2/8/1N2K3 w - - 0 1',
+      );
+      await tester.runAsync(() => cubit.playTyped('Nd2'));
+      await tester.pumpAndSettle();
+      expect(find.text('Qual peça?'), findsWidgets);
+      final rows = [
+        for (final san in ['Nbd2', 'Nfd2'])
+          tester.getSize(find.byKey(BlindKeys.option(san))).height,
+      ];
+      expect(rows, [56, 56]);
+    });
+  });
+
   group('H-PAR-09 aviso do microfone', () {
     testWidgets('texto exato do quadro, antes do pedido do sistema', (
       tester,

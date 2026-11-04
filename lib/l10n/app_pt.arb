@@ -565,7 +565,7 @@
   "voiceToneHigh": "Agudo",
   "blindTapTooShort": "Segure para gravar e solte para enviar.",
   "blindTitleShort": "Às cegas",
-  "blindHearAgain": "Ouvir novamente",
+  "blindHearAgain": "Ouvir de novo",
   "blindProcessing": "Entendendo…",
   "blindSayIllegal": "{move} não é possível nesta posição. Quer ouvir a posição ou a partida novamente? Depois, segure e tente outro lance.",
   "blindIllegalHint": "Lance ilegal: {move}. Ouça a posição e tente novamente.",

@@ -283,7 +283,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                 key: BlindKeys.option(option.san),
                 onTap: () => Navigator.pop(context, option.move),
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 48),
+                  constraints: const BoxConstraints(minHeight: 56),
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: Text(
@@ -314,14 +314,15 @@ class _BlindGameScreenState extends State<BlindGameScreen>
         title: l10n.gameResignTitle,
         message: l10n.gameResignHint,
         actions: [
-          FilledButton(
+          FilledButton.icon(
             key: BlindKeys.resignConfirm,
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.gameResign),
-          ),
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            icon: const Icon(Icons.flag),
+            label: Text(l10n.gameResign),
           ),
         ],
       ),
