@@ -263,6 +263,11 @@ final List<RouteBase> d2Routes = [
   appRoute(
     name: RouteNames.pilaresRestore,
     path: D2Paths.pilaresRestore,
+    // Sem conta, "Restaurar compra" passa antes pela conta (H-VEN-08).
+    redirect: (context, state) =>
+        context.read<AccountRepository>().current == null
+        ? Routes.accountEnterFrom(D2Paths.pilaresRestore)
+        : null,
     builder: (context, state) => BlocProvider(
       create: _restoreCubit,
       child: const PilaresRestoreScreen(),

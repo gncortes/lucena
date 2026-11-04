@@ -75,11 +75,11 @@ class _RestoreView extends StatelessWidget {
             AppSpacing.lg,
           ),
           children: [
+            Text(l10n.venRestore, style: theme.textTheme.headlineSmall),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               l10n.venRestoreText(state.email ?? ''),
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
+              style: theme.textTheme.bodyLarge,
             ),
             const SizedBox(height: AppSpacing.lg),
             DecoratedBox(

@@ -203,6 +203,36 @@ void main() {
   });
 
   group('Restaurar (H-VEN-08)', () {
+    // Bug 2 da D2 (PropV2CompraRestaurar): o título também no corpo e o
+    // e-mail da conta no texto.
+    testWidgets('título no corpo e o e-mail no texto', (tester) async {
+      await pump(tester, D2Paths.pilaresRestore);
+      expect(
+        find.descendant(
+          of: find.byType(ListView),
+          matching: find.text('Restaurar compra'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Comprou em outro aparelho ou pelo site? Procuramos a compra na '
+          'conta teste@example.com.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('sem conta, vai primeiro à conta', (tester) async {
+      accounts = FakeAccountRepository();
+      await pump(tester, D2Paths.pilaresRestore);
+      expect(find.byKey(PurchaseKeys.restoreScreen), findsNothing);
+      expect(
+        find.textContaining('conta ${Routes.accountEnter}'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('achou: Compra restaurada', (tester) async {
       purchases
         ..restoreResult = RestoreResult.found

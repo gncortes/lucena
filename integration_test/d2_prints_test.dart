@@ -110,11 +110,6 @@ void main() {
         PurchaseKeys.beforeHomeClose,
       ),
       (
-        'PropV2CompraRestaurar',
-        D2Paths.pilaresRestore,
-        PurchaseKeys.restoreScreen,
-      ),
-      (
         'PropV2CompraPendente',
         D2Paths.pilaresPurchasePending,
         PurchaseKeys.pendingScreen,
@@ -123,6 +118,25 @@ void main() {
         'PropV2CompraConcluida',
         D2Paths.pilaresPurchaseDone,
         PurchaseKeys.doneScreen,
+      ),
+    ]);
+  }, tags: ['d2-venda']);
+
+  // Restaurar pede conta (sem ela, a rota leva à entrada): o print com a conta
+  // Google do E2E, como no quadro.
+  patrolTest('D2 prints: restaurar com conta', ($) async {
+    await AppRobot($).open(
+      systemLocale: const Locale('pt', 'BR'),
+      lightDevice: true,
+      demo: true,
+      signedIn: true,
+      purchases: FakePurchaseRepository(demo),
+    );
+    await shots($, [
+      (
+        'PropV2CompraRestaurar',
+        D2Paths.pilaresRestore,
+        PurchaseKeys.restoreScreen,
       ),
     ]);
   }, tags: ['d2-venda']);
