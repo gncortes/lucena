@@ -147,7 +147,6 @@ void main() {
       expect(await lesson(ads, id), AdOutcome.none);
     }
     expect(service.consentUpdates, 0);
-    expect(await ads.privacyOptionsRequired(), isFalse);
   });
 
   test('primeira abertura: o formulário espera a pergunta', () async {

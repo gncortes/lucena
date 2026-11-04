@@ -24,13 +24,15 @@ class ProfileRowGroup extends StatelessWidget {
 }
 
 /// Uma linha do grupo: ícone, título e valor (opcional). Sem [onTap], só
-/// mostra.
+/// mostra. [external]: o toque sai do app (ajustes do sistema, e-mail): a
+/// seta vira `open_in_new`.
 class ProfileRow extends StatelessWidget {
   const ProfileRow({
     required this.icon,
     required this.title,
     this.value,
     this.onTap,
+    this.external = false,
     super.key,
   });
 
@@ -38,6 +40,7 @@ class ProfileRow extends StatelessWidget {
   final String title;
   final String? value;
   final VoidCallback? onTap;
+  final bool external;
 
   @override
   Widget build(BuildContext context) => ListTile(
@@ -45,7 +48,9 @@ class ProfileRow extends StatelessWidget {
     leading: Icon(icon),
     title: Text(title),
     subtitle: value == null ? null : Text(value!),
-    trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+    trailing: onTap == null
+        ? null
+        : Icon(external ? Icons.open_in_new : Icons.chevron_right),
     onTap: onTap,
   );
 }

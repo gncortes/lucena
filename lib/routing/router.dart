@@ -244,9 +244,8 @@ import 'routes.dart';
 import 'training_routes.dart';
 import '../ui/blind/widgets/blind_entry_screen.dart';
 import '../data/repositories/account/account_repository.dart';
+import '../data/repositories/device/device_settings_repository.dart';
 import '../data/repositories/sync/sync_scheduler.dart';
-import '../data/repositories/ads/ads_repository.dart';
-import '../data/repositories/purchase/purchase_repository.dart';
 import '../ui/privacy/view_models/privacy_cubit.dart';
 import '../ui/privacy/widgets/privacy_screen.dart';
 import '../domain/use_cases/game_intro.dart';
@@ -1891,9 +1890,8 @@ GoRouter buildRouter({
                 path: 'privacy',
                 builder: (context, state) => BlocProvider(
                   create: (context) => PrivacyCubit(
-                    ads: context.read<AdsRepository>(),
-                    purchases: context.read<PurchaseRepository>(),
                     accounts: context.read<AccountRepository>(),
+                    device: context.read<DeviceSettingsRepository>(),
                   )..load(),
                   child: const PrivacyScreen(),
                 ),

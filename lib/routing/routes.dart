@@ -600,7 +600,7 @@ abstract final class Routes {
   static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
 
-  /// Privacidade e anúncios (E1.25), aberta do Perfil.
+  /// Privacidade e dados (H-CON-20), aberta pelas Configurações.
   static const privacy = '/settings/privacy';
 
   static const settingsBoardAppearance = '/settings/appearance/board';

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/data/repositories/ads/ads_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
-import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/ui/core/keys/analytics_keys.dart';
 import 'package:lucena/ui/core/keys/privacy_keys.dart';
 import 'package:lucena/ui/privacy/view_models/privacy_cubit.dart';
@@ -13,11 +11,9 @@ import 'package:shared_preferences_platform_interface/in_memory_shared_preferenc
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
-import '../../../testing/fakes/fake_ads_service.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
-import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_device_settings_repository.dart';
 import '../../../testing/fakes/fake_purchase_service.dart';
-import '../../../testing/fakes/fake_remote_flags_repository.dart';
 import '../../../testing/test_app.dart';
 
 /// A chave "Ajudar a melhorar o Lucena" e o funil da remoção (E1.03).
@@ -34,15 +30,8 @@ void main() {
 
   testWidgets('a Privacidade traz a chave do Analytics', (tester) async {
     final cubit = PrivacyCubit(
-      ads: ServiceAdsRepository(
-        service: FakeAdsService(),
-        preferences: PreferencesService(),
-        flags: FakeRemoteFlagsRepository(),
-        purchases: purchases,
-        now: FakeNow(DateTime.utc(2026, 10, 22)),
-      ),
-      purchases: purchases,
       accounts: FakeAccountRepository(),
+      device: FakeDeviceSettingsRepository(),
     );
     addTearDown(cubit.close);
     await tester.runAsync(cubit.load);

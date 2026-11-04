@@ -48,11 +48,6 @@ abstract class AdsRepository {
   /// O build tem anúncios. A V1 não tem: a Privacidade e o Perfil não falam
   /// deles.
   bool get enabled;
-
-  /// "Escolhas de anúncios" aparece na Privacidade.
-  Future<bool> privacyOptionsRequired();
-
-  Future<void> showPrivacyOptions();
 }
 
 class ServiceAdsRepository implements AdsRepository {
@@ -270,28 +265,6 @@ class ServiceAdsRepository implements AdsRepository {
     _shownThisSession = false;
     unawaited(_save());
   }
-
-  @override
-  Future<bool> privacyOptionsRequired() async {
-    if (_adFree) return false;
-    try {
-      return await _service.privacyOptionsRequired();
-    } on Exception {
-      return false;
-    }
-  }
-
-  @override
-  Future<void> showPrivacyOptions() async {
-    var failed = false;
-    try {
-      await _service.showPrivacyOptions();
-    } on Exception {
-      // A janela do Google não abriu; a tela continua.
-      failed = true;
-    }
-    await _prepare(failed: failed, origin: 'privacidade');
-  }
 }
 
 /// Sem anúncios (F-Droid, sem Firebase, testes).
@@ -327,10 +300,4 @@ class NoAdsRepository implements AdsRepository {
 
   @override
   Stream<void> get adShown => const Stream.empty();
-
-  @override
-  Future<bool> privacyOptionsRequired() async => false;
-
-  @override
-  Future<void> showPrivacyOptions() async {}
 }

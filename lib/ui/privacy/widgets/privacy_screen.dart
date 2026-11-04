@@ -1,111 +1,157 @@
 import 'package:flutter/material.dart';
-
-import '../../../domain/models/legal_document.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../data/repositories/ads/ads_repository.dart';
-
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/legal_document.dart';
+import '../../../routing/routes.dart';
 import '../../analytics/widgets/analytics_opt_in_tile.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/privacy_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/load_error.dart';
-import '../../../routing/routes.dart';
+import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/open_link.dart';
+import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/section_title.dart';
+import '../../legal/widgets/legal_sheet.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../settings/widgets/about_screen.dart';
-import '../../legal/widgets/legal_sheet.dart';
 import '../view_models/privacy_cubit.dart';
 
-/// Privacidade e anúncios (canvas `PropV1AnuncioPrivacidade` e
-/// `PropV1AnuncioRemovido`). "Apagar minha conta" fecha a tela com `true`:
-/// o Perfil abre o diálogo de apagar.
+/// Privacidade e dados (canvas `PropV1ContaPrivacidade` e
+/// `PropV1ContaPrivacidadeRolado`, H-CON-20 e H-CON-24).
 class PrivacyScreen extends StatelessWidget {
   const PrivacyScreen({super.key});
+
+  /// O encarregado de dados (Política, seção 1).
+  static final dataOfficer = Uri.parse('mailto:gncortes.apps@gmail.com');
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final cubit = context.read<PrivacyCubit>();
     final state = context.watch<PrivacyCubit>().state;
     if (state.failure case final failure?) {
       return LoadErrorScreen(
         kind: LoadErrorKind.fromFailure(failure),
-        onAction: context.read<PrivacyCubit>().load,
+        onAction: cubit.load,
         onBack: () =>
             context.canPop() ? context.pop() : context.go(Routes.home),
       );
     }
-    final ads = context.read<AdsRepository>().enabled;
     final language = Localizations.localeOf(context).languageCode;
+    final terms = AboutScreen.termsFor(language);
+    final policy = AboutScreen.privacyFor(language);
     return Scaffold(
       key: PrivacyKeys.screen,
-      appBar: LucenaAppBar(
-        title: Text(ads ? l10n.privacyTitle : l10n.privacyTitleNoAds),
-      ),
+      appBar: LucenaAppBar(title: Text(l10n.privacyTitle)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.sm,
-          AppSpacing.lg,
-          AppSpacing.xl,
+        padding: scrollPadding(
+          context,
+          left: AppSpacing.screen,
+          top: AppSpacing.sm,
+          right: AppSpacing.screen,
         ),
         children: [
-          // A V1 sai sem anúncios: nenhum cartão sobre eles.
-          if (ads) ...[
-            if (state.adFree)
-              _InfoCard(
-                key: PrivacyKeys.adFreeCard,
-                icon: Icons.hide_source,
-                title: l10n.privacyAdFreeTitle,
-                text: l10n.privacyAdFreeText,
-              )
-            else
-              _InfoCard(
-                key: PrivacyKeys.freeCard,
-                icon: Icons.campaign,
-                title: l10n.privacyFreeTitle,
-                text: l10n.privacyFreeText,
-              ),
-            const SizedBox(height: AppSpacing.lg),
-          ],
+          _InfoCard(
+            key: PrivacyKeys.lgpdCard,
+            icon: Icons.admin_panel_settings_outlined,
+            title: l10n.conPrivLgpdTitle,
+            text: l10n.conPrivLgpdText,
+          ),
+          SectionTitle(l10n.conPrivSectionUse, inset: AppSpacing.xs),
           ProfileRowGroup(
             children: [
-              if (state.showsAdChoices)
-                ProfileRow(
-                  key: PrivacyKeys.adChoices,
-                  icon: Icons.campaign,
-                  title: l10n.privacyAdChoices,
-                  value: l10n.privacyAdChoicesValue,
-                  onTap: context.read<PrivacyCubit>().openAdChoices,
-                ),
               // As estatísticas (E1.03); sem elas no build (F-Droid), nada.
               if (context.analytics.measures) const AnalyticsOptInTile(),
+              // H-CON-24: só informa; não abre nada.
               ProfileRow(
-                key: PrivacyKeys.policy,
-                icon: Icons.description,
-                title: l10n.privacyPolicy,
-                value: l10n.privacyPolicyValue,
-                onTap: () => openLegal(
-                  context,
-                  LegalKind.privacy,
-                  website: AboutScreen.privacyFor(language),
-                ),
+                key: PrivacyKeys.ads,
+                icon: Icons.campaign_outlined,
+                title: l10n.conPrivAdsTitle,
+                value: l10n.conPrivAdsText,
               ),
+            ],
+          ),
+          SectionTitle(l10n.conPrivSectionPermissions, inset: AppSpacing.xs),
+          ProfileRowGroup(
+            children: [
+              ProfileRow(
+                key: PrivacyKeys.notifications,
+                icon: Icons.notifications_outlined,
+                title: l10n.conPrivNotifications,
+                value: l10n.conPrivNotificationsText,
+                external: true,
+                onTap: cubit.openNotifications,
+              ),
+              ProfileRow(
+                key: PrivacyKeys.microphone,
+                icon: Icons.mic_none,
+                title: l10n.conPrivMicrophone,
+                value: l10n.conPrivMicrophoneText,
+                external: true,
+                onTap: cubit.openMicrophone,
+              ),
+            ],
+          ),
+          SectionTitle(l10n.conPrivSectionData, inset: AppSpacing.xs),
+          ProfileRowGroup(
+            children: [
               if (state.hasAccount)
                 ProfileRow(
+                  key: PrivacyKeys.download,
+                  icon: Icons.download,
+                  title: l10n.conPrivDownload,
+                  value: l10n.conPrivDownloadText,
+                  onTap: () {},
+                ),
+              ProfileRow(
+                key: PrivacyKeys.talk,
+                icon: Icons.mail_outline,
+                title: l10n.conPrivTalk,
+                value: l10n.conPrivTalkText,
+                external: true,
+                onTap: () => openLink(context, dataOfficer),
+              ),
+            ],
+          ),
+          SectionTitle(l10n.conPrivSectionDocuments, inset: AppSpacing.xs),
+          ProfileRowGroup(
+            children: [
+              ProfileRow(
+                key: PrivacyKeys.terms,
+                icon: Icons.gavel,
+                title: l10n.aboutTerms,
+                value: shownAddress(terms),
+                onTap: () =>
+                    openLegal(context, LegalKind.terms, website: terms),
+              ),
+              ProfileRow(
+                key: PrivacyKeys.policy,
+                icon: Icons.policy_outlined,
+                title: l10n.aboutPrivacy,
+                value: shownAddress(policy),
+                onTap: () =>
+                    openLegal(context, LegalKind.privacy, website: policy),
+              ),
+            ],
+          ),
+          if (state.hasAccount) ...[
+            SectionTitle(l10n.conPrivSectionAccount, inset: AppSpacing.xs),
+            ProfileRowGroup(
+              children: [
+                ProfileRow(
                   key: PrivacyKeys.deleteAccount,
-                  icon: Icons.delete,
+                  icon: Icons.delete_outline,
                   title: l10n.privacyDelete,
                   value: l10n.privacyDeleteValue,
                   onTap: () => context.pop(true),
                 ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );

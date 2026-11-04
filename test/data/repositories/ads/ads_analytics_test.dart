@@ -56,17 +56,6 @@ void main() {
     expect(analytics.consent, (analytics: true, ads: true));
   });
 
-  test('negado na janela de privacidade', () async {
-    final ads = await session();
-    service.consent = false;
-    await ads.showPrivacyOptions();
-    expect(analytics.eventsNamed('anuncio_consentimento').last.params, {
-      'resultado': 'negado',
-      'origem': 'privacidade',
-    });
-    expect(analytics.consent, (analytics: false, ads: false));
-  });
-
   test('cada pedido conta o motivo, nunca o "desligado"', () async {
     await session();
     final ads = await session();

@@ -8677,53 +8677,21 @@
   "@analyticsOptInTitle": {
     "description": "Switch in Privacy and ads that turns usage statistics on or off."
   },
-  "analyticsOptInBody": "Sends how you use the app: screens, lessons and games. No name, email or anything you type.",
+  "analyticsOptInBody": "Sends usage data and error reports. No name, email or anything you write.",
   "@analyticsOptInBody": {
     "description": "Explains what the usage statistics send."
   },
-  "privacyTitle": "Privacy and ads",
+  "privacyTitle": "Privacy and data",
   "@privacyTitle": {
     "description": "Privacy screen title."
   },
-  "privacyFreeTitle": "Lucena is free",
-  "@privacyFreeTitle": {
-    "description": "Privacy screen card title, with ads."
-  },
-  "privacyFreeText": "An ad shows when you enter a lesson. Never in the middle of an exercise, a game or a challenge.",
-  "@privacyFreeText": {
-    "description": "Privacy screen card text, with ads."
-  },
-  "privacyAdChoices": "Ad choices",
-  "@privacyAdChoices": {
-    "description": "Privacy screen row that reopens the Google privacy options."
-  },
-  "privacyAdChoicesValue": "Opens the Google window with your options",
-  "@privacyAdChoicesValue": {
-    "description": "Privacy screen row value under \"Ad choices\"."
-  },
-  "privacyPolicy": "Privacy policy",
-  "@privacyPolicy": {
-    "description": "Privacy screen row that opens the privacy policy."
-  },
-  "privacyPolicyValue": "playlucena.com/privacy",
-  "@privacyPolicyValue": {
-    "description": "Privacy screen row value: the policy address."
-  },
-  "privacyDelete": "Delete my account and my data",
+  "privacyDelete": "Delete my account",
   "@privacyDelete": {
     "description": "Privacy screen row that deletes the account."
   },
-  "privacyDeleteValue": "Also in Account, on the Profile",
+  "privacyDeleteValue": "Delete the account and all its data",
   "@privacyDeleteValue": {
     "description": "Privacy screen row value under \"Delete my account\"."
-  },
-  "privacyAdFreeTitle": "No ads",
-  "@privacyAdFreeTitle": {
-    "description": "Privacy screen card title after buying \"Remove ads\"."
-  },
-  "privacyAdFreeText": "Thanks for supporting Lucena. Lessons open right away, forever.",
-  "@privacyAdFreeText": {
-    "description": "Privacy screen card text after buying \"Remove ads\"."
   },
   "removeAdsTitle": "Remove ads",
   "@removeAdsTitle": {
@@ -9015,10 +8983,6 @@
   "feedbackBack": "Back to profile",
   "@feedbackBack": {
     "description": "Thanks screen button back to the profile."
-  },
-  "privacyTitleNoAds": "Privacy",
-  "@privacyTitleNoAds": {
-    "description": "Privacy screen title in a build without ads."
   },
   "alertsBlockedSummary": "Blocked in Android settings",
   "@alertsBlockedSummary": {
@@ -11818,5 +11782,73 @@
   "ajuLinkError": "Couldn't open the link",
   "@ajuLinkError": {
     "description": "Aviso quando o navegador não abre um link externo (Sobre, Gap 6)."
+  },
+  "conPrivLgpdTitle": "Your data under the LGPD",
+  "@conPrivLgpdTitle": {
+    "description": "Privacidade e dados: título do cartão sobre os direitos da LGPD (lei de dados do Brasil)."
+  },
+  "conPrivLgpdText": "You can see, download, correct and delete your data at any time.",
+  "@conPrivLgpdText": {
+    "description": "Privacidade e dados: texto do cartão da LGPD."
+  },
+  "conPrivSectionUse": "Usage and ads",
+  "@conPrivSectionUse": {
+    "description": "Privacidade e dados: título da seção do interruptor de estatísticas e da linha de anúncios."
+  },
+  "conPrivAdsTitle": "Non-personalized ads",
+  "@conPrivAdsTitle": {
+    "description": "Privacidade e dados: linha só de leitura sobre os anúncios."
+  },
+  "conPrivAdsText": "We don't use your data to choose ads.",
+  "@conPrivAdsText": {
+    "description": "Privacidade e dados: subtítulo da linha de anúncios."
+  },
+  "conPrivSectionPermissions": "Device permissions",
+  "@conPrivSectionPermissions": {
+    "description": "Privacidade e dados: título da seção de permissões (abrem os ajustes do sistema)."
+  },
+  "conPrivNotifications": "Notifications",
+  "@conPrivNotifications": {
+    "description": "Privacidade e dados: linha que abre os ajustes de notificação do sistema."
+  },
+  "conPrivNotificationsText": "For the training reminders you turned on",
+  "@conPrivNotificationsText": {
+    "description": "Privacidade e dados: subtítulo da linha Notificações."
+  },
+  "conPrivMicrophone": "Microphone",
+  "@conPrivMicrophone": {
+    "description": "Privacidade e dados: linha que abre os ajustes do app no sistema (permissão do microfone)."
+  },
+  "conPrivMicrophoneText": "To recognize the moves you say",
+  "@conPrivMicrophoneText": {
+    "description": "Privacidade e dados: subtítulo da linha Microfone."
+  },
+  "conPrivSectionData": "Your data",
+  "@conPrivSectionData": {
+    "description": "Privacidade e dados: título da seção Baixar e Falar sobre meus dados."
+  },
+  "conPrivDownload": "Download my data",
+  "@conPrivDownload": {
+    "description": "Privacidade e dados: linha que abre a folha para baixar uma cópia dos dados."
+  },
+  "conPrivDownloadText": "Get a copy of your data",
+  "@conPrivDownloadText": {
+    "description": "Privacidade e dados: subtítulo da linha Baixar meus dados."
+  },
+  "conPrivTalk": "Ask about my data",
+  "@conPrivTalk": {
+    "description": "Privacidade e dados: linha que abre o e-mail para o encarregado de dados."
+  },
+  "conPrivTalkText": "With our data protection officer, by email",
+  "@conPrivTalkText": {
+    "description": "Privacidade e dados: subtítulo da linha Falar sobre meus dados."
+  },
+  "conPrivSectionDocuments": "Documents",
+  "@conPrivSectionDocuments": {
+    "description": "Privacidade e dados: título da seção dos Termos e da Política."
+  },
+  "conPrivSectionAccount": "Account",
+  "@conPrivSectionAccount": {
+    "description": "Privacidade e dados: título da seção com Excluir minha conta."
   }
 }

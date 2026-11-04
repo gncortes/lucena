@@ -3,11 +3,16 @@ import 'package:flutter/widgets.dart';
 abstract final class PrivacyKeys {
   static const screen = Key('privacy.screen');
 
-  /// "O Lucena é grátis" (com anúncios) ou "Sem anúncios" (comprou).
-  static const freeCard = Key('privacy.freeCard');
-  static const adFreeCard = Key('privacy.adFreeCard');
+  /// O cartão "Seus dados pela LGPD".
+  static const lgpdCard = Key('privacy.lgpdCard');
 
-  static const adChoices = Key('privacy.adChoices');
+  /// "Anúncios sem personalização": linha só de leitura.
+  static const ads = Key('privacy.ads');
+  static const notifications = Key('privacy.notifications');
+  static const microphone = Key('privacy.microphone');
+  static const download = Key('privacy.download');
+  static const talk = Key('privacy.talk');
+  static const terms = Key('privacy.terms');
   static const policy = Key('privacy.policy');
   static const deleteAccount = Key('privacy.deleteAccount');
 
