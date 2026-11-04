@@ -10,6 +10,8 @@ import 'variant.dart';
 
 /// Abre "Todos os modos" pelo "Ver mais" dos atalhos da tela inicial.
 Future<void> openAllModes(PatrolIntegrationTester $) async {
+  // Voltar de um modo aberto por "Todos os modos" cai nela, não no Início.
+  if (find.byKey(AllModesKeys.screen).evaluate().isNotEmpty) return;
   await $(HomeKeys.shortcutsSeeMore).scrollTo().tap();
   await $(AllModesKeys.screen).waitUntilVisible();
 }
