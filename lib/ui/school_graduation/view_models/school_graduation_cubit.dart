@@ -1,3 +1,5 @@
+import '../../../data/repositories/purchase/opening_offer_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/training/course_training_repository.dart';
@@ -34,11 +36,20 @@ final class SchoolGraduationState {
 
 /// O diploma da Escola (H-ESC-22): lê o curso concluído, sem alterá-lo.
 class SchoolGraduationCubit extends Cubit<SchoolGraduationState> {
-  SchoolGraduationCubit({required this._repository, required this._now})
-    : super(const SchoolGraduationState());
+  SchoolGraduationCubit({
+    required this._repository,
+    required this._now,
+    this._openingOffer,
+  }) : super(const SchoolGraduationState());
 
   final TrainingRepository _repository;
   final Now _now;
+
+  // A oferta do Pilares ao abrir o app (H-VEN-15).
+  final OpeningOfferRepository? _openingOffer;
+
+  /// "Conhecer o Pilares" conta como uma vez da oferta ao abrir o app.
+  Future<void> pilaresOpened() async => _openingOffer?.markShown();
 
   Future<void> load() async {
     final training = await _repository.load(TrainingCourse.escola);

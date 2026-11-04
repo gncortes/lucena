@@ -1,3 +1,5 @@
+import '../../data/repositories/purchase/opening_offer_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,6 +31,7 @@ final List<RouteBase> d3Routes = [
       create: (context) => SchoolGraduationCubit(
         repository: context.read<course_training.TrainingRepository>(),
         now: context.read<Now>(),
+        openingOffer: context.read<OpeningOfferRepository>(),
       )..load(),
       child: const SchoolGraduationScreen(),
     ),
