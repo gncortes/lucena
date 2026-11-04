@@ -156,6 +156,10 @@ final class TrainingGoalCubit extends Cubit<TrainingGoalState> {
   // ---- Objetivo ----
 
   Future<bool> setObjective({required ObjectiveKind kind, String? date}) async {
+    if (kind == ObjectiveKind.tournament &&
+        !isValidTournamentDate(date, today)) {
+      return false;
+    }
     final objective = TrainingObjective(
       kind: kind,
       setOn: today,
