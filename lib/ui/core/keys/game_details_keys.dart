@@ -5,11 +5,11 @@ abstract final class GameDetailsKeys {
   static const screen = Key('gameDetails.screen');
   static const board = Key('gameDetails.board');
 
-  /// A folha que sobe por cima do tabuleiro, a lista dela (que rola) e o
-  /// "x" que a desce.
-  static const sheet = Key('gameDetails.sheet');
+  /// As abas Resumo, Lances e Motor, e a lista da aba aberta (que rola).
+  static const tabSummary = Key('gameDetails.tab.summary');
+  static const tabMoves = Key('gameDetails.tab.moves');
+  static const tabEngine = Key('gameDetails.tab.engine');
   static const panel = Key('gameDetails.panel');
-  static const closeSheet = Key('gameDetails.sheet.close');
   static const opponent = Key('gameDetails.opponent');
   static const result = Key('gameDetails.result');
 
@@ -27,12 +27,30 @@ abstract final class GameDetailsKeys {
 
   /// A variante feita no tabuleiro, na tabela, e o lance [ply] dela.
   static const variation = Key('gameDetails.variation');
+  static const variationHint = Key('gameDetails.variationHint');
+  static const variationLabel = Key('gameDetails.variationLabel');
+  static const moveMenu = Key('gameDetails.moveMenu');
+  static const moveMenuClose = Key('gameDetails.moveMenu.close');
+  static const menuCopy = Key('gameDetails.menu.copy');
+  static const menuHideVariations = Key('gameDetails.menu.hideVariations');
+  static const menuDelete = Key('gameDetails.menu.delete');
   static Key variationMove(int ply) => Key('gameDetails.variation.$ply');
 
   /// A revisão: o botão, o progresso, o resumo e a precisão de cada lado.
-  static const reviewButton = Key('gameDetails.review.button');
-  static const reviewQuick = Key('gameDetails.review.quick');
-  static const reviewDeep = Key('gameDetails.review.deep');
+  static const pieceBadge = Key('gameDetails.board.pieceBadge');
+  static const oldAnalysis = Key('gameDetails.review.oldAnalysis');
+  static const oldAnalysisButton = Key('gameDetails.review.oldAnalysisButton');
+
+  /// O cartão do nível da análise, o botão de analisar a fundo, a nota da
+  /// análise rápida e a folha de profundidade com as duas opções e o botão.
+  static const levelCard = Key('gameDetails.level.card');
+  static const levelDeepen = Key('gameDetails.level.deepen');
+  static const levelNote = Key('gameDetails.level.note');
+  static const depthSheet = Key('gameDetails.depth.sheet');
+  static const depthSheetClose = Key('gameDetails.depth.sheet.close');
+  static const depthMedium = Key('gameDetails.depth.medium');
+  static const depthDeep = Key('gameDetails.depth.deep');
+  static const depthConfirm = Key('gameDetails.depth.confirm');
   static const reviewProgress = Key('gameDetails.review.progress');
 
   /// A história que o Viktor conta enquanto a revisão roda.
@@ -46,6 +64,15 @@ abstract final class GameDetailsKeys {
   /// A contagem de lances de uma qualidade ([quality] é o nome) de um lado.
   static Key count(String quality, {required bool white}) =>
       Key('gameDetails.review.count.$quality.${white ? 'white' : 'black'}');
+
+  /// Os momentos decisivos (a seção, cada cartão e o aviso de partida sem
+  /// erro do jogador) e a tabela de qualidades por lado.
+  static const moments = Key('gameDetails.moments');
+  static Key moment(int index) => Key('gameDetails.moment.$index');
+  static const noMistakes = Key('gameDetails.noMistakes');
+  static const qualityTable = Key('gameDetails.qualityTable');
+  static Key qualityRow(String quality) =>
+      Key('gameDetails.qualityTable.$quality');
 
   /// A explicação do lance mostrado e a barra de avaliação (só com a
   /// engine ligada).
@@ -64,6 +91,9 @@ abstract final class GameDetailsKeys {
   /// A engine: o botão e as linhas.
   static const engineButton = Key('gameDetails.engine.button');
   static const engineLines = Key('gameDetails.engine.lines');
+  static const engineHint = Key('gameDetails.engine.hint');
+  static const forcedNote = Key('gameDetails.engine.forcedNote');
+  static Key engineCount(int count) => Key('gameDetails.engine.count.$count');
   static Key engineLine(int index) => Key('gameDetails.engine.line.$index');
 
   /// O menu: abrir fora e copiar.

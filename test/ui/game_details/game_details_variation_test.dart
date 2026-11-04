@@ -163,6 +163,8 @@ void main() {
   test('a engine acompanha a variante, sem mexer nas anotações nem na '
       'revisão guardada', () async {
     final cubit = await load(engine: true);
+    // Partida sem revisão guardada: a análise é pedida (H-PAR-17).
+    await cubit.review(speed: ReviewSpeed.quick);
     await settle();
     await cubit.setEngine(on: !cubit.state.engine);
     cubit.select(0);
@@ -182,5 +184,35 @@ void main() {
     expect(cubit.state.live.keys, live.keys);
     expect(cubit.state.review, isNotNull);
     expect(await reviews.load(1), same(savedReview));
+  });
+
+  test('apagar a partir de um lance da variante corta o resto; do primeiro, '
+      'a variante some e o tabuleiro volta à partida', () async {
+    final cubit = await load();
+    cubit.select(0);
+    cubit.play(uci('c7c5'));
+    cubit.play(uci('g1f3'));
+    cubit.play(uci('d7d6'));
+    expect(cubit.state.variation.map((m) => m.san), ['c5', 'Nf3', 'd6']);
+
+    cubit.deleteVariationFrom(1);
+    expect(cubit.state.variation.map((m) => m.san), ['c5']);
+    expect(cubit.state.variationPly, 0);
+
+    cubit.deleteVariationFrom(0);
+    expect(cubit.state.variation, isEmpty);
+    expect(cubit.state.inVariation, isFalse);
+    expect(cubit.state.shownIndex, 0);
+  });
+
+  test('esconder as variantes volta ao lance de onde ela saía', () async {
+    final cubit = await load();
+    cubit.select(1);
+    cubit.play(uci('d2d4'));
+    expect(cubit.state.variation, hasLength(1));
+    cubit.clearVariation();
+    expect(cubit.state.variation, isEmpty);
+    expect(cubit.state.shownIndex, 1);
+    expect(cubit.state.inVariation, isFalse);
   });
 }

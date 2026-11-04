@@ -158,7 +158,7 @@ void main() {
         }
         if (details) {
           final cubit = tester
-              .element(find.byKey(GameDetailsKeys.screen))
+              .element(find.byKey(GameDetailsKeys.notFound))
               .read<GameDetailsCubit>();
           expect(progress.requested, [
             [77],

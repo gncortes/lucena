@@ -12,6 +12,7 @@ import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
+import 'robots/blind_robot.dart';
 import 'robots/catalog_robot.dart';
 import 'robots/conclusion_robot.dart';
 import 'robots/custom_position_robot.dart';
@@ -68,6 +69,36 @@ void main() {
     await $(BlindKeys.micAllow).waitUntilVisible();
     await $(BlindKeys.micDeny).tap();
     await $(BlindKeys.screen).waitUntilVisible();
+  });
+
+  // Roteiro 48 (H-PAR-09): "Permitir" faz o sistema pedir a permissão; o
+  // diálogo nativo é respondido pelo Patrol.
+  patrolTest('às cegas: Permitir abre o pedido do sistema e a partida segue', (
+    $,
+  ) async {
+    await AppRobot($).open();
+    await HomeRobot($).expectVisible();
+    final blind = BlindRobot($);
+    await blind.openEntry();
+    await $(BlindKeys.entry).tap();
+    await blind.allowMic();
+    await blind.expectInGame();
+  });
+
+  // Roteiro 45 (H-PAR-08): fechar à força no meio da partida às cegas e
+  // reabrir volta a ela.
+  patrolTest('às cegas: fechar à força e reabrir volta à partida', ($) async {
+    final app = AppRobot($);
+    final blind = BlindRobot($);
+    await app.open();
+    await HomeRobot($).expectVisible();
+    await blind.startWithoutMic();
+
+    await app.restart();
+    await HomeRobot($).expectVisible();
+    await blind.openEntry();
+    await $(BlindKeys.entry).tap();
+    await blind.expectInGame();
   });
 
   const pt = Locale('pt', 'BR');

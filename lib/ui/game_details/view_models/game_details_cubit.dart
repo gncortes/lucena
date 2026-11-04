@@ -297,9 +297,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// lance); 4 e 5 ficando parado no lance.
   static const budgets = <AnalysisBudget>[
     (depth: 10, time: Duration(milliseconds: 500)),
-    (depth: 14, time: Duration(milliseconds: 1500)),
-    (depth: 20, time: Duration(seconds: 5)),
-    (depth: 26, time: Duration(seconds: 10)),
+    (depth: 14, time: Duration(milliseconds: 400)),
+    (depth: 16, time: Duration(milliseconds: 600)),
+    (depth: 22, time: Duration(milliseconds: 1500)),
     (depth: 32, time: Duration(seconds: 20)),
     (depth: 40, time: Duration(seconds: 45)),
   ];
@@ -405,27 +405,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     );
     // A engine ligada já abre com as linhas da posição no tabuleiro.
     if (engine) unawaited(_analyseShown());
-    if (review == null) {
-      // Partida sem revisão guardada: a rápida começa sozinha, sem bloquear
-      // a abertura (o progresso aparece na folha). Com revisão guardada,
-      // nada é refeito.
-      unawaited(_reviewMissing());
-    } else {
-      unawaited(_annotate(state.shownIndex));
-    }
-  }
-
-  Future<void> _reviewMissing() async {
-    try {
-      await review(speed: ReviewSpeed.quick);
-    } catch (_) {
-      // O histórico continua utilizável quando a engine falha. O botão
-      // existente permite tentar de novo; retomadas não criam outro job.
-      _following = false;
-      if (!isClosed) {
-        emit(state.copyWith(reviewing: false, annotating: const {}));
-      }
-    }
+    // Partida sem revisão guardada (antiga): abrir não gera análise sozinha;
+    // o aluno decide em "Analisar" (H-PAR-17).
+    if (review != null) unawaited(_annotate(state.shownIndex));
   }
 
   /// Mostra a posição depois do lance [index] da partida (-1: a de início),
@@ -446,6 +428,32 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     _following = false;
     final target = ply.clamp(0, state.variation.length - 1);
     emit(state.copyWith(selected: state.variationFrom, variationPly: target));
+    if (state.engine) unawaited(_analyseShown());
+  }
+
+  /// Apaga o lance [ply] da variante e os seguintes. Se sobra algum, o
+  /// tabuleiro fica no último dela; senão, volta à partida.
+  void deleteVariationFrom(int ply) {
+    if (!state.ready || ply < 0 || ply >= state.variation.length) return;
+    if (ply == 0) return clearVariation();
+    final kept = state.variation.take(ply).toList();
+    emit(state.copyWith(variation: kept, variationPly: kept.length - 1));
+    if (state.engine) unawaited(_analyseShown());
+  }
+
+  /// Esconde a variante: some da lista e o tabuleiro volta ao lance da
+  /// partida de onde ela saía.
+  void clearVariation() {
+    if (!state.ready || state.variation.isEmpty) return;
+    final from = state.variationFrom;
+    emit(
+      state.copyWith(
+        variation: const <LoggedMove>[],
+        variationFrom: -1,
+        selected: from,
+        mainLine: true,
+      ),
+    );
     if (state.engine) unawaited(_analyseShown());
   }
 
@@ -519,6 +527,18 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     if (state.engine) unawaited(_analyseShown());
   }
 
+  /// Joga a sequência [ucis] a partir da posição mostrada, como lances do
+  /// jogador: a linha da engine vira variante.
+  void playLine(List<String> ucis) {
+    for (final uci in ucis) {
+      final move = Move.parse(uci);
+      if (move == null) return;
+      final before = state.shownPosition;
+      play(move);
+      if (state.shownPosition == before) return;
+    }
+  }
+
   /// O tabuleiro acompanha a revisão (até o jogador mexer nele).
   bool _following = false;
 
@@ -529,10 +549,24 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   /// têm anotação de peso igual ou maior passam direto. A revisão fica
   /// gravada.
   Future<void> review({ReviewSpeed speed = ReviewSpeed.medium}) async {
+    try {
+      await _review(speed);
+    } catch (_) {
+      // A engine falhou: a UI é liberada e "Analisar" tenta de novo.
+      _following = false;
+      if (!isClosed) {
+        emit(state.copyWith(reviewing: false, annotating: const {}));
+      }
+    }
+  }
+
+  Future<void> _review(ReviewSpeed speed) async {
     final weight = reviewWeights[speed]!;
     if (_analysis == null || state.start == null || state.reviewing) return;
     if (state.moves.isEmpty) return;
-    _following = true;
+    // Só a primeira análise leva o tabuleiro junto; aprofundar uma já feita
+    // roda sem mexer no que o usuário está vendo.
+    _following = state.review == null;
     emit(
       state.copyWith(reviewing: true, reviewProgress: 0, reviewWeight: weight),
     );

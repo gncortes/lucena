@@ -2286,10 +2286,6 @@
   "@settingsSoundHint": {
     "description": "Subtitle of the switch that turns the game sounds on or off."
   },
-  "reviewStart": "Review with Stockfish",
-  "@reviewStart": {
-    "description": "Game details: button that analyses every move of the game with the chess engine."
-  },
   "reviewRunning": "Analysing move {done} of {total}",
   "@reviewRunning": {
     "description": "Game details: progress while the engine reviews the game.",
@@ -2475,10 +2471,6 @@
   "reviewDeep": "Deep",
   "@reviewDeep": {
     "description": "Game details: button for a deep (slow, most accurate) engine review of the game."
-  },
-  "reviewSpeedHint": "The deeper, the more accurate and the slower. Accuracy appears when every move has been rated.",
-  "@reviewSpeedHint": {
-    "description": "Game details: note above the review speed buttons."
   },
   "reviewDeeper": "Review deeper",
   "@reviewDeeper": {
@@ -12589,5 +12581,180 @@
     "description": "Training goal flow copy."
   },
   "desafiosSpeedrunRecordHere": "Your record for this speedrun",
-  "@desafiosSpeedrunRecordHere": {}
+  "@desafiosSpeedrunRecordHere": {},
+  "partidaAnaliseAntiga": "This game is from before automatic analysis. A quick analysis takes a few seconds; a deep one, about a minute.",
+  "@partidaAnaliseAntiga": {
+    "description": "Game details: explains that an old game has no analysis yet, shown above the Analyze button"
+  },
+  "partidaAnaliseAnalisar": "Analyze",
+  "@partidaAnaliseAnalisar": {
+    "description": "Game details: button that starts the quick analysis of an old game"
+  },
+  "partidaAbaResumo": "Summary",
+  "@partidaAbaResumo": {
+    "description": "Tab of the game analysis screen with the summary"
+  },
+  "partidaAbaLances": "Moves",
+  "@partidaAbaLances": {
+    "description": "Tab of the game analysis screen with the move list and notation"
+  },
+  "partidaNivelRapida": "Quick analysis",
+  "@partidaNivelRapida": {
+    "description": "Game analysis screen: partidaNivelRapida"
+  },
+  "partidaNivelRapidaTexto": "One engine pass over each move.",
+  "@partidaNivelRapidaTexto": {
+    "description": "Game analysis screen: partidaNivelRapidaTexto"
+  },
+  "partidaNivelAprofundar": "Analyze in depth",
+  "@partidaNivelAprofundar": {
+    "description": "Game analysis screen: partidaNivelAprofundar"
+  },
+  "partidaNivelAnalisando": "Analyzing in depth",
+  "@partidaNivelAnalisando": {
+    "description": "Game analysis screen: partidaNivelAnalisando"
+  },
+  "partidaNivelAnalisandoGeral": "Analyzing the game",
+  "@partidaNivelAnalisandoGeral": {
+    "description": "Game analysis screen: partidaNivelAnalisandoGeral"
+  },
+  "partidaNivelProgresso": "Move {done} of {total} · about {seconds} s left",
+  "@partidaNivelProgresso": {
+    "description": "Game analysis screen: partidaNivelProgresso",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "partidaNivelMedia": "Medium analysis",
+  "@partidaNivelMedia": {
+    "description": "Game analysis screen: partidaNivelMedia"
+  },
+  "partidaNivelProfunda": "Deep analysis",
+  "@partidaNivelProfunda": {
+    "description": "Game analysis screen: partidaNivelProfunda"
+  },
+  "partidaNivelProfundidade": "Stockfish · depth {depth} on every move.",
+  "@partidaNivelProfundidade": {
+    "description": "Game analysis screen: partidaNivelProfundidade",
+    "placeholders": {
+      "depth": {
+        "type": "int"
+      }
+    }
+  },
+  "partidaNivelNota": "From the quick analysis. The numbers and moments update when the deep analysis finishes.",
+  "@partidaNivelNota": {
+    "description": "Game analysis screen: partidaNivelNota"
+  },
+  "partidaProfundidadeDica": "The deeper it goes, the more reliable the numbers and key moments.",
+  "@partidaProfundidadeDica": {
+    "description": "Game analysis screen: partidaProfundidadeDica"
+  },
+  "partidaProfundidadeMedia": "Medium",
+  "@partidaProfundidadeMedia": {
+    "description": "Game analysis screen: partidaProfundidadeMedia"
+  },
+  "partidaProfundidadeMediaTexto": "About 20 s · depth 16",
+  "@partidaProfundidadeMediaTexto": {
+    "description": "Game analysis screen: partidaProfundidadeMediaTexto"
+  },
+  "partidaProfundidadeProfunda": "Deep (recommended)",
+  "@partidaProfundidadeProfunda": {
+    "description": "Game analysis screen: partidaProfundidadeProfunda"
+  },
+  "partidaProfundidadeProfundaTexto": "About 1 min · depth 22 · keeps going while you browse",
+  "@partidaProfundidadeProfundaTexto": {
+    "description": "Game analysis screen: partidaProfundidadeProfundaTexto"
+  },
+  "partidaPrecisaoSua": "Your accuracy",
+  "@partidaPrecisaoSua": {
+    "description": "Game analysis screen: partidaPrecisaoSua"
+  },
+  "partidaPrecisaoAdversario": "{name}'s accuracy",
+  "@partidaPrecisaoAdversario": {
+    "description": "Game analysis screen: partidaPrecisaoAdversario",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "partidaNivelNenhuma": "Game not analyzed yet",
+  "@partidaNivelNenhuma": {
+    "description": "Title of the analysis level card when the game has no analysis"
+  },
+  "partidaMomentos": "Key moments",
+  "@partidaMomentos": {
+    "description": "Game analysis summary: partidaMomentos"
+  },
+  "partidaQualidades": "Moves by quality",
+  "@partidaQualidades": {
+    "description": "Game analysis summary: partidaQualidades"
+  },
+  "partidaSemErro": "You made no mistakes in this game.",
+  "@partidaSemErro": {
+    "description": "Game analysis summary: partidaSemErro"
+  },
+  "partidaVitoriaDoAdversario": "The win came from an opponent's move:",
+  "@partidaVitoriaDoAdversario": {
+    "description": "Game analysis summary: partidaVitoriaDoAdversario"
+  },
+  "partidaMomentosVazio": "No single move swung the game.",
+  "@partidaMomentosVazio": {
+    "description": "Game analysis summary: partidaMomentosVazio"
+  },
+  "partidaVarianteDica": "Play on the board to create a variation. Press and hold one of its moves for more options.",
+  "@partidaVarianteDica": {
+    "description": "Game analysis, Moves tab: partidaVarianteDica"
+  },
+  "partidaSuaVariante": "Your variation",
+  "@partidaSuaVariante": {
+    "description": "Game analysis, Moves tab: partidaSuaVariante"
+  },
+  "partidaMenuDica": "Move from your variation",
+  "@partidaMenuDica": {
+    "description": "Game analysis, Moves tab: partidaMenuDica"
+  },
+  "partidaMenuCopiar": "Copy these moves",
+  "@partidaMenuCopiar": {
+    "description": "Game analysis, Moves tab: partidaMenuCopiar"
+  },
+  "partidaMenuEsconder": "Hide variations",
+  "@partidaMenuEsconder": {
+    "description": "Game analysis, Moves tab: partidaMenuEsconder"
+  },
+  "partidaMenuApagar": "Delete this move and the ones after it",
+  "@partidaMenuApagar": {
+    "description": "Game analysis, Moves tab: partidaMenuApagar"
+  },
+  "partidaMotorDica": "Tap a line to see it on the board: it enters as a variation in Moves.",
+  "@partidaMotorDica": {
+    "description": "Game analysis, Engine tab: partidaMotorDica"
+  },
+  "partidaMotorForcado": "Forced move: the only one is {move}.",
+  "@partidaMotorForcado": {
+    "description": "Game analysis, Engine tab: partidaMotorForcado",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "partidaMotorLinhas": "{count, plural, =1{1 line} other{{count} lines}}",
+  "@partidaMotorLinhas": {
+    "description": "Game analysis, Engine tab: partidaMotorLinhas",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
