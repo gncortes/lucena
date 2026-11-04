@@ -31,8 +31,10 @@ import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/ads/ads_repository.dart';
+import 'data/repositories/alerts/alerts_repository.dart';
 import 'data/repositories/lesson_ad/course_access_repository.dart';
 import 'data/repositories/lesson_ad/demo_ad_repository.dart';
+import 'data/repositories/purchase/opening_offer_repository.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
@@ -128,6 +130,7 @@ import 'ui/reminders/widgets/reminders_bridge.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
+import 'ui/core/motion/entradas_vistas.dart';
 import 'ui/core/widgets/load_error.dart';
 import 'ui/core/widgets/load_skeleton.dart';
 import 'ui/core/widgets/load_error_fallback.dart';
@@ -251,6 +254,8 @@ class _LucenaAppState extends State<LucenaApp> {
   int _launchFailures = 0;
   bool _opening = false;
   final _started = <String>{};
+  // As telas que já fizeram a entrada animada nesta sessão (H-ANI-01).
+  final _entradasVistas = EntradasVistas();
   Future<PushOpening?>? _initialPush;
   Future<Uri?>? _initialLink;
   late final SettingsCubit _settings = SettingsCubit(
@@ -612,6 +617,9 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<PushRepository>.value(
           value: dependencies.pushRepository,
         ),
+        RepositoryProvider<AlertsRepository>.value(
+          value: dependencies.alertsRepository,
+        ),
         RepositoryProvider<AvatarRepository>.value(
           value: dependencies.avatarRepository,
         ),
@@ -827,6 +835,9 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<DemoAdRepository>.value(
           value: dependencies.demoAdRepository,
         ),
+        RepositoryProvider<OpeningOfferRepository>.value(
+          value: dependencies.openingOfferRepository,
+        ),
         RepositoryProvider<PurchaseRepository>.value(
           value: dependencies.purchaseRepository,
         ),
@@ -955,7 +966,10 @@ class _LucenaAppState extends State<LucenaApp> {
                         _router?.push(route);
                       },
                       child: SettingsSaveFailureListener(
-                        child: child ?? const SizedBox.shrink(),
+                        child: EntradasVistasEscopo(
+                          vistas: _entradasVistas,
+                          child: child ?? const SizedBox.shrink(),
+                        ),
                       ),
                     ),
                   ),

@@ -551,7 +551,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     BoardViewport.centerYOf(context)! - insetsOffset;
                 final footerHeight = machineEnded && state.mode.fromLink
                     ? _LinkEndBar.height
-                    : GameActionsBar.height;
+                    : GameActionsBar.height +
+                          (machineEnded &&
+                                  featured &&
+                                  featuredAlertShown(context)
+                              ? FeaturedEndBar.alertHeight
+                              : 0);
                 // A aula do link de campanha (T84), no fim do desafio.
                 final linkLesson = state.mode.fromLink
                     ? _linkLessonOf(context)

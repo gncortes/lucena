@@ -57,6 +57,10 @@ import '../../../domain/use_cases/home_shortcuts.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/mastery.dart';
+import '../../../domain/use_cases/opening_overlay.dart';
+import '../../../domain/use_cases/training/demo_offer_rules.dart';
+import '../../../data/repositories/purchase/opening_offer_repository.dart';
+import '../../../data/repositories/purchase/purchase_repository.dart';
 import '../../../domain/use_cases/streak_rules.dart';
 import '../../../domain/use_cases/train_suggestion.dart';
 
@@ -67,6 +71,8 @@ class HomeState {
     this.ready = false,
     this.failed = false,
     this.tourPending = false,
+    this.offerPending = false,
+    this.offerOpen = false,
     this.boardControlsDone = false,
     this.stage = OnboardingStage.tour,
     this.current,
@@ -97,6 +103,22 @@ class HomeState {
 
   /// A primeira abertura: o tour ainda não foi visto.
   final bool tourPending;
+
+  /// Só a folha da sequência perdida está na vez (nem tour, nem oferta).
+  bool get lostSheetTurn =>
+      OpeningOverlay.of(
+        tourPending: tourPending,
+        offerPending: offerPending,
+        streakLost: streak.lost > 0,
+      ) ==
+      OpeningOverlay.lostStreak;
+
+  /// A oferta (tela de venda) é a vez desta abertura (H-INI-14): vai abrir ou
+  /// já abriu. A folha da sequência perdida espera a próxima abertura.
+  final bool offerPending;
+
+  /// A oferta ainda não abriu nesta abertura: o Início a abre por cima.
+  final bool offerOpen;
   final bool boardControlsDone;
 
   /// Com [tourPending], a tela da primeira abertura em que a pessoa parou.
@@ -207,10 +229,12 @@ class HomeState {
     );
   }
 
-  HomeState copyWith({Streak? streak}) => HomeState(
+  HomeState copyWith({Streak? streak, bool? offerOpen}) => HomeState(
     ready: ready,
     failed: failed,
     tourPending: tourPending,
+    offerPending: offerPending,
+    offerOpen: offerOpen ?? this.offerOpen,
     boardControlsDone: boardControlsDone,
     stage: stage,
     current: current,
@@ -410,10 +434,16 @@ class HomeCubit extends Cubit<HomeState> {
     this._analytics = const NoAnalyticsRepository(),
     this._courseTraining,
     this._trainingCourses = const [],
+    this._openingOffer,
+    this._purchases,
     this.trainingLessonPreview,
   }) : super(const HomeState());
 
   final AnalyticsRepository _analytics;
+
+  // A oferta do Pilares ao abrir o app: sem ela (ou sem a compra), não sai.
+  final OpeningOfferRepository? _openingOffer;
+  final PurchaseRepository? _purchases;
   final course_training.TrainingRepository? _courseTraining;
   final List<TrainingCourseConfig> _trainingCourses;
 
@@ -527,11 +557,14 @@ class HomeCubit extends Cubit<HomeState> {
     final placementDone =
         _placement == null || await _placement.result() != null;
     final training = await _optionalContent(_trainingSummary);
+    final offer = await _offerTurn(tourPending: !onboarding.done);
     if (isClosed || serial != _loadSerial) return;
     emit(
       HomeState(
         ready: true,
         tourPending: !onboarding.done,
+        offerPending: offer.pending,
+        offerOpen: offer.open,
         boardControlsDone: onboarding.boardControlsDone,
         stage: onboarding.stage,
         current: current,
@@ -563,6 +596,40 @@ class HomeCubit extends Cubit<HomeState> {
         training: training,
       ),
     );
+  }
+
+  /// A vez da oferta nesta abertura (H-INI-14 / H-VEN-15): só para quem não
+  /// comprou, no máximo 2 vezes com 3 dias entre elas e nunca na abertura do
+  /// tour. Depois de aberta, segue sendo a vez dela até o app fechar.
+  Future<({bool pending, bool open})> _offerTurn({
+    required bool tourPending,
+  }) async {
+    final offer = _openingOffer;
+    final purchases = _purchases;
+    final now = _now;
+    const none = (pending: false, open: false);
+    if (offer == null || purchases == null || now == null) return none;
+    if (tourPending) {
+      offer.markTour();
+      return none;
+    }
+    if (offer.shownThisOpening) return (pending: true, open: false);
+    if (offer.tourThisOpening) return none;
+    final due = DemoOfferRules.shouldOffer(
+      await offer.load(),
+      demo: !purchases.state.access.owns,
+      now: now(),
+    );
+    return (pending: due, open: due);
+  }
+
+  /// A oferta abriu: conta a vez já ao abrir (fechar à força com ela aberta
+  /// conta como vista).
+  Future<void> offerOpened() async {
+    final offer = _openingOffer;
+    if (offer == null || !state.offerOpen) return;
+    emit(state.copyWith(offerOpen: false));
+    await offer.markShown();
   }
 
   Future<HomeTraining?> _trainingSummary() async {

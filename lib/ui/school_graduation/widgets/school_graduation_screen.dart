@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -183,7 +185,12 @@ class _SchoolGraduationScreenState extends State<SchoolGraduationScreen> {
                   FilledButton.icon(
                     key: TrainingKeys.diplomaPilares,
                     icon: const Icon(Icons.auto_stories),
-                    onPressed: () => context.push(Routes.pilaresSale),
+                    onPressed: () {
+                      unawaited(
+                        context.read<SchoolGraduationCubit>().pilaresOpened(),
+                      );
+                      unawaited(context.push(Routes.pilaresSale));
+                    },
                     label: Text(l10n.schoolGraduationPilares),
                   ),
                   OutlinedButton(

@@ -300,6 +300,56 @@ void main() {
     },
   );
 
+  testWidgets('rating fora de 400 a 3000: erro no campo e botão desabilitado '
+      '(H-ABE-16)', (tester) async {
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.manual);
+    const help = 'Just the number, from 400 to 3000.';
+    const error = 'Enter a number from 400 to 3000.';
+    final use = find.byKey(LevelKeys.ratingUse);
+    // Vazio: a ajuda fica e o botão está desabilitado.
+    expect(find.text(help), findsOneWidget);
+    expect(find.text(error), findsNothing);
+    expect(tester.widget<FilledButton>(use).onPressed, isNull);
+    for (final text in ['3001', '399']) {
+      await tester.enterText(find.byKey(LevelKeys.ratingField), text);
+      await tester.pumpAndSettle();
+      expect(find.text(error), findsOneWidget, reason: text);
+      expect(tester.widget<FilledButton>(use).onPressed, isNull);
+    }
+    // O campo aceita só dígitos, até 4: o quinto não entra e letra não entra.
+    String typed() => tester
+        .widget<TextField>(find.byKey(LevelKeys.ratingField))
+        .controller!
+        .text;
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '12345');
+    await tester.pumpAndSettle();
+    expect(typed(), '1234');
+    expect(find.text(error), findsNothing);
+    expect(tester.widget<FilledButton>(use).onPressed, isNotNull);
+    // Cheio, o campo não troca o número: apagar antes.
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '99999');
+    await tester.pumpAndSettle();
+    expect(typed(), '1234');
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '99999');
+    await tester.pumpAndSettle();
+    expect(typed(), '9999');
+    expect(find.text(error), findsOneWidget);
+    expect(tester.widget<FilledButton>(use).onPressed, isNull);
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '15a0');
+    await tester.pumpAndSettle();
+    expect(typed(), '150');
+    expect(find.text(error), findsOneWidget);
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '3000');
+    await tester.pumpAndSettle();
+    expect(find.text(error), findsNothing);
+    expect(tester.widget<FilledButton>(use).onPressed, isNotNull);
+  });
+
   testWidgets('Lichess: conecta, mostra os ratings e usa o blitz', (
     tester,
   ) async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/lesson_end.dart';
 import 'package:lucena/ui/core/keys/lesson_end_keys.dart';
+import 'package:lucena/ui/core/widgets/diploma_card.dart';
 import 'package:lucena/ui/lesson_end/widgets/course_completed_screen.dart';
 import 'package:lucena/ui/lesson_end/widgets/day_goal_screen.dart';
 import 'package:lucena/ui/lesson_end/widgets/demo_offer_screen.dart';
@@ -180,11 +181,26 @@ void main() {
         onGoals: () => goals++,
         onCatalog: () {},
         onClose: () {},
-        onShare: () {},
       ),
     );
     expect(find.text('Você concluiu o Pilares'), findsOneWidget);
     expect(find.byKey(LessonEndKeys.completedDiploma), findsOneWidget);
+    // H-LIC-53: o mesmo diploma da Escola (componente único) e o
+    // "Compartilhar conquista" do quadro, sempre na app bar.
+    expect(
+      find.descendant(
+        of: find.byKey(LessonEndKeys.completedDiploma),
+        matching: find.byType(DiplomaCard),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(LessonEndKeys.completedShare),
+        matching: find.byIcon(Icons.share_rounded),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Ana Souza'), findsOneWidget);
     expect(find.text('Ver o catálogo'), findsOneWidget);
     expect(find.byKey(LessonEndKeys.completedShare), findsOneWidget);

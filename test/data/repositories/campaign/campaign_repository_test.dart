@@ -68,6 +68,38 @@ void main() {
       expect(await const NoInstallReferrerRepository().pendingLink(), isNull);
     });
 
+    test('falha na leitura mantém a campanha para a abertura seguinte '
+        '(Gap 6)', () async {
+      final service = FakeInstallReferrerService('/aula/rook.lucena')
+        ..failures = 1;
+      ServiceInstallReferrerRepository reopen() =>
+          ServiceInstallReferrerRepository(service, PreferencesService());
+
+      expect(await reopen().pendingLink(), isNull);
+      // A leitura falhou: a campanha não foi gasta.
+      final link = await reopen().pendingLink();
+      expect(link?.path, '/aula/rook.lucena');
+      // Lida com sucesso, não volta mais.
+      expect(await reopen().pendingLink(), isNull);
+      expect(service.reads, 2);
+    });
+
+    test(
+      'desiste depois de ${ServiceInstallReferrerRepository.maxAttempts} falhas seguidas',
+      () async {
+        final service = FakeInstallReferrerService('/aula/rook.lucena')
+          ..failures = 99;
+        ServiceInstallReferrerRepository reopen() =>
+            ServiceInstallReferrerRepository(service, PreferencesService());
+
+        for (var i = 0; i < ServiceInstallReferrerRepository.maxAttempts; i++) {
+          expect(await reopen().pendingLink(), isNull);
+        }
+        expect(await reopen().pendingLink(), isNull);
+        expect(service.reads, ServiceInstallReferrerRepository.maxAttempts);
+      },
+    );
+
     test('o fake entrega o link pendente uma vez', () async {
       final fake = FakeInstallReferrerRepository(Uri.parse('https://x/p/a'));
       expect(await fake.pendingLink(), isNotNull);

@@ -31,6 +31,7 @@ import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/lesson_ad/course_access_repository.dart';
 import '../data/repositories/lesson_ad/demo_ad_repository.dart';
+import '../data/repositories/purchase/opening_offer_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../data/repositories/store/store_listing_repository.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
@@ -289,6 +290,7 @@ class Dependencies {
     this.adsRepository = const NoAdsRepository(),
     this.courseAccessRepository = const FullCourseAccessRepository(),
     this.demoAdRepository = const NoDemoAdRepository(),
+    this.openingOfferRepository = const NoOpeningOfferRepository(),
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
@@ -488,7 +490,7 @@ class Dependencies {
     );
     // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
     // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
-    const purchases = NoPurchaseRepository();
+    const PurchaseRepository purchases = NoPurchaseRepository();
     const ads = NoAdsRepository();
     final PushService pushService = firebase
         ? FirebasePushService()
@@ -629,7 +631,13 @@ class Dependencies {
       analyticsRepository: analytics,
       adsRepository: ads,
       demoAdRepository: LocalDemoAdRepository(preferences),
+      openingOfferRepository: LocalOpeningOfferRepository(preferences, now),
       purchaseRepository: purchases,
+      // Sem loja (V1 sem compra) o curso segue aberto; com a Play ligada
+      // (H-VEN-16), a lição tranca e mostra o anúncio pela compra.
+      courseAccessRepository: purchases is NoPurchaseRepository
+          ? const FullCourseAccessRepository()
+          : PurchaseCourseAccessRepository(purchases),
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
           : const NoStoreListingRepository(),
@@ -806,6 +814,9 @@ class Dependencies {
   /// O que a pessoa tem do Pilares e o anúncio da demonstração (T85-D1).
   final CourseAccessRepository courseAccessRepository;
   final DemoAdRepository demoAdRepository;
+
+  /// A oferta do Pilares ao abrir o app (H-INI-14).
+  final OpeningOfferRepository openingOfferRepository;
   final PurchaseRepository purchaseRepository;
   final StoreListingRepository storeListingRepository;
 

@@ -18,12 +18,34 @@ class ServiceInstallReferrerRepository implements InstallReferrerRepository {
   final PreferencesService _preferences;
 
   static const _readKey = 'campaign.referrerRead';
+  static const _attemptsKey = 'campaign.referrerAttempts';
+
+  /// Quantas aberturas seguidas tentam ler o referrer antes de desistir: uma
+  /// falha da Play não pode perder a campanha, mas um aparelho sem Play
+  /// também não pode esperar o limite de tempo para sempre.
+  static const maxAttempts = 3;
 
   @override
   Future<Uri?> pendingLink() async {
     if (await _preferences.getBool(_readKey) ?? false) return null;
+    final String? referrer;
+    try {
+      referrer = await _service.referrer();
+    } on InstallReferrerFailure {
+      // Gap 6: a leitura falhou, a campanha continua para a próxima abertura
+      // (até [maxAttempts]).
+      final attempts =
+          (int.tryParse(await _preferences.getString(_attemptsKey) ?? '') ??
+              0) +
+          1;
+      await _preferences.setString(_attemptsKey, '$attempts');
+      if (attempts >= maxAttempts) {
+        await _preferences.setBool(_readKey, value: true);
+      }
+      return null;
+    }
     await _preferences.setBool(_readKey, value: true);
-    return InstallReferrerRules.link(await _service.referrer());
+    return InstallReferrerRules.link(referrer);
   }
 }
 
