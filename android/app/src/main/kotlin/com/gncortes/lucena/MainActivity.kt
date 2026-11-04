@@ -3,12 +3,23 @@ package com.gncortes.lucena
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
+    // H-ANI-43 → H-ANI-44: no Android 12+, a tela nativa sai de uma vez, sem
+    // o fade padrão do sistema. O primeiro quadro do Flutter já é o peão na
+    // mesma pose e no mesmo lugar, então a troca não aparece.
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            splashScreen.setOnExitAnimationListener { vista -> vista.remove() }
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "lucena/notification_timezone")
