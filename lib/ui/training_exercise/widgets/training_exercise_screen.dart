@@ -44,6 +44,7 @@ import '../../endgames/widgets/grade_widgets.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_exercise_cubit.dart';
 import '../../core/motion/tabuleiro_animado.dart';
+import '../../core/motion/retorno_do_lance.dart';
 
 /// Course-neutral destination. Navigation callbacks run only after persistence.
 class TrainingExerciseScreen extends StatelessWidget {
@@ -104,6 +105,9 @@ class _ExerciseView extends StatefulWidget {
 
 class _ExerciseViewState extends State<_ExerciseView> {
   ChessboardController? _controller;
+
+  /// O tabuleiro guarda o estado quando o retorno do lance o envolve.
+  final _boardKey = GlobalKey();
 
   void _cycleAction(
     TrainingExerciseState state,
@@ -390,6 +394,24 @@ class _ExerciseViewState extends State<_ExerciseView> {
         ),
       ),
     );
+    // H-ANI-11/12: no resultado, a casa do lance pisca, o selo salta na peça
+    // e o tabuleiro respira (acerto) ou treme (erro).
+    final retornoMove = state.phase != TrainingExercisePhase.result
+        ? null
+        : wrongMove ??
+              (state.lastMove == null ? null : Move.parse(state.lastMove!));
+    board = KeyedSubtree(key: _boardKey, child: board);
+    if (retornoMove is NormalMove) {
+      board = RetornoDoLance(
+        key: ValueKey('${state.practicing} $fen ${retornoMove.uci}'),
+        tipo: wrongMove != null ? TipoDeRetorno.erro : TipoDeRetorno.acerto,
+        casa: retornoMove.to,
+        orientacao: side,
+        tamanho: size,
+        vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
+        child: board,
+      );
+    }
     if (widget.screen.homeHero) {
       board = GameBoardHero(orientation: side, child: board);
     } else if (widget.screen.heroTag case final tag?) {

@@ -138,6 +138,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Isso mesmo.'), findsOneWidget);
       expectCenteredBoard();
+      expectRetornoDoLance(tester, TrainingKeys.exerciseBoard, acerto: true);
 
       expect(tester.takeException(), isNull);
       await tester.tap(find.byKey(TrainingKeys.nextGoal));
@@ -314,6 +315,7 @@ void main() {
       await cubit.play('a1a2');
       await tester.pumpAndSettle();
       expect(cubit.state.fen, real.fen);
+      expectRetornoDoLance(tester, TrainingKeys.exerciseBoard, acerto: false);
       expect(find.byType(ScriptSpeech), findsOneWidget);
       expect(
         tester.getRect(find.byKey(TrainingKeys.exerciseBoard)),
@@ -331,6 +333,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(cubit.state.phase, TrainingExercisePhase.playing);
       expect(cubit.state.fen, real.fen);
+      expectSemRetornoDoLance();
       await cubit.play('a1a8');
       await tester.pumpAndSettle();
       expect(find.text('Isso mesmo.'), findsOneWidget);
