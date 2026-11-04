@@ -2375,6 +2375,6 @@
   "desafiosRaceEndQuit": "saiu",
   "desafiosRaceNewRecord": "Novo recorde de {minutes} min! Antes eram {previous}",
   "desafiosRaceSeeAll": "Ver os {count}",
-  "desafiosShareError": "Erro ao compartilhar o link.",
+  "desafiosShareError": "Não foi possível compartilhar o link.",
   "desafiosSpeedrunEmpty": "Nenhum speedrun neste nível."
 }

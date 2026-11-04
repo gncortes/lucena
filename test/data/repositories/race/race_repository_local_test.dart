@@ -228,13 +228,16 @@ void main() {
     expect((await repository.record()).isEmpty, isTrue);
   });
 
-  test('filtro salvo com formato errado volta ao padrão (H-DES-12 gap 6)', () async {
-    final preferences = PreferencesService();
-    await preferences.setString('race.filter', '{"goal":7,"excluded":"x"}');
-    final repository = reopen();
-    expect(await repository.filter(), const RaceFilter());
-    expect(await preferences.getString('race.filter'), isNull);
-  });
+  test(
+    'filtro salvo com formato errado volta ao padrão (H-DES-12 gap 6)',
+    () async {
+      final preferences = PreferencesService();
+      await preferences.setString('race.filter', '{"goal":7,"excluded":"x"}');
+      final repository = reopen();
+      expect(await repository.filter(), const RaceFilter());
+      expect(await preferences.getString('race.filter'), isNull);
+    },
+  );
 
   test(
     'o aquecimento é oferecido até o jogador pedir para não perguntar',
