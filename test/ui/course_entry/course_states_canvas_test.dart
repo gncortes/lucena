@@ -328,7 +328,7 @@ void main() {
             onWelcomeContinue: () {},
             onLesson: (_) {},
             onChapter: (_) {},
-            onStartPilares: () {},
+            onDiploma: () {},
             goalsBuilder: (_) => TrainingGoalsTab(
               onGoal: (_) {},
               onPlan: () {},

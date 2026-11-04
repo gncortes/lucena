@@ -11076,7 +11076,6 @@
   "trainingViewProgress": "View progress",
   "trainingViewGoals": "View goals",
   "trainingViewCatalog": "View catalog",
-  "trainingStartPilares": "Start Pilares",
   "trainingPilaresCompletedTitle": "You completed Pilares do Xadrez",
   "trainingPilaresCompletedBody": "All lessons and tests completed. Goals continue with theme exercises and openings; use the Catalog to review a lesson.",
   "trainingEscolaCompletedTitle": "You completed Viktor’s School",
@@ -11150,9 +11149,6 @@
     "description": "Training course state."
   },
   "@trainingViewCatalog": {
-    "description": "Training course state."
-  },
-  "@trainingStartPilares": {
     "description": "Training course state."
   },
   "@trainingPilaresCompletedTitle": {
@@ -11862,5 +11858,60 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "schoolGraduationBrand": "Viktor's School",
+  "@schoolGraduationBrand": {
+    "description": "Brand line at the top of the School diploma (shown in capitals)."
+  },
+  "schoolGraduationText": "for completing the {n} lessons of Viktor's School",
+  "@schoolGraduationText": {
+    "description": "Diploma text for the School: what the student completed.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolGraduationTeacher": "Viktor",
+  "@schoolGraduationTeacher": {
+    "description": "Teacher name signed on the School diploma."
+  },
+  "schoolGraduationSummary": "What you completed",
+  "@schoolGraduationSummary": {
+    "description": "Title of the per-module summary on the School diploma screen."
+  },
+  "schoolGraduationModuleCount": "{n, plural, =1{1 lesson} other{{n} lessons}}",
+  "@schoolGraduationModuleCount": {
+    "description": "How many lessons the student completed in a module, in the diploma summary.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolGraduationSurveyTitle": "What did you think of the School?",
+  "@schoolGraduationSurveyTitle": {
+    "description": "Title of the card that opens the opinion survey at the end of the School."
+  },
+  "schoolGraduationSurveyBody": "It takes 1 minute and helps improve the lessons.",
+  "@schoolGraduationSurveyBody": {
+    "description": "Subtitle of the opinion card at the end of the School."
+  },
+  "schoolGraduationPilares": "Meet Pilares",
+  "@schoolGraduationPilares": {
+    "description": "Button on the School diploma that opens the Pilares course presentation."
+  },
+  "schoolGraduationShareText": "I completed Viktor's School on Lucena! {link}",
+  "@schoolGraduationShareText": {
+    "description": "Text sent with the diploma image when sharing.",
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolGraduationOpen": "View the diploma",
+  "@schoolGraduationOpen": {
+    "description": "Lesson tab button, with the School completed, that reopens the diploma."
   }
 }

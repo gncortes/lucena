@@ -24,6 +24,16 @@ abstract final class TrainingKeys {
   static const completedCourse = Key('training.completedCourse');
   static const completedPrimary = Key('training.completedPrimary');
   static const completedCatalog = Key('training.completedCatalog');
+  static const diploma = Key('training.diploma');
+  static const diplomaName = Key('training.diplomaName');
+  static const diplomaShare = Key('training.diplomaShare');
+  static const diplomaClose = Key('training.diplomaClose');
+  static const diplomaSummary = Key('training.diplomaSummary');
+  static Key diplomaModule(String id) => Key('training.diplomaModule.$id');
+  static const diplomaPilares = Key('training.diplomaPilares');
+  static const diplomaCatalog = Key('training.diplomaCatalog');
+  static const diplomaConfetti = Key('training.diplomaConfetti');
+  static const surveyCard = Key('training.surveyCard');
   static const goalsSummary = Key('training.goalsSummary');
   static Key goalTile(String kind, String ref) =>
       Key('training.goal.$kind.$ref');

@@ -2127,7 +2127,6 @@
   "trainingViewProgress": "[Vîéw pŕöĝŕéšš one two]",
   "trainingViewGoals": "[Vîéw ĝöålš one]",
   "trainingViewCatalog": "[Vîéw çåtålöĝ one two]",
-  "trainingStartPilares": "[Štåŕt Pîlåŕéš one two]",
   "trainingPilaresCompletedTitle": "[Ýöû çömplétéd Pîlåŕéš dö Xådŕéž one two three]",
   "trainingPilaresCompletedBody": "[Åll léššöñš åñd téštš çömplétéd. Ĝöålš çöñtîñûé wîth thémé éxéŕçîšéš åñd öpéñîñĝš; ûšé thé Çåtålöĝ tö ŕévîéw å léššöñ. one two three four five six seven eight nine ten]",
   "trainingEscolaCompletedTitle": "[Ýöû çömplétéd Vîktöŕ’š Šçhööl one two three]",
@@ -2278,5 +2277,15 @@
   "practiceSolutionFollow": "[Föllöw thé åŕŕöw. one two]",
   "practiceSolutionTarget": "[Tåp thé måŕkéd šqûåŕé. one two three]",
   "practiceSolutionUnavailable": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]",
-  "practiceOpponentUnavailable": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]"
+  "practiceOpponentUnavailable": "[Åñ ûñéxpéçtéd éŕŕöŕ öççûŕŕéd one two three]",
+  "schoolGraduationBrand": "[Vîktöŕ'š Šçhööl one two]",
+  "schoolGraduationText": "[föŕ çömplétîñĝ thé {n} léššöñš öf Vîktöŕ'š Šçhööl one two three four five]",
+  "schoolGraduationTeacher": "[Vîktöŕ one]",
+  "schoolGraduationSummary": "[Whåt ýöû çömplétéd one two]",
+  "schoolGraduationModuleCount": "{n, plural, =1{[1 léššöñ one]} other{[{n} léššöñš one two]}}",
+  "schoolGraduationSurveyTitle": "[Whåt dîd ýöû thîñk öf thé Šçhööl? one two three]",
+  "schoolGraduationSurveyBody": "[Ît tåkéš 1 mîñûté åñd hélpš împŕövé thé léššöñš. one two three four five]",
+  "schoolGraduationPilares": "[Méét Pîlåŕéš one two]",
+  "schoolGraduationShareText": "[Î çömplétéd Vîktöŕ'š Šçhööl öñ Lûçéñå! {link} one two three four]",
+  "schoolGraduationOpen": "[Vîéw thé dîplömå one two]"
 }

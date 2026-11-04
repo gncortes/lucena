@@ -2253,7 +2253,6 @@
   "trainingViewProgress": "Ver o progresso",
   "trainingViewGoals": "Ver as metas",
   "trainingViewCatalog": "Ver o catálogo",
-  "trainingStartPilares": "Começar o Pilares",
   "trainingPilaresCompletedTitle": "Você concluiu o Pilares do Xadrez",
   "trainingPilaresCompletedBody": "Todas as lições e testes feitos. As metas seguem com os exercícios dos temas e as aberturas; para rever uma lição, use o Catálogo.",
   "trainingEscolaCompletedTitle": "Você concluiu a Escola do Viktor",
@@ -2404,5 +2403,15 @@
   "practiceSolutionFollow": "Siga a seta.",
   "practiceSolutionTarget": "Toque na casa marcada.",
   "practiceSolutionUnavailable": "Ocorreu um erro inesperado",
-  "practiceOpponentUnavailable": "Ocorreu um erro inesperado"
+  "practiceOpponentUnavailable": "Ocorreu um erro inesperado",
+  "schoolGraduationBrand": "Escola do Viktor",
+  "schoolGraduationText": "por concluir as {n} lições da Escola do Viktor",
+  "schoolGraduationTeacher": "Viktor",
+  "schoolGraduationSummary": "O que você concluiu",
+  "schoolGraduationModuleCount": "{n, plural, =1{1 lição} other{{n} lições}}",
+  "schoolGraduationSurveyTitle": "O que você achou da Escola?",
+  "schoolGraduationSurveyBody": "Leva 1 minuto e ajuda a melhorar as lições.",
+  "schoolGraduationPilares": "Conhecer o Pilares",
+  "schoolGraduationShareText": "Concluí a Escola do Viktor no Lucena! {link}",
+  "schoolGraduationOpen": "Ver o diploma"
 }

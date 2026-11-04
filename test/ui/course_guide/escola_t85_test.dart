@@ -47,6 +47,7 @@ void main() {
     TrainingState Function(TrainingScenarioBuilder) build, {
     CourseGuideTab tab = CourseGuideTab.lesson,
     void Function(TrainingLesson)? onLesson,
+    VoidCallback? onDiploma,
   }) async {
     setPhoneSize(tester, const Size(412, 917));
     final scenario = TrainingScenarioBuilder(
@@ -81,6 +82,7 @@ void main() {
             onHelp: () {},
             onWelcomeContinue: () {},
             onLesson: (l) => onLesson?.call(l),
+            onDiploma: onDiploma,
             onChapter: (_) {},
             goalsBuilder: (_) => const SizedBox(),
             progressBuilder: (_) => TrainingProgressTab(
@@ -194,6 +196,29 @@ void main() {
     expect(find.text('Formatura'), findsOneWidget);
     expect(find.text('0 de 1'), findsWidgets);
     expect(find.byKey(TrainingKeys.pieceStars('rook')), findsOneWidget);
+  });
+
+  testWidgets('Escola concluída: 4 abas e "Ver o diploma" abre o diploma', (
+    tester,
+  ) async {
+    var opened = 0;
+    await mount(
+      tester,
+      (s) => s.schoolDayOne().copyWith(
+        completedLessons: {
+          for (final l in escola.lessons.where((l) => l.visible))
+            l.id: '2026-10-25',
+        },
+      ),
+      onDiploma: () => opened++,
+    );
+    expect(find.byKey(TrainingKeys.completedCourse), findsOneWidget);
+    expect(find.text('Começar o Pilares'), findsNothing);
+    for (final tab in ['Lição', 'Metas', 'Estatísticas', 'Catálogo']) {
+      expect(find.text(tab), findsWidgets, reason: tab);
+    }
+    await tester.tap(find.text('Ver o diploma'));
+    expect(opened, 1);
   });
 
   testWidgets('oferta de dobrar escreve o número por extenso', (tester) async {

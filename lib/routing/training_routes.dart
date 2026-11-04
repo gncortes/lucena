@@ -19,6 +19,7 @@ import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/training/training_history_source.dart';
 import '../data/repositories/training/course_download_repository.dart';
 import '../data/repositories/push/push_repository.dart';
+import 'frentes/d3_routes.dart' show D3Paths;
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../domain/models/training/day_goals.dart';
@@ -73,9 +74,11 @@ GoRoute trainingRoute() => GoRoute(
     const _Guide(),
     config: _config(state),
     origin: state.uri.queryParameters['origem'] == 'home' ? 'home' : 'toque',
-    initialTab: state.uri.queryParameters['aba'] == 'goals'
-        ? CourseGuideTab.goals
-        : null,
+    initialTab: switch (state.uri.queryParameters['aba']) {
+      'goals' => CourseGuideTab.goals,
+      'catalog' => CourseGuideTab.catalog,
+      _ => null,
+    },
   ),
   routes: [
     GoRoute(
@@ -512,7 +515,7 @@ class _Guide extends StatelessWidget {
         onWelcomeContinue: plan,
         onHelp: () => context.push('${Routes.training(course)}/help'),
         onLesson: (lesson) => _lesson(context, lesson),
-        onStartPilares: () => context.push(Routes.training('pilares')),
+        onDiploma: () => context.push(D3Paths.schoolGraduation),
         onChapter: (chapter) =>
             context.push(Routes.trainingChapter(course, chapter)),
         goalsBuilder: (_) => KeyedSubtree(
