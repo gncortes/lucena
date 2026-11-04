@@ -14,6 +14,7 @@ import '../../core/motion/botao_carregando.dart';
 import '../../core/motion/entradas_vistas.dart';
 import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/motion/troca_com_fade.dart';
+import '../../core/motion/transicao_eixo_x.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/app_bar_height.dart';
@@ -126,41 +127,53 @@ class PlacementScreen extends StatelessWidget {
             ),
       body: SafeArea(
         top: state.view != PlacementView.result,
-        child: TrocaComFade(
-          chave: switch (state.view) {
-            PlacementView.question => 'q${state.number}',
-            final view => view,
-          },
-          child: switch (state.view) {
-            PlacementView.loading => const SkeletonList(),
-            PlacementView.intro => EntradaDaTela(
-              key: const ValueKey('intro'),
-              id: state.resuming
-                  ? 'PropV2TesteAberturaRetomada'
-                  : 'PropV2TesteAbertura',
-              child: _Intro(state: state, onPreferRating: onPreferRating),
-            ),
-            PlacementView.question => EntradaDaTela(
-              key: ValueKey('q${state.number}'),
-              id: switch (state.item?.type) {
-                PlacementItemType.squares => 'PropV1TesteNivelCasas',
-                PlacementItemType.move => 'PropV1TesteNivelLance',
-                _ => 'PropV1TesteNivelEscolha',
+        // H-ANI-03: o eixo X só na entrada (abertura → 1ª pergunta) e na
+        // saída (última pergunta → resultado); entre as perguntas, o fade
+        // com o tabuleiro parado (B7).
+        child: TransicaoEixoX(
+          child: KeyedSubtree(
+            key: ValueKey(switch (state.view) {
+              PlacementView.loading || PlacementView.intro => 'abertura',
+              PlacementView.question => 'perguntas',
+              PlacementView.result => 'resultado',
+            }),
+            child: TrocaComFade(
+              chave: switch (state.view) {
+                PlacementView.question => 'q${state.number}',
+                final view => view,
               },
-              child: _Question(
-                state: state,
-                usefulHeight:
-                    MediaQuery.sizeOf(context).height -
-                    MediaQuery.viewPaddingOf(context).vertical,
-              ),
+              child: switch (state.view) {
+                PlacementView.loading => const SkeletonList(),
+                PlacementView.intro => EntradaDaTela(
+                  key: const ValueKey('intro'),
+                  id: state.resuming
+                      ? 'PropV2TesteAberturaRetomada'
+                      : 'PropV2TesteAbertura',
+                  child: _Intro(state: state, onPreferRating: onPreferRating),
+                ),
+                PlacementView.question => EntradaDaTela(
+                  key: ValueKey('q${state.number}'),
+                  id: switch (state.item?.type) {
+                    PlacementItemType.squares => 'PropV1TesteNivelCasas',
+                    PlacementItemType.move => 'PropV1TesteNivelLance',
+                    _ => 'PropV1TesteNivelEscolha',
+                  },
+                  child: _Question(
+                    state: state,
+                    usefulHeight:
+                        MediaQuery.sizeOf(context).height -
+                        MediaQuery.viewPaddingOf(context).vertical,
+                  ),
+                ),
+                PlacementView.result => PlacementResultView(
+                  key: const ValueKey('result'),
+                  state: state,
+                  onDone: onDone,
+                  onPreferRating: onPreferRating,
+                ),
+              },
             ),
-            PlacementView.result => PlacementResultView(
-              key: const ValueKey('result'),
-              state: state,
-              onDone: onDone,
-              onPreferRating: onPreferRating,
-            ),
-          },
+          ),
         ),
       ),
     );

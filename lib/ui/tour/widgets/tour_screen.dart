@@ -16,9 +16,9 @@ import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/transicao_eixo_x.dart';
 import '../../core/motion/entradas_vistas.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -74,10 +74,6 @@ class TourScreen extends StatelessWidget {
           return const Scaffold(key: TourKeys.screen, body: SkeletonList());
         }
         final step = state.step;
-        final rtl = Directionality.of(context) == TextDirection.rtl;
-        // Avançando, o passo novo entra pelo fim da linha e o velho sai pelo
-        // começo; voltando, ao contrário.
-        final sign = (state.forward ? 1.0 : -1.0) * (rtl ? -1 : 1);
         final currentKey = TourKeys.step(step);
         return PopScope(
           canPop: !state.hasPrevious,
@@ -168,31 +164,11 @@ class TourScreen extends StatelessWidget {
                             // Corta só os lados (a troca desliza); a sombra dos
                             // botões passa da borda de baixo.
                             clipper: _SideClipper(),
-                            child: AnimatedSwitcher(
-                              duration: AppMotion.of(context).component,
-                              switchInCurve: AppMotion.enter,
-                              switchOutCurve: AppMotion.exit,
-                              layoutBuilder: (current, previous) => Stack(
-                                alignment: Alignment.topCenter,
-                                children: [...previous, ?current],
-                              ),
-                              transitionBuilder: (child, animation) {
-                                final entering = child.key == currentKey;
-                                final offset = Tween(
-                                  begin: Offset(
-                                    (entering ? 1 : -1) * sign * 0.35,
-                                    0,
-                                  ),
-                                  end: Offset.zero,
-                                ).animate(animation);
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: SlideTransition(
-                                    position: offset,
-                                    child: child,
-                                  ),
-                                );
-                              },
+                            // H-ANI-03: avançar entra pela direita; voltar,
+                            // pela esquerda.
+                            child: TransicaoEixoX(
+                              voltar: !state.forward,
+                              alinhamento: Alignment.topCenter,
                               child: Padding(
                                 key: currentKey,
                                 padding: const EdgeInsets.only(

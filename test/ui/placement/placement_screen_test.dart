@@ -14,6 +14,7 @@ import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/motion/lucena_motion.dart';
 import 'package:lucena/ui/core/motion/numero_que_conta.dart';
 import 'package:lucena/ui/core/motion/tabuleiro_animado.dart';
+import 'package:lucena/ui/core/motion/transicao_eixo_x.dart';
 import 'package:lucena/ui/placement/view_models/placement_cubit.dart';
 import 'package:lucena/ui/placement/widgets/placement_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -582,6 +583,49 @@ void main() {
       await tester.pumpAndSettle();
       final board = tester.widget<Chessboard>(find.byKey(PlacementKeys.board));
       expect(board.settings.animationDuration, Duration.zero);
+    });
+
+    // Combinado com o ORQ: o eixo X só na entrada e na saída; entre as
+    // perguntas fica o fade da B7.
+    testWidgets('H-ANI-03: abertura → 1ª pergunta entra pelo eixo X', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, geometry: true);
+      await cubit.start();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final q1 = find.byKey(const ValueKey('q1'));
+      expect(q1, findsOneWidget);
+      expect(
+        find.ancestor(of: q1, matching: find.byType(TransicaoEixoX)),
+        findsOneWidget,
+      );
+      final meio = tester.getTopLeft(q1).dx;
+      await tester.pumpAndSettle();
+      final fim = tester.getTopLeft(q1).dx;
+      expect(meio, greaterThan(fim));
+      expect(meio - fim, lessThanOrEqualTo(LucenaMotion.deslocamentoDoEixo));
+    });
+
+    testWidgets('H-ANI-03: última pergunta → resultado entra pelo eixo X', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, geometry: true);
+      await cubit.start();
+      for (var i = 0; i < PlacementState.questionCount - 1; i++) {
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      await cubit.answer(PlacementOutcome.dontKnow);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final resultado = find.byKey(const ValueKey('result'));
+      expect(resultado, findsOneWidget);
+      final meio = tester.getTopLeft(resultado).dx;
+      await tester.pumpAndSettle();
+      final fim = tester.getTopLeft(resultado).dx;
+      expect(meio, greaterThan(fim));
+      expect(meio - fim, lessThanOrEqualTo(LucenaMotion.deslocamentoDoEixo));
     });
 
     testWidgets('resultado: quadro do canvas e rating que conta até o valor', (

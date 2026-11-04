@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/voice.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/movimento_reduzido.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../view_models/speech_cubit.dart';
@@ -89,63 +91,76 @@ class VoiceCard extends StatelessWidget {
     return Semantics(
       selected: selected,
       button: true,
-      child: Material(
-        color: selected ? colors.primaryContainer : colors.surfaceContainerLow,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppShape.large),
-          side: BorderSide(
-            color: selected ? colors.primary : colors.outlineVariant,
-            width: selected ? 2 : 1,
+      // H-ANI-21: o escolhido se enche de cor em 200 ms (`emphasized`);
+      // com movimento reduzido, troca na hora.
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(end: selected ? 1 : 0),
+        duration: MovimentoReduzido.of(context)
+            ? Duration.zero
+            : LucenaMotion.selecao,
+        curve: LucenaMotion.emphasized,
+        builder: (context, t, conteudo) => Material(
+          color: Color.lerp(
+            colors.surfaceContainerLow,
+            colors.primaryContainer,
+            t,
           ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.sm,
-              AppSpacing.md,
-              AppSpacing.sm,
-              AppSpacing.md,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShape.large),
+            side: BorderSide(
+              color: Color.lerp(colors.outlineVariant, colors.primary, t)!,
+              width: 1 + t,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: 44,
-                  child: Center(
-                    child:
-                        leading ??
-                        Icon(
-                          selected ? Icons.check : icon,
-                          size: AppIconSize.large,
-                          color: selected ? colors.primary : foreground,
-                        ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 44,
+                    child: Center(
+                      child:
+                          leading ??
+                          Icon(
+                            selected ? Icons.check : icon,
+                            size: AppIconSize.large,
+                            color: selected ? colors.primary : foreground,
+                          ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: foreground,
-                  ),
-                ),
-                if (detail != null)
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
-                    detail,
+                    label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: selected
-                          ? colors.onPrimaryContainer
-                          : colors.onSurfaceVariant,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: foreground,
                     ),
                   ),
-              ],
+                  if (detail != null)
+                    Text(
+                      detail,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: selected
+                            ? colors.onPrimaryContainer
+                            : colors.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
