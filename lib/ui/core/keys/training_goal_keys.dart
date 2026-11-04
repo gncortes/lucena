@@ -19,6 +19,7 @@ abstract final class TrainingGoalKeys {
   static const diagnosticTest = Key('treinoDiag.test');
   static const diagnosticQuestionnaire = Key('treinoDiag.questionnaire');
   static const diagnosticOffline = Key('treinoDiag.offline');
+  static const diagnosticContinue = Key('treinoDiag.continue');
 
   // Teste.
   static const testScreen = Key('treinoTest.screen');

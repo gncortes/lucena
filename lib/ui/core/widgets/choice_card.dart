@@ -23,7 +23,9 @@ class ChoiceCard extends StatelessWidget {
   final String title;
   final String body;
   final bool selected;
-  final VoidCallback onTap;
+
+  /// Nulo: a opção não marca (ex.: o teste sem o conteúdo baixado).
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
