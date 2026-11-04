@@ -16,6 +16,8 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/featured_tournament_cubit.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'featured_card.dart';
 import 'featured_labels.dart';
 import 'featured_link_chip.dart';
@@ -96,84 +98,95 @@ class _Body extends StatelessWidget {
           )
         : '${tournament.year}';
     final details = [?place, when].join(' · ');
-    return ListView(
-      padding: scrollPadding(context, left: 16, right: 16),
-      children: [
-        LucenaCard(
-          key: FeaturedKeys.tournamentHeader,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.sm,
-            children: [
-              Wrap(
-                spacing: AppSpacing.sm,
-                runSpacing: AppSpacing.sm,
-                children: [
-                  InfoChip(
-                    compact: true,
-                    background: colors.primaryContainer,
-                    foreground: colors.primary,
-                    icon: FeaturedLabels.originIcon(FeaturedOrigin.tournament),
-                    label: l10n.featuredOriginTournament,
-                  ),
-                  if (state.ongoing)
+    return EntradaDaTela(
+      id: 'DesafiosTorneio.${tournament.id}',
+      child: ListaEmOrdem(
+        montar: (itens) => ListView(
+          padding: scrollPadding(context, left: 16, right: 16),
+          children: itens,
+        ),
+        itens: [
+          LucenaCard(
+            key: FeaturedKeys.tournamentHeader,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: AppSpacing.sm,
+              children: [
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
                     InfoChip(
-                      key: FeaturedKeys.tournamentOngoing,
                       compact: true,
-                      label: l10n.featuredLive,
+                      background: colors.primaryContainer,
+                      foreground: colors.primary,
+                      icon: FeaturedLabels.originIcon(
+                        FeaturedOrigin.tournament,
+                      ),
+                      label: l10n.featuredOriginTournament,
                     ),
-                ],
-              ),
-              Text(
-                tournament.nameIn(language),
-                key: FeaturedKeys.tournamentName,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
+                    if (state.ongoing)
+                      InfoChip(
+                        key: FeaturedKeys.tournamentOngoing,
+                        compact: true,
+                        label: l10n.featuredLive,
+                      ),
+                  ],
                 ),
-              ),
-              Text(
-                details,
-                style: theme.textTheme.bodySmall?.copyWith(
+                Text(
+                  tournament.nameIn(language),
+                  key: FeaturedKeys.tournamentName,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  details,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                if (summary.isNotEmpty)
+                  Text(
+                    summary,
+                    key: FeaturedKeys.tournamentSummary,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                FeaturedLinkChips(
+                  tournament: tournament,
+                  ongoing: state.ongoing,
+                ),
+              ],
+            ),
+          ),
+          if (state.items.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+              child: Text(
+                l10n.featuredTournamentNoFinals,
+                key: FeaturedKeys.tournamentNoFinals,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
-              if (summary.isNotEmpty)
-                Text(
-                  summary,
-                  key: FeaturedKeys.tournamentSummary,
-                  style: theme.textTheme.bodyMedium,
+            )
+          else ...[
+            SectionTitle(
+              l10n.desafiosFeaturedPractice,
+              textKey: FeaturedKeys.tournamentPractice,
+            ),
+            for (final item in state.items)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: FeaturedCard(
+                  item: item,
+                  onTap: () => _open(context, Routes.featuredEndgame(item.id)),
                 ),
-              FeaturedLinkChips(tournament: tournament, ongoing: state.ongoing),
-            ],
-          ),
-        ),
-        if (state.items.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-            child: Text(
-              l10n.featuredTournamentNoFinals,
-              key: FeaturedKeys.tournamentNoFinals,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onSurfaceVariant,
               ),
-            ),
-          )
-        else ...[
-          SectionTitle(
-            l10n.desafiosFeaturedPractice,
-            textKey: FeaturedKeys.tournamentPractice,
-          ),
-          for (final item in state.items)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: FeaturedCard(
-                item: item,
-                onTap: () => _open(context, Routes.featuredEndgame(item.id)),
-              ),
-            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 
