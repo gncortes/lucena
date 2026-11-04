@@ -346,22 +346,26 @@ class _Bars extends StatelessWidget {
                           height: _height,
                           child: Align(
                             alignment: Alignment.bottomCenter,
-                            child: Container(
-                              width: 24,
-                              // Dia sem final: um traço, para a semana aparecer.
-                              height: most == 0
-                                  ? 4
-                                  : (week.perDay[i] * _height / most).clamp(
-                                      4,
-                                      _height,
-                                    ),
-                              decoration: BoxDecoration(
-                                color: week.perDay[i] > 0
-                                    ? colors.primary
-                                    : colors.surfaceContainerHighest,
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(AppShape.tiny),
-                                  bottom: Radius.circular(AppShape.hairline),
+                            // H-ANI-18: a barra cresce de baixo até o valor,
+                            // no tempo da barra que enche; o desenho (topo
+                            // arredondado, base reta) é o do canvas.
+                            child: ValorQueAnima(
+                              valor: most == 0 ? 0 : week.perDay[i] / most,
+                              duracao: LucenaMotion.barraEnche,
+                              builder: (context, fracao) => Container(
+                                key: WeekKeys.bar(i),
+                                width: 24,
+                                // Dia sem final: um traço, para a semana
+                                // aparecer.
+                                height: (fracao * _height).clamp(4, _height),
+                                decoration: BoxDecoration(
+                                  color: week.perDay[i] > 0
+                                      ? colors.primary
+                                      : colors.surfaceContainerHighest,
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(AppShape.tiny),
+                                    bottom: Radius.circular(AppShape.hairline),
+                                  ),
                                 ),
                               ),
                             ),

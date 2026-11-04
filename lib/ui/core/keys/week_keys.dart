@@ -11,6 +11,9 @@ abstract final class WeekKeys {
   static Key stat(String code) => Key('week.stat.$code');
 
   static const bars = Key('week.bars');
+
+  /// A barra do dia [i] (0 = segunda).
+  static Key bar(int i) => Key('week.bar.$i');
   static const rating = Key('week.rating');
   static const play = Key('week.play');
   static const seeStreak = Key('week.seeStreak');

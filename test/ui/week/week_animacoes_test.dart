@@ -113,6 +113,31 @@ void main() {
     );
   });
 
+  testWidgets('as barras dos dias crescem de baixo até o valor (H-ANI-18)', (
+    tester,
+  ) async {
+    final cubit = WeekCubit(_Semana());
+    addTearDown(cubit.close);
+    await cubit.load();
+    await pump(tester, cubit);
+    double altura(int i) => tester.getSize(find.byKey(WeekKeys.bar(i))).height;
+    double base(int i) => tester.getRect(find.byKey(WeekKeys.bar(i))).bottom;
+    await tester.pump(const Duration(milliseconds: 50));
+    final inicio = altura(2);
+    final chao = base(2);
+    await tester.pump(const Duration(milliseconds: 250));
+    final meio = altura(2);
+    await tester.pumpAndSettle();
+    // A quarta-feira (3 finais) é o dia mais cheio: 72 de altura no fim.
+    expect(altura(2), 72);
+    expect(meio, greaterThan(inicio));
+    expect(meio, lessThan(72));
+    // Cresce para cima: a base não sai do lugar.
+    expect(base(2), chao);
+    // O dia de 1 final fica num terço do mais cheio.
+    expect(altura(1), 24);
+  });
+
   testWidgets('Tentar novamente gira o círculo no botão até a resposta', (
     tester,
   ) async {
