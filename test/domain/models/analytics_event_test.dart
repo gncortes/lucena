@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/linked_lesson.dart';
+import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/domain/use_cases/analytics_rules.dart';
 
 const _fen = '8/8/8/8/8/2k5/8/K1Q5 w - - 0 1';
@@ -246,8 +247,22 @@ final _samples = <AnalyticsEvent>[
     tempo: const Duration(seconds: 30),
     licoesAbertas: 2,
   ),
-  AnalyticsEvents.anuncioRemocao(etapa: 'aberta', origem: 'configuracoes'),
-  AnalyticsEvents.purchase(value: 9.9),
+  AnalyticsEvents.pilaresOfertaVista(origem: 'home', destaque: 'oferta'),
+  AnalyticsEvents.pilaresOfertaFechada(origem: 'home', destaque: 'oferta'),
+  AnalyticsEvents.pilaresPlanoEscolhido(plan: PilaresPlan.monthly),
+  AnalyticsEvents.demoInicio(capituloId: 'cap_1'),
+  AnalyticsEvents.demoFim(),
+  AnalyticsEvents.pilaresCompraResultado(
+    resultado: 'ok',
+    plan: PilaresPlan.lifetime,
+  ),
+  AnalyticsEvents.pilaresRestaurar(resultado: 'achou'),
+  AnalyticsEvents.pilaresAssinaturaEncerrada(),
+  AnalyticsEvents.purchase(
+    plan: PilaresPlan.lifetime,
+    value: 99.9,
+    currency: 'BRL',
+  ),
   AnalyticsEvents.corridaAquecimento(acao: 'aceitou'),
   AnalyticsEvents.corridaIniciada(tema: 'mate', recorde: 12),
   AnalyticsEvents.corridaProblema(
@@ -284,9 +299,10 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test('tem os 98 eventos (95 do app, com o treino, o funil de campanha da '
-        'T84, o dados_baixados e o aceite_termos da T85, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(95));
+    test('tem os 105 eventos (102 do app, com o treino, o funil de campanha '
+        'da T84, o dados_baixados, o aceite_termos e a venda do Pilares da '
+        'T85, e 3 da web)', () {
+      expect(AnalyticsCatalog.app, hasLength(102));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(

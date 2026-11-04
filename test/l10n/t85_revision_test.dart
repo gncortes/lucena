@@ -30,9 +30,5 @@ void main() {
       t.accountPhotoFailed,
       'Não foi possível enviar a foto. Tente novamente.',
     );
-    expect(
-      t.removeAdsError,
-      'Não foi possível concluir a compra. Tente novamente mais tarde.',
-    );
   });
 }

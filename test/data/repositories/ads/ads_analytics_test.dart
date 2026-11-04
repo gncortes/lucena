@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/ads/ads_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/ads_state.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -75,7 +76,9 @@ void main() {
   });
 
   test('sem anúncios comprado conta como comprado', () async {
-    purchases.state = const PurchaseState(adFree: true);
+    purchases.state = const PurchaseState(
+      access: PilaresAccess(kind: PilaresAccessKind.lifetime),
+    );
     await session();
     final ads = await session();
     await lesson(ads, 'a');

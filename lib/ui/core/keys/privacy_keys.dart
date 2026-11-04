@@ -25,11 +25,4 @@ abstract final class PrivacyKeys {
   static const downloadOpen = Key('privacy.downloadOpen');
   static const downloadError = Key('privacy.downloadError');
   static const downloadRetry = Key('privacy.downloadRetry');
-
-  /// A folha "Remover anúncios".
-  static const removeSheet = Key('privacy.removeSheet');
-  static const removeBuy = Key('privacy.removeBuy');
-  static const removeNo = Key('privacy.removeNo');
-  static const removePending = Key('privacy.removePending');
-  static const removeError = Key('privacy.removeError');
 }
