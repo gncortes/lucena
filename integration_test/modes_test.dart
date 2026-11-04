@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
-import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/privacy_keys.dart';
 import 'package:lucena/ui/core/keys/streak_keys.dart';
@@ -31,8 +31,8 @@ void main() {
     await openAllModes($);
     await $(AllModesKeys.item('journey')).scrollTo();
 
-    await $(AllModesKeys.item('endgames')).scrollTo().tap();
-    await $(EndgamesKeys.screen).waitUntilVisible();
+    await $(AllModesKeys.item('train')).scrollTo().tap();
+    await $(CatalogKeys.screen).waitUntilVisible();
   });
 
   patrolTest('sequência: a tela abre sem dias seguidos', ($) async {

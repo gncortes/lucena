@@ -1,32 +1,60 @@
 {
   "loadErrorRetry": "Try again",
-  "@loadErrorRetry": {"description": "Standard loading error: Retry."},
+  "@loadErrorRetry": {
+    "description": "Standard loading error: Retry."
+  },
   "loadErrorHome": "Go to home",
-  "@loadErrorHome": {"description": "Standard loading error: Home."},
+  "@loadErrorHome": {
+    "description": "Standard loading error: Home."
+  },
   "loadErrorBack": "Back",
-  "@loadErrorBack": {"description": "Standard loading error: Back."},
+  "@loadErrorBack": {
+    "description": "Standard loading error: Back."
+  },
   "loadErrorFreeSpace": "Free up space",
-  "@loadErrorFreeSpace": {"description": "Standard loading error: FreeSpace."},
+  "@loadErrorFreeSpace": {
+    "description": "Standard loading error: FreeSpace."
+  },
   "loadErrorGenericTitle": "An unexpected error occurred",
-  "@loadErrorGenericTitle": {"description": "Standard loading error: GenericTitle."},
+  "@loadErrorGenericTitle": {
+    "description": "Standard loading error: GenericTitle."
+  },
   "loadErrorOfflineTitle": "No internet",
-  "@loadErrorOfflineTitle": {"description": "Standard loading error: OfflineTitle."},
+  "@loadErrorOfflineTitle": {
+    "description": "Standard loading error: OfflineTitle."
+  },
   "loadErrorOfflineMessage": "You need an internet connection to access this feature.",
-  "@loadErrorOfflineMessage": {"description": "Standard loading error: OfflineMessage."},
+  "@loadErrorOfflineMessage": {
+    "description": "Standard loading error: OfflineMessage."
+  },
   "loadErrorNoSpaceTitle": "Not enough space on your phone",
-  "@loadErrorNoSpaceTitle": {"description": "Standard loading error: NoSpaceTitle."},
+  "@loadErrorNoSpaceTitle": {
+    "description": "Standard loading error: NoSpaceTitle."
+  },
   "loadErrorUnavailableTitle": "Content unavailable",
-  "@loadErrorUnavailableTitle": {"description": "Standard loading error: UnavailableTitle."},
+  "@loadErrorUnavailableTitle": {
+    "description": "Standard loading error: UnavailableTitle."
+  },
   "loadErrorNotFoundTitle": "Content not found",
-  "@loadErrorNotFoundTitle": {"description": "Standard loading error: NotFoundTitle."},
+  "@loadErrorNotFoundTitle": {
+    "description": "Standard loading error: NotFoundTitle."
+  },
   "loadErrorNotFoundMessage": "The link may be incorrect or the content has been removed.",
-  "@loadErrorNotFoundMessage": {"description": "Standard loading error: NotFoundMessage."},
+  "@loadErrorNotFoundMessage": {
+    "description": "Standard loading error: NotFoundMessage."
+  },
   "loadErrorLaunchTitle": "Lucena could not open",
-  "@loadErrorLaunchTitle": {"description": "Standard loading error: LaunchTitle."},
+  "@loadErrorLaunchTitle": {
+    "description": "Standard loading error: LaunchTitle."
+  },
   "loadErrorLaunchAgainTitle": "Lucena still cannot open",
-  "@loadErrorLaunchAgainTitle": {"description": "Standard loading error: LaunchAgainTitle."},
+  "@loadErrorLaunchAgainTitle": {
+    "description": "Standard loading error: LaunchAgainTitle."
+  },
   "loadErrorLaunchAgainMessage": "Close the app and open it again. If the problem continues, check the free space on your phone.",
-  "@loadErrorLaunchAgainMessage": {"description": "Standard loading error: LaunchAgainMessage."},
+  "@loadErrorLaunchAgainMessage": {
+    "description": "Standard loading error: LaunchAgainMessage."
+  },
   "@@locale": "en",
   "achievementAllLevelsHint": "Complete this endgame against every character, from the weakest to the strongest",
   "@achievementAllLevelsHint": {
@@ -1414,21 +1442,37 @@
     }
   },
   "tourSpeechBoard": "Hello! I am Viktor, your teacher. Before we start, choose the board colours and the pieces you like best.",
-  "@tourSpeechBoard": {"description": "Public onboarding speech, copied verbatim from tour.board."},
+  "@tourSpeechBoard": {
+    "description": "Public onboarding speech, copied verbatim from tour.board."
+  },
   "tourSpeechVoice": "I can read aloud everything I say. Choose my voice; tap one to hear it. And tell me what to call you.",
-  "@tourSpeechVoice": {"description": "Public onboarding speech, copied verbatim from tour.voice."},
+  "@tourSpeechVoice": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice."
+  },
   "tourSpeechVoiceNone": "Before we go on, tell me what to call you.",
-  "@tourSpeechVoiceNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.none."},
+  "@tourSpeechVoiceNone": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice.none."
+  },
   "tourSpeechVoiceLink": "Nice game! I am Viktor, your teacher. I can read aloud everything I say. Choose my voice, and tell me what to call you.",
-  "@tourSpeechVoiceLink": {"description": "Public onboarding speech, copied verbatim from tour.voice.link."},
+  "@tourSpeechVoiceLink": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice.link."
+  },
   "tourSpeechVoiceLinkNone": "Nice game! I am Viktor, your teacher. Before we go on, tell me what to call you.",
-  "@tourSpeechVoiceLinkNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.link.none."},
+  "@tourSpeechVoiceLinkNone": {
+    "description": "Public onboarding speech, copied verbatim from tour.voice.link.none."
+  },
   "tourSpeechSchool": "In the lessons, I first explain the idea, move by move. Then I show examples. At the end, you practise on the board.",
-  "@tourSpeechSchool": {"description": "Public onboarding speech, copied verbatim from tour.school."},
+  "@tourSpeechSchool": {
+    "description": "Public onboarding speech, copied verbatim from tour.school."
+  },
   "tourSpeechHelp": "Stuck? In a lesson, tap Show answer. In an exercise, tap the bulb and I give you a hint. Wrong move? I show you why, and you try again.",
-  "@tourSpeechHelp": {"description": "Public onboarding speech, copied verbatim from tour.help."},
+  "@tourSpeechHelp": {
+    "description": "Public onboarding speech, copied verbatim from tour.help."
+  },
   "tourSpeechPlay": "Outside the lessons, you play endgames against opponents who play like real people, from Coco to Stockfish. Games against them change your rating, shown at the top of the home screen.",
-  "@tourSpeechPlay": {"description": "Public onboarding speech, copied verbatim from tour.play."},
+  "@tourSpeechPlay": {
+    "description": "Public onboarding speech, copied verbatim from tour.play."
+  },
   "tourBack": "Back",
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
@@ -2971,34 +3015,6 @@
   "@allModesPlaySection": {
     "description": "All modes section: playing."
   },
-  "allModesProgressSection": "Progress",
-  "@allModesProgressSection": {
-    "description": "All modes section: rating and achievements."
-  },
-  "allModesBlindBody": "Play without seeing the pieces: say, type or tap your moves. Pick an endgame and choose Blindfold.",
-  "@allModesBlindBody": {
-    "description": "All modes card: blindfold play; it is chosen in the game setup after picking an endgame."
-  },
-  "allModesSpeedrunBody": "Against the clock: Classic, each game with its own clock, or the Marathon, one clock for the whole run.",
-  "@allModesSpeedrunBody": {
-    "description": "All modes card: speedrun, Classic or Marathon."
-  },
-  "allModesFreeBoardBody": "Play both sides, with or without a clock.",
-  "@allModesFreeBoardBody": {
-    "description": "All modes card: free board."
-  },
-  "allModesCustomBody": "Set up any position and play it.",
-  "@allModesCustomBody": {
-    "description": "All modes card: custom position."
-  },
-  "allModesRatingBody": "Your rating over time and every game that counted.",
-  "@allModesRatingBody": {
-    "description": "All modes card: rating history."
-  },
-  "allModesAchievementsBody": "The medals you have earned and the ones still waiting.",
-  "@allModesAchievementsBody": {
-    "description": "All modes card: achievements."
-  },
   "speechShowOnBoard": "Show {square} on the board",
   "@speechShowOnBoard": {
     "description": "Screen reader action on a square or move named in the teacher's speech bubble: highlights it on the board.",
@@ -3052,14 +3068,6 @@
   "homeUnlockedBlindAction": "Pick an endgame",
   "@homeUnlockedBlindAction": {
     "description": "Button of the new-mode card: opens the endgame catalog."
-  },
-  "lichessInviteTitle": "Play against people",
-  "@lichessInviteTitle": {
-    "description": "Invite to play against people on Lichess (after the beginner tricks and at graduation)."
-  },
-  "lichessInviteBody": "Create a free account on Lichess (lichess.org), practice these tricks in real games, and come back here to train endgames.",
-  "@lichessInviteBody": {
-    "description": "Body of the Lichess invite: create an account, practice, come back to train endgames."
   },
   "journeySpecialSpeedrunTitle": "Short speedrun",
   "@journeySpecialSpeedrunTitle": {
@@ -11843,5 +11851,37 @@
   "partidaOpponentErrorLeave": "Leave",
   "@partidaOpponentErrorLeave": {
     "description": "Button that leaves the game; it stays saved."
+  },
+  "partidaModosPilaresBody": "Your training guide, made for your game",
+  "@partidaModosPilaresBody": {
+    "description": "Subtitle of the Pilares card in All modes."
+  },
+  "partidaModosJourneyBody": "From Coco to Stockfish",
+  "@partidaModosJourneyBody": {
+    "description": "Subtitle of the Journey row in All modes."
+  },
+  "partidaModosTrainBody": "Any endgame, as many times as you like",
+  "@partidaModosTrainBody": {
+    "description": "Subtitle of the Train endgames row in All modes."
+  },
+  "partidaModosSpeedrunBody": "A series against the clock",
+  "@partidaModosSpeedrunBody": {
+    "description": "Subtitle of the Speedrun row in All modes."
+  },
+  "partidaModosBlindBody": "Without seeing the pieces",
+  "@partidaModosBlindBody": {
+    "description": "Subtitle of the Blindfold row in All modes."
+  },
+  "partidaModosFreeBoardBody": "Play any position",
+  "@partidaModosFreeBoardBody": {
+    "description": "Subtitle of the Free board row in All modes."
+  },
+  "partidaModosCustomBody": "Set up the position piece by piece",
+  "@partidaModosCustomBody": {
+    "description": "Subtitle of the Custom position row in All modes."
+  },
+  "partidaModosChooseHome": "Choose the home modes",
+  "@partidaModosChooseHome": {
+    "description": "Footer button of All modes that opens the home layout."
   }
 }

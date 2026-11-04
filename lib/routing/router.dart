@@ -918,7 +918,6 @@ GoRouter buildRouter({
             name: RouteNames.allModes,
             path: 'modes',
             builder: (context, state) => AllModesScreen(
-              courseAvailable: _courseAvailable(context),
               hasBlindCheckpoint: () async =>
                   await context.read<BlindCheckpointRepository>().load() !=
                   null,
