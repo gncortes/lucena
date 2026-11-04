@@ -23,6 +23,9 @@ final class FakeTrainingRepository implements TrainingRepository {
   Future<void>? beforeResources;
   Object? writeError;
   int writes = 0;
+
+  /// Gravações recusadas por [writeError] (para provar que não há laço).
+  int failedWrites = 0;
   @override
   Stream<TrainingState> get changes => _changes.stream;
   TrainingState _read(TrainingCourse course) {
@@ -63,7 +66,10 @@ final class FakeTrainingRepository implements TrainingRepository {
           'A transaction cannot change course or installation seed',
         );
       }
-      if (writeError case final error?) throw error;
+      if (writeError case final error?) {
+        failedWrites++;
+        throw error;
+      }
       await beforeSave;
       saved[course] = jsonEncode(state.toJson());
       writes++;

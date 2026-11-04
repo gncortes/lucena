@@ -22,6 +22,7 @@ import '../../../domain/use_cases/training/complete_training_goal.dart';
 import '../../../domain/use_cases/training/play_training_opening.dart';
 import '../../../domain/use_cases/training/training_date.dart';
 import '../../../domain/use_cases/training/opening_trecho_rules.dart';
+import '../../core/utils/save_retry.dart';
 
 enum TrainingOpeningPhase {
   loading,
@@ -151,11 +152,11 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
   late final StreamSubscription<TrainingState> _changes;
   bool _saving = false;
   bool _pendingHint = false;
-  Timer? _saveRetry;
+  final _saveRetry = SaveRetry();
 
   @override
   Future<void> close() async {
-    _saveRetry?.cancel();
+    _saveRetry.cancel();
     await _changes.cancel();
     await super.close();
   }
@@ -379,10 +380,11 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     } finally {
       _saving = false;
       if (!isClosed && state.error) {
-        _saveRetry?.cancel();
-        _saveRetry = Timer(const Duration(seconds: 1), () {
+        _saveRetry.schedule(() {
           if (!isClosed) unawaited(retry());
         });
+      } else {
+        _saveRetry.reset();
       }
     }
   }
@@ -561,10 +563,11 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     } finally {
       _saving = false;
       if (!isClosed && state.error) {
-        _saveRetry?.cancel();
-        _saveRetry = Timer(const Duration(seconds: 1), () {
+        _saveRetry.schedule(() {
           if (!isClosed) unawaited(retry());
         });
+      } else {
+        _saveRetry.reset();
       }
     }
   }
