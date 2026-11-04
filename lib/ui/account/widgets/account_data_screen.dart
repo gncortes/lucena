@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/motion/botao_carregando.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -248,10 +251,11 @@ class _DataViewState extends State<_DataView> {
         ),
         bottomNavigationBar: ActionsFooter(
           children: [
-            FilledButton(
-              key: AccountKeys.dataSave,
+            BotaoCarregando(
+              buttonKey: AccountKeys.dataSave,
+              busy: saving,
               onPressed: saving ? null : _save,
-              child: Text(edit ? l10n.profileSave : l10n.accountSaveContinue),
+              label: edit ? l10n.profileSave : l10n.accountSaveContinue,
             ),
           ],
         ),

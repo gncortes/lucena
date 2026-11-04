@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/motion/botao_carregando.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/account/mail_app_repository.dart';
@@ -195,10 +198,11 @@ class _ResetSheetState extends State<_ResetSheet> {
               stacked: true,
               margin: AppSpacing.xl,
               children: [
-                FilledButton(
-                  key: AccountKeys.resetSend,
+                BotaoCarregando(
+                  buttonKey: AccountKeys.resetSend,
+                  busy: _busy,
                   onPressed: _busy ? null : _send,
-                  child: Text(l10n.conSenhaSend),
+                  label: l10n.conSenhaSend,
                 ),
                 TextButton(
                   key: AccountKeys.resetCancel,

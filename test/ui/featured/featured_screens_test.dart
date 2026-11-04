@@ -28,6 +28,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/featured.dart';
 import 'package:lucena/domain/use_cases/featured_rules.dart';
 import 'package:lucena/ui/core/keys/featured_keys.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/featured/view_models/featured_catalog_cubit.dart';
 import 'package:lucena/ui/featured/view_models/featured_endgame_cubit.dart';
 import 'package:lucena/ui/featured/view_models/featured_tournament_cubit.dart';
@@ -218,6 +219,29 @@ void main() {
       expect(find.text('Finais históricos'), findsOneWidget);
       expect(find.byKey(FeaturedKeys.card('b')), findsOneWidget);
       expect(find.byKey(FeaturedKeys.card('a')), findsOneWidget);
+    });
+
+    // H-ANI-02: o tabuleiro do cartão voa até a tela do final, com o id = FEN
+    // que ela abre. Uma marca por posição na lista.
+    testWidgets('o tabuleiro de cada cartão é o TabuleiroHero da posição', (
+      tester,
+    ) async {
+      await openList(tester);
+      for (final final_ in sampleFeaturedCatalog().finals.where(
+        (f) => f.id == 'a' || f.id == 'b',
+      )) {
+        final hero = find.descendant(
+          of: find.byKey(FeaturedKeys.card(final_.id)),
+          matching: find.byType(TabuleiroHero),
+        );
+        expect(hero, findsOneWidget);
+        expect(tester.widget<TabuleiroHero>(hero).id, final_.fen);
+      }
+      final ids = tester
+          .widgetList<TabuleiroHero>(find.byType(TabuleiroHero))
+          .map((h) => h.id)
+          .toList();
+      expect(ids.toSet().length, ids.length);
     });
 
     testWidgets('não há filtros de país nem de origem', (tester) async {
@@ -555,6 +579,31 @@ void main() {
       expect(find.byKey(FeaturedKeys.lockedIcon), findsWidgets);
       expect(find.byKey(FeaturedKeys.configNote), findsOneWidget);
       expect(find.byKey(FeaturedKeys.playButton), findsOneWidget);
+    });
+
+    testWidgets('o tabuleiro do final recebe o voo com o id = FEN', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        const FeaturedEndgameScreen(),
+        location: '/e/a',
+        path: '/e/:id',
+      );
+      final hero = find.ancestor(
+        of: find.byKey(FeaturedKeys.endgameBoard),
+        matching: find.byType(TabuleiroHero),
+      );
+      expect(hero, findsOneWidget);
+      expect(
+        tester.widget<TabuleiroHero>(hero).id,
+        sampleFeaturedCatalog().finals.firstWhere((f) => f.id == 'a').fen,
+      );
+      final tags = tester.widgetList<Hero>(find.byType(Hero)).map((h) => h.tag);
+      expect(
+        tags.whereType<String>().where((t) => t.startsWith('featured.')),
+        isEmpty,
+      );
     });
 
     testWidgets('final sugerido deixa trocar o adversário', (tester) async {

@@ -106,6 +106,20 @@ void main() {
     expect(find.byKey(SpeedrunKeys.pace), findsOneWidget);
   });
 
+  testWidgets('primeira carga: as linhas entram em ordem, de cima para baixo', (
+    tester,
+  ) async {
+    await pump(tester, carregar: false);
+    await tester.runAsync(cubit.load);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final primeira = opacidade(tester, find.byKey(MotionKeys.itemDaLista(0)));
+    final terceira = opacidade(tester, find.byKey(MotionKeys.itemDaLista(2)));
+    expect(terceira, lessThan(primeira));
+    await tester.pump(const Duration(milliseconds: 1500));
+    expect(opacidade(tester, find.byKey(MotionKeys.itemDaLista(2))), 1);
+  });
+
   bool chipSelected(WidgetTester tester, String code) => tester
       .widget<ChoiceChip>(find.byKey(SpeedrunKeys.paceOption(code)))
       .selected;

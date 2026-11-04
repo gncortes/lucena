@@ -7,9 +7,14 @@ import '../../../domain/models/pilares_access.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/course_preview_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/abas_fade_through.dart';
+import '../../core/motion/acordeao.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/cartao_pressionavel.dart';
+import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/numero_que_conta.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
@@ -138,7 +143,8 @@ class SaleSection extends StatelessWidget {
   );
 }
 
-/// "Como você aprende" (ciclo): os passos ligados por uma linha vertical.
+/// "Como você aprende" (ciclo): os passos ligados por uma linha vertical. Os
+/// passos entram um a um e o conector desce entre eles (H-ANI-17).
 class SaleSteps extends StatelessWidget {
   const SaleSteps({required this.steps, super.key});
 
@@ -151,71 +157,75 @@ class SaleSteps extends StatelessWidget {
     return SaleCard(
       spacing: 0,
       children: [
-        for (final (i, step) in steps.indexed)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 14,
-              children: [
-                SizedBox(
-                  width: 32,
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: colors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '${i + 1}',
-                          style: saleStrong(
-                            context,
-                            size: 15,
-                            line: 20,
-                          )?.copyWith(color: colors.onPrimary),
-                        ),
-                      ),
-                      if (i < steps.length - 1)
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppSpacing.xs,
-                            ),
-                            child: SizedBox(
-                              width: 2,
-                              child: ColoredBox(color: colors.primaryContainer),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+        PassosComConector(
+          conector: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: SizedBox(
+              width: 32,
+              height: AppSpacing.lg,
+              child: Center(
+                child: SizedBox(
+                  width: 2,
+                  child: ColoredBox(color: colors.primaryContainer),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: 5,
-                      bottom: i < steps.length - 1 ? AppSpacing.lg : 0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 2,
-                      children: [
-                        Text(step.title, style: saleStrong(context)),
-                        if (step.summary != null)
-                          Text(step.summary!, style: saleBody(context)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
+          passos: [
+            for (final (i, step) in steps.indexed)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 14,
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${i + 1}',
+                      style: saleStrong(
+                        context,
+                        size: 15,
+                        line: 20,
+                      )?.copyWith(color: colors.onPrimary),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 2,
+                        children: [
+                          Text(step.title, style: saleStrong(context)),
+                          if (step.summary != null)
+                            Text(step.summary!, style: saleBody(context)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
       ],
     );
   }
+}
+
+/// Um número da venda que conta até o valor (H-ANI-18). O texto vem do
+/// modelo ("105", "850+"): os algarismos contam e o que sobra fica como sufixo.
+Widget saleCount(String value, {TextStyle? style}) {
+  final match = RegExp(r'^(\d[\d.]*)(\D*)$').firstMatch(value.trim());
+  final number = int.tryParse(match?.group(1)?.replaceAll('.', '') ?? '');
+  if (match == null || number == null) {
+    return Text(value, textAlign: TextAlign.center, style: style);
+  }
+  return NumeroQueConta(valor: number, sufixo: match.group(2)!, estilo: style);
 }
 
 /// Uma linha com ícone num círculo (linha_recurso); sem frase, centrada.
@@ -305,7 +315,7 @@ class SalePill extends StatelessWidget {
 
 /// Uma parte do sumário (parte_fechada e parte_aberta, Sumário B): tocar no
 /// cabeçalho abre todos os capítulos de uma vez, sem expansível por capítulo.
-class SalePartTile extends StatefulWidget {
+class SalePartTile extends StatelessWidget {
   const SalePartTile({
     required this.part,
     required this.initiallyOpen,
@@ -320,45 +330,25 @@ class SalePartTile extends StatefulWidget {
   final ({String title, String line, List<String> items}) openings;
 
   @override
-  State<SalePartTile> createState() => _SalePartTileState();
-}
-
-class _SalePartTileState extends State<SalePartTile> {
-  late bool _open = widget.initiallyOpen;
-
-  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final part = widget.part;
+    final colors = Theme.of(context).colorScheme;
     return Material(
       color: colors.surfaceContainerLow,
       borderRadius: BorderRadius.circular(AppShape.large),
       clipBehavior: Clip.antiAlias,
-      child: AnimatedSize(
-        duration: AppMotion.panel,
-        alignment: Alignment.topCenter,
+      child: Acordeao(
+        inicialmenteAberto: initiallyOpen,
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 8, 14),
+        cabecalho: KeyedSubtree(
+          key: CoursePreviewKeys.partHeader(part.number),
+          child: _header(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            InkWell(
-              key: CoursePreviewKeys.partHeader(part.number),
-              onTap: () => setState(() => _open = !_open),
-              child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(
-                  16,
-                  14,
-                  8,
-                  _open ? 6 : 14,
-                ),
-                child: _header(context),
-              ),
-            ),
-            if (_open) ...[
-              for (final chapter in part.chapters)
-                SaleSummaryChapter(chapter: chapter),
-              SaleOpenings(openings: widget.openings),
-            ],
+            for (final chapter in part.chapters)
+              SaleSummaryChapter(chapter: chapter),
+            SaleOpenings(openings: openings),
           ],
         ),
       ),
@@ -368,35 +358,18 @@ class _SalePartTileState extends State<SalePartTile> {
   Widget _header(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final part = widget.part;
-    return Row(
-      spacing: AppSpacing.md,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n.coursePartLessons(part.number, part.lessons),
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontSize: 13,
-                  height: 18 / 13,
-                  color: colors.primary,
-                ),
-              ),
-              Text(part.title, style: saleStrong(context, size: 17)),
-            ],
+        Text(
+          context.l10n.coursePartLessons(part.number, part.lessons),
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontSize: 13,
+            height: 18 / 13,
+            color: colors.primary,
           ),
         ),
-        SizedBox(
-          width: 48,
-          height: 48,
-          child: Icon(
-            _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-            size: AppIconSize.standard,
-            color: colors.onSurfaceVariant,
-          ),
-        ),
+        Text(part.title, style: saleStrong(context, size: 17)),
       ],
     );
   }
@@ -497,8 +470,8 @@ class _SaleNumberedRow extends StatelessWidget {
   );
 }
 
-/// A aba Dúvidas (FAQ D3): cada pergunta num `ExpansionTile` com o ícone do
-/// assunto; a primeira aberta.
+/// A aba Dúvidas (FAQ D3): cada pergunta num acordeão (H-ANI-22) com o ícone
+/// do assunto; a primeira aberta.
 class SaleFaq extends StatefulWidget {
   const SaleFaq({required this.items, required this.keyOf, super.key});
 
@@ -538,42 +511,50 @@ class _SaleFaqState extends State<SaleFaq> {
                     endIndent: AppSpacing.lg,
                     color: colors.outlineVariant,
                   ),
-                ExpansionTile(
+                Acordeao(
                   key: widget.keyOf(i),
-                  initiallyExpanded: _open.contains(i),
-                  onExpansionChanged: (open) =>
+                  inicialmenteAberto: _open.contains(i),
+                  aoTrocar: (open) =>
                       setState(() => open ? _open.add(i) : _open.remove(i)),
-                  shape: const Border(),
-                  collapsedShape: const Border(),
-                  minTileHeight: 56,
-                  tilePadding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.lg,
-                    end: AppSpacing.sm,
-                  ),
-                  // A resposta recuada até o texto da pergunta (16 + 24 + 16).
-                  childrenPadding: const EdgeInsetsDirectional.fromSTEB(
-                    56,
-                    0,
+                  padding: const EdgeInsetsDirectional.fromSTEB(
                     AppSpacing.lg,
-                    AppSpacing.lg,
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                    AppSpacing.md,
                   ),
-                  expandedAlignment: AlignmentDirectional.centerStart,
-                  leading: Icon(
-                    saleIcon(item.icon),
-                    size: AppIconSize.standard,
-                    color: _open.contains(i)
-                        ? colors.primary
-                        : colors.onSurfaceVariant,
+                  cabecalho: Row(
+                    spacing: AppSpacing.lg,
+                    children: [
+                      Icon(
+                        saleIcon(item.icon),
+                        size: AppIconSize.standard,
+                        color: _open.contains(i)
+                            ? colors.primary
+                            : colors.onSurfaceVariant,
+                      ),
+                      Expanded(
+                        child: Text(
+                          item.question,
+                          style: saleStrong(context)?.copyWith(
+                            color: _open.contains(i) ? colors.primary : null,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  trailing: Icon(
-                    _open.contains(i)
-                        ? Icons.expand_less_rounded
-                        : Icons.expand_more_rounded,
-                    color: colors.onSurfaceVariant,
+                  child: Padding(
+                    // A resposta recuada até o texto da pergunta (16 + 24 + 16).
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      56,
+                      0,
+                      AppSpacing.lg,
+                      AppSpacing.lg,
+                    ),
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(item.answer, style: saleBody(context)),
+                    ),
                   ),
-                  textColor: colors.primary,
-                  title: Text(item.question, style: saleStrong(context)),
-                  children: [Text(item.answer, style: saleBody(context))],
                 ),
               ],
             ],
@@ -584,8 +565,9 @@ class _SaleFaqState extends State<SaleFaq> {
   }
 }
 
-/// As abas grudadas embaixo da barra (abas_venda): 48 de altura, indicador de
-/// 3 com 12 de recuo e a linha fina. Visão geral, Conteúdo e Dúvidas.
+/// As abas grudadas embaixo da barra (abas_venda): 48 de altura, o indicador
+/// de 3 que desliza de uma aba à outra (H-ANI-05) e a linha fina. Visão geral,
+/// Conteúdo e Dúvidas.
 class SaleTabsHeader extends SliverPersistentHeaderDelegate {
   const SaleTabsHeader({
     required this.controller,
@@ -619,29 +601,36 @@ class SaleTabsHeader extends SliverPersistentHeaderDelegate {
         padding: const EdgeInsets.only(bottom: 1),
         child: SizedBox(
           height: 48,
-          child: TabBar(
-            controller: controller,
-            dividerHeight: 0,
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicator: UnderlineTabIndicator(
-              borderSide: BorderSide(width: 3, color: colors.primary),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppShape.tiny),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ListenableBuilder(
+                  listenable: controller,
+                  builder: (context, _) => IndicadorQueDesliza(
+                    abas: controller.length,
+                    atual: controller.index,
+                  ),
+                ),
               ),
-              insets: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            ),
-            labelColor: colors.primary,
-            unselectedLabelColor: colors.onSurfaceVariant,
-            labelStyle: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-            tabs: [
-              for (final (i, label) in [
-                l10n.courseSaleOverview,
-                l10n.courseSaleContent,
-                l10n.courseSaleFaq,
-              ].indexed)
-                Tab(key: keyOf(i), text: label),
+              TabBar(
+                controller: controller,
+                dividerHeight: 0,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: const BoxDecoration(),
+                labelColor: colors.primary,
+                unselectedLabelColor: colors.onSurfaceVariant,
+                labelStyle: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                tabs: [
+                  for (final (i, label) in [
+                    l10n.courseSaleOverview,
+                    l10n.courseSaleContent,
+                    l10n.courseSaleFaq,
+                  ].indexed)
+                    Tab(key: keyOf(i), text: label),
+                ],
+              ),
             ],
           ),
         ),
@@ -654,6 +643,37 @@ class SaleTabsHeader extends SliverPersistentHeaderDelegate {
       old.controller != controller || old.color != color;
 }
 
+/// O corpo da aba escolhida, num cruzamento de 450 ms (H-ANI-05). Cada aba
+/// tem a key do próprio índice.
+class SaleTabBody extends StatelessWidget {
+  const SaleTabBody({required this.index, required this.child, super.key});
+
+  final int index;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => AbasFadeThrough(
+    venda: true,
+    child: KeyedSubtree(key: ValueKey(index), child: child),
+  );
+}
+
+/// Os cartões de parte do sumário, um por parte, para a entrada em cascata
+/// (a primeira vem aberta).
+List<Widget> saleSummaryTiles({
+  required List<CourseSalePart> parts,
+  required ({String title, String line, List<String> items}) openings,
+  required Key Function(int i) keyOf,
+}) => [
+  for (final (i, part) in parts.indexed)
+    SalePartTile(
+      key: keyOf(i),
+      part: part,
+      initiallyOpen: i == 0,
+      openings: openings,
+    ),
+];
+
 /// O cartão "Para quem é" (cartao_faixa): abre a tela da faixa
 /// (PropV2CursoFaixa).
 class SaleAudienceCard extends StatelessWidget {
@@ -665,43 +685,45 @@ class SaleAudienceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Material(
-      color: colors.primaryContainer,
-      borderRadius: BorderRadius.circular(AppShape.large),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        key: tapKey,
-        onTap: () => context.push(D2Paths.pilaresForWhom),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            spacing: AppSpacing.md,
-            children: [
-              Icon(
-                saleIcon(item.icon ?? 'groups'),
-                size: AppIconSize.standard,
-                color: colors.primary,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 2,
-                  children: [
-                    Text(item.title, style: saleStrong(context)),
-                    if (item.summary case final summary?)
-                      Text(
-                        summary,
-                        style: saleBody(context, color: colors.onSurface),
-                      ),
-                  ],
+    return CartaoPressionavel(
+      child: Material(
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.large),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          key: tapKey,
+          onTap: () => context.push(D2Paths.pilaresForWhom),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Row(
+              spacing: AppSpacing.md,
+              children: [
+                Icon(
+                  saleIcon(item.icon ?? 'groups'),
+                  size: AppIconSize.standard,
+                  color: colors.primary,
                 ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                size: AppIconSize.standard,
-                color: colors.primary,
-              ),
-            ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 2,
+                    children: [
+                      Text(item.title, style: saleStrong(context)),
+                      if (item.summary case final summary?)
+                        Text(
+                          summary,
+                          style: saleBody(context, color: colors.onSurface),
+                        ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: AppIconSize.standard,
+                  color: colors.primary,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -787,15 +809,7 @@ class SaleSummary extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     spacing: AppSpacing.sm,
-    children: [
-      for (final (i, part) in parts.indexed)
-        SalePartTile(
-          key: keyOf(i),
-          part: part,
-          initiallyOpen: i == 0,
-          openings: openings,
-        ),
-    ],
+    children: saleSummaryTiles(parts: parts, openings: openings, keyOf: keyOf),
   );
 }
 
@@ -967,7 +981,8 @@ class SaleCostCompare extends StatelessWidget {
   }
 }
 
-/// Uma barra do comparativo: o trilho e o preenchimento na proporção.
+/// Uma barra do comparativo: o trilho e o preenchimento na proporção, que
+/// enche junto com o item (H-ANI-13).
 class _Bar extends StatelessWidget {
   const _Bar({
     required this.height,
@@ -982,22 +997,10 @@ class _Bar extends StatelessWidget {
   final double ratio;
 
   @override
-  Widget build(BuildContext context) => Container(
-    height: height,
-    decoration: BoxDecoration(
-      color: track,
-      borderRadius: BorderRadius.circular(AppShape.full),
-    ),
-    alignment: AlignmentDirectional.centerStart,
-    child: FractionallySizedBox(
-      widthFactor: ratio,
-      heightFactor: 1,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: fill,
-          borderRadius: BorderRadius.circular(AppShape.full),
-        ),
-      ),
-    ),
+  Widget build(BuildContext context) => BarraQueEnche(
+    valor: ratio,
+    cor: fill,
+    corDoTrilho: track,
+    altura: height,
   );
 }

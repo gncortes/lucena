@@ -133,6 +133,7 @@ abstract final class RouteNames {
   static const accountInvite = 'accountInvite';
   static const accountRequired = 'accountRequired';
   static const accountExternal = 'accountExternal';
+  static const progress = 'progress';
 
   // D3 (Abertura + Início + Iniciante): telas novas; a frente registra em `frentes/d3_routes.dart`.
   static const schoolGate = 'schoolGate';

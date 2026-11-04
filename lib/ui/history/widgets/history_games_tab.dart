@@ -12,6 +12,8 @@ import '../../../routing/routes.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/container_navigation.dart';
@@ -52,29 +54,34 @@ class HistoryGamesTab extends StatelessWidget {
     final games = state.filteredGames;
     final filteredOut = games.isEmpty && !filter.isEmpty;
     final score = HistoryGames.score(games);
-    return ListView(
-      key: RatingKeys.screen,
-      padding: padding,
-      children: [
-        if (filteredOut)
-          HistoryFilteredEmpty(
-            message: l10n.historyEmptyFilteredGames,
-            onClear: () => cubit.applyGamesFilter(const GamesHistoryFilter()),
-          )
-        else ...[
-          if (games.isNotEmpty) ...[
-            HistoryScore(
-              items: [
-                (score.wins, l10n.historyStatWins(score.wins)),
-                (score.draws, l10n.historyStatDraws(score.draws)),
-                (score.losses, l10n.historyStatLosses(score.losses)),
-              ],
-            ),
-            ..._months(context, state, games),
-          ] else
-            _empty(context),
+    // As linhas entram em ordem só na primeira vez da aba na sessão
+    // (H-ANI-17): filtrar, trocar de aba ou voltar mostra a lista pronta.
+    return EntradaDaTela(
+      id: 'HistoricoAbaPartidas',
+      child: ListaEmOrdem(
+        montar: (itens) =>
+            ListView(key: RatingKeys.screen, padding: padding, children: itens),
+        itens: [
+          if (filteredOut)
+            HistoryFilteredEmpty(
+              message: l10n.historyEmptyFilteredGames,
+              onClear: () => cubit.applyGamesFilter(const GamesHistoryFilter()),
+            )
+          else ...[
+            if (games.isNotEmpty) ...[
+              HistoryScore(
+                items: [
+                  (score.wins, l10n.historyStatWins(score.wins)),
+                  (score.draws, l10n.historyStatDraws(score.draws)),
+                  (score.losses, l10n.historyStatLosses(score.losses)),
+                ],
+              ),
+              ..._months(context, state, games),
+            ] else
+              _empty(context),
+          ],
         ],
-      ],
+      ),
     );
   }
 

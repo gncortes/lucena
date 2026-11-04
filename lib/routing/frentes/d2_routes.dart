@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/repositories/account/account_invite_repository.dart';
 import '../../data/repositories/account/account_repository.dart';
+import '../../data/repositories/achievements/achievements_repository.dart';
+import '../../data/repositories/rating/rating_repository.dart';
+import '../../ui/my_progress/view_models/my_progress_cubit.dart';
+import '../../ui/my_progress/widgets/my_progress_screen.dart';
 import '../../data/repositories/characters/character_repository.dart';
 import '../../data/repositories/course_preview/course_preview_repository.dart';
 import '../../data/repositories/purchase/purchase_repository.dart';
 import '../../ui/core/analytics/analytics_context.dart';
+import '../../ui/core/motion/rota_que_abre.dart';
 import '../../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../../ui/course_preview/widgets/course_band_preview_screen.dart';
 import '../../ui/course_preview/widgets/course_details_screen.dart';
@@ -30,6 +36,10 @@ import '../router.dart' show appRoute;
 import '../../domain/models/pilares_access.dart';
 import '../../domain/models/training/training_course.dart';
 import '../routes.dart';
+
+/// O id da [OrigemQueAbre] de onde a apresentação do Pilares (`/pilares`)
+/// cresce na [RotaQueAbre] (H-ANI-04 da Venda).
+const pilaresSaleOrigin = 'venda';
 
 /// Telas novas da frente D2 (Venda + Conta + Ajustes, T85). A frente registra as rotas na
 /// lista [d2Routes] com `appRoute(name: RouteNames.x, path: D2Paths.x, ...)`,
@@ -110,6 +120,9 @@ abstract final class D2Paths {
   /// Perfil Lichess / Chess.com (H-CON-20).
   static const accountExternal = '/conta/externo/:site';
 
+  /// "Seu progresso" (H-CON-03): a pílula do Início abre aqui.
+  static const progress = '/progress';
+
   /// A oferta com o plano marcado (o vitalício, sem `plano`) e a origem
   /// do analytics.
   static String offer({
@@ -149,29 +162,52 @@ CoursePreviewCubit _previewCubit(BuildContext context, {String? origin}) =>
     )..load();
 
 final List<RouteBase> d2Routes = [
+  // "Seu progresso" (H-CON-03): rating, o convite da conta e as conquistas.
+  appRoute(
+    name: RouteNames.progress,
+    path: D2Paths.progress,
+    builder: (context, state) => BlocProvider(
+      create: (context) => MyProgressCubit(
+        rating: context.read<RatingRepository>(),
+        achievements: context.read<AchievementsRepository>(),
+        invite: context.read<AccountInviteRepository>(),
+        accounts: context.read<AccountRepository>(),
+        characters: context.read<CharacterRepository>(),
+      )..load(),
+      child: const MyProgressScreen(),
+    ),
+  ),
   // A apresentação (H-VEN-01): quem tem o curso vai direto ao Sobre o
   // Pilares; `origem` vai à oferta vista e à oferta.
-  appRoute(
+  // H-ANI-04: cresce do cartão marcado com [pilaresSaleOrigin] (a chamada da
+  // demo); de outra origem, entra em fade.
+  GoRoute(
     name: RouteNames.pilaresPresentation,
     path: D2Paths.pilaresPresentation,
     redirect: (context, state) =>
         context.read<PurchaseRepository>().state.access.owns
         ? D2Paths.pilaresAbout
         : null,
-    builder: (context, state) {
+    pageBuilder: (context, state) {
       final origin = state.uri.queryParameters['origem'] ?? 'perfil';
-      return MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => _previewCubit(context, origin: origin),
-          ),
-          BlocProvider(
-            create: (context) => PilaresPricesCubit(
-              purchases: context.read<PurchaseRepository>(),
+      return RotaQueAbre<void>(
+        context: context,
+        id: pilaresSaleOrigin,
+        venda: true,
+        key: state.pageKey,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => _previewCubit(context, origin: origin),
             ),
-          ),
-        ],
-        child: CourseSaleScreen(origin: origin),
+            BlocProvider(
+              create: (context) => PilaresPricesCubit(
+                purchases: context.read<PurchaseRepository>(),
+              ),
+            ),
+          ],
+          child: CourseSaleScreen(origin: origin),
+        ),
       );
     },
   ),
@@ -292,15 +328,24 @@ final List<RouteBase> d2Routes = [
         context.read<PurchaseRepository>().state.access.owns
         ? Routes.training(TrainingCourse.pilares.name)
         : null,
-    builder: (context, state) => BlocProvider(
-      lazy: false,
-      create: (context) => CoursePreviewCubit(
-        context.read<CoursePreviewRepository>(),
-        context.read<CharacterRepository>(),
-        analytics: context.analytics,
-        origin: state.uri.queryParameters['origem'] ?? 'home',
-        highlight: 'plano',
-      )..load(),
+    builder: (context, state) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          lazy: false,
+          create: (context) => CoursePreviewCubit(
+            context.read<CoursePreviewRepository>(),
+            context.read<CharacterRepository>(),
+            analytics: context.analytics,
+            origin: state.uri.queryParameters['origem'] ?? 'home',
+            highlight: 'plano',
+          )..load(),
+        ),
+        // O comparativo de custo (SaleCostCompare) lê os preços.
+        BlocProvider(
+          create: (context) =>
+              PilaresPricesCubit(purchases: context.read<PurchaseRepository>()),
+        ),
+      ],
       child: const PilaresPlanSaleScreen(),
     ),
   ),

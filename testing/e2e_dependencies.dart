@@ -48,6 +48,7 @@ import 'fakes/fake_remote_flags_repository.dart';
 
 import 'package:lucena/data/repositories/lesson_ad/course_access_repository.dart';
 import 'package:lucena/data/repositories/lesson_ad/demo_ad_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
 import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
@@ -309,6 +310,8 @@ Future<Dependencies> e2eDependencies({
   bool realCourseTraining = false,
   Account? nativeInitialAccount = FakeAccountRepository.google,
   Now? now,
+  PurchaseRepository? purchases,
+  bool signedIn = false,
 }) async {
   if (realCourseTraining && trainingScenario != null) {
     throw ArgumentError('Real course training cannot use a seeded scenario');
@@ -328,6 +331,8 @@ Future<Dependencies> e2eDependencies({
   final account = FakeAccountRepository(
     account: startCourseFixture
         ? nativeInitialAccount
+        : signedIn
+        ? FakeAccountRepository.google
         : _courseFixtureAccount?.current,
   );
   _courseFixturePackages = withCoursePackages;
@@ -443,9 +448,12 @@ Future<Dependencies> e2eDependencies({
   return Dependencies(
     now: clock,
     remoteFlagsRepository: flags,
-    courseAccessRepository: demo
+    courseAccessRepository: purchases != null
+        ? PurchaseCourseAccessRepository(purchases)
+        : demo
         ? FakeCourseAccessRepository()
         : const FullCourseAccessRepository(),
+    purchaseRepository: purchases ?? const NoPurchaseRepository(),
     demoAdRepository: demo
         ? LocalDemoAdRepository(PreferencesService())
         : const NoDemoAdRepository(),

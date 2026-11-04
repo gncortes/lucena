@@ -73,7 +73,8 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(PrivacyKeys.downloading), findsOneWidget);
-    expect(find.text('Baixando'), findsOneWidget);
+    // H-ANI-08: o rótulo sai do botão e o círculo entra; o leitor continua lendo.
+    expect(find.bySemanticsLabel('Baixando'), findsOneWidget);
     expect(find.text('Baixar seus dados?'), findsOneWidget);
     expect(find.byKey(PrivacyKeys.downloadStart), findsNothing);
     expect(find.text('Cancelar'), findsOneWidget);

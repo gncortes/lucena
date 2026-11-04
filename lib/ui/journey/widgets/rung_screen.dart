@@ -10,6 +10,7 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -389,10 +390,9 @@ class _NextChallenge extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
-              PositionBoard(
-                fen: position.fen,
-                size: 120,
-                heroTag: challengeBoardTag(challenge.id),
+              TabuleiroHero(
+                id: position.fen,
+                child: PositionBoard(fen: position.fen, size: 120),
               ),
               const SizedBox(width: AppSpacing.lg),
               Expanded(
@@ -453,7 +453,7 @@ class _ChallengeCell extends StatelessWidget {
     return PositionCard(
       key: JourneyKeys.challenge(position.id),
       fen: position.fen,
-      heroTag: flies ? challengeBoardTag(challenge.id) : null,
+      heroId: flies ? position.fen : null,
       doneKey: done ? JourneyKeys.challengeDone(position.id) : null,
       doneLabel: done ? l10n.journeyCompletedLabel : null,
       onTap: () => _openChallenge(context, rungId, challenge),

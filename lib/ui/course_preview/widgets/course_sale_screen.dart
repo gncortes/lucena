@@ -9,6 +9,8 @@ import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/course_preview_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -68,8 +70,12 @@ class _SalePage extends StatefulWidget {
 
 class _SalePageState extends State<_SalePage>
     with SingleTickerProviderStateMixin {
-  late final _tabs = TabController(length: 3, vsync: this)
-    ..addListener(_tabChanged);
+  // O índice muda na hora: quem cruza as abas é o AbasFadeThrough (450 ms).
+  late final _tabs = TabController(
+    length: 3,
+    vsync: this,
+    animationDuration: Duration.zero,
+  )..addListener(_tabChanged);
   final _scroll = ScrollController();
   final _hero = GlobalKey();
 
@@ -96,82 +102,88 @@ class _SalePageState extends State<_SalePage>
     final theme = Theme.of(context);
     final sale = widget.sale;
     final page = theme.scaffoldBackgroundColor;
-    return Scaffold(
-      key: CoursePreviewKeys.sale,
-      // rodape_fixo: 16 16 24 no fundo da página.
-      bottomNavigationBar: ColoredBox(
-        color: page,
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.xl,
-            ),
-            child: SizedBox(
-              height: kButtonHeight,
-              child: FilledButton(
-                key: CoursePreviewKeys.buy,
-                onPressed: () =>
-                    context.push(D2Paths.offer(origin: widget.origin)),
-                child: Text(l10n.venSaleBuy),
+    return EntradaDaTela(
+      id: 'PropV2CursoApresentacao',
+      child: Scaffold(
+        key: CoursePreviewKeys.sale,
+        // rodape_fixo: 16 16 24 no fundo da página.
+        bottomNavigationBar: ColoredBox(
+          color: page,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.xl,
+              ),
+              child: SizedBox(
+                height: kButtonHeight,
+                child: FilledButton(
+                  key: CoursePreviewKeys.buy,
+                  onPressed: () =>
+                      context.push(D2Paths.offer(origin: widget.origin)),
+                  child: Text(l10n.venSaleBuy),
+                ),
               ),
             ),
           ),
         ),
-      ),
-      body: CustomScrollView(
-        key: CoursePreviewKeys.saleScroll,
-        controller: _scroll,
-        slivers: [
-          // O nome sempre na barra, sem subtítulo e com os mesmos ícones.
-          SliverAppBar(
-            pinned: true,
-            centerTitle: true,
-            backgroundColor: page,
-            surfaceTintColor: AppColors.clear,
-            scrolledUnderElevation: 0,
-            leading: BackButton(onPressed: () => _back(context)),
-            title: Text(sale.title),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              key: _hero,
+        body: CustomScrollView(
+          key: CoursePreviewKeys.saleScroll,
+          controller: _scroll,
+          slivers: [
+            // O nome sempre na barra, sem subtítulo e com os mesmos ícones.
+            SliverAppBar(
+              pinned: true,
+              centerTitle: true,
+              backgroundColor: page,
+              surfaceTintColor: AppColors.clear,
+              scrolledUnderElevation: 0,
+              leading: BackButton(onPressed: () => _back(context)),
+              title: Text(sale.title),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                key: _hero,
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                ),
+                child: _Hero(sale: sale, viktor: widget.viktor),
+              ),
+            ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: SaleTabsHeader(
+                controller: _tabs,
+                color: page,
+                keyOf: CoursePreviewKeys.tab,
+              ),
+            ),
+            SliverPadding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg,
-                AppSpacing.sm,
+                0,
                 AppSpacing.lg,
-                AppSpacing.lg,
+                AppSpacing.xxl,
               ),
-              child: _Hero(sale: sale, viktor: widget.viktor),
+              sliver: SliverToBoxAdapter(
+                child: SaleTabBody(
+                  index: _tabs.index,
+                  child: switch (_tabs.index) {
+                    0 => _Overview(sale: sale),
+                    1 => _Content(sale: sale),
+                    _ => SaleFaq(items: sale.faq, keyOf: CoursePreviewKeys.faq),
+                  },
+                ),
+              ),
             ),
-          ),
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: SaleTabsHeader(
-              controller: _tabs,
-              color: page,
-              keyOf: CoursePreviewKeys.tab,
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              0,
-              AppSpacing.lg,
-              AppSpacing.xxl,
-            ),
-            sliver: SliverToBoxAdapter(
-              child: switch (_tabs.index) {
-                0 => _Overview(sale: sale),
-                1 => _Content(sale: sale),
-                _ => SaleFaq(items: sale.faq, keyOf: CoursePreviewKeys.faq),
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -190,39 +202,69 @@ class _Hero extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final viktor = this.viktor;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          sale.line,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontSize: 15,
-            height: 22 / 15,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        Row(
-          spacing: AppSpacing.sm,
+    final benefits = sale.benefits;
+    // H-ANI-16 (01b): subtítulo, números, a lista item a item, o preço, o
+    // comparativo e o Viktor. O título fica na app bar e não entra.
+    return EntradaEmCascata(
+      montar: (itens) {
+        final tail = itens.sublist(3 + benefits.length);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _Number(value: '${sale.lessons}', label: l10n.courseLessonsLabel),
-            _Number(value: sale.exercises, label: l10n.courseExercisesLabel),
+            itens[0],
+            const SizedBox(height: AppSpacing.lg),
+            itens[1],
+            const SizedBox(height: AppSpacing.md),
+            SaleCard(
+              spacing: 14,
+              children: itens.sublist(2, 3 + benefits.length),
+            ),
+            for (final item in tail) ...[
+              const SizedBox(height: AppSpacing.md),
+              item,
+            ],
           ],
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _Benefits(sale: sale),
-        const SizedBox(height: AppSpacing.md),
-        _PriceCard(sale: sale),
-        const SizedBox(height: AppSpacing.md),
-        SaleCostCompare(sale: sale),
-        if (viktor != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          TeacherSpeech(
-            teacher: viktor,
-            text: sale.speech,
-            speechContext: SpeechContext.teaching,
-            avatarSize: CharacterAvatar.speech,
+        );
+      },
+      itens: [
+        ItemDaCascata.texto(
+          Text(
+            sale.line,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontSize: 15,
+              height: 22 / 15,
+            ),
           ),
-        ],
+        ),
+        ItemDaCascata.numero(
+          Row(
+            spacing: AppSpacing.sm,
+            children: [
+              _Number(value: '${sale.lessons}', label: l10n.courseLessonsLabel),
+              _Number(value: sale.exercises, label: l10n.courseExercisesLabel),
+            ],
+          ),
+        ),
+        ItemDaCascata.texto(_BenefitsHeader(sale: sale)),
+        for (final (i, item) in benefits.indexed)
+          ItemDaCascata.texto(
+            SaleIconLine(
+              key: CoursePreviewKeys.benefit(i),
+              item: item,
+              green: i.isOdd,
+            ),
+          ),
+        ItemDaCascata.texto(_PriceCard(sale: sale)),
+        ItemDaCascata.texto(SaleCostCompare(sale: sale)),
+        if (viktor != null)
+          ItemDaCascata.texto(
+            TeacherSpeech(
+              teacher: viktor,
+              text: sale.speech,
+              speechContext: SpeechContext.teaching,
+              avatarSize: CharacterAvatar.speech,
+            ),
+          ),
       ],
     );
   }
@@ -248,9 +290,8 @@ class _Number extends StatelessWidget {
         ),
         spacing: 2,
         children: [
-          Text(
+          saleCount(
             value,
-            textAlign: TextAlign.center,
             style: saleStrong(
               context,
               size: AppIconSize.standard,
@@ -272,34 +313,20 @@ class _Number extends StatelessWidget {
   }
 }
 
-/// "Mais que um curso de xadrez": o título, a linha e os 8 itens (azul e
-/// verde alternados).
-class _Benefits extends StatelessWidget {
-  const _Benefits({required this.sale});
+/// "Mais que um curso de xadrez": o título e a linha do cartão; os 8 itens
+/// (azul e verde alternados) entram um a um na cascata do topo.
+class _BenefitsHeader extends StatelessWidget {
+  const _BenefitsHeader({required this.sale});
 
   final CourseSale sale;
 
   @override
-  Widget build(BuildContext context) => SaleCard(
-    spacing: 14,
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.xs,
     children: [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.xs,
-        children: [
-          Text(
-            sale.benefitsTitle,
-            style: saleStrong(context, size: 20, line: 26),
-          ),
-          Text(sale.benefitsLine, style: saleBody(context)),
-        ],
-      ),
-      for (final (i, item) in sale.benefits.indexed)
-        SaleIconLine(
-          key: CoursePreviewKeys.benefit(i),
-          item: item,
-          green: i.isOdd,
-        ),
+      Text(sale.benefitsTitle, style: saleStrong(context, size: 20, line: 26)),
+      Text(sale.benefitsLine, style: saleBody(context)),
     ],
   );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/motion/cartao_de_plano.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
@@ -132,119 +133,63 @@ class PilaresPlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final radius = BorderRadius.circular(AppShape.card);
-    return Semantics(
-      selected: selected,
-      inMutuallyExclusiveGroup: true,
-      button: true,
-      child: Material(
-        color: AppColors.cardSurface,
-        shape: RoundedRectangleBorder(
-          borderRadius: radius,
-          side: BorderSide(
-            color: selected ? colors.primary : AppColors.cardOutline,
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: InkWell(
-          borderRadius: radius,
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Row(
+    // H-ANI-26: contorno, fundo e ponto do rádio trocam em 250 ms.
+    return CartaoDePlano(
+      selecionado: selected,
+      aoTocar: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 1),
-                  child: _Radio(selected: selected),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: theme.textTheme.titleMedium),
-                      if (badge case final badge?) ...[
-                        const SizedBox(height: AppSpacing.xs),
-                        Container(
-                          key: badgeKey,
-                          height: 22,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.sm,
-                          ),
-                          alignment: Alignment.center,
-                          decoration: ShapeDecoration(
-                            color: colors.primaryContainer,
-                            shape: const StadiumBorder(),
-                          ),
-                          child: Text(
-                            badge,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: colors.primary,
-                              fontSize: 12,
-                              height: 1,
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        text,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
+                Text(title, style: theme.textTheme.titleMedium),
+                if (badge case final badge?) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Container(
+                    key: badgeKey,
+                    height: 22,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: ShapeDecoration(
+                      color: colors.primaryContainer,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: Text(
+                      badge,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colors.primary,
+                        fontSize: 12,
+                        height: 1,
                       ),
-                    ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                AnimatedOpacity(
-                  opacity: loading ? 0.3 : 1,
-                  duration: AppMotion.state,
-                  child: Text(
-                    price,
-                    textAlign: TextAlign.end,
-                    style: theme.textTheme.titleSmall,
+                ],
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  text,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
           ),
-        ),
+          const SizedBox(width: AppSpacing.md),
+          AnimatedOpacity(
+            opacity: loading ? 0.3 : 1,
+            duration: AppMotion.state,
+            child: Text(
+              price,
+              textAlign: TextAlign.end,
+              style: theme.textTheme.titleSmall,
+            ),
+          ),
+        ],
       ),
-    );
-  }
-}
-
-class _Radio extends StatelessWidget {
-  const _Radio({required this.selected});
-
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      width: 22,
-      height: 22,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: selected ? colors.primary : colors.outline,
-          width: 2,
-        ),
-      ),
-      alignment: Alignment.center,
-      child: selected
-          ? Container(
-              width: 11,
-              height: 11,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colors.primary,
-              ),
-            )
-          : null,
     );
   }
 }
