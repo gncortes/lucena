@@ -1,8 +1,8 @@
 import 'fakes/fake_activity_repository.dart';
 
+import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/repositories/review/review_repository.dart';
-import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
 
 import 'fakes/fake_feedback_repositories.dart';
 import 'fakes/fake_daily_final_repository.dart';
@@ -194,7 +194,7 @@ Dependencies testDependencies({
   RemoteFlagsRepository? remoteFlagsRepository,
   AppUpdateRepository? appUpdateRepository,
   FeedbackRepository? feedbackRepository,
-  WouldPayRepository? wouldPayRepository,
+  FeedbackDraftRepository? feedbackDraftRepository,
   ReviewRepository? reviewRepository,
   List<AppLanguage>? languages,
 }) {
@@ -286,7 +286,8 @@ Dependencies testDependencies({
     remoteFlagsRepository: remoteFlagsRepository,
     appUpdateRepository: appUpdateRepository,
     feedbackRepository: feedbackRepository ?? FakeFeedbackRepository(),
-    wouldPayRepository: wouldPayRepository ?? const NoWouldPayRepository(),
+    feedbackDraftRepository:
+        feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
     reviewRepository: reviewRepository ?? FakeReviewRepository(),
     languages: languages ?? AppLanguage.selectable,
   );

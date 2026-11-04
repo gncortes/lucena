@@ -17,6 +17,9 @@ class FakeSurveyRepository implements SurveyRepository {
   /// Quantas vezes a resposta foi gravada.
   int saves = 0;
 
+  /// Liga a falha na gravação da resposta (sem espaço, banco travado).
+  bool failSave = false;
+
   @override
   Future<SurveyDraft?> loadDraft(SurveyKind kind) async => drafts[kind];
 
@@ -32,6 +35,7 @@ class FakeSurveyRepository implements SurveyRepository {
     SurveyKind kind,
     SurveyAnswers answers,
   ) async {
+    if (failSave) throw StateError('gravação recusada');
     saves++;
     final response = SurveyResponse(
       kind: kind,
