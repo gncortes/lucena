@@ -133,15 +133,23 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.pumpAndSettle();
+    // O push e o pop do go_router assentam de forma assíncrona: com a
+    // máquina carregada, o pumpAndSettle chegou a voltar antes da troca, e o
+    // toque não achava o cartão. Espera a rota de cima entrar e sair.
+    final linha = find.byKey(const ValueKey('linha'));
+    Future<void> ate(bool Function() pronto) async {
+      for (var i = 0; i < 50 && !pronto(); i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      await tester.pumpAndSettle();
+    }
+
     router.push('/capitulo');
-    await tester.pumpAndSettle();
+    await ate(() => linha.evaluate().isNotEmpty);
+    expect(linha, findsOneWidget);
     router.pop();
-    await tester.pumpAndSettle();
-    // A volta precisa ter assentado e o cartão estar tocável (com a máquina
-    // carregada, o toque chegou a cair antes disso).
-    await tester.ensureVisible(find.byKey(cartao));
-    await tester.pumpAndSettle();
-    expect(find.byKey(cartao).hitTestable(), findsOneWidget);
+    await ate(() => linha.evaluate().isEmpty);
+    expect(find.byKey(cartao), findsOneWidget);
     await tester.tap(find.byKey(cartao));
     await tester.pump();
     await tester.pump();
