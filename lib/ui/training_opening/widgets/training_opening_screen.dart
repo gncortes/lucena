@@ -25,7 +25,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/training_canvas_layout.dart';
 import '../../core/theme/canvas_symbols.dart';
-import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/teacher_speech.dart' show LessonVoiceButton;
@@ -48,7 +47,6 @@ class TrainingOpeningScreen extends StatelessWidget {
     required this.onNextGoal,
     this.heroTag,
     this.preview,
-    this.homeHero = false,
     this.partId,
     this.onProgress,
     super.key,
@@ -61,7 +59,6 @@ class TrainingOpeningScreen extends StatelessWidget {
   final VoidCallback onNextGoal;
   final Object? heroTag;
   final TrainingOpeningState? preview;
-  final bool homeHero;
   final String? partId;
   final VoidCallback? onProgress;
 
@@ -455,15 +452,13 @@ class _OpeningViewState extends State<_OpeningView> {
         child: board,
       );
     }
-    if (widget.screen.homeHero) {
-      board = GameBoardHero(orientation: side, child: board);
-    } else if (widget.screen.heroTag case final tag?) {
+    if (widget.screen.heroTag case final tag?) {
       board = Hero(tag: tag, child: board);
     } else {
       // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id (o FEN
       // com que a tela abre).
       board = TabuleiroHero(
-        id: _heroId ??= state.line!.fens.first,
+        id: _heroId ??= state.line!.fens[state.shown],
         child: board,
       );
     }

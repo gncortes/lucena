@@ -10,15 +10,15 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/canvas_symbols.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/position_board.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
@@ -153,7 +153,9 @@ class HeroCard extends StatelessWidget {
       avatar: state.teacher,
       fen: fen,
       orientation: training.orientation,
-      boardTag: fen == null ? null : gameBoardTag(training.orientation),
+      // H-ANI-02 (combinado da D1): o tabuleiro voa com o id = FEN da
+      // posição que a tela de destino abre.
+      boardHeroId: fen,
       onPressed: () =>
           openTrainingCourse(context, training, teacher: state.teacher),
     );
@@ -172,6 +174,7 @@ class _HeroData {
     this.avatarTag,
     this.fen,
     this.boardTag,
+    this.boardHeroId,
     this.orientation,
   });
 
@@ -187,6 +190,9 @@ class _HeroData {
   final Object? avatarTag;
   final String? fen;
   final Object? boardTag;
+
+  /// O id do [TabuleiroHero] (o FEN que a tela de destino mostra ao abrir).
+  final String? boardHeroId;
   final Side? orientation;
 }
 
@@ -252,12 +258,15 @@ class _HeroLayout extends StatelessWidget {
                     ),
                   ),
                   if (fen != null)
-                    PositionBoard(
-                      key: HomeKeys.heroBoard,
-                      fen: fen,
-                      orientation: orientation,
-                      size: HeroCard.board,
-                      heroTag: data.boardTag,
+                    _comHero(
+                      data.boardHeroId,
+                      PositionBoard(
+                        key: HomeKeys.heroBoard,
+                        fen: fen,
+                        orientation: orientation,
+                        size: HeroCard.board,
+                        heroTag: data.boardTag,
+                      ),
                     ),
                 ],
               ),
@@ -279,18 +288,13 @@ class _HeroLayout extends StatelessWidget {
                                 ),
                                 const SizedBox(width: AppSpacing.sm),
                                 Expanded(
-                                  // A barra branca sobre o azul.
-                                  child: Theme(
-                                    data: theme.copyWith(
-                                      colorScheme: colors.copyWith(primary: on),
-                                    ),
-                                    child: AnimatedProgress(
-                                      key: HomeKeys.heroProgress,
-                                      value: data.progress,
-                                      backgroundColor: on.withValues(
-                                        alpha: 0.3,
-                                      ),
-                                    ),
+                                  // A barra branca sobre o azul; enche até
+                                  // o ponto em que a pessoa está (H-ANI-13).
+                                  child: BarraQueEnche(
+                                    key: HomeKeys.heroProgress,
+                                    valor: data.progress,
+                                    cor: on,
+                                    corDoTrilho: on.withValues(alpha: 0.3),
                                   ),
                                 ),
                               ],
@@ -333,3 +337,6 @@ class _HeroLayout extends StatelessWidget {
     );
   }
 }
+
+Widget _comHero(String? id, Widget board) =>
+    id == null ? board : TabuleiroHero(id: id, child: board);

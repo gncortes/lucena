@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/next_steps_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/view_models/course_availability_cubit.dart';
@@ -21,6 +24,9 @@ import '../../home/widgets/path_card.dart';
 /// blocos em esqueleto: a lista só aparece com a resposta.
 class NextStepsScreen extends StatelessWidget {
   const NextStepsScreen({this.courseAvailable = _always, super.key});
+
+  /// Quadro do canvas, para a primeira entrada da sessão.
+  static const nextStepsEntranceId = 'PropV1InicioProximosPassos';
 
   /// Há lição liberada. Sem ela, o Pilares não aparece.
   final Future<bool> Function() courseAvailable;
@@ -74,56 +80,71 @@ class NextStepsScreen extends StatelessWidget {
         onTap: () => go(Routes.journey),
       ),
     ];
-    return Scaffold(
-      key: NextStepsKeys.screen,
-      appBar: LucenaAppBar(
-        leading: IconButton(
-          key: NextStepsKeys.back,
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => go(Routes.home),
+    return EntradaDaTela(
+      id: NextStepsScreen.nextStepsEntranceId,
+      child: Scaffold(
+        key: NextStepsKeys.screen,
+        appBar: LucenaAppBar(
+          leading: IconButton(
+            key: NextStepsKeys.back,
+            icon: const Icon(Icons.arrow_back),
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: () => go(Routes.home),
+          ),
+          title: Text(l10n.nextStepsTitle),
         ),
-        title: Text(l10n.nextStepsTitle),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: scrollPadding(
-                context,
-                left: AppSpacing.lg,
-                right: AppSpacing.lg,
-                top: AppSpacing.sm,
-              ),
-              children: [
-                if (course == null)
-                  Column(
-                    key: NextStepsKeys.loading,
-                    spacing: AppSpacing.sm,
-                    children: [
-                      for (var i = 0; i < 4; i++)
-                        const SkeletonBlock(height: 72, radius: AppShape.large),
-                    ],
-                  )
-                else
-                  Column(
-                    key: NextStepsKeys.block,
-                    spacing: AppSpacing.sm,
-                    children: steps,
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: scrollPadding(
+                  context,
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  top: AppSpacing.sm,
+                ),
+                children: [
+                  ShimmerConteudo(
+                    carregando: course == null,
+                    esqueleto: Column(
+                      key: NextStepsKeys.loading,
+                      spacing: AppSpacing.sm,
+                      children: [
+                        for (var i = 0; i < 4; i++)
+                          const SkeletonBlock(
+                            height: 72,
+                            radius: AppShape.large,
+                          ),
+                      ],
+                    ),
+                    child: course == null
+                        ? const SizedBox.shrink()
+                        : EntradaEmCascata(
+                            itens: [
+                              for (final step in steps)
+                                ItemDaCascata.texto(step),
+                            ],
+                            montar: (itens) => Column(
+                              key: NextStepsKeys.block,
+                              spacing: AppSpacing.sm,
+                              children: itens,
+                            ),
+                          ),
                   ),
+                ],
+              ),
+            ),
+            ActionsFooter(
+              children: [
+                TextButton(
+                  key: NextStepsKeys.home,
+                  onPressed: () => go(Routes.home),
+                  child: Text(l10n.nextStepsHome),
+                ),
               ],
             ),
-          ),
-          ActionsFooter(
-            children: [
-              TextButton(
-                key: NextStepsKeys.home,
-                onPressed: () => go(Routes.home),
-                child: Text(l10n.nextStepsHome),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

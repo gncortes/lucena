@@ -6,6 +6,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/update_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/busy_button.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/widgets/load_error.dart';
 import '../view_models/update_cubit.dart';
 import 'update_body.dart';
@@ -25,17 +26,20 @@ class UpdateRecommendedScreen extends StatelessWidget {
         if (state.offline) {
           return KeyedSubtree(
             key: UpdateKeys.recommendedOfflineScreen,
-            child: LoadErrorScreen(
-              kind: LoadErrorKind.offline,
-              message: l10n.updateOfflineMessage,
-              actionKey: UpdateKeys.recommendedRetry,
-              backKey: UpdateKeys.recommendedLater,
-              backLabel: l10n.updateRecommendedLater,
-              onAction: cubit.retry,
-              onBack: () {
-                cubit.recommendedLater();
-                _close(context);
-              },
+            child: EntradaDaTela(
+              id: 'PropV1AbEstAtualizarRecomendadaSemRede',
+              child: LoadErrorScreen(
+                kind: LoadErrorKind.offline,
+                message: l10n.updateOfflineMessage,
+                actionKey: UpdateKeys.recommendedRetry,
+                backKey: UpdateKeys.recommendedLater,
+                backLabel: l10n.updateRecommendedLater,
+                onAction: cubit.retry,
+                onBack: () {
+                  cubit.recommendedLater();
+                  _close(context);
+                },
+              ),
             ),
           );
         }

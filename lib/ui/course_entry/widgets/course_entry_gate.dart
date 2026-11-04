@@ -64,10 +64,14 @@ class CourseEntryGate extends StatelessWidget {
           // conteúdo quando o pacote fica pronto.
           return ShimmerConteudo(
             carregando: downloading,
-            esqueleto: _CourseScaffold(
-              title: courseTitle,
-              chapter: chapterId != null,
-              body: CourseDownloadSkeleton(chapter: chapterId != null),
+            // Mensageiro próprio: o aviso (SnackBar) da tela não aparece
+            // também no esqueleto enquanto os dois se cruzam.
+            esqueleto: ScaffoldMessenger(
+              child: _CourseScaffold(
+                title: courseTitle,
+                chapter: chapterId != null,
+                body: CourseDownloadSkeleton(chapter: chapterId != null),
+              ),
             ),
             child: downloading ? const SizedBox.shrink() : child,
           );

@@ -5,7 +5,8 @@ import '../../../routing/review_destinations.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_motion.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
@@ -68,11 +69,10 @@ class PlayerCard extends StatelessWidget {
                     key: HomeKeys.rating,
                     // Ao voltar de uma partida, o número conta até o rating
                     // novo.
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween(end: rating.toDouble()),
-                      duration: AppMotion.of(context).celebrate,
-                      curve: AppMotion.enter,
-                      builder: (context, value, _) => RatingValue(
+                    child: ValorQueAnima(
+                      valor: rating.toDouble(),
+                      duracao: LucenaMotion.numeroConta,
+                      builder: (context, value) => RatingValue(
                         rating: value.round(),
                         change: state.ratingChange,
                         valueKey: HomeKeys.ratingValue,

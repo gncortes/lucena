@@ -100,6 +100,34 @@ abstract final class LessonEntry {
     return false;
   }
 
+  /// Uma parte que só o curso completo tem (a meta trancada da demo,
+  /// H-VEN-12): a mesma folha do capítulo trancado, com o cadeado, outro
+  /// texto e "Agora não". Devolve se a pessoa pediu [primary].
+  static Future<bool> showLockedFeature(
+    BuildContext context, {
+    required String title,
+    required String body,
+    required String primary,
+    required Key sheetKey,
+    required Key primaryKey,
+    required Key laterKey,
+  }) async =>
+      await showLucenaSheet<bool>(
+        context,
+        sheetKey: sheetKey,
+        builder: (context) => _SheetBody(
+          icon: Icons.lock,
+          title: title,
+          body: body,
+          primary: primary,
+          later: context.l10n.licaoDemoLater,
+          primaryKey: primaryKey,
+          laterKey: laterKey,
+          onPrimary: () => Navigator.of(context).pop(true),
+        ),
+      ) ==
+      true;
+
   static T? _read<T>(BuildContext context) {
     try {
       return context.read<T>();

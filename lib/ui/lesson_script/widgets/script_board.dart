@@ -9,13 +9,13 @@ import '../../../domain/models/lesson_script.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
+import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/square_flash.dart';
 import '../view_models/lesson_script_state.dart';
 import 'board_coordinates.dart';
-import '../../core/motion/retorno_do_lance.dart';
-import '../../core/motion/tabuleiro_animado.dart';
 
 /// As cores das setas e das marcas do professor (protótipo T70: verde
 /// `0xcc15781b` como as marcas de `lesson_screen.dart`, azul = primária a 75%
@@ -69,6 +69,7 @@ class ScriptBoard extends StatefulWidget {
   final double size;
   final BoardSettings settings;
   final bool canvasFeedback;
+
   final ValueChanged<String> onMove;
 
   /// Toque numa casa (qualquer uma, até vazia) na prática do tipo toque.
@@ -115,6 +116,16 @@ class _ScriptBoardState extends State<ScriptBoard> {
     if (last != null) _julgar(widget.state, Move.parse(last));
   }
 
+  /// A cor da peça em [casa]; lê só o tabuleiro do FEN, que na Escola pode
+  /// não ter rei (e não vira posição de xadrez).
+  static Side? _corNa(String fen, Square casa) {
+    try {
+      return Setup.parseFen(fen).board.pieceAt(casa)?.color;
+    } on FenException {
+      return null;
+    }
+  }
+
   /// Guarda o retorno do lance [move] quando o estado [s] o julga.
   void _julgar(LessonScriptState s, Move? move) {
     final tipo = switch (s.tone) {
@@ -122,9 +133,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
       ScriptTone.bad => TipoDeRetorno.erro,
       ScriptTone.neutral => null,
     };
-    final cor = move is NormalMove
-        ? GameRules.fromFen(s.fen)?.board.pieceAt(move.to)?.color
-        : null;
+    final cor = move is NormalMove ? _corNa(s.fen, move.to) : null;
     if (tipo == null || move is! NormalMove || cor == null) return;
     _retorno = (casa: move.to, cor: cor, tipo: tipo, id: s.transition.id);
   }
@@ -140,7 +149,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
         s.transition.kind == TransitionKind.back) {
       return null;
     }
-    if (GameRules.fromFen(s.fen)?.board.pieceAt(r.casa)?.color != r.cor) {
+    if (_corNa(s.fen, r.casa) != r.cor) {
       return null;
     }
     return r;

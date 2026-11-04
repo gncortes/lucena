@@ -1,10 +1,19 @@
+import 'dart:async';
+
+import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/placement.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
+import 'package:lucena/ui/core/motion/lucena_motion.dart';
+import 'package:lucena/ui/core/motion/numero_que_conta.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_animado.dart';
 import 'package:lucena/ui/placement/view_models/placement_cubit.dart';
 import 'package:lucena/ui/placement/widgets/placement_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -468,5 +477,140 @@ void main() {
     await tester.tap(find.byKey(PlacementKeys.option(item.options.first)));
     await tester.pumpAndSettle();
     expect(cubit.state.number, number + 1);
+  });
+
+  group('animações da abertura (T85-D3)', () {
+    Finder quadro(String id) =>
+        find.byWidgetPredicate((w) => w is EntradaDaTela && w.id == id);
+
+    testWidgets('a abertura é o quadro PropV2TesteAbertura', (tester) async {
+      await pump(tester);
+      expect(quadro('PropV2TesteAbertura'), findsOneWidget);
+    });
+
+    testWidgets('na retomada é o quadro PropV2TesteAberturaRetomada', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester);
+      await tester.tap(find.byKey(PlacementKeys.start));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(PlacementKeys.dontKnow));
+      await tester.pumpAndSettle();
+      await cubit.load();
+      await tester.pumpAndSettle();
+      expect(cubit.state.resuming, isTrue);
+      expect(quadro('PropV2TesteAberturaRetomada'), findsOneWidget);
+    });
+
+    testWidgets('"Começar" troca o rótulo pelo círculo do BotaoCarregando', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester);
+      expect(find.byKey(CoreKeys.busySpinner), findsNothing);
+      unawaited(cubit.start());
+      await tester.pump();
+      if (cubit.state.starting) {
+        await tester.pump(LucenaMotion.trocaRotulo);
+        expect(find.byKey(CoreKeys.busySpinner), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+      }
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('a barra de progresso da pergunta enche (BarraQueEnche) e '
+        'guarda a key', (tester) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: find.byKey(PlacementKeys.progress),
+          matching: find.byKey(MotionKeys.barraQueEnche),
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('cada tipo de pergunta é um quadro do canvas', (tester) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      await tester.pumpAndSettle();
+      const ids = {
+        PlacementItemType.squares: 'PropV1TesteNivelCasas',
+        PlacementItemType.choice: 'PropV1TesteNivelEscolha',
+        PlacementItemType.move: 'PropV1TesteNivelLance',
+      };
+      final vistos = <PlacementItemType>{};
+      for (var i = 0; i < PlacementState.questionCount; i++) {
+        final tipo = cubit.state.item!.type;
+        vistos.add(tipo);
+        expect(quadro(ids[tipo]!), findsOneWidget, reason: '$tipo');
+        await cubit.answer(PlacementOutcome.dontKnow);
+        await tester.pumpAndSettle();
+      }
+      expect(vistos, containsAll(ids.keys));
+    });
+
+    testWidgets('na pergunta de lance o tabuleiro desliza em 300 ms '
+        '(TabuleiroAnimado)', (tester) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      for (var i = 0; i < 20; i++) {
+        if (cubit.state.item?.type == PlacementItemType.move) break;
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      expect(cubit.state.item!.type, PlacementItemType.move);
+      expect(find.byType(TabuleiroAnimado), findsOneWidget);
+      final board = tester.widget<Chessboard>(find.byKey(PlacementKeys.board));
+      expect(board.settings.animationDuration, LucenaMotion.lance);
+    });
+
+    testWidgets('movimento reduzido: o lance aparece no destino, sem deslize', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, disableAnimations: true);
+      await cubit.start();
+      for (var i = 0; i < 20; i++) {
+        if (cubit.state.item?.type == PlacementItemType.move) break;
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      final board = tester.widget<Chessboard>(find.byKey(PlacementKeys.board));
+      expect(board.settings.animationDuration, Duration.zero);
+    });
+
+    testWidgets('resultado: quadro do canvas e rating que conta até o valor', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      for (var i = 0; i < PlacementState.questionCount; i++) {
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pump();
+      final result = cubit.state.result!;
+      final id = result.levels.length > 1
+          ? 'TelaTesteResultadoDuasFaixas'
+          : 'TelaTesteResultado';
+      expect(quadro(id), findsOneWidget);
+      final numero = find.descendant(
+        of: find.byKey(PlacementKeys.level),
+        matching: find.byType(NumeroQueConta),
+      );
+      expect(numero, findsOneWidget);
+      String texto() => tester
+          .widget<Text>(
+            find.descendant(of: numero, matching: find.byType(Text)),
+          )
+          .data!;
+      final comeco = texto();
+      await tester.pumpAndSettle();
+      // O rating sai sem separador, como no resto do app ("1200").
+      final fim = '${result.theta}';
+      expect(texto(), fim);
+      expect(comeco, isNot(fim));
+    });
   });
 }

@@ -34,7 +34,6 @@ import '../../lesson_script/widgets/script_move_list.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
@@ -63,7 +62,6 @@ class TrainingExerciseScreen extends StatelessWidget {
     this.heroTag,
     this.preview,
     this.previewSpeech,
-    this.homeHero = false,
     super.key,
   });
   final TrainingRepository repository;
@@ -79,7 +77,6 @@ class TrainingExerciseScreen extends StatelessWidget {
 
   /// Explicit visual fixture text; ignored without a preview state.
   final String? previewSpeech;
-  final bool homeHero;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -414,9 +411,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
         child: board,
       );
     }
-    if (widget.screen.homeHero) {
-      board = GameBoardHero(orientation: side, child: board);
-    } else if (widget.screen.heroTag case final tag?) {
+    if (widget.screen.heroTag case final tag?) {
       board = Hero(tag: tag, child: board);
     } else {
       // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id (o FEN
