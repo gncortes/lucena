@@ -11,10 +11,13 @@ import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/routing/frentes/d1_routes.dart';
 import 'package:lucena/routing/route_names.dart';
 import 'package:lucena/ui/core/keys/ads_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/lesson_ad/widgets/lesson_entry.dart';
 
 import '../../../testing/fakes/fake_lesson_ad_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/motion_expectations.dart';
 
 const _lessonKey = Key('test.lesson');
 const _openKey = Key('test.open');
@@ -28,6 +31,7 @@ class _Harness {
   final FakeCourseAccessRepository access;
   final FakeDemoAdRepository ads;
   final now = FakeNow(DateTime(2026, 11, 4, 9));
+  final vistas = EntradasVistas();
   DemoAdEntry entry = DemoAdEntry.lesson;
 
   Future<void> pump(WidgetTester t) async {
@@ -95,6 +99,11 @@ class _Harness {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('pt'),
+          // Como no app: as entradas vistas valem acima do Navigator.
+          builder: (_, child) => EntradasVistasEscopo(
+            vistas: vistas,
+            child: child ?? const SizedBox.shrink(),
+          ),
         ),
       ),
     );
@@ -275,6 +284,63 @@ void main() {
     await t.tap(find.byKey(_chapterKey));
     await t.pumpAndSettle();
     expect(find.byKey(AdsKeys.lockedSheet), findsNothing);
+  });
+
+  group('H-ANI-16 nas folhas da demonstração', () {
+    for (final reduced in [false, true]) {
+      testWidgets(
+        'aviso: a cascata espera a folha parar (reduzido: $reduced)',
+        (t) async {
+          t.platformDispatcher.accessibilityFeaturesTestValue =
+              FakeAccessibilityFeatures(disableAnimations: reduced);
+          addTearDown(t.platformDispatcher.clearAccessibilityFeaturesTestValue);
+          final h = _Harness();
+          await h.pump(t);
+          await t.tap(find.byKey(_openKey));
+          await t.pump();
+          await t.pump(const Duration(milliseconds: 100));
+          // Título, texto e os dois botões, o principal antes do "Agora não".
+          expectEntradaEmCascata(t, itens: 4, animando: !reduced);
+          expect(
+            find.descendant(
+              of: find.byKey(MotionKeys.itemDaCascata(2)),
+              matching: find.byKey(AdsKeys.demoAdNoticeSee),
+            ),
+            findsOneWidget,
+          );
+          // A folha ainda sobe: nem o título começou.
+          expect(
+            opacidadeDaParte(t, find.byKey(MotionKeys.itemDaCascata(0))),
+            reduced ? 1 : 0,
+          );
+          await t.pumpAndSettle();
+          expect(
+            opacidadeDaParte(t, find.byKey(MotionKeys.itemDaCascata(3))),
+            1,
+          );
+          await t.tap(find.byKey(AdsKeys.demoAdNoticeLater));
+          await t.pumpAndSettle();
+        },
+      );
+    }
+
+    testWidgets('capítulo trancado: na segunda vez a folha já vem pronta', (
+      t,
+    ) async {
+      final h = _Harness();
+      await h.pump(t);
+      await t.tap(find.byKey(_chapterKey));
+      await t.pump();
+      await t.pump(const Duration(milliseconds: 100));
+      expectEntradaEmCascata(t, itens: 4, animando: true);
+      await t.pumpAndSettle();
+      await t.tap(find.byKey(AdsKeys.demoLockedSheetLater));
+      await t.pumpAndSettle();
+      await t.tap(find.byKey(_chapterKey));
+      await t.pump();
+      expectEntradaEmCascata(t, itens: 4, animando: false);
+      await t.pumpAndSettle();
+    });
   });
 
   testWidgets('rota do anúncio sem a lição volta ao início', (t) async {

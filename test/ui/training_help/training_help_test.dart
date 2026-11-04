@@ -4,14 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/training_help/widgets/training_help_screen.dart';
 import 'package:lucena/ui/training_help/widgets/training_tour.dart';
 
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 
@@ -160,4 +163,100 @@ void main() {
       });
     }
   }
+
+  group('PropV1TreinoAjuda (H-ANI-16 e 17)', () {
+    Future<void> abrir(
+      WidgetTester tester, {
+      EntradasVistas? vistas,
+      VoidCallback? onTour,
+    }) async {
+      setPhoneSize(tester, const Size(412, 917));
+      final tela = TrainingHelpScreen(
+        onBack: () {},
+        onTour: onTour ?? () {},
+        footer: const SizedBox(key: Key('rodape'), height: 40),
+      );
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          child: vistas == null
+              ? tela
+              : EntradasVistasEscopo(vistas: vistas, child: tela),
+        ),
+      );
+    }
+
+    for (final reduced in [false, true]) {
+      testWidgets(
+        'cartões em cascata e perguntas em ordem (reduzido: $reduced)',
+        (tester) async {
+          tester.platformDispatcher.accessibilityFeaturesTestValue =
+              FakeAccessibilityFeatures(disableAnimations: reduced);
+          addTearDown(
+            tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+          );
+          var tour = 0;
+          await abrir(tester, onTour: () => tour++);
+          // Tour, perguntas e o cartão do rodapé, nessa ordem.
+          expectEntradaEmCascata(tester, itens: 3, animando: !reduced);
+          expect(
+            find.descendant(
+              of: find.byKey(MotionKeys.itemDaCascata(0)),
+              matching: find.byKey(TrainingKeys.helpTour),
+            ),
+            findsOneWidget,
+          );
+          expect(
+            find.descendant(
+              of: find.byKey(MotionKeys.itemDaCascata(2)),
+              matching: find.byKey(const Key('rodape')),
+            ),
+            findsOneWidget,
+          );
+          for (var i = 0; i < 6; i++) {
+            expect(
+              find.descendant(
+                of: find.byKey(MotionKeys.itemDaLista(i)),
+                matching: find.byKey(TrainingKeys.faq(i + 1)),
+              ),
+              findsOneWidget,
+            );
+          }
+          expect(
+            opacidadeDaParte(tester, find.byKey(MotionKeys.itemDaLista(5))),
+            reduced ? 1 : 0,
+          );
+          // O toque vale desde o início.
+          await tester.tap(find.byKey(TrainingKeys.helpTour));
+          expect(tour, 1);
+          await tester.pump(const Duration(milliseconds: 1300));
+          await tester.pump();
+          expect(
+            opacidadeDaParte(tester, find.byKey(MotionKeys.itemDaCascata(2))),
+            1,
+          );
+          expect(
+            opacidadeDaParte(tester, find.byKey(MotionKeys.itemDaLista(5))),
+            1,
+          );
+          await tester.pumpAndSettle();
+        },
+      );
+    }
+
+    testWidgets('voltar à ajuda na mesma sessão mostra tudo pronto', (
+      tester,
+    ) async {
+      final vistas = EntradasVistas();
+      await abrir(tester, vistas: vistas);
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(const SizedBox());
+      await abrir(tester, vistas: vistas);
+      expectEntradaEmCascata(tester, itens: 3, animando: false);
+      expect(
+        opacidadeDaParte(tester, find.byKey(MotionKeys.itemDaLista(5))),
+        1,
+      );
+    });
+  });
 }
