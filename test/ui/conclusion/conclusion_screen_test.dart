@@ -508,6 +508,31 @@ void main() {
     });
   });
 
+  group('H-PAR-12 repetir a partida', () {
+    for (final outcome in [AttemptOutcome.win, AttemptOutcome.loss]) {
+      testWidgets('${outcome.name}: o botão se chama "Jogar novamente"', (
+        tester,
+      ) async {
+        await open(
+          tester,
+          outcome: outcome,
+          locale: const Locale('pt'),
+          moves: _longMoves,
+          played: const Duration(minutes: 5),
+        );
+        final again = find.byKey(
+          ConclusionKeys.action(ConclusionAction.playAgain),
+        );
+        expect(again, findsOneWidget);
+        expect(
+          find.descendant(of: again, matching: find.text('Jogar novamente')),
+          findsOneWidget,
+        );
+        expect(find.text('Jogar de novo'), findsNothing);
+      });
+    }
+  });
+
   group('aviso de conquista', () {
     for (final size in const [Size(360, 740), Size(412, 917)]) {
       testWidgets('fica no alto, acima do título (${size.width.toInt()})', (
