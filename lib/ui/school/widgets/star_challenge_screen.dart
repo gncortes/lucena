@@ -150,13 +150,16 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             _board = ChessboardController(game: _gameData(state));
           }
           final piece = state.piece;
-          final level = state.level;
           return Scaffold(
             key: StarChallengeKeys.screen,
             appBar: LucenaAppBar(
-              toolbarHeight: (MediaQuery.textScalerOf(context).scale(44) + 16)
-                  .clamp(72.0, double.infinity),
-              title: piece == null ? null : _title(context, piece, level),
+              // Regra da app bar (T85): 64 e só o título, sem o nível.
+              title: piece == null
+                  ? null
+                  : Text(
+                      context.l10n.starChallengeTitle(piece.name),
+                      textAlign: TextAlign.center,
+                    ),
             ),
             body: Stack(
               fit: StackFit.expand,
@@ -178,44 +181,6 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           );
         },
       ),
-    );
-  }
-
-  /// Pergunta 2 do contrato (T65), opção A: o nível e o modo no subtítulo
-  /// ("Fácil · Caça às estrelas"). Para a opção B (o nível no título, sem
-  /// subtítulo), troque para `false`.
-  static const _levelInSubtitle = false;
-
-  /// O título centralizado (`CompTopBar back centralizado subtitulo`).
-  Widget _title(
-    BuildContext context,
-    ChallengePiece piece,
-    ChallengeLevel? level,
-  ) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final title = l10n.starChallengeTitle(piece.name);
-    final levelText = level == null ? null : levelName(l10n, level);
-    if (!_levelInSubtitle || levelText == null) {
-      return Text(
-        levelText == null ? title : '$title · $levelText',
-        key: levelText == null ? null : StarChallengeKeys.levelChip,
-        textAlign: TextAlign.center,
-      );
-    }
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(title, textAlign: TextAlign.center),
-        Text(
-          '$levelText · ${l10n.starChallengeIntroTitle}',
-          key: StarChallengeKeys.levelChip,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
     );
   }
 
