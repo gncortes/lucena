@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../../../domain/models/level_source.dart';
+import '../../../domain/models/rating_level.dart';
 import '../../level/view_models/level_cubit.dart';
 
 /// "Seu nível" e a conta opcional, que vêm depois do tour.
@@ -13,6 +14,12 @@ abstract final class LevelKeys {
 
   /// Um dos cinco cartões.
   static Key option(LevelChoice choice) => Key('level.option.${choice.name}');
+
+  /// "Escolher minha faixa": a folha "Rating aproximado", uma faixa e
+  /// "Confirmar".
+  static const bandSheet = Key('level.band.sheet');
+  static Key bandOption(RatingLevel level) => Key('level.band.${level.name}');
+  static const bandConfirm = Key('level.band.confirm');
 
   /// "Lichess conectado" (também com rating provisório).
   static const lichessScreen = Key('level.lichess');

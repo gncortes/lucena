@@ -133,7 +133,7 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
         await _open(Routes.levelChess);
       case LevelChoice.manual:
         await _open(Routes.levelRating);
-      case LevelChoice.zero:
+      case LevelChoice.zero || LevelChoice.band:
         await cubit.finish();
     }
   }

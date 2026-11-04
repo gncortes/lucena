@@ -64,7 +64,19 @@ class TourState {
     this.hasVoices = false,
     this.linkSetupDone = false,
     this.learn = false,
+    this.country,
+    this.regionState,
+    this.regionCity,
+    this.countryFromPhone = false,
   });
+
+  /// A região escolhida no passo da região (só vai ao perfil em "Continuar").
+  final String? country;
+  final String? regionState;
+  final String? regionCity;
+
+  /// O país veio do idioma do celular (a ajuda "Pelo idioma do celular").
+  final bool countryFromPhone;
 
   /// Há voz no idioma: só escolhe a fala do passo da voz.
   final bool hasVoices;
@@ -113,6 +125,10 @@ class TourState {
     String? nickname,
     bool? finished,
     bool? forward,
+    String? Function()? country,
+    String? Function()? regionState,
+    String? Function()? regionCity,
+    bool? countryFromPhone,
   }) => TourState(
     ready: ready ?? this.ready,
     step: step ?? this.step,
@@ -123,6 +139,10 @@ class TourState {
     hasVoices: hasVoices,
     linkSetupDone: linkSetupDone,
     learn: learn,
+    country: country == null ? this.country : country(),
+    regionState: regionState == null ? this.regionState : regionState(),
+    regionCity: regionCity == null ? this.regionCity : regionCity(),
+    countryFromPhone: countryFromPhone ?? this.countryFromPhone,
   );
 }
 
@@ -151,9 +171,10 @@ class TourCubit extends Cubit<TourState> {
   int _navigationRevision = 0;
 
   /// As falas do Viktor vêm em [language] (as que faltam, em inglês).
-  Future<void> load(String language) async {
+  /// [phoneCountry] é o país do idioma do celular, o padrão da região.
+  Future<void> load(String language, {String? phoneCountry}) async {
     try {
-      await _load(language);
+      await _load(language, phoneCountry);
     } on Object catch (error, stack) {
       // A failed persisted write must not poison the next explicit load.
       _onboardingSaved = Future<void>.value();
@@ -164,7 +185,7 @@ class TourCubit extends Cubit<TourState> {
     }
   }
 
-  Future<void> _load(String language) async {
+  Future<void> _load(String language, String? phoneCountry) async {
     await _onboardingSaved;
     await _nicknameSaved;
     _saved = await _onboarding.load();
@@ -214,6 +235,10 @@ class TourCubit extends Cubit<TourState> {
         hasVoices: hasVoices,
         linkSetupDone: _saved.linkSetupDone,
         learn: learn,
+        country: profile.country ?? phoneCountry,
+        regionState: profile.state,
+        regionCity: profile.city,
+        countryFromPhone: profile.country == null && phoneCountry != null,
       ),
     );
     await _save(
@@ -225,7 +250,14 @@ class TourCubit extends Cubit<TourState> {
     );
   }
 
+  /// "Continuar". Na região, grava o que foi escolhido no perfil.
   Future<void> next() async {
+    if (!state.ready || state.finished || _finishing) return;
+    if (state.step == TourStep.region) await _saveRegion();
+    await _next();
+  }
+
+  Future<void> _next() async {
     if (!state.ready || state.finished || _finishing) return;
     final steps = state.steps;
     final position = state.position;
@@ -259,12 +291,70 @@ class TourCubit extends Cubit<TourState> {
       return;
     }
     _skipped = true;
-    await next();
+    if (state.step == TourStep.region) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.perfilRegiaoDefinida(acao: 'pulou', temEstado: false),
+        ),
+      );
+    }
+    await _next();
+  }
+
+  /// O país da região: estado e cidade eram do país antigo e saem.
+  void setRegionCountry(String code) {
+    final upper = code.toUpperCase();
+    if (upper == state.country) return;
+    emit(
+      state.copyWith(
+        country: () => upper,
+        regionState: () => null,
+        regionCity: () => null,
+        countryFromPhone: false,
+      ),
+    );
+  }
+
+  /// O estado da região; a cidade era do estado antigo e sai.
+  void setRegionState(String? value) {
+    if (value == state.regionState) return;
+    emit(state.copyWith(regionState: () => value, regionCity: () => null));
+  }
+
+  void setRegionCity(String? value) =>
+      emit(state.copyWith(regionCity: () => value));
+
+  Future<void> _saveRegion() async {
+    String? clean(String? text) {
+      final trimmed = text?.trim();
+      return trimmed == null || trimmed.isEmpty ? null : trimmed;
+    }
+
+    final before = await _profile.load();
+    final country = clean(state.country);
+    final regionState = clean(state.regionState);
+    final profile = before.copyWith(
+      country: country ?? before.country,
+      state: regionState,
+      city: clean(state.regionCity),
+    );
+    await _profile.save(profile);
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.perfilRegiaoDefinida(
+          acao: country != before.country ? 'trocou' : 'confirmou',
+          temEstado: regionState != null,
+        ),
+      ),
+    );
   }
 
   /// O fim do tour, ao sair da Conta (convite recusado ou conta criada): só
   /// aqui ele conta como visto.
-  Future<void> finish() async {
+  ///
+  /// Com [leave] falso (a conta foi para as telas dela), só grava que o tour
+  /// terminou: quem leva ao Início é o fim da conta.
+  Future<void> finish({bool leave = true}) async {
     if (!state.ready || state.finished || _finishing) return;
     _finishing = true;
     unawaited(
@@ -279,7 +369,7 @@ class TourCubit extends Cubit<TourState> {
       await _nicknameSaved;
       await _onboardingSaved;
       await _save(_saved.copyWith(done: true, step: 0, inProgress: false));
-      if (!isClosed) emit(state.copyWith(finished: true));
+      if (!isClosed && leave) emit(state.copyWith(finished: true));
     } finally {
       _finishing = false;
     }

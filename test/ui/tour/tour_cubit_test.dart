@@ -209,4 +209,66 @@ void main() {
     await tour.setNickname('');
     expect((await profile.load()).nickname, '');
   });
+
+  group('região', () {
+    Future<TourCubit> atRegion({String? phone}) async {
+      final tour = cubit();
+      await tour.load('pt', phoneCountry: phone);
+      while (tour.state.step != TourStep.region) {
+        await tour.next();
+      }
+      return tour;
+    }
+
+    test('sem perfil, o país vem do celular e nada é gravado ainda', () async {
+      final tour = await atRegion(phone: 'BR');
+      expect(tour.state.country, 'BR');
+      expect(tour.state.countryFromPhone, isTrue);
+      expect(profile.profile.country, isNull);
+    });
+
+    test('trocar de país limpa estado e cidade', () async {
+      final tour = await atRegion(phone: 'BR');
+      tour.setRegionState('SP');
+      tour.setRegionCity('Campinas');
+      tour.setRegionState('RJ');
+      expect(tour.state.regionCity, isNull);
+      tour.setRegionCity('Niterói');
+      tour.setRegionCountry('pt');
+      expect(tour.state.country, 'PT');
+      expect(tour.state.regionState, isNull);
+      expect(tour.state.regionCity, isNull);
+      expect(tour.state.countryFromPhone, isFalse);
+    });
+
+    test(
+      'Continuar grava país, estado e cidade e segue para a conta',
+      () async {
+        final tour = await atRegion(phone: 'BR');
+        tour.setRegionState('SP');
+        tour.setRegionCity('Campinas');
+        await tour.next();
+        expect(profile.profile.country, 'BR');
+        expect(profile.profile.state, 'SP');
+        expect(profile.profile.city, 'Campinas');
+        expect(tour.state.step, TourStep.account);
+      },
+    );
+
+    test('Pular não grava a região', () async {
+      final tour = await atRegion(phone: 'BR');
+      tour.setRegionState('SP');
+      await tour.skip();
+      expect(profile.profile.state, isNull);
+      expect(tour.state.step, TourStep.account);
+    });
+
+    test('finish(leave: false) grava o tour como visto sem sair', () async {
+      final tour = await atRegion();
+      await tour.next();
+      await tour.finish(leave: false);
+      expect(onboarding.saved.done, isTrue);
+      expect(tour.state.finished, isFalse);
+    });
+  });
 }

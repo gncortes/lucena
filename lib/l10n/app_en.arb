@@ -11833,5 +11833,131 @@
   "tourTabColors": "Colors",
   "@tourTabColors": {
     "description": "Tour, board step: segmented tab that shows the board colour options."
+  },
+  "tourLevelZeroTitle": "I'm just starting",
+  "@tourLevelZeroTitle": {
+    "description": "Tour level step: card for people who are new to chess; they follow the school lessons."
+  },
+  "tourLevelZeroText": "Viktor's lessons, from how the pieces move to your first checkmates.",
+  "@tourLevelZeroText": {
+    "description": "Body of the \"just starting\" card in the tour level step."
+  },
+  "tourLevelBandTitle": "Pick my range",
+  "@tourLevelBandTitle": {
+    "description": "Tour level step: card that opens the rating range sheet."
+  },
+  "tourLevelBandText": "You pick your rating range, and the Journey starts with the right opponent.",
+  "@tourLevelBandText": {
+    "description": "Body of the \"pick my range\" card before a range is chosen."
+  },
+  "tourLevelBandStart": "The Journey starts at Maia {level}",
+  "@tourLevelBandStart": {
+    "description": "Body of the \"pick my range\" card after a range is chosen; level is the Maia level where the Journey starts.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "tourBandTitle": "Approximate rating",
+  "@tourBandTitle": {
+    "description": "Title of the sheet where the player picks a rating range."
+  },
+  "tourBandHint": "Choose the range closest to your rating, online or over the board.",
+  "@tourBandHint": {
+    "description": "Hint under the title of the rating range sheet."
+  },
+  "tourBandConfirm": "Confirm",
+  "@tourBandConfirm": {
+    "description": "Button that saves the chosen rating range."
+  },
+  "tourRegionCountry": "Country",
+  "@tourRegionCountry": {
+    "description": "Tour region step: label of the country field."
+  },
+  "tourRegionCountryHelp": "From your phone language",
+  "@tourRegionCountryHelp": {
+    "description": "Tour region step: help under the country field when it was filled from the phone language."
+  },
+  "tourRegionState": "State (optional)",
+  "@tourRegionState": {
+    "description": "Tour region step: label of the state field."
+  },
+  "tourRegionCity": "City (optional)",
+  "@tourRegionCity": {
+    "description": "Tour region step: label of the city field."
+  },
+  "tourRegionChoose": "Choose",
+  "@tourRegionChoose": {
+    "description": "Tour region step: hint shown in a field with no value."
+  },
+  "tourRegionBenefitCountry": "Tournament endgames from your country come first",
+  "@tourRegionBenefitCountry": {
+    "description": "Tour region step: first benefit line."
+  },
+  "tourRegionBenefitLocal": "Tournaments from your state and city get priority",
+  "@tourRegionBenefitLocal": {
+    "description": "Tour region step: second benefit line."
+  },
+  "tourRegionBenefitAlerts": "With alerts on, you know when a tournament endgame from your region comes out",
+  "@tourRegionBenefitAlerts": {
+    "description": "Tour region step: third benefit line."
+  },
+  "tourRegionSearch": "Search",
+  "@tourRegionSearch": {
+    "description": "Label of the search field in the country, state and city sheets."
+  },
+  "tourRegionStateTitle": "State",
+  "@tourRegionStateTitle": {
+    "description": "Title of the state sheet."
+  },
+  "tourRegionCityTitle": "City",
+  "@tourRegionCityTitle": {
+    "description": "Title of the city sheet."
+  },
+  "tourRegionNoState": "No state with that name.",
+  "@tourRegionNoState": {
+    "description": "Empty search result in the state sheet."
+  },
+  "tourRegionNoCity": "No city with that name.",
+  "@tourRegionNoCity": {
+    "description": "Empty search result in the city sheet."
+  },
+  "tourRegionUseTyped": "Use “{text}”",
+  "@tourRegionUseTyped": {
+    "description": "Row in the state and city sheets that uses the typed text as the value.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "tourAccountSaved": "Your progress is saved and shows up on any phone",
+  "@tourAccountSaved": {
+    "description": "Tour account step: first benefit line."
+  },
+  "tourAccountNoAccount": "The app works without an account, on this phone only",
+  "@tourAccountNoAccount": {
+    "description": "Tour account step: second benefit line."
+  },
+  "tourAccountGoogle": "Create account with Google",
+  "@tourAccountGoogle": {
+    "description": "Tour account step: Google button."
+  },
+  "tourAccountEmail": "Create account with email",
+  "@tourAccountEmail": {
+    "description": "Tour account step: email button."
+  },
+  "tourAccountNoNetText": "You need an internet connection to create the account.",
+  "@tourAccountNoNetText": {
+    "description": "Tour account step: message when there is no internet."
+  },
+  "tourAccountRetry": "Try again",
+  "@tourAccountRetry": {
+    "description": "Tour account step: retry button on the no-internet state."
+  },
+  "tourAccountBack": "Back",
+  "@tourAccountBack": {
+    "description": "Tour account step: back button on the no-internet state."
   }
 }

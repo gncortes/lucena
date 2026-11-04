@@ -476,6 +476,55 @@ void main() {
       expect(profile.profile.lichessLinkedAt, before);
     });
   });
+
+  group('no tour', () {
+    LevelCubit tour() {
+      final cubit = LevelCubit(
+        home: home,
+        onboarding: onboarding,
+        profile: profile,
+        characters: FakeCharacterRepository(),
+        lichess: lichess,
+        chessCom: chessCom,
+        inTour: true,
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    test(
+      'abre em "Estou começando" e não mexe na etapa do onboarding',
+      () async {
+        final before = onboarding.saved;
+        final level = tour();
+        await level.load();
+        expect(level.state.choice, LevelChoice.zero);
+        expect(onboarding.saved.stage, before.stage);
+        expect(onboarding.saved.step, before.step);
+      },
+    );
+
+    test(
+      'a faixa grava o rating dela, sem dar o onboarding por feito',
+      () async {
+        final level = tour();
+        await level.load();
+        level.selectBand(RatingLevel.intermediate);
+        expect(level.state.choice, LevelChoice.band);
+        await level.finish();
+        expect(
+          onboarding.saved.selectedRating,
+          RatingLevel.intermediate.rating,
+        );
+        expect(onboarding.saved.byHand, isTrue);
+        expect(onboarding.saved.done, isFalse);
+        expect(level.state.finished, isTrue);
+        level.acknowledged();
+        expect(level.state.finished, isFalse);
+        expect(level.state.choice, LevelChoice.band);
+      },
+    );
+  });
 }
 
 class _DelayedProfile extends FakeProfileRepository {

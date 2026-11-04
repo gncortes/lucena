@@ -398,13 +398,17 @@ GoRouter buildRouter({
         name: RouteNames.tour,
         path: Routes.tour,
         builder: (context, state) => BlocProvider(
-          create: (_) => TourCubit(
-            onboarding: context.read<OnboardingRepository>(),
-            profile: context.read<ProfileRepository>(),
-            characters: context.read<CharacterRepository>(),
-            voice: context.read<VoiceRepository>(),
-            analytics: context.analytics,
-          )..load(_language(context)),
+          create: (_) =>
+              TourCubit(
+                onboarding: context.read<OnboardingRepository>(),
+                profile: context.read<ProfileRepository>(),
+                characters: context.read<CharacterRepository>(),
+                voice: context.read<VoiceRepository>(),
+                analytics: context.analytics,
+              )..load(
+                _language(context),
+                phoneCountry: context.read<ProfileCubit>().phoneCountry,
+              ),
           child: const TourScreen(),
         ),
       ),

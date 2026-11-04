@@ -57,4 +57,22 @@ abstract final class TourKeys {
   /// No passo da voz: o cartão da voz de número [n] (de 1) e "Sem voz".
   static Key voiceCard(int n) => Key('tour.voice.card.$n');
   static const voiceNone = Key('tour.voice.none');
+
+  /// No passo da região: os três campos, a folha de busca e as linhas dela.
+  static const regionCountry = Key('tour.region.country');
+  static const regionState = Key('tour.region.state');
+  static const regionCity = Key('tour.region.city');
+  static const regionSheet = Key('tour.region.sheet');
+  static const regionSearch = Key('tour.region.search');
+  static const regionNone = Key('tour.region.none');
+  static Key regionOption(String id) => Key('tour.region.option.$id');
+
+  /// No passo da conta: os botões e o estado sem internet.
+  static const accountGoogle = Key('tour.account.google');
+  static const accountEmail = Key('tour.account.email');
+  static const accountLogin = Key('tour.account.login');
+  static const accountLater = Key('tour.account.later');
+  static const accountOffline = Key('tour.account.offline');
+  static const accountRetry = Key('tour.account.retry');
+  static const accountBack = Key('tour.account.back');
 }

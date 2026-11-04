@@ -3,6 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/characters/character_repository.dart';
+import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
+import 'package:lucena/data/repositories/home/home_layout_repository.dart';
+import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/repositories/profile/profile_repository.dart';
+import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
+import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
@@ -13,6 +22,10 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/ui/core/widgets/choice_card.dart';
+import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
@@ -23,7 +36,13 @@ import 'package:lucena/ui/tour/widgets/tour_screen.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/voice/widgets/voice_pickers.dart';
 
+import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_chesscom_repository.dart';
+import '../../../testing/fakes/fake_home_layout_repository.dart';
+import '../../../testing/fakes/fake_lichess_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_sync_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -93,13 +112,37 @@ void main() {
         ),
       ],
     );
+    final accounts = FakeAccountRepository();
+    final sync = SyncScheduler(accounts, FakeSyncRepository());
+    addTearDown(sync.dispose);
     await tester.pumpWidget(
-      TestApp(
-        locale: const Locale('pt'),
-        settingsCubit: settingsCubit,
-        speechCubit: speech,
-        router: router,
-        child: const SizedBox(),
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AccountRepository>.value(value: accounts),
+          RepositoryProvider<OnboardingRepository>.value(value: onboarding),
+          RepositoryProvider<ProfileRepository>.value(value: profile),
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
+          RepositoryProvider<LichessRepository>.value(
+            value: FakeLichessRepository(),
+          ),
+          RepositoryProvider<ChessComRepository>.value(
+            value: FakeChessComRepository(),
+          ),
+          RepositoryProvider<HomeLayoutRepository>.value(
+            value: FakeHomeLayoutRepository(),
+          ),
+          RepositoryProvider<SyncScheduler>.value(value: sync),
+          RepositoryProvider<Now>.value(value: FakeNow(DateTime(2026, 11, 4))),
+        ],
+        child: TestApp(
+          locale: const Locale('pt'),
+          settingsCubit: settingsCubit,
+          speechCubit: speech,
+          router: router,
+          child: const SizedBox(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -143,7 +186,14 @@ void main() {
           expect(tester.takeException(), isNull);
           expect(speechText(tester), expected[index]);
           if (index < expected.length - 1) {
-            await tester.tap(find.byKey(TourKeys.nextButton));
+            // O Nível tem o "Continuar" dele e grava; "Pular" basta aqui.
+            await tester.tap(
+              find.byKey(
+                expected[index] == l10n.tourSpeechLevel
+                    ? TourKeys.skipButton
+                    : TourKeys.nextButton,
+              ),
+            );
             await tester.pumpAndSettle();
           }
         }
@@ -202,13 +252,21 @@ void main() {
             expect(balloon.left, closeTo(16, 1));
             expect(size.width - balloon.right, closeTo(16, 1));
 
-            // Botão de baixo.
+            // Botão de baixo (a Conta tem os dela dentro do passo).
             final button = rect(
               tester,
-              find.byKey(
-                step.isLast ? TourKeys.startButton : TourKeys.nextButton,
-              ),
+              find.byKey(switch (step) {
+                TourStep.level => LevelKeys.continueButton,
+                TourStep.account => TourKeys.accountLater,
+                _ => TourKeys.nextButton,
+              }),
             );
+            if (step == TourStep.account) {
+              expect(find.byKey(TourKeys.accountGoogle), findsOneWidget);
+              expect(find.byKey(TourKeys.accountEmail), findsOneWidget);
+              expect(find.byKey(TourKeys.nextButton), findsNothing);
+              return;
+            }
             expect(button.height, 52);
             expect(button.left, closeTo(16, 1));
             expect(size.width - button.right, closeTo(16, 1));
@@ -319,7 +377,7 @@ void main() {
       tester,
     ) async {
       await pumpTour(tester, step: TourStep.account);
-      await tester.tap(find.byKey(TourKeys.startButton));
+      await tester.tap(find.byKey(TourKeys.accountLater));
       await tester.pumpAndSettle();
       expect(find.text('rota-inicio'), findsOneWidget);
       expect(onboarding.saved.done, isTrue);
@@ -591,6 +649,103 @@ void main() {
       expect(find.byKey(TourKeys.nameField), findsOneWidget);
       expect(find.byKey(TourKeys.voiceNone), findsNothing);
       expect(find.textContaining('diga como devo chamar'), findsWidgets);
+    });
+  });
+
+  group('passo 4, nível', () {
+    testWidgets('cinco cartões, "Estou começando" marcado', (tester) async {
+      await pumpTour(tester, step: TourStep.level);
+      for (final choice in [
+        LevelChoice.zero,
+        LevelChoice.test,
+        LevelChoice.lichess,
+        LevelChoice.chess,
+        LevelChoice.band,
+      ]) {
+        expect(find.byKey(LevelKeys.option(choice)), findsOneWidget);
+      }
+      expect(
+        tester
+            .widget<ChoiceCard>(find.byKey(LevelKeys.option(LevelChoice.zero)))
+            .selected,
+        isTrue,
+      );
+    });
+
+    testWidgets('a faixa abre a folha, Confirmar marca e mostra onde começa', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.level);
+      final card = find.byKey(LevelKeys.option(LevelChoice.band));
+      await tester.ensureVisible(card);
+      await tester.tap(card);
+      await tester.pumpAndSettle();
+      expect(find.byKey(LevelKeys.bandSheet), findsOneWidget);
+      await tester.tap(find.byKey(LevelKeys.bandOption(RatingLevel.advanced)));
+      await tester.tap(find.byKey(LevelKeys.bandConfirm));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LevelKeys.bandSheet), findsNothing);
+      expect(find.textContaining('A Jornada começa no Maia'), findsOneWidget);
+      expect(
+        tester
+            .widget<ChoiceCard>(find.byKey(LevelKeys.option(LevelChoice.band)))
+            .selected,
+        isTrue,
+      );
+    });
+
+    testWidgets('Continuar com "Estou começando" segue para a região', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.level);
+      await tester.tap(find.byKey(LevelKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.region)), findsOneWidget);
+      expect(onboarding.saved.done, isFalse);
+    });
+  });
+
+  group('passo 5, região', () {
+    testWidgets('a cidade espera o estado, e o país vem da busca', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.region);
+      await tester.tap(find.byKey(TourKeys.regionCountry));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(TourKeys.regionSearch), 'Brasil');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.regionOption('BR')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.regionState));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(TourKeys.regionSearch), 'São Paulo');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.regionOption('SP')));
+      await tester.pumpAndSettle();
+      expect(find.text('São Paulo'), findsOneWidget);
+      await tester.tap(find.byKey(TourKeys.nextButton));
+      await tester.pumpAndSettle();
+      expect(profile.profile.country, 'BR');
+      expect(profile.profile.state, 'SP');
+      expect(find.byKey(TourKeys.step(TourStep.account)), findsOneWidget);
+    });
+
+    testWidgets('Pular não grava nada', (tester) async {
+      await pumpTour(tester, step: TourStep.region);
+      await tester.tap(find.byKey(TourKeys.skipButton));
+      await tester.pumpAndSettle();
+      expect(profile.saved.where((p) => p.country != null), isEmpty);
+      expect(find.byKey(TourKeys.step(TourStep.account)), findsOneWidget);
+    });
+  });
+
+  group('passo 6, conta', () {
+    testWidgets('convite sem "Pular" e sem rodapé do tour', (tester) async {
+      await pumpTour(tester, step: TourStep.account);
+      expect(find.byKey(TourKeys.accountGoogle), findsOneWidget);
+      expect(find.byKey(TourKeys.accountEmail), findsOneWidget);
+      expect(find.byKey(TourKeys.accountLogin), findsOneWidget);
+      expect(find.byKey(TourKeys.skipButton), findsNothing);
     });
   });
 }

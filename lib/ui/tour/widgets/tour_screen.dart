@@ -26,6 +26,20 @@ import '../../settings/widgets/open_link_dialog.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/voice_pickers.dart';
 import '../view_models/tour_cubit.dart';
+import 'tour_account_step.dart';
+import 'tour_level_step.dart';
+import 'tour_region_step.dart';
+import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/characters/character_repository.dart';
+import '../../../data/repositories/chesscom/chesscom_repository.dart';
+import '../../../data/repositories/home/home_layout_repository.dart';
+import '../../../data/repositories/lichess/lichess_repository.dart';
+import '../../../data/repositories/onboarding/onboarding_repository.dart';
+import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../domain/use_cases/now.dart';
+import '../../core/analytics/analytics_context.dart';
+import '../../level/view_models/level_cubit.dart';
 import '../../core/widgets/sound_off_icon.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/nickname_field.dart';
@@ -114,72 +128,88 @@ class TourScreen extends StatelessWidget {
                 ),
               ),
             ),
-            body: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    key: TourKeys.scroll,
-                    padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ViktorConversation(
-                          viktor: state.viktor,
-                          speech: _speech(l10n, state),
-                          viktorKey: TourKeys.viktor,
-                          speechKey: TourKeys.speech,
-                        ),
-                        ClipRect(
-                          // Corta só os lados (a troca desliza); a sombra dos
-                          // botões passa da borda de baixo.
-                          clipper: _SideClipper(),
-                          child: AnimatedSwitcher(
-                            duration: AppMotion.of(context).component,
-                            switchInCurve: AppMotion.enter,
-                            switchOutCurve: AppMotion.exit,
-                            layoutBuilder: (current, previous) => Stack(
-                              alignment: Alignment.topCenter,
-                              children: [...previous, ?current],
-                            ),
-                            transitionBuilder: (child, animation) {
-                              final entering = child.key == currentKey;
-                              final offset = Tween(
-                                begin: Offset(
-                                  (entering ? 1 : -1) * sign * 0.35,
-                                  0,
-                                ),
-                                end: Offset.zero,
-                              ).animate(animation);
-                              return FadeTransition(
-                                opacity: animation,
-                                child: SlideTransition(
-                                  position: offset,
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              key: currentKey,
-                              padding: const EdgeInsets.only(
-                                top: AppSpacing.lg,
+            // O nível usa o `LevelCubit` (criado só quando o passo abre).
+            body: BlocProvider(
+              create: (context) => LevelCubit(
+                onboarding: context.read<OnboardingRepository>(),
+                profile: context.read<ProfileRepository>(),
+                characters: context.read<CharacterRepository>(),
+                lichess: context.read<LichessRepository>(),
+                chessCom: context.read<ChessComRepository>(),
+                home: context.read<HomeLayoutRepository>(),
+                inTour: true,
+                analytics: context.analytics,
+                accounts: context.read<AccountRepository>(),
+                sync: context.read<SyncScheduler>(),
+                now: context.read<Now>(),
+              )..load(),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      key: TourKeys.scroll,
+                      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ViktorConversation(
+                            viktor: state.viktor,
+                            speech: _speech(l10n, state),
+                            viktorKey: TourKeys.viktor,
+                            speechKey: TourKeys.speech,
+                          ),
+                          ClipRect(
+                            // Corta só os lados (a troca desliza); a sombra dos
+                            // botões passa da borda de baixo.
+                            clipper: _SideClipper(),
+                            child: AnimatedSwitcher(
+                              duration: AppMotion.of(context).component,
+                              switchInCurve: AppMotion.enter,
+                              switchOutCurve: AppMotion.exit,
+                              layoutBuilder: (current, previous) => Stack(
+                                alignment: Alignment.topCenter,
+                                children: [...previous, ?current],
                               ),
-                              child: switch (step) {
-                                TourStep.board => const _BoardStep(),
-                                TourStep.theme => const _ThemeStep(),
-                                TourStep.voice => _VoiceStep(state: state),
-                                TourStep.level ||
-                                TourStep.region ||
-                                TourStep.account => const SizedBox.shrink(),
+                              transitionBuilder: (child, animation) {
+                                final entering = child.key == currentKey;
+                                final offset = Tween(
+                                  begin: Offset(
+                                    (entering ? 1 : -1) * sign * 0.35,
+                                    0,
+                                  ),
+                                  end: Offset.zero,
+                                ).animate(animation);
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: SlideTransition(
+                                    position: offset,
+                                    child: child,
+                                  ),
+                                );
                               },
+                              child: Padding(
+                                key: currentKey,
+                                padding: const EdgeInsets.only(
+                                  top: AppSpacing.lg,
+                                ),
+                                child: switch (step) {
+                                  TourStep.board => const _BoardStep(),
+                                  TourStep.theme => const _ThemeStep(),
+                                  TourStep.voice => _VoiceStep(state: state),
+                                  TourStep.level => const TourLevelStep(),
+                                  TourStep.region => const TourRegionStep(),
+                                  TourStep.account => const TourAccountStep(),
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                _TourFooter(state: state),
-              ],
+                  _TourFooter(state: state),
+                ],
+              ),
             ),
           ),
         );
@@ -225,16 +255,20 @@ class _TourFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<TourCubit>();
-    final last = state.step.isLast;
-    return ActionsFooter(
-      children: [
-        FilledButton(
-          key: last ? TourKeys.startButton : TourKeys.nextButton,
-          onPressed: last ? cubit.finish : cubit.next,
-          child: Text(l10n.tourNext),
-        ),
-      ],
-    );
+    // O nível tem o "Continuar" dele; a conta, os botões dentro do passo.
+    return switch (state.step) {
+      TourStep.level => const TourLevelFooter(),
+      TourStep.account => const SizedBox.shrink(),
+      _ => ActionsFooter(
+        children: [
+          FilledButton(
+            key: TourKeys.nextButton,
+            onPressed: cubit.next,
+            child: Text(l10n.tourNext),
+          ),
+        ],
+      ),
+    };
   }
 }
 
