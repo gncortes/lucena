@@ -38,19 +38,19 @@ void main() {
       );
     }
     expect(previous, 1);
-    // O último passo tem a chave do fim e leva à conta.
+    // O último passo é a Conta: sem "Continuar" nem "Pular", só "Agora não".
     expect(find.byKey(TourKeys.nextButton), findsNothing);
-    expect(find.byKey(TourKeys.startButton), findsOneWidget);
+    expect(find.byKey(TourKeys.accountLater), findsOneWidget);
     expect(find.byKey(TourKeys.skipButton), findsNothing);
   });
 
-  patrolTest('Seu nível: "Fazer o teste" vem marcado, "Continuar" habilitado e '
-      '"Não sei jogar" grava a faixa iniciante', ($) async {
+  patrolTest('passo Nível: "Estou começando" vem marcado, "Continuar" '
+      'habilitado e grava a faixa iniciante', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
     await tour.nextUntilLevel();
 
-    expect(tour.levelCubit.state.choice, LevelChoice.test);
+    expect(tour.levelCubit.state.choice, LevelChoice.zero);
     expect(tour.levelCubit.state.placed, isNull);
     expect(
       $.tester
@@ -72,13 +72,13 @@ void main() {
     expect(saved.selectedRating, RatingLevel.beginner.rating);
   });
 
-  patrolTest('Seu nível: informar o rating e usar grava a faixa', ($) async {
+  patrolTest('passo Nível: escolher a faixa na folha grava o nível', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
     await tour.nextUntilLevel();
 
     await tour.chooseLevel(RatingLevel.advanced);
-    expect(tour.levelCubit.state.choice, LevelChoice.manual);
+    expect(tour.levelCubit.state.choice, LevelChoice.band);
     await tour.start();
     await HomeRobot($).expectVisible();
     final saved = await tour.savedOnboarding();

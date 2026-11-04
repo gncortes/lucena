@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/ui/core/keys/tour_keys.dart';
+import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -16,11 +17,11 @@ void main() {
       'tela inicial já tem o cartão do objetivo', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: const Locale('pt', 'BR'), tour: true);
-    await tour.finishSteps();
     await tour.answerGoal(GoalPreference.learn);
+    await tour.finishSteps();
 
     await HomeRobot($).expectVisible();
-    expect(find.byKey(LevelKeys.screen), findsNothing);
+    expect(find.byKey(TourKeys.step(TourStep.level)), findsNothing);
     await $(HomeKeys.goalCard).waitUntilVisible();
   });
 

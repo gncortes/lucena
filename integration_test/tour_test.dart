@@ -7,7 +7,6 @@ import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
-import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -85,6 +84,8 @@ void main() {
     await tour.openFromSettings();
     await tour.expectStep(TourStep.board);
     await tour.next();
+    await tour.expectStep(TourStep.theme);
+    await tour.next();
     await tour.expectStep(TourStep.voice);
     await tour.skip();
     await HomeRobot($).expectVisible();
@@ -129,11 +130,10 @@ void main() {
     await settings.expectBoardAppearanceValue('Green · Merida');
   });
 
-  patrolTest('depois do tour vem o objetivo; "Já tenho conta" abre a conta, '
-      'que volta ao objetivo, e Continuar segue para "Seu nível"', ($) async {
+  patrolTest('antes do tour vem o objetivo; "Já tenho conta" abre a conta, '
+      'que volta ao objetivo, e Continuar segue para o Tabuleiro', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.finishSteps();
     await $(GoalKeys.screen).waitUntilVisible();
     // Fechado o app aqui, ele volta na pergunta (nada foi dado por visto).
     final saved = await tour.savedOnboarding();
@@ -144,6 +144,6 @@ void main() {
     await $(AccountKeys.close).tap();
     await $(GoalKeys.screen).waitUntilVisible();
     await tour.answerGoal();
-    await $(LevelKeys.screen).waitUntilVisible();
+    await tour.expectStep(TourStep.board);
   });
 }

@@ -218,7 +218,11 @@ class _Offline extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(Icons.wifi_off, size: 48, color: colors.onSurfaceVariant),
+          Icon(
+            Icons.wifi_off,
+            size: AppIconSize.illustration,
+            color: colors.onSurfaceVariant,
+          ),
           const SizedBox(height: AppSpacing.md),
           Text(
             l10n.loadErrorOfflineTitle,

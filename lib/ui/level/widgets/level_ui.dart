@@ -170,7 +170,6 @@ List<BlocListener<LevelCubit, LevelState>> lichessOwnerListeners() {
           key: LevelKeys.lichessCancelledSnack,
           action: SnackBarAction(
             label: context.l10n.loadErrorRetry,
-            textColor: Colors.white,
             key: LevelKeys.lichessSnackRetry,
             onPressed: cubit.connectLichess,
           ),

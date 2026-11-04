@@ -8,7 +8,6 @@ abstract final class TourKeys {
   static const skipButton = Key('tour.skip');
   static const nextButton = Key('tour.next');
   static const backButton = Key('tour.back');
-  static const startButton = Key('tour.start');
 
   /// Só em rc, no primeiro passo: abre um link de desafio colado.
   static const openLink = Key('tour.openLink');
