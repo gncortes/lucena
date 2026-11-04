@@ -149,7 +149,11 @@ class ModeTile extends StatelessWidget {
       child: Material(
         key: shortcut.key,
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
+        // #FAFBF9 com contorno 1px #E1E5DF (H-INI-06).
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.large),
+          side: const BorderSide(color: AppColors.cardOutline),
+        ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () => context.go(shortcut.route(hasPlan: hasPlan)),
