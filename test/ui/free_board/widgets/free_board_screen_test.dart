@@ -665,6 +665,27 @@ void main() {
     expect(settings.animationDuration, Duration.zero);
   });
 
+  testWidgets('H-PAR-07: a barra tem Virar, Relógio, Nova partida, nesta ordem', (
+    tester,
+  ) async {
+    await pumpScreen(tester, locale: const Locale('pt'));
+
+    String label(Key key) => tester
+        .widget<Text>(
+          find.descendant(of: find.byKey(key), matching: find.byType(Text)),
+        )
+        .data!;
+    expect(label(FreeBoardKeys.flipButton), 'Virar');
+    expect(label(FreeBoardKeys.clockButton), 'Relógio');
+    expect(label(FreeBoardKeys.newGameButton), 'Nova partida');
+    final x = [
+      FreeBoardKeys.flipButton,
+      FreeBoardKeys.clockButton,
+      FreeBoardKeys.newGameButton,
+    ].map((k) => tester.getTopLeft(find.byKey(k)).dx).toList();
+    expect(x[0] < x[1] && x[1] < x[2], isTrue);
+  });
+
   testWidgets('virar o tabuleiro inverte a orientação e mantém a lista', (
     tester,
   ) async {

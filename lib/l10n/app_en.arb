@@ -559,7 +559,7 @@
   "@freeBoardFiftyMoves": {
     "description": "Reason the game ended in a draw: fifty moves by each side without a capture or a pawn move."
   },
-  "freeBoardFlip": "Flip board",
+  "freeBoardFlip": "Flip",
   "@freeBoardFlip": {
     "description": "Tooltip of the button that turns the board around to see it from the other side."
   },
