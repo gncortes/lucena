@@ -73,6 +73,9 @@ GoRoute trainingRoute() => GoRoute(
     const _Guide(),
     config: _config(state),
     origin: state.uri.queryParameters['origem'] == 'home' ? 'home' : 'toque',
+    initialTab: state.uri.queryParameters['aba'] == 'goals'
+        ? CourseGuideTab.goals
+        : null,
   ),
   routes: [
     GoRoute(
