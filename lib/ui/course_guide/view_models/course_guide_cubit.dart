@@ -364,7 +364,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
           aba: switch (tab) {
             CourseGuideTab.lesson => 'aula',
             CourseGuideTab.goals => 'metas',
-            CourseGuideTab.progress => 'progresso',
+            CourseGuideTab.guide => 'guia',
+            CourseGuideTab.stats => 'progresso',
             CourseGuideTab.catalog => 'catalogo',
           },
           origem: origin,
@@ -383,7 +384,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
         aba: switch (tab) {
           CourseGuideTab.lesson => 'aula',
           CourseGuideTab.goals => 'metas',
-          CourseGuideTab.progress => 'progresso',
+          CourseGuideTab.guide => 'guia',
+          CourseGuideTab.stats => 'progresso',
           CourseGuideTab.catalog => 'catalogo',
         },
         origem: origin,

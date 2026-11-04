@@ -48,7 +48,7 @@ void main() {
           TrainingCourse.pilares: TrainingState(
             course: TrainingCourse.pilares,
             installSeed: 'header',
-            tab: CourseGuideTab.progress,
+            tab: CourseGuideTab.stats,
             cycles: {
               'theme': ThemeCycle(lessonId: 'theme', startedOn: '2026-10-20'),
             },

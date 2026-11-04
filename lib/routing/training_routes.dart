@@ -158,7 +158,7 @@ GoRoute trainingRoute() => GoRoute(
       builder: (context, state) => _guide(
         const _Guide(openingProgress: true),
         config: _config(state),
-        initialTab: CourseGuideTab.progress,
+        initialTab: CourseGuideTab.stats,
       ),
     ),
     GoRoute(

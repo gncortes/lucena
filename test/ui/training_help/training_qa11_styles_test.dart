@@ -40,7 +40,7 @@ Future<CourseGuideCubit> guide() async {
       TrainingCourse.pilares: TrainingState(
         course: TrainingCourse.pilares,
         installSeed: 'qa11',
-        tab: CourseGuideTab.progress,
+        tab: CourseGuideTab.stats,
         cycles: {
           'theme': ThemeCycle(
             lessonId: 'theme',

@@ -23,6 +23,7 @@ class CourseNavigationBar extends StatelessWidget {
     final labels = [
       l.courseGuideTabLesson,
       l.courseGuideTabGoals,
+      l.treinoTabGuide,
       l.courseGuideTabProgress,
       l.courseGuideTabCatalog,
     ];
@@ -55,6 +56,7 @@ class CourseNavigationBar extends StatelessWidget {
             for (final (i, icon) in [
               CanvasSymbols.school,
               CanvasSymbols.taskAlt,
+              Icons.explore_outlined,
               CanvasSymbols.insights,
               Icons.menu_book_outlined,
             ].indexed)

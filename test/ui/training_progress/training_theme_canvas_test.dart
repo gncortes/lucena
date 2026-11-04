@@ -120,7 +120,7 @@ void main() {
           TrainingCourse.pilares: TrainingState(
             course: TrainingCourse.pilares,
             installSeed: 'theme-canvas',
-            tab: CourseGuideTab.progress,
+            tab: CourseGuideTab.stats,
             cycles: {
               'theme': ThemeCycle(
                 lessonId: 'theme',

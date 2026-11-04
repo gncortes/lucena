@@ -287,7 +287,7 @@ void main() {
           tester,
           scenario,
           scenario.schoolDayOne().copyWith(
-            tab: CourseGuideTab.progress,
+            tab: CourseGuideTab.stats,
             completedLessons: {
               'pieces.rook': '2026-10-25',
               'hidden': '2026-10-25',

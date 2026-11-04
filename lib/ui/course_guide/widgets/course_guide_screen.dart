@@ -27,6 +27,7 @@ import '../../core/widgets/course/course_part_header.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
+import 'training_guide_tab.dart';
 import '../../course_entry/widgets/course_content_states.dart';
 
 class CourseGuideScreen extends StatelessWidget {
@@ -79,7 +80,8 @@ class CourseGuideScreen extends StatelessWidget {
           switch (tab) {
             CourseGuideTab.lesson => courseGuideCopy(context, config.titleKey),
             CourseGuideTab.goals => t.trainingGoalsTitle,
-            CourseGuideTab.progress => t.courseGuideTabProgress,
+            CourseGuideTab.guide => t.treinoTabGuide,
+            CourseGuideTab.stats => t.courseGuideTabProgress,
             CourseGuideTab.catalog => t.courseGuideTabCatalog,
           };
       if (!state.loading && state.failed && training == null) {
@@ -136,7 +138,11 @@ class CourseGuideScreen extends StatelessWidget {
                               )
                             : _WelcomeTab(onContinue: onWelcomeContinue),
                       CourseGuideTab.goals => goalsBuilder(context),
-                      CourseGuideTab.progress => progressBuilder(context),
+                      CourseGuideTab.guide => TrainingGuideTab(
+                        key: CourseGuideKeys.guideTab,
+                        course: config.course,
+                      ),
+                      CourseGuideTab.stats => progressBuilder(context),
                       CourseGuideTab.catalog => _CatalogTab(
                         state: state,
                         onChapter: onChapter,

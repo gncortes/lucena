@@ -197,7 +197,7 @@ void main() {
           state = scenario.canvasGoalsScenario(goalSamples[name]!);
           tab = CourseGuideTab.goals;
         } else if (name.contains('Progresso')) {
-          tab = CourseGuideTab.progress;
+          tab = CourseGuideTab.stats;
           if (school) {
             state = state.copyWith(
               completedLessons: {
