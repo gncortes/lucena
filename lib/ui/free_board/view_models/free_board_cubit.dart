@@ -27,6 +27,7 @@ import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/opponent_failures.dart';
 import '../../../domain/use_cases/think_time_policy.dart';
 import '../../core/sound/game_sounds.dart';
 import '../../../domain/models/game_sound.dart';
@@ -132,9 +133,11 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   // A tentativa desta partida já foi gravada.
   bool _recorded = false;
 
-  // Quando o motor falhou pela última vez, para não pedir de novo sem parar.
-  DateTime? _machineFailedAt;
-  static const _machineRetry = Duration(seconds: 2);
+  // As falhas seguidas do adversário: 3 tentativas, 2 s entre elas (H-PAR-18).
+  final _opponentFailures = OpponentFailures();
+
+  // O relógio está parado por causa de uma falha do adversário.
+  bool _pausedByFailure = false;
 
   /// A tela abriu. Partida nova (criada com posição) é só gravada; sem ela,
   /// continua a partida em andamento ou, se não há, começa uma do início.
@@ -387,8 +390,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// chama várias vezes por segundo; o resultado só depende do instante atual,
   /// então vale igual depois de o app ficar em segundo plano.
   void tick() {
-    // O motor falhou há pouco: tenta de novo, com intervalo.
-    if (_machineFailedAt != null) _askMachine();
+    // O motor falhou: tenta de novo, com intervalo.
+    if (_opponentFailures.failing) _askMachine();
     final clock = state.clock;
     if (clock == null || clock.running == null) return;
     final now = _now();
@@ -491,6 +494,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   void _restart(ClockConfig? clock) {
     if (!_active) return;
     _lowTimeWarned.clear();
+    _opponentFailures.reset();
+    _pausedByFailure = false;
     _recorded = false;
     _firstMoveCounted = false;
     _endCounted = false;
@@ -745,9 +750,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     if (side == null || !_active || isClosed || state.held) return;
     if (state.end != null || state.position.turn != side) return;
     if (state.machineThinking) return;
-    final failedAt = _machineFailedAt;
     final now = _now();
-    if (failedAt != null && now.difference(failedAt) < _machineRetry) return;
+    if (_opponentFailures.failing && !_opponentFailures.canTry(now)) return;
     final clock = state.clock;
     final thinkTime = ThinkTimePolicy.of(
       remaining: clock == null ? null : ClockEngine.remaining(clock, side, now),
@@ -793,19 +797,87 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
 
   void _machineAnswered(Position asked, Move? move) {
     if (isClosed) return;
-    _machineFailedAt = null;
     // A partida mudou enquanto a máquina pensava (desistência, bandeira, nova
     // partida): a resposta não vale mais.
     final stillAsked = identical(state.position, asked) && state.end == null;
     if (state.machineThinking) emit(state.copyWith(machineThinking: false));
-    if (!stillAsked || move == null) return;
+    if (!stillAsked) {
+      _opponentFailures.reset();
+      _pausedByFailure = false;
+      return;
+    }
+    // Sem lance é falha, como uma exceção.
+    if (move == null) {
+      _machineFailed(asked);
+      return;
+    }
+    if (_pausedByFailure) _resumeAfterFailure();
+    _opponentFailures.reset();
     play(move);
   }
 
   void _machineFailed(Position asked) {
     if (isClosed) return;
-    _machineFailedAt = _now();
     if (state.machineThinking) emit(state.copyWith(machineThinking: false));
+    // A partida mudou enquanto a máquina pensava: a falha não vale mais.
+    if (!identical(state.position, asked) || state.end != null) {
+      _opponentFailures.reset();
+      _pausedByFailure = false;
+      return;
+    }
+    _opponentFailures.record(_now());
+    _pauseForFailure();
+    if (_opponentFailures.exhausted) emit(state.copyWith(opponentError: true));
+  }
+
+  /// "Tentar novamente" da folha de erro: recomeça as 3 tentativas. O relógio
+  /// só volta quando o adversário jogar.
+  void retryOpponent() {
+    if (!_active || !state.opponentError) return;
+    _opponentFailures.reset();
+    emit(state.copyWith(opponentError: false));
+    _askMachine();
+  }
+
+  // Falha do app não tira tempo de ninguém: o relógio e o tempo do lance
+  // param, e a partida fica gravada assim.
+  void _pauseForFailure() {
+    if (_pausedByFailure) return;
+    _pausedByFailure = true;
+    final now = _now();
+    final turnStartedAt = state.turnStartedAt;
+    var paused = state.copyWith(
+      turnElapsed:
+          state.turnElapsed +
+          (turnStartedAt == null
+              ? Duration.zero
+              : now.difference(turnStartedAt)),
+      turnStartedAt: null,
+    );
+    final clock = state.clock;
+    if (clock != null) {
+      paused = paused.copyWith(clock: ClockEngine.stop(clock, now));
+    }
+    emit(_timed(paused, now));
+    _persist();
+  }
+
+  // O adversário voltou a responder: o relógio e o tempo do lance correm.
+  void _resumeAfterFailure() {
+    _pausedByFailure = false;
+    final now = _now();
+    final clock = state.clock;
+    emit(
+      _timed(
+        state.copyWith(
+          turnStartedAt: now,
+          clock: clock == null
+              ? null
+              : ClockEngine.resume(clock, turn: state.position.turn, now: now),
+        ),
+        now,
+      ),
+    );
   }
 
   // Grava a partida como está. Partida terminada sai da gravação: não há o

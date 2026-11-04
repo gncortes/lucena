@@ -45,6 +45,7 @@ void main() {
     illegal: (move) => '$move não é possível nesta posição.',
     drawAgreed: 'Empate combinado.',
     drawDeclined: 'Empate recusado.',
+    opponentError: 'Ocorreu um erro inesperado. Seu relógio está parado.',
   );
 
   setUp(() {
@@ -75,6 +76,7 @@ void main() {
       now: time ?? FakeNow(DateTime.utc(2026, 10, 7)),
       thinkTime: Duration.zero,
       restartDelay: Duration.zero,
+      retryInterval: Duration.zero,
     );
     addTearDown(cubit.close);
     await cubit.load(
@@ -854,6 +856,105 @@ void main() {
       );
     },
   );
+
+  group('H-PAR-18 adversário que falha', () {
+    const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+    final fiveMinutes = ClockConfig.same(
+      const TimeControl(initial: Duration(minutes: 5)),
+    );
+
+    test(
+      '1ª falha para o relógio e nada é dito; a 2ª tentativa joga',
+      () async {
+        final time = FakeNow(DateTime.utc(2026, 10, 7));
+        final cubit = await open(fen, time: time, clock: fiveMinutes);
+        opponent.failTimes = 1;
+
+        await cubit.playTyped('Ta7');
+
+        expect(cubit.state.opponentError, isFalse);
+        expect(cubit.state.sans, hasLength(2));
+        expect(cubit.state.phase, BlindPhase.playerTurn);
+        expect(cubit.state.running, Side.white);
+      },
+    );
+
+    test('3 falhas seguidas abrem a folha, falam o texto e o relógio '
+        'não anda', () async {
+      final time = FakeNow(DateTime.utc(2026, 10, 7));
+      final cubit = await open(fen, time: time, clock: fiveMinutes);
+      opponent.failTimes = 3;
+
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+
+      expect(opponent.requests, hasLength(3));
+      expect(cubit.state.opponentError, isTrue);
+      expect(cubit.state.running, isNull);
+      expect(spoken().last, contains('Ocorreu um erro inesperado'));
+      time.advance(const Duration(minutes: 10));
+      expect(cubit.state.end, isNull);
+      expect(cubit.state.phase, BlindPhase.opponentThinking);
+    });
+
+    test('tentar novamente com o motor bom joga e o relógio volta', () async {
+      final time = FakeNow(DateTime.utc(2026, 10, 7));
+      final cubit = await open(fen, time: time, clock: fiveMinutes);
+      opponent.failTimes = 3;
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+
+      await cubit.retryOpponent();
+      await pumpEventQueue();
+
+      expect(cubit.state.opponentError, isFalse);
+      expect(cubit.state.sans, hasLength(2));
+      expect(cubit.state.phase, BlindPhase.playerTurn);
+      expect(cubit.state.running, Side.white);
+    });
+
+    test('tentar novamente recomeça as 3 tentativas', () async {
+      final cubit = await open(fen, clock: fiveMinutes);
+      opponent.failTimes = 6;
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+      expect(cubit.state.opponentError, isTrue);
+
+      await cubit.retryOpponent();
+      await pumpEventQueue();
+
+      expect(opponent.requests, hasLength(6));
+      expect(cubit.state.opponentError, isTrue);
+    });
+
+    test('motor que lança erro conta como falha', () async {
+      final cubit = await open(fen, clock: fiveMinutes);
+      opponent.failNext = true;
+
+      await cubit.playTyped('Ta7');
+
+      expect(cubit.state.opponentError, isFalse);
+      expect(cubit.state.sans, hasLength(2));
+    });
+
+    test('sair mantém a partida gravada com o relógio parado', () async {
+      final repository = FakeBlindCheckpointRepository();
+      final cubit = await open(
+        fen,
+        checkpoints: repository,
+        clock: fiveMinutes,
+      );
+      opponent.failTimes = 3;
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+
+      await cubit.close();
+
+      expect(repository.checkpoint, isNotNull);
+      expect(repository.checkpoint!.moves, ['a1a7']);
+      expect(repository.checkpoint!.state['running'], isNull);
+    });
+  });
 }
 
 class _DelayedStopVoice extends FakeVoiceRepository {

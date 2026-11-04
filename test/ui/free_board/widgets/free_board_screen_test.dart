@@ -35,6 +35,8 @@ import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
@@ -705,6 +707,60 @@ void main() {
       ['Cf3', 'Re7', 'Bc4', 'Rf6', 'Dd4+', 'Re7', 'Ta7+'],
     );
     expect(tester.getSemantics(find.byKey(FreeBoardKeys.move(0))).label, 'Cf3');
+  });
+
+  group('H-PAR-18 adversário que falha', () {
+    const vsMachine = GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+    );
+
+    // Três falhas seguidas, 2 s entre elas, como a tela faz a cada tique.
+    Future<void> failThreeTimes(WidgetTester tester) async {
+      opponent.failTimes = 3;
+      await move(tester, 'e2', 'e4');
+      await tester.pump();
+      for (var i = 0; i < 2; i++) {
+        now.advance(const Duration(seconds: 2));
+        cubit.tick();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('na 3ª falha abre a folha, sem ✕', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsOneWidget);
+      expect(find.byKey(SheetKeys.close), findsNothing);
+      expect(cubit.state.opponentError, isTrue);
+    });
+
+    testWidgets('Tentar novamente fecha a folha e o adversário joga', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.retry));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsNothing);
+      expect(cubit.state.moves, hasLength(2));
+    });
+
+    testWidgets('Sair mantém a partida gravada', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.leave));
+      await tester.pumpAndSettle();
+
+      final saved = await games.load();
+      expect(saved, isNotNull);
+      expect(saved!.moves, ['e2e4']);
+    });
   });
 
   testWidgets('pré-lance: marcado na vez do adversário e jogado em seguida', (

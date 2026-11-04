@@ -11827,5 +11827,21 @@
   "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "partidaOpponentErrorTitle": "An unexpected error occurred",
+  "@partidaOpponentErrorTitle": {
+    "description": "Title of the sheet shown when the opponent engine keeps failing."
+  },
+  "partidaOpponentErrorHint": "Your clock is stopped. If you leave, the game continues where it stopped.",
+  "@partidaOpponentErrorHint": {
+    "description": "Explains the clock is stopped and leaving keeps the game saved."
+  },
+  "partidaOpponentErrorRetry": "Try again",
+  "@partidaOpponentErrorRetry": {
+    "description": "Button that asks the opponent again."
+  },
+  "partidaOpponentErrorLeave": "Leave",
+  "@partidaOpponentErrorLeave": {
+    "description": "Button that leaves the game; it stays saved."
   }
 }

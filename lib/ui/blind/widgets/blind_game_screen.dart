@@ -72,6 +72,9 @@ BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(
   illegal: (move) => l10n.blindSayIllegal(_capitalized(move)),
   drawAgreed: l10n.freeBoardDrawAgreed,
   drawDeclined: l10n.gameDrawDeclined,
+  opponentError:
+      '${l10n.partidaOpponentErrorTitle}. '
+      '${l10n.partidaOpponentErrorHint}',
 );
 
 /// Jogar às cegas, falando os lances (spike da T40): o estado em letras

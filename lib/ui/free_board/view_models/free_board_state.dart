@@ -82,6 +82,10 @@ abstract class FreeBoardState with _$FreeBoardState {
     /// A máquina está escolhendo o lance.
     @Default(false) bool machineThinking,
 
+    /// O adversário falhou 3 vezes seguidas: a folha de erro está na tela,
+    /// com o relógio parado (H-PAR-18).
+    @Default(false) bool opponentError,
+
     /// O relógio e a máquina esperam o aviso da etapa nova da Maratona sair
     /// da tela.
     @Default(false) bool held,
