@@ -13840,5 +13840,97 @@
   "venAboutProgress": "Tests and progress",
   "@venAboutProgress": {
     "description": "Seção da Visão geral do Sobre o Pilares (PropV1CursoDetalhes)."
+  },
+  "venDemoEndTitle": "Chapter 1 complete",
+  "@venDemoEndTitle": {
+    "description": "Título do fim da demonstração (PropV2DemoOferta, H-VEN-04)."
+  },
+  "venDemoEndText": "Enjoyed it? The 15-position test and the plan take you through the other 19 chapters, all the way to your goal.",
+  "@venDemoEndText": {
+    "description": "Texto abaixo do título no fim da demonstração."
+  },
+  "venDemoEndDone": "What you did",
+  "@venDemoEndDone": {
+    "description": "Rótulo da seção do que o aluno fez na demonstração."
+  },
+  "venDemoEndLessons": "3 lessons with Viktor",
+  "@venDemoEndLessons": {
+    "description": "Item: as lições do Capítulo 1."
+  },
+  "venDemoEndLessonsText": "Knight fork, double attack and loose piece.",
+  "@venDemoEndLessonsText": {
+    "description": "Os temas das lições do Capítulo 1."
+  },
+  "venDemoEndExercises": "Exercises to play the position",
+  "@venDemoEndExercises": {
+    "description": "Item: os exercícios do Capítulo 1."
+  },
+  "venDemoEndExercisesText": "More than 850 across the 20 chapters of the course.",
+  "@venDemoEndExercisesText": {
+    "description": "Quantos exercícios o curso completo tem."
+  },
+  "venDemoEndFull": "In the full course",
+  "@venDemoEndFull": {
+    "description": "Rótulo da seção do que o curso completo traz."
+  },
+  "venDemoEndTournamentText": "Set the tournament date and the plan picks the chapters that fit until then.",
+  "@venDemoEndTournamentText": {
+    "description": "Texto do item Treine até o dia do torneio no fim da demonstração."
+  },
+  "venDemoEndGoalsText": "Each goal shows today's part, in the time you have.",
+  "@venDemoEndGoalsText": {
+    "description": "Texto do item Várias metas ao mesmo tempo no fim da demonstração."
+  },
+  "venDemoEndDirect": "Straight to training",
+  "@venDemoEndDirect": {
+    "description": "Item: lições e listas abrem na hora no curso completo."
+  },
+  "venDemoEndDirectText": "Every lesson and every exercise list opens right away, in every chapter.",
+  "@venDemoEndDirectText": {
+    "description": "Texto do item Direto ao treino."
+  },
+  "venDemoEndPrice": "Subscription for {monthly}/month or Lifetime access to Pilares for {lifetime}",
+  "@venDemoEndPrice": {
+    "description": "Cartão de preço no fim da demonstração; os valores vêm da Google Play.",
+    "placeholders": {
+      "monthly": {
+        "type": "String"
+      },
+      "lifetime": {
+        "type": "String"
+      }
+    }
+  },
+  "venDemoEndPriceText": "All 20 chapters unlocked. Lifetime access to Pilares costs about 5 months of subscription.",
+  "@venDemoEndPriceText": {
+    "description": "Texto do cartão de preço no fim da demonstração."
+  },
+  "venDemoEndLater": "Not now",
+  "@venDemoEndLater": {
+    "description": "Botão de texto do fim da demonstração: volta ao Catálogo."
+  },
+  "venBeforeHomeTitle": "More than a course",
+  "@venBeforeHomeTitle": {
+    "description": "Título da oferta antes do Início (PropV2OfertaAntesInicioFolha, H-VEN-15)."
+  },
+  "venBeforeHomePlan": "A plan up to your tournament",
+  "@venBeforeHomePlan": {
+    "description": "Item da oferta antes do Início."
+  },
+  "venBeforeHomeGoalsText": "Lesson, exercises and opening every day",
+  "@venBeforeHomeGoalsText": {
+    "description": "Texto do item Várias metas ao mesmo tempo na oferta antes do Início."
+  },
+  "venBeforeHomeChaptersText": "Chapter 1 free, with 3 lessons and the test",
+  "@venBeforeHomeChaptersText": {
+    "description": "Texto do item 20 capítulos e 105 lições na oferta antes do Início."
+  },
+  "venBeforeHomeLearn": "See the plan",
+  "@venBeforeHomeLearn": {
+    "description": "Botão da oferta antes do Início: abre a venda do plano (H-VEN-14)."
+  },
+  "venBeforeHomeClose": "Close",
+  "@venBeforeHomeClose": {
+    "description": "Dica do X da oferta antes do Início."
   }
 }

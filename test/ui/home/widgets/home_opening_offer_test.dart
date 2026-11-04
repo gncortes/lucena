@@ -9,6 +9,7 @@ import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/training/demo_offer_rules.dart';
+import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/streak_keys.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
@@ -101,10 +102,10 @@ void main() {
           ),
         ),
         GoRoute(
-          path: '/pilares/offer',
-          builder: (_, state) => Scaffold(
-            body: Text('oferta ${state.uri.queryParameters['origem']}'),
-          ),
+          // A oferta antes do Início (H-VEN-15): a folha da D2.
+          path: D2Paths.pilaresBeforeHome,
+          builder: (_, _) =>
+              const Scaffold(body: Text('oferta antes do início')),
         ),
         GoRoute(
           path: '/tour',
@@ -127,10 +128,10 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('demo, nunca vista: abre a oferta com origem abertura_app e '
+  testWidgets('demo, nunca vista: abre a oferta antes do Início e '
       'conta a vez ao abrir', (tester) async {
     await open(tester);
-    expect(find.text('oferta abertura_app'), findsOneWidget);
+    expect(find.text('oferta antes do início'), findsOneWidget);
     expect(offer.state.count, 1);
     expect(offer.state.lastShown, today);
   });
@@ -160,7 +161,7 @@ void main() {
 
   testWidgets('assinatura encerrada volta a ver (é demo)', (tester) async {
     await open(tester, access: PilaresAccessKind.monthlyEnded);
-    expect(find.text('oferta abertura_app'), findsOneWidget);
+    expect(find.text('oferta antes do início'), findsOneWidget);
   });
 
   testWidgets('já mostrada 2 vezes: não abre mais', (tester) async {
@@ -193,7 +194,7 @@ void main() {
         lastShown: today.subtract(const Duration(days: 3)),
       ),
     );
-    expect(find.text('oferta abertura_app'), findsOneWidget);
+    expect(find.text('oferta antes do início'), findsOneWidget);
     expect(offer.state.count, 2);
   });
 
@@ -214,7 +215,7 @@ void main() {
   testWidgets('oferta e sequência perdida na mesma abertura: só a oferta; '
       'a folha espera a próxima abertura', (tester) async {
     await open(tester, days: run(12));
-    expect(find.text('oferta abertura_app'), findsOneWidget);
+    expect(find.text('oferta antes do início'), findsOneWidget);
     router.pop();
     await tester.pumpAndSettle();
     expect(find.byKey(HomeKeys.screen), findsOneWidget);

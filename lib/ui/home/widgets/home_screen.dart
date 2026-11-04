@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen>
         listener: (context, state) {
           if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
           unawaited(context.read<HomeCubit>().offerOpened());
-          unawaited(context.push(D2Paths.offer(origin: 'abertura_app')));
+          unawaited(context.push(D2Paths.pilaresBeforeHome));
         },
         child: BlocListener<HomeCubit, HomeState>(
           // A sequência que acabou: o aviso sai uma vez, com o final de hoje.

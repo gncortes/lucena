@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/campaign/campaign_repository.dart';
+import 'package:lucena/data/repositories/characters/character_repository.dart';
+import 'package:lucena/domain/models/campaign.dart';
+import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
@@ -13,6 +17,7 @@ import 'package:lucena/ui/pilares_sale/widgets/pilares_purchase_bridge.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
+import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_purchase_service.dart';
 import '../../../testing/test_app.dart';
 
@@ -20,6 +25,7 @@ void main() {
   late FakePurchaseRepository purchases;
   late FakeAccountRepository accounts;
   late FakeAnalyticsRepository analytics;
+  late MemoryCampaignRepository campaigns;
 
   setUp(() {
     purchases = FakePurchaseRepository(
@@ -33,6 +39,7 @@ void main() {
     );
     accounts = FakeAccountRepository(account: FakeAccountRepository.google);
     analytics = FakeAnalyticsRepository();
+    campaigns = MemoryCampaignRepository();
   });
 
   Future<GoRouter> pump(WidgetTester tester, String location) async {
@@ -51,6 +58,14 @@ void main() {
           builder: (_, state) => Scaffold(body: Text('conta ${state.uri}')),
         ),
         GoRoute(
+          path: Routes.training(TrainingCourse.pilares.name),
+          builder: (_, state) => Scaffold(body: Text('treino ${state.uri}')),
+        ),
+        GoRoute(
+          path: D2Paths.pilaresPlan,
+          builder: (_, _) => const Scaffold(body: Text('venda do plano')),
+        ),
+        GoRoute(
           path: Routes.settingsProfile,
           builder: (_, _) => const Scaffold(body: Text('perfil')),
         ),
@@ -59,8 +74,14 @@ void main() {
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      RepositoryProvider<AccountRepository>.value(
-        value: accounts,
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AccountRepository>.value(value: accounts),
+          RepositoryProvider<CampaignRepository>.value(value: campaigns),
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
+        ],
         child: TestApp(
           locale: const Locale('pt'),
           purchaseRepository: purchases,
@@ -275,5 +296,104 @@ void main() {
       router.routerDelegate.currentConfiguration.uri.path,
       D2Paths.pilaresPurchaseDone,
     );
+  });
+
+  group('Fim da demonstração (H-VEN-04)', () {
+    testWidgets('o cartão de preço traz os dois planos e os 5 meses', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresDemoEnd);
+      expect(find.byKey(PurchaseKeys.demoEndScreen), findsOneWidget);
+      expect(find.text('Capítulo 1 concluído'), findsOneWidget);
+      final price = await show(tester, PurchaseKeys.demoEndPrice);
+      final texts = tester
+          .widgetList<Text>(
+            find.descendant(of: price, matching: find.byType(Text)),
+          )
+          .map((text) => text.data)
+          .join(' ');
+      expect(texts, contains(r'R$ 19,90/mês'));
+      expect(texts, contains(r'R$ 99,90'));
+      expect(texts, contains('cerca de 5 meses de assinatura'));
+      expect(analytics.names, contains('demo_fim'));
+      expectPlainAppBar(tester);
+    });
+
+    testWidgets('"Agora não" volta ao Catálogo do Pilares', (tester) async {
+      final router = await pump(tester, D2Paths.pilaresDemoEnd);
+      await tester.tap(find.byKey(PurchaseKeys.demoEndLater));
+      await tester.pumpAndSettle();
+      expect(
+        router.routerDelegate.currentConfiguration.uri.toString(),
+        Routes.trainingCatalog(TrainingCourse.pilares.name),
+      );
+    });
+
+    testWidgets('"Ver opções de compra" abre a oferta com origem fim_demo', (
+      tester,
+    ) async {
+      campaigns.saved = const Campaign(utm: {'utm_campaign': 'x'});
+      await pump(tester, D2Paths.pilaresDemoEnd);
+      expect(
+        analytics.eventsNamed('campanha_oferta_vista').single.params,
+        containsPair('destaque', 'fim_demo'),
+      );
+      await tester.tap(find.byKey(PurchaseKeys.demoEndSeeOptions));
+      await tester.pumpAndSettle();
+      expect(find.byKey(PurchaseKeys.offerScreen), findsOneWidget);
+      final offer = tester.element(find.byKey(PurchaseKeys.offerScreen));
+      expect(GoRouterState.of(offer).uri.queryParameters['origem'], 'fim_demo');
+      expect(analytics.names, contains('campanha_oferta_tocada'));
+    });
+  });
+
+  group('Oferta antes do Início (H-VEN-15)', () {
+    testWidgets('folha sobre o Início com os três itens', (tester) async {
+      await pump(tester, D2Paths.pilaresBeforeHome);
+      expect(find.byKey(PurchaseKeys.beforeHomeSheet), findsOneWidget);
+      expect(find.text('inicio'), findsOneWidget);
+      expect(find.text('Mais que um curso'), findsOneWidget);
+      expect(find.text('Plano até o seu torneio'), findsOneWidget);
+      expect(
+        find.text('Capítulo 1 grátis, com 3 lições e o teste'),
+        findsOneWidget,
+      );
+      expect(
+        analytics.eventsNamed('pilares_oferta_vista').single.params,
+        allOf(
+          containsPair('origem', 'abertura_app'),
+          containsPair('destaque', 'folha'),
+        ),
+      );
+    });
+
+    testWidgets('o X fecha e fica o Início, com a oferta fechada uma vez', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresBeforeHome);
+      await tester.tap(find.byKey(PurchaseKeys.beforeHomeClose));
+      await tester.pumpAndSettle();
+      expect(find.byKey(PurchaseKeys.beforeHomeSheet), findsNothing);
+      expect(find.text('inicio'), findsOneWidget);
+      expect(analytics.eventsNamed('pilares_oferta_fechada'), hasLength(1));
+    });
+
+    testWidgets('o toque fora da folha fecha como o X', (tester) async {
+      await pump(tester, D2Paths.pilaresBeforeHome);
+      await tester.tapAt(const Offset(200, 20));
+      await tester.pumpAndSettle();
+      expect(find.byKey(PurchaseKeys.beforeHomeSheet), findsNothing);
+      expect(analytics.eventsNamed('pilares_oferta_fechada'), hasLength(1));
+    });
+
+    testWidgets('"Conhecer o plano" abre a venda do plano sem contar fechada', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresBeforeHome);
+      await tester.tap(find.byKey(PurchaseKeys.beforeHomeLearn));
+      await tester.pumpAndSettle();
+      expect(find.text('venda do plano'), findsOneWidget);
+      expect(analytics.eventsNamed('pilares_oferta_fechada'), isEmpty);
+    });
   });
 }
