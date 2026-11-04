@@ -468,4 +468,12 @@ List<AnalyticsEvent> trainingAnalyticsSamples(String course) => [
     aulaPendente: true,
   ),
   AnalyticsEvents.treinoLembreteMostrado(curso: course, atrasoMin: 2),
+  AnalyticsEvents.treinoObjetivoDefinido(
+    curso: course,
+    tipo: 'torneio',
+    diasAteTorneio: 20,
+  ),
+  AnalyticsEvents.treinoDiaPerdido(curso: course, opcao: 'mais_tempo'),
+  AnalyticsEvents.torneioPushAgendado(curso: course),
+  AnalyticsEvents.torneioPushMostrado(curso: course),
 ];

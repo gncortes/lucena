@@ -282,9 +282,9 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test('tem os 96 eventos (93 do app, com o treino e o funil de campanha da '
+    test('tem os 100 eventos (97 do app, com o treino e o funil de campanha da '
         'T84, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(93));
+      expect(AnalyticsCatalog.app, hasLength(97));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(
