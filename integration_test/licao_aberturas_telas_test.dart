@@ -49,8 +49,17 @@ void main() {
     final capture = await open($);
     await capture.openingMove('d2d4');
     await capture.openingMove('c1f4');
+    // Parte que não é a última: "Próxima parte" e "Próxima meta".
     expect($('Parte 1 concluída.'), findsOneWidget);
     await $(TrainingKeys.nextGoal).waitUntilVisible();
+    expect($(TrainingKeys.openingProgress), findsNothing);
+
+    // A última parte (o banco E2E tem duas) troca por "Ver o progresso".
+    await $(TrainingKeys.openingNextPart).tap();
+    await $(TrainingKeys.openingBoard).waitUntilVisible();
+    await capture.openingMove('d2d4');
+    await $(TrainingKeys.nextGoal).waitUntilVisible();
+    expect($(TrainingKeys.openingNextPart), findsNothing);
 
     await $(TrainingKeys.openingProgress).tap();
     await $(TrainingKeys.openingProgressScreen).waitUntilVisible();

@@ -144,6 +144,12 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('sem dica cadastrada a lâmpada não aparece', (tester) async {
+    await open(tester, build(statement: 'Brancas jogam.'));
+    expect(find.byKey(TrainingKeys.exerciseHint), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('acerto e erro usam a mesma marca, com ícones diferentes', (
     tester,
   ) async {
