@@ -128,10 +128,10 @@ void main() {
       expect(find.text('Escola do Viktor'), findsOneWidget);
       expect(find.text('Boas-vindas à Escola do Viktor'), findsOneWidget);
       for (final phrase in [
-        'a próxima aula, sempre aqui.',
+        'a próxima lição, sempre aqui.',
         'o que fazer hoje.',
-        'as aulas feitas e as estrelas.',
-        'todas as aulas do curso.',
+        'as lições feitas e as estrelas.',
+        'todas as lições do curso.',
       ]) {
         expect(find.textContaining(phrase), findsOneWidget);
       }
@@ -145,7 +145,7 @@ void main() {
       );
       await cubit.load();
       await tester.pumpAndSettle();
-      expect(find.text('Módulo 1 · aula 1'), findsOneWidget);
+      expect(find.text('Módulo 1 · lição 1'), findsOneWidget);
       await tester.tap(find.byKey(CourseGuideKeys.tab('catalog')));
       await tester.pumpAndSettle();
       expect(find.text('MÓDULO 1 · PEÇAS'), findsOneWidget);
@@ -187,7 +187,7 @@ void main() {
         if (stateName == 'done') {
           expect(find.byKey(TrainingKeys.doubleButton), findsOneWidget);
           expect(
-            find.text('Entram hoje mais 4 aulas e os desafios delas.'),
+            find.text('Entram hoje mais 4 lições e os desafios delas.'),
             findsOneWidget,
           );
           await tester.tap(find.byKey(TrainingKeys.doubleButton));

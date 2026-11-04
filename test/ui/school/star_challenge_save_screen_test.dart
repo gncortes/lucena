@@ -75,10 +75,7 @@ void main() {
         repository.gate.complete();
         await tester.pumpAndSettle();
         expect(find.byKey(StarChallengeKeys.saveError), findsOneWidget);
-        expect(
-          find.text('Não foi possível salvar. Tente novamente.'),
-          findsOneWidget,
-        );
+        expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
         expect(find.byKey(StarChallengeKeys.retrySave), findsOneWidget);
         expect(find.byKey(StarChallengeKeys.result), findsNothing);
         expect(tester.takeException(), isNull);

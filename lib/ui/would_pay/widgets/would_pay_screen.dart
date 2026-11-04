@@ -86,16 +86,8 @@ class WouldPayScreen extends StatelessWidget {
                           .backButtonTooltip,
                       onPressed: cubit.back,
                     ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.payTitle),
-                  Text(
-                    l10n.payStep(state.step + 1),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
+              // Só o título: o passo já aparece na barra de progresso.
+              title: Text(l10n.payTitle),
               bottom: AppBarProgress(
                 key: WouldPayKeys.progress,
                 value: (state.step + 1) / state.total,

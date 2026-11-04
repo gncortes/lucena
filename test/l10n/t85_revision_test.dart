@@ -9,30 +9,14 @@ void main() {
     expect(t.lessonRetry, 'Tentar novamente');
     expect(t.featuredFindRetry, 'Tentar novamente');
     expect(t.speedrunRetry, 'Tentar novamente');
-    expect(t.loadErrorEngineTitle, 'Erro ao iniciar a partida');
     expect(t.lessonMissing, 'Este capítulo não está disponível.');
     expect(t.exerciseMissing, 'Este exercício não está disponível.');
-    expect(
-      t.lessonSaveRetry,
-      'Não foi possível salvar o progresso. Tente novamente.',
-    );
-    expect(
-      t.practiceSolutionUnavailable,
-      'Não foi possível mostrar a solução. Tente novamente.',
-    );
+    expect(t.lessonSaveRetry, 'Ocorreu um erro inesperado');
+    expect(t.practiceSolutionUnavailable, 'Ocorreu um erro inesperado');
     expect(t.surveyThanks, 'Obrigado pela sua opinião.');
-    expect(
-      t.trainingPlanSaveError,
-      'Não foi possível salvar. Tente novamente.',
-    );
-    expect(
-      t.trainingExerciseSaveError,
-      'Não foi possível salvar. Tente novamente.',
-    );
-    expect(
-      t.learningAnalysisSaveError,
-      'Não foi possível salvar. Tente novamente.',
-    );
+    expect(t.trainingPlanSaveError, 'Ocorreu um erro inesperado');
+    expect(t.trainingExerciseSaveError, 'Ocorreu um erro inesperado');
+    expect(t.learningAnalysisSaveError, 'Ocorreu um erro inesperado');
     expect(
       t.trainingDownloadChapterError,
       'Não foi possível baixar o capítulo. Tente novamente.',

@@ -6,6 +6,7 @@ import '../keys/load_error_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/canvas_symbols.dart';
 import 'actions_footer.dart';
+import 'busy_button.dart';
 
 enum LoadErrorKind {
   generic,
@@ -74,8 +75,9 @@ class LoadErrorScreen extends StatelessWidget {
         t.loadErrorNotFoundMessage,
         CanvasSymbols.searchOff,
       ),
+      // A variante "motor" do erro padrão virou a genérica (T85-D0).
       LoadErrorKind.engine => (
-        t.loadErrorEngineTitle,
+        t.loadErrorGenericTitle,
         null,
         CanvasSymbols.error,
       ),
@@ -170,7 +172,7 @@ class LoadErrorScreen extends StatelessWidget {
   }
 }
 
-class _LoadErrorAction extends StatefulWidget {
+class _LoadErrorAction extends StatelessWidget {
   const _LoadErrorAction({
     required this.buttonKey,
     required this.onAction,
@@ -181,44 +183,12 @@ class _LoadErrorAction extends StatefulWidget {
   final VoidCallback onAction;
   final String label;
   final bool outlined;
-  @override
-  State<_LoadErrorAction> createState() => _LoadErrorActionState();
-}
-
-class _LoadErrorActionState extends State<_LoadErrorAction> {
-  bool _busy = false;
-  Future<void> _run() async {
-    if (_busy) return;
-    setState(() => _busy = true);
-    try {
-      await Future<void>.sync(widget.onAction);
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
 
   @override
-  Widget build(BuildContext context) {
-    final child = _busy
-        ? Semantics(
-            label: widget.label,
-            child: const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          )
-        : Text(widget.label);
-    return widget.outlined
-        ? OutlinedButton(
-            key: widget.buttonKey,
-            onPressed: _busy ? null : _run,
-            child: child,
-          )
-        : FilledButton(
-            key: widget.buttonKey,
-            onPressed: _busy ? null : _run,
-            child: child,
-          );
-  }
+  Widget build(BuildContext context) => BusyButton(
+    buttonKey: buttonKey,
+    label: label,
+    onPressed: onAction,
+    style: outlined ? BusyButtonStyle.outlined : BusyButtonStyle.filled,
+  );
 }

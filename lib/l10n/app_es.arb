@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "Contenido no disponible",
   "loadErrorNotFoundTitle": "Contenido no encontrado",
   "loadErrorNotFoundMessage": "El enlace puede ser incorrecto o el contenido se ha eliminado.",
-  "loadErrorEngineTitle": "Error al iniciar la partida",
   "loadErrorLaunchTitle": "Lucena no se abrió",
   "loadErrorLaunchAgainTitle": "Lucena sigue sin abrirse",
   "loadErrorLaunchAgainMessage": "Cierra la aplicación y ábrela de nuevo. Si el problema continúa, comprueba el espacio libre en el teléfono.",

@@ -125,7 +125,7 @@ void main() {
     expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
     expect(
       tester.widget<Text>(find.byKey(ChallengeKeys.leadText)).data,
-      'Quer ver esta aula gratuita?',
+      'Quer ver esta lição gratuita?',
     );
     expect(find.byKey(ChallengeKeys.leadStep(0)), findsOneWidget);
     expect(find.byKey(ChallengeKeys.leadStep(1)), findsOneWidget);
@@ -149,7 +149,7 @@ void main() {
     expect(answers(), ['agora_nao']);
   });
 
-  testWidgets('"Criar conta e ver a aula": o cadastro com o título da aula, '
+  testWidgets('"Criar conta e ver a lição": o cadastro com o título da aula, '
       'sem o "sem conta, tudo continua"', (tester) async {
     await pumpGate(tester);
     await tester.tap(find.byKey(ChallengeKeys.leadCreate));
@@ -158,7 +158,7 @@ void main() {
     expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
     expect(
       tester.widget<Text>(find.byKey(AccountKeys.enterTitle)).data,
-      'Crie sua conta para ter acesso à aula gratuita',
+      'Crie sua conta para ter acesso à lição gratuita',
     );
     expect(
       tester.widget<Text>(find.byKey(AccountKeys.enterText)).data,

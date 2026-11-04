@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "Содержимое недоступно",
   "loadErrorNotFoundTitle": "Содержимое не найдено",
   "loadErrorNotFoundMessage": "Ссылка может быть неверной или содержимое было удалено.",
-  "loadErrorEngineTitle": "Ошибка запуска партии",
   "loadErrorLaunchTitle": "Не удалось открыть Lucena",
   "loadErrorLaunchAgainTitle": "Lucena по-прежнему не открывается",
   "loadErrorLaunchAgainMessage": "Закройте приложение и откройте снова. Если проблема сохраняется, проверьте свободное место на телефоне.",

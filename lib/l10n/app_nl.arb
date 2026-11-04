@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "Inhoud niet beschikbaar",
   "loadErrorNotFoundTitle": "Inhoud niet gevonden",
   "loadErrorNotFoundMessage": "De link is mogelijk onjuist of de inhoud is verwijderd.",
-  "loadErrorEngineTitle": "Fout bij het starten van de partij",
   "loadErrorLaunchTitle": "Lucena kon niet worden geopend",
   "loadErrorLaunchAgainTitle": "Lucena kan nog steeds niet worden geopend",
   "loadErrorLaunchAgainMessage": "Sluit de app en open deze opnieuw. Controleer de vrije ruimte op je telefoon als het probleem aanhoudt.",

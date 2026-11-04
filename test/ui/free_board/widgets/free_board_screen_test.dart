@@ -2506,7 +2506,7 @@ void main() {
           .toList();
 
       testWidgets('não conseguiu: o fim de sempre e a folha da aula sozinha; '
-          '"Agora não" e o X deixam o fim, e "Ver a aula" reabre', (
+          '"Agora não" e o X deixam o fim, e "Ver a lição" reabre', (
         tester,
       ) async {
         await Goldens.loadFonts();
@@ -2529,12 +2529,12 @@ void main() {
         expect(find.byKey(ChallengeKeys.leadBoard), findsOneWidget);
         expect(
           textOf(tester, ChallengeKeys.leadCategory),
-          'Aula de finais de torre',
+          'Lição de finais de torre',
         );
         expect(textOf(tester, ChallengeKeys.leadTitle), 'Posição de Lucena');
         expect(
           textOf(tester, ChallengeKeys.leadText),
-          'Quer uma aula gratuita que explica como ganhar este final? Você '
+          'Quer uma lição gratuita que explica como ganhar este final? Você '
           'pratica e depois refaz este desafio.',
         );
         for (final (index, title) in [
@@ -2569,14 +2569,14 @@ void main() {
         await tester.tap(find.byKey(ChallengeKeys.leadNotNow));
         await tester.pumpAndSettle();
         // O fim de sempre: o selo sem texto de aula, jogar de novo,
-        // compartilhar e "Ver a aula" no rodapé.
+        // compartilhar e "Ver a lição" no rodapé.
         expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
         expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
         expect(find.byKey(ChallengeKeys.endPlayAgain), findsOneWidget);
         expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
         expect(find.byKey(ChallengeKeys.endMeetApp), findsNothing);
         expect(
-          tester.getSize(find.text('Ver a aula')).height,
+          tester.getSize(find.text('Ver a lição')).height,
           lessThanOrEqualTo(24),
         );
         expect(answers(), ['agora_nao']);
@@ -2592,7 +2592,7 @@ void main() {
         expect(answers(), ['agora_nao', 'agora_nao']);
         expect(analytics.eventsNamed('campanha_oferta_vista'), hasLength(1));
 
-        // "Criar conta e ver a aula": o cadastro, que termina na aula.
+        // "Criar conta e ver a lição": o cadastro, que termina na aula.
         await tester.tap(find.byKey(ChallengeKeys.endLesson));
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(ChallengeKeys.leadCreate));
@@ -2625,7 +2625,7 @@ void main() {
 
         expect(
           textOf(tester, ChallengeKeys.leadText),
-          'Quer uma aula gratuita que explica como empatar este final? Você '
+          'Quer uma lição gratuita que explica como empatar este final? Você '
           'pratica e depois refaz este desafio.',
         );
         expect(
@@ -2661,7 +2661,7 @@ void main() {
         expect(cubit.state.fulfilled, isTrue);
         expect(
           textOf(tester, ChallengeKeys.leadText),
-          'Quer ver uma aula gratuita sobre este final?',
+          'Quer ver uma lição gratuita sobre este final?',
         );
         expect(find.text('Com a ideia, em menos lances'), findsOneWidget);
         expect(

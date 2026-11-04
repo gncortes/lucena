@@ -118,7 +118,7 @@ void main() {
               find.byKey(CourseGuideKeys.chapterLesson('a1')),
             )
             .title,
-        'Aula 1 · Aula a1',
+        'Lição 1 · Aula a1',
       );
       await cubit.selectTab(CourseGuideTab.lesson);
       await tester.pumpAndSettle();
@@ -126,7 +126,7 @@ void main() {
         tester
             .widget<CourseContinueCard>(find.byType(CourseContinueCard))
             .label,
-        'Módulo 2 · aula 1',
+        'Módulo 2 · lição 1',
       );
       expect(tester.takeException(), isNull);
     },
@@ -192,7 +192,7 @@ void main() {
         tester
             .widget<CourseContinueCard>(find.byType(CourseContinueCard))
             .label,
-        'Parte I · aula 3',
+        'Parte I · lição 3',
       );
       await tester.scrollUntilVisible(
         find.byKey(CourseGuideKeys.seeCatalog),
@@ -212,7 +212,7 @@ void main() {
         tester
             .widget<CourseContinueCard>(find.byType(CourseContinueCard))
             .label,
-        'Parte II · aula 1',
+        'Parte II · lição 1',
       );
       expect(tester.takeException(), isNull);
     });

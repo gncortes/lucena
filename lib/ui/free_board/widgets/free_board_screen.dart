@@ -459,22 +459,15 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         ),
         title: state.mode.fromLink
             ? Text(context.l10n.journeyChallengeTitle, key: FreeBoardKeys.title)
+            // Final do dia: a meta é o título (só título, T85-D0), como nos
+            // problemas do Lichess e do chess.com.
             : state.mode.dailyDate != null
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(_title(context, state, talk), key: FreeBoardKeys.title),
-                  Text(
-                    context.l10n.dailyGoal(
-                      (state.mode.userSide ?? state.start.turn).name,
-                      state.mode.goal?.code ?? 'win',
-                    ),
-                    key: DailyKeys.goalSubtitle,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+            ? Text(
+                context.l10n.dailyGoal(
+                  (state.mode.userSide ?? state.start.turn).name,
+                  state.mode.goal?.code ?? 'win',
+                ),
+                key: DailyKeys.goalSubtitle,
               )
             : Text(_title(context, state, talk), key: FreeBoardKeys.title),
       ),

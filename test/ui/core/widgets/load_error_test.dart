@@ -63,7 +63,7 @@ void main() {
       CanvasSymbols.searchOff,
     ),
     LoadErrorKind.engine: (
-      'Erro ao iniciar a partida',
+      'Ocorreu um erro inesperado',
       null,
       CanvasSymbols.error,
     ),

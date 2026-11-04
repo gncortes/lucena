@@ -187,8 +187,9 @@ void main() {
     tester,
   ) async {
     final cubit = await pump(tester);
-    expect(find.text('Rook challenge'), findsOneWidget);
-    expect(find.text('Easy · Star hunt'), findsOneWidget);
+    expect(find.textContaining('Rook challenge'), findsOneWidget);
+    // Só o título, com o nível (T85-D0).
+    expect(find.text('Rook challenge · Easy'), findsOneWidget);
     expect(tester.widget<AppBar>(find.byType(AppBar)).bottom, isNull);
     expect(
       find.descendant(

@@ -52,6 +52,7 @@ import '../ui/training_progress/widgets/training_theme_screen.dart';
 import '../ui/training_help/widgets/training_help_screen.dart';
 import '../ui/training_help/widgets/training_tour.dart';
 import 'routes.dart';
+import 'route_names.dart';
 import 'training_launch.dart';
 import 'training_goal_destination.dart';
 
@@ -60,6 +61,7 @@ TrainingCourseConfig _config(GoRouterState state) =>
 
 /// Both variants share this route tree and all guide screens.
 GoRoute trainingRoute() => GoRoute(
+  name: RouteNames.trainingGuide,
   path: '/training/:course',
   redirect: (context, state) =>
       activeTrainingCourses.any(
@@ -74,6 +76,7 @@ GoRoute trainingRoute() => GoRoute(
   ),
   routes: [
     GoRoute(
+      name: RouteNames.trainingProfile,
       path: 'profile',
       builder: (context, state) => _guide(
         _Profile(startPart: state.uri.queryParameters['part']),
@@ -81,6 +84,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
       routes: [
         GoRoute(
+          name: RouteNames.trainingProfileWhy,
           path: 'why',
           builder: (context, state) => TrainingProfileWhyScreen(
             openingName: state.uri.queryParameters['name'] ?? '',
@@ -88,6 +92,7 @@ GoRoute trainingRoute() => GoRoute(
           ),
         ),
         GoRoute(
+          name: RouteNames.trainingProfileWhyLondon,
           path: 'why-london',
           builder: (context, state) =>
               TrainingProfileWhyScreen(onClose: () => _back(context)),
@@ -95,6 +100,7 @@ GoRoute trainingRoute() => GoRoute(
       ],
     ),
     GoRoute(
+      name: RouteNames.trainingContent,
       path: 'content/:chapter',
       builder: (context, state) =>
           state.uri.queryParameters['destination'] == null
@@ -112,6 +118,7 @@ GoRoute trainingRoute() => GoRoute(
             ),
     ),
     GoRoute(
+      name: RouteNames.trainingHelp,
       path: 'help',
       builder: (context, state) => TrainingHelpScreen(
         onBack: () => _back(context),
@@ -121,6 +128,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingTour,
       path: 'tour',
       builder: (context, state) => _guide(
         _Guide(tour: true, fromHelp: state.uri.queryParameters['help'] == '1'),
@@ -128,6 +136,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingTheme,
       path: 'theme/:theme',
       builder: (context, state) => _guide(
         _Guide(theme: state.pathParameters['theme']),
@@ -135,6 +144,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingOpenings,
       path: 'openings',
       builder: (context, state) => _guide(
         const _Guide(openings: true),
@@ -143,6 +153,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingOpeningProgress,
       path: 'opening-progress',
       builder: (context, state) => _guide(
         const _Guide(openingProgress: true),
@@ -151,6 +162,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingOpening,
       path: 'opening/:theme',
       pageBuilder: (context, state) => _destinationPage(
         context,
@@ -174,6 +186,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingExercise,
       path: 'exercise/:theme',
       pageBuilder: (context, state) => _destinationPage(
         context,
@@ -196,6 +209,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingPlan,
       path: 'plan',
       builder: (context, state) => BlocProvider(
         create: (_) => TrainingPlanCubit(
@@ -216,6 +230,7 @@ GoRoute trainingRoute() => GoRoute(
       ),
     ),
     GoRoute(
+      name: RouteNames.trainingChapter,
       path: 'chapter/:chapter',
       builder: (context, state) => _guide(
         Builder(

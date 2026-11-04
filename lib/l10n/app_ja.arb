@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "コンテンツを利用できません",
   "loadErrorNotFoundTitle": "コンテンツが見つかりません",
   "loadErrorNotFoundMessage": "リンクが間違っているか、コンテンツが削除された可能性があります。",
-  "loadErrorEngineTitle": "対局の開始中にエラーが発生しました",
   "loadErrorLaunchTitle": "Lucenaを開けませんでした",
   "loadErrorLaunchAgainTitle": "Lucenaをまだ開けません",
   "loadErrorLaunchAgainMessage": "アプリを閉じて、もう一度開いてください。解決しない場合は、スマートフォンの空き容量を確認してください。",

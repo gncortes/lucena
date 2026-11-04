@@ -18,8 +18,8 @@ Widget _app(Widget child) => MaterialApp(
 void main() {
   final theme = AppTheme.light;
 
-  test('superfícies do claro iguais às do canvas (painel branco)', () {
-    expect(theme.colorScheme.surfaceContainerLow, const Color(0xFFFFFFFF));
+  test('superfícies do claro iguais às do canvas (painel #FAFBF9, T85-D0)', () {
+    expect(theme.colorScheme.surfaceContainerLow, const Color(0xFFFAFBF9));
     expect(theme.colorScheme.surface, theme.scaffoldBackgroundColor);
   });
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/widgets/app_bar_progress.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/would_pay_keys.dart';
 import 'package:lucena/ui/would_pay/view_models/would_pay_cubit.dart';
@@ -62,19 +63,19 @@ void main() {
     tester,
   ) async {
     await pumpScreen(tester);
-    expect(find.text('1 de 3'), findsOneWidget);
+    expect(_step(tester), 1 / 3); // 1 de 3
     expect(enabled(tester, WouldPayKeys.next), isFalse);
     await tap(tester, WouldPayKeys.courseAnswer('yes'));
     await tap(tester, WouldPayKeys.coursePrice('30to59'));
     expect(enabled(tester, WouldPayKeys.next), isTrue);
     await tap(tester, WouldPayKeys.next);
 
-    expect(find.text('2 de 3'), findsOneWidget);
+    expect(_step(tester), 2 / 3); // 2 de 3
     await tap(tester, WouldPayKeys.coachAnswer('no'));
     await tap(tester, WouldPayKeys.coachPrice('none'));
     await tap(tester, WouldPayKeys.next);
 
-    expect(find.text('3 de 3'), findsOneWidget);
+    expect(_step(tester), 3 / 3); // 3 de 3
     expect(enabled(tester, WouldPayKeys.send), isFalse);
     await tap(tester, WouldPayKeys.learnAnswer('some'));
     await tap(tester, WouldPayKeys.whyChip('rating'));
@@ -95,7 +96,7 @@ void main() {
     await tap(tester, WouldPayKeys.coursePrice('none'));
     await tap(tester, WouldPayKeys.next);
     await tap(tester, WouldPayKeys.back);
-    expect(find.text('1 de 3'), findsOneWidget);
+    expect(_step(tester), 1 / 3); // 1 de 3
     expect(enabled(tester, WouldPayKeys.next), isTrue);
   });
 
@@ -129,3 +130,7 @@ void main() {
     });
   });
 }
+
+/// O passo da pesquisa na barra de progresso (a app bar leva só o título).
+double _step(WidgetTester tester) =>
+    tester.widget<AppBarProgress>(find.byType(AppBarProgress)).value;

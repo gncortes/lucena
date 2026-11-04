@@ -184,7 +184,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
   /// Pergunta 2 do contrato (T65), opção A: o nível e o modo no subtítulo
   /// ("Fácil · Caça às estrelas"). Para a opção B (o nível no título, sem
   /// subtítulo), troque para `false`.
-  static const _levelInSubtitle = true;
+  static const _levelInSubtitle = false;
 
   /// O título centralizado (`CompTopBar back centralizado subtitulo`).
   Widget _title(

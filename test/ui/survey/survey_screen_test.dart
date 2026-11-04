@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/widgets/app_bar_progress.dart';
 import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
 import 'package:lucena/ui/survey/view_models/survey_cubit.dart';
@@ -69,7 +70,7 @@ void main() {
   ) async {
     await pump(tester, SurveyKind.endgames);
     expect(find.text('Sua opinião'), findsOneWidget);
-    expect(find.text('1 de 2'), findsOneWidget);
+    expect(_step(tester), 1 / 2); // 1 de 2
     expect(find.text('O que você achou do Curso de finais?'), findsOneWidget);
     expect(find.text('O que poderia melhorar?'), findsOneWidget);
     expect(find.text('Marque quantos quiser.'), findsOneWidget);
@@ -81,7 +82,7 @@ void main() {
     expect(find.text('Gostei'), findsOneWidget);
     expect(enabled(tester, SurveyKeys.next), isTrue);
     await tap(tester, SurveyKeys.next);
-    expect(find.text('2 de 2'), findsOneWidget);
+    expect(_step(tester), 2 / 2); // 2 de 2
     expect(
       find.text(
         'Se lançarmos um curso completo de finais, você teria interesse?',
@@ -121,11 +122,11 @@ void main() {
       ),
     );
     await pump(tester, SurveyKind.endgames);
-    expect(find.text('2 de 2'), findsOneWidget);
+    expect(_step(tester), 2 / 2); // 2 de 2
     expect(find.text('um final de peões'), findsOneWidget);
     expect(enabled(tester, SurveyKeys.send), isTrue);
     await tap(tester, SurveyKeys.back);
-    expect(find.text('1 de 2'), findsOneWidget);
+    expect(_step(tester), 1 / 2); // 1 de 2
     expect(find.text('Gostei'), findsOneWidget);
   });
 
@@ -169,20 +170,20 @@ void main() {
     tester,
   ) async {
     await pump(tester, SurveyKind.school);
-    expect(find.text('1 de 3'), findsOneWidget);
+    expect(_step(tester), 1 / 3); // 1 de 3
     expect(find.text('O que você achou das lições da Escola?'), findsOneWidget);
     expect(find.text('Coordenadas e notação'), findsOneWidget);
     expect(find.text('Setas e marcas no tabuleiro'), findsNothing);
     await tap(tester, SurveyKeys.face(2));
     await tap(tester, SurveyKeys.next);
-    expect(find.text('2 de 3'), findsOneWidget);
+    expect(_step(tester), 2 / 3); // 2 de 3
     expect(find.text('O que você gostaria de aprender nele?'), findsOneWidget);
     expect(find.text('Preparação para torneio'), findsOneWidget);
     expect(enabled(tester, SurveyKeys.next), isFalse);
     await tap(tester, SurveyKeys.interest(SurveyInterest.yes));
     await tap(tester, SurveyKeys.topicChip('tactics'));
     await tap(tester, SurveyKeys.next);
-    expect(find.text('3 de 3'), findsOneWidget);
+    expect(_step(tester), 3 / 3); // 3 de 3
     expect(
       find.text('Onde você sente mais dificuldade nas suas partidas?'),
       findsOneWidget,
@@ -194,3 +195,7 @@ void main() {
     expect(surveys.responses[SurveyKind.school]?.answers.topics, {'tactics'});
   });
 }
+
+/// O passo da pesquisa na barra de progresso (a app bar leva só o título).
+double _step(WidgetTester tester) =>
+    tester.widget<AppBarProgress>(find.byType(AppBarProgress)).value;

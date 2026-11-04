@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "İçerik kullanılamıyor",
   "loadErrorNotFoundTitle": "İçerik bulunamadı",
   "loadErrorNotFoundMessage": "Bağlantı yanlış olabilir veya içerik kaldırılmış olabilir.",
-  "loadErrorEngineTitle": "Oyun başlatılırken hata oluştu",
   "loadErrorLaunchTitle": "Lucena açılamadı",
   "loadErrorLaunchAgainTitle": "Lucena hâlâ açılamıyor",
   "loadErrorLaunchAgainMessage": "Uygulamayı kapatıp yeniden açın. Sorun devam ederse telefondaki boş alanı kontrol edin.",

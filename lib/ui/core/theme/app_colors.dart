@@ -17,6 +17,14 @@ class AppColors extends ThemeExtension<AppColors> {
     this.chessBlack = chessBlackColor,
   });
 
+  /// Superfícies sem branco (T85-D0, canvas `--card-bg`/`--card-border`/
+  /// `--folha-bg`): cartão, chip e balão em [cardSurface] com contorno 1px
+  /// [cardOutline]; folha de baixo e diálogo em [sheetSurface], a cor do
+  /// fundo da tela.
+  static const cardSurface = Color(0xfffafbf9);
+  static const cardOutline = Color(0xffe1e5df);
+  static const sheetSurface = Color(0xfff5f7f4);
+
   /// O verde do recorde novo (texto e ícone do troféu).
   static const record = Color(0xff2e6b3a);
 

@@ -95,9 +95,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       final label = switch (status) {
-        HomeCourseStatus.lesson => 'Aula de hoje',
-        HomeCourseStatus.done => 'Metas feitas · mais uma aula?',
-        HomeCourseStatus.dayOff => 'Dia de folga · mais uma aula?',
+        HomeCourseStatus.lesson => 'Lição de hoje',
+        HomeCourseStatus.done => 'Metas feitas · mais uma lição?',
+        HomeCourseStatus.dayOff => 'Dia de folga · mais uma lição?',
         _ => 'Próxima meta',
       };
       final action = switch (status) {

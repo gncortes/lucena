@@ -21,8 +21,6 @@
   "@loadErrorNotFoundTitle": {"description": "Standard loading error: NotFoundTitle."},
   "loadErrorNotFoundMessage": "The link may be incorrect or the content has been removed.",
   "@loadErrorNotFoundMessage": {"description": "Standard loading error: NotFoundMessage."},
-  "loadErrorEngineTitle": "Error starting the game",
-  "@loadErrorEngineTitle": {"description": "Standard loading error: EngineTitle."},
   "loadErrorLaunchTitle": "Lucena could not open",
   "@loadErrorLaunchTitle": {"description": "Standard loading error: LaunchTitle."},
   "loadErrorLaunchAgainTitle": "Lucena still cannot open",
@@ -9111,7 +9109,7 @@
   "@challengeInvalidLinkPaste": {
     "description": "UX audit: challengeInvalidLinkPaste"
   },
-  "lessonSaveRetry": "Unable to save your progress. Try going back again.",
+  "lessonSaveRetry": "An unexpected error occurred",
   "@lessonSaveRetry": {
     "description": "UX audit: lessonSaveRetry"
   },
@@ -10172,7 +10170,7 @@
   "@trainingTimePickerTitle": {
     "description": "T85 study plan: trainingTimePickerTitle"
   },
-  "trainingPlanSaveError": "Could not save. Your choices were kept. Try again.",
+  "trainingPlanSaveError": "An unexpected error occurred",
   "@trainingPlanSaveError": {
     "description": "T85 study plan: trainingPlanSaveError"
   },
@@ -10482,7 +10480,7 @@
   "@trainingExerciseExpired": {
     "description": "T85 training exercise and cycle result: trainingExerciseExpired."
   },
-  "trainingExerciseSaveError": "Could not save. Try again.",
+  "trainingExerciseSaveError": "An unexpected error occurred",
   "@trainingExerciseSaveError": {
     "description": "T85 training exercise and cycle result: trainingExerciseSaveError."
   },
@@ -11505,7 +11503,7 @@
   "@learningAnalysisClose": {
     "description": "Dedicated position analysis copy from the training Canvas."
   },
-  "learningAnalysisSaveError": "Could not save. Try again.",
+  "learningAnalysisSaveError": "An unexpected error occurred",
   "@learningAnalysisSaveError": {
     "description": "Dedicated position analysis copy from the training Canvas."
   },
@@ -11822,11 +11820,11 @@
   "@practiceSolutionTarget": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
   },
-  "practiceSolutionUnavailable": "The solution for this position could not be shown. Try again.",
+  "practiceSolutionUnavailable": "An unexpected error occurred",
   "@practiceSolutionUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
   },
-  "practiceOpponentUnavailable": "The engine response could not be obtained. Try again.",
+  "practiceOpponentUnavailable": "An unexpected error occurred",
   "@practiceOpponentUnavailable": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
   }

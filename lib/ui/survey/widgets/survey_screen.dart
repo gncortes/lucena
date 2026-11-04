@@ -105,16 +105,8 @@ class SurveyScreen extends StatelessWidget {
                           .backButtonTooltip,
                       onPressed: cubit.back,
                     ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.surveyTitle),
-                  Text(
-                    l10n.surveyStep(state.step + 1, state.total),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
+              // Só o título: o passo já aparece na barra de progresso.
+              title: Text(l10n.surveyTitle),
               bottom: AppBarProgress(
                 key: SurveyKeys.progress,
                 value: (state.step + 1) / state.total,

@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "Treść niedostępna",
   "loadErrorNotFoundTitle": "Nie znaleziono treści",
   "loadErrorNotFoundMessage": "Link może być nieprawidłowy lub treść została usunięta.",
-  "loadErrorEngineTitle": "Błąd uruchamiania partii",
   "loadErrorLaunchTitle": "Nie udało się otworzyć Luceny",
   "loadErrorLaunchAgainTitle": "Nadal nie można otworzyć Luceny",
   "loadErrorLaunchAgainMessage": "Zamknij aplikację i otwórz ją ponownie. Jeśli problem nie ustąpi, sprawdź wolne miejsce w telefonie.",

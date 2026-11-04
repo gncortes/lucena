@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "Вміст недоступний",
   "loadErrorNotFoundTitle": "Вміст не знайдено",
   "loadErrorNotFoundMessage": "Посилання може бути неправильним або вміст було видалено.",
-  "loadErrorEngineTitle": "Помилка запуску партії",
   "loadErrorLaunchTitle": "Не вдалося відкрити Lucena",
   "loadErrorLaunchAgainTitle": "Lucena досі не відкривається",
   "loadErrorLaunchAgainMessage": "Закрийте застосунок і відкрийте знову. Якщо проблема не зникне, перевірте вільне місце на телефоні.",

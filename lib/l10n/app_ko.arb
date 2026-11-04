@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "콘텐츠를 사용할 수 없습니다",
   "loadErrorNotFoundTitle": "콘텐츠를 찾을 수 없습니다",
   "loadErrorNotFoundMessage": "링크가 잘못되었거나 콘텐츠가 삭제되었을 수 있습니다.",
-  "loadErrorEngineTitle": "대국 시작 중 오류가 발생했습니다",
   "loadErrorLaunchTitle": "Lucena를 열 수 없습니다",
   "loadErrorLaunchAgainTitle": "Lucena가 여전히 열리지 않습니다",
   "loadErrorLaunchAgainMessage": "앱을 닫고 다시 여세요. 문제가 계속되면 휴대전화의 남은 저장 공간을 확인하세요.",

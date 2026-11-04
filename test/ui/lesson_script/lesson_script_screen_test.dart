@@ -404,7 +404,7 @@ void main() {
       await _settle(tester);
       await _tap(tester, LessonScriptKeys.showAnswer);
       expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
-      expect(find.text('Erro ao iniciar a partida'), findsOneWidget);
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
       expect(find.byKey(LessonScriptKeys.board), findsNothing);
       await _tap(tester, LoadErrorKeys.action);
       expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);

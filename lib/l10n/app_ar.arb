@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "المحتوى غير متاح",
   "loadErrorNotFoundTitle": "المحتوى غير موجود",
   "loadErrorNotFoundMessage": "قد يكون الرابط غير صحيح أو تمت إزالة المحتوى.",
-  "loadErrorEngineTitle": "خطأ في بدء المباراة",
   "loadErrorLaunchTitle": "تعذّر فتح Lucena",
   "loadErrorLaunchAgainTitle": "لا يزال يتعذّر فتح Lucena",
   "loadErrorLaunchAgainMessage": "أغلق التطبيق وافتحه مجددًا. إذا استمرت المشكلة، فتحقق من المساحة المتاحة على الهاتف.",

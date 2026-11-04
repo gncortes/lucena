@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "محتوا در دسترس نیست",
   "loadErrorNotFoundTitle": "محتوا پیدا نشد",
   "loadErrorNotFoundMessage": "ممکن است پیوند اشتباه باشد یا محتوا حذف شده باشد.",
-  "loadErrorEngineTitle": "خطا در شروع بازی",
   "loadErrorLaunchTitle": "Lucena باز نشد",
   "loadErrorLaunchAgainTitle": "Lucena همچنان باز نمی‌شود",
   "loadErrorLaunchAgainMessage": "برنامه را ببندید و دوباره باز کنید. اگر مشکل ادامه داشت، فضای خالی تلفن را بررسی کنید.",

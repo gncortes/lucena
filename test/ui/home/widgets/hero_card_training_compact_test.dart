@@ -63,8 +63,8 @@ void main() {
         );
         await tester.pumpAndSettle();
         final label = status == HomeCourseStatus.done
-            ? 'Metas feitas · mais uma aula?'
-            : 'Dia de folga · mais uma aula?';
+            ? 'Metas feitas · mais uma lição?'
+            : 'Dia de folga · mais uma lição?';
         final target = find.byKey(HomeKeys.heroLabel);
         final paragraph = tester.renderObject<RenderParagraph>(target);
         expect(paragraph.text.toPlainText(), label);

@@ -249,7 +249,7 @@ void main() {
       expect(box.bottom - tester.getRect(saved).bottom, 16);
       expect(find.text('Você parou na pergunta 2 de 20'), findsOneWidget);
       expect(
-        find.text('As respostas que você já deu estão guardadas.'),
+        find.text('As respostas que você já deu estão salvas.'),
         findsOneWidget,
       );
     });

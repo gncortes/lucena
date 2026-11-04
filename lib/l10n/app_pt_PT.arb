@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "Conteúdo indisponível",
   "loadErrorNotFoundTitle": "Conteúdo não encontrado",
   "loadErrorNotFoundMessage": "A ligação pode estar errada ou o conteúdo foi removido.",
-  "loadErrorEngineTitle": "Erro ao iniciar a partida",
   "loadErrorLaunchTitle": "O Lucena não abriu",
   "loadErrorLaunchAgainTitle": "O Lucena continua sem abrir",
   "loadErrorLaunchAgainMessage": "Feche a aplicação e abra de novo. Se continuar, verifique o espaço livre no telemóvel.",

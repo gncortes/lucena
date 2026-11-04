@@ -790,7 +790,8 @@ void main() {
         links: FakeDeepLinkService(initial: challenge().uri),
       );
       expect(find.byKey(GameSetupKeys.screen), findsOneWidget);
-      expect(find.byKey(ChallengeKeys.linkSetupSubtitle), findsOneWidget);
+      // App bar só com o título (T85-D0).
+      expect(find.byKey(ChallengeKeys.linkSetupSubtitle), findsNothing);
     });
 
     testWidgets('um link que chega com o app aberto abre o desafio por cima', (

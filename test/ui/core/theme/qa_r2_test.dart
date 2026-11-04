@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/core/board/centered_board_layout.dart';
 import 'package:lucena/ui/core/theme/app_chip.dart';
 import 'package:lucena/ui/core/theme/app_text.dart';
@@ -81,7 +82,7 @@ void main() {
     expect(ctx.cardTitle?.fontWeight, FontWeight.w700);
   });
 
-  testWidgets('folha da Lucena: o chip pinta por baixo o branco da folha', (
+  testWidgets('folha da Lucena: o chip pinta por baixo a cor da folha', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -98,8 +99,9 @@ void main() {
       ),
     );
     final chip = tester.element(find.byKey(const Key('c')));
-    expect(Theme.of(chip).canvasColor, theme.colorScheme.surfaceContainerLow);
-    expect(theme.colorScheme.surfaceContainerLow, isNot(theme.canvasColor));
+    // T85-D0: a folha tem a cor do fundo da tela, e o chip pinta por baixo
+    // essa cor.
+    expect(Theme.of(chip).canvasColor, AppColors.sheetSurface);
   });
 
   testWidgets('painel da Nova partida: o chip pinta por baixo o branco', (

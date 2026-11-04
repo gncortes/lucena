@@ -54,7 +54,7 @@ void main() {
       locale: const Locale('pt'),
       course: const Course(modules: []),
     );
-    final message = find.text('As aulas ainda não estão disponíveis.');
+    final message = find.text('As lições ainda não estão disponíveis.');
     expect(message, findsOneWidget);
     expect(find.byKey(SchoolKeys.continueButton), findsNothing);
     expect(

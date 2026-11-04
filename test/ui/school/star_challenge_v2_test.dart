@@ -130,8 +130,9 @@ void main() {
     ) async {
       final cubit = await pump(tester, size: size);
       expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 72);
-      expect(find.text('Desafio da torre'), findsOneWidget);
-      expect(find.text('Fácil · Caça às estrelas'), findsOneWidget);
+      expect(find.textContaining('Desafio da torre'), findsOneWidget);
+      // Só o título, com o nível (T85-D0).
+      expect(find.text('Desafio da torre · Fácil'), findsOneWidget);
       expect(
         find.descendant(
           of: find.byType(AppBar),

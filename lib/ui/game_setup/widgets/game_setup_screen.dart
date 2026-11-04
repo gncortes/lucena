@@ -82,21 +82,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
     return Scaffold(
       key: GameSetupKeys.screen,
       appBar: LucenaAppBar(
-        title: state.fromLink
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l10n.setupTitle),
-                  Text(
-                    l10n.challengeLinkSetup,
-                    key: ChallengeKeys.linkSetupSubtitle,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              )
-            : Text(l10n.setupTitle),
+        title: Text(l10n.setupTitle),
         actions: [
           // Só contra a máquina: o desafio é uma partida contra ela.
           if (state.ready && state.setup.opponent != OpponentKind.twoPlayers)

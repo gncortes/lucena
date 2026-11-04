@@ -36,8 +36,8 @@ void main() {
           'Cravada',
         ),
         n == 1
-            ? 'Falta a aula Cravada e 1 meta para concluir.'
-            : 'Falta a aula Cravada e 3 metas para concluir.',
+            ? 'Falta a lição Cravada e 1 meta para concluir.'
+            : 'Falta a lição Cravada e 3 metas para concluir.',
       );
     }
   });
@@ -125,7 +125,7 @@ void main() {
         if (sample == 'pending' || sample == 'dailyOff') {
           expect(
             today.single.body,
-            'Falta a aula Tema 9 e 12 metas para concluir.',
+            'Falta a lição Tema 9 e 12 metas para concluir.',
           );
           expect(today.single.title, 'Hora do xadrez');
           expect(today.single.payload, '/');

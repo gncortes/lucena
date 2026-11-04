@@ -86,7 +86,7 @@ void main() {
       if (sample == 'first') {
         expect(find.text('AULA'), findsNothing);
         final info = find.text(
-          'Ao concluir uma aula, o tema dela entra nas metas por 7 dias, um exercício por dia.',
+          'Ao concluir uma lição, o tema dela entra nas metas por 7 dias, um exercício por dia.',
         );
         final panel = tester.widget<Material>(
           find.ancestor(of: info, matching: find.byType(Material)).first,
@@ -107,7 +107,7 @@ void main() {
       } else if (sample == 'dayOff') {
         expect(find.text('Plano: 0 dias de estudo'), findsOneWidget);
         final info = find.text(
-          'A aula adiantada conta como meta feita. Os exercícios dela entram no próximo dia de estudo.',
+          'A lição adiantada conta como meta feita. Os exercícios dela entram no próximo dia de estudo.',
         );
         final panel = tester.widget<Material>(
           find.ancestor(of: info, matching: find.byType(Material)).first,
@@ -121,7 +121,7 @@ void main() {
           tester
               .widget<CourseItemTile>(find.byType(CourseItemTile).first)
               .title,
-          startsWith('Aula 1 · '),
+          startsWith('Lição 1 · '),
         );
       } else if (sample == 'large') {
         final progress = tester.widget<AnimatedProgress>(
@@ -132,7 +132,7 @@ void main() {
           tester
               .widget<CourseItemTile>(find.byType(CourseItemTile).first)
               .title,
-          startsWith('Aula 1 · '),
+          startsWith('Lição 1 · '),
         );
       } else {
         expect(

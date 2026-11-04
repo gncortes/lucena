@@ -10,7 +10,6 @@
   "loadErrorUnavailableTitle": "Nội dung không khả dụng",
   "loadErrorNotFoundTitle": "Không tìm thấy nội dung",
   "loadErrorNotFoundMessage": "Liên kết có thể không đúng hoặc nội dung đã bị xóa.",
-  "loadErrorEngineTitle": "Lỗi khi bắt đầu ván cờ",
   "loadErrorLaunchTitle": "Không thể mở Lucena",
   "loadErrorLaunchAgainTitle": "Vẫn không thể mở Lucena",
   "loadErrorLaunchAgainMessage": "Đóng ứng dụng rồi mở lại. Nếu sự cố vẫn tiếp diễn, hãy kiểm tra dung lượng trống trên điện thoại.",
