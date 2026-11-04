@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/training/course_training_repository.dart';
+import 'package:lucena/data/services/notification_service.dart';
 import 'package:lucena/domain/models/training/goal/training_diagnostic.dart';
 import 'package:lucena/domain/models/training/goal/training_objective.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/use_cases/training/goal/goal_actions.dart';
 import 'package:lucena/domain/use_cases/training/goal/plan_chapters.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/training_goal_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -93,5 +95,41 @@ void main() {
     await $(TrainingGoalKeys.diagnosticScreen).waitUntilVisible();
     await $(TrainingGoalKeys.diagnosticQuestionnaire).tap();
     await $(TrainingGoalKeys.questResume).waitUntilVisible();
+  });
+
+  /// Caso 34: tocar a notificação do torneio com o app fechado abre o
+  /// Registrar. O Patrol não mata o processo; o app é fechado à força pela
+  /// árvore de widgets (como nos outros casos) e a notificação é tocada na
+  /// barra do sistema, passando pela ligação de produção (RemindersBridge).
+  patrolTest('T85 toque na notificação do torneio abre o Registrar', ($) async {
+    final app = AppRobot($);
+    await openGuideWithObjective($, app);
+    final service = DeviceNotificationService();
+    const channel = NotificationChannelSpec(id: 'training', name: 'Treino');
+    await service.start(const [channel]);
+    if (!await service.permitted()) {
+      final permission = service.requestPermission();
+      await $.platform.mobile.grantPermissionWhenInUse();
+      expect(await permission, true);
+    }
+    const title = 'Como foi o torneio?';
+    await service.show(
+      ShownNotification(
+        id: 691,
+        channel: channel,
+        title: title,
+        body: 'Registre o seu desempenho.',
+        payload: '${Routes.training(course.name)}/tournaments/register',
+      ),
+    );
+
+    await app.restart();
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openNotifications();
+    final notifications = await $.platform.mobile.getNotifications();
+    final index = notifications.indexWhere((n) => n.title == title);
+    expect(index, greaterThanOrEqualTo(0));
+    await $.platform.mobile.tapOnNotificationByIndex(index);
+    await $(TrainingGoalKeys.registerScreen).waitUntilVisible();
   });
 }

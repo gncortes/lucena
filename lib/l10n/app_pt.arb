@@ -2396,8 +2396,6 @@
   "treinoDiagQuestSub": "Você conta o que acha fraco no seu jogo",
   "treinoDiagOffline": "Você precisa de conexão com a internet para fazer o teste.",
   "treinoTestProgress": "Posição {n} de {total}",
-  "treinoTestWhite": "Brancas jogam. Encontre o melhor lance.",
-  "treinoTestBlack": "Pretas jogam. Encontre o melhor lance.",
   "treinoTestDontKnow": "Não sei",
   "treinoTestResumeTitle": "Você parou na posição {n} de {total}",
   "treinoTestResumeBody": "As respostas que você já deu estão salvas.",
@@ -2544,5 +2542,8 @@
   "desafiosRaceSeeAll": "Ver os {count}",
   "desafiosShareError": "Não foi possível compartilhar o link.",
   "desafiosSpeedrunEmpty": "Nenhum speedrun neste nível.",
-  "partidaConclusaoVerAnalise": "Ver a análise"
+  "partidaConclusaoVerAnalise": "Ver a análise",
+  "treinoUndoAdjust": "Voltar ao plano anterior",
+  "treinoFieldPace": "Ritmo",
+  "treinoFieldEntity": "Valeu rating de"
 }

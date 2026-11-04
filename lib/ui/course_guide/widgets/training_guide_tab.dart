@@ -327,6 +327,15 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
           onPressed: () => _go(RouteNames.trainingNextGoal),
         ),
       ],
+      if (view.state.previousStudyPlan != null)
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: TextButton(
+            key: TrainingGoalKeys.adjustUndo,
+            onPressed: cubit.undoLastAdjust,
+            child: Text(t.treinoUndoAdjust),
+          ),
+        ),
       if (late.isNotEmpty && phase == TournamentPhase.before)
         Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.md),

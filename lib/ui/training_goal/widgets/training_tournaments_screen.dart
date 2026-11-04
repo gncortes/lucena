@@ -24,6 +24,7 @@ class TrainingTournamentsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     return GoalPage(
+      centerTitle: false,
       screenKey: TrainingGoalKeys.tournamentsScreen,
       title: t.treinoMyTournaments,
       onBack: onBack,

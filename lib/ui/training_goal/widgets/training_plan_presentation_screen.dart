@@ -26,6 +26,7 @@ class TrainingPlanPresentationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     return GoalPage(
+      centerTitle: false,
       screenKey: TrainingGoalKeys.presentationScreen,
       title: t.treinoPlanTitle,
       onBack: onBack,

@@ -4,6 +4,7 @@ import '../../models/training/training_course_config.dart';
 import '../../models/training/training_resources.dart';
 import '../../models/training/training_state.dart';
 import '../now.dart';
+import 'goal/plan_status.dart';
 import 'training_date.dart';
 import 'opening_trecho_rules.dart';
 
@@ -51,9 +52,12 @@ final class BuildDayGoals {
     // Pending lessons retain their place without accumulating a missed day's quota.
     lessons.addAll(pending);
     final reserved = lessons.map((g) => g.ref).toSet();
-    for (final lesson in resources.lessons.where(
-      (l) => l.visible || !l.published,
-    )) {
+    final byId = {for (final l in resources.lessons) l.id: l};
+    final ordered = [
+      for (final id in lessonOrderForPlan(state, resources, date))
+        if (byId[id] case final l? when l.visible || !l.published) l,
+    ];
+    for (final lesson in ordered) {
       if (!lesson.inCourseOrder) continue;
       if (!lesson.published) break;
       if (quota == 0 || lessons.length >= quota) break;

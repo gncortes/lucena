@@ -19,11 +19,13 @@ import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 import '../course_guide/course_guide_catalog_layout_test.dart' show lesson;
 
-Future<void> pump(
+Future<FakeTrainingRepository> pump(
   WidgetTester tester, {
   required CourseGuideTab tab,
   TrainingObjective? objective,
   StudyPlan? plan,
+  StudyPlan? previous,
+  bool? catalogOnlyPlan,
 }) async {
   setPhoneSize(tester, const Size(412, 917));
   const config = TrainingCourseConfig.pilares;
@@ -45,6 +47,8 @@ Future<void> pump(
         tab: tab,
         objective: objective,
         studyPlan: plan,
+        previousStudyPlan: previous,
+        catalogOnlyPlan: catalogOnlyPlan,
       ),
     },
   );
@@ -75,6 +79,7 @@ Future<void> pump(
     ),
   );
   await tester.pumpAndSettle();
+  return repository;
 }
 
 void main() {
@@ -148,5 +153,75 @@ void main() {
     await tester.tap(find.byKey(TrainingGoalKeys.catalogAbout));
     await tester.pumpAndSettle();
     expect(find.text('Sobre o Pilares'), findsOneWidget);
+  });
+
+  testWidgets('H-TRE-09: Voltar ao plano anterior troca o plano e some', (
+    tester,
+  ) async {
+    StudyPlan plan(String id) => StudyPlan(
+      createdOn: '2026-11-04',
+      chapterIds: [id],
+      weeks: [
+        PlanWeek(start: '2026-11-04', end: '2026-11-10', chapterIds: [id]),
+      ],
+    );
+    const objective = TrainingObjective(
+      kind: ObjectiveKind.tournament,
+      setOn: '2026-11-04',
+      tournamentDate: '2026-11-14',
+    );
+    await pump(
+      tester,
+      tab: CourseGuideTab.guide,
+      objective: objective,
+      plan: plan('beta'),
+      previous: plan('alpha'),
+    );
+    expect(find.byKey(TrainingGoalKeys.adjustUndo), findsOneWidget);
+    expect(find.text('Voltar ao plano anterior'), findsOneWidget);
+    await tester.tap(find.byKey(TrainingGoalKeys.adjustUndo));
+    await tester.pumpAndSettle();
+    expect(find.byKey(TrainingGoalKeys.adjustUndo), findsNothing);
+  });
+
+  testWidgets('o filtro do Catálogo fica salvo e volta ao reabrir', (
+    tester,
+  ) async {
+    StudyPlan plan() => StudyPlan(
+      createdOn: '2026-11-04',
+      chapterIds: const ['alpha'],
+      weeks: [
+        PlanWeek(
+          start: '2026-11-04',
+          end: '2026-11-10',
+          chapterIds: const ['alpha'],
+        ),
+      ],
+    );
+    const objective = TrainingObjective(
+      kind: ObjectiveKind.tournament,
+      setOn: '2026-11-04',
+      tournamentDate: '2026-11-14',
+    );
+    final repository = await pump(
+      tester,
+      tab: CourseGuideTab.catalog,
+      objective: objective,
+      plan: plan(),
+    );
+    await tester.tap(find.byKey(TrainingGoalKeys.catalogFilterAll));
+    await tester.pumpAndSettle();
+    final saved = await repository.load(TrainingCourse.pilares);
+    expect(saved.catalogOnlyPlan, isFalse);
+    expect(TrainingState.fromJson(saved.toJson()).catalogOnlyPlan, isFalse);
+
+    await pump(
+      tester,
+      tab: CourseGuideTab.catalog,
+      objective: objective,
+      plan: plan(),
+      catalogOnlyPlan: false,
+    );
+    expect(find.byKey(CourseGuideKeys.chapterLesson('b1')), findsOneWidget);
   });
 }

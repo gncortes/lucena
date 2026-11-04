@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/route_names.dart';
@@ -526,8 +528,9 @@ class _CatalogTab extends StatefulWidget {
 class _CatalogTabState extends State<_CatalogTab> {
   final expanded = <String>{};
 
-  /// Filtro do catálogo (H-TRE-13): com plano, abre em "Meu plano".
-  late bool _onlyPlan = _planIds != null;
+  /// Filtro do catálogo (H-TRE-13): com plano, abre em "Meu plano"; a
+  /// escolha do usuário fica salva no estado do treino.
+  bool get _onlyPlan => widget.state.training?.catalogOnlyPlan ?? true;
 
   Set<String>? get _planIds {
     final plan = widget.state.training?.studyPlan;
@@ -568,7 +571,9 @@ class _CatalogTabState extends State<_CatalogTab> {
           course: config.course,
           hasPlan: planIds != null,
           onlyPlan: filtered,
-          onChanged: (value) => setState(() => _onlyPlan = value),
+          onChanged: (value) => unawaited(
+            context.read<CourseGuideCubit>().setCatalogOnlyPlan(value),
+          ),
         ),
         for (final (index, group) in groups.entries.indexed) ...[
           if (!modules || expanded.contains(group.key)) ...[

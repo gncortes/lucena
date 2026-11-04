@@ -25,6 +25,7 @@ class TrainingWeekScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     return GoalPage(
+      centerTitle: false,
       screenKey: TrainingGoalKeys.weekScreen,
       title: t.treinoWeekHeader(week + 1),
       onBack: onBack,

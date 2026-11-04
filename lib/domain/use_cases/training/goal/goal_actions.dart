@@ -113,6 +113,7 @@ TrainingState replan(
   if (objective == null) return state;
   final levels = state.diagnostic?.topics ?? const <String, TopicLevel>{};
   return state.copyWith(
+    previousStudyPlan: state.studyPlan,
     studyPlan: generateStudyPlan(
       chapters: planChapters(resources),
       levels: levels,
@@ -124,6 +125,13 @@ TrainingState replan(
     missedDayNoticeOn: null,
     missedDayMinutes: null,
   );
+}
+
+/// "Voltar ao plano anterior": desfaz o último ajuste (H-TRE-09).
+TrainingState undoAdjust(TrainingState state) {
+  final previous = state.previousStudyPlan;
+  if (previous == null) return state;
+  return state.copyWith(studyPlan: previous, previousStudyPlan: null);
 }
 
 /// "Agora não" no capítulo atrasado: o plano não muda; só some a pergunta.
@@ -191,6 +199,7 @@ TrainingState confirmKeepTime(
   final dropped = fit.dropped.toSet();
   return clearMissedNotice(
     state.copyWith(
+      previousStudyPlan: plan,
       studyPlan: plan.copyWith(
         chapterIds: [
           for (final id in plan.chapterIds)

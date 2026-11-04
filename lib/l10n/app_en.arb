@@ -11792,14 +11792,6 @@
       }
     }
   },
-  "treinoTestWhite": "White to move. Find the best move.",
-  "@treinoTestWhite": {
-    "description": "Training goal flow copy."
-  },
-  "treinoTestBlack": "Black to move. Find the best move.",
-  "@treinoTestBlack": {
-    "description": "Training goal flow copy."
-  },
   "treinoTestDontKnow": "I don't know",
   "@treinoTestDontKnow": {
     "description": "Training goal flow copy."
@@ -12583,5 +12575,17 @@
   "partidaConclusaoVerAnalise": "View analysis",
   "@partidaConclusaoVerAnalise": {
     "description": "Footer button on the win conclusion that opens the game analysis"
+  },
+  "treinoUndoAdjust": "Back to the previous plan",
+  "@treinoUndoAdjust": {
+    "description": "Training goal flow copy."
+  },
+  "treinoFieldPace": "Pace",
+  "@treinoFieldPace": {
+    "description": "Training goal flow copy."
+  },
+  "treinoFieldEntity": "Counts for rating with",
+  "@treinoFieldEntity": {
+    "description": "Training goal flow copy."
   }
 }
