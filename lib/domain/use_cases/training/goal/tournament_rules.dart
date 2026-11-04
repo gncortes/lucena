@@ -1,3 +1,4 @@
+import '../../../models/training/training_state.dart';
 import '../../../models/training/training_plan.dart';
 import '../training_date.dart';
 
@@ -54,3 +55,21 @@ int studyDaysBetween(TrainingPlan plan, String from, String to) {
 /// Minutos de estudo até o torneio: tempo por dia vezes os dias marcados (H-TRE-03).
 int studyMinutesUntil(TrainingPlan plan, String from, String to) =>
     studyDaysBetween(plan, from, to) * plan.minutes;
+
+/// O aviso local do dia seguinte ao torneio (H-TRE-14): às 9h, uma vez, só
+/// enquanto o desempenho não foi registrado e a hora ainda não passou.
+({DateTime at, String name})? tournamentPush(
+  TrainingState state,
+  DateTime now,
+) {
+  final objective = state.objective;
+  final date = objective?.tournamentDate;
+  if (objective == null || !objective.hasTournament || date == null) {
+    return null;
+  }
+  if (state.tournaments.any((t) => t.date == date)) return null;
+  final day = DateTime.parse(addDays(date, 1));
+  final at = DateTime(day.year, day.month, day.day, 9);
+  if (!at.isAfter(now)) return null;
+  return (at: at, name: objective.tournamentName);
+}

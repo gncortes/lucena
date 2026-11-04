@@ -34,6 +34,12 @@ class L10nReminderTexts implements ReminderTexts, CourseReminderTexts {
   @override
   String get trainingTitle => _l10n.trainingNotifTitle;
   @override
+  String tournamentPushTitle(String tournamentName) => _l10n.treinoHowWas(
+    tournamentName.isEmpty ? _l10n.treinoTournamentLower : tournamentName,
+  );
+  @override
+  String get tournamentPushBody => _l10n.treinoPushBody;
+  @override
   String trainingBody(TrainingReminderText request, String? lessonTitle) {
     final count = request.arguments['n']! as int;
     if (request.key == 'trainingNotifLesson') {

@@ -16,6 +16,7 @@ import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/future_training_reminders.dart';
 import '../../../domain/use_cases/training/training_reminder.dart';
+import '../../../domain/use_cases/training/goal/tournament_rules.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../data/services/notification_service.dart';
 import '../../../domain/models/alert_settings.dart';
@@ -140,6 +141,7 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
       ...trainingNotifications,
     ]);
     await _recordTrainingSchedules(trainingNotifications, now);
+    await _recordTournamentPush(trainingNotifications, now, permitted);
     if (!isClosed && !listEquals(plan, state)) emit(plan);
   }
 
@@ -154,6 +156,20 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     final notifications = <ScheduledNotification>[];
     for (final config in courses) {
       final before = await repository.load(config.course);
+      final push = tournamentPush(before, now());
+      if (push != null) {
+        notifications.add(
+          ScheduledNotification(
+            id: tournamentPushFirstId + config.course.index,
+            channel: texts.trainingChannel,
+            title: texts.tournamentPushTitle(push.name),
+            body: texts.tournamentPushBody,
+            at: push.at,
+            payload:
+                '${Routes.training(config.course.name)}/tournaments/register',
+          ),
+        );
+      }
       if (!before.onboardingDone || !before.plan.reminderOn) continue;
       final resources = await repository.resources(config.course);
       final training = await repository.update(
@@ -253,6 +269,47 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     }
   }
 
+  /// Registra o aviso do torneio uma vez: agendado ao entrar na lista, mostrado
+  /// quando a hora passa. O estado guarda a data do torneio avisado.
+  Future<void> _recordTournamentPush(
+    List<ScheduledNotification> notifications,
+    DateTime now,
+    bool permitted,
+  ) async {
+    final repository = _training;
+    if (repository == null || !permitted) return;
+    for (final config in courses) {
+      final scheduledNow = notifications.any(
+        (n) => n.id == tournamentPushFirstId + config.course.index,
+      );
+      AnalyticsEvent? event;
+      await repository.transact(config.course, (current) {
+        final date = current.objective?.tournamentDate;
+        final marked = current.tournamentPushFor;
+        if (scheduledNow && marked != date) {
+          event = AnalyticsEvents.torneioPushAgendado(
+            curso: config.course.name,
+          );
+          return current.copyWith(tournamentPushFor: date);
+        }
+        if (!scheduledNow && marked != null) {
+          if (marked == date && tournamentPush(current, now) == null) {
+            final registered = current.tournaments.any((t) => t.date == date);
+            if (!registered) {
+              event = AnalyticsEvents.torneioPushMostrado(
+                curso: config.course.name,
+              );
+            }
+          }
+          return current.copyWith(tournamentPushFor: null);
+        }
+        return current;
+      });
+      if (event != null) unawaited(_log(event!));
+    }
+  }
+
+  static const tournamentPushFirstId = 650;
   static const trainingFirstId = 600;
   static const trainingWeeklyFirstId = 700;
   static const trainingTransientFirstId = 708;
