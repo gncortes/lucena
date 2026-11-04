@@ -23,6 +23,7 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+import '../../../testing/aparelho_principal.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
@@ -413,23 +414,28 @@ void main() {
     });
   }
 
-  testWidgets('pergunta (canvas PropV1TesteNivelLance): o enunciado em texto '
-      'normal, à esquerda e colado ao tabuleiro', (tester) async {
-    final (cubit, _) = await pump(tester, size: const Size(412, 915));
-    await cubit.start();
-    await tester.pumpAndSettle();
-    final text = tester.widget<Text>(find.byKey(PlacementKeys.prompt));
-    expect(text.textAlign, TextAlign.start);
-    final style = DefaultTextStyle.of(
-      tester.element(find.byKey(PlacementKeys.prompt)),
-    ).style.merge(text.style);
-    expect(style.fontWeight, anyOf(isNull, FontWeight.w400));
-    expect(style.fontSize, 16);
-    final prompt = tester.getRect(find.byKey(PlacementKeys.prompt));
-    final board = tester.getRect(find.byKey(PlacementKeys.board));
-    expect(prompt.left, closeTo(AppSpacing.screen, 1));
-    expect(board.top - prompt.bottom, closeTo(AppSpacing.md, 1));
-  });
+  for (final size in [const Size(412, 915), aparelhoPrincipal]) {
+    testWidgets(
+      '$size, pergunta (canvas PropV1TesteNivelLance): o enunciado em texto '
+      'normal, à esquerda e colado ao tabuleiro',
+      (tester) async {
+        final (cubit, _) = await pump(tester, size: size);
+        await cubit.start();
+        await tester.pumpAndSettle();
+        final text = tester.widget<Text>(find.byKey(PlacementKeys.prompt));
+        expect(text.textAlign, TextAlign.start);
+        final style = DefaultTextStyle.of(
+          tester.element(find.byKey(PlacementKeys.prompt)),
+        ).style.merge(text.style);
+        expect(style.fontWeight, anyOf(isNull, FontWeight.w400));
+        expect(style.fontSize, 16);
+        final prompt = tester.getRect(find.byKey(PlacementKeys.prompt));
+        final board = tester.getRect(find.byKey(PlacementKeys.board));
+        expect(prompt.left, closeTo(AppSpacing.screen, 1));
+        expect(board.top - prompt.bottom, closeTo(AppSpacing.md, 1));
+      },
+    );
+  }
 
   for (final scale in [1.0, 2.0]) {
     testWidgets('B6: rotação e fonte $scale preservam tabuleiro e respostas', (

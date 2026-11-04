@@ -45,6 +45,7 @@ import 'package:lucena/ui/tour/widgets/tour_screen.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/voice/widgets/voice_pickers.dart';
 
+import '../../../testing/aparelho_principal.dart';
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_chesscom_repository.dart';
@@ -797,7 +798,11 @@ void main() {
       expect(find.byKey(TourKeys.skipButton), findsNothing);
     });
 
-    for (final size in [const Size(360, 800), const Size(412, 915)]) {
+    for (final size in [
+      const Size(360, 800),
+      const Size(412, 915),
+      aparelhoPrincipal,
+    ]) {
       testWidgets('$size: as ações ficam fixas no pé da tela, fora da '
           'rolagem (canvas PropV2TourBConta)', (tester) async {
         await pumpTour(tester, step: TourStep.account, size: size);

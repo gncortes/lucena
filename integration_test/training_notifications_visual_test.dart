@@ -102,6 +102,16 @@ void main() {
             ),
           );
           await $.platform.mobile.openNotifications();
+          // Se o teste cair com a gaveta aberta, ela cobre o app nos cenários
+          // seguintes (prints, MP4, diálogos do sistema e o "voltar"). O
+          // fechar do Patrol é um "voltar": só com a gaveta ainda aberta.
+          var gavetaAberta = true;
+          addTearDown(() async {
+            if (!gavetaAberta) return;
+            try {
+              await $.platform.mobile.closeNotifications();
+            } on Object catch (_) {}
+          });
           final notifications = await $.platform.mobile.getNotifications();
           final index = notifications.indexWhere(
             (notification) =>
@@ -117,6 +127,7 @@ void main() {
             'notification-${course.name}-${lessonDone ? 'lesson-done' : 'lesson-pending'}',
           );
           await $.platform.mobile.tapOnNotificationByIndex(index);
+          gavetaAberta = false;
           await $(HomeKeys.courseCard).waitUntilVisible();
           expect(router.routeInformationProvider.value.uri.path, Routes.home);
         },

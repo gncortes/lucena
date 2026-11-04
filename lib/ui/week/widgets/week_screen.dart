@@ -197,8 +197,12 @@ class _Body extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.betweenCards),
         _Bars(week: week),
-        const SizedBox(height: AppSpacing.betweenCards),
-        _Rating(week: week),
+        // Sem finais na semana o rating não mudou: a linha "de X para X" não
+        // diz nada, e o canvas só a desenha na semana com partidas.
+        if (week.finals > 0) ...[
+          const SizedBox(height: AppSpacing.betweenCards),
+          _Rating(week: week),
+        ],
       ],
     );
   }
