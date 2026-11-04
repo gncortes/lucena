@@ -16,7 +16,8 @@ import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/journey_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'journey_ui.dart';
 import 'trail_widgets.dart';
 import '../../core/widgets/animated_progress.dart';
@@ -48,40 +49,43 @@ class JourneyScreen extends StatelessWidget {
       appBar: LucenaAppBar(title: Text(l10n.journeyTitle)),
       body: progress == null
           ? const SkeletonList()
-          : ListView(
-              padding: scrollPadding(context),
-              children: [
-                // Para quem chega: a Jornada é o passo seguinte às aulas.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg,
-                    AppSpacing.xs,
-                    AppSpacing.lg,
-                    AppSpacing.md,
-                  ),
-                  child: Text(
-                    l10n.journeyIntro,
-                    key: JourneyKeys.intro,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+          : EntradaDaTela(
+              id: 'Jornada',
+              child: ListaEmOrdem(
+                montar: (itens) =>
+                    ListView(padding: scrollPadding(context), children: itens),
+                itens: [
+                  // Para quem chega: a Jornada é o passo seguinte às aulas.
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.xs,
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                    ),
+                    child: Text(
+                      l10n.journeyIntro,
+                      key: JourneyKeys.intro,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
-                ),
-                _Summary(progress: progress),
-                const SizedBox(height: AppSpacing.sm),
-                // A trilha vai do mais fraco ao mais forte: o Stockfish no
-                // fim, como chefe final.
-                for (final (index, rung) in progress.rungs.indexed)
-                  StaggeredEntrance(
-                    index: index,
-                    child: _TrailNode(
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: _Summary(progress: progress),
+                  ),
+                  // A trilha vai do mais fraco ao mais forte: o Stockfish no
+                  // fim, como chefe final.
+                  for (final (index, rung) in progress.rungs.indexed)
+                    _TrailNode(
                       rung: rung,
                       progress: progress,
                       first: index == 0,
                       last: index == progress.rungs.length - 1,
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
     );
   }

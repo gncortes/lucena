@@ -28,6 +28,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/featured.dart';
 import 'package:lucena/domain/use_cases/featured_rules.dart';
 import 'package:lucena/ui/core/keys/featured_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/featured/view_models/featured_catalog_cubit.dart';
 import 'package:lucena/ui/featured/view_models/featured_endgame_cubit.dart';
@@ -45,6 +46,7 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_push_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
 
 class _ControlledProgress extends FakeFeaturedProgressRepository {
   Completer<void>? gate;
@@ -207,6 +209,19 @@ void main() {
       path: '/list',
       load: load,
     );
+
+    testWidgets('primeira carga: seções e cartões entram em ordem', (
+      tester,
+    ) async {
+      await openList(tester, load: false);
+      unawaited(
+        tester
+            .element(find.byKey(FeaturedKeys.listLoading))
+            .read<FeaturedCatalogCubit>()
+            .load(),
+      );
+      await expectEntraEmOrdem(tester);
+    });
 
     testWidgets('mostra o carrossel de torneios e as seções', (tester) async {
       await openList(tester);
@@ -474,6 +489,19 @@ void main() {
       path: '/t/:id',
       load: load,
     );
+
+    testWidgets('primeira carga: cabeçalho e finais entram em ordem', (
+      tester,
+    ) async {
+      await openTournament(tester, 'live', load: false);
+      unawaited(
+        tester
+            .element(find.byKey(FeaturedKeys.tournamentLoading))
+            .read<FeaturedTournamentCubit>()
+            .load(),
+      );
+      await expectEntraEmOrdem(tester);
+    });
 
     testWidgets('em andamento: selos, datas, links e finais para praticar', (
       tester,
@@ -866,4 +894,20 @@ void main() {
       expect(share.text, contains('https://${AppLinks.host}/p/'));
     });
   });
+}
+
+/// H-ANI-17: na primeira carga, a terceira linha ainda entra quando a
+/// primeira já apareceu; no fim, todas prontas.
+Future<void> expectEntraEmOrdem(WidgetTester tester) async {
+  final primeira = find.byKey(MotionKeys.itemDaLista(0));
+  var voltas = 0;
+  while (primeira.evaluate().isEmpty && voltas++ < 100) {
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+  expect(primeira, findsOneWidget);
+  await tester.pump(const Duration(milliseconds: 100));
+  final terceira = find.byKey(MotionKeys.itemDaLista(2));
+  expect(opacidade(tester, terceira), lessThan(opacidade(tester, primeira)));
+  await tester.pumpAndSettle();
+  expect(opacidade(tester, terceira), 1);
 }
