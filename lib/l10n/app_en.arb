@@ -12756,5 +12756,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "partidaContra": "Against {name}",
+  "@partidaContra": {"description": "Game summary card: opponent line", "placeholders": {"name": {"type": "String"}}}
 }

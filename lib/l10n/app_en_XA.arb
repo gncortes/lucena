@@ -2254,8 +2254,6 @@
   "treinoDiagQuestSub": "[Ýöû téll ûš whåt féélš wéåk îñ ýöûŕ ĝåmé one two three four]",
   "treinoDiagOffline": "[Ýöû ñééd åñ îñtéŕñét çöññéçtîöñ tö tåké thé téšt. one two three four five]",
   "treinoTestProgress": "[Pöšîtîöñ {n} öf {total} one two three]",
-  "treinoTestWhite": "[Whîté tö mövé. Fîñd thé béšt mövé. one two three]",
-  "treinoTestBlack": "[Blåçk tö mövé. Fîñd thé béšt mövé. one two three]",
   "treinoTestDontKnow": "[Î döñ't kñöw one two]",
   "treinoTestResumeTitle": "[Ýöû štöppéd åt pöšîtîöñ {n} öf {total} one two three four]",
   "treinoTestResumeBody": "[Thé åñšwéŕš ýöû ålŕéådý ĝåvé åŕé šåvéd. one two three four]",
@@ -2403,6 +2401,10 @@
   "desafiosShareError": "[Çöûld ñöt šhåŕé thé lîñk. one two three]",
   "desafiosSpeedrunEmpty": "[Ñö špéédŕûñš åt thîš lévél. one two three]",
   "partidaConclusaoVerAnalise": "[Vîéw åñålýšîš one two]",
+  "treinoUndoAdjust": "[Båçk tö thé pŕévîöûš plåñ one two three]",
+  "treinoFieldPace": "[Påçé one]",
+  "treinoFieldEntity": "[Çöûñtš föŕ ŕåtîñĝ wîth one two three]",
+  "desafiosSpeedrunRecordHere": "[Ýöûŕ ŕéçöŕd föŕ thîš špéédŕûñ one two three]",
   "partidaAnaliseAntiga": "[Thîš ĝåmé îš fŕöm béföŕé åûtömåtîç åñålýšîš. Å qûîçk åñålýšîš tåkéš å féw šéçöñdš; å déép öñé, åböût å mîñûté. one two three four five six seven eight nine]",
   "partidaAnaliseAnalisar": "[Åñålýžé one]",
   "partidaAbaResumo": "[Šûmmåŕý one]",
@@ -2438,5 +2440,6 @@
   "partidaMenuApagar": "[Délété thîš mövé åñd thé öñéš åftéŕ ît one two three four]",
   "partidaMotorDica": "[Tåp å lîñé tö šéé ît öñ thé böåŕd: ît éñtéŕš åš å våŕîåtîöñ îñ Mövéš. one two three four five six]",
   "partidaMotorForcado": "[Föŕçéd mövé: thé öñlý öñé îš {move}. one two three four]",
-  "partidaMotorLinhas": "{count, plural, =1{[1 lîñé one]} other{[{count} lîñéš one two]}}"
+  "partidaMotorLinhas": "{count, plural, =1{[1 lîñé one]} other{[{count} lîñéš one two]}}",
+  "partidaContra": "[Åĝåîñšt {name} one two]"
 }

@@ -2580,5 +2580,6 @@
   "partidaMenuApagar": "Apagar este lance e os seguintes",
   "partidaMotorDica": "Toque numa linha para vê-la no tabuleiro: ela entra como variante em Lances.",
   "partidaMotorForcado": "Lance forçado: só existe {move}.",
-  "partidaMotorLinhas": "{count, plural, =1{1 linha} other{{count} linhas}}"
+  "partidaMotorLinhas": "{count, plural, =1{1 linha} other{{count} linhas}}",
+  "partidaContra": "Contra {name}"
 }
