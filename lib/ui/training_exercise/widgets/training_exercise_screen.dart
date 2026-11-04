@@ -273,9 +273,12 @@ class _ExerciseViewState extends State<_ExerciseView> {
                               ),
                             ),
                           )
+                        // Sem dica cadastrada a lâmpada não aparece
+                        // (canvas LicaoPraticaSemDica).
                         : state.phase == TrainingExercisePhase.playing &&
                               !state.solving &&
-                              !state.hint
+                              !state.hint &&
+                              exercise.hintText != null
                         ? TrainingCanvasFooter.hint(
                             key: TrainingKeys.exerciseHint,
                             label: l.exerciseHintFree,

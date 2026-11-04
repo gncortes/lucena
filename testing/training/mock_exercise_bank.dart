@@ -13,6 +13,8 @@ abstract final class MockExerciseBank {
           fen: black ? blackFen : fen,
           solution: [black ? 'a8a1' : 'a1a8'],
           mock: true,
+          // O conteúdo real traz `dica` em todo exercício (H-LIC-41).
+          hintText: 'Olhe a última fileira.',
         ),
   ];
 }
