@@ -43,10 +43,10 @@ import 'fakes/fake_feedback_repositories.dart';
 import 'fakes/fake_school_repositories.dart';
 
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/repositories/review/review_repository.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
-import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
 
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
@@ -75,8 +75,8 @@ class TestApp extends StatelessWidget {
     this.purchaseRepository,
     this.storeListingRepository,
     this.updateCubit,
-    this.wouldPayRepository,
     this.feedbackRepository,
+    this.feedbackDraftRepository,
     this.reviewRepository,
     this.schoolProgressRepository,
     this.endgameProgressRepository,
@@ -136,10 +136,8 @@ class TestApp extends StatelessWidget {
   /// A atualização (E1.32), quando a tela testada é uma das duas.
   final UpdateCubit? updateCubit;
 
-  /// O "Você pagaria?" e o "Enviar feedback" (E1.26). Sem eles, o cartão
-  /// nunca aparece e o envio vai para um falso.
-  final WouldPayRepository? wouldPayRepository;
   final FeedbackRepository? feedbackRepository;
+  final FeedbackDraftRepository? feedbackDraftRepository;
   final ReviewRepository? reviewRepository;
 
   /// O progresso que conta as aulas concluídas do convite.
@@ -239,11 +237,11 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<SurveyRepository>.value(
           value: surveyRepository ?? FakeSurveyRepository(),
         ),
-        RepositoryProvider<WouldPayRepository>.value(
-          value: wouldPayRepository ?? const NoWouldPayRepository(),
-        ),
         RepositoryProvider<FeedbackRepository>.value(
           value: feedbackRepository ?? FakeFeedbackRepository(),
+        ),
+        RepositoryProvider<FeedbackDraftRepository>.value(
+          value: feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: reviewRepository ?? FakeReviewRepository(),

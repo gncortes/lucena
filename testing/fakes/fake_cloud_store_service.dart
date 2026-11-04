@@ -20,6 +20,9 @@ class FakeCloudStoreService implements CloudStoreService {
   /// Os documentos criados em `feedback/` (sem o `createdAt` do servidor).
   final feedback = <Map<String, Object?>>[];
 
+  /// Com `true`, a regra recusa o `feedback/` (a gravação falha na hora).
+  bool refuseFeedback = false;
+
   /// Quantas vezes cada partida foi mandada (a regra deixa só criar).
   final gameWrites = <String, int>{};
 
@@ -89,6 +92,9 @@ class FakeCloudStoreService implements CloudStoreService {
 
   @override
   Future<void> addFeedback(Map<String, Object?> data) {
+    if (refuseFeedback) {
+      return Future.error(const CloudStoreException('permission-denied'));
+    }
     if (offline) return Completer<void>().future;
     feedback.add(data);
     return Future.value();
