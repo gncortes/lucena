@@ -237,8 +237,6 @@ void main() {
         AccountKeys.acceptScreen,
       ),
       ('PropV1PerfilSemConta', Routes.settingsProfile, ProfileKeys.screen),
-      // O mesmo Perfil sem conta, no quadro da retenção (H-CON-12).
-      ('PropV1RetencaoPerfil', Routes.settingsProfile, ProfileKeys.screen),
     ]);
   }, tags: ['d2-conta']);
 

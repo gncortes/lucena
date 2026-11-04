@@ -571,7 +571,7 @@ void main() {
     });
   });
 
-  testWidgets('PropV1RetencaoPerfil: um grupo de linhas e um de avisos', (
+  testWidgets('PropV1PerfilSemConta: um grupo de linhas e um de avisos', (
     tester,
   ) async {
     await pumpScreen(tester);

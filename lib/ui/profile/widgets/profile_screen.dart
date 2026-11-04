@@ -36,7 +36,7 @@ import 'account_delete_sheet.dart';
 import 'lichess_sheet.dart';
 import 'profile_rows.dart';
 
-/// O Perfil (quadros `PropV1RetencaoPerfil` e `PropV1PerfilConta`): só o
+/// O Perfil (quadros `PropV1PerfilSemConta` e `PropV1PerfilConta`): só o
 /// que é da pessoa, a mesma tela com e sem conta (muda a linha do cabeçalho,
 /// o cartão de cima e as ações da conta). Um grupo com país, região, idioma,
 /// objetivo, nível e Lichess; outro com as notificações.
