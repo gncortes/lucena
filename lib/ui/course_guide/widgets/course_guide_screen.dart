@@ -27,6 +27,7 @@ import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/keys/training_keys.dart';
+import '../../core/motion/abas_fade_through.dart';
 import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/motion/entrada_em_cascata.dart';
 import '../../core/motion/entradas_vistas.dart';
@@ -205,38 +206,47 @@ class CourseGuideScreen extends StatelessWidget {
             esqueleto: const CourseDownloadSkeleton(),
             child: state.loading
                 ? const SizedBox.shrink()
-                : _entradaDaAba(
-                    config.course,
-                    tab,
-                    training?.onboardingDone == true,
-                    bodyOverride ??
-                        switch (tab) {
-                          CourseGuideTab.lesson =>
-                            training?.onboardingDone == true
-                                ? _withPlanBand(
-                                    _LessonTab(
-                                      state: state,
-                                      onLesson: onLesson,
-                                      onDiploma: onDiploma,
-                                    ),
-                                  )
-                                : _WelcomeTab(onContinue: onWelcomeContinue),
-                          CourseGuideTab.goals => goalsBuilder(context),
-                          CourseGuideTab.guide =>
-                            PilaresDemo.isActive(context, config.course)
-                                ? const PilaresDemoGuide()
-                                : TrainingGuideTab(
-                                    key: CourseGuideKeys.guideTab,
-                                    course: config.course,
-                                  ),
-                          CourseGuideTab.stats => progressBuilder(context),
-                          CourseGuideTab.catalog => _CatalogTab(
-                            state: state,
-                            onChapter: onChapter,
-                            onLesson: onLesson,
-                            onLevelTest: onLevelTest,
-                          ),
-                        },
+                // H-ANI-05: o corpo troca por fade through; a barra de
+                // baixo e a app bar ficam.
+                : AbasFadeThrough(
+                    child: KeyedSubtree(
+                      key: ValueKey(tab),
+                      child: _entradaDaAba(
+                        config.course,
+                        tab,
+                        training?.onboardingDone == true,
+                        bodyOverride ??
+                            switch (tab) {
+                              CourseGuideTab.lesson =>
+                                training?.onboardingDone == true
+                                    ? _withPlanBand(
+                                        _LessonTab(
+                                          state: state,
+                                          onLesson: onLesson,
+                                          onDiploma: onDiploma,
+                                        ),
+                                      )
+                                    : _WelcomeTab(
+                                        onContinue: onWelcomeContinue,
+                                      ),
+                              CourseGuideTab.goals => goalsBuilder(context),
+                              CourseGuideTab.guide =>
+                                PilaresDemo.isActive(context, config.course)
+                                    ? const PilaresDemoGuide()
+                                    : TrainingGuideTab(
+                                        key: CourseGuideKeys.guideTab,
+                                        course: config.course,
+                                      ),
+                              CourseGuideTab.stats => progressBuilder(context),
+                              CourseGuideTab.catalog => _CatalogTab(
+                                state: state,
+                                onChapter: onChapter,
+                                onLesson: onLesson,
+                                onLevelTest: onLevelTest,
+                              ),
+                            },
+                      ),
+                    ),
                   ),
           ),
         ),

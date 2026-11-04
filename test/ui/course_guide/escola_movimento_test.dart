@@ -150,6 +150,46 @@ void main() {
     });
   });
 
+  group('troca de aba (H-ANI-05)', () {
+    testWidgets('o corpo troca por fade through; a barra de baixo fica', (
+      tester,
+    ) async {
+      final cubit = await mount(
+        tester,
+        (s) => s.schoolDayOne(),
+        tab: CourseGuideTab.catalog,
+      );
+      await tester.pumpAndSettle();
+      final corpo = find.byKey(MotionKeys.corpoDasAbas);
+      expect(corpo, findsOneWidget);
+      final barra = find.byType(NavigationBar);
+      final antes = tester.getRect(barra);
+      await cubit.selectTab(CourseGuideTab.goals);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      // No meio da troca as duas abas estão no corpo (a velha some, a nova
+      // cresce).
+      expect(
+        find.descendant(
+          of: corpo,
+          matching: find.byKey(const ValueKey(CourseGuideTab.catalog)),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: corpo,
+          matching: find.byKey(const ValueKey(CourseGuideTab.goals)),
+        ),
+        findsOneWidget,
+      );
+      expect(tester.getRect(barra), antes);
+      await tester.pumpAndSettle();
+      expect(find.byType(TrainingGoalsTab), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('primeira carga (H-ANI-07)', () {
     testWidgets('o esqueleto fica até carregar e se dissolve no conteúdo', (
       tester,
