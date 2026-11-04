@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/course_preview.dart';
+import '../../../domain/models/pilares_access.dart';
+import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/course_preview_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -9,6 +13,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../pilares_sale/view_models/pilares_prices_cubit.dart';
 
 /// As peças comuns da venda (H-VEN-01) e do Sobre o Pilares (H-VEN-02):
 /// cartão, seção, linha com ícone, passos, sumário por parte e dúvidas. Um
@@ -577,4 +582,422 @@ class _SaleFaqState extends State<SaleFaq> {
       ),
     );
   }
+}
+
+/// As abas grudadas embaixo da barra (abas_venda): 48 de altura, indicador de
+/// 3 com 12 de recuo e a linha fina. Visão geral, Conteúdo e Dúvidas.
+class SaleTabsHeader extends SliverPersistentHeaderDelegate {
+  const SaleTabsHeader({
+    required this.controller,
+    required this.color,
+    required this.keyOf,
+  });
+
+  final TabController controller;
+  final Color color;
+  final Key Function(int i) keyOf;
+
+  static const _height = 48.0 + 1;
+
+  @override
+  double get minExtent => _height;
+
+  @override
+  double get maxExtent => _height;
+
+  @override
+  Widget build(BuildContext context, double shrink, bool overlaps) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color,
+        border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 1),
+        child: SizedBox(
+          height: 48,
+          child: TabBar(
+            controller: controller,
+            dividerHeight: 0,
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(width: 3, color: colors.primary),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppShape.tiny),
+              ),
+              insets: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            ),
+            labelColor: colors.primary,
+            unselectedLabelColor: colors.onSurfaceVariant,
+            labelStyle: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            tabs: [
+              for (final (i, label) in [
+                l10n.courseSaleOverview,
+                l10n.courseSaleContent,
+                l10n.courseSaleFaq,
+              ].indexed)
+                Tab(key: keyOf(i), text: label),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(SaleTabsHeader old) =>
+      old.controller != controller || old.color != color;
+}
+
+/// O cartão "Para quem é" (cartao_faixa): abre a tela da faixa
+/// (PropV2CursoFaixa).
+class SaleAudienceCard extends StatelessWidget {
+  const SaleAudienceCard({required this.item, this.tapKey, super.key});
+
+  final CourseSaleItem item;
+  final Key? tapKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.primaryContainer,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        key: tapKey,
+        onTap: () => context.push(D2Paths.pilaresForWhom),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            spacing: AppSpacing.md,
+            children: [
+              Icon(
+                saleIcon(item.icon ?? 'groups'),
+                size: AppIconSize.standard,
+                color: colors.primary,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(item.title, style: saleStrong(context)),
+                    if (item.summary case final summary?)
+                      Text(
+                        summary,
+                        style: saleBody(context, color: colors.onSurface),
+                      ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: AppIconSize.standard,
+                color: colors.primary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O destaque do teste de nível (destaque_nivel): a pergunta, a frase e o
+/// exemplo de cada parte com a pílula.
+class SaleLevelCard extends StatelessWidget {
+  const SaleLevelCard({required this.item, required this.examples, super.key});
+
+  final CourseSaleItem item;
+  final List<({String title, String status, String tone})> examples;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return SaleCard(
+      color: colors.primaryContainer,
+      spacing: 10,
+      children: [
+        Row(
+          spacing: 10,
+          children: [
+            Icon(
+              saleIcon(item.icon ?? 'insights'),
+              size: AppIconSize.standard,
+              color: colors.primary,
+            ),
+            Expanded(
+              child: Text(item.title, style: saleStrong(context, size: 17)),
+            ),
+          ],
+        ),
+        if (item.summary case final summary?)
+          Text(summary, style: saleBody(context, color: colors.onSurface)),
+        SaleCard(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+          spacing: 0,
+          children: [
+            for (final example in examples)
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 36),
+                child: Row(
+                  spacing: AppSpacing.md,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        example.title,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 15,
+                          height: 20 / 15,
+                        ),
+                      ),
+                    ),
+                    SalePill(text: example.status, tone: example.tone),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// O sumário por parte: cada parte é um acordeão e a primeira vem aberta.
+class SaleSummary extends StatelessWidget {
+  const SaleSummary({
+    required this.parts,
+    required this.openings,
+    required this.keyOf,
+    super.key,
+  });
+
+  final List<CourseSalePart> parts;
+  final ({String title, String line, List<String> items}) openings;
+  final Key Function(int i) keyOf;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    spacing: AppSpacing.sm,
+    children: [
+      for (final (i, part) in parts.indexed)
+        SalePartTile(
+          key: keyOf(i),
+          part: part,
+          initiallyOpen: i == 0,
+          openings: openings,
+        ),
+    ],
+  );
+}
+
+/// O maior valor em reais de um texto ("R$ 700 a R$ 1.080" → 1080).
+double? _largestReais(String text) {
+  double? largest;
+  for (final match in RegExp(r'\d[\d.]*(,\d+)?').allMatches(text)) {
+    final value = double.tryParse(
+      match.group(0)!.replaceAll('.', '').replaceAll(',', '.'),
+    );
+    if (value != null && (largest == null || value > largest)) {
+      largest = value;
+    }
+  }
+  return largest;
+}
+
+/// "Quanto custa estudar xadrez por 3 meses" (data-comparativo, H-VEN-01 e
+/// H-VEN-14): as linhas
+/// de custo, a soma com a barra cheia e o Pilares com a barra do tamanho do
+/// preço.
+class SaleCostCompare extends StatelessWidget {
+  const SaleCostCompare({required this.sale, super.key});
+
+  final CourseSale sale;
+
+  /// A proporção do quadro (R$ 99,90 de R$ 1.080) quando falta um preço.
+  static const _fallbackRatio = 0.092;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    final price =
+        context.watch<PilaresPricesCubit>().state[PilaresPlan.lifetime] ??
+        l10n.venRefLifetime;
+    final costs = sale.costs;
+    final total = costs.isEmpty ? null : _largestReais(costs.last.value);
+    final ours = _largestReais(price);
+    final ratio = total != null && ours != null && total > 0
+        ? (ours / total).clamp(0.02, 1.0)
+        : _fallbackRatio;
+    final rowStyle = saleBody(
+      context,
+      color: colors.onSurface,
+    )?.copyWith(fontWeight: FontWeight.w500);
+    final noteStyle = saleBody(context)
+        ?.copyWith(fontSize: 13, height: 18 / 13);
+    Widget row(CourseSaleCost cost) => Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      spacing: AppSpacing.sm,
+      children: [
+        Expanded(child: Text(cost.title, style: rowStyle)),
+        Text(cost.value, textAlign: TextAlign.end, style: rowStyle),
+      ],
+    );
+    return DecoratedBox(
+      key: CoursePreviewKeys.costCompare,
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        border: Border.all(color: AppColors.cardOutline),
+        borderRadius: BorderRadius.circular(AppShape.card),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: AppSpacing.md,
+          children: [
+            Text(
+              sale.costTitle,
+              style: saleStrong(
+                context,
+                size: 18,
+                line: 24,
+              )?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            for (final (i, cost) in costs.indexed)
+              if (i < costs.length - 1)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 2,
+                  children: [
+                    row(cost),
+                    if (cost.note case final note?)
+                      Text(note, style: noteStyle),
+                  ],
+                )
+              else ...[
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: AppColors.cardOutline,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.xs,
+                  children: [
+                    row(cost),
+                    _Bar(
+                      height: 10,
+                      track: colors.primary.withValues(alpha: 0.1),
+                      fill: AppColors.costBar,
+                      ratio: 1,
+                    ),
+                  ],
+                ),
+              ],
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: colors.primary,
+                borderRadius: BorderRadius.circular(AppShape.large),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      spacing: AppSpacing.sm,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            sale.ours.title,
+                            style: saleStrong(context)
+                                ?.copyWith(color: colors.onPrimary),
+                          ),
+                        ),
+                        Text(
+                          price,
+                          style: saleStrong(
+                            context,
+                            size: 18,
+                            line: 24,
+                          )?.copyWith(color: colors.onPrimary),
+                        ),
+                      ],
+                    ),
+                    _Bar(
+                      height: 14,
+                      track: colors.onPrimary.withValues(alpha: 0.22),
+                      fill: AppColors.goalWinBg,
+                      ratio: ratio,
+                    ),
+                    if (sale.ours.summary case final summary?)
+                      Text(
+                        summary,
+                        style: saleBody(
+                          context,
+                          color: AppColors.onPrimarySoft,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            Text(
+              sale.costSource,
+              style: saleBody(context)?.copyWith(fontSize: 12, height: 16 / 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Uma barra do comparativo: o trilho e o preenchimento na proporção.
+class _Bar extends StatelessWidget {
+  const _Bar({
+    required this.height,
+    required this.track,
+    required this.fill,
+    required this.ratio,
+  });
+
+  final double height;
+  final Color track;
+  final Color fill;
+  final double ratio;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    height: height,
+    decoration: BoxDecoration(
+      color: track,
+      borderRadius: BorderRadius.circular(AppShape.full),
+    ),
+    alignment: AlignmentDirectional.centerStart,
+    child: FractionallySizedBox(
+      widthFactor: ratio,
+      heightFactor: 1,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(AppShape.full),
+        ),
+      ),
+    ),
+  );
 }

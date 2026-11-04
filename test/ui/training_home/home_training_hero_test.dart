@@ -21,8 +21,9 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/routing/training_launch.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
-import 'package:lucena/ui/core/theme/app_motion.dart';
-import 'package:lucena/ui/core/widgets/game_board_hero.dart';
+import 'package:lucena/ui/core/motion/lucena_motion.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/home/widgets/hero_card.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
@@ -158,7 +159,7 @@ void main() {
               ),
             ],
             banks: {
-              'theme': [exercise],
+              if (!opening) 'theme': [exercise],
             },
             openings: {
               'theme': [
@@ -248,7 +249,6 @@ void main() {
                               lessonId: 'theme',
                               teacher: launch.teacher,
                               preview: launch.openingPreview,
-                              homeHero: true,
                               onNextGoal: () {},
                             )
                           : TrainingExerciseScreen(
@@ -259,16 +259,13 @@ void main() {
                               title: launch.title,
                               teacher: launch.teacher,
                               preview: launch.exercisePreview,
-                              homeHero: true,
                               onNextGoal: () {},
                               onRedoLesson: (_) {},
                             );
-                      return CustomTransitionPage<void>(
+                      return PaginaComTabuleiro<void>(
+                        context: context,
                         key: state.pageKey,
-                        transitionDuration: AppMotion.screen,
                         child: child,
-                        transitionsBuilder: (_, animation, _, child) =>
-                            FadeTransition(opacity: animation, child: child),
                       );
                     },
                   ),
@@ -306,49 +303,40 @@ void main() {
           expect(find.byType(SnackBar), findsNothing);
           // First destination frame must contain the matching arrival mark,
           // even while both repository reads are held by the gate.
-          final arrival = find.byType(GameBoardHero);
-          expect(arrival, findsOneWidget);
-          final board =
-              (tester.widget<GameBoardHero>(arrival).child as Directionality)
-                      .child
-                  as Chessboard;
-          expect(board.orientation, side);
-          expect(find.byType(CircularProgressIndicator), findsNothing);
-          expect(
-            find.descendant(
-              of: arrival,
-              matching: find.byWidgetPredicate(
-                (w) => w is Hero && w.tag == gameBoardTag(side),
-              ),
+          // H-ANI-02: a ponta de chegada é o TabuleiroHero do mesmo FEN do
+          // cartão do Início.
+          // Durante o voo o Hero tira o tabuleiro da árvore: procura-se a
+          // ponta pela tela.
+          final arrival = find.descendant(
+            of: find.byType(
+              opening ? TrainingOpeningScreen : TrainingExerciseScreen,
             ),
-            findsOneWidget,
+            matching: find.byType(TabuleiroHero),
           );
-          final destinationRect = tester.getRect(arrival);
+          expect(arrival, findsOneWidget);
+          expect(tester.widget<TabuleiroHero>(arrival).id, training.fen);
+          expect(find.byType(CircularProgressIndicator), findsNothing);
           // No input is accepted from the visual snapshot.
           final ignores = tester.widgetList<IgnorePointer>(
             find.ancestor(of: arrival, matching: find.byType(IgnorePointer)),
           );
           expect(ignores.any((w) => w.ignoring), isTrue);
           await tester.pump(const Duration(milliseconds: 120));
-          final flying = tester.widgetList<StaticChessboard>(
-            find.byType(StaticChessboard),
-          );
+          final flying = tester.getSize(find.byKey(MotionKeys.tabuleiroEmVoo));
           expect(
-            flying.any((w) => w.size > HeroCard.board && w.size < 412),
+            flying.width > HeroCard.board && flying.width < 412,
             isTrue,
-            reason: 'The frozen Home board must be in the flight overlay',
+            reason: 'The Home board must be in the flight overlay',
           );
-          await tester.pump(AppMotion.screen);
+          await tester.pump(LucenaMotion.vooDoTabuleiro);
+          expect(
+            tester.widget<Chessboard>(find.byKey(boardKey)).orientation,
+            side,
+          );
+          final destinationRect = tester.getRect(find.byKey(boardKey));
           gate.complete();
           await tester.pumpAndSettle();
           expect(tester.getRect(find.byKey(boardKey)), destinationRect);
-          expect(
-            find.byWidgetPredicate(
-              (w) => w is Hero && w.tag == gameBoardTag(side),
-            ),
-            findsNothing,
-            reason: 'Arrival Hero is retired before returning',
-          );
           router.pop();
           await tester.pumpAndSettle();
           expect(find.text(opening ? 'Aberturas' : 'Guia'), findsOneWidget);

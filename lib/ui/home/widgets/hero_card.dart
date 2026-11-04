@@ -10,15 +10,16 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/canvas_symbols.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/position_board.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
@@ -153,7 +154,9 @@ class HeroCard extends StatelessWidget {
       avatar: state.teacher,
       fen: fen,
       orientation: training.orientation,
-      boardTag: fen == null ? null : gameBoardTag(training.orientation),
+      // H-ANI-02 (combinado da D1): o tabuleiro voa com o id = FEN da
+      // posição que a tela de destino abre.
+      boardHeroId: fen,
       onPressed: () =>
           openTrainingCourse(context, training, teacher: state.teacher),
     );
@@ -172,6 +175,7 @@ class _HeroData {
     this.avatarTag,
     this.fen,
     this.boardTag,
+    this.boardHeroId,
     this.orientation,
   });
 
@@ -187,6 +191,9 @@ class _HeroData {
   final Object? avatarTag;
   final String? fen;
   final Object? boardTag;
+
+  /// O id do [TabuleiroHero] (o FEN que a tela de destino mostra ao abrir).
+  final String? boardHeroId;
   final Side? orientation;
 }
 
@@ -223,113 +230,117 @@ class _HeroLayout extends StatelessWidget {
       );
       if (avatarTag != null) portrait = Hero(tag: avatarTag, child: portrait);
     }
-    return Material(
-      key: HomeKeys.goalCard,
-      color: colors.primary,
-      borderRadius: BorderRadius.circular(AppShape.large),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: data.onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.md,
-            children: [
-              Row(
-                spacing: AppSpacing.md,
-                children: [
-                  ?portrait,
-                  Expanded(
-                    child: Text(
-                      data.title,
-                      key: HomeKeys.goalTitle,
-                      maxLines: 2,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: on,
-                        fontWeight: AppWeight.heavy,
+    // H-ANI-20: o cartão afunda no toque.
+    return CartaoPressionavel(
+      child: Material(
+        key: HomeKeys.goalCard,
+        color: colors.primary,
+        borderRadius: BorderRadius.circular(AppShape.large),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: data.onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.md,
+              children: [
+                Row(
+                  spacing: AppSpacing.md,
+                  children: [
+                    ?portrait,
+                    Expanded(
+                      child: Text(
+                        data.title,
+                        key: HomeKeys.goalTitle,
+                        maxLines: 2,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: on,
+                          fontWeight: AppWeight.heavy,
+                        ),
                       ),
                     ),
-                  ),
-                  if (fen != null)
-                    PositionBoard(
-                      key: HomeKeys.heroBoard,
-                      fen: fen,
-                      orientation: orientation,
-                      size: HeroCard.board,
-                      heroTag: data.boardTag,
-                    ),
-                ],
-              ),
-              Row(
-                children: [
-                  // Com a barra, ela ocupa o meio (o rótulo vai até a metade
-                  // do espaço antes do botão); sem, o rótulo vai até o botão.
-                  // O botão fica sempre encostado à direita.
-                  Expanded(
-                    child: data.progress > 0
-                        ? LayoutBuilder(
-                            builder: (context, constraints) => Row(
-                              children: [
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth: constraints.maxWidth / 2,
-                                  ),
-                                  child: label,
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  // A barra branca sobre o azul.
-                                  child: Theme(
-                                    data: theme.copyWith(
-                                      colorScheme: colors.copyWith(primary: on),
+                    if (fen != null)
+                      _comHero(
+                        data.boardHeroId,
+                        PositionBoard(
+                          key: HomeKeys.heroBoard,
+                          fen: fen,
+                          orientation: orientation,
+                          size: HeroCard.board,
+                          heroTag: data.boardTag,
+                        ),
+                      ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    // Com a barra, ela ocupa o meio (o rótulo vai até a metade
+                    // do espaço antes do botão); sem, o rótulo vai até o botão.
+                    // O botão fica sempre encostado à direita.
+                    Expanded(
+                      child: data.progress > 0
+                          ? LayoutBuilder(
+                              builder: (context, constraints) => Row(
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: constraints.maxWidth / 2,
                                     ),
-                                    child: AnimatedProgress(
+                                    child: label,
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  Expanded(
+                                    // A barra branca sobre o azul; enche até
+                                    // o ponto em que a pessoa está (H-ANI-13).
+                                    child: BarraQueEnche(
                                       key: HomeKeys.heroProgress,
-                                      value: data.progress,
-                                      backgroundColor: on.withValues(
-                                        alpha: 0.3,
-                                      ),
+                                      valor: data.progress,
+                                      cor: on,
+                                      corDoTrilho: on.withValues(alpha: 0.3),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : label,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  FilledButton.icon(
-                    key: HomeKeys.goalAction,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: on,
-                      foregroundColor: colors.primary,
-                      minimumSize: const Size(0, kButtonHeightPill),
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        AppSpacing.md,
-                        0,
-                        AppSpacing.lg,
-                        0,
+                                ],
+                              ),
+                            )
+                          : label,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    FilledButton.icon(
+                      key: HomeKeys.goalAction,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: on,
+                        foregroundColor: colors.primary,
+                        minimumSize: const Size(0, kButtonHeightPill),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          AppSpacing.md,
+                          0,
+                          AppSpacing.lg,
+                          0,
+                        ),
+                        // O desenho tem 36; o toque, os 48 do Material (D6).
+                        tapTargetSize: MaterialTapTargetSize.padded,
+                        visualDensity: VisualDensity.standard,
+                        shape: const StadiumBorder(),
                       ),
-                      // O desenho tem 36; o toque, os 48 do Material (D6).
-                      tapTargetSize: MaterialTapTargetSize.padded,
-                      visualDensity: VisualDensity.standard,
-                      shape: const StadiumBorder(),
+                      onPressed: data.onPressed,
+                      icon: const Icon(
+                        CanvasSymbols.playArrow,
+                        fill: 1,
+                        size: AppIconSize.button,
+                      ),
+                      label: Text(data.action),
                     ),
-                    onPressed: data.onPressed,
-                    icon: const Icon(
-                      CanvasSymbols.playArrow,
-                      fill: 1,
-                      size: AppIconSize.button,
-                    ),
-                    label: Text(data.action),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+Widget _comHero(String? id, Widget board) =>
+    id == null ? board : TabuleiroHero(id: id, child: board);

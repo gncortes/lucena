@@ -17,6 +17,7 @@ import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/course_preview/widgets/course_details_screen.dart';
 import 'package:lucena/ui/course_preview/widgets/course_sale_parts.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
@@ -65,8 +66,12 @@ void main() {
           builder: (_, _) => const Scaffold(body: Text('inicio')),
         ),
         GoRoute(
-          path: D2Paths.pilaresAbout,
-          builder: (_, _) => const Scaffold(body: Text('sobre')),
+          path: '${Routes.training('pilares')}/help',
+          builder: (context, _) => Scaffold(
+            body: Column(
+              children: [const Text('como funciona'), const CourseAboutTile()],
+            ),
+          ),
         ),
         ...d2Routes,
       ],
@@ -304,7 +309,7 @@ void main() {
       );
       await pump(tester, D2Paths.pilaresPresentation);
       expect(find.byKey(CoursePreviewKeys.sale), findsNothing);
-      expect(find.text('sobre'), findsOneWidget);
+      expect(find.byKey(CoursePreviewKeys.details), findsOneWidget);
     });
 
     testWidgets('conteúdo: Parte I aberta, lições numeradas, teste e '
@@ -360,20 +365,163 @@ void main() {
     });
   });
 
+  group('Sobre o Pilares (H-VEN-02)', () {
+    Finder detailsScrollable() => find
+        .descendant(
+          of: find.byKey(CoursePreviewKeys.details),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+
+    Future<Finder> reveal(WidgetTester tester, Finder finder) async {
+      await tester.scrollUntilVisible(
+        finder,
+        200,
+        scrollable: detailsScrollable(),
+      );
+      await tester.pumpAndSettle();
+      return finder;
+    }
+
+    Future<void> openDetailsTab(WidgetTester tester, int i) async {
+      await tester.tap(find.byKey(CoursePreviewKeys.detailsTab(i)));
+      await tester.pumpAndSettle();
+    }
+
+    /// Abre "Como funciona" e toca no cartão "Sobre o Pilares".
+    Future<GoRouter> openFromHelp(WidgetTester tester) async {
+      final router = await pump(tester, '${Routes.training('pilares')}/help');
+      await tester.tap(find.byKey(CoursePreviewKeys.aboutTile));
+      await tester.pumpAndSettle();
+      return router;
+    }
+
+    testWidgets('1: o cartão da Ajuda abre a barra, 3 abas e Visão geral', (
+      tester,
+    ) async {
+      await pump(tester, '${Routes.training('pilares')}/help');
+      expect(find.text('Sobre o Pilares'), findsOneWidget);
+      expect(
+        find.text('Conteúdo, plano e dúvidas do Pilares do Xadrez.'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(CoursePreviewKeys.aboutTile));
+      await tester.pumpAndSettle();
+      expect(find.byKey(CoursePreviewKeys.details), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.text('Sobre o Pilares'),
+        ),
+        findsOneWidget,
+      );
+      for (var i = 0; i < 3; i++) {
+        expect(find.byKey(CoursePreviewKeys.detailsTab(i)), findsOneWidget);
+      }
+      expect(tester.widget<TabBar>(find.byType(TabBar)).controller!.index, 0);
+      expect(find.text('Como o curso funciona'), findsOneWidget);
+      for (var i = 1; i <= 5; i++) {
+        expect(find.text('Passo $i'), findsOneWidget);
+      }
+      expect(
+        await reveal(tester, find.byKey(CoursePreviewKeys.detailsAudience)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('2: Conteúdo com as partes e a Parte I aberta', (tester) async {
+      await openFromHelp(tester);
+      await openDetailsTab(tester, 1);
+      expect(find.text('Resultado de exemplo'), findsOneWidget);
+      expect(find.text('Sumário de exemplo.'), findsOneWidget);
+      expect(find.byKey(CoursePreviewKeys.detailsPart(0)), findsOneWidget);
+      expect(
+        find.byKey(CoursePreviewKeys.summaryChapter(1), skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(CoursePreviewKeys.summaryChapter(7), skipOffstage: false),
+        findsNothing,
+      );
+    });
+
+    testWidgets('3: Dúvidas com a primeira aberta; tocar abre outra', (
+      tester,
+    ) async {
+      await openFromHelp(tester);
+      await openDetailsTab(tester, 2);
+      expect(find.text('Resposta de exemplo 1.'), findsOneWidget);
+      expect(find.text('Resposta de exemplo 2.'), findsNothing);
+      await tester.tap(
+        await reveal(tester, find.byKey(CoursePreviewKeys.detailsFaq(1))),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Resposta de exemplo 2.'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(CoursePreviewKeys.detailsFaq(1)),
+          matching: find.byIcon(Icons.expand_less_rounded),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('5: a seta volta a "Como funciona", de qualquer aba', (
+      tester,
+    ) async {
+      for (var i = 0; i < 3; i++) {
+        await openFromHelp(tester);
+        await openDetailsTab(tester, i);
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
+        expect(find.byKey(CoursePreviewKeys.details), findsNothing);
+        expect(find.text('como funciona'), findsOneWidget);
+      }
+    });
+
+    testWidgets('5: aberta direto (comprador), a seta vai a "Como funciona"', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresAbout);
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      expect(find.text('como funciona'), findsOneWidget);
+    });
+  });
+
   // 9: o texto real da venda só afirma e bate com o conteúdo (105, 20,
   // 850+). O arquivo é privado: fora do CI, o teste pula.
   final real = File('assets/courses/pt/pilares_venda.json');
   test('9: a venda real só afirma e traz 105 lições, 20 capítulos e 850+', () {
-    final raw = real.readAsStringSync();
-    final sale = CoursePreview.fromJson(jsonDecode(raw) as Map<String, dynamic>)
-        .sale;
+    final json = jsonDecode(real.readAsStringSync()) as Map<String, dynamic>;
+    final sale = CoursePreview.fromJson(json).sale;
     expect(sale.title, 'Pilares do Xadrez');
     expect(sale.lessons, 105);
     expect(sale.chapters, 20);
     expect(sale.exercises, '850+');
     expect(sale.benefits, hasLength(8));
     expect(sale.faq, hasLength(8));
-    final text = raw.toLowerCase();
+    // Sobre o Pilares (H-VEN-02): 5 partes que somam 105 e as 9 dúvidas.
+    final details = CoursePreview.fromJson(json).details;
+    expect(details.steps, hasLength(5));
+    expect(details.faq, hasLength(9));
+    expect(details.faq.first.question, 'Serve para o meu nível?');
+    expect(sale.parts.map((p) => p.lessons), [24, 17, 25, 21, 18]);
+    // 4 e 6: o fim da assinatura e o tempo de acesso, sem valores.
+    final ended = details.faq.singleWhere(
+      (f) => f.question == 'O que acontece quando a assinatura termina?',
+    );
+    for (final part in ['progresso', 'Capítulo 1', 'anúncio', '2 a 20']) {
+      expect(ended.answer, contains(part));
+    }
+    final access = details.faq.singleWhere(
+      (f) => f.question == 'Por quanto tempo tenho acesso?',
+    );
+    expect(access.answer, contains('Acesso vitalício ao Pilares'));
+    expect(access.answer, contains('assinatura mensal'));
+    expect(access.answer.contains(r'R$'), isFalse);
+    // Só a venda: o "Sobre o Pilares" explica regras ("sem dica").
+    final text = jsonEncode(json['sale']).toLowerCase();
     for (final negation in ['não é um curso', ' sem ', 'nada de']) {
       expect(text.contains(negation), isFalse, reason: negation);
     }

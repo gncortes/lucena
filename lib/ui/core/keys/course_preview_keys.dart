@@ -19,4 +19,12 @@ abstract final class CoursePreviewKeys {
   static const audience = Key('coursePreview.sale.audience');
   static const band = Key('coursePreview.band');
   static const bandChart = Key('coursePreview.band.chart');
+
+  // "Sobre o Pilares" (H-VEN-02).
+  static const aboutTile = Key('course.details.aboutTile');
+  static const details = Key('course.details');
+  static Key detailsTab(int index) => Key('course.details.tab.$index');
+  static Key detailsPart(int index) => Key('course.details.part.$index');
+  static Key detailsFaq(int index) => Key('course.details.faq.$index');
+  static const detailsAudience = Key('course.details.audience');
 }

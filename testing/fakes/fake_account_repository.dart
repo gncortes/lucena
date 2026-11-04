@@ -11,6 +11,9 @@ class FakeAccountRepository implements AccountRepository {
   Account? account;
   AccountFailure? failure;
   bool canceled = false;
+
+  /// Segura a entrada pelo Google até completar (para ver o carregando).
+  Completer<void>? googleHold;
   final _changes = StreamController<Account?>.broadcast();
 
   static const google = Account(
@@ -41,6 +44,8 @@ class FakeAccountRepository implements AccountRepository {
 
   @override
   Future<Account?> signInWithGoogle() async {
+    final hold = googleHold;
+    if (hold != null) await hold.future;
     _throwIfFailing();
     if (canceled) return null;
     _set(google);

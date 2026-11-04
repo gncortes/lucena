@@ -6,10 +6,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/use_cases/featured_rules.dart';
+import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -19,7 +24,6 @@ import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/load_error.dart';
-import '../../core/widgets/staggered_entrance.dart';
 import '../../featured/widgets/featured_card.dart';
 import '../../streak/widgets/streak_lost_sheet.dart';
 import '../view_models/home_cubit.dart';
@@ -41,9 +45,9 @@ class _HomeScreenState extends State<HomeScreen>
     duration: AppMotion.entrance,
   );
 
-  // Entrada em sequência: o nome do app primeiro, depois o painel.
+  // O nome do app entra primeiro; o painel entra em ordem, de cima para
+  // baixo (`ListaEmOrdem`, H-ANI-17).
   late final _title = _stage(0, 0.6);
-  late final _actions = _stage(0.3, 1);
 
   CurvedAnimation _stage(double begin, double end) {
     return CurvedAnimation(
@@ -66,7 +70,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _title.dispose();
-    _actions.dispose();
     _entrance.dispose();
     super.dispose();
   }
@@ -90,51 +93,65 @@ class _HomeScreenState extends State<HomeScreen>
         }
       },
       child: BlocListener<HomeCubit, HomeState>(
-        // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
-        // Tour e oferta primeiro: a folha só sai quando é a vez dela (uma por
-        // abertura).
+        // A oferta do Pilares por cima do Início (H-INI-14), uma vez por
+        // abertura, quando o Início é a tela de cima.
         listenWhen: (previous, current) =>
-            current.lostSheetTurn &&
-            (previous.streak.lost == 0 ||
-                previous.tourPending ||
-                previous.offerPending),
+            current.ready && current.offerOpen && !current.tourPending,
         listener: (context, state) {
-          final cubit = context.read<HomeCubit>();
-          var played = false;
-          unawaited(
-            showStreakLostSheet(
-              context,
-              streak: state.streak,
-              onPlay: () {
-                played = true;
-                unawaited(context.push(Routes.daily));
-              },
-            ).then((_) => cubit.lostAnswered(state.streak, played: played)),
-          );
-          unawaited(cubit.lostShown());
+          if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
+          unawaited(context.read<HomeCubit>().offerOpened());
+          unawaited(context.push(D2Paths.pilaresBeforeHome));
         },
-        child: BlocBuilder<HomeCubit, HomeState>(
-          builder: (context, state) => state.failed && !state.ready
-              // O Início é a raiz: o erro não tem "Voltar".
-              ? KeyedSubtree(
-                  key: HomeKeys.error,
-                  child: LoadErrorScreen(
-                    kind: LoadErrorKind.generic,
-                    onAction: () => context.read<HomeCubit>().load(
-                      Localizations.localeOf(context).languageCode,
+        child: BlocListener<HomeCubit, HomeState>(
+          // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
+          // Tour e oferta primeiro: a folha só sai quando é a vez dela (uma por
+          // abertura).
+          listenWhen: (previous, current) =>
+              current.lostSheetTurn &&
+              (previous.streak.lost == 0 ||
+                  previous.tourPending ||
+                  previous.offerPending),
+          listener: (context, state) {
+            final cubit = context.read<HomeCubit>();
+            var played = false;
+            unawaited(
+              showStreakLostSheet(
+                context,
+                streak: state.streak,
+                onPlay: () {
+                  played = true;
+                  unawaited(context.push(Routes.daily));
+                },
+              ).then((_) => cubit.lostAnswered(state.streak, played: played)),
+            );
+            unawaited(cubit.lostShown());
+          },
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) => state.failed && !state.ready
+                // O Início é a raiz: o erro não tem "Voltar".
+                ? KeyedSubtree(
+                    key: HomeKeys.error,
+                    child: LoadErrorScreen(
+                      kind: LoadErrorKind.generic,
+                      onAction: () => context.read<HomeCubit>().load(
+                        Localizations.localeOf(context).languageCode,
+                      ),
                     ),
-                  ),
-                )
-              : _scaffold(context, theme),
+                  )
+                : _scaffold(context, theme),
+          ),
         ),
       ),
     );
   }
 
   Widget _scaffold(BuildContext context, ThemeData theme) {
-    return Scaffold(
-      key: HomeKeys.screen,
-      body: SafeArea(child: _content(context, theme)),
+    return EntradaDaTela(
+      id: homeEntranceId,
+      child: Scaffold(
+        key: HomeKeys.screen,
+        body: SafeArea(child: _content(context, theme)),
+      ),
     );
   }
 
@@ -195,37 +212,21 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             Expanded(
               child: BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  if (!state.ready) return const _HomeSkeleton();
-                  return ListView(
+                // Primeira carga: o esqueleto brilha e se dissolve no
+                // conteúdo (H-ANI-07).
+                builder: (context, state) => ShimmerConteudo(
+                  carregando: !state.ready,
+                  esqueleto: const _HomeSkeleton(),
+                  child: ListView(
                     padding: scrollPadding(
                       context,
                       left: AppSpacing.lg,
                       top: AppSpacing.sm,
                       right: AppSpacing.lg,
                     ),
-                    children: [
-                      _Entrance(
-                        animation: _actions,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (state.hero != null) ...[
-                              HeroCard(state: state),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
-                            if (state.showsFeatured &&
-                                state.featured != null) ...[
-                              _featured(context, state.featured!),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
-                            _shortcuts(context, state),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                    children: [ListaEmOrdem(itens: _sections(context, state))],
+                  ),
+                ),
               ),
             ),
           ],
@@ -233,6 +234,24 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
   }
+
+  // As partes da rolagem, na ordem em que entram: o cartão, o destaque, o
+  // título dos atalhos e uma linha da grade por vez.
+  List<Widget> _sections(BuildContext context, HomeState state) {
+    Widget gap(Widget child, double bottom) => Padding(
+      padding: EdgeInsets.only(bottom: bottom),
+      child: child,
+    );
+    return [
+      if (state.hero != null) gap(HeroCard(state: state), AppSpacing.xl),
+      if (state.showsFeatured && state.featured != null)
+        gap(_featured(context, state.featured!), AppSpacing.xl),
+      ..._shortcuts(context, state),
+    ];
+  }
+
+  /// O quadro do canvas da entrada do Início (H-ANI-01: uma vez por sessão).
+  static const homeEntranceId = 'PropV2Home';
 
   /// A altura da barra de cima (canvas `PropV2UxHome`).
   static const _topBar = 64.0;
@@ -251,51 +270,53 @@ class _HomeScreenState extends State<HomeScreen>
           seeMoreKey: FeaturedKeys.homeSeeAll,
           onSeeMore: () => context.go(Routes.featured),
         ),
-        FeaturedCard(
-          key: FeaturedKeys.homeCard,
-          item: item,
-          compact: true,
-          // Por cima da tela inicial: voltar cai nela, não na lista.
-          onTap: () => context.push(Routes.featuredEndgame(item.id)),
+        // H-ANI-20: o destaque afunda no toque.
+        CartaoPressionavel(
+          child: FeaturedCard(
+            key: FeaturedKeys.homeCard,
+            item: item,
+            compact: true,
+            // Por cima da tela inicial: voltar cai nela, não na lista.
+            onTap: () => context.push(Routes.featuredEndgame(item.id)),
+          ),
         ),
       ],
     );
   }
 
   // "Atalhos": todos os caminhos marcados numa grade 2×N, todos da mesma
-  // altura; "Ver mais" abre Todos os modos.
-  Widget _shortcuts(BuildContext context, HomeState state) {
+  // altura; "Ver mais" abre Todos os modos. Cada linha é uma parte da lista.
+  List<Widget> _shortcuts(BuildContext context, HomeState state) {
     final shortcuts = state.shortcuts;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.md,
-      children: [
-        HomeSectionHeader(
+    return [
+      Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.md),
+        child: HomeSectionHeader(
           title: context.l10n.homeShortcutsTitle,
           titleKey: HomeKeys.shortcutsTitle,
           seeMoreKey: HomeKeys.shortcutsSeeMore,
           onSeeMore: () => context.go(Routes.allModes),
         ),
-        for (var row = 0; row < shortcuts.length; row += 2)
-          Row(
+      ),
+      for (var row = 0; row < shortcuts.length; row += 2)
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+          child: Row(
             spacing: AppSpacing.md,
             children: [
               for (var column = row; column < row + 2; column++)
                 Expanded(
                   child: column < shortcuts.length
-                      ? StaggeredEntrance(
-                          index: column,
-                          child: ModeTile(
-                            shortcut: shortcuts[column],
-                            hasPlan: state.training != null,
-                          ),
+                      ? ModeTile(
+                          shortcut: shortcuts[column],
+                          hasPlan: state.training != null,
                         )
                       : const SizedBox.shrink(),
                 ),
             ],
           ),
-      ],
-    );
+        ),
+    ];
   }
 }
 

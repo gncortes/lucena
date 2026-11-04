@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -22,6 +23,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_wiki.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   Future<ExerciseCubit> pump(
@@ -76,9 +78,20 @@ void main() {
     'T85 test arrow and Android back open the same cancelable dialog',
     (tester) async {
       await pump(tester, 'e02', trainingTest: true, locale: const Locale('pt'));
+      // H-ANI-06: a barra de cima enche (H-ANI-13) e a saída é a folha
+      // sobre o véu, não um diálogo.
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byKey(MotionKeys.barraQueEnche),
+        ),
+        findsOneWidget,
+      );
       await tester.tap(find.byKey(TrainingKeys.testBack));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.testLeaveDialog), findsOneWidget);
+      expect(find.byKey(MotionKeys.folha), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
       await tester.tap(find.byKey(TrainingKeys.testContinue));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.testLeaveDialog), findsNothing);
@@ -88,6 +101,7 @@ void main() {
       await tester.tap(find.byKey(TrainingKeys.testContinue));
       await tester.pumpAndSettle();
       expect(find.byKey(ExerciseKeys.board), findsOneWidget);
+      expectTabuleiroAnimado(tester, ExerciseKeys.board);
     },
   );
 
@@ -231,6 +245,30 @@ void main() {
       tester.widget<Icon>(find.byKey(TrainingKeys.exerciseResultMark)).icon,
       Icons.cancel,
     );
+  });
+
+  testWidgets('H-ANI-11/12: acerto e erro pintam a casa e põem o selo na '
+      'peça, sobre o tabuleiro', (tester) async {
+    setSize(tester, sizes.first);
+    await pump(tester, 'e02');
+    expect(find.byKey(MotionKeys.corDaCasa), findsNothing);
+    Finder selo(IconData icon) => find.descendant(
+      of: find.byKey(MotionKeys.seloNaPeca),
+      matching: find.byIcon(icon),
+    );
+    await move(tester, 'c1', 'c4');
+    expect(find.byKey(MotionKeys.corDaCasa), findsOneWidget);
+    expect(selo(Icons.check), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byKey(ExerciseKeys.board),
+        matching: find.byKey(MotionKeys.tabuleiroDoRetorno),
+      ),
+      findsOneWidget,
+    );
+    await move(tester, 'c4', 'c3');
+    expect(selo(Icons.close), findsOneWidget);
+    expect(selo(Icons.check), findsNothing);
   });
 
   testWidgets('erro depois do primeiro lance tira um ponto e não zera', (

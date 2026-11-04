@@ -3,11 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/repositories/characters/character_repository.dart';
+import '../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../data/repositories/lesson_ad/course_access_repository.dart';
 import '../../data/repositories/lesson_ad/demo_ad_repository.dart';
+import '../../data/repositories/training/course_training_repository.dart';
+import '../../data/repositories/training/demo_offer_repository.dart';
 import '../../domain/models/character.dart';
+import '../../domain/models/course_access.dart';
 import '../../domain/use_cases/now.dart';
 import '../../domain/models/survey.dart';
 import '../../domain/models/training/lesson_end.dart';
+import '../../domain/models/training/training_course.dart';
+import '../../domain/models/training/training_state.dart';
+import '../../domain/use_cases/training/goal/goal_dates.dart';
+import '../../domain/use_cases/training/goal/goal_view.dart';
+import '../../domain/use_cases/training/lesson_end_steps.dart';
+import '../../ui/core/l10n/l10n.dart';
+import '../../ui/lesson_end/view_models/demo_offer_cubit.dart';
+import '../../ui/lesson_end/widgets/day_goal_screen.dart';
+import '../../ui/lesson_end/widgets/demo_offer_screen.dart';
 import '../../ui/core/widgets/load_skeleton.dart';
 import '../../ui/lesson_end/widgets/course_completed_screen.dart';
 import '../../ui/lesson_end/widgets/lesson_soon_screen.dart';
@@ -32,6 +46,12 @@ abstract final class D1Paths {
   /// Curso concluído, o diploma (H-LIC-46).
   static const trainingCompleted = '/training/:course/completed';
 
+  /// Meta do dia cumprida, no fim do último exercício do dia (H-LIC-50).
+  static const trainingDayGoal = '/training/:course/day-goal';
+
+  /// Oferta da demonstração no fim da lição (H-LIC-51).
+  static const trainingDemoOffer = '/training/:course/demo-offer';
+
   /// Anúncio da demonstração em tela cheia (H-LIC-47).
   static const lessonAd = '/lesson/ad';
 
@@ -43,6 +63,96 @@ abstract final class D1Paths {
 
   /// Feedback enviado (H-OPI-12).
   static const feedbackSent = '/settings/feedback/sent';
+}
+
+/// A meta do dia e se o botão "Fazer o teste agora" aparece.
+typedef DayGoalArgs = ({DayGoalSummary summary, bool canTest});
+
+/// O resultado da lição que a oferta mostra.
+typedef DemoOfferArgs = ({DemoOfferFacts facts, String title});
+
+/// O que vem depois do último exercício, antes de voltar ao Treino
+/// (H-LIC-50/51): a meta do dia, se foi cumprida, e a oferta da demonstração,
+/// se o [DemoOfferCubit] deixar. Devolve aonde ir depois de voltar ao Treino
+/// (o teste do capítulo ou a oferta do Pilares) ou nulo para ficar no Treino.
+Future<String?> showLessonEndSteps(
+  BuildContext context, {
+  required TrainingCourse course,
+  required TrainingState saved,
+  required String lessonId,
+  required String lessonTitle,
+}) async {
+  // Falha aqui não pode virar "não foi possível salvar": o treino já gravou.
+  try {
+    return await _lessonEndSteps(
+      context,
+      course: course,
+      saved: saved,
+      lessonId: lessonId,
+      lessonTitle: lessonTitle,
+    );
+  } on Object catch (error, stack) {
+    reportHandledError(error, stack);
+    return null;
+  }
+}
+
+Future<String?> _lessonEndSteps(
+  BuildContext context, {
+  required TrainingCourse course,
+  required TrainingState saved,
+  required String lessonId,
+  required String lessonTitle,
+}) async {
+  final router = GoRouter.of(context);
+  final l = context.l10n;
+  final now = context.read<Now>();
+  final training = context.read<TrainingRepository>();
+  final access = context.read<CourseAccessRepository>().access;
+  final offers = context.read<DemoOfferRepository>();
+  final resources = await training.resources(course);
+  final today = trainingGoalToday(now());
+  final pathParameters = {'course': course.name};
+  String? next;
+  final summary = dayGoalSummary(
+    saved,
+    resources,
+    today,
+    chapterLabel: (n, title) => l.trainingProgressChapterTitle(n, title),
+  );
+  final testId = GoalView.of(saved, resources, today).current?.testId;
+  if (summary != null) {
+    final canTest = summary.testPending && testId != null;
+    final test = await router.pushNamed<bool>(
+      RouteNames.trainingDayGoal,
+      pathParameters: pathParameters,
+      extra: (summary: summary, canTest: canTest),
+    );
+    if (test == true && canTest) next = Routes.endgameExercisesIntro(testId);
+  }
+  final facts = demoOfferFacts(saved, resources, lessonId);
+  if (facts == null || access != CourseAccess.demo) return next;
+  final cubit = DemoOfferCubit(
+    course: course,
+    repository: offers,
+    demo: true,
+    now: now,
+  );
+  await cubit.decide();
+  final show = cubit.state == true;
+  await cubit.close();
+  if (!show) return next;
+  final buy = await router.pushNamed<bool>(
+    RouteNames.trainingDemoOffer,
+    pathParameters: pathParameters,
+    extra: (facts: facts, title: lessonTitle),
+  );
+  return buy == true
+      ? router.namedLocation(
+          RouteNames.pilaresOffer,
+          queryParameters: const {'origem': 'fim_demo'},
+        )
+      : next;
 }
 
 /// Carrega o Viktor e só então monta a tela (esqueleto enquanto carrega).
@@ -97,6 +207,47 @@ final List<RouteBase> d1Routes = [
           ),
           onBack: () =>
               context.canPop() ? context.pop() : context.go(_courseHome(state)),
+        ),
+      );
+    },
+  ),
+  appRoute(
+    name: RouteNames.trainingDayGoal,
+    path: D1Paths.trainingDayGoal,
+    // Sem os dados do dia (link solto, fechar à força), volta ao treino.
+    redirect: (context, state) =>
+        state.extra is DayGoalArgs ? null : _courseHome(state),
+    builder: (context, state) {
+      final args = state.extra! as DayGoalArgs;
+      return DayGoalScreen(
+        summary: args.summary,
+        onBack: () => context.canPop()
+            ? context.pop(false)
+            : context.go(_courseHome(state)),
+        onTest: args.canTest ? () => context.pop(true) : null,
+      );
+    },
+  ),
+  appRoute(
+    name: RouteNames.trainingDemoOffer,
+    path: D1Paths.trainingDemoOffer,
+    redirect: (context, state) =>
+        state.extra is DemoOfferArgs ? null : _courseHome(state),
+    builder: (context, state) {
+      final args = state.extra! as DemoOfferArgs;
+      return _withViktor(
+        (teacher) => DemoOfferScreen(
+          chapterNumber: args.facts.chapter,
+          exerciseTitle: args.title,
+          correct: args.facts.correct,
+          total: args.facts.total,
+          teacher: teacher,
+          onSeeCourse: () => context.canPop()
+              ? context.pop(true)
+              : context.go(_courseHome(state)),
+          onNotNow: () => context.canPop()
+              ? context.pop(false)
+              : context.go(_courseHome(state)),
         ),
       );
     },

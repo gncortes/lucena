@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/test_canvas_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/endgames/widgets/exercises_done_screen.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 
 /// H-LIC-47 a 49: medalhas e telas de resultado do teste do capítulo.
@@ -131,6 +134,79 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('Os erros foram'), findsNothing);
+  });
+
+  group('H-ANI-25: o resultado se monta em ordem', () {
+    Widget page(int correct) => TestCanvasResultPage(
+      chapter: 2,
+      answers: [for (var i = 0; i < 12; i++) i < correct],
+      teacher: FakeCharacterRepository.viktor,
+      onContinue: () {},
+      onRetry: () {},
+      onReview: (_) {},
+    );
+    const partes = ['estrela', 'titulo', 'subtitulo', 'viktor', 'botoes'];
+
+    for (final reduced in [false, true]) {
+      testWidgets('medalha, título, placar, bolinhas, Viktor e botões '
+          '(reduzido: $reduced)', (tester) async {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        await tester.pumpWidget(
+          TestApp(locale: const Locale('pt'), child: page(10)),
+        );
+        expectEntradaDeResultado(
+          tester,
+          partes: partes,
+          bolinhas: 12,
+          animando: !reduced,
+        );
+        await tester.pump(const Duration(milliseconds: 1300));
+        await tester.pump();
+        expect(
+          opacidadeDaParte(
+            tester,
+            find.byKey(MotionKeys.parteDoResultado('botoes')),
+          ),
+          1,
+        );
+        await tester.pumpAndSettle();
+      });
+    }
+
+    testWidgets('o mesmo resultado já visto abre pronto', (tester) async {
+      final vistas = EntradasVistas();
+      Future<void> abrir(Key key) async {
+        await tester.pumpWidget(
+          TestApp(
+            locale: const Locale('pt'),
+            child: EntradasVistasEscopo(
+              vistas: vistas,
+              child: KeyedSubtree(key: key, child: page(4)),
+            ),
+          ),
+        );
+      }
+
+      await abrir(const ValueKey(1));
+      expectEntradaDeResultado(
+        tester,
+        partes: partes,
+        bolinhas: 12,
+        animando: true,
+      );
+      await tester.pumpAndSettle();
+      await abrir(const ValueKey(2));
+      expectEntradaDeResultado(
+        tester,
+        partes: partes,
+        bolinhas: 12,
+        animando: false,
+      );
+    });
   });
 
   testWidgets('reprovar não mostra cadeado nem aviso de bloqueio', (

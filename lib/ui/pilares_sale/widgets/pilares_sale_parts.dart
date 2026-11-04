@@ -17,11 +17,16 @@ class PilaresBenefitSection extends StatelessWidget {
   const PilaresBenefitSection({
     required this.label,
     required this.items,
+    this.compact = false,
     super.key,
   });
 
   final String label;
   final List<(IconData, String, String)> items;
+
+  /// O cartão mais justo do fim da demonstração (`PropV2DemoOferta`):
+  /// margem 12, 8 entre os itens, ícone centrado e título 16/24.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -44,25 +49,37 @@ class PilaresBenefitSection extends StatelessWidget {
             border: Border.all(color: AppColors.cardOutline),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: EdgeInsets.all(compact ? AppSpacing.md : AppSpacing.lg),
             child: Column(
               children: [
                 for (final (index, (icon, title, text)) in items.indexed) ...[
-                  if (index > 0) const SizedBox(height: AppSpacing.lg),
+                  if (index > 0)
+                    SizedBox(height: compact ? AppSpacing.sm : AppSpacing.lg),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: compact
+                        ? CrossAxisAlignment.center
+                        : CrossAxisAlignment.start,
                     children: [
                       Icon(
                         icon,
                         color: colors.primary,
                         size: AppIconSize.standard,
                       ),
-                      const SizedBox(width: AppSpacing.md),
+                      SizedBox(width: compact ? AppSpacing.lg : AppSpacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(title, style: theme.textTheme.titleSmall),
+                            Text(
+                              title,
+                              style: compact
+                                  ? theme.textTheme.titleMedium?.copyWith(
+                                      fontSize: 16,
+                                      height: 24 / 16,
+                                      fontWeight: FontWeight.w500,
+                                    )
+                                  : theme.textTheme.titleSmall,
+                            ),
                             const SizedBox(height: 2),
                             Text(
                               text,
@@ -412,4 +429,39 @@ class PilaresResultScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// O selo em pílula (24 de altura, 12/16 peso 500): "Vitalício", "Mensal" e
+/// "Demonstração" no cartão do curso; "Grátis" no Catálogo da demo.
+class PilaresBadge extends StatelessWidget {
+  const PilaresBadge({
+    required this.text,
+    this.background = AppColors.successSurface,
+    this.foreground = AppColors.successOnSurface,
+    super.key,
+  });
+
+  final String text;
+  final Color background;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    constraints: const BoxConstraints(minHeight: 24),
+    alignment: Alignment.center,
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    decoration: BoxDecoration(
+      color: background,
+      borderRadius: BorderRadius.circular(AppShape.extraLarge),
+    ),
+    child: Text(
+      text,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 12,
+        height: 16 / 12,
+        fontWeight: FontWeight.w500,
+        color: foreground,
+      ),
+    ),
+  );
 }

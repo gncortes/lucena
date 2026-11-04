@@ -9,6 +9,7 @@ import '../../../domain/models/training/training_course_config.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -146,64 +147,67 @@ class ModeTile extends StatelessWidget {
     );
     return SizedBox(
       height: height,
-      child: Material(
-        key: shortcut.key,
-        color: colors.surfaceContainerLow,
-        // #FAFBF9 com contorno 1px #E1E5DF (H-INI-06).
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppShape.large),
-          side: const BorderSide(color: AppColors.cardOutline),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.go(shortcut.route(hasPlan: hasPlan)),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: iconBox,
-                  height: iconBox,
-                  decoration: BoxDecoration(
-                    color: tone.background,
-                    borderRadius: BorderRadius.circular(AppShape.large),
-                  ),
-                  child: Icon(
-                    shortcut.icon,
-                    fill: 1,
-                    size: AppIconSize.standard,
-                    color: tone.foreground,
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      shortcut.title(l10n),
-                      maxLines: 1,
-                      style: context.cardTitle?.copyWith(
-                        fontWeight: AppWeight.heavy,
-                        letterSpacing: 0,
-                      ),
+      // H-ANI-20: o atalho afunda no toque.
+      child: CartaoPressionavel(
+        child: Material(
+          key: shortcut.key,
+          color: colors.surfaceContainerLow,
+          // #FAFBF9 com contorno 1px #E1E5DF (H-INI-06).
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShape.large),
+            side: const BorderSide(color: AppColors.cardOutline),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => context.go(shortcut.route(hasPlan: hasPlan)),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: iconBox,
+                    height: iconBox,
+                    decoration: BoxDecoration(
+                      color: tone.background,
+                      borderRadius: BorderRadius.circular(AppShape.large),
                     ),
-                    // Sempre a altura de duas linhas: o título fica na
-                    // mesma altura em todos os atalhos.
-                    SizedBox(
-                      height: _twoLines(context, body),
-                      child: Align(
-                        alignment: AlignmentDirectional.topStart,
-                        child: Text(
-                          shortcut.body(l10n),
-                          maxLines: 2,
-                          style: body,
+                    child: Icon(
+                      shortcut.icon,
+                      fill: 1,
+                      size: AppIconSize.standard,
+                      color: tone.foreground,
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        shortcut.title(l10n),
+                        maxLines: 1,
+                        style: context.cardTitle?.copyWith(
+                          fontWeight: AppWeight.heavy,
+                          letterSpacing: 0,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      // Sempre a altura de duas linhas: o título fica na
+                      // mesma altura em todos os atalhos.
+                      SizedBox(
+                        height: _twoLines(context, body),
+                        child: Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: Text(
+                            shortcut.body(l10n),
+                            maxLines: 2,
+                            style: body,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

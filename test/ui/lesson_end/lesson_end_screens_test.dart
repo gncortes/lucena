@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/lesson_end.dart';
 import 'package:lucena/ui/core/keys/lesson_end_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/widgets/diploma_card.dart';
 import 'package:lucena/ui/lesson_end/widgets/course_completed_screen.dart';
 import 'package:lucena/ui/lesson_end/widgets/day_goal_screen.dart';
@@ -69,6 +70,50 @@ void main() {
     );
     expect(find.byKey(LessonEndKeys.dayGoalTest), findsNothing);
     expect(find.text('3 de 4 lições'), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-13: as barras dos capítulos enchem de 0 na entrada', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        surveyRepository: FakeSurveyRepository(),
+        child: DayGoalScreen(summary: summary(), onBack: () {}),
+      ),
+    );
+    final bars = find.descendant(
+      of: find.byKey(MotionKeys.barraQueEnche),
+      matching: find.byType(LinearProgressIndicator),
+    );
+    expect(bars, findsNWidgets(6));
+    double first() => tester.widget<LinearProgressIndicator>(bars.first).value!;
+    expect(first(), 0);
+    await tester.pump(const Duration(milliseconds: 350));
+    expect(first(), inExclusiveRange(0, 1));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(first(), 1);
+  });
+
+  testWidgets('H-ANI-13: com movimento reduzido, a barra já está cheia', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        surveyRepository: FakeSurveyRepository(),
+        mediaBuilder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!,
+        ),
+        child: DayGoalScreen(summary: summary(), onBack: () {}),
+      ),
+    );
+    final bars = find.descendant(
+      of: find.byKey(MotionKeys.barraQueEnche),
+      matching: find.byType(LinearProgressIndicator),
+    );
+    expect(tester.widget<LinearProgressIndicator>(bars.at(2)).value, .5);
   });
 
   testWidgets('B20: oferta da demonstração', (tester) async {

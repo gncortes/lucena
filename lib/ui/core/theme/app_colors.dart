@@ -36,6 +36,9 @@ class AppColors extends ThemeExtension<AppColors> {
   static const successOnSurface = Color(0xff2e6b45);
   static const waitingSurface = Color(0xfffff1cc);
   static const waitingOnSurface = Color(0xff7a5900);
+
+  /// O texto do aviso amarelo (pagamento pendente no Perfil).
+  static const waitingInk = Color(0xff3d2e00);
   static const errorSurface = Color(0xfffce4e1);
 
   /// O verde do recorde novo (texto e ícone do troféu).

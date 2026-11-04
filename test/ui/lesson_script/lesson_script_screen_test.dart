@@ -40,6 +40,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/script_fixture.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 const _tall = Size(412, 915);
 const _short = Size(360, 640);
@@ -1005,6 +1006,16 @@ void main() {
       });
     });
   }
+
+  testWidgets('H-ANI-02: o tabuleiro voa com o FEN de abertura da lição, '
+      'que não muda com os lances', (tester) async {
+    final s = await _open(tester, _tall);
+    final first = s.cubit.state.fen;
+    expectTabuleiroHero(tester, LessonScriptKeys.board, first);
+    await _until(tester, s, ScriptPhase.pergunta);
+    expectTabuleiroHero(tester, LessonScriptKeys.board, first);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('pergunta: só Ver resposta; resposta traz a lista de lances', (
     tester,

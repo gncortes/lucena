@@ -19,10 +19,12 @@ import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/training/training_history_source.dart';
 import '../data/repositories/training/course_download_repository.dart';
 import '../data/repositories/push/push_repository.dart';
+import 'frentes/d1_routes.dart' show showLessonEndSteps;
 import 'frentes/d3_routes.dart' show D3Paths;
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../domain/models/training/day_goals.dart';
+import '../domain/models/analytics_event.dart';
 import '../domain/models/character.dart';
 import '../domain/models/training/training_content.dart';
 import '../domain/models/training/training_course.dart';
@@ -36,8 +38,9 @@ import '../ui/core/analytics/analytics_context.dart';
 import '../ui/core/l10n/l10n.dart';
 import '../ui/core/keys/training_keys.dart';
 import '../ui/course_entry/widgets/course_entry_gate.dart';
+import '../ui/course_preview/widgets/course_details_screen.dart';
 import '../ui/course_entry/widgets/course_content_session.dart';
-import '../ui/core/theme/app_motion.dart';
+import '../ui/core/motion/tabuleiro_hero.dart';
 import '../ui/course_guide/view_models/course_guide_cubit.dart';
 import '../ui/course_guide/view_models/training_plan_cubit.dart';
 import '../ui/course_guide/widgets/course_chapter_screen.dart';
@@ -56,6 +59,7 @@ import '../domain/use_cases/training/goal/goal_actions.dart';
 import '../domain/use_cases/training/goal/goal_dates.dart';
 import 'routes.dart';
 import '../ui/lesson_ad/widgets/lesson_entry.dart';
+import '../ui/pilares_sale/widgets/pilares_demo_tabs.dart';
 import 'route_names.dart';
 import 'training_launch.dart';
 import 'training_goal_destination.dart';
@@ -134,6 +138,9 @@ GoRoute trainingRoute() => GoRoute(
         onTour: () => context.push(
           '${Routes.training(_config(state).course.name)}/tour?help=1',
         ),
+        footer: _config(state).course == TrainingCourse.pilares
+            ? const CourseAboutTile()
+            : null,
       ),
     ),
     GoRoute(
@@ -588,17 +595,44 @@ class _Guide extends StatelessWidget {
           }
           context.push(Routes.trainingChapter(course, chapter));
         },
-        goalsBuilder: (_) => KeyedSubtree(
-          key: openings ? TrainingKeys.openingsScreen : null,
-          child: TrainingGoalsTab(
-            onGoal: goal,
-            onPlan: plan,
-            onOpening: (id) => context.push(
-              '${Routes.trainingOpening(course, id)}${openings ? '?list=1' : ''}',
+        goalsBuilder: (tab) {
+          // Demonstração do Pilares (H-VEN-12): cadeado no que não é lição
+          // do Capítulo 1 e a chamada no fim.
+          final demo = PilaresDemo.isActive(
+            tab,
+            tab.read<CourseGuideCubit>().config.course,
+          );
+          return KeyedSubtree(
+            key: openings ? TrainingKeys.openingsScreen : null,
+            child: TrainingGoalsTab(
+              onGoal: demo
+                  ? (g) {
+                      tab.analytics.log(
+                        AnalyticsEvents.demoInicio(capituloId: '1'),
+                      );
+                      goal(g);
+                    }
+                  : goal,
+              onPlan: plan,
+              onOpening: (id) => context.push(
+                '${Routes.trainingOpening(course, id)}${openings ? '?list=1' : ''}',
+              ),
+              onLockedGoal: demo
+                  ? (_) => unawaited(PilaresDemo.openLockedGoal(tab))
+                  : null,
+              lessonSummary: demo ? tab.l10n.venDemoGoalsLesson : null,
+              footer: demo ? const PilaresDemoGoalsCallout() : null,
             ),
-          ),
-        ),
-        progressBuilder: (_) => TrainingProgressTab(
+          );
+        },
+        progressBuilder: (tab) => TrainingProgressTab(
+          footer:
+              PilaresDemo.isActive(
+                tab,
+                tab.read<CourseGuideCubit>().config.course,
+              )
+              ? const PilaresDemoStatsCallout()
+              : null,
           testScores: context.read<CourseGuideCubit>().state.testScores,
           testProgress: context.read<CourseGuideCubit>().state.testProgress,
           onTest: (id) => context.push(Routes.endgameExercisesIntro(id)),
@@ -782,9 +816,21 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
       return;
     }
     try {
-      await context.read<course_training.TrainingRepository>().update(
-        widget.config.course,
-        (s) => s.copyWith(tab: CourseGuideTab.goals),
+      final saved = await context
+          .read<course_training.TrainingRepository>()
+          .update(
+            widget.config.course,
+            (s) => s.copyWith(tab: CourseGuideTab.goals),
+          );
+      final title = (await _data)?.title ?? '';
+      if (!mounted) return;
+      // Meta do dia e oferta da demo antes de voltar (H-LIC-50/51, frente D1).
+      final next = await showLessonEndSteps(
+        context,
+        course: widget.config.course,
+        saved: saved,
+        lessonId: widget.theme,
+        lessonTitle: title,
       );
       if (!mounted) return;
       if (router.canPop()) {
@@ -793,6 +839,7 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
       } else {
         router.go(Routes.training(widget.config.course.name));
       }
+      if (next != null) unawaited(router.push<void>(next));
     } catch (_) {
       if (mounted) {
         _finishing = false;
@@ -832,7 +879,6 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
             teacher: data.teacher,
             onNextGoal: _finish,
             preview: widget.launch?.openingPreview,
-            homeHero: widget.launch?.openingPreview != null,
             partId: widget.partId,
             onProgress: () => context.push(
               '${Routes.training(widget.config.course.name)}/opening-progress',
@@ -853,7 +899,6 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
           onNextGoal: _finish,
           onRedoLesson: (id) => context.push(Routes.trainingLesson(id)),
           preview: widget.launch?.exercisePreview,
-          homeHero: widget.launch?.exercisePreview != null,
         );
       },
     ),
@@ -876,16 +921,10 @@ Page<void> _destinationPage(
   if (state.extra is! TrainingLaunch) {
     return MaterialPage<void>(key: state.pageKey, child: child);
   }
-  final duration = AppMotion.of(context).screen;
-  return CustomTransitionPage<void>(
+  // H-ANI-02: o tabuleiro do cartão do Início voa até o da tela.
+  return PaginaComTabuleiro<void>(
+    context: context,
     key: state.pageKey,
-    transitionDuration: duration,
-    reverseTransitionDuration: duration,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        FadeTransition(
-          opacity: animation.drive(CurveTween(curve: AppMotion.enter)),
-          child: child,
-        ),
     child: child,
   );
 }

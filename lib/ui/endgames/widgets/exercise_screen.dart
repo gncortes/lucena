@@ -1,11 +1,15 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
 import '../../core/widgets/app_bar_progress.dart';
+import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/sheet_header.dart';
 import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/skeleton.dart';
 
@@ -56,6 +60,8 @@ import '../../../domain/use_cases/wiki_markup.dart';
 import 'move_sentence.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 
 /// Um exercício (T72): como a lição roteirizada, o balão do Viktor em cima,
 /// o tabuleiro e, embaixo, a notação dos lances. O feedback do lance vem na
@@ -126,29 +132,62 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final done = await cubit.savedExerciseCount();
     if (!mounted) return;
     final t = context.l10n;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        key: TrainingKeys.testLeaveDialog,
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-        title: Text(t.trainingTestLeaveTitle),
-        content: Text(
-          done == 0
-              ? t.testCanvasLeaveEmptyBody
-              : t.trainingTestLeaveBody(done, cubit.state.number),
+    final body = done == 0
+        ? t.testCanvasLeaveEmptyBody
+        : t.trainingTestLeaveBody(done, cubit.state.number);
+    // H-ANI-06: a saída do teste é a folha do kit, sobre o véu.
+    final confirmed = await showLucenaSheet<bool>(
+      context,
+      sheetKey: TrainingKeys.testLeaveDialog,
+      builder: (context) => SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SheetHeader(title: t.trainingTestLeaveTitle, hint: body),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    FilledButton(
+                      key: TrainingKeys.testContinue,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(kButtonHeight),
+                        textStyle: AppButtonText.footer(context),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(
+                        t.trainingTestContinue,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    OutlinedButton(
+                      key: TrainingKeys.testLeave,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(kButtonHeight),
+                        textStyle: AppButtonText.footer(context),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text(
+                        t.trainingTestLeave,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            key: TrainingKeys.testContinue,
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(t.trainingTestContinue),
-          ),
-          TextButton(
-            key: TrainingKeys.testLeave,
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(t.trainingTestLeave),
-          ),
-        ],
       ),
     );
     _askingExit = false;
@@ -159,10 +198,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     });
   }
 
-  late final _shake = AnimationController(
-    vsync: this,
-    duration: AppMotion.component,
-  );
+  /// O tabuleiro guarda o estado quando o retorno do lance (H-ANI-11) o
+  /// envolve e quando sai.
+  final _boardKey = GlobalKey();
 
   // O cronômetro: anda enquanto o aluno resolve; resolvido, fica parado no
   // tempo final.
@@ -214,7 +252,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     _elapsed.dispose();
     _flash.dispose();
     _board?.dispose();
-    _shake.dispose();
     super.dispose();
   }
 
@@ -257,9 +294,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     // app, o tabuleiro nasce aqui, antes do primeiro tique).
     if (state.phase != ExercisePhase.done) {
       _elapsed.value = context.read<ExerciseCubit>().elapsed;
-    }
-    if (state.mistakes > previous.mistakes) {
-      _shake.forward(from: 0);
     }
     // Outro passo (posição ou fase nova): a casa marcada pela fala sai.
     if (state.fen != previous.fen || state.phase != previous.phase) {
@@ -326,7 +360,16 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   ? AppBarHeight.standard - AppBarProgress.height
                   : null,
               bottom: widget.trainingTest && lesson != null && state.count > 0
-                  ? AppBarProgress(value: state.number / state.count)
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(
+                        AppBarProgress.height,
+                      ),
+                      // H-ANI-13: enche do exercício anterior para o atual.
+                      child: BarraQueEnche(
+                        valor: state.number / state.count,
+                        altura: AppBarProgress.height,
+                      ),
+                    )
                   : null,
               centerTitle: widget.trainingTest ? true : null,
               leading: widget.trainingTest
@@ -709,12 +752,77 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final exerciseId = state.exercise?.id ?? widget.exerciseId ?? '';
     final hint = state.hint;
     final wrong = state.wrongMove;
-    return AnimatedBuilder(
-      animation: _shake,
-      builder: (context, child) => Transform.translate(
-        offset: Offset(sin(_shake.value * pi * 4) * 8 * (1 - _shake.value), 0),
-        child: child,
+    final retorno = _retorno(state);
+    final child = KeyedSubtree(
+      key: _boardKey,
+      child: _boardStack(
+        context,
+        state,
+        boardSettings,
+        size: size,
+        board: board,
+        previewFen: previewFen,
+        lessonId: lessonId,
+        exerciseId: exerciseId,
+        hint: hint,
+        wrong: wrong,
       ),
+    );
+    if (retorno == null) return child;
+    // H-ANI-11/12: a casa pisca, o selo salta na peça e o tabuleiro
+    // respira (acerto) ou treme (erro). O teste do capítulo não tem
+    // retorno.
+    return RetornoDoLance(
+      key: ValueKey(retorno.id),
+      tipo: retorno.tipo,
+      casa: retorno.casa,
+      orientacao: state.side,
+      tamanho: size,
+      vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
+      child: child,
+    );
+  }
+
+  /// O retorno do último lance do aluno, se houver.
+  ({TipoDeRetorno tipo, Square casa, String id})? _retorno(
+    ExerciseState state,
+  ) {
+    if (widget.trainingTest) return null;
+    if (state.wrongMove case final NormalMove wrong) {
+      return (
+        tipo: TipoDeRetorno.erro,
+        casa: wrong.to,
+        id: 'e${state.mistakes}',
+      );
+    }
+    if (state.say == ExerciseSay.correct) {
+      if (state.sayMove case (:final fenBefore, :final uci)) {
+        if (Move.parse(uci) case final NormalMove move) {
+          return (
+            tipo: TipoDeRetorno.acerto,
+            casa: move.to,
+            id: '$fenBefore $uci',
+          );
+        }
+      }
+    }
+    return null;
+  }
+
+  Widget _boardStack(
+    BuildContext context,
+    ExerciseState state,
+    BoardSettings boardSettings, {
+    required double size,
+    required ChessboardController? board,
+    required String? previewFen,
+    required String lessonId,
+    required String exerciseId,
+    required Move? hint,
+    required Move? wrong,
+  }) {
+    return SizedBox.square(
+      dimension: size,
       // A miniatura da lista voa até aqui e vira o tabuleiro.
       child: Hero(
         tag: exerciseHeroTag(lessonId, exerciseId),
@@ -731,43 +839,53 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 // comentado (canvas PropV2ExA3/A8).
                 child: ListenableBuilder(
                   listenable: _flash,
-                  builder: (context, _) => Chessboard(
-                    key: ExerciseKeys.board,
-                    size: size,
-                    controller: board,
-                    settings: boardSettings.chessground,
-                    orientation: state.side,
-                    shapes: {
-                      // A casa tocada na fala do professor.
-                      if (_flash.square case final flashed?)
-                        Circle(
-                          color: ScriptShapes.arrow(
-                            Theme.of(context).colorScheme,
-                            'b',
+                  // H-ANI-10: deslize do kit, captura e halo do xeque.
+                  builder: (context, _) => TabuleiroAnimado(
+                    controlador: board,
+                    orientacao: state.side,
+                    tamanho: size,
+                    pecas: boardSettings.chessground.pieceAssets,
+                    child: Chessboard(
+                      key: ExerciseKeys.board,
+                      size: size,
+                      controller: board,
+                      settings: TabuleiroAnimado.ajustes(
+                        context,
+                        boardSettings.chessground,
+                      ),
+                      orientation: state.side,
+                      shapes: {
+                        // A casa tocada na fala do professor.
+                        if (_flash.square case final flashed?)
+                          Circle(
+                            color: ScriptShapes.arrow(
+                              Theme.of(context).colorScheme,
+                              'b',
+                            ),
+                            orig: Square.fromName(flashed),
                           ),
-                          orig: Square.fromName(flashed),
-                        ),
-                      if (hint is NormalMove)
-                        Arrow(
-                          color: AppColors.successColor.withValues(
-                            alpha: AppColors.boardMarkAlpha,
+                        if (hint is NormalMove)
+                          Arrow(
+                            color: AppColors.successColor.withValues(
+                              alpha: AppColors.boardMarkAlpha,
+                            ),
+                            orig: hint.from,
+                            dest: hint.to,
                           ),
-                          orig: hint.from,
-                          dest: hint.to,
-                        ),
-                      if (wrong is NormalMove)
-                        Arrow(
-                          color: AppColors.errorColor.withValues(
-                            alpha: AppColors.boardMarkAlpha,
+                        if (wrong is NormalMove)
+                          Arrow(
+                            color: AppColors.errorColor.withValues(
+                              alpha: AppColors.boardMarkAlpha,
+                            ),
+                            orig: wrong.from,
+                            dest: wrong.to,
                           ),
-                          orig: wrong.from,
-                          dest: wrong.to,
-                        ),
-                    },
-                    onMove: (move, {viaDragAndDrop}) =>
-                        widget.trainingTest && !state.locked
-                        ? _submitTestMove(move)
-                        : context.read<ExerciseCubit>().play(move),
+                      },
+                      onMove: (move, {viaDragAndDrop}) =>
+                          widget.trainingTest && !state.locked
+                          ? _submitTestMove(move)
+                          : context.read<ExerciseCubit>().play(move),
+                    ),
                   ),
                 ),
               ),

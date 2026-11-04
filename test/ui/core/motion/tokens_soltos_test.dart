@@ -38,5 +38,5 @@ void main() {
           '$caminho:$n: ${linha.trim()}',
     ];
     expect(soltos, isEmpty, reason: soltos.join('\n'));
-  }, skip: 'entra com a FolhaLucena, no lote L1');
+  });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../keys/sheet_keys.dart';
+import '../motion/folha_lucena.dart';
 import '../theme/app_chip.dart';
 import '../theme/app_sheet.dart';
 import 'sheet_close_button.dart';
@@ -10,7 +11,8 @@ import 'sheet_header.dart';
 /// raio 28, alça 32×4 e o ✕ redondo por fora, acima do canto final
 /// ([SheetCloseButton]). O fundo escurecido vem de [AppSheet.scrim]. O ✕ fecha
 /// sem resultado (`null`); quem precisa de outro valor ao fechar passa
-/// [onClose]. Com [dismissible] falso (folha de erro que exige escolha) não há
+/// [onClose]. Com [filtro], a folha do filtro da app bar (350 ms; conteúdo em
+/// `OpcoesDoFiltro`). Com [dismissible] falso (folha de erro que exige escolha) não há
 /// ✕, nem arrastar, nem toque fora, nem o voltar do sistema.
 Future<T?> showLucenaSheet<T>(
   BuildContext context, {
@@ -21,16 +23,13 @@ Future<T?> showLucenaSheet<T>(
   VoidCallback? onClose,
   bool enableDrag = true,
   bool dismissible = true,
+  bool filtro = false,
 }) {
-  return showModalBottomSheet<T>(
-    context: context,
-    isScrollControlled: true,
+  return FolhaLucena.mostrar<T>(
+    context,
+    filtro: filtro,
     enableDrag: dismissible && enableDrag,
     isDismissible: dismissible,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    barrierColor: AppSheet.scrim,
     builder: (context) => LucenaSheetFrame(
       sheetKey: sheetKey,
       closeKey: closeKey,

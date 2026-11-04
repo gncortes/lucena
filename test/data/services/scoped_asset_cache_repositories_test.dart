@@ -450,6 +450,14 @@ Map<String, String> _fixtures(String marker) {
           'warning': {'title': marker},
         },
       },
+      'details': {
+        'coverLine': marker,
+        'summaryLine': marker,
+        for (final key in ['steps', 'parts', 'openings', 'progress', 'faq'])
+          key: [],
+        'audience': {'title': marker},
+        'result': {'title': marker},
+      },
     }),
   };
 }
