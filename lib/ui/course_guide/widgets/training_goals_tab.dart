@@ -75,12 +75,7 @@ class TrainingGoalsTab extends StatelessWidget {
       final schoolFirstLessons =
           cubit.config.progressKind == TrainingProgressKind.modulesAndPieces &&
           state.training!.completedLessons.isEmpty;
-      final contents = <Widget>[
-        TrainingGoalCard(
-          course: cubit.config.course,
-          place: TrainingGoalCardPlace.goals,
-        ),
-      ];
+      final contents = <Widget>[];
       if (hasOfflineLesson) {
         contents.add(const TrainingGoalsOfflineNotice());
       }
@@ -299,6 +294,15 @@ class TrainingGoalsTab extends StatelessWidget {
         padding: const EdgeInsets.only(top: 8),
         child: CustomScrollView(
           slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverToBoxAdapter(
+                child: TrainingGoalCard(
+                  course: cubit.config.course,
+                  place: TrainingGoalCardPlace.goals,
+                ),
+              ),
+            ),
             for (final item in contents)
               SliverPadding(
                 padding: EdgeInsets.fromLTRB(
