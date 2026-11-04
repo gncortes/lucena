@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,8 @@ import 'package:lucena/domain/models/maia_level.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
@@ -369,5 +373,61 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(ChallengeKeys.sheet), findsOne);
     expect(find.textContaining('Maia 1400'), findsWidgets);
+  });
+
+  testWidgets('H-PAR-02: lendo a configuração: esqueleto e sem o botão de '
+      'começar; falhando: erro com tentar de novo, que volta ao esqueleto e '
+      'lê outra vez', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final training = FakeTrainingRepository()
+      ..failLoad = true
+      ..gate = Completer<void>();
+    final loading = GameSetupCubit(
+      training,
+      progress: FakeProgressRepository(),
+      profile: FakeProfileRepository(),
+      position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
+      goal: PositionGoal.win,
+    );
+    addTearDown(loading.close);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
+    final first = loading.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: loading,
+          child: const GameSetupScreen(),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byKey(CoreKeys.skeleton), findsOneWidget);
+    expect(find.byKey(GameSetupKeys.startButton), findsNothing);
+
+    training.gate!.complete();
+    await first;
+    await tester.pumpAndSettle();
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+    expect(find.byKey(GameSetupKeys.startButton), findsNothing);
+
+    // Tentar de novo: esqueleto de novo, e a leitura que dá certo abre a tela.
+    training
+      ..failLoad = false
+      ..gate = Completer<void>();
+    await tester.tap(find.byKey(LoadErrorKeys.action));
+    await tester.pump();
+    expect(find.byKey(CoreKeys.skeleton), findsOneWidget);
+    training.gate!.complete();
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameSetupKeys.startButton), findsOneWidget);
   });
 }

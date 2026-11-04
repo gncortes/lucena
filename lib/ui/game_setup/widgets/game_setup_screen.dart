@@ -4,6 +4,9 @@ import '../../core/theme/app_chip.dart';
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -125,15 +128,16 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                   footer: ActionsFooter(
                     margin: AppSpacing.xl,
                     children: [
-                      FilledButton(
-                        key: GameSetupKeys.startButton,
-                        onPressed:
-                            state.canStart &&
-                                (!state.blindGame || voiceAvailable)
-                            ? () => _start(context, state)
-                            : null,
-                        child: Text(l10n.clockStartGame),
-                      ),
+                      if (state.ready)
+                        FilledButton(
+                          key: GameSetupKeys.startButton,
+                          onPressed:
+                              state.canStart &&
+                                  (!state.blindGame || voiceAvailable)
+                              ? () => _start(context, state)
+                              : null,
+                          child: Text(l10n.clockStartGame),
+                        ),
                     ],
                   ),
                   child: ListView(
@@ -162,7 +166,10 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                         const SizedBox(height: AppSpacing.xl),
                         _ClockSection(state: state),
                         if (state.attempts.isNotEmpty) _History(state: state),
-                      ],
+                      ] else
+                        // Lendo a configuração: esqueleto, sem o botão de
+                        // começar (H-PAR-02).
+                        const SkeletonList(rows: 5),
                     ],
                   ),
                 ),
