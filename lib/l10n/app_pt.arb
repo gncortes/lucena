@@ -1943,6 +1943,7 @@
   "licaoCursoConcluidoMetas": "Ver as metas",
   "licaoCursoConcluidoCatalogo": "Ver o catálogo",
   "licaoCursoConcluidoCompartilhar": "Compartilhar conquista",
+  "licaoCursoConcluidoShareText": "Concluí o Pilares do Xadrez no Lucena! {link}",
   "licaoDiplomaMarcaPilares": "PILARES DO XADREZ",
   "licaoSemInternetCapitulo": "Você precisa de conexão com a internet para acessar este capítulo.",
   "licaoSemInternetCurso": "Você precisa de conexão com a internet para acessar este curso.",
@@ -2879,5 +2880,11 @@
         "type": "int"
       }
     }
-  }
+  },
+  "venAboutTitle": "Sobre o Pilares",
+  "venAboutCardLine": "Conteúdo, plano e dúvidas do Pilares do Xadrez.",
+  "venAboutHow": "Como o curso funciona",
+  "venAboutCovers": "O que o curso cobre",
+  "venAboutOpenings": "Aberturas",
+  "venAboutProgress": "Testes e progresso"
 }

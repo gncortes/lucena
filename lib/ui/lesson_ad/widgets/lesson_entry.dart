@@ -92,7 +92,10 @@ abstract final class LessonEntry {
       builder: (context) => _LockedSheet(title: chapterTitle),
     );
     if (buy == true && context.mounted) {
-      await context.pushNamed<void>(RouteNames.pilaresOffer);
+      await context.pushNamed<void>(
+        RouteNames.pilaresOffer,
+        queryParameters: const {'origem': 'catalogo'},
+      );
     }
     return false;
   }

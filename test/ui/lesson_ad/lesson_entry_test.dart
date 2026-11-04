@@ -69,12 +69,16 @@ class _Harness {
         GoRoute(
           name: RouteNames.pilaresPresentation,
           path: '/apresentacao',
-          builder: (_, _) => const Scaffold(body: Text('apresentação')),
+          builder: (_, state) => Scaffold(
+            body: Text('apresentação ${state.uri.queryParameters['origem']}'),
+          ),
         ),
         GoRoute(
           name: RouteNames.pilaresOffer,
           path: '/oferta',
-          builder: (_, _) => const Scaffold(body: Text('oferta')),
+          builder: (_, state) => Scaffold(
+            body: Text('oferta ${state.uri.queryParameters['origem']}'),
+          ),
         ),
         ...d1Routes,
       ],
@@ -197,8 +201,9 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.byKey(AdsKeys.learnMore));
     await t.pumpAndSettle();
-    expect(find.text('apresentação'), findsOneWidget);
-    final nav = Navigator.of(t.element(find.text('apresentação')));
+    // H-LIC-12: pilares_oferta_vista com origem=anuncio.
+    expect(find.text('apresentação anuncio'), findsOneWidget);
+    final nav = Navigator.of(t.element(find.text('apresentação anuncio')));
     nav.pop();
     await t.pumpAndSettle();
     expect(find.byKey(AdsKeys.screen), findsOneWidget);
@@ -238,7 +243,8 @@ void main() {
     expect(find.text('Capítulo 2 · Golpes em linha'), findsOneWidget);
     await t.tap(find.byKey(AdsKeys.demoLockedSheetBuy));
     await t.pumpAndSettle();
-    expect(find.text('oferta'), findsOneWidget);
+    // H-LIC-06: o cadeado do capítulo abre a oferta com origem=catalogo.
+    expect(find.text('oferta catalogo'), findsOneWidget);
   });
 
   testWidgets('capítulo trancado: Agora não só fecha a folha', (t) async {
@@ -249,7 +255,7 @@ void main() {
     await t.tap(find.byKey(AdsKeys.demoLockedSheetLater));
     await t.pumpAndSettle();
     expect(find.byKey(AdsKeys.lockedSheet), findsNothing);
-    expect(find.text('oferta'), findsNothing);
+    expect(find.textContaining('oferta'), findsNothing);
   });
 
   testWidgets('comprador toca o capítulo 2 sem folha', (t) async {

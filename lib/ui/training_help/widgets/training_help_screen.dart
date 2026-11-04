@@ -11,9 +11,13 @@ class TrainingHelpScreen extends StatelessWidget {
   const TrainingHelpScreen({
     required this.onBack,
     required this.onTour,
+    this.footer,
     super.key,
   });
   final VoidCallback onBack, onTour;
+
+  /// O cartão no fim da lista (o "Sobre o Pilares", da frente de Venda).
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context) {
@@ -150,6 +154,10 @@ class TrainingHelpScreen extends StatelessWidget {
               ),
             ),
           ),
+          if (footer case final footer?) ...[
+            const SizedBox(height: 16),
+            footer,
+          ],
         ],
       ),
     );

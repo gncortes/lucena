@@ -9,6 +9,7 @@ import '../../data/repositories/purchase/purchase_repository.dart';
 import '../../ui/core/analytics/analytics_context.dart';
 import '../../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../../ui/course_preview/widgets/course_band_preview_screen.dart';
+import '../../ui/course_preview/widgets/course_details_screen.dart';
 import '../../ui/course_preview/widgets/course_sale_screen.dart';
 import '../../ui/pilares_sale/view_models/pilares_prices_cubit.dart';
 import '../../ui/pilares_sale/widgets/pilares_subscription_ended_screen.dart';
@@ -41,8 +42,15 @@ abstract final class D2Paths {
   /// Para quem é, a faixa (H-VEN-01).
   static const pilaresForWhom = '/pilares/for-whom';
 
-  /// Sobre o Pilares, 3 abas (H-VEN-03).
+  /// Sobre o Pilares, 3 abas (H-VEN-02).
   static const pilaresAbout = '/pilares/about';
+
+  /// Sobre o Pilares; aberto pelo cartão de "Como funciona" (`de=ajuda`), a
+  /// seta só fecha a tela.
+  static String about({bool fromHelp = false}) => Uri(
+    path: pilaresAbout,
+    queryParameters: {if (fromHelp) 'de': 'ajuda'},
+  ).toString();
 
   /// Fim da demonstração (H-VEN-04).
   static const pilaresDemoEnd = '/pilares/demo-end';
@@ -156,6 +164,17 @@ final List<RouteBase> d2Routes = [
         child: CourseSaleScreen(origin: origin),
       );
     },
+  ),
+  // Sobre o Pilares (H-VEN-02): o mesmo para demo e comprador.
+  appRoute(
+    name: RouteNames.pilaresAbout,
+    path: D2Paths.pilaresAbout,
+    builder: (context, state) => BlocProvider(
+      create: _previewCubit,
+      child: CourseDetailsScreen(
+        fromHelp: state.uri.queryParameters['de'] == 'ajuda',
+      ),
+    ),
   ),
   appRoute(
     name: RouteNames.pilaresForWhom,

@@ -15,16 +15,21 @@ import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/platform_rating.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
+import 'package:lucena/domain/models/pilares_access.dart';
+import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
+import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/profile/widgets/profile_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_lichess_repository.dart';
+import '../../../../testing/fakes/fake_link_repository.dart';
+import '../../../../testing/fakes/fake_purchase_service.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
@@ -56,6 +61,7 @@ void main() {
     UserProfile profile = const UserProfile(),
     PurchaseRepository? purchases,
     FakeStoreListingRepository? store,
+    FakeLinkRepository? links,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 1400);
@@ -116,6 +122,18 @@ void main() {
           path: Routes.feedback,
           builder: (_, state) => stub('rota-feedback'),
         ),
+        GoRoute(
+          path: D2Paths.pilaresOffer,
+          builder: (_, state) => stub('rota-oferta ${state.uri}'),
+        ),
+        GoRoute(
+          path: D2Paths.pilaresAbout,
+          builder: (_, state) => stub('rota-sobre'),
+        ),
+        GoRoute(
+          path: D2Paths.pilaresRestore,
+          builder: (_, state) => stub('rota-restaurar'),
+        ),
       ],
     );
     await tester.pumpWidget(
@@ -126,6 +144,7 @@ void main() {
         locale: const Locale('pt', 'BR'),
         purchaseRepository: purchases,
         storeListingRepository: store,
+        linkRepository: links,
         child: const SizedBox(),
       ),
     );
@@ -614,5 +633,168 @@ void main() {
     ]) {
       expect(find.text(text), findsNothing, reason: text);
     }
+  });
+
+  group('cartão do curso (H-VEN-04/09)', () {
+    FakePurchaseRepository store(PilaresAccess access) =>
+        FakePurchaseRepository(
+          PurchaseState(
+            access: access,
+            pricesReady: true,
+            prices: const {PilaresPlan.monthly: r'R$ 19,90'},
+          ),
+        );
+
+    Finder inCard(String text) => find.descendant(
+      of: find.byKey(PurchaseKeys.courseCard),
+      matching: find.text(text),
+    );
+
+    testWidgets('04-1: demo vê o selo e "Ver o curso completo" abre a '
+        'oferta', (tester) async {
+      await pumpScreen(tester, purchases: store(const PilaresAccess()));
+      expect(inCard('Pilares do Xadrez'), findsOneWidget);
+      expect(inCard('Demonstração'), findsOneWidget);
+      expect(
+        inCard('Você tem o Capítulo 1. O curso completo tem 20 capítulos.'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(PurchaseKeys.courseSeeFull));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('rota-oferta /pilares/offer'), findsOneWidget);
+    });
+
+    testWidgets('09-1: vitalício com a data e "Acesso vitalício"; 04-5: sem '
+        '"Ver o curso completo"', (tester) async {
+      await pumpScreen(
+        tester,
+        purchases: store(
+          PilaresAccess(
+            kind: PilaresAccessKind.lifetime,
+            since: DateTime(2026, 11, 2),
+          ),
+        ),
+      );
+      expect(inCard('Vitalício'), findsOneWidget);
+      expect(
+        inCard('Comprado em 2 de novembro de 2026, pela Google Play'),
+        findsOneWidget,
+      );
+      expect(inCard('Acesso vitalício'), findsOneWidget);
+      expect(find.byKey(PurchaseKeys.courseSeeFull), findsNothing);
+      expect(find.byKey(PurchaseKeys.courseManage), findsNothing);
+      expect(find.byKey(PurchaseKeys.courseRestore), findsOneWidget);
+    });
+
+    testWidgets('09-2: mensal com a renovação e "Gerenciar na Google Play"', (
+      tester,
+    ) async {
+      final links = FakeLinkRepository();
+      await pumpScreen(
+        tester,
+        links: links,
+        purchases: store(
+          PilaresAccess(
+            kind: PilaresAccessKind.monthlyActive,
+            since: DateTime(2026, 11, 2),
+            renewsAt: DateTime(2026, 12, 2),
+          ),
+        ),
+      );
+      expect(inCard('Mensal'), findsOneWidget);
+      expect(
+        inCard('Assinado em 2 de novembro de 2026, pela Google Play'),
+        findsOneWidget,
+      );
+      expect(
+        inCard(r'Mensal · R$ 19,90/mês · renova em 2 de dezembro de 2026'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(PurchaseKeys.courseManage));
+      await tester.pumpAndSettle();
+      expect(links.opened.single.host, 'play.google.com');
+    });
+
+    testWidgets('09-3: pagamento pendente com o aviso e o botão cheio', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        purchases: store(
+          PilaresAccess(
+            kind: PilaresAccessKind.monthlyGrace,
+            since: DateTime(2026, 11, 2),
+            renewsAt: DateTime(2026, 12, 2),
+            graceUntil: DateTime(2026, 12, 9),
+          ),
+        ),
+      );
+      expect(
+        find.text(
+          'Regularize o pagamento até 9 de dezembro para manter o acesso ao '
+          'curso.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(PurchaseKeys.courseGrace),
+          matching: find.byIcon(Icons.credit_card_off),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        inCard(r'Mensal · R$ 19,90/mês · pagamento pendente'),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(PurchaseKeys.courseFixPayment),
+          matching: find.byType(FilledButton),
+          matchRoot: true,
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(PurchaseKeys.courseManage), findsNothing);
+    });
+
+    testWidgets('09-4: "Detalhes do curso" abre o Sobre o Pilares', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        purchases: store(const PilaresAccess(kind: PilaresAccessKind.lifetime)),
+      );
+      await tester.tap(find.byKey(PurchaseKeys.courseDetails));
+      await tester.pumpAndSettle();
+      expect(find.text('rota-sobre'), findsOneWidget);
+    });
+
+    testWidgets('09: "Restaurar compra" abre a restauração', (tester) async {
+      await pumpScreen(
+        tester,
+        purchases: store(const PilaresAccess(kind: PilaresAccessKind.lifetime)),
+      );
+      await tester.ensureVisible(find.byKey(PurchaseKeys.courseRestore));
+      await tester.tap(find.byKey(PurchaseKeys.courseRestore));
+      await tester.pumpAndSettle();
+      expect(find.text('rota-restaurar'), findsOneWidget);
+    });
+
+    testWidgets('09-5: a loja mudou o acesso, o cartão acompanha', (
+      tester,
+    ) async {
+      final purchases = store(const PilaresAccess());
+      await pumpScreen(tester, purchases: purchases);
+      expect(inCard('Demonstração'), findsOneWidget);
+      purchases.state = purchases.state.copyWith(
+        access: PilaresAccess(
+          kind: PilaresAccessKind.lifetime,
+          since: DateTime(2026, 11, 2),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(inCard('Vitalício'), findsOneWidget);
+    });
   });
 }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/use_cases/featured_rules.dart';
+import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/keys/home_keys.dart';
@@ -90,42 +91,53 @@ class _HomeScreenState extends State<HomeScreen>
         }
       },
       child: BlocListener<HomeCubit, HomeState>(
-        // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
-        // Tour e oferta primeiro: a folha só sai quando é a vez dela (uma por
-        // abertura).
+        // A oferta do Pilares por cima do Início (H-INI-14), uma vez por
+        // abertura, quando o Início é a tela de cima.
         listenWhen: (previous, current) =>
-            current.lostSheetTurn &&
-            (previous.streak.lost == 0 ||
-                previous.tourPending ||
-                previous.offerPending),
+            current.ready && current.offerOpen && !current.tourPending,
         listener: (context, state) {
-          final cubit = context.read<HomeCubit>();
-          var played = false;
-          unawaited(
-            showStreakLostSheet(
-              context,
-              streak: state.streak,
-              onPlay: () {
-                played = true;
-                unawaited(context.push(Routes.daily));
-              },
-            ).then((_) => cubit.lostAnswered(state.streak, played: played)),
-          );
-          unawaited(cubit.lostShown());
+          if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
+          unawaited(context.read<HomeCubit>().offerOpened());
+          unawaited(context.push(D2Paths.offer(origin: 'abertura_app')));
         },
-        child: BlocBuilder<HomeCubit, HomeState>(
-          builder: (context, state) => state.failed && !state.ready
-              // O Início é a raiz: o erro não tem "Voltar".
-              ? KeyedSubtree(
-                  key: HomeKeys.error,
-                  child: LoadErrorScreen(
-                    kind: LoadErrorKind.generic,
-                    onAction: () => context.read<HomeCubit>().load(
-                      Localizations.localeOf(context).languageCode,
+        child: BlocListener<HomeCubit, HomeState>(
+          // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
+          // Tour e oferta primeiro: a folha só sai quando é a vez dela (uma por
+          // abertura).
+          listenWhen: (previous, current) =>
+              current.lostSheetTurn &&
+              (previous.streak.lost == 0 ||
+                  previous.tourPending ||
+                  previous.offerPending),
+          listener: (context, state) {
+            final cubit = context.read<HomeCubit>();
+            var played = false;
+            unawaited(
+              showStreakLostSheet(
+                context,
+                streak: state.streak,
+                onPlay: () {
+                  played = true;
+                  unawaited(context.push(Routes.daily));
+                },
+              ).then((_) => cubit.lostAnswered(state.streak, played: played)),
+            );
+            unawaited(cubit.lostShown());
+          },
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) => state.failed && !state.ready
+                // O Início é a raiz: o erro não tem "Voltar".
+                ? KeyedSubtree(
+                    key: HomeKeys.error,
+                    child: LoadErrorScreen(
+                      kind: LoadErrorKind.generic,
+                      onAction: () => context.read<HomeCubit>().load(
+                        Localizations.localeOf(context).languageCode,
+                      ),
                     ),
-                  ),
-                )
-              : _scaffold(context, theme),
+                  )
+                : _scaffold(context, theme),
+          ),
         ),
       ),
     );

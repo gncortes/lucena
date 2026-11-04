@@ -317,6 +317,33 @@ void main() {
       expect(find.text(error), findsOneWidget, reason: text);
       expect(tester.widget<FilledButton>(use).onPressed, isNull);
     }
+    // O campo aceita só dígitos, até 4: o quinto não entra e letra não entra.
+    String typed() => tester
+        .widget<TextField>(find.byKey(LevelKeys.ratingField))
+        .controller!
+        .text;
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '12345');
+    await tester.pumpAndSettle();
+    expect(typed(), '1234');
+    expect(find.text(error), findsNothing);
+    expect(tester.widget<FilledButton>(use).onPressed, isNotNull);
+    // Cheio, o campo não troca o número: apagar antes.
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '99999');
+    await tester.pumpAndSettle();
+    expect(typed(), '1234');
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '99999');
+    await tester.pumpAndSettle();
+    expect(typed(), '9999');
+    expect(find.text(error), findsOneWidget);
+    expect(tester.widget<FilledButton>(use).onPressed, isNull);
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '15a0');
+    await tester.pumpAndSettle();
+    expect(typed(), '150');
+    expect(find.text(error), findsOneWidget);
     await tester.enterText(find.byKey(LevelKeys.ratingField), '3000');
     await tester.pumpAndSettle();
     expect(find.text(error), findsNothing);
