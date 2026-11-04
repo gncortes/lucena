@@ -33,6 +33,18 @@ class LocalSurveyRepository implements SurveyRepository {
   static String responseKey(SurveyKind kind) =>
       'survey.v1.${kind.code}.response';
 
+  /// Antes da T85 o Pilares gravava como `endgames`: quem já respondeu ou
+  /// tem rascunho continua igual.
+  static const _legacyCode = {SurveyKind.pilares: 'endgames'};
+
+  static String? _legacyDraftKey(SurveyKind kind) =>
+      _legacyCode[kind] == null ? null : 'survey.v1.${_legacyCode[kind]}.draft';
+
+  static String? _legacyResponseKey(SurveyKind kind) =>
+      _legacyCode[kind] == null
+      ? null
+      : 'survey.v1.${_legacyCode[kind]}.response';
+
   Future<T?> _read<T>(
     String key,
     T Function(Map<String, Object?> json) parse,
@@ -51,7 +63,11 @@ class LocalSurveyRepository implements SurveyRepository {
 
   @override
   Future<SurveyDraft?> loadDraft(SurveyKind kind) async {
-    final draft = await _read(draftKey(kind), SurveyDraft.fromJson);
+    var draft = await _read(draftKey(kind), SurveyDraft.fromJson);
+    final legacy = _legacyDraftKey(kind);
+    if (draft == null && legacy != null) {
+      draft = await _read(legacy, SurveyDraft.fromJson);
+    }
     return draft?.kind == kind ? draft : null;
   }
 
@@ -61,7 +77,11 @@ class LocalSurveyRepository implements SurveyRepository {
 
   @override
   Future<SurveyResponse?> loadResponse(SurveyKind kind) async {
-    final response = await _read(responseKey(kind), SurveyResponse.fromJson);
+    var response = await _read(responseKey(kind), SurveyResponse.fromJson);
+    final legacy = _legacyResponseKey(kind);
+    if (response == null && legacy != null) {
+      response = await _read(legacy, SurveyResponse.fromJson);
+    }
     return response?.kind == kind ? response : null;
   }
 
@@ -81,6 +101,9 @@ class LocalSurveyRepository implements SurveyRepository {
       jsonEncode(response.toJson()),
     );
     await _preferences.remove(draftKey(kind));
+    if (_legacyDraftKey(kind) case final legacy?) {
+      await _preferences.remove(legacy);
+    }
     return response;
   }
 }

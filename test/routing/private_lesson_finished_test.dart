@@ -55,7 +55,7 @@ class _ChapterFiles extends AssetService {
 }
 
 void main() {
-  for (final kind in [SurveyKind.endgames, SurveyKind.school]) {
+  for (final kind in [SurveyKind.pilares, SurveyKind.school]) {
     testWidgets(
       'actual finished route scopes only private endgames: ${kind.code}',
       (tester) async {
@@ -67,7 +67,7 @@ void main() {
           school: school,
           configs: [TrainingCourseConfig.pilares],
         );
-        if (kind == SurveyKind.endgames) {
+        if (kind == SurveyKind.pilares) {
           // Real File I/O runs outside the widget fake clock. Source cold loads
           // are covered separately; this case verifies the actual route scope.
           await tester.runAsync(() async {
@@ -103,7 +103,7 @@ void main() {
         await tester.pumpAndSettle();
         final context = tester.element(find.byType(LessonFinishedScreen));
         final cubit = context.read<LessonFinishedCubit>();
-        final expectedSource = kind == SurveyKind.endgames
+        final expectedSource = kind == SurveyKind.pilares
             ? private.forId('pilares.c1')!
             : public;
         expect(context.read<EndgameLessonRepository>(), same(expectedSource));
@@ -117,7 +117,7 @@ void main() {
         final state = cubit.state;
         expect(state.ready, isTrue);
         expect(state.practice, isNull);
-        if (kind == SurveyKind.endgames) {
+        if (kind == SurveyKind.pilares) {
           final index = jsonDecode(
             File(TrainingCourseConfig.pilares.indexSource).readAsStringSync(),
           ) as Map;

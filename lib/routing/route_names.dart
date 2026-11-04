@@ -10,7 +10,6 @@ abstract final class RouteNames {
   static const updateRequired = 'updateRequired';
   static const updateRecommended = 'updateRecommended';
   static const tour = 'tour';
-  static const wouldPay = 'wouldPay';
   static const survey = 'survey';
   static const lessonFinished = 'lessonFinished';
   static const streak = 'streak';

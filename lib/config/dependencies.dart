@@ -29,6 +29,8 @@ import '../data/repositories/analytics/analytics_repository.dart';
 import '../data/services/firebase/analytics_service.dart';
 import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/lesson_ad/course_access_repository.dart';
+import '../data/repositories/lesson_ad/demo_ad_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../data/repositories/store/store_listing_repository.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
@@ -164,9 +166,9 @@ import '../data/services/firebase/auth_service.dart';
 import '../data/repositories/learning/learning_repository.dart';
 import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/repositories/feedback/feedback_draft_repository.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
-import '../data/repositories/would_pay/would_pay_repository.dart';
 import '../data/services/device_service.dart';
 import '../data/services/review_service.dart';
 import '../data/services/firebase/file_store_service.dart';
@@ -282,10 +284,12 @@ class Dependencies {
     this.mailAppRepository = const NoMailAppRepository(),
     this.analyticsRepository = const NoAnalyticsRepository(),
     this.adsRepository = const NoAdsRepository(),
+    this.courseAccessRepository = const FullCourseAccessRepository(),
+    this.demoAdRepository = const NoDemoAdRepository(),
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
-    this.wouldPayRepository = const NoWouldPayRepository(),
+    this.feedbackDraftRepository = const NoFeedbackDraftRepository(),
     this.reviewRepository = const NoReviewRepository(),
     this.installReferrerRepository = const NoInstallReferrerRepository(),
     this._campaignRepository,
@@ -614,6 +618,7 @@ class Dependencies {
       mailAppRepository: const DeviceMailAppRepository(),
       analyticsRepository: analytics,
       adsRepository: ads,
+      demoAdRepository: LocalDemoAdRepository(preferences),
       purchaseRepository: purchases,
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
@@ -627,7 +632,7 @@ class Dependencies {
               origin: analytics.origin,
             )
           : const NoFeedbackRepository(),
-      wouldPayRepository: LocalWouldPayRepository(preferences),
+      feedbackDraftRepository: LocalFeedbackDraftRepository(preferences),
       reviewRepository: LocalReviewRepository(
         preferences,
         firebase ? PlayReviewService() : const NoReviewService(),
@@ -777,12 +782,18 @@ class Dependencies {
   /// Os anúncios antes das aulas, a compra que os tira e a página do app na
   /// Play (E1.25). Fora da Play, nenhum.
   final AdsRepository adsRepository;
+
+  /// O que a pessoa tem do Pilares e o anúncio da demonstração (T85-D1).
+  final CourseAccessRepository courseAccessRepository;
+  final DemoAdRepository demoAdRepository;
   final PurchaseRepository purchaseRepository;
   final StoreListingRepository storeListingRepository;
 
-  /// "Enviar feedback" e o "Você pagaria?" (E1.26), em `feedback/{id}`.
+  /// "Enviar feedback" (E1.26), em `feedback/{id}`.
   final FeedbackRepository feedbackRepository;
-  final WouldPayRepository wouldPayRepository;
+
+  /// O rascunho do "Enviar feedback" (H-OPI-11), no aparelho.
+  final FeedbackDraftRepository feedbackDraftRepository;
 
   /// O pedido de avaliação da Play (E1.26).
   final ReviewRepository reviewRepository;

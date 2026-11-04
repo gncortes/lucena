@@ -98,17 +98,17 @@ void main() {
   ) async {
     await pump(
       tester,
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       'rook.lucena',
       next: 'rook.philidor',
     );
     expect(find.text('Lucena: done!'), findsNothing);
     expect(find.textContaining(': done!'), findsOneWidget);
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsOneWidget);
     expect(find.textContaining('Next: '), findsOneWidget);
     expect(find.text('Back to lessons'), findsOneWidget);
     final invite = tester.getBottomLeft(
-      find.byKey(SurveyKeys.invite(SurveyKind.endgames)),
+      find.byKey(SurveyKeys.invite(SurveyKind.pilares)),
     );
     final next = tester.getTopLeft(find.byKey(LessonFinishedKeys.next));
     expect(invite.dy, lessThan(next.dy));
@@ -119,7 +119,7 @@ void main() {
   });
 
   testWidgets('sem próxima aula só há o botão de voltar', (tester) async {
-    await pump(tester, SurveyKind.endgames, 'rook.philidor');
+    await pump(tester, SurveyKind.pilares, 'rook.philidor');
     expect(find.byKey(LessonFinishedKeys.next), findsNothing);
     expect(find.byKey(LessonFinishedKeys.back), findsOneWidget);
   });
@@ -129,20 +129,20 @@ void main() {
   ) async {
     await pump(tester, SurveyKind.school, 'pieces.rook');
     expect(find.byKey(SurveyKeys.invite(SurveyKind.school)), findsOneWidget);
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsNothing);
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsNothing);
     expect(find.text('Back to school'), findsOneWidget);
     await tester.tap(find.byKey(SurveyKeys.inviteAction(SurveyKind.school)));
     await tester.pumpAndSettle();
-    expect(opened.last, '/survey/school?from=lesson');
+    expect(opened.last, '/survey/school?origem=licao_escola');
   });
 
   testWidgets('com a resposta enviada o convite não aparece', (tester) async {
     await surveys.saveResponse(
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       const SurveyAnswers(rating: 4),
     );
-    await pump(tester, SurveyKind.endgames, 'rook.lucena');
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsNothing);
+    await pump(tester, SurveyKind.pilares, 'rook.lucena');
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsNothing);
   });
 
   testWidgets('finais: "Próximos passos" com a Corrida e o treino do final', (
@@ -158,7 +158,7 @@ void main() {
     );
     await pump(
       tester,
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       'rook.lucena',
       problems: [...raceTestProblems, lucena],
     );
@@ -173,9 +173,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byKey(NextStepsKeys.block)).dy,
       lessThan(
-        tester
-            .getTopLeft(find.byKey(SurveyKeys.invite(SurveyKind.endgames)))
-            .dy,
+        tester.getTopLeft(find.byKey(SurveyKeys.invite(SurveyKind.pilares))).dy,
       ),
     );
     await tester.tap(find.byKey(NextStepsKeys.option('raceOnly')));
@@ -186,7 +184,7 @@ void main() {
   testWidgets('finais sem o tipo na Corrida: só o treino e o teste', (
     tester,
   ) async {
-    await pump(tester, SurveyKind.endgames, 'rook.lucena');
+    await pump(tester, SurveyKind.pilares, 'rook.lucena');
     expect(find.byKey(NextStepsKeys.option('raceOnly')), findsNothing);
     expect(find.byKey(NextStepsKeys.option('train')), findsOneWidget);
     expect(find.text('Practice this endgame'), findsOneWidget);
@@ -210,7 +208,7 @@ void main() {
         );
         await pump(
           tester,
-          SurveyKind.endgames,
+          SurveyKind.pilares,
           lesson.id,
           trail: EndgameTrail(
             modules: [
@@ -245,7 +243,7 @@ void main() {
     expect(finished.hasExercises, isFalse);
     expect(finished.practice, isNull);
   });
-  for (final kind in [SurveyKind.school, SurveyKind.endgames]) {
+  for (final kind in [SurveyKind.school, SurveyKind.pilares]) {
     for (final close in [false, true]) {
       testWidgets(
         'training ${kind.code} completion exit close=$close returns to its course',

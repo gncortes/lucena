@@ -174,7 +174,7 @@ void main() {
     expect(info, isNotNull);
     expect(info!.fen, isNull);
     final cubit = LessonFinishedCubit(
-      kind: SurveyKind.endgames,
+      kind: SurveyKind.pilares,
       nextId: null,
       lessonId: real.id,
       endgames: repo,

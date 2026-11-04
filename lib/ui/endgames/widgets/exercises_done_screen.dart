@@ -107,8 +107,18 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
         answers: [
           for (final exercise in answered) completed[exercise.id] == true,
         ],
+        themes: [
+          for (final exercise in answered)
+            exercise.theme == null
+                ? null
+                : state.texts.plain('part.${exercise.theme}.title'),
+        ],
         teacher: state.viktor,
         onContinue: () => context.pop(),
+        // Sem rota própria do catálogo do capítulo: abre o capítulo do guia.
+        onReviewLessons: () => context.pushReplacement(
+          Routes.trainingChapter('pilares', lesson.id),
+        ),
         onReview: (index) {
           final exercise = answered[index];
           context.push(
@@ -331,16 +341,47 @@ class TestCanvasResultPage extends StatelessWidget {
     required this.onContinue,
     required this.onRetry,
     required this.onReview,
+    this.onReviewLessons,
+    this.themes = const [],
     this.teacher,
     this.speech,
     super.key,
   });
   final int chapter;
   final List<bool> answers;
+
+  /// Theme title of each answer (same order as [answers]); null when unknown.
+  final List<String?> themes;
   final Character? teacher;
   final String? speech;
   final VoidCallback onContinue, onRetry;
+
+  /// Failed results: opens the chapter catalog. Never locks the next chapter.
+  final VoidCallback? onReviewLessons;
   final ValueChanged<int> onReview;
+
+  /// "A", "A e B", "A, B e C".
+  static String _themeList(AppLocalizations t, List<String> items) =>
+      items.length < 2
+      ? items.join()
+      : t.licaoTemasUltimo(items.take(items.length - 1).join(', '), items.last);
+
+  String _failedSpeech(AppLocalizations t, {required bool far}) {
+    final wrong = <String>[];
+    for (var i = 0; i < answers.length && i < themes.length; i++) {
+      final theme = themes[i];
+      if (!answers[i] && theme != null && !wrong.contains(theme)) {
+        wrong.add(theme);
+      }
+    }
+    if (wrong.isEmpty) {
+      return far ? t.licaoTesteFalaMuitoAbaixo : t.licaoTesteFalaAbaixo;
+    }
+    final list = _themeList(t, wrong);
+    return far
+        ? t.licaoTesteFalaMuitoAbaixoTemas(list)
+        : t.licaoTesteFalaAbaixoTemas(list);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -349,19 +390,20 @@ class TestCanvasResultPage extends StatelessWidget {
     final grade = ExerciseGrade
         .values[ChapterTestScores.gradeIndex(correct, answers.length)];
     final below = grade == ExerciseGrade.below;
+    final far = correct <= 3;
     final title = below
-        ? t.testCanvasFailedTitle
+        ? (far ? t.licaoTesteRecomecar : t.licaoTesteQuaseLa)
         : grade == ExerciseGrade.passed
         ? t.testCanvasRegular
         : gradeName(t, grade);
-    Widget button(bool retry, bool primary) {
-      final key = retry ? ExercisesDoneKeys.redo : ExercisesDoneKeys.back;
-      final label = Text(retry ? t.testCanvasRetry : t.testCanvasContinue);
-      final onPressed = retry ? onRetry : onContinue;
-      return primary
-          ? FilledButton(key: key, onPressed: onPressed, child: label)
-          : OutlinedButton(key: key, onPressed: onPressed, child: label);
-    }
+    Widget button(
+      Key key,
+      String label,
+      VoidCallback? onPressed,
+      bool primary,
+    ) => primary
+        ? FilledButton(key: key, onPressed: onPressed, child: Text(label))
+        : OutlinedButton(key: key, onPressed: onPressed, child: Text(label));
 
     return Scaffold(
       key: ExercisesDoneKeys.screen,
@@ -485,7 +527,7 @@ class TestCanvasResultPage extends StatelessWidget {
                         text:
                             speech ??
                             (below
-                                ? t.testCanvasFailedSpeech
+                                ? _failedSpeech(t, far: far)
                                 : t.testCanvasResultSpeech(
                                     correct,
                                     answers.length,
@@ -504,7 +546,35 @@ class TestCanvasResultPage extends StatelessWidget {
             ActionsFooter(
               stacked: true,
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              children: [button(below, true), button(!below, false)],
+              children: [
+                if (below) ...[
+                  button(
+                    TestCanvasKeys.reviewLessons,
+                    t.licaoTesteReverLicoes,
+                    onReviewLessons ?? onContinue,
+                    true,
+                  ),
+                  button(
+                    ExercisesDoneKeys.redo,
+                    t.testCanvasRetry,
+                    onRetry,
+                    false,
+                  ),
+                ] else ...[
+                  button(
+                    ExercisesDoneKeys.back,
+                    t.testCanvasContinue,
+                    onContinue,
+                    true,
+                  ),
+                  button(
+                    ExercisesDoneKeys.redo,
+                    t.testCanvasRetry,
+                    onRetry,
+                    false,
+                  ),
+                ],
+              ],
             ),
           ],
         ),

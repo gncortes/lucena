@@ -1,5 +1,3 @@
-import 'would_pay.dart';
-
 /// O assunto do "Enviar feedback" (E1.26).
 enum FeedbackType {
   problem('problema'),
@@ -19,30 +17,23 @@ enum FeedbackType {
   }
 }
 
-/// O que vai para `feedback/{id}`: o texto livre do Perfil ou as respostas do
-/// "Você pagaria?". Sem uid; a versão do app e o modelo do celular vão juntos.
+/// O que vai para `feedback/{id}`: o texto livre do Perfil. Sem uid; a versão
+/// do app e o modelo do celular vão juntos.
 class FeedbackEntry {
   const FeedbackEntry.free({
-    required FeedbackType this.type,
-    required String this.text,
+    required this.type,
+    required this.text,
     this.language,
-  }) : answers = null;
-
-  const FeedbackEntry.wouldPay({
-    required WouldPayAnswers this.answers,
-    this.language,
-  }) : type = null,
-       text = null;
+  });
 
   /// O tamanho máximo do texto livre.
   static const maxText = 500;
 
-  final FeedbackType? type;
-  final String? text;
-  final WouldPayAnswers? answers;
+  final FeedbackType type;
+  final String text;
   final String? language;
 
-  String get kind => answers == null ? 'livre' : 'pagaria';
+  String get kind => 'livre';
 
   /// O texto sem espaços nas pontas e cortado em [maxText].
   static String clip(String text) {
@@ -51,8 +42,7 @@ class FeedbackEntry {
   }
 
   /// O documento, sem o `createdAt` (quem grava põe o horário do servidor).
-  /// [level] é o nível ou rating do perfil; sem ele, vale o escolhido no
-  /// passo 3 do "Você pagaria?".
+  /// [level] é o nível ou rating do perfil.
   Map<String, Object?> toJson({
     String? level,
     String? appVersion,
@@ -60,12 +50,11 @@ class FeedbackEntry {
     String? manufacturer,
     String? origin,
   }) {
-    final answers = this.answers;
     return {
       'kind': kind,
-      if (answers == null) ...{'type': type!.code, 'text': clip(text!)},
-      if (answers != null) 'answers': answers.toJson(),
-      'level': ?_cut(level ?? answers?.level, 32),
+      'type': type.code,
+      'text': clip(text),
+      'level': ?_cut(level, 32),
       'origin': ?_cut(origin, 32),
       'appVersion': ?_cut(appVersion, 32),
       'model': ?_cut(model, 64),
@@ -79,4 +68,19 @@ String? _cut(String? value, int max) {
   final trimmed = value?.trim();
   if (trimmed == null || trimmed.isEmpty) return null;
   return trimmed.length > max ? trimmed.substring(0, max) : trimmed;
+}
+
+/// O rascunho do "Enviar feedback": o assunto (se já escolhido) e o texto.
+class FeedbackDraft {
+  const FeedbackDraft({this.type, this.text = ''});
+
+  factory FeedbackDraft.fromJson(Map<String, Object?> json) => FeedbackDraft(
+    type: FeedbackType.byCode(json['type']),
+    text: json['text'] is String ? json['text']! as String : '',
+  );
+
+  final FeedbackType? type;
+  final String text;
+
+  Map<String, Object?> toJson() => {'type': ?type?.code, 'text': text};
 }

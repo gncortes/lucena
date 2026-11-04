@@ -225,7 +225,15 @@ void main() {
           tester,
           entry(_Downloads(failure: const LessonContentNetworkUnavailable())),
         );
+        expect(find.text('Sem internet'), findsOneWidget);
+        expect(
+          find.text(
+            'Você precisa de conexão com a internet para acessar este curso.',
+          ),
+          findsOneWidget,
+        );
         expect(find.text('Tentar novamente'), findsOneWidget);
+        expect(find.text('Voltar'), findsOneWidget);
         await shot(tester, '${prefix}SemInternet', size);
         if (size == const Size(412, 917)) {
           for (final (name, error) in [
@@ -242,6 +250,8 @@ void main() {
               expect(find.byType(TextButton), findsNothing);
             } else {
               expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+              expect(find.text('Tentar novamente'), findsOneWidget);
+              expect(find.text('Voltar'), findsOneWidget);
             }
             await shot(tester, '$prefix$name', size);
           }
@@ -264,6 +274,15 @@ void main() {
               tester,
               entry(_Downloads(failure: error), chapter: 'pilares.c1'),
             );
+            if (error is LessonContentNetworkUnavailable) {
+              expect(find.text('Sem internet'), findsOneWidget);
+              expect(
+                find.text(
+                  'Você precisa de conexão com a internet para acessar este capítulo.',
+                ),
+                findsOneWidget,
+              );
+            }
             await shot(tester, name, size);
           }
         }

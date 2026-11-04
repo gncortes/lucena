@@ -166,7 +166,7 @@ void main() {
           uri.path,
           transition == 'endgame-part'
               ? '/endgames/pilares.c1/roteiro'
-              : '/lesson-finished/${school ? 'school' : 'endgames'}/${school ? 'pieces.rook' : 'pilares.c1'}',
+              : '/lesson-finished/${school ? 'school' : 'pilares'}/${school ? 'pieces.rook' : 'pilares.c1'}',
         );
         expect(
           uri.queryParameters[transition == 'endgame-part' ? 'part' : 'next'],
@@ -176,7 +176,7 @@ void main() {
       });
     }
 
-    for (final kind in [SurveyKind.school, SurveyKind.endgames]) {
+    for (final kind in [SurveyKind.school, SurveyKind.pilares]) {
       testWidgets('finished Next navigates with $origin for ${kind.code}', (
         tester,
       ) async {

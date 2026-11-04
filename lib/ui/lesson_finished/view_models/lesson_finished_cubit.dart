@@ -87,7 +87,7 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
         : await endgames.texts(language);
     EndgameLesson? lesson;
     String? subcategory;
-    if (kind == SurveyKind.endgames) {
+    if (kind == SurveyKind.pilares) {
       lesson = (await endgames.trail()).lesson(lessonId);
       final practice = lesson?.practice;
       if (practice != null) {

@@ -5622,10 +5622,6 @@
   "@surveyInviteTitle": {
     "description": "Title of the card that invites the person to answer the survey."
   },
-  "surveyInviteTrail": "Takes 1 minute. We are preparing an endgame course and want to build it with what you tell us.",
-  "@surveyInviteTrail": {
-    "description": "Text of the survey card at the end of the endgame trail."
-  },
   "surveyInviteEndgameLesson": "You finished a lesson. It takes 1 minute and helps improve this one and the next ones.",
   "@surveyInviteEndgameLesson": {
     "description": "Text of the survey card on the finished endgame lesson screen."
@@ -5638,21 +5634,21 @@
   "@surveyInviteAction": {
     "description": "Button of the survey card that opens the survey."
   },
+  "opiniaoDiplomaPilaresTitle": "What did you think of Pilares?",
+  "@opiniaoDiplomaPilaresTitle": {
+    "description": "Survey row on the Pilares diploma: title."
+  },
+  "opiniaoDiplomaSchoolTitle": "What did you think of the School?",
+  "@opiniaoDiplomaSchoolTitle": {
+    "description": "Survey row on the School diploma: title."
+  },
+  "opiniaoDiplomaText": "It takes 1 minute and helps improve the lessons.",
+  "@opiniaoDiplomaText": {
+    "description": "Survey row on the course diplomas: subtitle."
+  },
   "surveyTitle": "Your opinion",
   "@surveyTitle": {
     "description": "Title of the survey screen."
-  },
-  "surveyStep": "{step} of {total}",
-  "@surveyStep": {
-    "description": "Survey progress label, for example 1 of 2.",
-    "placeholders": {
-      "step": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
   },
   "surveyContinue": "Continue",
   "@surveyContinue": {
@@ -5701,14 +5697,6 @@
   "surveyImproveTextHint": "Tell us in your own words (optional)",
   "@surveyImproveTextHint": {
     "description": "Hint of the free text field about improvements."
-  },
-  "surveyInterestEndgamesTitle": "If we launch a full endgame course, would you be interested?",
-  "@surveyInterestEndgamesTitle": {
-    "description": "Interest question of the endgame survey."
-  },
-  "surveyInterestEndgamesHint": "With all the endgames, the features of these lessons improved and what students ask for.",
-  "@surveyInterestEndgamesHint": {
-    "description": "Hint under the interest question of the endgame survey."
   },
   "surveyInterestSchoolTitle": "If we launch a course for you to keep improving, would you be interested?",
   "@surveyInterestSchoolTitle": {
@@ -8485,202 +8473,75 @@
   "@adsLabel": {
     "description": "Chip on the test interstitial ad."
   },
-  "adsLessonNote": "You entered a lesson. The lesson opens when you close the ad.",
-  "@adsLessonNote": {
-    "description": "Test interstitial ad: what happens next."
+  "licaoAdLearnMore": "Learn about Pilares",
+  "@licaoAdLearnMore": {
+    "description": "Ad screen: text button in the top bar that opens the Pilares course presentation."
   },
-  "adsCloseNote": "Tap the X to open the lesson.",
-  "@adsCloseNote": {
-    "description": "Test interstitial ad: how to close it."
-  },
-  "payInviteTitle": "Help decide the future of Lucena",
-  "@payInviteTitle": {
-    "description": "Title of the \"Would you pay?\" invite card in the lesson list."
-  },
-  "payInviteText": "3 questions, 1 minute: what you would pay for a course or a coach. It does not exist yet, we just want to know.",
-  "@payInviteText": {
-    "description": "Text of the \"Would you pay?\" invite card."
-  },
-  "payInviteYes": "Answer",
-  "@payInviteYes": {
-    "description": "Invite card button that opens the survey."
-  },
-  "payInviteNo": "Not now",
-  "@payInviteNo": {
-    "description": "Invite card button that hides the card for good."
-  },
-  "payTitle": "Would you pay?",
-  "@payTitle": {
-    "description": "Title of the \"Would you pay?\" survey."
-  },
-  "payStep": "{n} of 3",
-  "@payStep": {
-    "description": "Survey progress label, for example 1 of 3.",
+  "licaoAdCloseIn": "Close in {seconds}",
+  "@licaoAdCloseIn": {
+    "description": "Ad screen: close button while the countdown runs.",
     "placeholders": {
-      "n": {
+      "seconds": {
         "type": "int"
       }
     }
   },
-  "payCourseQuestion": "Would you buy a course with about 60 endgames to practice?",
-  "@payCourseQuestion": {
-    "description": "Step 1 question about a course."
+  "licaoAdClose": "Close",
+  "@licaoAdClose": {
+    "description": "Ad screen: close button once the countdown ends."
   },
-  "payCourseHelp": "One-time payment, with all lessons and positions. The course does not exist yet: we want to know if it makes sense.",
-  "@payCourseHelp": {
-    "description": "Help under the course question."
+  "licaoAdSpace": "Ad space",
+  "@licaoAdSpace": {
+    "description": "Ad screen: label in the placeholder where the ad shows."
   },
-  "payHowMuch": "How much would you pay?",
-  "@payHowMuch": {
-    "description": "Price range question."
+  "licaoAdAfter": "After the ad: {lesson}",
+  "@licaoAdAfter": {
+    "description": "Ad screen footer: the lesson that opens after the ad.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
   },
-  "payHowMuchHelp": "Pick the range closest to what you would pay.",
-  "@payHowMuchHelp": {
-    "description": "Help under the price range question."
+  "licaoAdFailedTitle": "Could not load the ad",
+  "@licaoAdFailedTitle": {
+    "description": "Ad failed screen: title."
   },
-  "payCoachQuestion": "Would you pay a monthly fee for a coach that reads your Lichess games?",
-  "@payCoachQuestion": {
-    "description": "Step 2 question about a coach."
+  "licaoAdFailedMessage": "Without the ad, the lesson cannot open. Check your internet connection.",
+  "@licaoAdFailedMessage": {
+    "description": "Ad failed screen: message."
   },
-  "payCoachHelp": "It finds the endgames you do badly in and suggests similar lessons and endgames to play. It does not exist yet either.",
-  "@payCoachHelp": {
-    "description": "Help under the coach question."
+  "licaoAdRetry": "Try again",
+  "@licaoAdRetry": {
+    "description": "Ad failed screen: retry button."
   },
-  "payYes": "Yes",
-  "@payYes": {
-    "description": "Answer: yes."
+  "licaoAdBack": "Back",
+  "@licaoAdBack": {
+    "description": "Ad failed screen: goes back to the catalog."
   },
-  "payMaybe": "Maybe",
-  "@payMaybe": {
-    "description": "Answer: maybe."
+  "licaoAdNoticeTitle": "An ad before the lesson",
+  "@licaoAdNoticeTitle": {
+    "description": "Sheet shown once before the first ad of the demo: title."
   },
-  "payNo": "No",
-  "@payNo": {
-    "description": "Answer: no."
+  "licaoAdNoticeBody": "The demo is free because each lesson and the exercise list start with an ad. In the full course, you go straight to training.",
+  "@licaoAdNoticeBody": {
+    "description": "Sheet shown once before the first ad of the demo: body."
   },
-  "payCourseNone": "Would not buy",
-  "@payCourseNone": {
-    "description": "Course price range: would not buy."
+  "licaoAdNoticeSee": "See the ad",
+  "@licaoAdNoticeSee": {
+    "description": "Sheet before the first ad: continue button."
   },
-  "payCourse1": "Up to R$ 29",
-  "@payCourse1": {
-    "description": "Course price range 1."
+  "licaoDemoLater": "Not now",
+  "@licaoDemoLater": {
+    "description": "Demo sheets (ad notice and locked chapter): dismiss button."
   },
-  "payCourse2": "R$ 30 to R$ 59",
-  "@payCourse2": {
-    "description": "Course price range 2."
+  "licaoLockedBody": "Available to those with the full course.",
+  "@licaoLockedBody": {
+    "description": "Locked chapter sheet: body."
   },
-  "payCourse3": "R$ 60 to R$ 99",
-  "@payCourse3": {
-    "description": "Course price range 3."
-  },
-  "payCourse4": "R$ 100 or more",
-  "@payCourse4": {
-    "description": "Course price range 4."
-  },
-  "payMonthNone": "Would not pay",
-  "@payMonthNone": {
-    "description": "Monthly price range: would not pay."
-  },
-  "payMonth1": "Up to R$ 9 a month",
-  "@payMonth1": {
-    "description": "Monthly price range 1."
-  },
-  "payMonth2": "R$ 10 to R$ 19 a month",
-  "@payMonth2": {
-    "description": "Monthly price range 2."
-  },
-  "payMonth3": "R$ 20 to R$ 39 a month",
-  "@payMonth3": {
-    "description": "Monthly price range 3."
-  },
-  "payMonth4": "R$ 40 or more a month",
-  "@payMonth4": {
-    "description": "Monthly price range 4."
-  },
-  "payLearnQuestion": "Is the way the app is built making you learn?",
-  "@payLearnQuestion": {
-    "description": "Step 3 question about learning."
-  },
-  "payLearnHelp": "Lesson, exercises, test and a game of the endgame.",
-  "@payLearnHelp": {
-    "description": "Help under the learning question."
-  },
-  "payLearnYes": "Yes",
-  "@payLearnYes": {
-    "description": "Learning answer: yes."
-  },
-  "payLearnSome": "Somewhat",
-  "@payLearnSome": {
-    "description": "Learning answer: somewhat."
-  },
-  "payLearnNo": "No",
-  "@payLearnNo": {
-    "description": "Learning answer: no."
-  },
-  "payNextQuestion": "Which endgame do you want to learn next?",
-  "@payNextQuestion": {
-    "description": "Step 3 question about the next endgame."
-  },
-  "payNextHint": "Write it in your own words (optional)",
-  "@payNextHint": {
-    "description": "Hint of the next endgame text box."
-  },
-  "payWhyQuestion": "Why did you download Lucena?",
-  "@payWhyQuestion": {
-    "description": "Step 3 question about why."
-  },
-  "payWhyHelp": "Pick as many as you like.",
-  "@payWhyHelp": {
-    "description": "Help under the why question."
-  },
-  "payWhyLearn": "Learn endgames",
-  "@payWhyLearn": {
-    "description": "Why chip."
-  },
-  "payWhyTournament": "Train for a tournament",
-  "@payWhyTournament": {
-    "description": "Why chip."
-  },
-  "payWhyRating": "Improve my rating",
-  "@payWhyRating": {
-    "description": "Why chip."
-  },
-  "payWhyTeach": "Teach someone",
-  "@payWhyTeach": {
-    "description": "Why chip."
-  },
-  "payWhyCurious": "Curiosity",
-  "@payWhyCurious": {
-    "description": "Why chip."
-  },
-  "payLevelQuestion": "Your level",
-  "@payLevelQuestion": {
-    "description": "Step 3 question about the level."
-  },
-  "payLevelHelp": "Only shows if you have not set your level yet.",
-  "@payLevelHelp": {
-    "description": "Help under the level question."
-  },
-  "payLevelBeginner": "Beginner",
-  "@payLevelBeginner": {
-    "description": "Level chip."
-  },
-  "payLevelMiddle": "Intermediate",
-  "@payLevelMiddle": {
-    "description": "Level chip."
-  },
-  "payLevelAdvanced": "Advanced",
-  "@payLevelAdvanced": {
-    "description": "Level chip."
-  },
-  "payContinue": "Continue",
-  "@payContinue": {
-    "description": "Button to the next step."
-  },
-  "paySend": "Send",
-  "@paySend": {
-    "description": "Button that sends the survey."
+  "licaoLockedBuy": "Buy the course",
+  "@licaoLockedBuy": {
+    "description": "Locked chapter sheet: goes to the offer."
   },
   "feedbackTitle": "Send feedback",
   "@feedbackTitle": {
@@ -9516,6 +9377,45 @@
   "@courseGuideSeeCatalog": {
     "description": "T85 course guide: courseGuideSeeCatalog."
   },
+  "licaoPlanProgress": "Week {week} of {total} · {days, plural, =0{today} =1{1 day left} other{{days} days left}}",
+  "@licaoPlanProgress": {
+    "description": "Lesson tab: plan band under the app bar, week and days left until the event.",
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "courseGuideLessonLabel": "{part} · Lesson {n}",
+  "@courseGuideLessonLabel": {
+    "description": "Lesson tab card label: part and lesson number.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "courseGuideResumeLabel": "{part} · {stage}",
+  "@courseGuideResumeLabel": {
+    "description": "Lesson tab card label when resuming: part and the stage where the student stopped.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
   "courseGuideStudyTips": "Study tips",
   "@courseGuideStudyTips": {
     "description": "T85 course guide: courseGuideStudyTips."
@@ -9967,7 +9867,7 @@
       }
     }
   },
-  "trainingEndBackToGoals": "Back to goals",
+  "trainingEndBackToGoals": "Continue",
   "@trainingEndBackToGoals": {
     "description": "T85 training exercise and cycle result: trainingEndBackToGoals."
   },
@@ -10076,9 +9976,276 @@
   "@trainingEndReviewLesson": {
     "description": "T85 training exercise and cycle result: trainingEndReviewLesson."
   },
-  "trainingEndSeeGoals": "See goals",
+  "trainingEndSeeGoals": "Do the reinforcement",
   "@trainingEndSeeGoals": {
     "description": "T85 training exercise and cycle result: trainingEndSeeGoals."
+  },
+  "licaoVoltarMetas": "Back to goals",
+  "@licaoVoltarMetas": {
+    "description": "T85-D1 Lição, fim: licaoVoltarMetas."
+  },
+  "licaoAgoraNao": "Not now",
+  "@licaoAgoraNao": {
+    "description": "T85-D1 Lição, fim: licaoAgoraNao."
+  },
+  "licaoMetaDiaTitle": "Today's goal done",
+  "@licaoMetaDiaTitle": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaTitle."
+  },
+  "licaoMetaDiaSemana": "Week {semana} of {total} · {dias, plural, =0{last day} =1{1 day left} other{{dias} days left}}",
+  "@licaoMetaDiaSemana": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaSemana.",
+    "placeholders": {
+      "semana": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "dias": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaLicoes": "{feitas} of {total} lessons",
+  "@licaoMetaDiaLicoes": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaLicoes.",
+    "placeholders": {
+      "feitas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaLicoesTeste": "{feitas} of {total} lessons · test pending",
+  "@licaoMetaDiaLicoesTeste": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaLicoesTeste.",
+    "placeholders": {
+      "feitas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaCapitulos": "{feitos, plural, =1{1 of {total} chapters completed} other{{feitos} of {total} chapters completed}}",
+  "@licaoMetaDiaCapitulos": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaCapitulos.",
+    "placeholders": {
+      "feitos": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoMetaDiaTesteAgora": "Take the test now",
+  "@licaoMetaDiaTesteAgora": {
+    "description": "T85-D1 Lição, fim: licaoMetaDiaTesteAgora."
+  },
+  "licaoOfertaTitle": "Chapter {numero} completed",
+  "@licaoOfertaTitle": {
+    "description": "T85-D1 Lição, fim: licaoOfertaTitle.",
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoOfertaResultado": "{titulo} · {certas} of {total} correct",
+  "@licaoOfertaResultado": {
+    "description": "T85-D1 Lição, fim: licaoOfertaResultado.",
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      },
+      "certas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoOfertaFala": "Fork, double attack and loose piece: you already see these tactics. Now practise until it becomes a habit.",
+  "@licaoOfertaFala": {
+    "description": "T85-D1 Lição, fim: licaoOfertaFala."
+  },
+  "licaoOfertaCardTitle": "A plan made for you",
+  "@licaoOfertaCardTitle": {
+    "description": "T85-D1 Lição, fim: licaoOfertaCardTitle."
+  },
+  "licaoOfertaCardBody": "Take the 15-position test and get the right chapters for your goal.",
+  "@licaoOfertaCardBody": {
+    "description": "T85-D1 Lição, fim: licaoOfertaCardBody."
+  },
+  "licaoOfertaAcao": "See the full course",
+  "@licaoOfertaAcao": {
+    "description": "T85-D1 Lição, fim: licaoOfertaAcao."
+  },
+  "licaoRevisaoTitle": "Review",
+  "@licaoRevisaoTitle": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoTitle."
+  },
+  "licaoRevisaoSemana": "Week {semana} of {total} · {periodo}",
+  "@licaoRevisaoSemana": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoSemana.",
+    "placeholders": {
+      "semana": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "periodo": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoRevisaoDias": "{dias, plural, =0{It is today} =1{1 day left} other{{dias} days left}}",
+  "@licaoRevisaoDias": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoDias.",
+    "placeholders": {
+      "dias": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoRevisaoIntro": "The chapters with the most mistakes in the test come first.",
+  "@licaoRevisaoIntro": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoIntro."
+  },
+  "licaoRevisaoItem": "Chapter test · {certas} of {total}",
+  "@licaoRevisaoItem": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoItem.",
+    "placeholders": {
+      "certas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoRevisaoComecar": "Start the review",
+  "@licaoRevisaoComecar": {
+    "description": "T85-D1 Lição, fim: licaoRevisaoComecar."
+  },
+  "licaoTorneioTitle": "Tournament day",
+  "@licaoTorneioTitle": {
+    "description": "T85-D1 Lição, fim: licaoTorneioTitle."
+  },
+  "licaoTorneioHoje": "Today · {data}",
+  "@licaoTorneioHoje": {
+    "description": "T85-D1 Lição, fim: licaoTorneioHoje.",
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoTorneioFala": "Good luck at {torneio}. Warm up with three positions and enter the first round calm.",
+  "@licaoTorneioFala": {
+    "description": "T85-D1 Lição, fim: licaoTorneioFala.",
+    "placeholders": {
+      "torneio": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoTorneioAquecer": "Three positions to warm up",
+  "@licaoTorneioAquecer": {
+    "description": "T85-D1 Lição, fim: licaoTorneioAquecer."
+  },
+  "licaoTorneioPosicao": "Position {numero}",
+  "@licaoTorneioPosicao": {
+    "description": "T85-D1 Lição, fim: licaoTorneioPosicao.",
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoTorneioPosicaoInfo": "{capitulo} · {lado}",
+  "@licaoTorneioPosicaoInfo": {
+    "description": "T85-D1 Lição, fim: licaoTorneioPosicaoInfo.",
+    "placeholders": {
+      "capitulo": {
+        "type": "String"
+      },
+      "lado": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoTorneioAquecerAcao": "Warm up",
+  "@licaoTorneioAquecerAcao": {
+    "description": "T85-D1 Lição, fim: licaoTorneioAquecerAcao."
+  },
+  "licaoCursoConcluidoTitle": "You completed {curso}",
+  "@licaoCursoConcluidoTitle": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoTitle.",
+    "placeholders": {
+      "curso": {
+        "type": "String"
+      }
+    }
+  },
+  "licaoCursoConcluidoTexto": "for completing the {capitulos} chapters and the {licoes} lessons",
+  "@licaoCursoConcluidoTexto": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoTexto.",
+    "placeholders": {
+      "capitulos": {
+        "type": "int"
+      },
+      "licoes": {
+        "type": "int"
+      }
+    }
+  },
+  "licaoCursoConcluidoFala": "The catalog stays open so you can redo any lesson or exercise. In your goals, exercises continue through the themes and your openings.",
+  "@licaoCursoConcluidoFala": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoFala."
+  },
+  "licaoCursoConcluidoMetas": "See goals",
+  "@licaoCursoConcluidoMetas": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoMetas."
+  },
+  "licaoCursoConcluidoCatalogo": "See the catalog",
+  "@licaoCursoConcluidoCatalogo": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoCatalogo."
+  },
+  "licaoCursoConcluidoCompartilhar": "Share achievement",
+  "@licaoCursoConcluidoCompartilhar": {
+    "description": "T85-D1 Lição, fim: licaoCursoConcluidoCompartilhar."
+  },
+  "licaoDiplomaMarcaPilares": "PILARES DO XADREZ",
+  "@licaoDiplomaMarcaPilares": {
+    "description": "T85-D1 Lição, fim: licaoDiplomaMarcaPilares."
+  },
+  "licaoSemInternetCapitulo": "You need an internet connection to access this chapter.",
+  "@licaoSemInternetCapitulo": {
+    "description": "T85-D1 Lição, fim: licaoSemInternetCapitulo."
+  },
+  "licaoSemInternetCurso": "You need an internet connection to access this course.",
+  "@licaoSemInternetCurso": {
+    "description": "T85-D1 Lição, fim: licaoSemInternetCurso."
+  },
+  "licaoEmBreveTitle": "The next lesson is coming soon",
+  "@licaoEmBreveTitle": {
+    "description": "T85-D1 Lição, fim: licaoEmBreveTitle."
+  },
+  "licaoEmBreveBody": "You finished all published lessons. Until the next one arrives, today's goals continue: theme exercises and openings.",
+  "@licaoEmBreveBody": {
+    "description": "T85-D1 Lição, fim: licaoEmBreveBody."
+  },
+  "licaoEmBreveVoltar": "Back",
+  "@licaoEmBreveVoltar": {
+    "description": "T85-D1 Lição, fim: licaoEmBreveVoltar."
   },
   "trainingExerciseExpired": "Return to your goals to continue training.",
   "@trainingExerciseExpired": {
@@ -11253,7 +11420,7 @@
   "@testCanvasMedals": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
   },
-  "testCanvasRegular": "Fair",
+  "testCanvasRegular": "You passed",
   "@testCanvasRegular": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
   },
@@ -11301,6 +11468,60 @@
   "testCanvasLeaveEmptyBody": "No exercises completed. When you return, start at exercise 1.",
   "@testCanvasLeaveEmptyBody": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "licaoTesteQuaseLa": "Almost there",
+  "@licaoTesteQuaseLa": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteRecomecar": "Let's start over",
+  "@licaoTesteRecomecar": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteReverLicoes": "Review the lessons",
+  "@licaoTesteReverLicoes": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteFalaAbaixo": "I recommend reviewing this chapter's lessons before moving on.",
+  "@licaoTesteFalaAbaixo": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteFalaAbaixoTemas": "I recommend reviewing this chapter's lessons before moving on. The mistakes were in {temas}.",
+  "@licaoTesteFalaAbaixoTemas": {
+    "description": "Lesson exercise and chapter test copy.",
+    "placeholders": {
+      "temas": { "type": "String" }
+    }
+  },
+  "licaoTesteFalaMuitoAbaixo": "I strongly recommend reviewing this chapter's lessons before moving on.",
+  "@licaoTesteFalaMuitoAbaixo": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteFalaMuitoAbaixoTemas": "I strongly recommend reviewing this chapter's lessons before moving on. The mistakes were in {temas}.",
+  "@licaoTesteFalaMuitoAbaixoTemas": {
+    "description": "Lesson exercise and chapter test copy.",
+    "placeholders": {
+      "temas": { "type": "String" }
+    }
+  },
+  "licaoTemasUltimo": "{lista} and {ultimo}",
+  "@licaoTemasUltimo": {
+    "description": "Lesson exercise and chapter test copy.",
+    "placeholders": {
+      "lista": { "type": "String" },
+      "ultimo": { "type": "String" }
+    }
+  },
+  "licaoExercicioDicaSeta": "Follow the arrow on the board.",
+  "@licaoExercicioDicaSeta": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoExercicioResultadoAcertou": "Correct answer",
+  "@licaoExercicioResultadoAcertou": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoExercicioResultadoErrou": "Wrong answer",
+  "@licaoExercicioResultadoErrou": {
+    "description": "Lesson exercise and chapter test copy."
   },
   "testCanvasScore": "{correct} of {total}",
   "@testCanvasScore": {

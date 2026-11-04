@@ -31,6 +31,8 @@ import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/ads/ads_repository.dart';
 import 'data/repositories/alerts/alerts_repository.dart';
+import 'data/repositories/lesson_ad/course_access_repository.dart';
+import 'data/repositories/lesson_ad/demo_ad_repository.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
@@ -55,9 +57,9 @@ import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/photo/photo_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
+import 'data/repositories/feedback/feedback_draft_repository.dart';
 import 'data/repositories/feedback/feedback_repository.dart';
 import 'data/repositories/review/review_repository.dart';
-import 'data/repositories/would_pay/would_pay_repository.dart';
 import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
@@ -788,8 +790,8 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<FeedbackRepository>.value(
           value: dependencies.feedbackRepository,
         ),
-        RepositoryProvider<WouldPayRepository>.value(
-          value: dependencies.wouldPayRepository,
+        RepositoryProvider<FeedbackDraftRepository>.value(
+          value: dependencies.feedbackDraftRepository,
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: dependencies.reviewRepository,
@@ -802,6 +804,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<AdsRepository>.value(
           value: dependencies.adsRepository,
+        ),
+        RepositoryProvider<CourseAccessRepository>.value(
+          value: dependencies.courseAccessRepository,
+        ),
+        RepositoryProvider<DemoAdRepository>.value(
+          value: dependencies.demoAdRepository,
         ),
         RepositoryProvider<PurchaseRepository>.value(
           value: dependencies.purchaseRepository,

@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/services/device_service.dart';
+import 'package:lucena/data/services/firebase/cloud_store_service.dart';
 import 'package:lucena/domain/models/app_version.dart';
 import 'package:lucena/domain/models/feedback_entry.dart';
-import 'package:lucena/domain/models/would_pay.dart';
 
 import '../../../../testing/fakes/fake_cloud_store_service.dart';
 import '../../../../testing/fakes/fake_feedback_repositories.dart';
@@ -19,6 +19,7 @@ void main() {
       value: DeviceModel(model: 'Pixel 8', manufacturer: 'Google'),
     ),
     const AppVersion('1.4.0'),
+    wait: Duration.zero,
   );
 
   test('o texto livre vai com assunto, versão e modelo, sem uid', () async {
@@ -77,32 +78,13 @@ void main() {
     expect(ok, isTrue);
   });
 
-  test('o "Você pagaria?" manda só as respostas e o nível', () async {
-    await repository().send(
-      const FeedbackEntry.wouldPay(
-        answers: WouldPayAnswers(
-          course: WouldPayAnswer.yes,
-          coursePrice: CoursePrice.from30To59,
-          coach: WouldPayAnswer.no,
-          coachPrice: MonthPrice.none,
-          learn: LearnAnswer.some,
-          why: {'tournament', 'learn'},
-        ),
+  test('gap 5: o servidor recusou, o envio falha (a tela avisa)', () async {
+    store.refuseFeedback = true;
+    await expectLater(
+      repository().send(
+        const FeedbackEntry.free(type: FeedbackType.problem, text: 'Travou'),
       ),
-      level: '1500',
+      throwsA(isA<CloudStoreException>()),
     );
-    final data = store.feedback.single;
-    expect(data['kind'], 'pagaria');
-    expect(data.containsKey('type'), isFalse);
-    expect(data.containsKey('text'), isFalse);
-    expect(data['level'], '1500');
-    expect(data['answers'], {
-      'course': 'yes',
-      'coursePrice': '30to59',
-      'coach': 'no',
-      'coachPrice': 'none',
-      'learn': 'some',
-      'why': ['learn', 'tournament'],
-    });
   });
 }

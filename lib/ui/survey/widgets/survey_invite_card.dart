@@ -12,14 +12,29 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../view_models/survey_invite_cubit.dart';
 
-/// De onde o convite aparece, que decide o texto dele.
-enum SurveyInviteSource { trail, endgameLesson, schoolLesson }
+/// De onde o convite aparece: decide o texto, o formato (cartão com botão no
+/// fim da lição, linha clicável no diploma) e a origem no registro.
+enum SurveyInviteSource {
+  pilaresLesson('licao_pilares'),
+  schoolLesson('licao_escola'),
+  pilaresDiploma('diploma_pilares'),
+  schoolDiploma('diploma_escola');
 
-/// O cartão "O que achou das aulas?" (E1.05): convida a responder o
-/// questionário de [kind]. Não é janela nem faixa fixa. Some assim que há
-/// resposta enviada daquele [kind]; ao voltar do questionário, lê de novo.
+  const SurveyInviteSource(this.origin);
+
+  /// O valor de `origem` no `questionario_aberto`.
+  final String origin;
+
+  bool get isDiploma => this == pilaresDiploma || this == schoolDiploma;
+}
+
+/// O convite "O que você achou...?" (E1.05, H-OPI-01/02) para o
+/// questionário de [kind]. No fim da lição é um cartão com "Responder"; no
+/// diploma, uma linha clicável. Some assim que há resposta enviada daquele
+/// [kind]; ao voltar do questionário, lê de novo.
 class SurveyInviteCard extends StatelessWidget {
   const SurveyInviteCard({required this.kind, required this.source, super.key});
 
@@ -43,9 +58,7 @@ class _InviteView extends StatelessWidget {
 
   Future<void> _open(BuildContext context) async {
     final cubit = context.read<SurveyInviteCubit>();
-    await context.push(
-      Routes.survey(kind, fromLesson: source != SurveyInviteSource.trail),
-    );
+    await context.push(Routes.survey(kind, origin: source.origin));
     await cubit.load();
   }
 
@@ -54,62 +67,94 @@ class _InviteView extends StatelessWidget {
     final visible = context.watch<SurveyInviteCubit>().state;
     if (!visible) return const SizedBox.shrink();
     final l10n = context.l10n;
-    final colors = Theme.of(context).colorScheme;
-    final text = switch (source) {
-      SurveyInviteSource.trail => l10n.surveyInviteTrail,
-      SurveyInviteSource.endgameLesson => l10n.surveyInviteEndgameLesson,
-      SurveyInviteSource.schoolLesson => l10n.surveyInviteSchoolLesson,
-    };
-    return Container(
+    final school = kind == SurveyKind.school;
+    if (source.isDiploma) {
+      // A key fica num KeyedSubtree próprio: o LucenaCard repete a key que
+      // recebe por dentro e o finder acharia dois.
+      return KeyedSubtree(
+        key: SurveyKeys.inviteRow(kind),
+        child: LucenaCard(
+          onTap: () => _open(context),
+          child: _InviteHeader(
+            title: school
+                ? l10n.opiniaoDiplomaSchoolTitle
+                : l10n.opiniaoDiplomaPilaresTitle,
+            text: l10n.opiniaoDiplomaText,
+            trailing: const Icon(Icons.chevron_right),
+          ),
+        ),
+      );
+    }
+    return KeyedSubtree(
       key: SurveyKeys.invite(kind),
-      padding: const EdgeInsets.all(AppSpacing.insideCard),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
+      child: LucenaCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: AppSpacing.md,
+          children: [
+            _InviteHeader(
+              title: l10n.surveyInviteTitle,
+              text: school
+                  ? l10n.surveyInviteSchoolLesson
+                  : l10n.surveyInviteEndgameLesson,
+            ),
+            // Botão dentro do cartão: 48 no canvas.
+            SizedBox(
+              height: kButtonHeightCompact,
+              child: FilledButton.tonal(
+                key: SurveyKeys.inviteAction(kind),
+                onPressed: () => _open(context),
+                child: Text(l10n.surveyInviteAction),
+              ),
+            ),
+          ],
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.md,
-        children: [
-          Row(
+    );
+  }
+}
+
+/// Ícone `feedback`, título e texto do convite.
+class _InviteHeader extends StatelessWidget {
+  const _InviteHeader({required this.title, required this.text, this.trailing});
+
+  final String title;
+  final String text;
+  final Widget? trailing;
+
+  static const _iconBox = 40.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      spacing: AppSpacing.md,
+      children: [
+        Container(
+          width: _iconBox,
+          height: _iconBox,
+          decoration: BoxDecoration(
+            color: colors.primaryContainer,
+            borderRadius: BorderRadius.circular(AppShape.medium),
+          ),
+          child: Icon(
+            Icons.feedback,
+            size: AppIconSize.standard,
+            color: colors.primary,
+          ),
+        ),
+        Expanded(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.md,
+            spacing: AppSpacing.xs / 2,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(AppShape.medium),
-                ),
-                child: Icon(
-                  Icons.feedback,
-                  size: AppIconSize.standard,
-                  color: colors.primary,
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.xs / 2,
-                  children: [
-                    Text(l10n.surveyInviteTitle, style: context.cardTitle),
-                    Text(text, style: Theme.of(context).textTheme.bodyMedium),
-                  ],
-                ),
-              ),
+              Text(title, style: context.cardTitle),
+              Text(text, style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
-          FilledButton.tonal(
-            key: SurveyKeys.inviteAction(kind),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeightCompact),
-            ),
-            onPressed: () => _open(context),
-            child: Text(l10n.surveyInviteAction),
-          ),
-        ],
-      ),
+        ),
+        ?trailing,
+      ],
     );
   }
 }

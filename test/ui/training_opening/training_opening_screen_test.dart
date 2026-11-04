@@ -47,7 +47,11 @@ void main() {
   // Create the fake's queued Future in the widget test's FakeAsync zone.
   // A repository built in setUp owns a real-zone Future and leaves its
   // transaction (and the screen's loading spinner) pending during fake pumps.
-  Future<void> prepare({OpeningTrecho? scripted, bool single = false}) async {
+  Future<void> prepare({
+    OpeningTrecho? scripted,
+    bool single = false,
+    List<OpeningTrecho>? parts,
+  }) async {
     settings = SettingsCubit(
       FakeSettingsRepository(),
       languages: AppLanguage.selectable,
@@ -88,12 +92,14 @@ void main() {
           openings: {
             for (final id in ['one', 'two'])
               id: [
-                scripted ??
-                    OpeningTrecho(
-                      id: 't1',
-                      title: 'line',
-                      moves: ['e2e4', 'e7e5', 'g1f3'],
-                    ),
+                ...?parts,
+                if (parts == null)
+                  scripted ??
+                      OpeningTrecho(
+                        id: 't1',
+                        title: 'line',
+                        moves: ['e2e4', 'e7e5', 'g1f3'],
+                      ),
               ],
           },
         ),
@@ -369,6 +375,78 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+  for (final twoParts in [true, false]) {
+    testWidgets(
+      'H-LIC-38/39: texts and footer of a finished part (two parts: $twoParts)',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(412, 915);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        OpeningTrecho part(String id) => OpeningTrecho(
+          id: id,
+          title: 'line',
+          moves: ['e2e4', 'e7e5', 'g1f3'],
+        );
+        await prepare(parts: [part('t1'), if (twoParts) part('t2')]);
+        var progress = 0;
+        var nextGoal = 0;
+        await tester.pumpWidget(
+          TestApp(
+            locale: const Locale('pt'),
+            settingsCubit: settings,
+            child: TrainingOpeningScreen(
+              repository: repository,
+              config: TrainingCourseConfig.pilares,
+              now: now,
+              lessonId: 'one',
+              teacher: teacher,
+              onNextGoal: () => nextGoal++,
+              onProgress: () => progress++,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final cubit = tester
+            .element(find.byKey(TrainingKeys.openingBoard))
+            .read<TrainingOpeningCubit>();
+        final assets = tester
+            .widget<Chessboard>(find.byKey(TrainingKeys.openingBoard))
+            .settings
+            .pieceAssets;
+        await tester.runAsync(
+          () => ChessgroundImages.instance.loadAll(assets, devicePixelRatio: 1),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Jogue os lances do seu repertório.'), findsOneWidget);
+        await cubit.play('d2d4');
+        await tester.pumpAndSettle();
+        expect(find.text('Procure outro lance.'), findsOneWidget);
+        await cubit.play('e2e4');
+        await tester.pumpAndSettle();
+        expect(find.text('Isso mesmo.'), findsOneWidget);
+        await cubit.play('g1f3');
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 1));
+        expect(cubit.state.phase, TrainingOpeningPhase.complete);
+        expect(find.text('Próxima meta'), findsOneWidget);
+        if (twoParts) {
+          expect(find.text('Parte 1 concluída.'), findsOneWidget);
+          expect(find.text('Próxima parte'), findsOneWidget);
+          expect(find.byKey(TrainingKeys.openingProgress), findsNothing);
+        } else {
+          expect(find.textContaining('as 1 partes feitas'), findsOneWidget);
+          expect(find.text('Ver o progresso'), findsOneWidget);
+          await tester.tap(find.byKey(TrainingKeys.openingProgress));
+          expect(progress, 1);
+        }
+        await tester.tap(find.byKey(TrainingKeys.nextGoal));
+        expect(nextGoal, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('real opening list ignores retired completed IDs', (
     tester,
   ) async {

@@ -12,6 +12,8 @@ import 'fakes/fake_course_download_repository.dart';
 import 'fakes/fake_account_repository.dart';
 
 import 'package:lucena/data/repositories/ads/ads_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_access_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/demo_ad_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
@@ -41,10 +43,10 @@ import 'fakes/fake_feedback_repositories.dart';
 import 'fakes/fake_school_repositories.dart';
 
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/repositories/review/review_repository.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
-import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
 
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
@@ -69,11 +71,13 @@ class TestApp extends StatelessWidget {
     this.regionPromptRepository,
     this.analytics,
     this.adsRepository,
+    this.courseAccessRepository,
+    this.demoAdRepository,
     this.purchaseRepository,
     this.storeListingRepository,
     this.updateCubit,
-    this.wouldPayRepository,
     this.feedbackRepository,
+    this.feedbackDraftRepository,
     this.reviewRepository,
     this.schoolProgressRepository,
     this.endgameProgressRepository,
@@ -123,6 +127,10 @@ class TestApp extends StatelessWidget {
   /// Os anúncios. Sem ele, nenhum.
   final AdsRepository? adsRepository;
 
+  /// O acesso ao Pilares e o anúncio da demonstração. Sem eles, curso aberto.
+  final CourseAccessRepository? courseAccessRepository;
+  final DemoAdRepository? demoAdRepository;
+
   /// O "Remover anúncios". Sem ele, a compra não existe (nem a linha).
   final PurchaseRepository? purchaseRepository;
 
@@ -132,10 +140,8 @@ class TestApp extends StatelessWidget {
   /// A atualização (E1.32), quando a tela testada é uma das duas.
   final UpdateCubit? updateCubit;
 
-  /// O "Você pagaria?" e o "Enviar feedback" (E1.26). Sem eles, o cartão
-  /// nunca aparece e o envio vai para um falso.
-  final WouldPayRepository? wouldPayRepository;
   final FeedbackRepository? feedbackRepository;
+  final FeedbackDraftRepository? feedbackDraftRepository;
   final ReviewRepository? reviewRepository;
 
   /// O progresso que conta as aulas concluídas do convite.
@@ -235,11 +241,11 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<SurveyRepository>.value(
           value: surveyRepository ?? FakeSurveyRepository(),
         ),
-        RepositoryProvider<WouldPayRepository>.value(
-          value: wouldPayRepository ?? const NoWouldPayRepository(),
-        ),
         RepositoryProvider<FeedbackRepository>.value(
           value: feedbackRepository ?? FakeFeedbackRepository(),
+        ),
+        RepositoryProvider<FeedbackDraftRepository>.value(
+          value: feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: reviewRepository ?? FakeReviewRepository(),
@@ -258,6 +264,12 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<AdsRepository>.value(
           value: adsRepository ?? const NoAdsRepository(),
+        ),
+        RepositoryProvider<CourseAccessRepository>.value(
+          value: courseAccessRepository ?? const FullCourseAccessRepository(),
+        ),
+        RepositoryProvider<DemoAdRepository>.value(
+          value: demoAdRepository ?? const NoDemoAdRepository(),
         ),
         RepositoryProvider<PurchaseRepository>.value(
           value: purchaseRepository ?? const NoPurchaseRepository(),

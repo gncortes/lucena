@@ -13,7 +13,10 @@ void main() {
     expect(t.exerciseMissing, 'Este exercício não está disponível.');
     expect(t.lessonSaveRetry, 'Ocorreu um erro inesperado');
     expect(t.practiceSolutionUnavailable, 'Ocorreu um erro inesperado');
-    expect(t.surveyThanks, 'Obrigado pela sua opinião.');
+    expect(
+      t.surveyThanks,
+      'Obrigado pela sua opinião. Ela ajuda a melhorar o Lucena.',
+    );
     expect(t.trainingPlanSaveError, 'Ocorreu um erro inesperado');
     expect(t.trainingExerciseSaveError, 'Ocorreu um erro inesperado');
     expect(t.learningAnalysisSaveError, 'Ocorreu um erro inesperado');

@@ -10,6 +10,7 @@ import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/test_canvas_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/widgets/app_bar_progress.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/exercise_screen.dart';
 import 'package:lucena/ui/endgames/widgets/exercises_done_screen.dart';
@@ -154,6 +155,15 @@ void main() {
           final board = tester.getRect(find.byKey(ExerciseKeys.board));
           expect(board.width, closeTo(size.width, 1));
           expect(find.text('Teste · 3 de 12'), findsOneWidget);
+          // H-LIC-45: barra de 4 px rente à base da app bar, valendo N/12.
+          final bar = find.descendant(
+            of: find.byType(AppBar),
+            matching: find.byType(AppBarProgress),
+          );
+          expect(bar, findsOneWidget);
+          expect(tester.widget<AppBarProgress>(bar).value, closeTo(0.25, 1e-9));
+          expect(tester.getSize(bar).height, AppBarProgress.height);
+          expect(find.textContaining('Exercício 3 de 12'), findsNothing);
         }
         if (name == 'TesteResultado' || name == 'TesteNaoPassou') {
           expect(find.byKey(TestCanvasKeys.answer(11)), findsOneWidget);
@@ -162,7 +172,14 @@ void main() {
             findsOneWidget,
           );
           expect(find.byKey(ExercisesDoneKeys.redo), findsOneWidget);
-          expect(find.byKey(ExercisesDoneKeys.back), findsOneWidget);
+          expect(
+            find.byKey(
+              name == 'TesteNaoPassou'
+                  ? TestCanvasKeys.reviewLessons
+                  : ExercisesDoneKeys.back,
+            ),
+            findsOneWidget,
+          );
         }
         await capture.shot(tester, name, size);
         expect(tester.takeException(), isNull);

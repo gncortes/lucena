@@ -116,6 +116,25 @@ void main() {
     expect(cycle.phase, ThemePhase.reinforce);
   });
 
+  test('H-LIC-41: quem usou a dica não ganha a estrela na nota do ciclo', () {
+    final cycle = ThemeCycle(
+      lessonId: 'theme1',
+      startedOn: '2026-10-23',
+      level: 3,
+    );
+    final rules = ThemeCycleRules(now);
+    final clean = rules.record(cycle, exercise('a', 3), correct: true);
+    final hinted = rules.record(
+      cycle,
+      exercise('b', 3),
+      correct: true,
+      hint: true,
+    );
+    expect(clean.score, greaterThan(0));
+    expect(hinted.score, 0);
+    expect(hinted.days.single.earned, isFalse);
+  });
+
   test('dica guarda o acerto visual mas desce nível e não soma nota', () {
     final cycle = ThemeCycle(
       lessonId: 'theme1',
