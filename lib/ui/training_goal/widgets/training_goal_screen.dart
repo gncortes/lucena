@@ -7,6 +7,7 @@ import '../../../domain/models/training/goal/training_objective.dart';
 import '../../../domain/use_cases/training/goal/tournament_rules.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/lucena_card.dart';
@@ -229,7 +230,7 @@ class _Option extends StatelessWidget {
     final colors = theme.colorScheme;
     final header = InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppShape.large),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
