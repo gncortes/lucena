@@ -13,6 +13,7 @@ import 'package:lucena/ui/core/keys/alerts_keys.dart';
 import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/my_progress_keys.dart';
 import 'package:lucena/ui/core/keys/privacy_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
@@ -189,6 +190,7 @@ void main() {
         AccountKeys.acceptScreen,
       ),
       ('PropV1PerfilSemConta', Routes.settingsProfile, ProfileKeys.screen),
+      ('PropV2UxProgresso', D2Paths.progress, MyProgressKeys.screen),
     ]);
   }, tags: ['d2-conta']);
 
