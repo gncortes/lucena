@@ -48,9 +48,8 @@ void main() {
           'adaptive_icon_monochrome: assets/branding/launcher_icon_monochrome.png',
         ),
       );
-      final adaptativo = File(
-        '$res/mipmap-anydpi-v26/ic_launcher.xml',
-      ).readAsStringSync();
+      final adaptativo = File('$res/mipmap-anydpi-v26/ic_launcher.xml')
+          .readAsStringSync();
       expect(adaptativo, contains('<monochrome'));
     });
 
@@ -72,37 +71,42 @@ void main() {
   group('H-ANI-43 · abertura nativa', () {
     test('Android 12+: fundo, peão animado e 500 ms', () {
       final estilo = File('$res/values-v31/styles.xml').readAsStringSync();
-      String item(String nome) => RegExp(
-        '<item name="android:$nome">([^<]+)</item>',
-      ).firstMatch(estilo)!.group(1)!.trim();
-      expect(item('windowSplashScreenBackground').toUpperCase(), contains('14211B'));
+      String item(String nome) =>
+          RegExp('<item name="android:$nome">([^<]+)</item>')
+              .firstMatch(estilo)!
+              .group(1)!
+              .trim();
       expect(
-        item('windowSplashScreenAnimatedIcon'),
-        '@drawable/abertura_peao',
+        item('windowSplashScreenBackground').toUpperCase(),
+        contains('14211B'),
       );
+      expect(item('windowSplashScreenAnimatedIcon'), '@drawable/abertura_peao');
       expect(item('windowSplashScreenAnimationDuration'), '500');
     });
 
-    test('o peão é um animated-vector: escala 0,6 → 1,06 → 1, opacidade 0 → 1', () {
-      final peao = File('$res/drawable/abertura_peao.xml').readAsStringSync();
-      expect(peao, contains('<animated-vector'));
-      final escalas = RegExp(
-        r'android:propertyName="scaleX"[^>]*android:valueFrom="([\d.]+)"[^>]*android:valueTo="([\d.]+)"',
-      ).allMatches(peao).map((m) => '${m[1]}>${m[2]}').toList();
-      expect(escalas, ['0.6>1.06', '1.06>1']);
-      expect(
-        RegExp(r'android:propertyName="scaleY"').allMatches(peao).length,
-        2,
-      );
-      expect(
-        peao,
-        matches(
-          RegExp(
-            r'android:propertyName="alpha"[^>]*android:valueFrom="0"[^>]*android:valueTo="1"',
+    test(
+      'o peão é um animated-vector: escala 0,6 → 1,06 → 1, opacidade 0 → 1',
+      () {
+        final peao = File('$res/drawable/abertura_peao.xml').readAsStringSync();
+        expect(peao, contains('<animated-vector'));
+        final escalas = RegExp(
+          r'android:propertyName="scaleX"[^>]*android:valueFrom="([\d.]+)"[^>]*android:valueTo="([\d.]+)"',
+        ).allMatches(peao).map((m) => '${m[1]}>${m[2]}').toList();
+        expect(escalas, ['0.6>1.06', '1.06>1']);
+        expect(
+          RegExp(r'android:propertyName="scaleY"').allMatches(peao).length,
+          2,
+        );
+        expect(
+          peao,
+          matches(
+            RegExp(
+              r'android:propertyName="alpha"[^>]*android:valueFrom="0"[^>]*android:valueTo="1"',
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('Android 11 e anteriores: launch_background #14211B', () {
       for (final pasta in ['values', 'values-night']) {
