@@ -399,7 +399,7 @@ void main() {
 
     testWidgets('H-CON-13: nunca sincronizou diz "ainda não"', (tester) async {
       await pumpScreen(tester);
-      expect(find.text('Última sincronização: ainda não'), findsOneWidget);
+      expect(find.text('Ainda não salvo'), findsOneWidget);
       // Critério 4: o cartão diz o que acontece sem internet.
       expect(
         find.text(
@@ -659,7 +659,7 @@ void main() {
       expect(inCard('Pilares do Xadrez'), findsOneWidget);
       expect(inCard('Demonstração'), findsOneWidget);
       expect(
-        inCard('Você tem o Capítulo 1. O curso completo tem 20 capítulos.'),
+        inCard('Na demonstração você faz o Capítulo 1. O curso completo tem 20 capítulos.'),
         findsOneWidget,
       );
       await tester.tap(find.byKey(PurchaseKeys.courseSeeFull));

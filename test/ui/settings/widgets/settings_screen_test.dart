@@ -350,11 +350,11 @@ void main() {
       );
     });
 
-    testWidgets('Notificações conta no feminino: "3 de 4 ligadas"', (
+    testWidgets('Notificações conta com o substantivo: "3 de 4 notificações ligadas"', (
       tester,
     ) async {
       await pumpPt(tester);
-      expect(inTile(SettingsKeys.alertsTile, '3 de 4 ligadas'), findsOneWidget);
+      expect(inTile(SettingsKeys.alertsTile, '3 de 4 notificações ligadas'), findsOneWidget);
     });
 
     testWidgets('"Avaliar o Lucena" abre a página na Play', (tester) async {
@@ -453,7 +453,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byKey(SettingsKeys.alertsTile),
-        matching: find.text('3 of 4 on'),
+        matching: find.text('3 of 4 notifications on'),
       ),
       findsOneWidget,
     );

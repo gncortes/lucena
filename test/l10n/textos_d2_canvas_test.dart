@@ -15,4 +15,37 @@ void main() {
   test('item 7: o grupo se chama "Notificações" em todo lugar', () {
     expect(pt.alertsTitle, 'Notificações');
   });
+
+  // Consultor de texto, aprovado pelo orquestrador (04/11): "tudo salvo" com
+  // "ainda não" se contradiziam; "exercício" e a contagem com o substantivo
+  // seguem o padrão do app. "Salvo", nunca "guardado" (H-LIC-16).
+  test('cartão da conta: "Progresso na conta" e "salvo"', () {
+    expect(pt.profileSyncedTitle, 'Progresso na conta');
+    expect(pt.profileSyncedAt('hoje, 21:40'), 'Salvo hoje, 21:40');
+    expect(pt.profileSyncedNever, 'Ainda não salvo');
+    expect(
+      pt.profileSyncOffline,
+      'Sem internet, o que você faz fica no celular e é salvo na conta '
+      'quando a conexão voltar.',
+    );
+  });
+
+  test('aquecimento: "alguns exercícios rápidos"', () {
+    expect(
+      pt.settingsWarmUpHint,
+      'Antes de uma partida, alguns exercícios rápidos do mesmo final.',
+    );
+  });
+
+  test('notificações: "3 de 4 notificações ligadas"', () {
+    expect(pt.alertsCount(3, 4), '3 de 4 notificações ligadas');
+  });
+
+  test('cartão do curso na demonstração', () {
+    expect(
+      pt.venDemoText,
+      'Na demonstração você faz o Capítulo 1. O curso completo tem 20 '
+      'capítulos.',
+    );
+  });
 }
