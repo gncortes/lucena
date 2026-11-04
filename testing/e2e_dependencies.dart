@@ -1,3 +1,4 @@
+import 'package:lucena/data/repositories/account/account_invite_repository.dart';
 import 'package:lucena/data/repositories/training/training_endgame_content.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:lucena/data/services/lesson_content_service.dart';
@@ -312,6 +313,7 @@ Future<Dependencies> e2eDependencies({
   Now? now,
   PurchaseRepository? purchases,
   bool signedIn = false,
+  bool accountInvite = false,
 }) async {
   if (realCourseTraining && trainingScenario != null) {
     throw ArgumentError('Real course training cannot use a seeded scenario');
@@ -466,6 +468,11 @@ Future<Dependencies> e2eDependencies({
     shareRepository: e2eShare,
     deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
     accountRepository: account,
+    // Os cenários não esperam o convite da conta; o print do Progresso
+    // (PropV2UxProgresso) o mostra pendente, como para o visitante novo.
+    accountInviteRepository: accountInvite
+        ? LocalAccountInviteRepository(PreferencesService())
+        : const NoAccountInviteRepository(),
     syncRepository: FakeSyncRepository(),
     avatarRepository: FakeAvatarRepository(),
     photoRepository: FakePhotoRepository(),

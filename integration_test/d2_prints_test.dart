@@ -237,6 +237,17 @@ void main() {
         AccountKeys.acceptScreen,
       ),
       ('PropV1PerfilSemConta', Routes.settingsProfile, ProfileKeys.screen),
+    ]);
+  }, tags: ['d2-conta']);
+
+  // O quadro do Progresso tem o convite da conta pendente.
+  patrolTest('D2 prints: progresso com o convite', ($) async {
+    await AppRobot($).open(
+      systemLocale: const Locale('pt', 'BR'),
+      lightDevice: true,
+      accountInvite: true,
+    );
+    await shots($, [
       ('PropV2UxProgresso', D2Paths.progress, MyProgressKeys.screen),
     ]);
   }, tags: ['d2-conta']);
