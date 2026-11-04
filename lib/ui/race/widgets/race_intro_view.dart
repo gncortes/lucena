@@ -17,6 +17,7 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';
 import 'race_filter_screen.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 
 /// A abertura da Corrida: o que é, a duração (3 ou 5 min), as regras, a
 /// linha dos filtros (objetivo e finais, em tela cheia), o recorde da duração
@@ -42,95 +43,110 @@ class RaceIntroView extends StatelessWidget {
     }
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return Column(
-      key: RaceKeys.introView,
-      children: [
-        Expanded(
-          child: ListView(
-            padding: scrollPadding(
-              context,
-              left: AppSpacing.lg,
-              right: AppSpacing.lg,
-              top: AppSpacing.lg,
-            ),
-            children: [
-              Row(
-                spacing: AppSpacing.lg,
-                children: [
-                  ExcludeSemantics(
-                    child: PositionBoard(
-                      fen: state.problems.first.fen,
-                      size: 112,
-                      radius: AppShape.small,
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.raceIntroSubtitle,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          l10n.raceIntroBody,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+    // H-ANI-16: a explicação se monta em ordem (título, textos, regras) e o
+    // "Começar" entra por último; o toque fica liberado desde o início.
+    return EntradaEmCascata(
+      montar: (itens) => Column(
+        key: RaceKeys.introView,
+        children: [
+          Expanded(
+            child: ListView(
+              padding: scrollPadding(
+                context,
+                left: AppSpacing.lg,
+                right: AppSpacing.lg,
+                top: AppSpacing.lg,
               ),
-              const SizedBox(height: AppSpacing.lg),
-              // O porquê de ser só de finais e para que serve (canvas V2 ·
-              // Ligações, L4).
-              Container(
-                key: RaceKeys.whyEndgames,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
+              children: itens.sublist(0, itens.length - 2),
+            ),
+          ),
+          ...itens.sublist(itens.length - 2),
+        ],
+      ),
+      itens: [
+        ItemDaCascata.titulo(
+          Row(
+            spacing: AppSpacing.lg,
+            children: [
+              ExcludeSemantics(
+                child: PositionBoard(
+                  fen: state.problems.first.fen,
+                  size: 112,
+                  radius: AppShape.small,
                 ),
-                decoration: BoxDecoration(
-                  color: colors.secondaryContainer,
-                  borderRadius: BorderRadius.circular(AppShape.medium),
-                ),
-                child: Row(
+              ),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.sm,
                   children: [
-                    Icon(
-                      Icons.lightbulb,
-                      size: AppIconSize.button,
-                      color: colors.onSecondaryContainer,
+                    Text(
+                      l10n.raceIntroSubtitle,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: l10n.raceWhyEndgamesTitle,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            TextSpan(text: ' ${l10n.raceWhyEndgamesBody}'),
-                          ],
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSecondaryContainer,
-                        ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l10n.raceIntroBody,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
+            ],
+          ),
+        ),
+        const ItemDaCascata.texto(SizedBox(height: AppSpacing.lg)),
+        // O porquê de ser só de finais e para que serve (canvas V2 ·
+        // Ligações, L4).
+        ItemDaCascata.texto(
+          Container(
+            key: RaceKeys.whyEndgames,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: colors.secondaryContainer,
+              borderRadius: BorderRadius.circular(AppShape.medium),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: AppSpacing.sm,
+              children: [
+                Icon(
+                  Icons.lightbulb,
+                  size: AppIconSize.button,
+                  color: colors.onSecondaryContainer,
+                ),
+                Expanded(
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: l10n.raceWhyEndgamesTitle,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        TextSpan(text: ' ${l10n.raceWhyEndgamesBody}'),
+                      ],
+                    ),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSecondaryContainer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Duração em seção própria, acima das regras (E1.33, opção B).
+        ItemDaCascata.texto(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               const SizedBox(height: AppSpacing.sm),
-              // Duração em seção própria, acima das regras (E1.33, opção B).
               SectionTitle(l10n.raceDuration, inset: 0),
               SegmentedButton<RaceDuration>(
                 key: RaceKeys.duration,
@@ -150,58 +166,79 @@ class RaceIntroView extends StatelessWidget {
                     unawaited(cubit.selectDuration(selection.single)),
               ),
               const SizedBox(height: AppSpacing.sm),
-              _Rule(
-                icon: Icons.timer,
-                title: l10n.raceRuleTimeTitle(state.duration.minutes),
-                body: l10n.raceRuleTimeBody,
-              ),
-              _Rule(
-                icon: Icons.trending_up,
-                title: l10n.raceRuleHarderTitle,
-                body: l10n.raceRuleHarderBody,
-              ),
-              _Rule(
-                icon: Icons.close,
-                title: l10n.raceRuleErrorsTitle,
-                body: l10n.raceRuleErrorsBody,
-              ),
-              _Rule(
-                icon: Icons.bolt,
-                title: l10n.raceRuleShortestTitle,
-                body: l10n.raceRuleShortestBody,
-              ),
-              SectionTitle(l10n.raceFilters, inset: 0),
-              _FilterRow(state: state),
-              const SizedBox(height: AppSpacing.lg),
-              _RecordCard(record: state.record, duration: state.duration),
             ],
           ),
         ),
-        // A nota fica no pé, sobre o "Começar" (canvas).
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.sm,
-            AppSpacing.lg,
-            0,
+        ItemDaCascata.texto(
+          _Rule(
+            icon: Icons.timer,
+            title: l10n.raceRuleTimeTitle(state.duration.minutes),
+            body: l10n.raceRuleTimeBody,
           ),
-          child: Text(
-            l10n.raceFootnote,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
+        ),
+        ItemDaCascata.texto(
+          _Rule(
+            icon: Icons.trending_up,
+            title: l10n.raceRuleHarderTitle,
+            body: l10n.raceRuleHarderBody,
+          ),
+        ),
+        ItemDaCascata.texto(
+          _Rule(
+            icon: Icons.close,
+            title: l10n.raceRuleErrorsTitle,
+            body: l10n.raceRuleErrorsBody,
+          ),
+        ),
+        ItemDaCascata.texto(
+          _Rule(
+            icon: Icons.bolt,
+            title: l10n.raceRuleShortestTitle,
+            body: l10n.raceRuleShortestBody,
+          ),
+        ),
+        ItemDaCascata.texto(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SectionTitle(l10n.raceFilters, inset: 0),
+              _FilterRow(state: state),
+              const SizedBox(height: AppSpacing.lg),
+            ],
+          ),
+        ),
+        ItemDaCascata.texto(
+          _RecordCard(record: state.record, duration: state.duration),
+        ),
+        // A nota fica no pé, sobre o "Começar" (canvas).
+        ItemDaCascata.texto(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              0,
+            ),
+            child: Text(
+              l10n.raceFootnote,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ),
         ),
-        ActionsFooter(
-          children: [
-            FilledButton.icon(
-              key: RaceKeys.start,
-              icon: const Icon(Icons.play_arrow),
-              label: Text(l10n.raceStart),
-              onPressed: cubit.start,
-            ),
-          ],
+        ItemDaCascata.botao(
+          ActionsFooter(
+            children: [
+              FilledButton.icon(
+                key: RaceKeys.start,
+                icon: const Icon(Icons.play_arrow),
+                label: Text(l10n.raceStart),
+                onPressed: cubit.start,
+              ),
+            ],
+          ),
         ),
       ],
     );

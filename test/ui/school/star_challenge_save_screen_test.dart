@@ -83,7 +83,26 @@ void main() {
         repository.gate = Completer<void>();
         await tester.tap(find.byKey(StarChallengeKeys.retrySave));
         await tester.pump();
-        expect(find.byKey(StarChallengeKeys.saveProgress), findsOneWidget);
+        await tester.pump(const Duration(milliseconds: 120));
+        // H-ANI-08: o "Tentar de novo" carrega no próprio botão, que fica
+        // no lugar e não aceita outro toque.
+        expect(find.byKey(StarChallengeKeys.saveProgress), findsNothing);
+        expect(find.byKey(StarChallengeKeys.retrySave), findsOneWidget);
+        expect(
+          tester
+              .widget<ButtonStyleButton>(
+                find.byKey(StarChallengeKeys.retrySave),
+              )
+              .onPressed,
+          isNull,
+        );
+        expect(
+          find.descendant(
+            of: find.byKey(StarChallengeKeys.retrySave),
+            matching: find.byType(CircularProgressIndicator),
+          ),
+          findsOneWidget,
+        );
         repository.gate.complete();
         await tester.pumpAndSettle();
         expect(find.byKey(StarChallengeKeys.result), findsOneWidget);

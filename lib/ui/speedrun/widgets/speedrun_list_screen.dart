@@ -24,7 +24,6 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../view_models/speedrun_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
 import 'speedrun_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -32,6 +31,8 @@ import '../../core/widgets/one_line.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/lista_em_ordem.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.
 class SpeedrunListScreen extends StatelessWidget {
@@ -88,11 +89,15 @@ class SpeedrunListScreen extends StatelessWidget {
         esqueleto: const SkeletonList(),
         child: all == null
             ? const SizedBox.shrink()
-            : ListView(
-                // Espaço no fim: o último cartão rola até sair da barra do
-                // sistema.
-                padding: scrollPadding(context, bottom: 48),
-                children: [
+            // As linhas entram em ordem na primeira carga (H-ANI-17).
+            : ListaEmOrdem(
+                montar: (itens) => ListView(
+                  // Espaço no fim: o último cartão rola até sair da barra do
+                  // sistema.
+                  padding: scrollPadding(context, bottom: 48),
+                  children: itens,
+                ),
+                itens: [
                   // O modo no alto: cada partida com o seu relógio, ou um
                   // relógio só para todas (a Maratona). Fica gravado.
                   const _ModePicker(),
@@ -140,12 +145,8 @@ class SpeedrunListScreen extends StatelessWidget {
                     ),
                   if (marathon) ...[
                     section(l10n.speedrunEndingSection),
-                    for (final (index, summary) in state.marathons.indexed)
-                      if (shown(summary))
-                        StaggeredEntrance(
-                          index: index,
-                          child: _Card(summary: summary),
-                        ),
+                    for (final summary in state.marathons)
+                      if (shown(summary)) _Card(summary: summary),
                   ] else
                     for (final kind in SpeedrunKind.values)
                       // Modalidade sem speedrun na dificuldade não ganha título.
@@ -161,12 +162,9 @@ class SpeedrunListScreen extends StatelessWidget {
                           SpeedrunKind.full => l10n.speedrunFullSection,
                           SpeedrunKind.marathon => l10n.marathonSection,
                         }),
-                        for (final (index, summary) in all.indexed)
+                        for (final summary in all)
                           if (summary.speedrun.kind == kind && shown(summary))
-                            StaggeredEntrance(
-                              index: index,
-                              child: _Card(summary: summary),
-                            ),
+                            _Card(summary: summary),
                       ],
                 ],
               ),
@@ -250,55 +248,61 @@ class SpeedrunListScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.xl,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        section(
-                          Icons.timer_outlined,
-                          l10n.speedrunModeClassic,
-                          Text(
-                            l10n.speedrunHelpClassic,
-                            key: SpeedrunKeys.intro,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
-                        section(
-                          Icons.all_inclusive,
-                          l10n.marathonSection,
-                          Text(
-                            l10n.speedrunHelpMarathon,
-                            key: SpeedrunKeys.helpText,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
-                        section(
-                          Icons.av_timer_outlined,
-                          l10n.speedrunPaceLine(paceShort(l10n, pace)),
-                          Text(
-                            l10n.speedrunHelpClock(
-                              initial,
-                              pace.increment.inSeconds,
+                    child: EntradaEmCascata(
+                      montar: (itens) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: itens,
+                      ),
+                      itens: [
+                        for (final secao in [
+                          section(
+                            Icons.timer_outlined,
+                            l10n.speedrunModeClassic,
+                            Text(
+                              l10n.speedrunHelpClassic,
+                              key: SpeedrunKeys.intro,
+                              style: theme.textTheme.bodyLarge,
                             ),
-                            key: SpeedrunKeys.paceHelp,
-                            style: theme.textTheme.bodyLarge,
                           ),
-                        ),
-                        section(
-                          Icons.school_outlined,
-                          l10n.speedrunHelpLevels,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: levels,
+                          section(
+                            Icons.all_inclusive,
+                            l10n.marathonSection,
+                            Text(
+                              l10n.speedrunHelpMarathon,
+                              key: SpeedrunKeys.helpText,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
-                        ),
-                        section(
-                          Icons.pause_circle_outline,
-                          l10n.lessonDemoPause,
-                          Text(
-                            l10n.speedrunHelpPause,
-                            style: theme.textTheme.bodyLarge,
+                          section(
+                            Icons.av_timer_outlined,
+                            l10n.speedrunPaceLine(paceShort(l10n, pace)),
+                            Text(
+                              l10n.speedrunHelpClock(
+                                initial,
+                                pace.increment.inSeconds,
+                              ),
+                              key: SpeedrunKeys.paceHelp,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
-                        ),
+                          section(
+                            Icons.school_outlined,
+                            l10n.speedrunHelpLevels,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: levels,
+                            ),
+                          ),
+                          section(
+                            Icons.pause_circle_outline,
+                            l10n.lessonDemoPause,
+                            Text(
+                              l10n.speedrunHelpPause,
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ),
+                        ])
+                          ItemDaCascata.texto(secao),
                       ],
                     ),
                   ),

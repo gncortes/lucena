@@ -34,6 +34,7 @@ import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
 
 /// A lista dos speedruns, com o ritmo escolhido no alto.
 void main() {
@@ -103,6 +104,20 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byKey(MotionKeys.shimmerEsqueleto), findsNothing);
     expect(find.byKey(SpeedrunKeys.pace), findsOneWidget);
+  });
+
+  testWidgets('primeira carga: as linhas entram em ordem, de cima para baixo', (
+    tester,
+  ) async {
+    await pump(tester, carregar: false);
+    await tester.runAsync(cubit.load);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final primeira = opacidade(tester, find.byKey(MotionKeys.itemDaLista(0)));
+    final terceira = opacidade(tester, find.byKey(MotionKeys.itemDaLista(2)));
+    expect(terceira, lessThan(primeira));
+    await tester.pump(const Duration(milliseconds: 1500));
+    expect(opacidade(tester, find.byKey(MotionKeys.itemDaLista(2))), 1);
   });
 
   bool chipSelected(WidgetTester tester, String code) => tester
@@ -309,6 +324,31 @@ void main() {
     expect(find.byKey(SpeedrunKeys.helpScreen), findsNothing);
     expect(find.byKey(SpeedrunKeys.listScreen), findsOneWidget);
   });
+
+  testWidgets(
+    'Como funciona: as seções entram em cascata, de cima para baixo',
+    (tester) async {
+      await pump(tester, locale: const Locale('pt'));
+      await tester.tap(find.byKey(SpeedrunKeys.help));
+      await tester.pump();
+      await tester.pump();
+      expect(find.byKey(SpeedrunKeys.intro), findsOneWidget);
+      // Espera a primeira seção começar a aparecer (depois da transição).
+      var voltas = 0;
+      while (opacidadeAcima(tester, find.byKey(SpeedrunKeys.intro)) < 0.3 &&
+          voltas++ < 100) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      final primeira = opacidadeAcima(tester, find.byKey(SpeedrunKeys.intro));
+      final ritmo = opacidadeAcima(tester, find.byKey(SpeedrunKeys.paceHelp));
+      expect(primeira, greaterThanOrEqualTo(0.3));
+      expect(ritmo, lessThan(primeira));
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(opacidadeAcima(tester, find.byKey(SpeedrunKeys.intro)), 1);
+      expect(opacidadeAcima(tester, find.byKey(SpeedrunKeys.paceHelp)), 1);
+      await tester.pumpAndSettle();
+    },
+  );
 
   testWidgets('detalhe sem speedrun escolhido: erro explícito, não corpo em '
       'branco', (tester) async {

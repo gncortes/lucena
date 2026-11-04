@@ -1,4 +1,5 @@
 import 'training_lesson_scope.dart';
+import 'abre_do_cartao.dart';
 import '../domain/models/load_failure.dart';
 import '../data/repositories/diagnostics/failure_report_repository.dart';
 import '../ui/core/widgets/load_error.dart';
@@ -2147,6 +2148,9 @@ GoRoute _route({
         child: buildChild(),
       );
     }
+    // H-ANI-04: a aula aberta pelo cartão da Escola cresce dele.
+    final doCartao = paginaQueAbre(context, state, buildChild());
+    if (doCartao != null) return doCartao;
     if (!fade && state.extra is! TrainingLaunch) {
       return MaterialPage<void>(key: state.pageKey, child: buildChild());
     }
@@ -2168,9 +2172,10 @@ TrainingLaunch? _trainingLaunch(GoRouterState state) =>
 
 String? _trainingTitle(GoRouterState state) =>
     _trainingLaunch(state)?.title ??
-    (state.extra is TrainingLesson
-        ? (state.extra as TrainingLesson).title
-        : null);
+    switch (AbreDoCartao.licaoDe(state.extra)) {
+      final TrainingLesson lesson => lesson.title,
+      _ => null,
+    };
 
 Future<bool> Function()? _trainingGoalDone(
   BuildContext context,

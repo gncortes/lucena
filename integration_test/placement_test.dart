@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
-import 'robots/endgames_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/placement_robot.dart';
 import 'robots/profile_robot.dart';
@@ -55,19 +54,14 @@ void main() {
     await tour.leaveNextSteps();
   });
 
-  patrolTest('perfil: refazer o teste; a escola e a trilha de finais passam '
-      'a mostrar o roteiro', ($) async {
+  // A V1 tem só o Pilares (decisão do Gabriel): a trilha de finais fica
+  // oculta e o atalho Pilares abre o curso. O teste refeito pelo perfil se
+  // confere no Início e na Escola, não mais na trilha.
+  patrolTest('perfil: refazer o teste; o Início e a Escola seguem com o '
+      'novo degrau', ($) async {
     final app = AppRobot($);
     final placement = PlacementRobot($);
     await app.open(systemLocale: _english);
-    // Antes do teste: o curso de finais abre no cartão "Continuar" (T82:
-    // sem convite do teste nem filtro "Para você").
-    final endgames = EndgamesRobot($);
-    await endgames.openFromHome();
-    await $(EndgamesKeys.continueButton).waitUntilVisible();
-    // O voltar pelo widget (a dica "Back" muda com o idioma).
-    await $(BackButton).tap();
-    await $.pumpAndSettle();
 
     await HomeRobot($).openSettings();
     await ProfileRobot($).open();
@@ -80,11 +74,12 @@ void main() {
     // O resultado volta a "Seu nível", de onde o teste foi aberto.
     await $(LevelKeys.screen).waitUntilVisible();
 
-    // O curso de finais segue com o "Continuar", agora no próximo do
-    // roteiro.
+    // Depois de fechar o app: o Início mostra o rating, e a Escola não
+    // convida mais para o teste.
     await app.restart();
-    await endgames.openFromHome();
-    await $(EndgamesKeys.continueButton).waitUntilVisible();
+    await HomeRobot($).expectRating();
+    await $(HomeKeys.schoolButton).scrollTo().tap();
+    await $.pumpAndSettle();
     expect(find.byKey(SchoolKeys.placementTest), findsNothing);
   });
 }

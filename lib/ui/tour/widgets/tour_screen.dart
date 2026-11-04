@@ -312,8 +312,14 @@ class _BoardStepState extends State<_BoardStep> {
             expandedInsets: EdgeInsets.zero,
             showSelectedIcon: false,
             segments: [
-              ButtonSegment(value: false, label: Text(l10n.tourTabColors)),
-              ButtonSegment(value: true, label: Text(l10n.boardPieces)),
+              ButtonSegment(
+                value: false,
+                label: Text(l10n.tourTabColors, key: TourKeys.boardTabColors),
+              ),
+              ButtonSegment(
+                value: true,
+                label: Text(l10n.boardPieces, key: TourKeys.boardTabPieces),
+              ),
             ],
             selected: {_pieces},
             onSelectionChanged: (value) =>
