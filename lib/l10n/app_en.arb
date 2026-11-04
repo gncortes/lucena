@@ -9711,6 +9711,21 @@
   "@courseGuideSeeCatalog": {
     "description": "T85 course guide: courseGuideSeeCatalog."
   },
+  "licaoPlanProgress": "Week {week} of {total} · {days, plural, =0{today} =1{1 day left} other{{days} days left}}",
+  "@licaoPlanProgress": {
+    "description": "Lesson tab: plan band under the app bar, week and days left until the event.",
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "courseGuideStudyTips": "Study tips",
   "@courseGuideStudyTips": {
     "description": "T85 course guide: courseGuideStudyTips."

@@ -7,4 +7,7 @@ abstract final class SpeechKeys {
 
   /// O texto cortado que termina em "… Ver mais".
   static const cut = Key('speech.cut');
+
+  /// O "… Ver mais" do balão (o mesmo texto cortado de [cut]).
+  static const balloonSeeMore = cut;
 }

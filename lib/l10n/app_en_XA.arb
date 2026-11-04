@@ -1852,6 +1852,7 @@
   "courseGuideTabsCatalog": "[Åll léššöñš îñ thé çöûŕšé. one two three]",
   "courseGuideTabIntro": "[{tab}: {body} one two]",
   "courseGuideSeeCatalog": "[Vîéw thé çåtålöĝ one two]",
+  "licaoPlanProgress": "[Wéék {week} öf {total} · {days, plural, =0{tödåý} =1{1 dåý léft} other{{days} dåýš léft}} one two three four five six seven eight]",
   "courseGuideStudyTips": "[Štûdý tîpš one]",
   "courseGuideTips1Title": "[Thîñk béföŕé mövîñĝ one two]",
   "courseGuideTips1Body": "[Îñ dîffîçûlt pöšîtîöñš, thîñk föŕ åt léåšt 5 mîñûtéš béföŕé plåýîñĝ. Thé éfföŕt hélpš ýöû ŕémémbéŕ thé îdéå. one two three four five six seven eight nine]",
