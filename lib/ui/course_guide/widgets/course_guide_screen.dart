@@ -1,3 +1,9 @@
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/route_names.dart';
+import '../../core/keys/training_goal_keys.dart';
+import '../../core/widgets/lucena_sheet.dart';
+import '../../training_goal/widgets/training_goal_card.dart';
 import '../../core/widgets/course/course_navigation_bar.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../domain/use_cases/training/needs_opening_profile.dart';
@@ -146,6 +152,7 @@ class CourseGuideScreen extends StatelessWidget {
                             : _WelcomeTab(onContinue: onWelcomeContinue),
                       CourseGuideTab.goals => goalsBuilder(context),
                       CourseGuideTab.guide => TrainingGuideTab(
+                        key: CourseGuideKeys.guideTab,
                         course: config.course,
                       ),
                       CourseGuideTab.stats => progressBuilder(context),
@@ -449,6 +456,10 @@ class _LessonTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
+        TrainingGoalCard(
+          course: cubit.config.course,
+          place: TrainingGoalCardPlace.home,
+        ),
         CourseContinueCard(
           key: needsProfile ? TrainingProfileKeys.moment : null,
           label: needsProfile
@@ -514,6 +525,16 @@ class _CatalogTab extends StatefulWidget {
 
 class _CatalogTabState extends State<_CatalogTab> {
   final expanded = <String>{};
+
+  /// Filtro do catálogo (H-TRE-13): com plano, abre em "Meu plano".
+  late bool _onlyPlan = _planIds != null;
+
+  Set<String>? get _planIds {
+    final plan = widget.state.training?.studyPlan;
+    if (plan == null || plan.chapterIds.isEmpty) return null;
+    return plan.chapterIds.toSet();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -525,8 +546,15 @@ class _CatalogTabState extends State<_CatalogTab> {
 
   @override
   Widget build(BuildContext context) {
+    final planIds = _planIds;
+    final filtered = _onlyPlan && planIds != null;
     final data = widget.state.resources!.lessons
-        .where((l) => l.visible && l.published)
+        .where(
+          (l) =>
+              l.visible &&
+              l.published &&
+              (!filtered || planIds.contains(l.groupId)),
+        )
         .toList();
     final completed = widget.state.training!.completedLessons;
     final config = context.read<CourseGuideCubit>().config;
@@ -536,6 +564,12 @@ class _CatalogTabState extends State<_CatalogTab> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
+        _CatalogHeader(
+          course: config.course,
+          hasPlan: planIds != null,
+          onlyPlan: filtered,
+          onChanged: (value) => setState(() => _onlyPlan = value),
+        ),
         for (final (index, group) in groups.entries.indexed) ...[
           if (!modules || expanded.contains(group.key)) ...[
             if (modules)
@@ -606,6 +640,99 @@ class _CatalogTabState extends State<_CatalogTab> {
             ),
         ],
       ],
+    );
+  }
+}
+
+class _CatalogHeader extends StatelessWidget {
+  const _CatalogHeader({
+    required this.course,
+    required this.hasPlan,
+    required this.onlyPlan,
+    required this.onChanged,
+  });
+  final TrainingCourse course;
+  final bool hasPlan;
+  final bool onlyPlan;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              if (hasPlan)
+                Expanded(
+                  child: SegmentedButton<bool>(
+                    key: TrainingGoalKeys.catalogFilter,
+                    showSelectedIcon: false,
+                    segments: [
+                      ButtonSegment(
+                        value: true,
+                        label: Text(
+                          t.treinoCatalogFilterPlan,
+                          key: TrainingGoalKeys.catalogFilterPlan,
+                        ),
+                      ),
+                      ButtonSegment(
+                        value: false,
+                        label: Text(
+                          t.treinoCatalogFilterAll,
+                          key: TrainingGoalKeys.catalogFilterAll,
+                        ),
+                      ),
+                    ],
+                    selected: {onlyPlan},
+                    onSelectionChanged: (value) => onChanged(value.first),
+                  ),
+                )
+              else
+                const Spacer(),
+              IconButton(
+                key: TrainingGoalKeys.catalogAbout,
+                tooltip: t.treinoAboutPilares,
+                icon: const Icon(Icons.article_outlined),
+                onPressed: () => showLucenaSheet<void>(
+                  context,
+                  builder: (sheetContext) => Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.treinoAboutPilares,
+                          style: Theme.of(sheetContext).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(t.treinoAboutBody),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (hasPlan && onlyPlan)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                key: TrainingGoalKeys.catalogChangePlan,
+                onPressed: () => context.pushNamed(
+                  RouteNames.trainingPlan,
+                  pathParameters: {'course': course.name},
+                  queryParameters: const {'replan': '1'},
+                ),
+                child: Text(t.treinoCatalogChangePlan),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

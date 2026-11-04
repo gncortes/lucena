@@ -51,6 +51,8 @@ import '../ui/training_opening/widgets/training_opening_progress_screen.dart';
 import '../ui/training_progress/widgets/training_theme_screen.dart';
 import '../ui/training_help/widgets/training_help_screen.dart';
 import '../ui/training_help/widgets/training_tour.dart';
+import '../domain/use_cases/training/goal/goal_actions.dart';
+import '../domain/use_cases/training/goal/goal_dates.dart';
 import 'routes.dart';
 import 'route_names.dart';
 import 'training_launch.dart';
@@ -211,23 +213,51 @@ GoRoute trainingRoute() => GoRoute(
     GoRoute(
       name: RouteNames.trainingPlan,
       path: 'plan',
-      builder: (context, state) => BlocProvider(
-        create: (_) => TrainingPlanCubit(
-          repository: context.read<course_training.TrainingRepository>(),
-          config: _config(state),
-          now: context.read<Now>(),
-          push: context.read<PushRepository>(),
-          analytics: context.analytics,
-          trainingAnalytics: context.trainingAnalytics,
-          afterSave: (_) => context.read<RemindersCubit>().refresh(),
-          beforeLoad: () =>
-              context.read<TrainingHistorySource>().bootstrap(_config(state)),
-        )..load(),
-        child: TrainingPlanScreen(
-          onBack: () => _back(context),
-          onSaved: () => _back(context),
-        ),
-      ),
+      builder: (context, state) {
+        final flow = state.uri.queryParameters['flow'] == '1';
+        final replanAfter = state.uri.queryParameters['replan'] == '1';
+        final date = state.uri.queryParameters['date'];
+        final now = context.read<Now>();
+        final repository = context.read<course_training.TrainingRepository>();
+        return BlocProvider(
+          create: (_) => TrainingPlanCubit(
+            repository: repository,
+            config: _config(state),
+            now: now,
+            push: context.read<PushRepository>(),
+            analytics: context.analytics,
+            trainingAnalytics: context.trainingAnalytics,
+            afterSave: (_) async {
+              if (replanAfter) {
+                final config = _config(state);
+                final resources = await repository.resources(config.course);
+                final today = trainingGoalToday(now());
+                await repository.update(
+                  config.course,
+                  (s) => replan(s, resources, today),
+                );
+              }
+              if (context.mounted) {
+                await context.read<RemindersCubit>().refresh();
+              }
+            },
+            beforeLoad: () =>
+                context.read<TrainingHistorySource>().bootstrap(_config(state)),
+          )..load(),
+          child: TrainingPlanScreen(
+            flow: flow,
+            tournamentDate: date,
+            today: date == null ? null : trainingGoalToday(now()),
+            onBack: () => _back(context),
+            onSaved: () => flow
+                ? context.pushNamed(
+                    RouteNames.trainingDiagnostic,
+                    pathParameters: {'course': _config(state).course.name},
+                  )
+                : _back(context),
+          ),
+        );
+      },
     ),
     GoRoute(
       name: RouteNames.trainingChapter,

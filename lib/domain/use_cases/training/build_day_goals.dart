@@ -19,6 +19,15 @@ final class BuildDayGoals {
     if (state.day?.date == date) {
       return _reconcileScriptedOpenings(state, resources);
     }
+    // Treino por meta: o dia que fecha todas as metas conta como estudado.
+    final closing = state.day;
+    if (closing != null &&
+        closing.allDone &&
+        !state.studiedDates.contains(closing.date)) {
+      state = state.copyWith(
+        studiedDates: [...state.studiedDates, closing.date],
+      );
+    }
     final pendingGoals = <String, TrainingGoal>{
       for (final goal in [...state.deferredGoals, ...?state.day?.goals])
         if (!goal.done) goal.key: goal,

@@ -192,6 +192,11 @@ abstract final class AnalyticsCatalog {
     ],
     'treino_lembrete_agendado': ['curso', 'hora', 'metas', 'aula_pendente'],
     'treino_lembrete_mostrado': ['curso', 'atraso_min'],
+    // Objetivo e torneio (T85, Treino B).
+    'treino_objetivo_definido': ['curso', 'tipo', 'dias_ate_torneio'],
+    'treino_dia_perdido': ['curso', 'opcao'],
+    'torneio_push_agendado': ['curso'],
+    'torneio_push_mostrado': ['curso'],
     // Aulas e exercícios.
     'aula_aberta': [
       'aula_id', 'tipo_aula', 'origem', 'retomada', 'primeira_vez', //
@@ -506,6 +511,27 @@ abstract final class AnalyticsEvents {
     required int atrasoMin,
   }) =>
       _e('treino_lembrete_mostrado', {'curso': curso, 'atraso_min': atrasoMin});
+
+  static AnalyticsEvent treinoObjetivoDefinido({
+    required String curso,
+    required String tipo,
+    int? diasAteTorneio,
+  }) => _e('treino_objetivo_definido', {
+    'curso': curso,
+    'tipo': tipo,
+    'dias_ate_torneio': diasAteTorneio,
+  });
+
+  static AnalyticsEvent treinoDiaPerdido({
+    required String curso,
+    required String opcao,
+  }) => _e('treino_dia_perdido', {'curso': curso, 'opcao': opcao});
+
+  static AnalyticsEvent torneioPushAgendado({required String curso}) =>
+      _e('torneio_push_agendado', {'curso': curso});
+
+  static AnalyticsEvent torneioPushMostrado({required String curso}) =>
+      _e('torneio_push_mostrado', {'curso': curso});
 
   static AnalyticsEvent _e(String name, [Map<String, Object?> p = const {}]) =>
       AnalyticsEvent._(name, p);

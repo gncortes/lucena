@@ -10,6 +10,7 @@ abstract final class CourseGuideKeys {
   static const goalsBadge = Key('courseGuide.goalsBadge');
   static Key catalogPart(String id) => Key('courseGuide.catalogPart.$id');
   static Key tab(String tab) => Key('courseGuide.tab.$tab');
+  static const guideTab = Key('courseGuide.guideTab');
   static const planAction = Key('courseGuide.planAction');
   static const helpAction = Key('courseGuide.helpAction');
   static const continueButton = Key('courseGuide.continue');
