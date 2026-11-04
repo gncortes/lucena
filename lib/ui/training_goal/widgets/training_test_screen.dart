@@ -10,6 +10,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/training/goal/diagnostic_test_size.dart';
 import '../../../domain/use_cases/training/goal/goal_view.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -82,14 +83,19 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
       footer: (context, view) {
         final d = view.state.diagnostic;
         if (d == null || !d.testComplete) return const SizedBox.shrink();
-        return BlocBuilder<TrainingGoalCubit, TrainingGoalState>(
-          builder: (context, state) => BusyButton(
-            buttonKey: TrainingGoalKeys.testSeePlan,
-            label: t.treinoTestSeePlan,
-            busy: state.saving,
-            onPressed: () async {
-              if (await cubit.finish()) widget.onSeePlan();
-            },
+        // H-ANI-25: "Ver o plano" desliza por último, no mesmo relógio do
+        // resultado (as duas entradas nascem no mesmo quadro).
+        return EntradaDeResultado(
+          id: '${_resultId(d)}-botoes',
+          botoes: BlocBuilder<TrainingGoalCubit, TrainingGoalState>(
+            builder: (context, state) => BusyButton(
+              buttonKey: TrainingGoalKeys.testSeePlan,
+              label: t.treinoTestSeePlan,
+              busy: state.saving,
+              onPressed: () async {
+                if (await cubit.finish()) widget.onSeePlan();
+              },
+            ),
           ),
         );
       },
@@ -210,6 +216,10 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
     );
   }
 
+  /// O teste respondido: as mesmas respostas não animam duas vezes.
+  static String _resultId(TrainingDiagnostic d) =>
+      'meta-teste-${d.testChapterIds.join(',')}-${d.testAnswers.join(',')}';
+
   List<Widget> _result(
     BuildContext context,
     GoalView view,
@@ -229,29 +239,48 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
       TopicLevel.practicing => t.treinoLevelReview,
       TopicLevel.learning => t.treinoLevelLearn,
     };
+    // H-ANI-25: o título sobe, a frase entra e onde o jogador está vem
+    // depois; o rodapé fecha a entrada.
     return [
-      Text(
-        t.treinoTestDone,
-        key: TrainingGoalKeys.testResult,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      Text(t.treinoTestAnswered(d.testSize), textAlign: TextAlign.center),
-      const SizedBox(height: AppSpacing.lg),
-      Text(
-        t.treinoTestWhereYouAre,
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      const SizedBox(height: AppSpacing.sm),
-      for (final e in levels.entries)
-        LucenaCard(
-          child: Row(
-            children: [
-              Expanded(child: Text(titles[e.key] ?? e.key)),
-              Text(label(e.value)),
-            ],
-          ),
+      EntradaDeResultado(
+        id: _resultId(d),
+        titulo: Text(
+          t.treinoTestDone,
+          key: TrainingGoalKeys.testResult,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
+        subtitulo: Text(
+          t.treinoTestAnswered(d.testSize),
+          textAlign: TextAlign.center,
+        ),
+        viktor: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              t.treinoTestWhereYouAre,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            for (final e in levels.entries)
+              LucenaCard(
+                child: Row(
+                  children: [
+                    Expanded(child: Text(titles[e.key] ?? e.key)),
+                    Text(label(e.value)),
+                  ],
+                ),
+              ),
+          ],
+        ),
+        montar: (parts) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: parts,
+        ),
+      ),
     ];
   }
 }
