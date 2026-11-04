@@ -14,7 +14,6 @@ import '../../core/theme/canvas_symbols.dart';
 import '../../../domain/models/lesson_content.dart';
 import '../../core/keys/training_entry_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/theme/app_icon_size.dart';
 
@@ -127,34 +126,16 @@ class CourseDownloadFailure extends StatelessWidget {
       );
     }
     final offline = failure is LessonContentNetworkUnavailable;
-    final message = !chapter && offline
-        ? t.trainingDownloadCourseOffline
-        : chapter && offline
-        ? t.trainingDownloadChapterOffline
-        : chapter
-        ? t.trainingDownloadChapterError
-        : t.trainingDownloadCourseError;
-    return Center(
+    return KeyedSubtree(
       key: TrainingEntryKeys.failure,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              EmptyState(
-                style: EmptyStateStyle.error,
-                iconFill: 1,
-                icon: offline ? CanvasSymbols.wifiOff : CanvasSymbols.error,
-                usePrimaryErrorColor: true,
-                message: message,
-                actionLabel: t.lessonRetry,
-                actionKey: TrainingEntryKeys.retry,
-                onAction: onRetry,
-              ),
-            ],
-          ),
-        ),
+      child: LoadErrorScreen(
+        kind: offline ? LoadErrorKind.offline : LoadErrorKind.generic,
+        message: offline
+            ? (chapter ? t.licaoSemInternetCapitulo : t.licaoSemInternetCurso)
+            : null,
+        onAction: onRetry,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
       ),
     );
   }
