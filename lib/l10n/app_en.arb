@@ -11596,5 +11596,7 @@
   "desafiosRaceSeeAll": "See all {count}",
   "@desafiosRaceSeeAll": {"placeholders": {"count": {"type": "int"}}},
   "desafiosShareError": "Could not share the link.",
-  "@desafiosShareError": {}
+  "@desafiosShareError": {},
+  "desafiosSpeedrunEmpty": "No speedruns at this level.",
+  "@desafiosSpeedrunEmpty": {}
 }

@@ -247,6 +247,48 @@ void main() {
     expect(find.byKey(SpeedrunKeys.item('rung.1000@60+0')), findsOneWidget);
   });
 
+  testWidgets('nível sem speedrun: mostra o aviso em vez de uma lista vazia', (
+    tester,
+  ) async {
+    await cubit.close();
+    cubit = SpeedrunCubit(
+      journey: FakeJourneyRepository(
+        speedruns: [
+          for (final speedrun in sampleSpeedruns)
+            if (speedrun.id.startsWith('ending.queen')) speedrun,
+        ],
+      ),
+      speedruns: FakeSpeedrunRepository(FakeProgressRepository()),
+      games: FakeOngoingGameRepository(),
+      now: FakeNow(DateTime.utc(2026, 10, 4, 12)),
+      settings: settings,
+      characters: FakeCharacterRepository(),
+      profile: FakeProfileRepository(
+        UserProfile(rating: RatingLevel.master.rating),
+      ),
+    );
+    await pump(tester, locale: const Locale('pt'));
+    expect(find.byKey(SpeedrunKeys.empty), findsOneWidget);
+    expect(find.text('Nenhum speedrun neste nível.'), findsOneWidget);
+    await tester.tap(find.byKey(SpeedrunKeys.categoryOption('beginner')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.empty), findsNothing);
+  });
+
+  testWidgets('Como funciona abre em tela cheia e o fechar volta à lista', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('pt'));
+    await tester.tap(find.byKey(SpeedrunKeys.help));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.helpScreen), findsOneWidget);
+    expect(find.text('Como funciona'), findsOneWidget);
+    await tester.tap(find.byKey(SpeedrunKeys.helpClose));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.helpScreen), findsNothing);
+    expect(find.byKey(SpeedrunKeys.listScreen), findsOneWidget);
+  });
+
   testWidgets('quem está começando vê o ritmo numa linha, que abre o '
       'seletor', (tester) async {
     await cubit.close();
