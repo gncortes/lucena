@@ -63,6 +63,7 @@ class FreeBoardRobot {
     String? goal,
     String? position,
     String? challenge,
+    String? featured,
     Key fromScreen = HomeKeys.screen,
     bool preserveStack = false,
   }) async {
@@ -79,6 +80,7 @@ class FreeBoardRobot {
       goal: goal,
       position: position,
       challenge: challenge,
+      featured: featured,
     );
     final router = GoRouter.of(context);
     if (preserveStack) {
