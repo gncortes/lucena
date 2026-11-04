@@ -1,6 +1,5 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -159,7 +158,7 @@ void main() {
         }
         if (details) {
           final cubit = tester
-              .element(find.byKey(LoadErrorKeys.screen))
+              .element(find.byKey(GameDetailsKeys.screen))
               .read<GameDetailsCubit>();
           expect(progress.requested, [
             [77],
