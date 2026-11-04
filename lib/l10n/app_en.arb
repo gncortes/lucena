@@ -11558,7 +11558,7 @@
   "@testCanvasMedals": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
   },
-  "testCanvasRegular": "Fair",
+  "testCanvasRegular": "You passed",
   "@testCanvasRegular": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
   },
@@ -11606,6 +11606,60 @@
   "testCanvasLeaveEmptyBody": "No exercises completed. When you return, start at exercise 1.",
   "@testCanvasLeaveEmptyBody": {
     "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "licaoTesteQuaseLa": "Almost there",
+  "@licaoTesteQuaseLa": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteRecomecar": "Let's start over",
+  "@licaoTesteRecomecar": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteReverLicoes": "Review the lessons",
+  "@licaoTesteReverLicoes": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteFalaAbaixo": "I recommend reviewing this chapter's lessons before moving on.",
+  "@licaoTesteFalaAbaixo": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteFalaAbaixoTemas": "I recommend reviewing this chapter's lessons before moving on. The mistakes were in {temas}.",
+  "@licaoTesteFalaAbaixoTemas": {
+    "description": "Lesson exercise and chapter test copy.",
+    "placeholders": {
+      "temas": { "type": "String" }
+    }
+  },
+  "licaoTesteFalaMuitoAbaixo": "I strongly recommend reviewing this chapter's lessons before moving on.",
+  "@licaoTesteFalaMuitoAbaixo": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoTesteFalaMuitoAbaixoTemas": "I strongly recommend reviewing this chapter's lessons before moving on. The mistakes were in {temas}.",
+  "@licaoTesteFalaMuitoAbaixoTemas": {
+    "description": "Lesson exercise and chapter test copy.",
+    "placeholders": {
+      "temas": { "type": "String" }
+    }
+  },
+  "licaoTemasUltimo": "{lista} and {ultimo}",
+  "@licaoTemasUltimo": {
+    "description": "Lesson exercise and chapter test copy.",
+    "placeholders": {
+      "lista": { "type": "String" },
+      "ultimo": { "type": "String" }
+    }
+  },
+  "licaoExercicioDicaSeta": "Follow the arrow on the board.",
+  "@licaoExercicioDicaSeta": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoExercicioResultadoAcertou": "Correct answer",
+  "@licaoExercicioResultadoAcertou": {
+    "description": "Lesson exercise and chapter test copy."
+  },
+  "licaoExercicioResultadoErrou": "Wrong answer",
+  "@licaoExercicioResultadoErrou": {
+    "description": "Lesson exercise and chapter test copy."
   },
   "testCanvasScore": "{correct} of {total}",
   "@testCanvasScore": {

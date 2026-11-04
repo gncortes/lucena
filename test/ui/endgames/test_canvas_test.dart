@@ -162,7 +162,14 @@ void main() {
             findsOneWidget,
           );
           expect(find.byKey(ExercisesDoneKeys.redo), findsOneWidget);
-          expect(find.byKey(ExercisesDoneKeys.back), findsOneWidget);
+          expect(
+            find.byKey(
+              name == 'TesteNaoPassou'
+                  ? TestCanvasKeys.reviewLessons
+                  : ExercisesDoneKeys.back,
+            ),
+            findsOneWidget,
+          );
         }
         await capture.shot(tester, name, size);
         expect(tester.takeException(), isNull);

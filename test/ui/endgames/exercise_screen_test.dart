@@ -215,6 +215,24 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('acerto e erro usam a mesma marca da barra do treino', (
+    tester,
+  ) async {
+    setSize(tester, sizes.first);
+    await pump(tester, 'e02');
+    expect(find.byKey(TrainingKeys.exerciseResultMark), findsNothing);
+    await move(tester, 'c1', 'c4');
+    expect(
+      tester.widget<Icon>(find.byKey(TrainingKeys.exerciseResultMark)).icon,
+      Icons.check_circle,
+    );
+    await move(tester, 'c4', 'c3');
+    expect(
+      tester.widget<Icon>(find.byKey(TrainingKeys.exerciseResultMark)).icon,
+      Icons.cancel,
+    );
+  });
+
   testWidgets('erro depois do primeiro lance tira um ponto e não zera', (
     tester,
   ) async {

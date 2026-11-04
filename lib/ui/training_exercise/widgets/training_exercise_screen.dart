@@ -33,14 +33,13 @@ import '../../lesson_script/widgets/script_move_list.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/course/training_badge.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
+import '../../core/widgets/exercise_result_mark.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../endgames/widgets/grade_widgets.dart';
-import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_exercise_cubit.dart';
 
@@ -163,7 +162,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
                         ? state.displayedCorrect
                               ? l.trainingFixedCorrect
                               : l.trainingFixedWrong
-                        : l.trainingFixedPrompt));
+                        : state.hint && exercise?.hintText != null
+                        ? exercise!.hintText!
+                        : exercise?.statement ?? l.trainingFixedPrompt));
       final moves = state.playedMoves;
       final sans = exercise == null
           ? <String>[]
@@ -188,26 +189,8 @@ class _ExerciseViewState extends State<_ExerciseView> {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
-            if (exercise != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Semantics(
-                  key: TrainingKeys.exerciseTitleDifficulty,
-                  label: TrainingBadge.difficultyLabel(context, exercise.stars),
-                  child: Icon(
-                    CanvasSymbols.star,
-                    size: AppIconSize.standard,
-                    fill:
-                        state.hint ||
-                            state.solving ||
-                            state.errorSnapshot != null ||
-                            (result && !state.correct)
-                        ? 0
-                        : 1,
-                    color: StarsRow.colorFor(exercise.stars),
-                  ),
-                ),
-              ),
+            // Marca única de acerto e de erro (H-LIC-42); sem estrela aqui.
+            if (result) ExerciseResultMark(correct: state.displayedCorrect),
           ],
         ),
         body: SafeArea(
@@ -278,7 +261,8 @@ class _ExerciseViewState extends State<_ExerciseView> {
                             ),
                           )
                         : state.phase == TrainingExercisePhase.playing &&
-                              !state.solving
+                              !state.solving &&
+                              !state.hint
                         ? TrainingCanvasFooter.hint(
                             key: TrainingKeys.exerciseHint,
                             label: l.exerciseHintFree,
