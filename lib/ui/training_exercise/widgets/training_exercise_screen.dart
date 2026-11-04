@@ -180,7 +180,6 @@ class _ExerciseViewState extends State<_ExerciseView> {
       return Scaffold(
         key: TrainingKeys.exerciseScreen,
         appBar: LucenaAppBar(
-          toolbarHeight: 64,
           leading: IconButton(
             icon: const Icon(CanvasSymbols.arrowBack),
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
@@ -478,7 +477,6 @@ class _ExerciseViewState extends State<_ExerciseView> {
     return Scaffold(
       key: TrainingKeys.exerciseEnd,
       appBar: LucenaAppBar(
-        toolbarHeight: 64,
         leading: CloseButton(
           onPressed: () =>
               _cycleAction(state, 'voltar_metas', widget.screen.onNextGoal),

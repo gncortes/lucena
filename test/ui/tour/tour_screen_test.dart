@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
@@ -226,12 +227,12 @@ void main() {
             expect(tester.takeException(), isNull);
             expect(find.byKey(TourKeys.step(step)), findsOneWidget);
 
-            // Progresso: 4 dp, largura toda, colado na base da barra (y 56).
+            // Progresso: 4 dp, largura toda, colado na base da barra (y 64).
             final progress = rect(tester, find.byKey(TourKeys.progress));
             expect(progress.height, 4);
             expect(progress.left, 0);
             expect(progress.width, size.width);
-            expect(progress.top, closeTo(56, 1));
+            expect(progress.top, closeTo(AppBarHeight.standard, 1));
             const fractions = {
               TourStep.board: 0.20,
               TourStep.theme: 0.30,

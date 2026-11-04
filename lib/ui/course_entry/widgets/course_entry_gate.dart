@@ -84,7 +84,6 @@ class CourseEntryGate extends StatelessWidget {
         }
         return Scaffold(
           appBar: LucenaAppBar(
-            toolbarHeight: 64,
             leading: _backButton(context),
             title: Text(
               courseTitle,
@@ -134,7 +133,6 @@ class _AccountEntry extends StatelessWidget {
       child: Scaffold(
         key: TrainingEntryKeys.account,
         appBar: LucenaAppBar(
-          toolbarHeight: 64,
           leading: _backButton(context),
           title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
         ),

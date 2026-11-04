@@ -366,7 +366,6 @@ class TestCanvasResultPage extends StatelessWidget {
     return Scaffold(
       key: ExercisesDoneKeys.screen,
       appBar: LucenaAppBar(
-        toolbarHeight: 64,
         leading: IconButton(
           key: ExercisesDoneKeys.close,
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,

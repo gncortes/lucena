@@ -12,6 +12,7 @@ import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/data/repositories/progress/progress_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository.dart';
 import 'package:lucena/data/repositories/review/game_review_repository.dart';
+import 'package:lucena/data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_repository.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository.dart';
 import 'package:lucena/domain/models/attempt.dart';
@@ -30,6 +31,7 @@ import '../../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../../testing/fakes/fake_analysis_repository.dart';
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_game_review_repository.dart';
+import '../../../../testing/fakes/fake_deep_analysis_repository.dart';
 import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
@@ -68,6 +70,9 @@ Widget _repositories(
     ),
     RepositoryProvider<GameReviewRepository>.value(
       value: FakeGameReviewRepository(),
+    ),
+    RepositoryProvider<DeepAnalysisRepository>.value(
+      value: FakeDeepAnalysisRepository(),
     ),
     RepositoryProvider<LessonRepository>.value(value: FakeLessonRepository()),
     RepositoryProvider<SettingsRepository>.value(
@@ -111,6 +116,9 @@ void main() {
               ),
               RepositoryProvider<GameReviewRepository>.value(
                 value: FakeGameReviewRepository(),
+              ),
+              RepositoryProvider<DeepAnalysisRepository>.value(
+                value: FakeDeepAnalysisRepository(),
               ),
               RepositoryProvider<LessonRepository>.value(value: lessons),
               RepositoryProvider<SettingsRepository>.value(

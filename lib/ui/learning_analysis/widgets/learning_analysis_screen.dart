@@ -1,3 +1,4 @@
+import '../../core/theme/app_bar_height.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_colors.dart';
@@ -49,7 +50,7 @@ class LearningAnalysisScreen extends StatelessWidget {
         key: LearningAnalysisKeys.screen,
         backgroundColor: _background,
         appBar: AppBar(
-          toolbarHeight: 64,
+          toolbarHeight: AppBarHeight.standard,
           backgroundColor: _background,
           titleSpacing: 0,
           leading: IconButton(

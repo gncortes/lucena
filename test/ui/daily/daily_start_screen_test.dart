@@ -57,13 +57,22 @@ void main() {
     return cubit;
   }
 
-  testWidgets('carregando: título e o esqueleto da partida, sem compartilhar', (
+  testWidgets('carregando: título, esqueleto e Compartilhar desabilitado', (
     tester,
   ) async {
+    // H-DES-04 e a regra "ícones fixos entre estados" (README T85).
     await pump(tester, none: false, load: false);
     expect(find.byKey(DailyKeys.loading), findsOneWidget);
     expect(find.text('Final do dia'), findsOneWidget);
-    expect(find.byKey(DailyKeys.appBarShare), findsNothing);
+    final share = tester.widget<IconButton>(find.byKey(DailyKeys.appBarShare));
+    expect(share.onPressed, isNull);
+    expect(
+      find.descendant(
+        of: find.byKey(DailyKeys.appBarShare),
+        matching: find.byIcon(Icons.share_outlined),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('sem final hoje: o Início com o aviso', (tester) async {

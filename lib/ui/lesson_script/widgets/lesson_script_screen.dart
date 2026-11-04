@@ -299,7 +299,6 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               onPressed: () => unawaited(_leave()),
               icon: const Icon(CanvasSymbols.arrowBack),
             ),
-            toolbarHeight: 64,
             centerTitle: state.curiosities == null,
             title: FutureBuilder<String?>(
               future: _safeTitle(),
