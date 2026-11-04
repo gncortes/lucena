@@ -14009,5 +14009,41 @@
   "venAdFailedMessage": "The lesson opens after the ad. Check your connection and try again, or open it right away with Pilares.",
   "@venAdFailedMessage": {
     "description": "Texto da falha do anúncio da demonstração (PropV2DemoAnuncioFalhouCompra, H-VEN-13)."
+  },
+  "venDemoCatalogTitle": "Chapter 1 is unlocked for you",
+  "@venDemoCatalogTitle": {
+    "description": "Título do cartão do topo do Catálogo da demonstração (PropV2DemoCatalogoCompra, H-VEN-11)."
+  },
+  "venDemoCatalogDone": "{done} of {total} done",
+  "@venDemoCatalogDone": {
+    "description": "Progresso do Capítulo 1 no cartão do Catálogo da demonstração.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "venDemoCatalogText": "Each lesson and the exercise set start with an ad. With Pilares, you get your plan and your goals for each day.",
+  "@venDemoCatalogText": {
+    "description": "Texto do cartão do topo do Catálogo da demonstração."
+  },
+  "venDemoCatalogFree": "Free",
+  "@venDemoCatalogFree": {
+    "description": "Selo do Capítulo 1 no Catálogo da demonstração."
+  },
+  "venDemoCatalogAdFirst": "Starts with an ad",
+  "@venDemoCatalogAdFirst": {
+    "description": "Resumo de cada item do Capítulo 1 no Catálogo da demonstração."
+  },
+  "venDemoCatalogFull": "In the full course",
+  "@venDemoCatalogFull": {
+    "description": "Faixa (em maiúsculas na tela) acima dos capítulos trancados no Catálogo da demonstração."
+  },
+  "venDemoCatalogClosing": "Pilares has 105 lessons in 20 chapters and more than 850 exercises.",
+  "@venDemoCatalogClosing": {
+    "description": "Texto do cartão no fim do Catálogo da demonstração, acima de Conhecer o Pilares."
   }
 }

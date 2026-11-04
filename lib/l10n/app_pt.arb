@@ -2942,5 +2942,22 @@
   "venPlanSaleClosing": "Treine até o seu objetivo, com o Viktor em cada lição.",
   "venPlanSaleStart": "Começar pelo Capítulo 1",
   "venPlanSaleFull": "Ver o curso completo",
-  "venAdFailedMessage": "A lição abre depois do anúncio. Confira a internet e tente de novo, ou abra direto com o Pilares."
+  "venAdFailedMessage": "A lição abre depois do anúncio. Confira a internet e tente de novo, ou abra direto com o Pilares.",
+  "venDemoCatalogTitle": "Capítulo 1 liberado para você",
+  "venDemoCatalogDone": "{done} de {total} concluídos",
+  "@venDemoCatalogDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "venDemoCatalogText": "Cada lição e a lista de exercícios começam com um anúncio. No Pilares, você tem seu plano e suas metas de cada dia.",
+  "venDemoCatalogFree": "Grátis",
+  "venDemoCatalogAdFirst": "Começa com um anúncio",
+  "venDemoCatalogFull": "No curso completo",
+  "venDemoCatalogClosing": "O Pilares tem 105 lições em 20 capítulos e mais de 850 exercícios."
 }

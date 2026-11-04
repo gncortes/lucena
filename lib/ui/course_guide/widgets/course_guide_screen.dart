@@ -40,6 +40,8 @@ import 'course_guide_copy.dart';
 import 'licao_plan_band.dart';
 import 'training_guide_tab.dart';
 import '../../course_entry/widgets/course_content_states.dart';
+import '../../lesson_ad/widgets/lesson_entry.dart';
+import '../../pilares_sale/widgets/pilares_demo_catalog.dart';
 
 class CourseGuideScreen extends StatelessWidget {
   const CourseGuideScreen({
@@ -144,7 +146,8 @@ class CourseGuideScreen extends StatelessWidget {
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: const Icon(CanvasSymbols.arrowBack),
           ),
-          actions: showHeaderActions
+          // O Catálogo da demonstração (H-VEN-11) não tem plano nem ajuda.
+          actions: showHeaderActions && !_demoCatalog(context, tab)
               ? [
                   IconButton(
                     key: CourseGuideKeys.planAction,
@@ -536,6 +539,17 @@ class _LessonTab extends StatelessWidget {
   }
 }
 
+/// Quem está na demonstração do Pilares vê o Catálogo da Venda (H-VEN-11).
+bool _demoCatalog(
+  BuildContext context,
+  CourseGuideTab tab, [
+  TrainingCourse? course,
+]) =>
+    tab == CourseGuideTab.catalog &&
+    (course ?? context.read<CourseGuideCubit>().config.course) ==
+        TrainingCourse.pilares &&
+    LessonEntry.isLocked(context, 'pilares.c2');
+
 class _CatalogTab extends StatefulWidget {
   const _CatalogTab({
     required this.state,
@@ -575,6 +589,16 @@ class _CatalogTabState extends State<_CatalogTab> {
 
   @override
   Widget build(BuildContext context) {
+    final config = context.read<CourseGuideCubit>().config;
+    if (_demoCatalog(context, CourseGuideTab.catalog, config.course)) {
+      return PilaresDemoCatalog(
+        lessons: widget.state.resources!.lessons,
+        completed: widget.state.training!.completedLessons.keys.toSet(),
+        nextLessonId: widget.state.nextLesson?.id,
+        onLesson: widget.onLesson,
+        onChapter: widget.onChapter,
+      );
+    }
     final planIds = _planIds;
     final filtered = _onlyPlan && planIds != null;
     final data = widget.state.resources!.lessons
@@ -586,7 +610,6 @@ class _CatalogTabState extends State<_CatalogTab> {
         )
         .toList();
     final completed = widget.state.training!.completedLessons;
-    final config = context.read<CourseGuideCubit>().config;
     final modules =
         config.progressKind == TrainingProgressKind.modulesAndPieces;
     final groups = {for (final lesson in data) lesson.groupId: lesson.group};

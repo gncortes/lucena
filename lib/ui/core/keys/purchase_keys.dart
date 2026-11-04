@@ -74,4 +74,10 @@ abstract final class PurchaseKeys {
   static const planSaleCompare = Key('pilares.plan.compare');
   static const planSaleStart = Key('pilares.plan.start');
   static const planSaleFull = Key('pilares.plan.full');
+
+  // Catálogo da demonstração (H-VEN-11, PropV2DemoCatalogoCompra).
+  static const demoCatalogBanner = Key('demo.catalog.banner');
+  static Key demoCatalogLockedChapter(int number) =>
+      Key('demo.catalog.lockedChapter.$number');
+  static const demoCatalogLearnMore = Key('demo.catalog.learnMore');
 }
