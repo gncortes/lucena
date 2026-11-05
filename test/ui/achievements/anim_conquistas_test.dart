@@ -11,7 +11,9 @@ import 'package:lucena/ui/achievements/widgets/achievements_screen.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/motion/barra_que_enche.dart';
+import 'package:lucena/ui/core/motion/segmentado_lucena.dart';
 import 'package:lucena/ui/core/motion/shimmer_conteudo.dart';
+import 'package:lucena/ui/core/motion/valor_que_anima.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 
@@ -161,5 +163,33 @@ void main() {
     await pumpScreen(tester);
     expect(find.byKey(MotionKeys.itemDaLista(0)), findsOneWidget);
     expect(find.byKey(MotionKeys.itemDaLista(1)), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-18: o total, a linha e o detalhe contam até o valor', (
+    tester,
+  ) async {
+    Finder contando(Key key) => find.ancestor(
+      of: find.byKey(key),
+      matching: find.byType(ValorQueAnima),
+    );
+    await pumpScreen(tester);
+    expect(contando(AchievementsKeys.progress), findsOneWidget);
+    expect(find.text('3 of 6 unlocked'), findsOneWidget);
+    const id = 'rung-1000-completed';
+    expect(contando(AchievementsKeys.itemProgress(id)), findsOneWidget);
+    await tester.tap(find.byKey(AchievementsKeys.item(id)));
+    await tester.pumpAndSettle();
+    expect(contando(AchievementsKeys.detailProgress), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-21: o filtro é o segmentado que troca animado', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    expect(find.byType(SegmentadoLucena<AchievementsFilter>), findsOneWidget);
+    expect(find.byType(SegmentedButton<AchievementsFilter>), findsNothing);
+    await tester.tap(find.byKey(AchievementsKeys.filter('locked')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(AchievementsKeys.item('beat-2600')), findsNothing);
   });
 }
