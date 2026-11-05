@@ -41,8 +41,24 @@ class _OrigemQueAbreState extends State<OrigemQueAbre> {
 
   final _escondida = ValueNotifier(false);
 
+  /// Falso entre sair da árvore e ser descartada (a folha que fecha).
+  bool _ativa = true;
+
+  @override
+  void deactivate() {
+    _ativa = false;
+    super.deactivate();
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    _ativa = true;
+  }
+
   /// O retângulo do cartão na tela, ou nulo se ainda não tem tamanho.
   Rect? get retangulo {
+    if (!mounted || !_ativa) return null;
     final caixa = context.findRenderObject();
     if (caixa is! RenderBox || !caixa.attached || !caixa.hasSize) return null;
     return caixa.localToGlobal(Offset.zero) & caixa.size;
@@ -203,7 +219,12 @@ class _CrescendoState extends State<_Crescendo> {
       animation: widget.animacao,
       builder: (context, _) {
         final tela = limites.biggest;
-        final origem = _OrigemQueAbreState.daVez(widget.id);
+        // A origem da abertura vale até ela sair da árvore (a folha que fecha):
+        // depois fica o último retângulo, sem pular para outra de mesmo id.
+        final presa = _origem;
+        final origem = presa == null
+            ? _OrigemQueAbreState.daVez(widget.id)
+            : (presa.mounted && presa._ativa ? presa : null);
         final animando = !widget.animacao.isCompleted;
         if (animando) _inicio = origem?.retangulo ?? _inicio;
         final inicio = _inicio;
