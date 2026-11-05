@@ -9,6 +9,8 @@ import '../../../routing/routes.dart';
 import '../../core/keys/alerts_keys.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -130,43 +132,70 @@ class _AlertsScreenState extends State<AlertsScreen> {
         ),
       ],
     ];
-    return Scaffold(
-      key: AlertsKeys.screen,
-      appBar: LucenaAppBar(title: Text(l10n.alertsTitle)),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.screen,
-          AppSpacing.sm,
-          AppSpacing.screen,
-          AppSpacing.xl,
-        ),
-        children: [
-          // A permissão Android também vale para os lembretes sem Firebase.
-          state.permitted
-              ? _Allowed(onSettings: cubit.openSystemSettings)
-              : _Denied(
-                  onSettings: cubit.openSystemSettings,
-                  onAllow: state.canAsk ? cubit.requestPermission : null,
-                ),
-          const SizedBox(height: AppSpacing.lg),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-            child: Text(
-              l10n.alertsIntro,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+    // H-ANI-16: a faixa, o texto, as chaves e a região entram em cascata,
+    // só na primeira entrada da tela.
+    return EntradaDaTela(
+      id: 'PropV1TreinoNotificacao',
+      child: Scaffold(
+        key: AlertsKeys.screen,
+        appBar: LucenaAppBar(title: Text(l10n.alertsTitle)),
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screen,
+            AppSpacing.sm,
+            AppSpacing.screen,
+            AppSpacing.xl,
+          ),
+          children: [
+            EntradaEmCascata(
+              montar: (itens) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: itens,
               ),
+              itens: [
+                // A permissão Android também vale para os lembretes sem
+                // Firebase.
+                ItemDaCascata.texto(
+                  state.permitted
+                      ? _Allowed(onSettings: cubit.openSystemSettings)
+                      : _Denied(
+                          onSettings: cubit.openSystemSettings,
+                          onAllow: state.canAsk
+                              ? cubit.requestPermission
+                              : null,
+                        ),
+                ),
+                ItemDaCascata.texto(
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                    ),
+                    child: Text(
+                      l10n.alertsIntro,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+                // Sem a permissão, as chaves ficam esmaecidas, mas mudam.
+                ItemDaCascata.texto(
+                  Opacity(
+                    opacity: !state.permitted ? _muted : 1,
+                    child: ProfileRowGroup(children: switches),
+                  ),
+                ),
+                if (state.push && state.country != null)
+                  ItemDaCascata.texto(
+                    _RegionRow(country: state.country!, state: state.state),
+                  ),
+              ],
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          // Sem a permissão, as chaves ficam esmaecidas, mas mudam.
-          Opacity(
-            opacity: !state.permitted ? _muted : 1,
-            child: ProfileRowGroup(children: switches),
-          ),
-          if (state.push && state.country != null)
-            _RegionRow(country: state.country!, state: state.state),
-        ],
+          ],
+        ),
       ),
     );
   }
