@@ -9,6 +9,7 @@ import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
+import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
@@ -285,6 +286,77 @@ void main() {
       await $.pump(const Duration(milliseconds: 1000));
     }, ready: CoursePreviewKeys.sale);
   }, tags: ['d3-mp4', 'd3-meta-demo']);
+
+  patrolTest('D3 MP4: compra na demo e a lição do Cap. 2 entra nas Metas', (
+    $,
+  ) async {
+    // Comprou no meio do dia: o dia de hoje ganha a lição na hora, e o que
+    // já estava nas metas fica.
+    final purchases = FakePurchaseRepository(
+      const PurchaseState(
+        pricesReady: true,
+        prices: {
+          PilaresPlan.lifetime: r'R$ 99,90',
+          PilaresPlan.monthly: r'R$ 19,90',
+        },
+      ),
+    );
+    await AppRobot($).open(
+      systemLocale: ptBr,
+      lightDevice: true,
+      demo: true,
+      trainingScenario: E2ETrainingScenario.goalsLarge,
+      purchases: purchases,
+    );
+    await $(HomeKeys.screen).waitUntilVisible();
+    final lessonGoal = find.byWidgetPredicate(
+      (w) => switch (w.key) {
+        ValueKey<String>(:final value) => value.startsWith(
+          'training.goal.lesson.',
+        ),
+        _ => false,
+      },
+    );
+    final capture = TrainingCaptureRobot($);
+    await capture.record('D3MetaDemoCompraLicao', () async {
+      await $.pump(const Duration(milliseconds: 600));
+      unawaited(
+        GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+            .push<void>(Routes.trainingGoals(TrainingCourse.pilares.name)),
+      );
+      await $(TrainingKeys.goalsChapterDone).waitUntilVisible();
+      await $.pumpAndSettle();
+      await $.pump(const Duration(milliseconds: 1500));
+      await $(PurchaseKeys.demoGoalsNoLessonLearnMore).tap();
+      await $(CoursePreviewKeys.sale).waitUntilVisible();
+      await $.pumpAndSettle();
+      await $.pump(const Duration(milliseconds: 1000));
+      // A loja confirma a compra vitalícia.
+      purchases.state = purchases.state.copyWith(
+        access: const PilaresAccess(kind: PilaresAccessKind.lifetime),
+      );
+      unawaited(
+        GoRouter.of($.tester.element(find.byKey(CoursePreviewKeys.sale)))
+            .push<void>(D2Paths.pilaresPurchaseDone),
+      );
+      await $(PurchaseKeys.doneScreen).waitUntilVisible();
+      await $.pumpAndSettle();
+      await $.pump(const Duration(milliseconds: 1500));
+      // O voltar da compra concluída leva ao Início; de lá, as Metas.
+      GoRouter.of($.tester.element(find.byKey(PurchaseKeys.doneScreen)))
+          .go(Routes.home);
+      await $(HomeKeys.screen).waitUntilVisible();
+      await $.pump(const Duration(milliseconds: 800));
+      unawaited(
+        GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+            .push<void>(Routes.trainingGoals(TrainingCourse.pilares.name)),
+      );
+      await $(lessonGoal).waitUntilVisible();
+      expect(find.byKey(TrainingKeys.goalsChapterDone), findsNothing);
+      await $.pumpAndSettle();
+      await $.pump(const Duration(milliseconds: 2500));
+    }, ready: TrainingKeys.goalsSummary);
+  }, tags: ['d3-mp4', 'd3-meta-compra']);
 
   patrolTest(
     'D3 MP4: Jornada e Degrau, a barra enche e a contagem sobe (H-ANI-13)',

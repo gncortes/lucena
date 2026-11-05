@@ -18,7 +18,10 @@ final class BuildDayGoals {
     final at = now();
     final date = trainingDate(at);
     if (state.day?.date == date) {
-      return _reconcileScriptedOpenings(state, resources);
+      return _reconcileScriptedOpenings(
+        _completeMissingLessons(state, resources, at),
+        resources,
+      );
     }
     // Treino por meta: o dia que fecha todas as metas conta como estudado.
     final closing = state.day;
@@ -53,7 +56,32 @@ final class BuildDayGoals {
         .toList();
     // Pending lessons retain their place without accumulating a missed day's quota.
     lessons.addAll(pending);
-    final reserved = lessons.map((g) => g.ref).toSet();
+    lessons.addAll(_courseLessons(state, resources, date, quota, lessons));
+    final hasLesson = lessons.isNotEmpty;
+    return state.copyWith(
+      day: DayGoals(
+        date: date,
+        plan: state.plan,
+        studyDay: true,
+        goals: [...lessons, ...config.followUps.build(state, resources, now)],
+        lessonsLocked: resources.lockedLessons.isNotEmpty,
+      ),
+      lastLessonDate: hasLesson ? date : null,
+      offDayCredits: [],
+      deferredGoals: [],
+    );
+  }
+
+  /// The next lessons in course order, up to [quota] counting [taken].
+  List<TrainingGoal> _courseLessons(
+    TrainingState state,
+    TrainingResources resources,
+    String date,
+    int quota,
+    List<TrainingGoal> taken,
+  ) {
+    final added = <TrainingGoal>[];
+    final reserved = taken.map((g) => g.ref).toSet();
     final byId = {for (final l in resources.lessons) l.id: l};
     final ordered = [
       for (final id in lessonOrderForPlan(state, resources, date))
@@ -62,26 +90,48 @@ final class BuildDayGoals {
     for (final lesson in ordered) {
       if (!lesson.inCourseOrder) continue;
       if (!lesson.published) break;
-      if (quota == 0 || lessons.length >= quota) break;
+      if (quota == 0 || taken.length + added.length >= quota) break;
       if (state.completedLessons.containsKey(lesson.id) ||
           reserved.contains(lesson.id) ||
           resources.lockedLessons.contains(lesson.id)) {
         continue;
       }
-      lessons.add(TrainingGoal(kind: GoalKind.lesson, ref: lesson.id));
+      added.add(TrainingGoal(kind: GoalKind.lesson, ref: lesson.id));
       reserved.add(lesson.id);
     }
-    final hasLesson = lessons.isNotEmpty;
-    return state.copyWith(
-      day: DayGoals(
-        date: date,
-        plan: state.plan,
-        studyDay: true,
-        goals: [...lessons, ...config.followUps.build(state, resources, now)],
-      ),
-      lastLessonDate: hasLesson ? date : null,
-      offDayCredits: [],
-      deferredGoals: [],
+    return added;
+  }
+
+  /// O dia que nasceu com lições trancadas (demo do Pilares) e sem lição
+  /// ganha a lição quando o acesso abre no meio do dia (compra ou
+  /// restauração). O que já foi feito hoje fica; só a lição entra.
+  TrainingState _completeMissingLessons(
+    TrainingState state,
+    TrainingResources resources,
+    DateTime at,
+  ) {
+    final day = state.day!;
+    if (!day.lessonsLocked || resources.lockedLessons.isNotEmpty) return state;
+    // O acesso abriu: o dia deixa de ser da demo, com ou sem lição nova.
+    final opened = state.copyWith(day: day.copyWith(lessonsLocked: false));
+    if (!day.studyDay ||
+        day.goals.any(
+          (g) => g.kind == GoalKind.lesson || g.kind == GoalKind.extraLesson,
+        ) ||
+        state.lastLessonDate == day.date) {
+      return opened;
+    }
+    final added = _courseLessons(
+      state,
+      resources,
+      day.date,
+      lessonsDue(state, at),
+      const [],
+    );
+    if (added.isEmpty) return opened;
+    return opened.copyWith(
+      day: opened.day!.copyWith(goals: [...added, ...day.goals]),
+      lastLessonDate: day.date,
     );
   }
 
