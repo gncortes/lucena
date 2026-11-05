@@ -5,18 +5,20 @@ import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/alerts/view_models/alerts_cubit.dart';
 import 'package:lucena/ui/alerts/widgets/alerts_screen.dart';
 import 'package:lucena/ui/core/keys/alerts_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/widgets/skeleton.dart';
 
 import '../../../testing/fakes/fake_alerts_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_push_repository.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
 
 void main() {
   late FakeAlertsRepository alerts;
   late FakePushRepository push;
 
-  Future<AlertsCubit> pump(WidgetTester tester) async {
+  Future<AlertsCubit> pump(WidgetTester tester, {bool settle = true}) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
@@ -34,7 +36,7 @@ void main() {
         child: const AlertsScreen(),
       ),
     );
-    await tester.pumpAndSettle();
+    settle ? await tester.pumpAndSettle() : await tester.pump();
     return cubit;
   }
 
@@ -51,6 +53,29 @@ void main() {
         ),
       )
       .value;
+
+  Finder item(int i) => find.byKey(MotionKeys.itemDaCascata(i));
+
+  for (final permitido in [true, false]) {
+    testWidgets('H-ANI-16: a tela entra em cascata '
+        '(${permitido ? 'permitido' : 'negado'})', (tester) async {
+      push.allowed = permitido;
+      await pump(tester, settle: false);
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(item(0), findsOneWidget);
+      final ultimo = item(2);
+      expect(ultimo, findsOneWidget);
+      expect(opacidade(tester, ultimo), lessThan(1));
+      await tester.pumpAndSettle();
+      for (var i = 0; item(i).evaluate().isNotEmpty; i++) {
+        expect(opacidade(tester, item(i)), 1, reason: 'item $i');
+      }
+      expect(
+        find.byKey(permitido ? AlertsKeys.allowed : AlertsKeys.offBanner),
+        findsOneWidget,
+      );
+    });
+  }
 
   testWidgets('permitido: a linha do Android e as 4 chaves', (tester) async {
     await pump(tester);
