@@ -161,6 +161,101 @@ void main() {
     expect(opacidadeAcima(tester, find.textContaining('Tela B')), 1);
   });
 
+  testWidgets(
+    'a origem que sai no meio (folha fechando) não troca por outra de mesmo id',
+    (tester) async {
+      // A folha do cadeado é a origem da venda; a chamada da aba, embaixo,
+      // tem o mesmo id. Quando a folha sai da árvore, o retângulo segue de
+      // onde estava, sem pular para a chamada.
+      tester.view.physicalSize = tela;
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      const chamada = Offset(20, 40);
+      final folhaAberta = ValueNotifier(true);
+      addTearDown(folhaAberta.dispose);
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, _) => Scaffold(
+              body: Stack(
+                children: [
+                  Positioned(
+                    left: chamada.dx,
+                    top: chamada.dy,
+                    child: OrigemQueAbre(
+                      id: 'venda',
+                      child: Container(
+                        width: 100,
+                        height: 50,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: folhaAberta,
+                    builder: (context, aberta, _) => aberta
+                        ? Positioned(
+                            left: canto.dx,
+                            top: canto.dy,
+                            child: OrigemQueAbre(
+                              id: 'venda',
+                              child: GestureDetector(
+                                onTap: () => context.push('/b'),
+                                child: Container(
+                                  key: cartao,
+                                  width: tamanho.width,
+                                  height: tamanho.height,
+                                  color: Colors.teal,
+                                ),
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            ),
+            routes: [
+              GoRoute(
+                path: 'b',
+                pageBuilder: (context, state) => RotaQueAbre<void>(
+                  context: context,
+                  id: 'venda',
+                  venda: true,
+                  key: state.pageKey,
+                  child: const Scaffold(body: Text('Tela B')),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(size: tela),
+          child: MaterialApp.router(routerConfig: router),
+        ),
+      );
+      await tester.tap(find.byKey(cartao));
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      final antes = quadro(tester);
+      folhaAberta.value = false;
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 16));
+      final depois = quadro(tester);
+      // Continua crescendo a partir da folha: nunca volta ao canto da chamada.
+      expect(depois.top, lessThanOrEqualTo(antes.top));
+      expect(depois.top, greaterThan(chamada.dy + 50));
+      expect(depois.width, greaterThanOrEqualTo(antes.width));
+      await tester.pumpAndSettle();
+      expect(find.text('Tela B'), findsOneWidget);
+    },
+  );
+
   testWidgets('sem a origem na tela: abre em fade, sem quebrar', (
     tester,
   ) async {

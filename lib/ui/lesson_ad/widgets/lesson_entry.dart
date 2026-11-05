@@ -7,11 +7,13 @@ import '../../../data/repositories/lesson_ad/demo_ad_repository.dart';
 import '../../../data/repositories/review/review_repository.dart';
 import '../../../domain/models/course_access.dart';
 import '../../../domain/use_cases/ad_policy.dart';
+import '../../../routing/frentes/d2_routes.dart' show pilaresSaleOrigin;
 import '../../../routing/route_names.dart';
 import '../../core/keys/ads_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/entrada_em_cascata.dart';
 import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/rota_que_abre.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
@@ -105,6 +107,9 @@ abstract final class LessonEntry {
   /// Uma parte que só o curso completo tem (a meta trancada da demo,
   /// H-VEN-12): a mesma folha do capítulo trancado, com o cadeado, outro
   /// texto e "Agora não". Devolve se a pessoa pediu [primary].
+  ///
+  /// A folha é a [OrigemQueAbre] de [origem] (H-ANI-04): a tela aberta por
+  /// [primary] cresce dela, e não da chamada da aba que fica embaixo.
   static Future<bool> showLockedFeature(
     BuildContext context, {
     required String title,
@@ -114,21 +119,34 @@ abstract final class LessonEntry {
     required Key primaryKey,
     required Key laterKey,
     String quadro = 'PropV2MetaSemCompraDemoCadeadoFolha',
+    String origem = pilaresSaleOrigin,
   }) async =>
       await showLucenaSheet<bool>(
         context,
         sheetKey: sheetKey,
-        builder: (context) => _SheetBody(
-          quadro: quadro,
-          icon: Icons.lock,
-          title: title,
-          body: body,
-          primary: primary,
-          later: context.l10n.licaoDemoLater,
-          primaryKey: primaryKey,
-          laterKey: laterKey,
-          onPrimary: () => Navigator.of(context).pop(true),
-        ),
+        builder: (context) {
+          final theme = Theme.of(context);
+          return OrigemQueAbre(
+            id: origem,
+            // A cópia que cresce leva o fundo da folha.
+            child: ColoredBox(
+              color:
+                  theme.bottomSheetTheme.modalBackgroundColor ??
+                  theme.colorScheme.surfaceContainerLow,
+              child: _SheetBody(
+                quadro: quadro,
+                icon: Icons.lock,
+                title: title,
+                body: body,
+                primary: primary,
+                later: context.l10n.licaoDemoLater,
+                primaryKey: primaryKey,
+                laterKey: laterKey,
+                onPrimary: () => Navigator.of(context).pop(true),
+              ),
+            ),
+          );
+        },
       ) ==
       true;
 
