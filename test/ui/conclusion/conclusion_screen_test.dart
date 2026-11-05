@@ -724,6 +724,40 @@ void main() {
 
   // H-ANI-25: o resultado se monta em ordem (o cabeçalho, os números, o resto
   // e as ações fixas por último); com movimento reduzido, tudo pronto.
+  group('H-ANI-18 a precisão conta quando a análise chega', () {
+    for (final reduzido in [false, true]) {
+      testWidgets('reduzido: $reduzido', (tester) async {
+        analysis.hold = Completer<void>();
+        await open(tester, disableAnimations: reduzido);
+        expect(cubit.state.reviewing, isTrue);
+        analysis.hold!.complete();
+        analysis.hold = null;
+        String? precisao() {
+          final f = find.byKey(ConclusionKeys.accuracy);
+          return f.evaluate().isEmpty ? null : tester.widget<Text>(f).data;
+        }
+
+        for (var i = 0; i < 10 && cubit.state.review == null; i++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 20)),
+          );
+        }
+        expect(cubit.state.review, isNotNull);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 16));
+        final cedo = precisao();
+        await settle(tester);
+        final fim = precisao();
+        expect(fim, isNot('–'));
+        if (reduzido) {
+          expect(cedo, fim);
+        } else {
+          expect(cedo, isNot(fim));
+        }
+      });
+    }
+  });
+
   group('H-ANI-25 entrada do resultado', () {
     for (final reduzido in [false, true]) {
       testWidgets('em ordem, as ações por último (reduzido: $reduzido)', (

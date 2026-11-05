@@ -390,6 +390,65 @@ void main() {
       },
     );
   }
+
+  group('H-ANI-18: a nota do tema conta junto com a barra', () {
+    final subject = ThemeCycle(
+      lessonId: 'theme',
+      startedOn: '2026-10-20',
+      days: [
+        for (var i = 0; i < 7; i++)
+          ThemeDay(
+            date: '2026-10-${20 + i}',
+            exerciseId: 's$i',
+            stars: [1, 1, 2, 2, 3, 3, 3][i],
+            correct: <int>{0, 2, 3, 5, 6}.contains(i),
+          ),
+      ],
+    );
+
+    Future<void> abrir(WidgetTester tester, {bool reduzir = false}) async {
+      final cubit = await load(selectedCycle: subject);
+      await tester.pumpWidget(
+        MediaQuery(
+          data: MediaQueryData(disableAnimations: reduzir),
+          child: TestApp(
+            locale: const Locale('pt'),
+            child: BlocProvider.value(
+              value: cubit,
+              child: Scaffold(body: TrainingProgressTab(onTheme: (_) {})),
+            ),
+          ),
+        ),
+      );
+    }
+
+    int? notaNaTela(WidgetTester tester) {
+      final row = find.byKey(TrainingKeys.masteryRow('theme'));
+      for (final text in tester.widgetList<Text>(
+        find.descendant(of: row, matching: find.byType(Text)),
+      )) {
+        final m = RegExp(r'^(\d+) %$').firstMatch(text.data ?? '');
+        if (m != null) return int.parse(m.group(1)!);
+      }
+      return null;
+    }
+
+    testWidgets('sai de 0 e termina em 73 %', (tester) async {
+      await abrir(tester);
+      await tester.pump();
+      expect(notaNaTela(tester), lessThan(73));
+      await tester.pump(const Duration(milliseconds: 325));
+      expect(notaNaTela(tester), inExclusiveRange(0, 73));
+      await tester.pumpAndSettle();
+      expect(notaNaTela(tester), 73);
+    });
+
+    testWidgets('movimento reduzido: 73 % no primeiro quadro', (tester) async {
+      await abrir(tester, reduzir: true);
+      await tester.pump();
+      expect(notaNaTela(tester), 73);
+    });
+  });
 }
 
 void _noBack() {}

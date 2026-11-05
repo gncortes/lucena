@@ -22,7 +22,9 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/numero_que_conta.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/widgets/course/piece_stars_row.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
@@ -111,15 +113,22 @@ class TrainingProgressTab extends StatelessWidget {
                                       ?.copyWith(fontWeight: FontWeight.w500),
                                 ),
                               ),
-                              Text(
-                                t.trainingCount(items.length, done),
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                    ),
+                              ValorQueAnima(
+                                valor: done.toDouble(),
+                                duracao: LucenaMotion.numeroConta,
+                                builder: (context, agora) => Text(
+                                  t.trainingCount(items.length, agora.round()),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures(),
+                                        ],
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                      ),
+                                ),
                               ),
                             ],
                           ),
@@ -264,16 +273,27 @@ class TrainingProgressTab extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              Text(
-                                cycles[lesson.id]!.cycleDays.length < 7
-                                    ? t.trainingCycleDays(
-                                        cycles[lesson.id]!.cycleDays.length,
-                                      )
-                                    : t.trainingPercent(
-                                        cycles[lesson.id]!.score,
+                              ValorQueAnima(
+                                valor:
+                                    (cycles[lesson.id]!.cycleDays.length < 7
+                                            ? cycles[lesson.id]!
+                                                  .cycleDays
+                                                  .length
+                                            : cycles[lesson.id]!.score)
+                                        .toDouble(),
+                                duracao: LucenaMotion.numeroConta,
+                                builder: (context, agora) => Text(
+                                  cycles[lesson.id]!.cycleDays.length < 7
+                                      ? t.trainingCycleDays(agora.round())
+                                      : t.trainingPercent(agora.round()),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures(),
+                                        ],
                                       ),
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(fontWeight: FontWeight.w500),
+                                ),
                               ),
                               const Icon(Icons.chevron_right),
                             ],

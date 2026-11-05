@@ -11,6 +11,8 @@ import '../../../domain/use_cases/training/goal/diagnostic_test_size.dart';
 import '../../../domain/use_cases/training/goal/goal_view.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/motion/entrada_de_resultado.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -250,9 +252,17 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        subtitulo: Text(
-          t.treinoTestAnswered(d.testSize),
-          textAlign: TextAlign.center,
+        // H-ANI-18: as posições respondidas contam no tempo do placar.
+        placar: ValorQueAnima(
+          valor: d.testSize.toDouble(),
+          duracao: LucenaMotion.numeroConta,
+          builder: (context, agora) => Text(
+            t.treinoTestAnswered(agora.round()),
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
+          ),
         ),
         viktor: Column(
           mainAxisSize: MainAxisSize.min,
