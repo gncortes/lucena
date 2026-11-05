@@ -9,7 +9,7 @@ O Lucena é oferecido por [RAZÃO SOCIAL], nome fantasia [NOME FANTASIA], CNPJ [
 O Lucena é um app de treino de xadrez. Você joga finais contra o Maia (níveis humanos de 1000 a 2600) ou contra o Stockfish (nível máximo) e faz o curso Pilares do Xadrez. O app é grátis, com anúncios no capítulo grátis do Pilares. Ao usar o Lucena, você aceita estes Termos.
 
 ## 3. Sua conta
-A conta é opcional. Com ela, seu progresso fica salvo e vale em qualquer celular. Você cria a conta com Google ou com e-mail e senha. Mantenha seus dados de acesso com você. Você pode excluir a conta quando quiser, em Perfil, Privacidade e dados, ou pela página playlucena.com/excluir-conta.
+A conta é opcional. Com ela, seu progresso fica salvo e vale em qualquer celular. Você cria a conta com Google ou com e-mail e senha. Mantenha seus dados de acesso com você. Você pode excluir a conta quando quiser, em Perfil, Excluir a conta, ou pela página playlucena.com/excluir-conta.
 
 ## 4. Crianças e adolescentes
 Menores de 18 anos podem usar o Lucena com o conhecimento de um responsável. Crianças com menos de 12 anos usam o app sem conta, ou com uma conta criada por um responsável. As compras são feitas por maiores de 18 anos ou com a autorização do responsável. Coletamos o mínimo de dados e não usamos dados de crianças e adolescentes para publicidade. Pais e responsáveis podem pedir ao encarregado de dados o acesso e a exclusão dos dados (veja a Política de Privacidade).

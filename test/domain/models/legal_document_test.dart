@@ -80,6 +80,29 @@ Fim.
     expect(privacy, contains('## 10. Por quanto tempo salvamos'));
   });
 
+  // Caminhos reais do app: excluir em Perfil; o resto em Configurações.
+  test('Termos e Política dão os mesmos caminhos do app', () {
+    final terms = File('assets/legal/termos_pt.md').readAsStringSync();
+    final privacy = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    for (final (nome, text) in [('termos', terms), ('privacidade', privacy)]) {
+      expect(text, contains('em Perfil, Excluir a conta'), reason: nome);
+      for (final antigo in ['Perfil, Privacidade', 'Ajustes, Privacidade']) {
+        expect(text, isNot(contains(antigo)), reason: '$nome: $antigo');
+      }
+    }
+    for (final item in [
+      'Falar sobre meus dados',
+      'Ajudar a melhorar o Lucena',
+      'Baixar meus dados',
+    ]) {
+      expect(
+        privacy,
+        contains('Configurações, Privacidade e dados, $item'),
+        reason: item,
+      );
+    }
+  });
+
   test('Termos e Política dão o mesmo nome fantasia', () {
     for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
       final text = File('assets/legal/$arquivo').readAsStringSync();

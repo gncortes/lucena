@@ -3,7 +3,7 @@
 Versão 1, em vigor desde [DATA]. Esta Política segue a Lei Geral de Proteção de Dados (Lei 13.709/2018) e o Marco Civil da Internet (Lei 12.965/2014).
 
 ## 1. Quem decide sobre seus dados
-O controlador dos seus dados é [RAZÃO SOCIAL], nome fantasia [NOME FANTASIA], CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. O encarregado de dados atende pelo e-mail gncortes.apps@gmail.com ou em Perfil, Privacidade e dados, Falar sobre meus dados.
+O controlador dos seus dados é [RAZÃO SOCIAL], nome fantasia [NOME FANTASIA], CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. O encarregado de dados atende pelo e-mail gncortes.apps@gmail.com ou em Configurações, Privacidade e dados, Falar sobre meus dados.
 
 ## 2. O que o Lucena salva e por quê
 Sem conta, o app funciona no seu celular e salva seus dados no aparelho. Com conta, salvamos também os dados abaixo.
@@ -24,7 +24,7 @@ Sem conta, o app funciona no seu celular e salva seus dados no aparelho. Com con
 Salvamos só o necessário para cada finalidade. Não pedimos sua idade e não usamos seus dados para criar perfis de publicidade.
 
 ## 3. Dados de uso e relatórios de falha
-Usamos o Firebase Analytics [e o Firebase Crashlytics] para medir o uso e achar falhas. Esses dados usam o código de instalação do app e não incluem seu nome nem seu e-mail. Mantemos desligados o Google Signals e o uso do ID de publicidade nessas medições. Você desliga a coleta quando quiser em Ajustes, Privacidade, Ajudar a melhorar o Lucena.
+Usamos o Firebase Analytics [e o Firebase Crashlytics] para medir o uso e achar falhas. Esses dados usam o código de instalação do app e não incluem seu nome nem seu e-mail. Mantemos desligados o Google Signals e o uso do ID de publicidade nessas medições. Você desliga a coleta quando quiser em Configurações, Privacidade e dados, Ajudar a melhorar o Lucena.
 
 ## 4. Anúncios
 Mostramos anúncios com o Google AdMob no capítulo grátis do Pilares. Eles são não personalizados: não dependem do que você faz no app nem de dados da sua conta. O Google pode tratar dados técnicos do aparelho para entregar o anúncio, conforme a política de privacidade dele. Quem tem acesso ativo ao Pilares não vê anúncios.
@@ -50,7 +50,7 @@ Salvamos seus dados enquanto sua conta existir. Quando você exclui a conta, apa
 ## 11. Seus direitos
 Você pode, a qualquer momento:
 - confirmar se tratamos seus dados e acessá-los;
-- baixar seus dados, em Perfil, Privacidade e dados, Baixar meus dados;
+- baixar seus dados, em Configurações, Privacidade e dados, Baixar meus dados;
 - corrigir dados incorretos;
 - excluir sua conta e seus dados, em Perfil, Excluir a conta, ou em playlucena.com/excluir-conta, mesmo sem o app instalado;
 - pedir a anonimização, o bloqueio ou a eliminação de dados desnecessários;

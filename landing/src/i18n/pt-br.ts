@@ -324,7 +324,7 @@ const pt: Dictionary = {
       {
         title: 'O que fica no seu aparelho',
         body: [
-          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam guardados só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
+          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam salvos só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
           'Para apagar tudo, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
         ],
       },
@@ -338,7 +338,7 @@ const pt: Dictionary = {
       {
         title: 'Microfone',
         body: [
-          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem guarda o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
+          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem salva o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
         ],
       },
       {
