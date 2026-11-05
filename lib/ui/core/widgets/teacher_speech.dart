@@ -776,8 +776,7 @@ class TeacherSpeech extends StatelessWidget {
     final wiki = wikiOf(context);
     final pages = [
       for (final mark in marked.marks)
-        if (!lessonV2)
-          if (wiki.url(mark.key, language) case final url?) (mark, url),
+        if (wiki.url(mark.key, language) case final url?) (mark, url),
     ];
     final onLink = onLinkOverride ?? this.onLink;
     final links = onLink == null

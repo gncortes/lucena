@@ -15,7 +15,9 @@ import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
+import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/keys/featured_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -357,6 +359,79 @@ void main() {
       await $.pump(const Duration(milliseconds: 2500));
     }, ready: TrainingKeys.goalsSummary);
   }, tags: ['d3-mp4', 'd3-meta-compra']);
+
+  patrolTest('D3: fala do Viktor com o link do Morphy, depois da compra', (
+    $,
+  ) async {
+    final purchases = FakePurchaseRepository(
+      const PurchaseState(
+        pricesReady: true,
+        prices: {
+          PilaresPlan.lifetime: r'R$ 99,90',
+          PilaresPlan.monthly: r'R$ 19,90',
+        },
+      ),
+    );
+    await AppRobot($).open(
+      systemLocale: ptBr,
+      lightDevice: true,
+      demo: true,
+      trainingScenario: E2ETrainingScenario.goalsLarge,
+      purchases: purchases,
+    );
+    await $(HomeKeys.screen).waitUntilVisible();
+    final lessonGoal = find.byWidgetPredicate(
+      (w) => switch (w.key) {
+        ValueKey<String>(:final value) => value.startsWith(
+          'training.goal.lesson.',
+        ),
+        _ => false,
+      },
+    );
+    unawaited(
+      GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+          .push<void>(Routes.trainingGoals(TrainingCourse.pilares.name)),
+    );
+    await $(TrainingKeys.goalsChapterDone).waitUntilVisible();
+    await $(PurchaseKeys.demoGoalsNoLessonLearnMore).tap();
+    await $(CoursePreviewKeys.sale).waitUntilVisible();
+    purchases.state = purchases.state.copyWith(
+      access: const PilaresAccess(kind: PilaresAccessKind.lifetime),
+    );
+    unawaited(
+      GoRouter.of($.tester.element(find.byKey(CoursePreviewKeys.sale)))
+          .push<void>(D2Paths.pilaresPurchaseDone),
+    );
+    await $(PurchaseKeys.doneScreen).waitUntilVisible();
+    await $.pumpAndSettle();
+    GoRouter.of($.tester.element(find.byKey(PurchaseKeys.doneScreen)))
+        .go(Routes.home);
+    await $(HomeKeys.screen).waitUntilVisible();
+    unawaited(
+      GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+          .push<void>(Routes.trainingGoals(TrainingCourse.pilares.name)),
+    );
+    await $(lessonGoal).waitUntilVisible();
+    await $.pumpAndSettle();
+    await $(lessonGoal).first.tap();
+    await $(find.textContaining('conde Isouard', findRichText: true))
+        .waitUntilVisible(timeout: const Duration(seconds: 60));
+    await $.pump(const Duration(seconds: 3));
+    expect(find.textContaining('Lição 9 ·', findRichText: true), findsNothing);
+    expect(
+      find.textContaining('Mates com torre e bispo', findRichText: true),
+      findsWidgets,
+    );
+    final capture = TrainingCaptureRobot($);
+    final ready = find.byKey(LessonScriptKeys.screen).evaluate().isNotEmpty
+        ? LessonScriptKeys.screen
+        : LessonScriptKeys.speech;
+    await capture.shot('D3LicaoMorphyFala', ready: ready);
+    await $.tester.tapOnText(find.textRange.ofSubstring('Paul Morphy').first);
+    await $(ExternalPageKeys.sheet).waitUntilVisible();
+    await $.pump(const Duration(seconds: 4));
+    await capture.shot('D3LicaoMorphyLink', ready: ExternalPageKeys.sheet);
+  }, tags: ['d3-morphy']);
 
   patrolTest(
     'D3 MP4: Jornada e Degrau, a barra enche e a contagem sobe (H-ANI-13)',
