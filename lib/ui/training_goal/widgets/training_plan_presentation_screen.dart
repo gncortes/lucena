@@ -28,6 +28,7 @@ class TrainingPlanPresentationScreen extends StatelessWidget {
     return GoalPage(
       centerTitle: false,
       screenKey: TrainingGoalKeys.presentationScreen,
+      cascata: true,
       title: t.treinoPlanTitle,
       onBack: onBack,
       builder: (context, view) => view.hasTournament

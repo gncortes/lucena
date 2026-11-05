@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/motion/barra_que_enche.dart';
 import 'package:lucena/ui/core/widgets/animated_progress.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/training_progress_tab.dart';
@@ -263,12 +264,12 @@ void main() {
           expect(tester.takeException(), isNull);
           return;
         }
-        final progress = tester.widget<AnimatedProgress>(
-          find.byType(AnimatedProgress).first,
+        final progress = tester.widget<BarraQueEnche>(
+          find.byType(BarraQueEnche).first,
         );
-        expect(progress.role, ProgressRole.primary);
+        expect(progress.papel, ProgressRole.primary);
         expect(
-          progress.value,
+          progress.valor,
           subject.cycleDays.length < 7
               ? subject.cycleDays.length / 7
               : subject.score / 100,
@@ -303,11 +304,11 @@ void main() {
         expect(find.text(t.trainingTestsMissing), findsNothing);
         expect(find.text(t.trainingOpeningAccuracyNote), findsOneWidget);
         expect(find.text(t.trainingOpeningAllDoneShort), findsOneWidget);
-        final progress = tester.widget<AnimatedProgress>(
-          find.byType(AnimatedProgress).first,
+        final progress = tester.widget<BarraQueEnche>(
+          find.byType(BarraQueEnche).first,
         );
-        expect(progress.value, cycle.score / 100);
-        expect(progress.role, ProgressRole.primary);
+        expect(progress.valor, cycle.score / 100);
+        expect(progress.papel, ProgressRole.primary);
         await tester.tap(find.byKey(TrainingKeys.masteryRow('theme')));
         expect(selected, 'theme');
         expect(tester.takeException(), isNull);

@@ -47,6 +47,7 @@ class _TrainingDiagnosticScreenState extends State<TrainingDiagnosticScreen> {
     final cubit = context.read<TrainingGoalCubit>();
     return GoalPage(
       screenKey: TrainingGoalKeys.diagnosticScreen,
+      cascata: true,
       title: t.treinoPlanTitle,
       onBack: widget.onBack,
       builder: (context, view) {

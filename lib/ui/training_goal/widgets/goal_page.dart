@@ -8,6 +8,8 @@ import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../course_guide/widgets/training_load_error.dart';
 import '../view_models/training_goal_cubit.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 
 /// Moldura das telas do fluxo do objetivo: título só com texto, carregando e
 /// erro únicos da base D0, rodapé fixo opcional.
@@ -23,6 +25,7 @@ class GoalPage extends StatelessWidget {
     this.titleOf,
     this.progressOf,
     this.titleKey,
+    this.cascata = false,
     super.key,
   });
 
@@ -40,6 +43,23 @@ class GoalPage extends StatelessWidget {
   final VoidCallback onBack;
   final List<Widget> Function(BuildContext context, GoalView view) builder;
   final Widget Function(BuildContext context, GoalView view)? footer;
+
+  /// H-ANI-16: o texto que explica entra em cascata (o primeiro item como
+  /// título), só na primeira entrada da tela.
+  final bool cascata;
+
+  List<Widget> _corpo(BuildContext context, GoalView view) {
+    final filhos = builder(context, view);
+    if (!cascata || filhos.isEmpty) return filhos;
+    return [
+      EntradaEmCascata(
+        itens: [
+          for (final (i, filho) in filhos.indexed)
+            i == 0 ? ItemDaCascata.titulo(filho) : ItemDaCascata.texto(filho),
+        ],
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +81,7 @@ class GoalPage extends StatelessWidget {
             bottom: switch (progressOf?.call(view)) {
               final value? => PreferredSize(
                 preferredSize: const Size.fromHeight(4),
-                child: LinearProgressIndicator(value: value, minHeight: 4),
+                child: BarraQueEnche(valor: value, altura: 4),
               ),
               null => null,
             },
@@ -79,7 +99,7 @@ class GoalPage extends StatelessWidget {
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.all(AppSpacing.screen),
-                    children: builder(context, view),
+                    children: _corpo(context, view),
                   ),
                 ),
                 if (footer != null) GoalFooter(child: footer!(context, view)),
