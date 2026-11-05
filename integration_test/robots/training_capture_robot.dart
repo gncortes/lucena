@@ -174,6 +174,14 @@ class TrainingCaptureRobot {
     });
   }
 
+  /// Marca o começo de um trecho na gravação aberta por [begin]. O nome
+  /// segue o padrão `x<velocidade>_<rótulo>` (ex.: `x1_Tour`, `x5_Licoes_2_a_9`):
+  /// tools/capture/videos_perfis.py acelera cada trecho e escreve o rótulo.
+  Future<void> mark(String name) async {
+    await semFaixaDoTeste($);
+    await _request('mark', name);
+  }
+
   Future<void> end(String name, {Key? ready}) async {
     if (ready != null) await settleRoute(ready);
     await _request('end', name);
