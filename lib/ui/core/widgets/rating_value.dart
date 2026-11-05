@@ -150,15 +150,18 @@ class _CountedRatingState extends State<_CountedRating>
   @override
   Widget build(BuildContext context) {
     final value = widget.value;
+    final change = value.change;
     return AnimatedBuilder(
       animation: _curve,
+      // A variação conta junto (H-ANI-19: "o rating e o +267 contam"); a
+      // seta e a cor já são as do valor final desde o primeiro quadro.
       builder: (context, _) => RatingValue(
         rating: (value.rating * _curve.value).round(),
-        change: value.change,
+        change: change == null ? null : (change * _curve.value).round(),
         large: value.large,
         valueKey: value.valueKey,
         changeKey: value.changeKey,
-        up: value.up,
+        up: value.up ?? (change == null ? null : change >= 0),
       ),
     );
   }
