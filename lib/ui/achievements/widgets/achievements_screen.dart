@@ -12,6 +12,7 @@ import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/segmentado_lucena.dart';
 import '../../core/motion/shimmer_conteudo.dart';
 import '../view_models/achievements_cubit.dart';
 import 'achievement_detail.dart';
@@ -128,9 +129,10 @@ class _Overall extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            context.l10n.achievementsProgress(done, total),
-            key: AchievementsKeys.progress,
+          AchievementCount(
+            value: done,
+            text: (count) => context.l10n.achievementsProgress(count, total),
+            textKey: AchievementsKeys.progress,
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -158,23 +160,17 @@ class _Filter extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
       child: SizedBox(
         width: double.infinity,
-        child: SegmentedButton<AchievementsFilter>(
-          showSelectedIcon: false,
-          segments: [
-            for (final filter in AchievementsFilter.values)
-              ButtonSegment(
-                value: filter,
-                label: OneLine(switch (filter) {
-                  AchievementsFilter.all => l10n.achievementsFilterAll,
-                  AchievementsFilter.unlocked =>
-                    l10n.achievementsFilterUnlocked,
-                  AchievementsFilter.locked => l10n.achievementsFilterLocked,
-                  AchievementsFilter.history => l10n.achievementsFilterHistory,
-                }, key: AchievementsKeys.filter(filter.name)),
-              ),
-          ],
-          selected: {selected},
-          onSelectionChanged: (selection) => cubit.filter(selection.single),
+        // CompSegmentado do canvas (TelaConquistas), com a troca da H-ANI-21.
+        child: SegmentadoLucena<AchievementsFilter>(
+          valores: AchievementsFilter.values,
+          selecionado: selected,
+          rotulo: (filter) => OneLine(switch (filter) {
+            AchievementsFilter.all => l10n.achievementsFilterAll,
+            AchievementsFilter.unlocked => l10n.achievementsFilterUnlocked,
+            AchievementsFilter.locked => l10n.achievementsFilterLocked,
+            AchievementsFilter.history => l10n.achievementsFilterHistory,
+          }, key: AchievementsKeys.filter(filter.name)),
+          aoEscolher: cubit.filter,
         ),
       ),
     );
@@ -233,9 +229,10 @@ class _AchievementRow extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
                   BarraQueEnche(valor: progress.fraction),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    progress.label(l10n),
-                    key: AchievementsKeys.itemProgress(achievement.id),
+                  AchievementCount(
+                    value: progress.done,
+                    text: (count) => progress.label(l10n, count: count),
+                    textKey: AchievementsKeys.itemProgress(achievement.id),
                     style: theme.textTheme.labelMedium,
                   ),
                 ],
