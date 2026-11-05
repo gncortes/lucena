@@ -207,7 +207,15 @@ class _CrescendoState extends State<_Crescendo> {
     widget.animacao.removeStatusListener(_mudouOEstado);
     _ida.dispose();
     _telaAberta.dispose();
-    _mostra();
+    // No dispose a árvore está travada: se a origem sai no mesmo quadro
+    // (go para o Início com a pilha inteira), ela ainda está montada, mas
+    // inativa. Mostrar de novo fica para depois do quadro.
+    final origem = _origem;
+    if (origem != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (origem.mounted) origem._escondida.value = false;
+      });
+    }
     super.dispose();
   }
 

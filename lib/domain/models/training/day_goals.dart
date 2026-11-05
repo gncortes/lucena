@@ -121,20 +121,30 @@ final class DayGoals {
     Iterable<TrainingGoal> goals = const [],
     this.doubled = false,
     this.plan = const TrainingPlan(),
+    this.lessonsLocked = false,
   }) : goals = List.unmodifiable(goals);
   final String date;
   final TrainingPlan plan;
   final bool studyDay, doubled;
+
+  /// O dia nasceu com lições trancadas pelo acesso (demo do Pilares): se o
+  /// acesso abrir hoje, a lição que faltou entra na hora.
+  final bool lessonsLocked;
   final List<TrainingGoal> goals;
   int get remaining => goals.where((g) => !g.done).length;
   bool get allDone => studyDay && remaining == 0;
   TrainingGoal? get next => goals.where((g) => !g.done).firstOrNull;
-  DayGoals copyWith({Iterable<TrainingGoal>? goals, bool? doubled}) => DayGoals(
+  DayGoals copyWith({
+    Iterable<TrainingGoal>? goals,
+    bool? doubled,
+    bool? lessonsLocked,
+  }) => DayGoals(
     date: date,
     plan: plan,
     studyDay: studyDay,
     goals: goals ?? this.goals,
     doubled: doubled ?? this.doubled,
+    lessonsLocked: lessonsLocked ?? this.lessonsLocked,
   );
   Map<String, Object?> toJson() => {
     'date': date,
@@ -142,6 +152,7 @@ final class DayGoals {
     'studyDay': studyDay,
     'doubled': doubled,
     'goals': goals.map((g) => g.toJson()).toList(),
+    if (lessonsLocked) 'lessonsLocked': true,
   };
   factory DayGoals.fromJson(Map<String, dynamic> j) => DayGoals(
     date: j['date'] as String,
@@ -151,5 +162,6 @@ final class DayGoals {
     goals: (j['goals'] as List).map(
       (g) => TrainingGoal.fromJson(Map<String, dynamic>.from(g as Map)),
     ),
+    lessonsLocked: j['lessonsLocked'] as bool? ?? false,
   );
 }

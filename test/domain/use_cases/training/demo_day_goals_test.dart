@@ -94,6 +94,55 @@ void main() {
     expect(lessonsOfToday(state, demo), ['pilares.c1.teste']);
     expect(DemoGoals.chapterOneDone(state, demo), isFalse);
   });
+  test('a compra no meio do dia completa a lição que faltava, sem refazer '
+      'o resto', () {
+    final build = BuildDayGoals(scenario.now, scenario.config);
+    // O dia nasceu na demo: sem lição. Uma meta já foi feita antes da compra.
+    final demoDay = build(chapterOneDone(), DemoGoals.restrict(content));
+    final day = demoDay.day!;
+    expect(day.goals.where((g) => g.kind == GoalKind.lesson), isEmpty);
+    final started = demoDay.copyWith(
+      day: day.copyWith(
+        goals: [
+          ...day.goals,
+          TrainingGoal(kind: GoalKind.exercise, ref: 'feito', done: true),
+        ],
+      ),
+    );
+    final bought = build(started, content);
+    expect(
+      bought.day!.goals
+          .where((g) => g.kind == GoalKind.lesson)
+          .map((g) => g.ref),
+      ['pilares.c2.tema'],
+    );
+    // O que já foi feito hoje fica como estava.
+    expect(bought.day!.date, day.date);
+    expect(
+      bought.day!.goals.where((g) => g.kind != GoalKind.lesson),
+      started.day!.goals,
+    );
+    expect(bought.lastLessonDate, day.date);
+    // Recarregar de novo não muda nada.
+    expect(build(bought, content).day!.goals, bought.day!.goals);
+  });
+
+  test('dia com lição já cumprida não ganha outra no recarregar', () {
+    final build = BuildDayGoals(scenario.now, scenario.config);
+    final owned = build(chapterOneDone(), content);
+    final lesson = owned.day!.goals.first;
+    final done = owned.copyWith(
+      day: owned.day!.copyWith(
+        goals: [
+          TrainingGoal(kind: lesson.kind, ref: lesson.ref, done: true),
+          ...owned.day!.goals.skip(1),
+        ],
+      ),
+      completedLessons: {...owned.completedLessons, lesson.ref: '2026-10-26'},
+    );
+    expect(build(done, content).day!.goals, done.day!.goals);
+  });
+
   test('só a demo do Pilares tranca: comprador e Escola veem tudo aberto', () {
     Set<String> locked(TrainingCourse course, CourseAccess access) =>
         DemoGoals.forAccess(course, access, content).lockedLessons;

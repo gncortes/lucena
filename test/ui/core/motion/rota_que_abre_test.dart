@@ -17,6 +17,10 @@ void main() {
   GoRouter rotas({bool venda = false}) => GoRouter(
     routes: [
       GoRoute(
+        path: '/inicio',
+        builder: (context, _) => const Scaffold(body: Text('Início')),
+      ),
+      GoRoute(
         path: '/',
         builder: (context, _) => Scaffold(
           body: Stack(
@@ -51,6 +55,12 @@ void main() {
               key: state.pageKey,
               child: const Scaffold(body: Center(child: _Contador())),
             ),
+            routes: [
+              GoRoute(
+                path: 'c',
+                builder: (context, _) => const Scaffold(body: Text('Fim')),
+              ),
+            ],
           ),
         ],
       ),
@@ -255,6 +265,21 @@ void main() {
       expect(find.text('Tela B'), findsOneWidget);
     },
   );
+
+  testWidgets('trocar a pilha inteira (go) com a tela aberta não quebra', (
+    tester,
+  ) async {
+    // A compra concluída volta ao Início com go: a origem e a rota saem da
+    // árvore no mesmo quadro.
+    final router = await abre(tester);
+    await tester.pumpAndSettle();
+    router.push('/b/c');
+    await tester.pumpAndSettle();
+    router.go('/inicio');
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Início'), findsOneWidget);
+  });
 
   testWidgets('sem a origem na tela: abre em fade, sem quebrar', (
     tester,
