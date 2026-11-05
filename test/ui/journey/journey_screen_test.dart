@@ -106,6 +106,24 @@ void main() {
     expect(opacidade(tester, terceira), 1);
   });
 
+  testWidgets('H-ANI-13/18: na entrada, a barra do degrau atual enche e os '
+      'desafios feitos contam junto', (tester) async {
+    await pump(tester, done: {sampleLadder.first.challenges.first.id});
+    final barra = find.descendant(
+      of: find.byKey(MotionKeys.barraQueEnche),
+      matching: find.byType(LinearProgressIndicator),
+    );
+    double valor() => tester.widget<LinearProgressIndicator>(barra).value!;
+    String texto() =>
+        tester.widget<Text>(find.byKey(JourneyKeys.summaryProgress)).data!;
+
+    expect(valor(), lessThan(.5));
+    expect(texto(), '0 of 2 challenges');
+    await tester.pumpAndSettle();
+    expect(valor(), .5);
+    expect(texto(), '1 of 2 challenges');
+  });
+
   testWidgets('em português', (tester) async {
     await pump(tester, locale: const Locale('pt'));
 

@@ -15,6 +15,7 @@ import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
+import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/keys/week_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
@@ -157,6 +158,33 @@ void main() {
     await $.pumpAndSettle();
     await TrainingCaptureRobot($)
         .shot('D3AcheOLance', ready: FeaturedKeys.findBoard);
+  });
+
+  patrolTest('D3 prints: o gráfico do rating se desenha (H-ANI-19)', ($) async {
+    await AppRobot($).open(systemLocale: ptBr, lightDevice: true);
+    await seedRatingHistory(const [
+      1000,
+      1040,
+      1025,
+      1080,
+      1110,
+      1095,
+      1150,
+      1190,
+      1170,
+      1230,
+      1267,
+    ]);
+    await $(HomeKeys.screen).waitUntilVisible();
+    final capture = TrainingCaptureRobot($);
+    await capture.record('D3GraficoRating', () async {
+      unawaited(
+        GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+            .push<void>(Routes.rating),
+      );
+      await $(RatingKeys.chart).waitUntilVisible();
+      await $.pumpAndSettle();
+    }, ready: RatingKeys.chart);
   });
 
   patrolTest('D3 prints: Detalhes da partida salva', ($) async {
