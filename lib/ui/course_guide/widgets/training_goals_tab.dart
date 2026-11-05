@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/meta_dobrada.dart';
+import '../../core/motion/valor_que_anima.dart';
 
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 
@@ -193,10 +195,20 @@ class TrainingGoalsTab extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  Text(
-                    t.trainingGoalsLeft(counts.remaining, counts.total),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
+                  // H-ANI-18: conta o que já foi feito, junto com a barra;
+                  // "Faltam" desce de M até N.
+                  ValorQueAnima(
+                    valor: (counts.total - counts.remaining).toDouble(),
+                    duracao: LucenaMotion.numeroConta,
+                    builder: (context, feito) => Text(
+                      t.trainingGoalsLeft(
+                        counts.total - feito.round(),
+                        counts.total,
+                      ),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
                     ),
                   ),
                 ],

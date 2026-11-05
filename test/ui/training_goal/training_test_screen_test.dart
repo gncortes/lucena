@@ -92,7 +92,7 @@ void main() {
       expect(find.byKey(TrainingGoalKeys.testResult), findsOneWidget);
       expectEntradaDeResultado(
         tester,
-        partes: const ['titulo', 'subtitulo', 'viktor', 'botoes'],
+        partes: const ['titulo', 'placar', 'viktor', 'botoes'],
         animando: !reduzido,
       );
       expect(
@@ -120,4 +120,35 @@ void main() {
       await tester.pumpAndSettle();
     });
   }
+  int? respondidas(WidgetTester tester) {
+    for (final text in tester.widgetList<Text>(
+      find.descendant(
+        of: find.byKey(MotionKeys.parteDoResultado('placar')),
+        matching: find.byType(Text),
+      ),
+    )) {
+      final m = RegExp(r'^(\d+) posiç').firstMatch(text.data ?? '');
+      if (m != null) return int.parse(m.group(1)!);
+    }
+    return null;
+  }
+
+  testWidgets('H-ANI-18: as posições respondidas contam no lugar do placar', (
+    tester,
+  ) async {
+    await abreNoResultado(tester, reduzido: false);
+    expect(respondidas(tester), 0);
+    await tester.pumpAndSettle();
+    expect(respondidas(tester), greaterThan(0));
+  });
+
+  testWidgets('H-ANI-18: reduzido, o total já no primeiro quadro', (
+    tester,
+  ) async {
+    await abreNoResultado(tester, reduzido: true);
+    final fim = respondidas(tester);
+    expect(fim, greaterThan(0));
+    await tester.pumpAndSettle();
+    expect(respondidas(tester), fim);
+  });
 }

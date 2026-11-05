@@ -13,7 +13,9 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/tabuleiro_animado.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
@@ -446,7 +448,6 @@ class _AccuracyBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).toString();
     final value = this.value;
-    final text = value == null ? '–' : formatAccuracy(value, locale);
     return Container(
       constraints: const BoxConstraints(minWidth: 96),
       padding: const EdgeInsets.symmetric(
@@ -457,14 +458,19 @@ class _AccuracyBox extends StatelessWidget {
         color: light ? AppColors.paper : AppColors.chessBlackColor,
         borderRadius: BorderRadius.circular(AppShape.medium),
       ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: light ? AppColors.ink : AppColors.white,
-          fontSize: 26,
-          fontWeight: AppWeight.heavy,
-          fontFeatures: const [FontFeature.tabularFigures()],
+      // H-ANI-18: a precisão conta até o valor; muda, conta do anterior.
+      child: ValorQueAnima(
+        valor: value ?? 0,
+        duracao: LucenaMotion.numeroConta,
+        builder: (context, agora) => Text(
+          value == null ? '–' : formatAccuracy(agora, locale),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: light ? AppColors.ink : AppColors.white,
+            fontSize: 26,
+            fontWeight: AppWeight.heavy,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
         ),
       ),
     );
