@@ -13,9 +13,11 @@ import 'package:lucena/domain/use_cases/demo_goals.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/route_names.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/motion/cartao_pressionavel.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
 import 'package:lucena/ui/course_guide/widgets/training_goals_tab.dart';
@@ -232,6 +234,30 @@ void main() {
     await tester.tap(find.byKey(PurchaseKeys.demoGuidePlan));
     await tester.pumpAndSettle();
     expect(find.text('plano destino'), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-20: o cartão das semanas afunda no toque e volta', (
+    tester,
+  ) async {
+    await pump(tester, tab: CourseGuideTab.guide);
+    final escala = find.descendant(
+      of: find.ancestor(
+        of: find.byKey(PurchaseKeys.demoGuideWeeks),
+        matching: find.byType(CartaoPressionavel),
+      ),
+      matching: find.byKey(MotionKeys.cartaoPressionado),
+    );
+    expect(escala, findsOneWidget);
+    double agora() => tester.widget<AnimatedScale>(escala).scale;
+    final dedo = await tester.startGesture(
+      tester.getCenter(find.text('Semana 2')),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(agora(), .97);
+    // Soltar abre o plano; cancelar o gesto (arrastar) volta a 1 na tela.
+    await dedo.cancel();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(agora(), 1);
   });
 
   testWidgets('Guia: "Conhecer o Pilares" abre a apresentação', (tester) async {

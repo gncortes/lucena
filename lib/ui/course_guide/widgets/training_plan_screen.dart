@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/motion/entrada_em_cascata.dart';
 import '../../core/widgets/skeleton.dart';
 
 import 'training_load_error.dart';
@@ -99,52 +100,81 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
               borderRadius: BorderRadius.circular(AppShape.extraLarge),
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Icon(
-                      CanvasSymbols.notifications,
-                      color: Theme.of(dialogContext).colorScheme.secondary,
+                // H-ANI-16: o aviso entra em cascata a cada abertura.
+                child: EntradaEmCascata(
+                  animar: true,
+                  montar: (itens) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: itens,
+                  ),
+                  itens: [
+                    ItemDaCascata.selo(
+                      Icon(
+                        CanvasSymbols.notifications,
+                        color: Theme.of(dialogContext).colorScheme.secondary,
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      t.trainingPermissionTitle,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(dialogContext).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      t.trainingPermissionBody,
-                      style: Theme.of(dialogContext).textTheme.bodyMedium
-                          ?.copyWith(
-                            color: Theme.of(dialogContext)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      spacing: 8,
-                      children: [
-                        TextButton(
-                          key: TrainingKeys.permissionLater,
-                          style: TextButton.styleFrom(
-                            minimumSize: const Size(110, kButtonHeightCompact),
-                          ),
-                          onPressed: () => Navigator.pop(dialogContext, false),
-                          child: Text(t.trainingPermissionLater),
+                    ItemDaCascata.titulo(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text(
+                          t.trainingPermissionTitle,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(dialogContext)
+                              .textTheme
+                              .headlineSmall,
                         ),
-                        FilledButton(
-                          key: TrainingKeys.permissionAllow,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size(110, kButtonHeightCompact),
-                          ),
-                          onPressed: () => Navigator.pop(dialogContext, true),
-                          child: Text(t.trainingPermissionAllow),
+                      ),
+                    ),
+                    ItemDaCascata.texto(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text(
+                          t.trainingPermissionBody,
+                          style: Theme.of(dialogContext).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(dialogContext)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
                         ),
-                      ],
+                      ),
+                    ),
+                    ItemDaCascata.botao(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          spacing: 8,
+                          children: [
+                            TextButton(
+                              key: TrainingKeys.permissionLater,
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(
+                                  110,
+                                  kButtonHeightCompact,
+                                ),
+                              ),
+                              onPressed: () =>
+                                  Navigator.pop(dialogContext, false),
+                              child: Text(t.trainingPermissionLater),
+                            ),
+                            FilledButton(
+                              key: TrainingKeys.permissionAllow,
+                              style: FilledButton.styleFrom(
+                                minimumSize: const Size(
+                                  110,
+                                  kButtonHeightCompact,
+                                ),
+                              ),
+                              onPressed: () =>
+                                  Navigator.pop(dialogContext, true),
+                              child: Text(t.trainingPermissionAllow),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),

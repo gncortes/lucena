@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_plan.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/domain/models/voice.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/course_guide/view_models/training_plan_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/training_plan_screen.dart';
@@ -113,6 +114,25 @@ void main() {
                   : find.byKey(TrainingKeys.permissionDialog),
               findsOneWidget,
             );
+            if (name == 'PlanoPermissao') {
+              // H-ANI-16: ícone, título, texto e botões entram em cascata.
+              for (var i = 0; i < 4; i++) {
+                expect(
+                  find.descendant(
+                    of: find.byKey(TrainingKeys.permissionDialog),
+                    matching: find.byKey(MotionKeys.itemDaCascata(i)),
+                  ),
+                  findsOneWidget,
+                );
+              }
+              expect(
+                find.descendant(
+                  of: find.byKey(MotionKeys.itemDaCascata(3)),
+                  matching: find.byKey(TrainingKeys.permissionAllow),
+                ),
+                findsOneWidget,
+              );
+            }
           }
           await capture.shot(tester, name, size);
           expect(tester.takeException(), isNull);

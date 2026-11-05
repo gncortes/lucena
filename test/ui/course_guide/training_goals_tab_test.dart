@@ -109,4 +109,70 @@ void main() {
       );
     }
   }
+  group('H-ANI-18: "Faltam N de M" conta junto com a barra', () {
+    Future<void> abrir(WidgetTester tester, {bool reduzir = false}) async {
+      setPhoneSize(tester, const Size(412, 917));
+      final scenario = TrainingScenarioBuilder(TrainingCourse.pilares);
+      final repository = scenario.repository(scenario.goalsScenario('middle'));
+      final cubit = CourseGuideCubit(
+        repository: repository,
+        config: scenario.config,
+        now: scenario.now,
+      );
+      addTearDown(cubit.close);
+      addTearDown(repository.dispose);
+      await cubit.load();
+      await tester.pumpWidget(
+        MediaQuery(
+          data: MediaQueryData(disableAnimations: reduzir),
+          child: TestApp(
+            locale: const Locale('pt'),
+            child: BlocProvider.value(
+              value: cubit,
+              child: Scaffold(
+                body: TrainingGoalsTab(onGoal: (_) {}, onPlan: () {}),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    (int, int)? faltam(WidgetTester tester) {
+      for (final text in tester.widgetList<Text>(
+        find.descendant(
+          of: find.byKey(TrainingKeys.goalsSummary),
+          matching: find.byType(Text),
+        ),
+      )) {
+        final m = RegExp(r'^Faltam (\d+) de (\d+)$')
+            .firstMatch(text.data ?? '');
+        if (m != null) return (int.parse(m.group(1)!), int.parse(m.group(2)!));
+      }
+      return null;
+    }
+
+    testWidgets('começa em M e desce até N', (tester) async {
+      await abrir(tester);
+      await tester.pumpAndSettle();
+      final (fim, total) = faltam(tester)!;
+      expect(fim, lessThan(total));
+      await tester.pumpWidget(const SizedBox());
+      await abrir(tester);
+      await tester.pump();
+      expect(faltam(tester)!.$1, greaterThan(fim));
+      await tester.pumpAndSettle();
+      expect(faltam(tester)!.$1, fim);
+    });
+
+    testWidgets('movimento reduzido: N já no primeiro quadro', (tester) async {
+      await abrir(tester, reduzir: true);
+      await tester.pumpAndSettle();
+      final fim = faltam(tester)!.$1;
+      await tester.pumpWidget(const SizedBox());
+      await abrir(tester, reduzir: true);
+      await tester.pump();
+      expect(faltam(tester)!.$1, fim);
+    });
+  });
 }

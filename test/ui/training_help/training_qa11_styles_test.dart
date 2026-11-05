@@ -105,9 +105,7 @@ void main() {
         FontWeight.w500,
       );
       expect(
-        tester
-            .widget<BarraQueEnche>(find.byType(BarraQueEnche))
-            .corDoTrilho,
+        tester.widget<BarraQueEnche>(find.byType(BarraQueEnche)).corDoTrilho,
         Theme.of(context).scaffoldBackgroundColor,
       );
       expect(tester.takeException(), isNull);

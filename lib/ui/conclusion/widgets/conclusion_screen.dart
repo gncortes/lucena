@@ -61,6 +61,7 @@ import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/valor_que_anima.dart';
 import '../../core/motion/barra_que_enche.dart';
 
@@ -1397,10 +1398,10 @@ class _Analysis extends StatelessWidget {
         onTap: review == null && !state.reviewing
             ? () => context.read<ConclusionCubit>().quickReview()
             : null,
-        child: AnimatedSize(
-          duration: motion.component,
-          curve: AppMotion.move,
-          alignment: Alignment.topCenter,
+        // Movimento reduzido: sem AnimatedSize (com duração zero ele se
+        // remarca dentro do próprio layout quando a análise chega).
+        child: _TamanhoQueAcompanha(
+          duracao: motion.component,
           child: LayoutBuilder(
             builder: (context, box) {
               final board = math.min(
@@ -1428,6 +1429,24 @@ class _Analysis extends StatelessWidget {
       ),
     );
   }
+}
+
+/// [AnimatedSize] quando há movimento; com duração zero, o filho direto.
+class _TamanhoQueAcompanha extends StatelessWidget {
+  const _TamanhoQueAcompanha({required this.duracao, required this.child});
+
+  final Duration duracao;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => duracao == Duration.zero
+      ? child
+      : AnimatedSize(
+          duration: duracao,
+          curve: AppMotion.move,
+          alignment: Alignment.topCenter,
+          child: child,
+        );
 }
 
 /// O título do cartão: o raio e "Análise rápida", com a linha de baixo.
@@ -1600,11 +1619,11 @@ class _AnalysisSummary extends StatelessWidget {
             children: [
               // O quadrado da precisão, sempre todo azul; o número conta até o
               // valor.
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: (mine ?? 0) / 100),
-                duration: AppMotion.of(context).celebrate,
-                curve: AppMotion.enter,
-                builder: (context, value, _) => Container(
+              // H-ANI-18: o número conta pelo kit (reduzido: valor final).
+              ValorQueAnima(
+                valor: (mine ?? 0) / 100,
+                duracao: LucenaMotion.numeroConta,
+                builder: (context, value) => Container(
                   width: 76,
                   height: 52,
                   alignment: Alignment.center,

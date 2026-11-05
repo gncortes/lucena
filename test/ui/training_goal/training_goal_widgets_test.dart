@@ -27,6 +27,8 @@ Future<FakeTrainingRepository> pump(
   StudyPlan? plan,
   StudyPlan? previous,
   bool? catalogOnlyPlan,
+  bool settle = true,
+  bool reduzir = false,
 }) async {
   setPhoneSize(tester, const Size(412, 917));
   const config = TrainingCourseConfig.pilares;
@@ -62,24 +64,27 @@ Future<FakeTrainingRepository> pump(
   addTearDown(repository.dispose);
   await cubit.load();
   await tester.pumpWidget(
-    TestApp(
-      locale: const Locale('pt'),
-      child: BlocProvider.value(
-        value: cubit,
-        child: CourseGuideScreen(
-          onBack: () {},
-          onPlan: () {},
-          onHelp: () {},
-          onWelcomeContinue: () {},
-          onLesson: (_) {},
-          onChapter: (_) {},
-          goalsBuilder: (_) => const SizedBox(),
-          progressBuilder: (_) => const SizedBox(),
+    MediaQuery(
+      data: MediaQueryData(disableAnimations: reduzir),
+      child: TestApp(
+        locale: const Locale('pt'),
+        child: BlocProvider.value(
+          value: cubit,
+          child: CourseGuideScreen(
+            onBack: () {},
+            onPlan: () {},
+            onHelp: () {},
+            onWelcomeContinue: () {},
+            onLesson: (_) {},
+            onChapter: (_) {},
+            goalsBuilder: (_) => const SizedBox(),
+            progressBuilder: (_) => const SizedBox(),
+          ),
         ),
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) await tester.pumpAndSettle();
   return repository;
 }
 
@@ -146,6 +151,54 @@ void main() {
     expect(find.byKey(TrainingGoalKeys.goalCard), findsWidgets);
     expect(find.byKey(TrainingGoalKeys.goalCardDefine), findsNothing);
     expect(find.text('Torneio em 10 dias'), findsOneWidget);
+  });
+
+  group('H-ANI-18: os dias até o torneio contam', () {
+    const torneio = TrainingObjective(
+      kind: ObjectiveKind.tournament,
+      setOn: '2026-11-04',
+      tournamentDate: '2026-11-14',
+    );
+    int? diasNaTela(WidgetTester tester) {
+      for (final text in tester.widgetList<Text>(
+        find.descendant(
+          of: find.byKey(TrainingGoalKeys.goalCard).first,
+          matching: find.byType(Text),
+        ),
+      )) {
+        final m = RegExp(r'^Torneio em (\d+) dias?$')
+            .firstMatch(text.data ?? '');
+        if (m != null) return int.parse(m.group(1)!);
+      }
+      return null;
+    }
+
+    testWidgets('sai de 0 e para em 10', (tester) async {
+      await pump(
+        tester,
+        tab: CourseGuideTab.lesson,
+        objective: torneio,
+        settle: false,
+      );
+      await tester.pump();
+      await tester.pump();
+      expect(diasNaTela(tester), lessThan(10));
+      await tester.pumpAndSettle();
+      expect(diasNaTela(tester), 10);
+    });
+
+    testWidgets('movimento reduzido: 10 já no primeiro quadro', (tester) async {
+      await pump(
+        tester,
+        tab: CourseGuideTab.lesson,
+        objective: torneio,
+        settle: false,
+        reduzir: true,
+      );
+      await tester.pump();
+      await tester.pump();
+      expect(diasNaTela(tester), 10);
+    });
   });
 
   testWidgets('catálogo abre em Meu plano e o filtro mostra tudo', (

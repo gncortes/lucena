@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/keys/training_goal_keys.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
@@ -43,29 +44,33 @@ class TrainingTournamentsScreen extends StatelessWidget {
           ];
         }
         return [
-          for (final r in list)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: LucenaCard(
-                child: Column(
-                  key: TrainingGoalKeys.tournamentRow(r.id),
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      r.name,
-                      style: Theme.of(context).textTheme.titleMedium,
+          ListaEmOrdem(
+            itens: [
+              for (final r in list)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: LucenaCard(
+                    child: Column(
+                      key: TrainingGoalKeys.tournamentRow(r.id),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          r.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(civilLong(context, r.date)),
+                        Text(
+                          t.treinoTournamentRow(
+                            _tenths(r.tenthsPoints),
+                            '${r.rounds}',
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(civilLong(context, r.date)),
-                    Text(
-                      t.treinoTournamentRow(
-                        _tenths(r.tenthsPoints),
-                        '${r.rounds}',
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+            ],
+          ),
         ];
       },
       footer: (context, view) => BusyButton(

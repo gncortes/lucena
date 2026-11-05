@@ -1848,6 +1848,7 @@ GoRouter buildRouter({
           _route(
             name: RouteNames.country,
             path: 'country',
+            eixoX: true,
             builder: (context, state) => const CountryScreen(),
           ),
           _route(
