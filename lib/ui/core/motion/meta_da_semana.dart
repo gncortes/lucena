@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'entradas_vistas.dart';
@@ -7,7 +9,8 @@ import 'movimento_reduzido.dart';
 /// A meta do dia na Sequência (H-ANI-28), sem bloco novo na tela: quando
 /// hoje está [cumprida], os ✓ dos dias anteriores saem em onda, o anel de
 /// hoje fecha em 450 ms, o ✓ de hoje salta e o contador sobe com um salto.
-/// Tudo em 1,2 s, só na primeira entrada da tela na sessão.
+/// Tudo em 1,2 s, só na primeira entrada da tela na sessão, depois que a
+/// transição da rota acaba.
 ///
 /// Um relógio só para a tela: os pedaços leem o [TempoDaMeta] de
 /// [MetaDaSemana.of]. Sem festa (meta não cumprida, tela já vista, movimento
@@ -67,11 +70,34 @@ class _MetaDaSemanaState extends State<MetaDaSemana>
   void _talvez() {
     if (!widget.cumprida || _celebrou || !_pode) return;
     _celebrou = true;
-    _controle.forward(from: 0);
+    _controle.value = 0;
+    // A tela que ainda está chegando começa a festa só quando a transição
+    // acaba (como o `RelogioDeEntrada`): a onda não some atrás do fade. No
+    // primeiro build a animação da rota ainda não está ligada (diz
+    // "completa"), então a conferência fica para o quadro seguinte.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final rota = ModalRoute.of(context)?.animation;
+      if (rota != null && rota.status == AnimationStatus.forward) {
+        _rota = rota..addStatusListener(_rotaChegou);
+      } else {
+        unawaited(_controle.forward());
+      }
+    });
+  }
+
+  Animation<double>? _rota;
+
+  void _rotaChegou(AnimationStatus status) {
+    if (status != AnimationStatus.completed) return;
+    _rota?.removeStatusListener(_rotaChegou);
+    _rota = null;
+    if (mounted) unawaited(_controle.forward());
   }
 
   @override
   void dispose() {
+    _rota?.removeStatusListener(_rotaChegou);
     _controle.dispose();
     super.dispose();
   }
