@@ -8,6 +8,8 @@ import '../../../domain/use_cases/training/goal/tournament_rules.dart';
 import '../../../routing/route_names.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/lucena_card.dart';
@@ -134,12 +136,26 @@ class _CardBody extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(title, style: theme.textTheme.titleMedium),
+                      // H-ANI-18: os dias até o torneio contam.
+                      child: view.phase == TournamentPhase.before
+                          ? ValorQueAnima(
+                              valor: view.daysLeft!.toDouble(),
+                              duracao: LucenaMotion.numeroConta,
+                              builder: (context, agora) => Text(
+                                t.treinoTournamentIn(agora.round()),
+                                style: theme.textTheme.titleMedium,
+                              ),
+                            )
+                          : Text(title, style: theme.textTheme.titleMedium),
                     ),
                     if (place == TrainingGoalCardPlace.goals && view.streak > 0)
-                      Text(
-                        t.treinoStreakDays(view.streak),
-                        key: TrainingGoalKeys.streak,
+                      ValorQueAnima(
+                        valor: view.streak.toDouble(),
+                        duracao: LucenaMotion.numeroConta,
+                        builder: (context, agora) => Text(
+                          t.treinoStreakDays(agora.round()),
+                          key: TrainingGoalKeys.streak,
+                        ),
                       ),
                   ],
                 ),

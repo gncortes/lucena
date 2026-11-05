@@ -64,6 +64,7 @@ void main() {
     Size? viewport,
     FakeSettingsRepository? preferences,
     Locale locale = const Locale('en'),
+    bool reduzir = false,
   }) async {
     final reviews = FakeGameReviewRepository();
     tester.view.physicalSize = viewport ?? const Size(1080, 5000);
@@ -100,12 +101,15 @@ void main() {
     addTearDown(settings.close);
     await settings.load();
     await tester.pumpWidget(
-      TestApp(
-        settingsCubit: settings,
-        locale: locale,
-        child: BlocProvider.value(
-          value: cubit,
-          child: const GameDetailsScreen(),
+      MediaQuery(
+        data: MediaQueryData(disableAnimations: reduzir),
+        child: TestApp(
+          settingsCubit: settings,
+          locale: locale,
+          child: BlocProvider.value(
+            value: cubit,
+            child: const GameDetailsScreen(),
+          ),
         ),
       ),
     );
@@ -120,6 +124,38 @@ void main() {
 
   String text(WidgetTester tester, Key key) =>
       tester.widget<Text>(find.byKey(key)).data ?? '';
+
+  for (final reduzir in [false, true]) {
+    testWidgets('H-ANI-18: a precisão conta quando a análise chega '
+        '(reduzido: $reduzir)', (tester) async {
+      final id = await progress.addAttempt(game);
+      await pump(tester, id, reduzir: reduzir);
+      String precisao() => tester
+          .widget<Text>(
+            find.descendant(
+              of: find.byKey(GameDetailsKeys.accuracyWhite),
+              matching: find.byType(Text),
+            ),
+          )
+          .data!;
+      await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
+      for (var i = 0; i < 50; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+        if (find.byKey(GameDetailsKeys.accuracyWhite).evaluate().isNotEmpty) {
+          break;
+        }
+      }
+      final cedo = precisao();
+      await tester.pumpAndSettle();
+      final fim = precisao();
+      expect(fim, isNot('–'));
+      if (reduzir) {
+        expect(cedo, fim);
+      } else {
+        expect(cedo, isNot(fim));
+      }
+    });
+  }
 
   testWidgets('revisar: o resumo com a precisão, os símbolos na tabela e a '
       'anotação no tabuleiro', (tester) async {
