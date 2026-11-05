@@ -49,7 +49,65 @@ Fim.
     expect(privacy.sections, hasLength(13));
     expect(
       privacy.sections[1].blocks.whereType<LegalTable>().single.rows,
-      hasLength(9),
+      hasLength(10),
     );
+  });
+
+  // Decisões do Gabriel (04/11) sobre a exclusão da conta.
+  test('a Política diz o que é apagado, o prazo e o caminho do app', () {
+    final text = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    expect(text, isNot(contains('[PRAZO EXCLUSÃO]')));
+    expect(text, contains('em até 15 dias a contar do pedido'));
+    for (final item in ['região', 'Lichess', 'preferências']) {
+      expect(text, contains(item), reason: item);
+    }
+    expect(text, contains('em Perfil, Excluir a conta'));
+    expect(text, isNot(contains('Privacidade e dados, Excluir conta')));
+    expect(text, isNot(contains('nome fantasia Lucena')));
+  });
+
+  // Regra do Gabriel: "salvar", nunca "guardar" (canvas de 04/11).
+  test('Termos e Política falam em salvar, não em guardar', () {
+    for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
+      final text = File('assets/legal/$arquivo').readAsStringSync();
+      expect(
+        RegExp('guard', caseSensitive: false).hasMatch(text),
+        isFalse,
+        reason: arquivo,
+      );
+    }
+    final privacy = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    expect(privacy, contains('## 10. Por quanto tempo salvamos'));
+  });
+
+  // Caminhos reais do app: excluir em Perfil; o resto em Configurações.
+  test('Termos e Política dão os mesmos caminhos do app', () {
+    final terms = File('assets/legal/termos_pt.md').readAsStringSync();
+    final privacy = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    for (final (nome, text) in [('termos', terms), ('privacidade', privacy)]) {
+      expect(text, contains('em Perfil, Excluir a conta'), reason: nome);
+      for (final antigo in ['Perfil, Privacidade', 'Ajustes, Privacidade']) {
+        expect(text, isNot(contains(antigo)), reason: '$nome: $antigo');
+      }
+    }
+    for (final item in [
+      'Falar sobre meus dados',
+      'Ajudar a melhorar o Lucena',
+      'Baixar meus dados',
+    ]) {
+      expect(
+        privacy,
+        contains('Configurações, Privacidade e dados, $item'),
+        reason: item,
+      );
+    }
+  });
+
+  test('Termos e Política dão o mesmo nome fantasia', () {
+    for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
+      final text = File('assets/legal/$arquivo').readAsStringSync();
+      expect(text, contains('nome fantasia [NOME FANTASIA]'), reason: arquivo);
+      expect(text, isNot(contains('nome fantasia Lucena')), reason: arquivo);
+    }
   });
 }

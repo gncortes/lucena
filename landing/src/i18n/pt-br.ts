@@ -324,7 +324,7 @@ const pt: Dictionary = {
       {
         title: 'O que fica no seu aparelho',
         body: [
-          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam guardados só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
+          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam salvos só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
           'Para apagar tudo, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
         ],
       },
@@ -338,7 +338,7 @@ const pt: Dictionary = {
       {
         title: 'Microfone',
         body: [
-          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem guarda o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
+          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem salva o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
         ],
       },
       {
@@ -377,7 +377,7 @@ const pt: Dictionary = {
       {
         title: '',
         body: [
-          'O Lucena, app de treino de finais de xadrez de [RAZÃO SOCIAL], nome fantasia Lucena, permite excluir a conta e apagar os dados dela, com ou sem o app instalado.',
+          'O Lucena, app de treino de finais de xadrez de [NOME FANTASIA], permite excluir a conta e apagar os dados dela, com ou sem o app instalado.',
         ],
       },
       {
@@ -403,7 +403,7 @@ const pt: Dictionary = {
       {
         title: 'O que é apagado',
         body: [
-          'Apagamos, em até [PRAZO EXCLUSÃO], os dados da conta: nome, <span style="white-space:nowrap">e-mail</span> e foto; o progresso nas lições, as partidas, o rating e as conquistas; e o código de notificação do aparelho.',
+          'Apagamos, em até 15 dias a contar do pedido, os dados da conta: nome, <span style="white-space:nowrap">e-mail</span> e foto; o perfil, a região, o usuário do Lichess e as preferências; o progresso nas lições, as partidas, o rating e as conquistas; e o código de notificação do aparelho.',
         ],
       },
       {
@@ -416,7 +416,7 @@ const pt: Dictionary = {
       {
         title: 'Quem decide sobre seus dados',
         body: [
-          '[RAZÃO SOCIAL], nome fantasia Lucena, CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. O encarregado de dados atende pelo <span style="white-space:nowrap">e-mail</span> <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+          '[RAZÃO SOCIAL], nome fantasia [NOME FANTASIA], CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. O encarregado de dados atende pelo <span style="white-space:nowrap">e-mail</span> <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
         ],
       },
     ],
