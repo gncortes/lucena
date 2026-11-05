@@ -242,17 +242,15 @@ void main() {
     expect(mark(Icons.cancel), findsNothing);
   });
 
-  testWidgets('H-ANI-11/12: acerto e erro pintam a casa e põem o selo na '
-      'peça, sobre o tabuleiro', (tester) async {
+  testWidgets('H-ANI-11/12: acerto e erro põem o selo na peça, sobre o '
+      'tabuleiro', (tester) async {
     setSize(tester, sizes.first);
     await pump(tester, 'e02');
-    expect(find.byKey(MotionKeys.corDaCasa), findsNothing);
     Finder selo(IconData icon) => find.descendant(
       of: find.byKey(MotionKeys.seloNaPeca),
       matching: find.byIcon(icon),
     );
     await move(tester, 'c1', 'c4');
-    expect(find.byKey(MotionKeys.corDaCasa), findsOneWidget);
     expect(selo(Icons.check), findsOneWidget);
     expect(
       find.ancestor(

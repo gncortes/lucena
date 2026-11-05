@@ -7,7 +7,6 @@ import 'package:lucena/ui/core/motion/retorno_do_lance.dart';
 import 'package:lucena/ui/core/motion/selo_na_peca.dart';
 import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/core/motion/troca_com_fade.dart';
-import 'package:lucena/ui/core/theme/app_colors.dart';
 
 /// H-ANI-11 e H-ANI-12: o mesmo sinal de acerto e de erro em todo exercício,
 /// e o selo sempre inteiro: nas laterais e embaixo dentro do tabuleiro; na
@@ -55,8 +54,13 @@ void main() {
       .getTranslation()
       .x;
 
-  Color corDaCasa(WidgetTester tester) =>
-      tester.widget<ColoredBox>(find.byKey(MotionKeys.corDaCasa)).color;
+  /// Alguma cor por cima do tabuleiro (o filho é o marrom).
+  Finder corNaCasa() => find.descendant(
+    of: find.byKey(MotionKeys.tabuleiroDoRetorno),
+    matching: find.byWidgetPredicate(
+      (w) => w is ColoredBox && w.color != Colors.brown,
+    ),
+  );
 
   List<String> hapticos(WidgetTester tester) {
     final chamadas = <String>[];
@@ -131,7 +135,8 @@ void main() {
   });
 
   group('H-ANI-11 · retorno do lance', () {
-    testWidgets('acerto: o selo salta acima de 1 e assenta em 1; casa verde; '
+    testWidgets('acerto: o selo salta acima de 1 e assenta em 1; a casa não '
+        'muda de cor; '
         'vibração leve', (tester) async {
       final vibrou = hapticos(tester);
       await tester.pumpWidget(tela(retorno(TipoDeRetorno.acerto)));
@@ -140,32 +145,27 @@ void main() {
       expect(escalaDoSelo(tester), greaterThan(1));
       await tester.pump(const Duration(milliseconds: 130));
       expect(escalaDoSelo(tester), 1);
-      expect(corDaCasa(tester).withValues(alpha: 1), AppColors.successColor);
+      expect(corNaCasa(), findsNothing);
       await tester.pump(const Duration(milliseconds: 160));
-      expect(
-        corDaCasa(tester),
-        AppColors.successColor.withValues(alpha: RetornoDoLance.corAcesa),
-      );
+      expect(corNaCasa(), findsNothing);
       expect(dx(tester), 0);
     });
 
-    testWidgets('erro: o tabuleiro treme e para; a peça volta; vibração '
-        'média', (tester) async {
+    testWidgets('erro: o tabuleiro fica parado (sem tremida) e a casa não muda '
+        'de cor; a peça volta; vibração média', (tester) async {
       final vibrou = hapticos(tester);
       var voltou = 0;
       await tester.pumpWidget(
         tela(retorno(TipoDeRetorno.erro, aoVoltar: () => voltou++)),
       );
       expect(vibrou, ['HapticFeedbackType.mediumImpact']);
-      var tremeu = false;
       for (var ms = 0; ms < 340; ms += 20) {
-        if (dx(tester).abs() > 0) tremeu = true;
+        expect(dx(tester), 0);
         await tester.pump(const Duration(milliseconds: 20));
       }
-      expect(tremeu, isTrue);
       await tester.pump(const Duration(milliseconds: 20));
       expect(dx(tester), 0);
-      expect(corDaCasa(tester).a, greaterThan(0));
+      expect(corNaCasa(), findsNothing);
       expect(voltou, 0);
       await tester.pump(const Duration(milliseconds: 760));
       expect(voltou, 1);
@@ -173,13 +173,13 @@ void main() {
 
     testWidgets('o mesmo retorno nos cinco tipos de exercício: a mesma '
         'sequência de quadros', (tester) async {
-      Future<List<(double, double, double)>> quadros(String tipo) async {
+      Future<List<(double, double)>> quadros(String tipo) async {
         await tester.pumpWidget(
           tela(retorno(TipoDeRetorno.erro, key: ValueKey(tipo))),
         );
-        final lista = <(double, double, double)>[];
+        final lista = <(double, double)>[];
         for (var ms = 0; ms <= 1100; ms += 50) {
-          lista.add((dx(tester), escalaDoSelo(tester), corDaCasa(tester).a));
+          lista.add((dx(tester), escalaDoSelo(tester)));
           await tester.pump(const Duration(milliseconds: 50));
         }
         return lista;
@@ -192,12 +192,13 @@ void main() {
       }
     });
 
-    testWidgets('movimento reduzido: sem tremida, selo em 1 e cor no '
-        'primeiro quadro', (tester) async {
+    testWidgets('movimento reduzido: parado e selo em 1 no primeiro quadro', (
+      tester,
+    ) async {
       hapticos(tester);
       await tester.pumpWidget(tela(retorno(TipoDeRetorno.erro), reduzir: true));
       expect(escalaDoSelo(tester), 1);
-      expect(corDaCasa(tester).a, greaterThan(0));
+      expect(corNaCasa(), findsNothing);
       for (var ms = 0; ms < 400; ms += 20) {
         expect(dx(tester), 0);
         await tester.pump(const Duration(milliseconds: 20));

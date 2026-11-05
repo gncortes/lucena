@@ -35,7 +35,6 @@ void expectRetornoDoLance(
     ),
     findsOneWidget,
   );
-  expect(find.byKey(MotionKeys.corDaCasa), findsOneWidget);
   Finder selo(IconData icone) => find.descendant(
     of: find.byKey(MotionKeys.seloNaPeca),
     matching: find.byIcon(icone),

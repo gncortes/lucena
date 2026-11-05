@@ -282,7 +282,7 @@ void main() {
   });
 
   // H-ANI-10/11: o tabuleiro é o do kit, e o lance que fecha o problema
-  // ganha o retorno (casa, selo e respiro ou tremida) antes da troca.
+  // ganha o retorno (casa, selo e respiro no acerto) antes da troca.
   Finder seloDa(IconData icone) => find.descendant(
     of: find.byKey(MotionKeys.seloNaPeca),
     matching: find.byIcon(icone),
@@ -307,7 +307,7 @@ void main() {
     );
   });
 
-  testWidgets('H-ANI-11: o acerto pinta a casa e põe o ✓ na peça', (
+  testWidgets('H-ANI-11: o acerto põe o ✓ na peça, sem pintar a casa', (
     tester,
   ) async {
     await pumpRace(tester);
@@ -316,7 +316,6 @@ void main() {
     await move(tester, 'a1', 'g7');
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsOneWidget);
-    expect(find.byKey(MotionKeys.corDaCasa), findsOneWidget);
     expect(seloDa(Icons.check), findsOneWidget);
     expect(seloDa(Icons.close), findsNothing);
     await tester.pumpAndSettle();

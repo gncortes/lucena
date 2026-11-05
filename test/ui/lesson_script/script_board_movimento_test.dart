@@ -40,15 +40,16 @@ void main() {
     ),
   );
 
-  testWidgets('acerto: a casa pisca em verde e o selo aparece', (tester) async {
+  testWidgets('acerto: a casa fica com a cor dela e o selo aparece', (
+    tester,
+  ) async {
     await monte(tester, tone: ScriptTone.good);
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.byKey(MotionKeys.corDaCasa), findsOneWidget);
     expect(find.byKey(MotionKeys.seloNaPeca), findsOneWidget);
     expect(find.byIcon(Icons.check), findsOneWidget);
   });
 
-  testWidgets('erro: o tabuleiro treme e o selo é o X', (tester) async {
+  testWidgets('erro: o retorno entra e o selo é o X', (tester) async {
     await monte(tester, tone: ScriptTone.bad);
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsOneWidget);
@@ -58,7 +59,7 @@ void main() {
   testWidgets('neutro: sem retorno', (tester) async {
     await monte(tester, tone: ScriptTone.neutral);
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.byKey(MotionKeys.corDaCasa), findsNothing);
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
   });
 
   testWidgets('o deslize da peça usa os 300 ms do kit', (tester) async {

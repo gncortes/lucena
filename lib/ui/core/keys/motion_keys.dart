@@ -27,10 +27,7 @@ abstract final class MotionKeys {
   /// O selo (✓, ✗ ou a qualidade do lance) sobre a peça.
   static const seloNaPeca = Key('motion.seloNaPeca');
 
-  /// A cor na casa do lance, no acerto e no erro.
-  static const corDaCasa = Key('motion.corDaCasa');
-
-  /// O tabuleiro que respira (acerto) ou treme (erro).
+  /// O tabuleiro que respira (acerto) ou fica parado (erro).
   static const tabuleiroDoRetorno = Key('motion.tabuleiroDoRetorno');
 
   /// O tabuleiro durante o voo do hero (H-ANI-02).

@@ -25,6 +25,10 @@ enum E2ETrainingScenario {
   dayOff,
   doubled,
   meta,
+
+  /// O exercício da meta com as brancas (Ta1-a8#: o lance chega ao canto de
+  /// cima à esquerda, embaixo do Viktor).
+  metaWhite,
   opening,
   medium,
   hard,
@@ -173,10 +177,8 @@ final class E2ETrainingRepository implements TrainingRepository {
       E2ETrainingScenario.done => builder.allDone(),
       E2ETrainingScenario.dayOff => builder.large(dayOff: true),
       E2ETrainingScenario.doubled => builder.doubled(),
-      E2ETrainingScenario.meta => builder.allDone(
-        leaveExercises: true,
-        leaveOpenings: true,
-      ),
+      E2ETrainingScenario.meta || E2ETrainingScenario.metaWhite =>
+        builder.allDone(leaveExercises: true, leaveOpenings: true),
       E2ETrainingScenario.opening => builder.allDone(leaveOpenings: true),
       E2ETrainingScenario.medium => builder.large(cycleDay: 3),
       E2ETrainingScenario.hard => builder.large(cycleDay: 5),

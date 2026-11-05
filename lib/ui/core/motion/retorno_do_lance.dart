@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 
 import '../keys/motion_keys.dart';
 import '../theme/app_colors.dart';
-import 'casa_no_tabuleiro.dart';
 import 'lucena_motion.dart';
 import 'movimento_reduzido.dart';
 import 'selo_na_peca.dart';
@@ -17,14 +16,15 @@ enum TipoDeRetorno { acerto, erro }
 /// Monte-o sobre o [TabuleiroAnimado] logo que a peça chega, com uma key nova
 /// a cada tentativa.
 ///
-/// - **Acerto:** a [casa] pisca em verde (420 ms), o selo ✓ salta e o
-///   tabuleiro respira 1,5% (320 ms). Vibração leve.
-/// - **Erro:** a casa fica vermelha, o selo ✗ salta e o tabuleiro treme ±7
-///   px (340 ms). Aos 1100 ms, [aoVoltar] devolve a peça à casa de origem.
-///   Vibração média.
+/// A [casa] nunca muda de cor (Gabriel, 04/11): fica só o destaque de último
+/// lance do tabuleiro, e o rei em xeque segue com o destaque do xeque.
 ///
-/// Com movimento reduzido, a cor e o selo aparecem parados, sem respiro nem
-/// tremida. A vibração segue o ajuste do app ([vibrar]).
+/// - **Acerto:** o selo ✓ salta e o tabuleiro respira 1,5% (320 ms).
+///   Vibração leve.
+/// - **Erro:** o selo ✗ salta e o tabuleiro fica parado (sem tremida). Aos
+///   1100 ms, [aoVoltar] devolve a peça à casa de origem. Vibração média.
+///
+/// Com movimento reduzido, o selo aparece parado, sem respiro. A vibração segue o ajuste do app ([vibrar]).
 class RetornoDoLance extends StatefulWidget {
   const RetornoDoLance({
     required this.tipo,
@@ -55,16 +55,6 @@ class RetornoDoLance extends StatefulWidget {
   /// No erro, quando a peça deve voltar à casa de origem.
   final VoidCallback? aoVoltar;
 
-  /// A opacidade da cor na casa, depois de piscar.
-  static const corAcesa = .45;
-
-  /// A opacidade da cor em [t] (0 a 1 dos 420 ms do acerto): acende forte e
-  /// assenta.
-  static final pisca = TweenSequence<double>([
-    TweenSequenceItem(tween: Tween(begin: 0, end: .75), weight: 40),
-    TweenSequenceItem(tween: Tween(begin: .75, end: corAcesa), weight: 60),
-  ]);
-
   /// A escala do tabuleiro em [t] (0 a 1 dos 320 ms do respiro).
   static final respiro = TweenSequence<double>([
     TweenSequenceItem(
@@ -83,24 +73,6 @@ class RetornoDoLance extends StatefulWidget {
     ),
   ]);
 
-  /// O deslocamento do tabuleiro em [t] (0 a 1 dos 340 ms da tremida).
-  static final tremida = TweenSequence<double>([
-    for (final (de, para) in const [
-      (0.0, -1.0),
-      (-1.0, 1.0),
-      (1.0, -1.0),
-      (-1.0, 1.0),
-      (1.0, 0.0),
-    ])
-      TweenSequenceItem(
-        tween: Tween(
-          begin: de * LucenaMotion.amplitudeDaTremida,
-          end: para * LucenaMotion.amplitudeDaTremida,
-        ),
-        weight: 1,
-      ),
-  ]);
-
   @override
   State<RetornoDoLance> createState() => _RetornoDoLanceState();
 }
@@ -110,7 +82,7 @@ class _RetornoDoLanceState extends State<RetornoDoLance>
   bool get _acerto => widget.tipo == TipoDeRetorno.acerto;
 
   Duration get _total =>
-      _acerto ? LucenaMotion.piscaDaCasa : LucenaMotion.voltaDoErro;
+      _acerto ? LucenaMotion.respiroDoTabuleiro : LucenaMotion.voltaDoErro;
 
   late final _tempo = AnimationController(vsync: this, duration: _total)
     ..addStatusListener((status) {
@@ -145,57 +117,32 @@ class _RetornoDoLanceState extends State<RetornoDoLance>
   @override
   Widget build(BuildContext context) {
     final cor = _acerto ? AppColors.successColor : AppColors.errorColor;
-    final casa = retanguloDaCasa(
-      widget.casa,
-      widget.orientacao,
-      widget.tamanho,
-    );
     final respiro = _ate(LucenaMotion.respiroDoTabuleiro);
-    final tremida = _ate(LucenaMotion.tremidaDoTabuleiro);
-    final pisca = _ate(LucenaMotion.piscaDaCasa);
     return AnimatedBuilder(
       animation: _tempo,
       builder: (context, tabuleiro) {
         final t = _tempo.value;
-        final dx = _reduzido || _acerto
-            ? 0.0
-            : RetornoDoLance.tremida.transform(tremida.transform(t));
         final escala = _reduzido || !_acerto
             ? 1.0
             : RetornoDoLance.respiro.transform(respiro.transform(t));
-        final opacidade = _reduzido || !_acerto
-            ? RetornoDoLance.corAcesa
-            : RetornoDoLance.pisca.transform(pisca.transform(t));
-        return Transform.translate(
+        return Transform.scale(
           key: MotionKeys.tabuleiroDoRetorno,
-          offset: Offset(dx, 0),
-          child: Transform.scale(
-            scale: escala,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                tabuleiro!,
-                Positioned.fromRect(
-                  rect: casa,
-                  child: IgnorePointer(
-                    child: ColoredBox(
-                      key: MotionKeys.corDaCasa,
-                      color: cor.withValues(alpha: opacidade),
-                    ),
-                  ),
+          scale: escala,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              tabuleiro!,
+              SeloNaPeca(
+                casa: widget.casa,
+                orientacao: widget.orientacao,
+                tamanho: widget.tamanho,
+                cor: cor,
+                child: Icon(
+                  _acerto ? Icons.check : Icons.close,
+                  color: AppColors.chessWhiteColor,
                 ),
-                SeloNaPeca(
-                  casa: widget.casa,
-                  orientacao: widget.orientacao,
-                  tamanho: widget.tamanho,
-                  cor: cor,
-                  child: Icon(
-                    _acerto ? Icons.check : Icons.close,
-                    color: AppColors.chessWhiteColor,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

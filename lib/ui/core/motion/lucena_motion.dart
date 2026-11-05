@@ -115,20 +115,11 @@ abstract final class LucenaMotion {
   /// O selo salta de 0 a 1,2 e volta a 1.
   static const saltoDoSelo = Duration(milliseconds: 260);
 
-  /// A casa pisca na cor do acerto.
-  static const piscaDaCasa = Duration(milliseconds: 420);
-
   /// O tabuleiro respira no acerto.
   static const respiroDoTabuleiro = Duration(milliseconds: 320);
 
   /// Quanto o tabuleiro cresce no respiro.
   static const escalaDoRespiro = 1.015;
-
-  /// O tabuleiro treme no erro.
-  static const tremidaDoTabuleiro = Duration(milliseconds: 340);
-
-  /// Quanto o tabuleiro vai para cada lado na tremida, em px.
-  static const amplitudeDaTremida = 7.0;
 
   /// Do erro até a peça voltar à casa de origem.
   static const voltaDoErro = Duration(milliseconds: 1100);

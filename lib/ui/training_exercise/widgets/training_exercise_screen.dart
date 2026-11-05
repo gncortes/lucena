@@ -410,7 +410,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
       ),
     );
     // H-ANI-11/12: no resultado, a casa do lance pisca, o selo salta na peça
-    // e o tabuleiro respira (acerto) ou treme (erro).
+    // e o tabuleiro respira (acerto) ou fica parado (erro).
     final retornoMove = state.phase != TrainingExercisePhase.result
         ? null
         : wrongMove ??

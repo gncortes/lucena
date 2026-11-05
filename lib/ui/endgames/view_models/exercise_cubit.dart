@@ -413,7 +413,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     await _finishReply(step);
   }
 
-  /// O lance errado: o tabuleiro treme e o lance volta; o balão diz "Não." e
+  /// O lance errado: a casa fica vermelha e o lance volta; o balão diz "Não." e
   /// o porquê, se há. Errar o primeiro lance zera os pontos. O porquê escrito
   /// na aula chega depois, sem segurar o tabuleiro.
   Future<void> _wrong(Move move) async {

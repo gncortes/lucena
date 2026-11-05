@@ -764,8 +764,8 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       ),
     );
     if (retorno == null) return child;
-    // H-ANI-11/12: a casa pisca, o selo salta na peça e o tabuleiro
-    // respira (acerto) ou treme (erro). O teste do capítulo não tem
+    // H-ANI-11/12: o selo salta na peça e o tabuleiro
+    // respira (acerto) ou fica parado (erro). O teste do capítulo não tem
     // retorno.
     return RetornoDoLance(
       key: ValueKey(retorno.id),
