@@ -1245,7 +1245,6 @@ GoRouter buildRouter({
                           0;
                       final language = _language(context);
                       final lessons = context.read<EndgameLessonRepository>();
-                      final l10n = context.l10n;
                       return BlocProvider(
                         key: ValueKey('script.$id.$part'),
                         create: (_) => LessonScriptCubit(
@@ -1293,21 +1292,11 @@ GoRouter buildRouter({
                             preview: _trainingLaunch(state)?.lessonPreview,
                             previewTeacher: _trainingLaunch(state)?.teacher,
                             previewTitle: _trainingTitle(state),
-                            title: lessons.texts(language).then((texts) async {
-                              final title = texts.partTitle(id, part);
-                              if (title == null) return null;
-                              final chapter = (await lessons.trail()).lesson(
-                                id,
-                              );
-                              final index =
-                                  chapter?.lesson.sections.indexWhere(
-                                    (unit) => unit.id == part,
-                                  ) ??
-                                  -1;
-                              return index < 0
-                                  ? title
-                                  : l10n.endgameActivityTitle(index + 1, title);
-                            }),
+                            // Só o assunto na barra, sem "Lição N ·": poupa
+                            // espaço (Gabriel, 05/11).
+                            title: lessons
+                                .texts(language)
+                                .then((texts) => texts.partTitle(id, part)),
                           ),
                         ),
                       );

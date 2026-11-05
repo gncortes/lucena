@@ -8464,7 +8464,6 @@
   "endgamePartNumber": "Part {number}",
   "endgamesStartFirstChapter": "Start the first chapter",
   "endgamesContinueChapter": "Continue chapter: {chapter}",
-  "endgameActivityTitle": "Lesson {number} · {title}",
   "@endgamePartNumber": {
     "description": "Part number in the Endgames collection, distinct from School modules.",
     "placeholders": {
@@ -8480,17 +8479,6 @@
     "description": "Resume the named endgame chapter.",
     "placeholders": {
       "chapter": {
-        "type": "String"
-      }
-    }
-  },
-  "@endgameActivityTitle": {
-    "description": "Endgame lesson activity app bar; number within the chapter and its existing title. Does not change lesson content.",
-    "placeholders": {
-      "number": {
-        "type": "int"
-      },
-      "title": {
         "type": "String"
       }
     }

@@ -1664,7 +1664,6 @@
   "endgamePartNumber": "Parte {number}",
   "endgamesStartFirstChapter": "Começar o primeiro capítulo",
   "endgamesContinueChapter": "Continuar capítulo: {chapter}",
-  "endgameActivityTitle": "Lição {number} · {title}",
   "pushChannelTournaments": "Finais de xadrez",
   "raceDuration": "Duração",
   "raceDurationMinutes": "{minutes} min",
