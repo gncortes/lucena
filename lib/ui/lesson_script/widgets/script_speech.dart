@@ -451,10 +451,19 @@ class CanvasSpeechLayout {
     final source = text.replaceAll(RegExp(r'\n\s*\n+'), '\n');
     final parts = <(String, String)>[];
     var at = 0;
-    for (final match in RegExp(r'\[[^\]]+\]|\{[^}]+\}').allMatches(source)) {
+    // Um nome marcado (`{{nome|chave}}`) mede só o nome e volta inteiro,
+    // com a chave, mesmo cortado.
+    final marks = RegExp(
+      '${SpeechText.wikiPattern.pattern}|\\[[^\\]]+\\]|\\{[^}]+\\}',
+    );
+    for (final match in marks.allMatches(source)) {
       if (match.start > at) parts.add((source.substring(at, match.start), ''));
       final marked = match.group(0)!;
-      parts.add((marked.substring(1, marked.length - 1), marked[0]));
+      if (match.namedGroup('wikiText') case final name?) {
+        parts.add((name, '{{|${match.namedGroup('wikiKey')}'));
+      } else {
+        parts.add((marked.substring(1, marked.length - 1), marked[0]));
+      }
       at = match.end;
     }
     if (at < source.length) parts.add((source.substring(at), ''));
@@ -540,6 +549,8 @@ class CanvasSpeechLayout {
       output
           .map(
             (part) => switch (part.$2) {
+              final tag when tag.startsWith('{{|') =>
+                '{{${part.$1}|${tag.substring(3)}}}',
               '[' => '[${part.$1}]',
               '{' => '{${part.$1}}',
               _ => part.$1,
