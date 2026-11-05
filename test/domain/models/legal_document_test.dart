@@ -66,6 +66,20 @@ Fim.
     expect(text, isNot(contains('nome fantasia Lucena')));
   });
 
+  // Regra do Gabriel: "salvar", nunca "guardar" (canvas de 04/11).
+  test('Termos e Política falam em salvar, não em guardar', () {
+    for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
+      final text = File('assets/legal/$arquivo').readAsStringSync();
+      expect(
+        RegExp('guard', caseSensitive: false).hasMatch(text),
+        isFalse,
+        reason: arquivo,
+      );
+    }
+    final privacy = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    expect(privacy, contains('## 10. Por quanto tempo salvamos'));
+  });
+
   test('Termos e Política dão o mesmo nome fantasia', () {
     for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
       final text = File('assets/legal/$arquivo').readAsStringSync();

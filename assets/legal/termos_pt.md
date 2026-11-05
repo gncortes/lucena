@@ -37,7 +37,7 @@ A assinatura custa R$ 19,90 por mês e renova automaticamente todo mês, pela Go
 
 **Como cancelar.** Abra Google Play, Pagamentos e assinaturas, Assinaturas, escolha o Lucena e toque em Cancelar. No app, Perfil, Gerenciar assinatura abre essa página. Desinstalar o app não cancela a assinatura.
 
-**O que acontece.** O cancelamento vale para a próxima renovação, e o acesso continua até o fim do período já pago. Quando o acesso termina, seu progresso fica guardado e você volta ao capítulo grátis, com anúncios.
+**O que acontece.** O cancelamento vale para a próxima renovação, e o acesso continua até o fim do período já pago. Quando o acesso termina, seu progresso fica salvo e você volta ao capítulo grátis, com anúncios.
 
 **Mudança de preço.** Um novo preço só vale depois que você o aceita na Google Play.
 
@@ -60,7 +60,7 @@ Trabalhamos para o Lucena funcionar bem. Podemos corrigir, melhorar ou trocar pa
 Respondemos pelos danos que a lei manda, nos termos do Código de Defesa do Consumidor. Nenhuma regra destes Termos reduz seus direitos de consumidor.
 
 ## 15. Mudanças nestes Termos
-Quando mudarmos estes Termos, avisamos no app antes de valerem. A compra que você fez continua com as condições que valiam na data dela. Guardamos as versões anteriores.
+Quando mudarmos estes Termos, avisamos no app antes de valerem. A compra que você fez continua com as condições que valiam na data dela. Salvamos as versões anteriores.
 
 ## 16. Lei e foro
 Valem as leis brasileiras. Para resolver qualquer questão sobre o Lucena, vale o foro do seu domicílio.
