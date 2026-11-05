@@ -55,36 +55,35 @@ class CourseNavigationBar extends StatelessWidget {
     };
     return SafeArea(
       top: false,
-      child: DecoratedBox(
-        position: DecorationPosition.foreground,
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: colors.outlineVariant)),
-        ),
-        child: NavigationBar(
-          height: 64,
-          selectedIndex: selectedIndex,
-          onDestinationSelected: onDestinationSelected,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-          backgroundColor: colors.surfaceContainerLowest,
-          indicatorColor: Colors.transparent,
-          destinations: [
-            for (final (i, tab) in tabs.indexed)
-              NavigationDestination(
-                key: CourseGuideKeys.tab(tab.name),
-                label: name(tab),
-                icon: _wrap(
-                  tab,
-                  Icon(
-                    _icon(tab),
-                    color: i == selectedIndex
-                        ? colors.primary
-                        : colors.onSurfaceVariant,
-                  ),
-                  l,
+      // Sem risco em cima: no canvas a barra continua o fundo da tela.
+      child: NavigationBar(
+        height: 64,
+        selectedIndex: selectedIndex,
+        onDestinationSelected: onDestinationSelected,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        // A cor do fundo da tela, como no canvas: a barra não forma faixa
+        // branca (Gabriel, 05/11).
+        backgroundColor: colors.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        indicatorColor: Colors.transparent,
+        destinations: [
+          for (final (i, tab) in tabs.indexed)
+            NavigationDestination(
+              key: CourseGuideKeys.tab(tab.name),
+              label: name(tab),
+              icon: _wrap(
+                tab,
+                Icon(
+                  _icon(tab),
+                  color: i == selectedIndex
+                      ? colors.primary
+                      : colors.onSurfaceVariant,
                 ),
+                l,
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

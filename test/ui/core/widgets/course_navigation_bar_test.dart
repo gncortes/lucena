@@ -36,6 +36,29 @@ void main() {
     ]);
   });
 
+  testWidgets('a barra tem a cor do fundo da tela, sem faixa nem tom', (
+    tester,
+  ) async {
+    await pump(tester);
+    final context = tester.element(find.byType(CourseNavigationBar));
+    final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+    expect(bar.backgroundColor, Theme.of(context).scaffoldBackgroundColor);
+    expect(bar.surfaceTintColor, Colors.transparent);
+    expect(bar.elevation, 0);
+    // Sem risco separando a barra do conteúdo (canvas, 05/11).
+    final borders = tester
+        .widgetList<DecoratedBox>(
+          find.ancestor(
+            of: find.byType(NavigationBar),
+            matching: find.byType(DecoratedBox),
+          ),
+        )
+        .map((b) => b.decoration)
+        .whereType<BoxDecoration>()
+        .where((d) => d.border != null);
+    expect(borders, isEmpty);
+  });
+
   testWidgets('cinco ícones na ordem, sem rótulo visível', (tester) async {
     await pump(tester);
     final destinations = tester

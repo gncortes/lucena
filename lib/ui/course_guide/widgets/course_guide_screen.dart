@@ -783,8 +783,11 @@ class _CatalogTabState extends State<_CatalogTab> {
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Material(
-              color: Theme.of(context).colorScheme.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(AppShape.card),
+              color: AppColors.cardSurface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppShape.card),
+                side: const BorderSide(color: AppColors.cardOutline),
+              ),
               child: ListTile(
                 key: CourseGuideKeys.catalogPart(group.key),
                 title: Text(

@@ -538,8 +538,12 @@ class TrainingProgressTab extends StatelessWidget {
   );
   static Widget _card(BuildContext context, {required List<Widget> children}) =>
       Material(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(AppShape.card),
+        // Cartão do canvas: #FAFBF9 com contorno, não o branco puro.
+        color: AppColors.cardSurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.card),
+          side: const BorderSide(color: AppColors.cardOutline),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

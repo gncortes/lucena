@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/motion/barra_que_enche.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/core/widgets/animated_progress.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/training_progress_tab.dart';
@@ -331,6 +332,34 @@ void main() {
       );
       await tester.pumpAndSettle();
       final t = tester.element(find.byType(TrainingProgressTab)).l10n;
+      // Cartões na cor do canvas (#FAFBF9 com contorno), nenhum branco puro.
+      final cards = tester
+          .widgetList<Material>(
+            find.descendant(
+              of: find.byType(TrainingProgressTab),
+              matching: find.byType(Material),
+            ),
+          )
+          .where((m) => m.color == AppColors.cardSurface)
+          .toList();
+      expect(cards.length, greaterThanOrEqualTo(3));
+      for (final card in cards) {
+        expect(
+          (card.shape! as RoundedRectangleBorder).side.color,
+          AppColors.cardOutline,
+        );
+      }
+      expect(
+        tester
+            .widgetList<Material>(
+              find.descendant(
+                of: find.byType(TrainingProgressTab),
+                matching: find.byType(Material),
+              ),
+            )
+            .where((m) => m.color == const Color(0xFFFFFFFF)),
+        isEmpty,
+      );
       expect(
         t.trainingProgressLegendTestPassed,
         'Você passou · 9 de 12, o mínimo para passar',
