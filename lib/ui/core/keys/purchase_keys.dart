@@ -91,6 +91,12 @@ abstract final class PurchaseKeys {
   static Key demoGoalsLockedTile(String kind, String ref) =>
       Key('demo.goals.lockedTile.$kind.$ref');
   static const demoGoalsLearnMore = Key('demo.goals.learnMore');
+
+  /// "Conhecer o Pilares" na seção Lição das Metas da demo, com o Capítulo 1
+  /// concluído (PropV2MetaDemoFimCap1B).
+  static const demoGoalsNoLessonLearnMore = Key(
+    'demo.goals.noLesson.learnMore',
+  );
   static const demoGoalsLockSheet = Key('demo.goals.lockSheet');
   static const demoGoalsLockSheetLearn = Key('demo.goals.lockSheet.learn');
   static const demoGoalsLockSheetLater = Key('demo.goals.lockSheet.later');

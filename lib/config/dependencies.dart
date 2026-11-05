@@ -14,6 +14,8 @@ import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../data/repositories/training/course_training_repository_local.dart'
     as course_training;
+import '../data/repositories/training/course_access_training_repository.dart'
+    as course_training;
 import '../data/repositories/training/training_learning_bridge.dart';
 import '../data/repositories/training/observed_training_repository.dart';
 import '../data/repositories/training/school_training_observation_source.dart';
@@ -387,6 +389,15 @@ class Dependencies {
       preferences,
       mode: analyticsMode,
     );
+    // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
+    // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
+    const PurchaseRepository purchases = NoPurchaseRepository();
+    // Sem loja (V1 sem compra) o curso segue aberto; com a Play ligada
+    // (H-VEN-16), a lição tranca e mostra o anúncio pela compra.
+    final CourseAccessRepository courseAccess =
+        purchases is NoPurchaseRepository
+        ? const FullCourseAccessRepository()
+        : PurchaseCourseAccessRepository(purchases);
     late final course_training.TrainingRepository courseTrainingStorage;
     final trainingAnalytics = TrainingAnalytics(
       now: now,
@@ -464,7 +475,11 @@ class Dependencies {
       journey: journey,
     );
     courseTraining = ObservedTrainingRepository(
-      courseTrainingStorage,
+      // A meta do dia só oferece o que o acesso abre (demo: Capítulo 1).
+      course_training.CourseAccessTrainingRepository(
+        courseTrainingStorage,
+        courseAccess,
+      ),
       observers: {
         TrainingCourseConfig.escola.course: SchoolTrainingObserver(
           now: now,
@@ -496,9 +511,6 @@ class Dependencies {
           ? Duration.zero
           : const Duration(hours: 12),
     );
-    // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
-    // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
-    const PurchaseRepository purchases = NoPurchaseRepository();
     const ads = NoAdsRepository();
     final PushService pushService = firebase
         ? FirebasePushService()
@@ -642,11 +654,7 @@ class Dependencies {
       demoOfferRepository: LocalDemoOfferRepository(preferences, now),
       openingOfferRepository: LocalOpeningOfferRepository(preferences, now),
       purchaseRepository: purchases,
-      // Sem loja (V1 sem compra) o curso segue aberto; com a Play ligada
-      // (H-VEN-16), a lição tranca e mostra o anúncio pela compra.
-      courseAccessRepository: purchases is NoPurchaseRepository
-          ? const FullCourseAccessRepository()
-          : PurchaseCourseAccessRepository(purchases),
+      courseAccessRepository: courseAccess,
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
           : const NoStoreListingRepository(),

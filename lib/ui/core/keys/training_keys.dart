@@ -34,6 +34,9 @@ abstract final class TrainingKeys {
   static const diplomaCatalog = Key('training.diplomaCatalog');
   static const surveyCard = Key('training.surveyCard');
   static const goalsSummary = Key('training.goalsSummary');
+
+  /// "Capítulo 1 concluído" no resumo "Hoje" da demo (PropV2MetaDemoFimCap1B).
+  static const goalsChapterDone = Key('training.goalsSummary.chapterDone');
   static Key goalTile(String kind, String ref) =>
       Key('training.goal.$kind.$ref');
   static const doubleOffer = Key('training.doubleOffer');

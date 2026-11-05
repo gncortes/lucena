@@ -8,6 +8,8 @@ import 'package:lucena/data/repositories/training/course_training_repository.dar
     as course_training;
 import 'package:lucena/data/repositories/training/course_training_repository_local.dart'
     as course_training;
+import 'package:lucena/data/repositories/training/course_access_training_repository.dart'
+    as course_training;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:lucena/data/services/secure_storage_service.dart';
@@ -405,6 +407,11 @@ Future<Dependencies> e2eDependencies({
     await trainingSchool.course(),
     await trainingSchool.texts('pt'),
   );
+  final CourseAccessRepository courseAccess = purchases != null
+      ? PurchaseCourseAccessRepository(purchases)
+      : demo
+      ? FakeCourseAccessRepository()
+      : const FullCourseAccessRepository();
   final course_training.TrainingRepository courseTrainingRaw =
       realCourseTraining
       ? course_training.TrainingRepositoryLocal(
@@ -438,7 +445,10 @@ Future<Dependencies> e2eDependencies({
     AssetJourneyRepository(const AssetService(), positions),
   );
   final courseTraining = ObservedTrainingRepository(
-    courseTrainingRaw,
+    course_training.CourseAccessTrainingRepository(
+      courseTrainingRaw,
+      courseAccess,
+    ),
     observers: {
       TrainingCourseConfig.escola.course: SchoolTrainingObserver(
         now: clock,
@@ -464,7 +474,11 @@ Future<Dependencies> e2eDependencies({
             : TrainingCourseConfig.pilares,
       );
     }
-    await courseTrainingRaw.seed(trainingScenario, e2eNow);
+    await courseTrainingRaw.seed(
+      trainingScenario,
+      e2eNow,
+      access: courseAccess.access,
+    );
   }
   return Dependencies(
     now: clock,
@@ -472,11 +486,7 @@ Future<Dependencies> e2eDependencies({
     // Configurações e no Sobre (PropV1ConfigB, PropV1LegalSobre).
     version: await Dependencies.installedVersion(),
     remoteFlagsRepository: flags,
-    courseAccessRepository: purchases != null
-        ? PurchaseCourseAccessRepository(purchases)
-        : demo
-        ? FakeCourseAccessRepository()
-        : const FullCourseAccessRepository(),
+    courseAccessRepository: courseAccess,
     purchaseRepository: purchases ?? const NoPurchaseRepository(),
     demoAdRepository: demo
         ? LocalDemoAdRepository(PreferencesService())

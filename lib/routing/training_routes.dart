@@ -62,6 +62,7 @@ import '../domain/use_cases/training/goal/goal_dates.dart';
 import 'routes.dart';
 import '../ui/lesson_ad/widgets/lesson_entry.dart';
 import '../ui/pilares_sale/widgets/pilares_demo_tabs.dart';
+import '../ui/core/keys/purchase_keys.dart';
 import 'route_names.dart';
 import 'training_launch.dart';
 import 'training_goal_destination.dart';
@@ -640,6 +641,15 @@ class _Guide extends StatelessWidget {
                   : null,
               lessonSummary: demo ? tab.l10n.venDemoGoalsLesson : null,
               footer: demo ? const PilaresDemoGoalsCallout() : null,
+              // Capítulo 1 concluído na demo: o convite na seção Lição.
+              chapterDoneInvite: demo
+                  ? PilaresDemoCallout(
+                      text: tab.l10n.venDemoGoalsNoLesson,
+                      buttonKey: PurchaseKeys.demoGoalsNoLessonLearnMore,
+                      origin: 'metas',
+                      highlight: 'meta_capitulo_1',
+                    )
+                  : null,
             ),
           );
         },

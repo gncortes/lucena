@@ -37,6 +37,7 @@ class TrainingGoalsTab extends StatelessWidget {
     this.onLockedGoal,
     this.lessonSummary,
     this.footer,
+    this.chapterDoneInvite,
     super.key,
   });
   final ValueChanged<TrainingGoal> onGoal;
@@ -54,6 +55,11 @@ class TrainingGoalsTab extends StatelessWidget {
   /// Bloco no fim da lista; na demo, toma o lugar do quadro de boas-vindas.
   final Widget? footer;
 
+  /// Na demo, com o Capítulo 1 concluído e sem lição aberta hoje
+  /// (PropV2MetaDemoFimCap1B): o convite vai na seção Lição e toma o lugar do
+  /// [footer], para a aba ter um convite só.
+  final Widget? chapterDoneInvite;
+
   bool get _demo => onLockedGoal != null;
   @override
   Widget build(
@@ -67,6 +73,16 @@ class TrainingGoalsTab extends StatelessWidget {
           ? DemoGoals.counts(state.training!)
           : trainingGoalCounts(state.training!);
       final cubit = context.read<CourseGuideCubit>();
+      final chapterDone =
+          _demo &&
+          chapterDoneInvite != null &&
+          day.studyDay &&
+          DemoGoals.chapterOneDone(state.training!, state.resources!) &&
+          !day.goals.any(
+            (g) =>
+                (g.kind == GoalKind.lesson || g.kind == GoalKind.extraLesson) &&
+                !DemoGoals.isLocked(g),
+          );
       final extra = day.goals.any((g) => g.kind == GoalKind.extraLesson);
       final offer =
           day.allDone &&
@@ -196,21 +212,31 @@ class TrainingGoalsTab extends StatelessWidget {
                     ),
                   ),
                   // H-ANI-18: conta o que já foi feito, junto com a barra;
-                  // "Faltam" desce de M até N.
-                  ValorQueAnima(
-                    valor: (counts.total - counts.remaining).toDouble(),
-                    duracao: LucenaMotion.numeroConta,
-                    builder: (context, feito) => Text(
-                      t.trainingGoalsLeft(
-                        counts.total - feito.round(),
-                        counts.total,
-                      ),
+                  // "Faltam" desce de M até N. Na demo sem lição aberta, o
+                  // contador (0 de 0) dá lugar a "Capítulo 1 concluído".
+                  if (chapterDone)
+                    Text(
+                      t.venDemoGoalsChapterDone,
+                      key: TrainingKeys.goalsChapterDone,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
-                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    )
+                  else
+                    ValorQueAnima(
+                      valor: (counts.total - counts.remaining).toDouble(),
+                      duracao: LucenaMotion.numeroConta,
+                      builder: (context, feito) => Text(
+                        t.trainingGoalsLeft(
+                          counts.total - feito.round(),
+                          counts.total,
+                        ),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
               SizedBox(
@@ -230,7 +256,9 @@ class TrainingGoalsTab extends StatelessWidget {
                         corDoTrilho: Theme.of(context)
                             .colorScheme
                             .outlineVariant,
-                        valor: counts.total == 0
+                        valor: chapterDone
+                            ? 1
+                            : counts.total == 0
                             ? 0
                             : (counts.total - counts.remaining) / counts.total,
                       ),
@@ -319,6 +347,16 @@ class TrainingGoalsTab extends StatelessWidget {
           final goals = day.goals
               .where((g) => _sectionOf(g.kind) == section)
               .toList();
+          if (chapterDone && section == GoalSection.lessons && goals.isEmpty) {
+            contents.add(
+              _GoalsSection(
+                header: _section(context, t.trainingSectionLesson),
+                headerGap: goalGap,
+                children: [chapterDoneInvite!],
+              ),
+            );
+            continue;
+          }
           if (goals.isEmpty) continue;
           final label = switch (section) {
             GoalSection.lessons =>
@@ -365,7 +403,7 @@ class TrainingGoalsTab extends StatelessWidget {
           );
         }
       }
-      if (footer case final footer?) contents.add(footer);
+      if (footer case final footer? when !chapterDone) contents.add(footer);
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: CustomScrollView(

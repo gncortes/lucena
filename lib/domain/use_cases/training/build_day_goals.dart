@@ -48,6 +48,8 @@ final class BuildDayGoals {
     final pending = pendingGoals
         .where((g) => !g.done && g.kind == GoalKind.lesson)
         .where((g) => !state.completedLessons.containsKey(g.ref))
+        // A lição que o acesso não abre (demo) não volta como meta.
+        .where((g) => !resources.lockedLessons.contains(g.ref))
         .toList();
     // Pending lessons retain their place without accumulating a missed day's quota.
     lessons.addAll(pending);
@@ -62,7 +64,8 @@ final class BuildDayGoals {
       if (!lesson.published) break;
       if (quota == 0 || lessons.length >= quota) break;
       if (state.completedLessons.containsKey(lesson.id) ||
-          reserved.contains(lesson.id)) {
+          reserved.contains(lesson.id) ||
+          resources.lockedLessons.contains(lesson.id)) {
         continue;
       }
       lessons.add(TrainingGoal(kind: GoalKind.lesson, ref: lesson.id));

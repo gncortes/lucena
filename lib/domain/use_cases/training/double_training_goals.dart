@@ -36,7 +36,10 @@ final class DoubleTrainingGoals {
     )) {
       if (!lesson.inCourseOrder) continue;
       if (!lesson.published || lessons.length >= wanted) break;
-      if (state.completedLessons.containsKey(lesson.id)) continue;
+      if (state.completedLessons.containsKey(lesson.id) ||
+          resources.lockedLessons.contains(lesson.id)) {
+        continue;
+      }
       lessons.add(lesson);
     }
     final followUps = config.followUps

@@ -14140,6 +14140,14 @@
   "@venDemoGoalsClosing": {
     "description": "Texto da chamada no fim das Metas da demonstração."
   },
+  "venDemoGoalsChapterDone": "Chapter 1 completed",
+  "@venDemoGoalsChapterDone": {
+    "description": "À direita de \"Hoje\" nas Metas da demonstração quando o Capítulo 1 acabou e não há lição aberta (PropV2MetaDemoFimCap1B)."
+  },
+  "venDemoGoalsNoLesson": "In Pilares, the daily goal brings a lesson, exercises and an opening.",
+  "@venDemoGoalsNoLesson": {
+    "description": "Convite na seção Lição das Metas da demonstração, sem lição aberta depois do Capítulo 1 (PropV2MetaDemoFimCap1B)."
+  },
   "venDemoGoalsLockTitle": "Goals are part of Pilares",
   "@venDemoGoalsLockTitle": {
     "description": "Título da folha ao tocar numa meta trancada da demonstração (PropV2MetaSemCompraDemoCadeadoFolha)."

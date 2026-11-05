@@ -17,6 +17,7 @@ import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/motion/barra_que_enche.dart';
 import 'package:lucena/ui/core/motion/cartao_pressionavel.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
@@ -93,6 +94,7 @@ void main() {
     required CourseGuideTab tab,
     CourseAccess access = CourseAccess.demo,
     bool nextDay = true,
+    bool chapterDone = false,
   }) async {
     goals = [];
     analytics = FakeAnalyticsRepository();
@@ -108,15 +110,19 @@ void main() {
           installSeed: 'demo',
           onboardingDone: true,
           tab: tab,
-          completedLessons: nextDay ? {'pilares.c1.garfo': '2026-11-03'} : {},
+          completedLessons: {
+            if (nextDay) 'pilares.c1.garfo': '2026-11-03',
+            if (chapterDone) 'pilares.c1.duplo': '2026-11-03',
+          },
           day: DayGoals(
             date: '2026-11-04',
             studyDay: true,
             goals: [
-              TrainingGoal(
-                kind: GoalKind.lesson,
-                ref: nextDay ? 'pilares.c1.duplo' : 'pilares.c1.garfo',
-              ),
+              if (!chapterDone)
+                TrainingGoal(
+                  kind: GoalKind.lesson,
+                  ref: nextDay ? 'pilares.c1.duplo' : 'pilares.c1.garfo',
+                ),
               if (nextDay)
                 TrainingGoal(kind: GoalKind.exercise, ref: 'pilares.c1.garfo'),
             ],
@@ -156,6 +162,14 @@ void main() {
                       : null,
                   lessonSummary: demo ? context.l10n.venDemoGoalsLesson : null,
                   footer: demo ? const PilaresDemoGoalsCallout() : null,
+                  chapterDoneInvite: demo
+                      ? PilaresDemoCallout(
+                          text: context.l10n.venDemoGoalsNoLesson,
+                          buttonKey: PurchaseKeys.demoGoalsNoLessonLearnMore,
+                          origin: 'metas',
+                          highlight: 'meta_capitulo_1',
+                        )
+                      : null,
                 );
               },
               progressBuilder: (context) => TrainingProgressTab(
@@ -319,6 +333,48 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('apresentação metas'), findsOneWidget);
   });
+
+  testWidgets(
+    'Metas, Capítulo 1 concluído: "Capítulo 1 concluído", barra cheia e um '
+    'convite só, na seção Lição',
+    (tester) async {
+      await pump(tester, tab: CourseGuideTab.goals, chapterDone: true);
+      expect(find.text('Faltam 0 de 0'), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(TrainingKeys.goalsSummary),
+          matching: find.text('Capítulo 1 concluído'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<BarraQueEnche>(
+              find.descendant(
+                of: find.byKey(TrainingKeys.goalsSummary),
+                matching: find.byType(BarraQueEnche),
+              ),
+            )
+            .valor,
+        1,
+      );
+      expect(find.text('LIÇÃO'), findsOneWidget);
+      expect(
+        find.text(
+          'No Pilares, a meta do dia traz lição, exercícios e abertura.',
+        ),
+        findsOneWidget,
+      );
+      // Um convite só: o do rodapé sai nesse estado.
+      expect(find.byKey(PurchaseKeys.demoGoalsLearnMore), findsNothing);
+      expect(offerSeen(), containsPair('origem', 'metas'));
+      await tapVisible(
+        tester,
+        find.byKey(PurchaseKeys.demoGoalsNoLessonLearnMore),
+      );
+      expect(find.text('apresentação metas'), findsOneWidget);
+    },
+  );
 
   testWidgets('Metas: a lição grátis abre normalmente', (tester) async {
     await pump(tester, tab: CourseGuideTab.goals);

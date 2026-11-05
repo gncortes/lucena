@@ -4,11 +4,13 @@ import 'package:lucena/data/repositories/training/course_training_repository.dar
 import 'package:lucena/data/repositories/training/course_training_repository_local.dart';
 import 'package:lucena/data/services/lesson_content_service.dart';
 import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/course_access.dart';
 import 'package:lucena/domain/models/training/training_content.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
+import 'package:lucena/domain/use_cases/demo_goals.dart';
 import 'package:lucena/domain/use_cases/training/complete_training_lesson.dart';
 
 import '../fakes/fake_now.dart';
@@ -148,7 +150,13 @@ final class E2ETrainingRepository implements TrainingRepository {
         );
       });
 
-  Future<void> seed(E2ETrainingScenario scenario, FakeNow now) async {
+  /// Com [access] de demonstração, o dia nasce como no app: sem lição
+  /// trancada (Capítulo 2+) na meta.
+  Future<void> seed(
+    E2ETrainingScenario scenario,
+    FakeNow now, {
+    CourseAccess access = CourseAccess.owned,
+  }) async {
     now.value = DateTime(2026, 10, 26, 12);
     final course = scenario.name.startsWith('school')
         ? TrainingCourse.escola
@@ -158,7 +166,7 @@ final class E2ETrainingRepository implements TrainingRepository {
       value: scenario == E2ETrainingScenario.meta,
     );
     _resources.remove(course);
-    final data = await resources(course);
+    final data = DemoGoals.forAccess(course, access, await resources(course));
     if (data.lessons.isEmpty) {
       throw StateError('T85 requires the real course content via CONTENT_URL');
     }

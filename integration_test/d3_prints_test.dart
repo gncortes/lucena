@@ -23,6 +23,7 @@ import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
@@ -244,6 +245,46 @@ void main() {
       await $.pumpAndSettle();
     }, ready: CoursePreviewKeys.sale);
   }, tags: ['d3-mp4', 'd3-cadeado']);
+
+  patrolTest('D3 prints: Metas da demo com o Capítulo 1 concluído', ($) async {
+    // PropV2MetaDemoFimCap1B: "Capítulo 1 concluído" no "Hoje", barra cheia e
+    // o convite na seção Lição, sem o do rodapé; o botão abre a apresentação.
+    await AppRobot($).open(
+      systemLocale: ptBr,
+      lightDevice: true,
+      demo: true,
+      trainingScenario: E2ETrainingScenario.goalsLarge,
+      purchases: FakePurchaseRepository(
+        const PurchaseState(
+          pricesReady: true,
+          prices: {
+            PilaresPlan.lifetime: r'R$ 99,90',
+            PilaresPlan.monthly: r'R$ 19,90',
+          },
+        ),
+      ),
+    );
+    await $(HomeKeys.screen).waitUntilVisible();
+    final capture = TrainingCaptureRobot($);
+    await capture.record('D3MetaDemoCap1Concluido', () async {
+      await $.pump(const Duration(milliseconds: 600));
+      unawaited(
+        GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+            .push<void>(Routes.trainingGoals(TrainingCourse.pilares.name)),
+      );
+      await $(TrainingKeys.goalsChapterDone).waitUntilVisible();
+      await $.pumpAndSettle();
+      await $.pump(const Duration(milliseconds: 2500));
+      await $.scrollUntilVisible(
+        finder: find.byKey(PurchaseKeys.demoGoalsNoLessonLearnMore),
+      );
+      await $.pump(const Duration(milliseconds: 1500));
+      await $(PurchaseKeys.demoGoalsNoLessonLearnMore).tap();
+      await $(CoursePreviewKeys.sale).waitUntilVisible();
+      await $.pumpAndSettle();
+      await $.pump(const Duration(milliseconds: 1000));
+    }, ready: CoursePreviewKeys.sale);
+  }, tags: ['d3-mp4', 'd3-meta-demo']);
 
   patrolTest(
     'D3 MP4: Jornada e Degrau, a barra enche e a contagem sobe (H-ANI-13)',
