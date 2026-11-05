@@ -12,7 +12,9 @@ import '../../achievements/widgets/achievement_ui.dart';
 import '../../core/keys/my_progress_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -124,19 +126,30 @@ class _Rating extends StatelessWidget {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: AlignmentDirectional.centerStart,
-                      child: RatingValue(
-                        rating: state.rating,
-                        change: state.change,
-                        large: true,
-                        animateOnce: true,
-                        valueKey: MyProgressKeys.ratingValue,
+                      // H-ANI-18: o rating e as partidas contam até o valor.
+                      child: ValorQueAnima(
+                        valor: state.rating.toDouble(),
+                        duracao: LucenaMotion.numeroConta,
+                        builder: (context, agora) => RatingValue(
+                          rating: agora.round(),
+                          change: state.change,
+                          up: (state.change ?? 0) >= 0,
+                          large: true,
+                          valueKey: MyProgressKeys.ratingValue,
+                        ),
                       ),
                     ),
                   ),
-                  Text(
-                    l10n.conProgressGames(state.games),
-                    key: MyProgressKeys.games,
-                    style: muted,
+                  ValorQueAnima(
+                    valor: state.games.toDouble(),
+                    duracao: LucenaMotion.numeroConta,
+                    builder: (context, agora) => Text(
+                      l10n.conProgressGames(agora.round()),
+                      key: MyProgressKeys.games,
+                      style: muted?.copyWith(
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
                   ),
                 ],
               ),
