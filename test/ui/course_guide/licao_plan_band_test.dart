@@ -47,6 +47,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
       expect(find.text('Torneio da escola'), findsOneWidget);
       expect(find.text('Semana 5 de 9 · faltam 26 dias'), findsOneWidget);
       // H-ANI-13: uma barra que enche por semana.
@@ -69,6 +70,53 @@ void main() {
         ),
       );
       expect(find.textContaining('é hoje'), findsOneWidget);
+    });
+
+    Future<void> faixa(WidgetTester tester, {bool reduzir = false}) =>
+        tester.pumpWidget(
+          MediaQuery(
+            data: MediaQueryData(disableAnimations: reduzir),
+            child: TestApp(
+              locale: const Locale('pt'),
+              child: Scaffold(
+                body: LicaoPlanBand(
+                  event: event,
+                  now: DateTime(2026, 11, 4),
+                  onTap: () {},
+                ),
+              ),
+            ),
+          ),
+        );
+
+    int? diasNaTela(WidgetTester tester) {
+      final textos = tester
+          .widgetList<Text>(find.textContaining('Semana 5 de 9'))
+          .map((t) => t.data!);
+      if (textos.isEmpty) return null;
+      if (textos.single.contains('é hoje')) return 0;
+      return int.parse(RegExp(r'(\d+) dias?$').firstMatch(textos.single)![1]!);
+    }
+
+    testWidgets('H-ANI-18: os dias que faltam contam até o valor, sem passar '
+        'por "é hoje"', (tester) async {
+      await faixa(tester);
+      final vistos = <int>[];
+      for (var i = 0; i < 12; i++) {
+        vistos.add(diasNaTela(tester)!);
+        await tester.pump(const Duration(milliseconds: 60));
+      }
+      expect(vistos.first, lessThan(26));
+      expect(vistos, isNot(contains(0)));
+      await tester.pumpAndSettle();
+      expect(diasNaTela(tester), 26);
+    });
+
+    testWidgets('movimento reduzido: o valor final no primeiro quadro', (
+      tester,
+    ) async {
+      await faixa(tester, reduzir: true);
+      expect(diasNaTela(tester), 26);
     });
   });
 }

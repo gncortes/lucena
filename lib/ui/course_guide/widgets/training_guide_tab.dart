@@ -22,6 +22,7 @@ import '../../training_goal/widgets/goal_format.dart';
 import '../../training_goal/widgets/goal_page.dart';
 import '../../training_goal/widgets/plan_widgets.dart';
 import 'training_load_error.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 
 /// A aba Guia (H-TRE-05): o objetivo e o plano do curso, semana a semana.
 class TrainingGuideTab extends StatelessWidget {
@@ -112,17 +113,28 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
           return const LoadSkeletonScreen();
         }
         if (!view.hasObjective) return _empty(context);
+        final filhos = [
+          if (!view.hasPlan)
+            ..._noPlan(context)
+          else if (!view.hasTournament)
+            ..._improve(context, view)
+          else
+            ..._tournament(context, view, cubit),
+          ..._tournaments(context, view),
+        ];
+        // H-ANI-16: o guia entra em cascata na primeira vez.
         return ListView(
           key: TrainingGoalKeys.guideTab,
           padding: const EdgeInsets.all(AppSpacing.screen),
           children: [
-            if (!view.hasPlan)
-              ..._noPlan(context)
-            else if (!view.hasTournament)
-              ..._improve(context, view)
-            else
-              ..._tournament(context, view, cubit),
-            ..._tournaments(context, view),
+            EntradaEmCascata(
+              itens: [
+                for (final (i, filho) in filhos.indexed)
+                  i == 0
+                      ? ItemDaCascata.titulo(filho)
+                      : ItemDaCascata.texto(filho),
+              ],
+            ),
           ],
         );
       },
@@ -143,22 +155,30 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
               LucenaCard(
                 key: TrainingGoalKeys.guideEmpty,
                 padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 12,
-                  children: [
-                    Icon(
-                      Icons.stadium_outlined,
-                      size: 32,
-                      color: theme.colorScheme.primary,
-                    ),
-                    Text(
-                      t.treinoNoGoalTitle,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
+                // H-ANI-16: ícone, título e convite em cascata.
+                child: EntradaEmCascata(
+                  montar: (itens) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 12,
+                    children: itens,
+                  ),
+                  itens: [
+                    ItemDaCascata.selo(
+                      Icon(
+                        Icons.stadium_outlined,
+                        size: 32,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
-                    Text(t.treinoNoGoalGuideBody),
+                    ItemDaCascata.titulo(
+                      Text(
+                        t.treinoNoGoalTitle,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    ItemDaCascata.texto(Text(t.treinoNoGoalGuideBody)),
                   ],
                 ),
               ),

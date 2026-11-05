@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 
 import '../../../domain/models/training/plan_event.dart';
 import '../../core/keys/course_guide_keys.dart';
@@ -52,17 +54,29 @@ class LicaoPlanBand extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Text(
-                        context.l10n.licaoPlanProgress(
-                          event.weekAt(now),
-                          event.totalWeeks,
-                          event.daysLeft(now),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: text.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
+                      // H-ANI-18: os dias que faltam contam na entrada. A
+                      // contagem começa em 1 para não passar por "é hoje".
+                      ValorQueAnima(
+                        valor: event.daysLeft(now).toDouble(),
+                        duracao: LucenaMotion.numeroConta,
+                        builder: (context, agora) {
+                          final fim = event.daysLeft(now);
+                          final dias = fim == 0
+                              ? 0
+                              : agora.round().clamp(1, fim);
+                          return Text(
+                            context.l10n.licaoPlanProgress(
+                              event.weekAt(now),
+                              event.totalWeeks,
+                              dias,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: text.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),

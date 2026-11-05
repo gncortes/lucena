@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/speedrun.dart';
 import 'package:lucena/ui/core/pace/pace_ui.dart';
 import 'package:lucena/domain/use_cases/clock_format.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/history/widgets/history_labels.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
@@ -23,6 +24,7 @@ import '../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 
 /// A Maratona e o clássico do mesmo final: o detalhe com a oferta de rating
@@ -87,6 +89,7 @@ void main() {
     double scale = 1,
     Locale locale = const Locale('en'),
     ThemeMode mode = ThemeMode.light,
+    bool settle = true,
   }) async {
     tester.view.physicalSize = size * 2;
     tester.view.devicePixelRatio = 2;
@@ -102,7 +105,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (settle) await tester.pumpAndSettle();
   }
 
   String text(WidgetTester tester, Key key) => tester
@@ -284,6 +287,66 @@ void main() {
         );
       });
     }
+
+    // H-ANI-25: o fim da tentativa se monta em ordem: o cartão de como
+    // acabou (ou o tempo que sobrou), o resto, e o "Try again" por último.
+    testWidgets('H-ANI-25: perdeu, o cartão, o resto e o botão por último', (
+      tester,
+    ) async {
+      await open(await stopped(SpeedrunRunEnd.lost));
+      await pump(tester, const SpeedrunAttemptScreen(), settle: false);
+      await tester.pump();
+      expectEntradaDeResultado(
+        tester,
+        partes: const ['placar', 'viktor', 'botoes'],
+        animando: true,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado('placar')),
+          matching: find.byKey(SpeedrunKeys.marathonEndHero),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado('botoes')),
+          matching: find.byKey(SpeedrunKeys.retry),
+        ),
+        findsOneWidget,
+      );
+      await tester.pump(const Duration(milliseconds: 1300));
+      await tester.pump();
+      expect(
+        opacidadeDaParte(
+          tester,
+          find.byKey(MotionKeys.parteDoResultado('botoes')),
+        ),
+        1,
+      );
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('H-ANI-25: concluída, o tempo que sobrou entra primeiro', (
+      tester,
+    ) async {
+      await open(await complete(marathonId, sampleMarathon.stages.length));
+      await pump(tester, const SpeedrunAttemptScreen(), settle: false);
+      await tester.pump();
+      expectEntradaDeResultado(
+        tester,
+        partes: const ['placar', 'viktor'],
+        animando: true,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado('placar')),
+          matching: find.byKey(SpeedrunKeys.total),
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpAndSettle();
+    });
 
     testWidgets('perdeu: 1:49.0 sobrou, contra o adversário da etapa e '
         '+110 ao concluir', (tester) async {

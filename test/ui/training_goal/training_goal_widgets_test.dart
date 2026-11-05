@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/training_goal_keys.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
@@ -105,6 +106,29 @@ void main() {
     expect(button.top, greaterThan(tester.getRect(card).bottom + 200));
     final title = tester.getRect(find.text('Qual é o seu objetivo?'));
     expect(title.left, tester.getRect(card).left + 24);
+  });
+
+  testWidgets('H-ANI-16: o convite do Guia sem objetivo entra em cascata', (
+    tester,
+  ) async {
+    await pump(tester, tab: CourseGuideTab.guide);
+    final card = find.byKey(TrainingGoalKeys.guideEmpty).first;
+    for (final i in [0, 1, 2]) {
+      expect(
+        find.descendant(
+          of: card,
+          matching: find.byKey(MotionKeys.itemDaCascata(i)),
+        ),
+        findsOneWidget,
+      );
+    }
+    expect(
+      find.descendant(
+        of: find.byKey(MotionKeys.itemDaCascata(1)),
+        matching: find.text('Qual é o seu objetivo?'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('com torneio, o Início mostra os dias que faltam', (

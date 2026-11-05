@@ -14,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/core/theme/app_motion.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/campaign.dart';
@@ -2484,6 +2485,30 @@ void main() {
           .jumpTo(0);
       await tester.pump();
     }
+
+    // H-ANI-25: no fim contra a máquina, o resultado aparece no tabuleiro e o
+    // rodapé do fim desliza por último.
+    testWidgets('H-ANI-25: o rodapé do fim entra por último', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      await resign(tester);
+      final botoes = find.byKey(MotionKeys.parteDoResultado('botoes'));
+      expect(
+        find.descendant(
+          of: botoes,
+          matching: find.byKey(FreeBoardKeys.seeResultButton),
+        ),
+        findsOneWidget,
+      );
+      expect(opacidadeDaParte(tester, botoes), 0);
+      await tester.pump(const Duration(milliseconds: 1300));
+      expect(opacidadeDaParte(tester, botoes), 1);
+      await tester.pumpAndSettle();
+    });
 
     testWidgets('desistir pede confirmação; o resultado aparece em destaque e '
         'a conclusão da partida gravada abre no lugar da partida', (

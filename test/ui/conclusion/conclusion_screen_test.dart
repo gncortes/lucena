@@ -22,10 +22,12 @@ import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/fakes/fake_account_invite_repository.dart';
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_achievements_repository.dart';
@@ -718,5 +720,56 @@ void main() {
       expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
       expect(invite.shown, isFalse);
     });
+  });
+
+  // H-ANI-25: o resultado se monta em ordem (o cabeçalho, os números, o resto
+  // e as ações fixas por último); com movimento reduzido, tudo pronto.
+  group('H-ANI-25 entrada do resultado', () {
+    for (final reduzido in [false, true]) {
+      testWidgets('em ordem, as ações por último (reduzido: $reduzido)', (
+        tester,
+      ) async {
+        await open(
+          tester,
+          moves: _longMoves,
+          played: const Duration(minutes: 5),
+          settled: false,
+          disableAnimations: reduzido,
+        );
+        for (var i = 0; i < 30; i++) {
+          if (find
+              .byKey(MotionKeys.parteDoResultado('titulo'))
+              .evaluate()
+              .isNotEmpty) {
+            break;
+          }
+          await tester.pump(const Duration(milliseconds: 16));
+        }
+        expectEntradaDeResultado(
+          tester,
+          partes: const ['titulo', 'placar', 'viktor', 'botoes'],
+          animando: !reduzido,
+        );
+        Finder dentro(String parte, Key key) => find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado(parte)),
+          matching: find.byKey(key),
+        );
+        expect(dentro('titulo', ConclusionKeys.title), findsOneWidget);
+        expect(dentro('placar', ConclusionKeys.rating), findsOneWidget);
+        expect(
+          dentro('botoes', ConclusionKeys.action(ConclusionAction.playAgain)),
+          findsOneWidget,
+        );
+        await tester.pump(const Duration(milliseconds: 1300));
+        expect(
+          opacidadeDaParte(
+            tester,
+            find.byKey(MotionKeys.parteDoResultado('botoes')),
+          ),
+          1,
+        );
+        await settle(tester);
+      });
+    }
   });
 }
