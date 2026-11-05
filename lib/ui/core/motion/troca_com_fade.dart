@@ -29,6 +29,12 @@ class TrocaComFade extends StatelessWidget {
     switchOutCurve: LucenaMotion.emphasizedAccelerate,
     transitionBuilder: (filho, animacao) =>
         FadeTransition(opacity: animacao, child: filho),
+    // Sem recorte: o selo da fileira de cima sai por cima do tabuleiro.
+    layoutBuilder: (atual, anteriores) => Stack(
+      alignment: Alignment.center,
+      clipBehavior: Clip.none,
+      children: [...anteriores, ?atual],
+    ),
     child: KeyedSubtree(key: ValueKey(chave), child: child),
   );
 }

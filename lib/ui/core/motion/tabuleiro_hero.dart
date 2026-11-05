@@ -112,9 +112,12 @@ class _ComRaio extends StatelessWidget {
   final double raio;
   final Widget child;
 
+  // Sem raio, sem recorte: o selo do retorno da fileira de cima sai por cima
+  // do tabuleiro (H-ANI-12).
   @override
-  Widget build(BuildContext context) =>
-      ClipRRect(borderRadius: BorderRadius.circular(raio), child: child);
+  Widget build(BuildContext context) => raio == 0
+      ? child
+      : ClipRRect(borderRadius: BorderRadius.circular(raio), child: child);
 }
 
 /// A entrada e a saída da tela que tem o [TabuleiroHero] (H-ANI-02).

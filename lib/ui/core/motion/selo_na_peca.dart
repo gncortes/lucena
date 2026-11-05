@@ -9,8 +9,8 @@ import 'movimento_reduzido.dart';
 
 /// O selo sobre a peça (H-ANI-12): ✓ e ✗ do retorno do lance, `!!`, `??`
 /// das anotações. Nasce no canto de cima à direita da [casa], um pouco para
-/// fora dela, e nunca sai do tabuleiro ([PieceBadgeGeometry]): em a8, h8, h1
-/// e nas bordas é empurrado para dentro, com o mesmo tamanho.
+/// fora dela ([PieceBadgeGeometry]): na fileira de cima sai por cima do
+/// tabuleiro; nas laterais e embaixo é empurrado para dentro.
 ///
 /// Entra com o salto de H-ANI-11 (0 → 1,2 → 1 em 260 ms); a posição não
 /// anima. Com movimento reduzido ou [saltar] falso, aparece parado.
@@ -105,6 +105,7 @@ class _SeloNaPecaState extends State<SeloNaPeca>
       child: SizedBox.square(
         dimension: widget.tamanho,
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             Positioned.fromRect(
               rect: r,

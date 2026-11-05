@@ -11,9 +11,11 @@ void main() {
   Rect rect(Square s, {Side side = Side.white}) =>
       PieceBadgeGeometry.rect(square: s, orientation: side, boardSize: board);
 
+  // Por cima, o selo da fileira de cima sai do tabuleiro (há espaço acima);
+  // pelos lados e por baixo, nunca.
   void inside(Rect r) {
     expect(r.left, greaterThanOrEqualTo(0));
-    expect(r.top, greaterThanOrEqualTo(0));
+    expect(r.top, greaterThanOrEqualTo(-badge * 0.3 - 0.001));
     expect(r.right, lessThanOrEqualTo(board + 0.001));
     expect(r.bottom, lessThanOrEqualTo(board + 0.001));
     expect(r.width, closeTo(badge, 0.001));
@@ -27,15 +29,15 @@ void main() {
     inside(r);
   });
 
-  test('a8 (canto de cima à esquerda): o selo não sai do tabuleiro', () {
+  test('a8 (canto de cima à esquerda): sobe acima do tabuleiro, inteiro', () {
     final r = rect(Square.a8);
-    expect(r.top, 0);
+    expect(r.top, closeTo(-badge * 0.3, 0.001));
     inside(r);
   });
 
-  test('h8 (canto de cima à direita): fica dentro', () {
+  test('h8 (canto de cima à direita): sobe acima, sem sair pelo lado', () {
     final r = rect(Square.h8);
-    expect(r.top, 0);
+    expect(r.top, closeTo(-badge * 0.3, 0.001));
     expect(r.right, closeTo(board, 0.001));
     inside(r);
   });

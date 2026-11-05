@@ -6,9 +6,10 @@ import '../../theme/app_colors.dart';
 
 /// Onde fica o selo de qualidade do lance (`!!`, `??`...) sobre o tabuleiro.
 ///
-/// O selo nasce no canto de cima à direita da casa, mas nunca sai do
-/// tabuleiro: em a8, h8, h1, na coluna h e na 1ª e 8ª fileiras ele é
-/// empurrado para dentro.
+/// O selo nasce no canto de cima à direita da casa, um pouco para fora dela.
+/// Na fileira de cima ele sai por cima do tabuleiro, inteiro (há espaço
+/// acima); pelos lados e por baixo é empurrado para dentro (o tabuleiro vai
+/// de ponta a ponta da tela).
 abstract final class PieceBadgeGeometry {
   /// Lado do selo, em fração da casa.
   static const sizeFactor = 0.48;
@@ -23,7 +24,7 @@ abstract final class PieceBadgeGeometry {
     final y = orientation == Side.black ? square.rank : 7 - square.rank;
     final size = cell * sizeFactor;
     final left = (x * cell + cell - size * 0.7).clamp(0.0, boardSize - size);
-    final top = (y * cell - size * 0.3).clamp(0.0, boardSize - size);
+    final top = (y * cell - size * 0.3).clamp(-size * 0.3, boardSize - size);
     return Rect.fromLTWH(left, top, size, size);
   }
 }

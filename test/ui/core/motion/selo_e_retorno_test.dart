@@ -5,10 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/motion/retorno_do_lance.dart';
 import 'package:lucena/ui/core/motion/selo_na_peca.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
+import 'package:lucena/ui/core/motion/troca_com_fade.dart';
 import 'package:lucena/ui/core/theme/app_colors.dart';
 
 /// H-ANI-11 e H-ANI-12: o mesmo sinal de acerto e de erro em todo exercício,
-/// e o selo sempre inteiro dentro do tabuleiro.
+/// e o selo sempre inteiro: nas laterais e embaixo dentro do tabuleiro; na
+/// fileira de cima sai por cima dele (há espaço acima).
 void main() {
   const tamanho = 320.0;
 
@@ -71,7 +74,7 @@ void main() {
 
   group('H-ANI-12 · selo na peça', () {
     for (final orientacao in Side.values) {
-      testWidgets('dentro do tabuleiro em a8, h8, h1 e e4 '
+      testWidgets('inteiro em a8, h8, h1 e e4 '
           '(${orientacao.name} embaixo), sempre do mesmo tamanho', (
         tester,
       ) async {
@@ -91,8 +94,11 @@ void main() {
             ),
           );
           final selo = tester.getRect(find.byKey(MotionKeys.seloNaPeca));
-          const tabuleiro = Rect.fromLTWH(0, 0, tamanho, tamanho);
-          expect(tabuleiro.intersect(selo), selo, reason: '$casa');
+          expect(selo.left, greaterThanOrEqualTo(0), reason: '$casa');
+          expect(selo.right, lessThanOrEqualTo(tamanho + 1e-9));
+          expect(selo.bottom, lessThanOrEqualTo(tamanho + 1e-9));
+          // Por cima, só o pedaço que sai de toda casa (30% do selo).
+          expect(selo.top, greaterThanOrEqualTo(-selo.height * 0.3 - 1e-9));
           tamanhoDoSelo ??= selo.size;
           expect(selo.width, closeTo(tamanhoDoSelo.width, 1e-9));
           expect(selo.height, closeTo(tamanhoDoSelo.height, 1e-9));
@@ -198,5 +204,42 @@ void main() {
       }
       await tester.pumpAndSettle();
     });
+  });
+
+  testWidgets('o selo da fileira de cima não é recortado pelo fade nem pelo '
+      'hero do tabuleiro (Gabriel, 04/11)', (tester) async {
+    await tester.pumpWidget(
+      tela(
+        TabuleiroHero(
+          id: 'x',
+          child: TrocaComFade(
+            chave: 1,
+            child: RetornoDoLance(
+              tipo: TipoDeRetorno.acerto,
+              casa: Square.h8,
+              orientacao: Side.white,
+              tamanho: tamanho,
+              vibrar: false,
+              child: const ColoredBox(color: Colors.brown),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final selo = find.byKey(MotionKeys.seloNaPeca);
+    expect(tester.getRect(selo).top, lessThan(0));
+    for (final tipo in [ClipRect, ClipRRect]) {
+      expect(
+        find.ancestor(of: selo, matching: find.byType(tipo)),
+        findsNothing,
+        reason: '$tipo',
+      );
+    }
+    for (final pilha in tester.widgetList<Stack>(
+      find.ancestor(of: selo, matching: find.byType(Stack)),
+    )) {
+      expect(pilha.clipBehavior, Clip.none);
+    }
   });
 }

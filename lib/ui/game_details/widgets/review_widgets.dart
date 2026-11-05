@@ -612,8 +612,8 @@ class _ReviewBoardState extends State<ReviewBoard> {
                     ),
                   ),
                 ),
-              // O selo do lance é um componente por cima do tabuleiro, que
-              // não sai dele (a8, h8, h1, bordas).
+              // O selo do lance é um componente por cima do tabuleiro: na
+              // fileira de cima sai por cima dele; pelos lados, não.
               Stack(
                 clipBehavior: Clip.none,
                 children: [

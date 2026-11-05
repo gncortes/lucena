@@ -172,6 +172,7 @@ class _RetornoDoLanceState extends State<RetornoDoLance>
           child: Transform.scale(
             scale: escala,
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
                 tabuleiro!,
                 Positioned.fromRect(
