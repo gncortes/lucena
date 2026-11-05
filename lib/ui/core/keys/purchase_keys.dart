@@ -85,6 +85,9 @@ abstract final class PurchaseKeys {
   static const demoGuide = Key('demo.guide');
   static const demoGuideLearnMore = Key('demo.guide.learnMore');
   static const demoGuidePlan = Key('demo.guide.plan');
+
+  /// O cartão das semanas do plano de exemplo (afunda no toque, H-ANI-20).
+  static const demoGuideWeeks = Key('demo.guide.weeks');
   static Key demoGoalsLockedTile(String kind, String ref) =>
       Key('demo.goals.lockedTile.$kind.$ref');
   static const demoGoalsLearnMore = Key('demo.goals.learnMore');
