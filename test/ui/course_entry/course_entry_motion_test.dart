@@ -13,6 +13,7 @@ import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/keys/training_entry_keys.dart';
 import 'package:lucena/ui/course_entry/widgets/course_entry_gate.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
@@ -82,6 +83,16 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     return downloads;
   }
+
+  testWidgets('o título do curso fica à esquerda já no esqueleto, como na '
+      'tela do curso (não pula do centro)', (tester) async {
+    await mount(tester);
+    final titulo = find.descendant(
+      of: find.byKey(TrainingEntryKeys.skeletonAppBar),
+      matching: find.text('Pilares do Xadrez'),
+    );
+    expect(tester.getTopLeft(titulo).dx, lessThan(64));
+  });
 
   testWidgets('H-ANI-07: o esqueleto brilha e se dissolve no conteúdo', (
     tester,

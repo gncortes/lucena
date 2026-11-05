@@ -125,7 +125,13 @@ class _CourseScaffold extends StatelessWidget {
   final Widget body;
   @override
   Widget build(BuildContext context) => Scaffold(
+    // O título fica onde a tela do curso o põe (à esquerda, colado na seta),
+    // para não pular do centro para a esquerda quando o pacote fica pronto
+    // (Gabriel, 04/11). O capítulo segue centrado, como a tela dele.
     appBar: LucenaAppBar(
+      key: TrainingEntryKeys.skeletonAppBar,
+      centerTitle: chapter,
+      titleSpacing: chapter ? null : 0,
       leading: _backButton(context),
       title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
     ),

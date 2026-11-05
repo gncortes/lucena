@@ -9,6 +9,7 @@ abstract final class TrainingEntryKeys {
   static const email = ValueKey('training-entry-email');
   static const speech = ValueKey('training-entry-speech');
   static const loading = ValueKey('training-entry-loading');
+  static const skeletonAppBar = ValueKey('training-entry-skeleton-app-bar');
   static const failure = ValueKey('training-entry-failure');
   static const retry = ValueKey('training-entry-retry');
   static const storage = ValueKey('training-entry-storage');
