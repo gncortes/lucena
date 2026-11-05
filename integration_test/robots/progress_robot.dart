@@ -151,9 +151,16 @@ class ProgressRobot {
     expect(find.byKey(RatingKeys.chart), findsNothing);
   }
 
+  /// Volta dos detalhes do rating até a tela inicial (eles abrem por Seu
+  /// progresso, uma tela no meio).
   Future<void> closeRatingDetails() async {
-    await $(BackButton).tap();
-    await $.pumpAndSettle();
+    for (var i = 0; i < 4; i++) {
+      if (find.byKey(HomeKeys.screen).hitTestable().evaluate().isNotEmpty) {
+        return;
+      }
+      await $(BackButton).tap();
+      await $.pumpAndSettle();
+    }
   }
 
   Future<void> openAchievements() async {

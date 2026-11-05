@@ -1,6 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
@@ -185,10 +186,8 @@ void main() {
     await speedrun.openHistory(0);
     await speedrun.expectBonusEarned();
 
-    // Resumo, Histórico, speedrun e lista: de volta à tela inicial.
-    for (var screen = 0; screen < 4; screen++) {
-      await speedrun.back();
-    }
+    // Resumo, Histórico, speedrun e lista (e Todos os modos, quando a lista abre por ele): de volta à tela inicial.
+    await _backToHome($, speedrun);
     await HomeRobot($).expectVisible();
     expect(await progress.rating(), greaterThan(before));
     // O bônus sobe o rating, mas não conta como partida (T67c); as etapas
@@ -211,12 +210,24 @@ void main() {
     await FreeBoardRobot($).resign();
     await ConclusionRobot($).expectNoRating();
 
-    // Conclusão, speedrun e lista: de volta à tela inicial.
-    for (var screen = 0; screen < 3; screen++) {
-      await speedrun.back();
-    }
+    // Conclusão, speedrun e lista (e Todos os modos, quando a lista abre por ele): de volta à tela inicial.
+    await _backToHome($, speedrun);
     await HomeRobot($).expectVisible();
     expect(await progress.rating(), before);
     await progress.expectRatedGames('1 rated game');
   });
+}
+
+/// Volta até a tela inicial: a lista dos speedruns pode abrir pelo Todos os
+/// modos, uma tela a mais no caminho.
+Future<void> _backToHome(
+  PatrolIntegrationTester $,
+  SpeedrunRobot speedrun,
+) async {
+  for (var i = 0; i < 6; i++) {
+    if (find.byKey(HomeKeys.screen).hitTestable().evaluate().isNotEmpty) {
+      return;
+    }
+    await speedrun.back();
+  }
 }

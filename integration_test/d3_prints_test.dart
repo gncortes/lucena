@@ -1,19 +1,28 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/journey/journey_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
+import 'package:lucena/ui/core/keys/course_preview_keys.dart';
 import 'package:lucena/ui/core/keys/featured_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/journey_keys.dart';
+import 'package:lucena/ui/core/keys/speedrun_keys.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
+import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
@@ -23,11 +32,14 @@ import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
 import '../testing/e2e_prints_fixtures.dart';
+import '../testing/fakes/fake_purchase_service.dart';
 import '../testing/training/e2e_training.dart';
 import 'robots/app_robot.dart';
 import 'robots/blind_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/game_details_robot.dart';
+import 'robots/journey_robot.dart';
+import 'robots/speedrun_robot.dart';
 import 'robots/placement_robot.dart';
 import 'robots/race_robot.dart';
 import 'robots/tour_robot.dart';
@@ -186,6 +198,127 @@ void main() {
       await $.pumpAndSettle();
     }, ready: RatingKeys.chart);
   });
+
+  patrolTest('D3 prints: Conhecer o Pilares cresce da folha do cadeado', (
+    $,
+  ) async {
+    // PropV2MetaSemCompraDemoCadeadoFolha → apresentação (H-ANI-04, 560 ms).
+    await AppRobot($).open(
+      systemLocale: ptBr,
+      lightDevice: true,
+      demo: true,
+      trainingScenario: E2ETrainingScenario.goalsLarge,
+      purchases: FakePurchaseRepository(
+        const PurchaseState(
+          pricesReady: true,
+          prices: {
+            PilaresPlan.lifetime: r'R$ 99,90',
+            PilaresPlan.monthly: r'R$ 19,90',
+          },
+        ),
+      ),
+    );
+    await $(HomeKeys.screen).waitUntilVisible();
+    unawaited(
+      GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+          .push<void>(Routes.trainingGoals(TrainingCourse.pilares.name)),
+    );
+    await $(CourseGuideKeys.screen).waitUntilVisible();
+    await $.pumpAndSettle();
+    final trancada = find.byWidgetPredicate(
+      (w) =>
+          w.key is ValueKey<String> &&
+          (w.key! as ValueKey<String>).value.startsWith(
+            'demo.goals.lockedTile.',
+          ),
+    );
+    await $.scrollUntilVisible(finder: trancada.first);
+    await $.tester.tap(trancada.first);
+    await $.pumpAndSettle();
+    await $(PurchaseKeys.demoGoalsLockSheetLearn).waitUntilVisible();
+    final capture = TrainingCaptureRobot($);
+    await capture.record('D3CadeadoConhecerPilares', () async {
+      await $.pump(const Duration(milliseconds: 600));
+      await $(PurchaseKeys.demoGoalsLockSheetLearn).tap();
+      await $(CoursePreviewKeys.sale).waitUntilVisible();
+      await $.pumpAndSettle();
+    }, ready: CoursePreviewKeys.sale);
+  }, tags: ['d3-mp4', 'd3-cadeado']);
+
+  patrolTest(
+    'D3 MP4: Jornada e Degrau, a barra enche e a contagem sobe (H-ANI-13)',
+    ($) async {
+      await AppRobot($).open(systemLocale: ptBr, lightDevice: true);
+      await $(HomeKeys.screen).waitUntilVisible();
+      // Três desafios do primeiro degrau já cumpridos: a barra tem o que encher.
+      final ladder = await $.tester
+          .element(find.byKey(HomeKeys.screen))
+          .read<JourneyRepository>()
+          .ladder();
+      final rung = ladder.first;
+      for (final challenge in rung.challenges.take(3)) {
+        await seedAttempt(
+          e2eSavedGame.copyWith(
+            positionId: challenge.position.id,
+            challengeId: challenge.id,
+          ),
+        );
+      }
+      final journey = JourneyRobot($);
+      final capture = TrainingCaptureRobot($);
+      await capture.record('D3JornadaBarra', () async {
+        await $.pump(const Duration(milliseconds: 500));
+        await journey.open();
+        await $.pumpAndSettle();
+        await $.pump(const Duration(milliseconds: 800));
+      }, ready: JourneyKeys.screen);
+      await capture.record('D3DegrauBarra', () async {
+        await $.pump(const Duration(milliseconds: 500));
+        await journey.openRung(rung.id);
+        await $.pumpAndSettle();
+        await $.pump(const Duration(milliseconds: 800));
+      }, ready: JourneyKeys.rungScreen);
+    },
+    tags: ['d3-mp4'],
+  );
+
+  patrolTest(
+    'D3 MP4: o tempo que sobrou conta no resumo da Maratona (H-ANI-18)',
+    ($) async {
+      final app = AppRobot($);
+      final speedrun = SpeedrunRobot($);
+      final board = FreeBoardRobot($);
+      await app.open(systemLocale: ptBr, lightDevice: true);
+      await speedrun.open(pace: null);
+      await speedrun.chooseMode(marathon: true);
+      await speedrun.choosePace('30+0');
+      await speedrun.openSpeedrun('marathon.e2e.ending@30+0');
+      await speedrun.start();
+      final (from, to) = E2EJourneyRepository.mate;
+      for (var stage = 0; stage < 3; stage++) {
+        if (stage > 0) {
+          await speedrun.expectNextMarathonStage(stage);
+        } else {
+          await speedrun.waitVersusGone();
+        }
+        await app.advanceTime(const Duration(seconds: 2));
+        await board.move(from, to);
+      }
+      await $(ConclusionKeys.screen).waitUntilVisible();
+      await $.pumpAndSettle();
+      await speedrun.back();
+      await speedrun.openHistoryScreen();
+      await $.pumpAndSettle();
+      await TrainingCaptureRobot($).record('D3MaratonaResumo', () async {
+        await $.pump(const Duration(milliseconds: 500));
+        await $(SpeedrunKeys.historyRun(0)).scrollTo().tap();
+        await $(SpeedrunKeys.attemptScreen).waitUntilVisible();
+        await $.pumpAndSettle();
+        await $.pump(const Duration(milliseconds: 800));
+      }, ready: SpeedrunKeys.attemptScreen);
+    },
+    tags: ['d3-mp4'],
+  );
 
   patrolTest('D3 prints: Detalhes da partida salva', ($) async {
     await AppRobot($).open(systemLocale: ptBr, lightDevice: true);
