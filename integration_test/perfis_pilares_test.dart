@@ -232,8 +232,10 @@ void main() {
   }) async {
     var practiceMarked = false;
     final parts = lessonId.split('.');
-    final index = await fetchJson($, 'courses/${parts[0]}/index.json')
-        as Map<String, dynamic>;
+    final index = await fetchJson(
+      $,
+      'courses/${parts[0]}/index.json',
+    ) as Map<String, dynamic>;
     final names = <String>{};
     for (final part in index['partes'] as List<dynamic>) {
       for (final chapter

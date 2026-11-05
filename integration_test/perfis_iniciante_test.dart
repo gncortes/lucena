@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
+
 import '../testing/e2e_dependencies.dart';
 import '../testing/training/e2e_training.dart';
+
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -77,8 +79,8 @@ Future<void> _hold(PatrolIntegrationTester $, [int ms = 1500]) async {
   final dirs = piece == 'b'
       ? diagonal
       : piece == 'q' || piece == 'k'
-          ? [...straight, ...diagonal]
-          : straight;
+      ? [...straight, ...diagonal]
+      : straight;
   final first = <String, String>{};
   final queue = <String>[from];
   final seen = <String>{from};
@@ -132,7 +134,9 @@ Future<void> _playLesson(
     if (stall > 80) {
       fail('aula parada em $sig (fala: ${lesson.speech})');
     }
-    if (peekSheet && i == 3 && find.byKey(LessonScriptKeys.speech).evaluate().isNotEmpty) {
+    if (peekSheet &&
+        i == 3 &&
+        find.byKey(LessonScriptKeys.speech).evaluate().isNotEmpty) {
       await lesson.expectSpeechSheetRoundTrip();
     }
     bool tap(Key k) => find.byKey(k).evaluate().isNotEmpty;
@@ -222,7 +226,9 @@ Future<void> _playLesson(
 const _perfil = String.fromEnvironment('PERFIL');
 
 void main() {
-  patrolTest('P1 iniciante que aprende a jogar', skip: _perfil == 'P2', ($) async {
+  patrolTest('P1 iniciante que aprende a jogar', skip: _perfil == 'P2', (
+    $,
+  ) async {
     await AppRobot($).open(
       systemLocale: const Locale('pt', 'BR'),
       lightDevice: true,
@@ -304,7 +310,9 @@ void main() {
     await guide.load();
     await $.pumpAndSettle();
     final goals = guide.state.training!.day!.goals;
-    debugPrint('T85 metas: ${goals.map((g) => '${g.kind.name}:${g.ref}').join(', ')}');
+    debugPrint(
+      'T85 metas: ${goals.map((g) => '${g.kind.name}:${g.ref}').join(', ')}',
+    );
     await robot.shot('p1-lista-inicial');
     await robot.mark('x1_Aula_1');
     final first = goals.firstWhere((g) => g.kind == GoalKind.lesson);
@@ -337,14 +345,12 @@ void main() {
           .tap();
       await $.pump(const Duration(seconds: 3));
       if (find.byKey(LessonScriptKeys.screen).evaluate().isEmpty) {
-        fail(
-          'AULA ${pending.first.ref} sem tela: ' +
-              find
-                  .byType(Text)
-                  .evaluate()
-                  .map((e) => (e.widget as Text).data)
-                  .join(' | '),
-        );
+        final textos = find
+            .byType(Text)
+            .evaluate()
+            .map((e) => (e.widget as Text).data)
+            .join(' | ');
+        fail('AULA ${pending.first.ref} sem tela: $textos');
       }
       await _playLesson($);
       await $.pumpAndSettle();
@@ -464,7 +470,9 @@ void main() {
 
     // Progresso e Perfil.
     await robot.mark('x1_Progresso');
-    await $(HomeKeys.playerCard).scrollTo(scrollDirection: AxisDirection.up).tap();
+    await $(HomeKeys.playerCard)
+        .scrollTo(scrollDirection: AxisDirection.up)
+        .tap();
     await $(MyProgressKeys.screen).waitUntilVisible();
     await _hold($, 3000);
     await robot.shot('p2-progresso', ready: MyProgressKeys.screen);
@@ -482,7 +490,9 @@ void main() {
 Future<void> _homeFromAnywhere(PatrolIntegrationTester $) async {
   for (var i = 0; i < 8; i++) {
     if (find.byKey(HomeKeys.screen).hitTestable().evaluate().isNotEmpty) return;
-    final navigator = Navigator.of($.tester.element(find.byType(Scaffold).last));
+    final navigator = Navigator.of(
+      $.tester.element(find.byType(Scaffold).last),
+    );
     await navigator.maybePop();
     await $.pumpAndSettle();
   }
