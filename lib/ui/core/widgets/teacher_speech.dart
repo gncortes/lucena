@@ -8,6 +8,7 @@ import '../theme/canvas_symbols.dart';
 
 import 'package:intl/intl.dart' show Bidi;
 
+import 'animated_speech_switcher.dart' show SpeechPop;
 import 'speech_balloon.dart';
 import 'speech_text_tap_notification.dart';
 import 'explanation_cards.dart';
@@ -542,7 +543,29 @@ class TeacherSpeech extends StatelessWidget {
   }
 
   /// O balão (ou, na folha, o texto direto). Sem ✕: a folha tem o dela.
-  Widget _closable(BuildContext context) => _speech(context);
+  /// H-ANI-09: o balão entra pelo bico só na primeira aparição. O pop fica
+  /// acima da troca de fala (que remonta o balão a cada texto e já tem a
+  /// digitação), e não vale onde a fala não tem balão (folha, lição V2).
+  Widget _closable(BuildContext context) {
+    final speech = _speech(context);
+    if (lessonV2 || ViktorSheet.insideOf(context)) return speech;
+    return SpeechPop(
+      alignment: switch (_tail(context)) {
+        BalloonTail.up => AlignmentDirectional.topStart,
+        BalloonTail.start => AlignmentDirectional.centerStart,
+        BalloonTail.down => AlignmentDirectional.bottomStart,
+        BalloonTail.none => AlignmentDirectional.center,
+      },
+      child: speech,
+    );
+  }
+
+  BalloonTail _tail(BuildContext context) =>
+      _compact(context) || part == TeacherSpeechPart.bubble
+      ? BalloonTail.none
+      : _stackedIn(context)
+      ? (bubbleAboveHeader ? BalloonTail.down : BalloonTail.up)
+      : BalloonTail.start;
 
   /// O balão, que troca de fala com uma transição suave.
   Widget _speech(BuildContext context) {
@@ -984,7 +1007,6 @@ class TeacherSpeech extends StatelessWidget {
     if (section) return SizedBox(width: double.infinity, child: content);
     // O balão único do app (branco, ponta e animação de `SpeechBalloon`): a
     // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
-    final stacked = _stackedIn(context);
     return SpeechBalloon(
       padding: canvasTrainingBalloon
           ? const EdgeInsetsDirectional.all(16)
@@ -993,12 +1015,9 @@ class TeacherSpeech extends StatelessWidget {
           : trainingLayout && MediaQuery.sizeOf(context).height < 780
           ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 6)
           : SpeechBalloon.defaultPadding,
+      // A entrada pelo bico fica em `_closable`, acima da troca de fala.
       pop: false,
-      tail: _compact(context) || part == TeacherSpeechPart.bubble
-          ? BalloonTail.none
-          : stacked
-          ? (bubbleAboveHeader ? BalloonTail.down : BalloonTail.up)
-          : BalloonTail.start,
+      tail: _tail(context),
       tailX: SpeechBalloon.tailXFor(avatarSize),
       tailY: avatarSize / 2,
       child: trainingLayout ? SingleChildScrollView(child: content) : content,
