@@ -9,6 +9,8 @@ import '../../core/l10n/l10n.dart';
 import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/entradas_vistas.dart';
 import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -223,13 +225,19 @@ class _Banner extends StatelessWidget {
                     ),
                   ),
                 ),
-                Text(
-                  l10n.venDemoCatalogDone(done, total),
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontSize: 14,
-                    height: 20 / 14,
-                    fontWeight: FontWeight.w500,
-                    color: colors.primary,
+                // H-ANI-18: o "X de Y concluídos" conta até o valor.
+                ValorQueAnima(
+                  valor: done.toDouble(),
+                  duracao: LucenaMotion.numeroConta,
+                  builder: (context, agora) => Text(
+                    l10n.venDemoCatalogDone(agora.round(), total),
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontSize: 14,
+                      height: 20 / 14,
+                      fontWeight: FontWeight.w500,
+                      color: colors.primary,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ),
               ],

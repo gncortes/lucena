@@ -8,6 +8,7 @@ import '../../../routing/route_names.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
 import '../../core/motion/rota_que_abre.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -262,31 +263,35 @@ class PilaresDemoGuide extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColors.cardSurface,
-                  borderRadius: BorderRadius.circular(AppShape.card),
-                  border: Border.all(color: AppColors.cardOutline),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Column(
-                    children: [
-                      for (final (index, text) in weeks.indexed)
+              // H-ANI-20: toda linha leva ao plano; o cartão inteiro afunda.
+              CartaoPressionavel(
+                child: DecoratedBox(
+                  key: PurchaseKeys.demoGuideWeeks,
+                  decoration: BoxDecoration(
+                    color: AppColors.cardSurface,
+                    borderRadius: BorderRadius.circular(AppShape.card),
+                    border: Border.all(color: AppColors.cardOutline),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Column(
+                      children: [
+                        for (final (index, text) in weeks.indexed)
+                          _WeekRow(
+                            number: index + 1,
+                            label: l10n.venDemoGuideWeek(index + 1),
+                            text: text,
+                            onTap: plan,
+                          ),
                         _WeekRow(
-                          number: index + 1,
-                          label: l10n.venDemoGuideWeek(index + 1),
-                          text: text,
+                          text: l10n.venDemoGuideEnd(
+                            l10n.venDemoGuideDate,
+                            l10n.venDemoGuideEvent,
+                          ),
                           onTap: plan,
                         ),
-                      _WeekRow(
-                        text: l10n.venDemoGuideEnd(
-                          l10n.venDemoGuideDate,
-                          l10n.venDemoGuideEvent,
-                        ),
-                        onTap: plan,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

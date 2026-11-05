@@ -9,6 +9,7 @@ import 'package:lucena/domain/models/achievement.dart';
 import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/my_progress_keys.dart';
+import 'package:lucena/ui/core/motion/valor_que_anima.dart';
 import 'package:lucena/ui/my_progress/view_models/my_progress_cubit.dart';
 import 'package:lucena/ui/my_progress/widgets/my_progress_screen.dart';
 
@@ -134,6 +135,25 @@ void main() {
       tester.getTopLeft(card).dy,
       greaterThan(tester.getBottomLeft(find.byKey(MyProgressKeys.rating)).dy),
     );
+  });
+
+  testWidgets('H-ANI-18: o rating e as partidas contam até o valor', (
+    tester,
+  ) async {
+    await played();
+    await pumpScreen(tester);
+    for (final key in [MyProgressKeys.ratingValue, MyProgressKeys.games]) {
+      expect(
+        find.ancestor(
+          of: find.byKey(key),
+          matching: find.byType(ValorQueAnima),
+        ),
+        findsOneWidget,
+        reason: '$key',
+      );
+    }
+    expect(find.text('1450'), findsOneWidget);
+    expect(find.text('2 partidas'), findsOneWidget);
   });
 
   testWidgets('com conta: sem o cartão, e o resto igual', (tester) async {

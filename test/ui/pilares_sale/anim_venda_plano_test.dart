@@ -15,6 +15,7 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/core/motion/valor_que_anima.dart';
 import 'package:lucena/ui/pilares_sale/widgets/pilares_demo_catalog.dart';
 import 'package:lucena/ui/pilares_sale/widgets/pilares_sale_parts.dart';
 
@@ -206,6 +207,23 @@ void main() {
       expect(barra().value, lessThan(.5));
       await tester.pumpAndSettle();
       expect(barra().value, .5);
+    });
+
+    testWidgets('H-ANI-18: o "1 de 2 concluídos" do topo conta até o valor', (
+      tester,
+    ) async {
+      await catalogo(tester);
+      await tester.pump(const Duration(milliseconds: 20));
+      expect(
+        find.ancestor(
+          of: find.text('0 de 2 concluídos'),
+          matching: find.byType(ValorQueAnima),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('0 de 2 concluídos'), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text('1 de 2 concluídos'), findsOneWidget);
     });
 
     testWidgets('H-ANI-20: cada item grátis é um cartão pressionável', (
