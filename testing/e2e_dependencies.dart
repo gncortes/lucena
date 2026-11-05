@@ -188,6 +188,25 @@ class E2EAnalysis extends FakeAnalysisRepository {
 Future<int> seedAttempt(Attempt attempt) =>
     LocalProgressRepository(_database!).addAttempt(attempt);
 
+/// Grava no histórico do rating os [ratings], um por dia, terminando hoje
+/// (no relógio dos cenários): para o gráfico do Histórico ter curva.
+Future<void> seedRatingHistory(List<int> ratings) async {
+  final database = _database!;
+  final today = e2eNow();
+  for (final (index, rating) in ratings.indexed) {
+    await database
+        .into(database.ratingHistory)
+        .insert(
+          RatingHistoryCompanion.insert(
+            at: today.subtract(Duration(days: ratings.length - 1 - index)),
+            rating: rating.toDouble(),
+            deviation: 80,
+            volatility: 0.06,
+          ),
+        );
+  }
+}
+
 /// Os sons dos cenários: nada toca; os pedidos ficam guardados para conferir.
 final e2eSound = FakeSoundRepository();
 

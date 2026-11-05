@@ -13,6 +13,8 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/motion/entrada_de_resultado.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -82,16 +84,25 @@ class MarathonAttemptView extends StatelessWidget {
         id: 'maratona-${run.attempt.id}',
         placar: bloco(top: AppSpacing.lg, [
           if (completed) ...[
-            TimeDisplay(
-              value: runTime(context, recordTime(speedrun, run.total)),
-              semanticsLabel: l10n.marathonLeftValue(
-                runTime(context, recordTime(speedrun, run.total)),
+            // H-ANI-18: o tempo que sobrou conta até o valor; o leitor de
+            // tela lê só o final. O valor animado é a fração do tempo final.
+            ValorQueAnima(
+              valor: 1,
+              duracao: LucenaMotion.numeroConta,
+              builder: (context, fracao) => TimeDisplay(
+                value: runTime(
+                  context,
+                  recordTime(speedrun, run.total) * fracao,
+                ),
+                semanticsLabel: l10n.marathonLeftValue(
+                  runTime(context, recordTime(speedrun, run.total)),
+                ),
+                type: TimeDisplayType.record,
+                size: TimeDisplaySize.block,
+                state: TimeDisplayState.highlight,
+                label: l10n.marathonLeft,
+                textKey: SpeedrunKeys.total,
               ),
-              type: TimeDisplayType.record,
-              size: TimeDisplaySize.block,
-              state: TimeDisplayState.highlight,
-              label: l10n.marathonLeft,
-              textKey: SpeedrunKeys.total,
             ),
             if (bonus != null && bonus.points > 0)
               SpeedrunRatingBonusCard.earned(bonus: bonus),

@@ -2,17 +2,26 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../motion/grafico_que_desenha.dart';
 import '../theme/app_shape.dart';
 
 /// O rating partida a partida, num gráfico de linha com a escala ao lado.
 /// Tocar ou arrastar o dedo mostra o rating daquela partida.
+///
+/// H-ANI-19: na entrada da tela, a linha se desenha, a área aparece no fim e
+/// as marcas saltam uma a uma; trocar o [periodo] redesenha em 300 ms.
 class RatingChart extends StatefulWidget {
   const RatingChart({
     required this.ratings,
     this.height = 200,
     this.highlighted,
+    this.periodo,
     super.key,
   });
+
+  /// O período mostrado; quando muda, o gráfico se redesenha. Nulo: o
+  /// número de partidas.
+  final Object? periodo;
 
   /// Da partida mais antiga para a mais recente.
   final List<double> ratings;
@@ -38,10 +47,10 @@ class _RatingChartState extends State<RatingChart> {
   }
 
   void _select(Offset position, double width) {
-    final plot = width - _Plot.axisWidth;
+    final plot = width - RatingChartPainter.axisWidth;
     final count = widget.ratings.length;
     if (plot <= 0 || count < 2) return;
-    final x = (position.dx - _Plot.axisWidth).clamp(0, plot);
+    final x = (position.dx - RatingChartPainter.axisWidth).clamp(0, plot);
     final index = (x / plot * (count - 1)).round();
     if (index != _selected) setState(() => _selected = index);
   }
@@ -67,9 +76,11 @@ class _RatingChartState extends State<RatingChart> {
             child: SizedBox(
               height: widget.height,
               width: double.infinity,
-              child: CustomPaint(
-                painter: _Plot(
+              child: GraficoQueDesenha(
+                periodo: widget.periodo ?? widget.ratings.length,
+                pintor: (tempo) => RatingChartPainter(
                   widget.ratings,
+                  tempo: tempo,
                   selected: _selected,
                   highlighted: widget.highlighted,
                   line: colors.primary,
@@ -98,9 +109,11 @@ class _RatingChartState extends State<RatingChart> {
   }
 }
 
-class _Plot extends CustomPainter {
-  _Plot(
+/// O desenho do [RatingChart] num quadro do [GraficoQueDesenha].
+class RatingChartPainter extends CustomPainter {
+  RatingChartPainter(
     this.values, {
+    required this.tempo,
     required this.selected,
     required this.highlighted,
     required this.line,
@@ -112,6 +125,7 @@ class _Plot extends CustomPainter {
   });
 
   final List<double> values;
+  final TempoDoGrafico tempo;
   final int? selected;
   final int? highlighted;
   final Color line;
@@ -180,11 +194,14 @@ class _Plot extends CustomPainter {
           ..shader = LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [line.withValues(alpha: 0.18), line.withValues(alpha: 0)],
+            colors: [
+              line.withValues(alpha: 0.18 * tempo.area),
+              line.withValues(alpha: 0),
+            ],
           ).createShader(plot),
       )
       ..drawPath(
-        path,
+        _drawn(path, tempo.linha),
         Paint()
           ..color = line
           ..style = PaintingStyle.stroke
@@ -194,10 +211,17 @@ class _Plot extends CustomPainter {
       );
 
     // As marcas: todas com poucas partidas; senão, só a última.
+    // Cada marca salta na sua vez (40 ms entre elas).
     void marker(int index, {double radius = 4}) {
+      final scale = tempo.ponto(index);
+      if (scale <= 0) return;
       canvas
-        ..drawCircle(point(index), radius + 2, Paint()..color = surface)
-        ..drawCircle(point(index), radius, Paint()..color = line);
+        ..drawCircle(
+          point(index),
+          (radius + 2) * scale,
+          Paint()..color = surface,
+        )
+        ..drawCircle(point(index), radius * scale, Paint()..color = line);
     }
 
     if (values.length <= _maxMarkers) {
@@ -224,12 +248,13 @@ class _Plot extends CustomPainter {
     // A partida em destaque: um anel em volta de uma marca maior.
     final highlighted = this.highlighted;
     final hasHighlight = highlighted != null && highlighted < values.length;
-    if (hasHighlight) {
+    // O anel e o balão chegam com a área, no fim do desenho.
+    if (hasHighlight && tempo.area > 0) {
       canvas.drawCircle(
         point(highlighted),
         10,
         Paint()
-          ..color = line
+          ..color = line.withValues(alpha: tempo.area)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2,
       );
@@ -239,7 +264,7 @@ class _Plot extends CustomPainter {
     final selected = this.selected;
     if (selected == null || selected >= values.length) {
       // Sem o dedo, o balão fica com a partida em destaque.
-      if (hasHighlight) bubbleAt(highlighted);
+      if (hasHighlight && tempo.area >= 1) bubbleAt(highlighted);
       return;
     }
     // A partida debaixo do dedo: a linha de guia, a marca e o rating dela.
@@ -253,6 +278,19 @@ class _Plot extends CustomPainter {
     );
     marker(selected, radius: 6);
     bubbleAt(selected);
+  }
+
+  // O trecho da linha já desenhado: de 0 a [fraction] do comprimento.
+  static Path _drawn(Path path, double fraction) {
+    if (fraction >= 1) return path;
+    final drawn = Path();
+    for (final metric in path.computeMetrics()) {
+      drawn.addPath(
+        metric.extractPath(0, metric.length * fraction),
+        Offset.zero,
+      );
+    }
+    return drawn;
   }
 
   // O intervalo entre as linhas da grade: redondo, com poucas linhas.
@@ -269,8 +307,9 @@ class _Plot extends CustomPainter {
   )..layout();
 
   @override
-  bool shouldRepaint(_Plot old) =>
+  bool shouldRepaint(RatingChartPainter old) =>
       old.values != values ||
+      old.tempo != tempo ||
       old.selected != selected ||
       old.highlighted != highlighted ||
       old.line != line ||

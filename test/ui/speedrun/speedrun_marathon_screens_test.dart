@@ -348,6 +348,20 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('H-ANI-18: concluída, o tempo que sobrou conta até o valor', (
+      tester,
+    ) async {
+      await open(await complete(marathonId, sampleMarathon.stages.length));
+      await pump(tester, const SpeedrunAttemptScreen(), settle: false);
+      await tester.pump();
+      final fim = RunTimeFormat.clock(
+        Duration(seconds: 180 - sampleMarathon.stages.length * 10),
+      );
+      expect(text(tester, SpeedrunKeys.total), isNot(contains(fim)));
+      await tester.pumpAndSettle();
+      expect(text(tester, SpeedrunKeys.total), contains(fim));
+    });
+
     testWidgets('perdeu: 1:49.0 sobrou, contra o adversário da etapa e '
         '+110 ao concluir', (tester) async {
       await open(await stopped(SpeedrunRunEnd.lost));

@@ -125,6 +125,7 @@ class HistoryRatingCard extends StatelessWidget {
                       ? RatingChart(
                           key: RatingKeys.chart,
                           highlighted: highlighted < 0 ? null : highlighted,
+                          periodo: period,
                           ratings: [
                             for (final entry in entries) entry.rating.rating,
                           ],
