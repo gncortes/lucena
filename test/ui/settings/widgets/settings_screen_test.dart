@@ -350,12 +350,16 @@ void main() {
       );
     });
 
-    testWidgets('Notificações conta com o substantivo: "3 de 4 notificações ligadas"', (
-      tester,
-    ) async {
-      await pumpPt(tester);
-      expect(inTile(SettingsKeys.alertsTile, '3 de 4 notificações ligadas'), findsOneWidget);
-    });
+    testWidgets(
+      'Notificações conta com o substantivo: "3 de 4 notificações ligadas"',
+      (tester) async {
+        await pumpPt(tester);
+        expect(
+          inTile(SettingsKeys.alertsTile, '3 de 4 notificações ligadas'),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('"Avaliar o Lucena" abre a página na Play', (tester) async {
       final store = FakeStoreListingRepository();

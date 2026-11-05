@@ -21,7 +21,6 @@ import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/numero_que_conta.dart';
 import '../../core/widgets/course/piece_stars_row.dart';
@@ -297,13 +296,12 @@ class TrainingProgressTab extends StatelessWidget {
                                   return Center(
                                     child: SizedBox(
                                       height: 8,
-                                      child: AnimatedProgress(
-                                        roundValue: true,
-                                        value: incomplete
+                                      child: BarraQueEnche(
+                                        valor: incomplete
                                             ? cycle.cycleDays.length / 7
                                             : cycle.score / 100,
-                                        color: color,
-                                        backgroundColor: Theme.of(context)
+                                        cor: color,
+                                        corDoTrilho: Theme.of(context)
                                             .scaffoldBackgroundColor,
                                       ),
                                     ),

@@ -12,6 +12,9 @@ import 'package:lucena/ui/core/motion/opcao_selecionavel.dart';
 import 'package:lucena/ui/training_goal/view_models/training_goal_cubit.dart';
 import 'package:lucena/ui/training_goal/widgets/training_diagnostic_screen.dart';
 
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/phone_size.dart';
@@ -47,6 +50,8 @@ void main() {
   Future<TrainingGoalCubit> abre(
     WidgetTester tester, {
     TrainingResources? recursos,
+    bool assentar = true,
+    bool reduzido = false,
   }) async {
     setPhoneSize(tester, const Size(412, 917));
     abriu = [];
@@ -65,17 +70,27 @@ void main() {
     await tester.pumpWidget(
       TestApp(
         locale: const Locale('pt'),
-        child: BlocProvider.value(
-          value: cubit,
-          child: TrainingDiagnosticScreen(
-            onBack: () {},
-            onTest: () => abriu.add('teste'),
-            onQuestionnaire: () => abriu.add('questionário'),
+        child: MediaQuery(
+          data: MediaQueryData(
+            size: const Size(412, 917),
+            disableAnimations: reduzido,
+          ),
+          child: BlocProvider.value(
+            value: cubit,
+            child: TrainingDiagnosticScreen(
+              onBack: () {},
+              onTest: () => abriu.add('teste'),
+              onQuestionnaire: () => abriu.add('questionário'),
+            ),
           ),
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (assentar) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
     return cubit;
   }
 
@@ -91,6 +106,28 @@ void main() {
   VoidCallback? continuar(WidgetTester tester) => tester
       .widget<FilledButton>(find.byKey(TrainingGoalKeys.diagnosticContinue))
       .onPressed;
+
+  for (final reduzido in [false, true]) {
+    testWidgets('H-ANI-16: o texto entra em cascata (reduzido: $reduzido)', (
+      tester,
+    ) async {
+      await abre(tester, assentar: false, reduzido: reduzido);
+      // Pergunta, espaço, Teste, espaço, Questionário.
+      expectEntradaEmCascata(tester, itens: 5, animando: !reduzido);
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.itemDaCascata(2)),
+          matching: find.byKey(TrainingGoalKeys.diagnosticTest),
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpAndSettle();
+      expect(
+        opacidadeDaParte(tester, find.byKey(MotionKeys.itemDaCascata(4))),
+        1,
+      );
+    });
+  }
 
   testWidgets('sem escolha: nada marcado e Continuar desligado', (
     tester,

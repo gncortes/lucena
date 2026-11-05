@@ -4,10 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_content.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
-import 'package:lucena/ui/core/widgets/animated_progress.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/widgets/course/course_item_tile.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
+import 'package:lucena/ui/core/motion/barra_que_enche.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/training_goals_tab.dart';
 
@@ -124,10 +124,11 @@ void main() {
           startsWith('Lição 1 · '),
         );
       } else if (sample == 'large') {
-        final progress = tester.widget<AnimatedProgress>(
-          find.byType(AnimatedProgress),
+        // H-ANI-13: a barra das metas é a que enche, com o mesmo trilho.
+        final progress = tester.widget<BarraQueEnche>(
+          find.byType(BarraQueEnche),
         );
-        expect(progress.backgroundColor, const Color(0xffc4c6d0));
+        expect(progress.corDoTrilho, const Color(0xffc4c6d0));
         expect(
           tester
               .widget<CourseItemTile>(find.byType(CourseItemTile).first)

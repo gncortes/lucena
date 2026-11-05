@@ -62,6 +62,7 @@ import '../../core/theme/app_button_text.dart';
 import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/motion/valor_que_anima.dart';
+import '../../core/motion/barra_que_enche.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o
@@ -1509,7 +1510,7 @@ class _AnalysisRunning extends StatelessWidget {
           child: _ReviewBoard(state: state, size: board),
         ),
         const SizedBox(height: AppSpacing.md),
-        AnimatedProgress(value: total == 0 ? 0 : state.reviewDone / total),
+        BarraQueEnche(valor: total == 0 ? 0 : state.reviewDone / total),
       ],
     );
   }
