@@ -78,6 +78,24 @@ void main() {
     expect(opacidade(tester, segundo), 1);
   });
 
+  testWidgets('H-ANI-13/18: na entrada, a barra enche e os desafios feitos '
+      'contam junto', (tester) async {
+    await pump(tester, done: {queen.id}, assentar: false);
+    final barra = find.descendant(
+      of: find.byKey(MotionKeys.barraQueEnche),
+      matching: find.byType(LinearProgressIndicator),
+    );
+    double valor() => tester.widget<LinearProgressIndicator>(barra).value!;
+    String texto() =>
+        tester.widget<Text>(find.byKey(JourneyKeys.rungProgress)).data!;
+
+    expect(valor(), lessThan(.5));
+    expect(texto(), '0 of 2 challenges');
+    await tester.pumpAndSettle();
+    expect(valor(), .5);
+    expect(texto(), '1 of 2 challenges');
+  });
+
   testWidgets('o personagem no alto, com o progresso', (tester) async {
     await pump(tester, done: {queen.id});
 

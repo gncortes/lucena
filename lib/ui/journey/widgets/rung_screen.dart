@@ -26,7 +26,10 @@ import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
 import '../../core/motion/lista_em_ordem.dart';
 import 'journey_ui.dart';
-import '../../core/widgets/animated_progress.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
+import '../../core/widgets/animated_progress.dart' show ProgressRole;
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/section_title.dart';
 
@@ -353,17 +356,22 @@ class _Header extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
-          AnimatedProgress(
-            value: total == 0 ? 0 : done / total,
-            role: ProgressRole.success,
-            backgroundColor: colors.surfaceContainerHighest,
+          // H-ANI-13/18: a barra enche e os desafios feitos contam junto.
+          BarraQueEnche(
+            valor: total == 0 ? 0 : done / total,
+            papel: ProgressRole.success,
+            corDoTrilho: colors.surfaceContainerHighest,
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(
-            l10n.journeyRungProgress(done, total),
-            key: JourneyKeys.rungProgress,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
+          ValorQueAnima(
+            valor: done.toDouble(),
+            duracao: LucenaMotion.numeroConta,
+            builder: (context, agora) => Text(
+              l10n.journeyRungProgress(agora.round(), total),
+              key: JourneyKeys.rungProgress,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ),
         ],
