@@ -8,7 +8,9 @@ import 'movimento_reduzido.dart';
 
 /// A opção de escolha única do tour, do objetivo e do nível (H-ANI-30): o
 /// fundo, a borda e o rádio passam ao estado novo em 200 ms (`emphasized`),
-/// sempre. Com movimento reduzido, trocam sem transição.
+/// sempre. Com movimento reduzido, trocam sem transição. Onde o canvas desenha
+/// opções no lugar de chips (PropV1PerfilObjetivo), é ela que cumpre a
+/// seleção da H-ANI-21.
 ///
 /// É a casca do `ChoiceCard`: o [child] é o conteúdo (ícone, título e
 /// texto) e o rádio vem no fim.

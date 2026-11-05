@@ -225,9 +225,10 @@ class _AchievementDetailState extends State<AchievementDetail>
           ],
           if (unlocked == null && progress != null) ...[
             const SizedBox(height: AppSpacing.lg),
-            Text(
-              progress.label(l10n),
-              key: AchievementsKeys.detailProgress,
+            AchievementCount(
+              value: progress.done,
+              text: (count) => progress.label(l10n, count: count),
+              textKey: AchievementsKeys.detailProgress,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleSmall,
             ),

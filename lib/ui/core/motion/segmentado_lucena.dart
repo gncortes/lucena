@@ -7,7 +7,8 @@ import 'movimento_reduzido.dart';
 /// O controle segmentado de escolha única (CompSegmentado, D30: contorno em
 /// pílula, 40 de altura, sem ✓), com a troca animada da H-ANI-30: o segmento
 /// tocado se enche de cor e o anterior se esvazia em 200 ms (`emphasized`).
-/// Com movimento reduzido, troca na hora.
+/// Com movimento reduzido, troca na hora. Onde o canvas desenha o segmentado
+/// no lugar de chips (TelaConquistas), é ele que cumpre a H-ANI-21.
 ///
 /// Existe porque o `SegmentedButton` do Material troca a cor de uma vez. As
 /// cores são as do `segmentedButtonTheme` do app (secondaryContainer cheio).
@@ -42,7 +43,16 @@ class SegmentadoLucena<T> extends StatelessWidget {
       child: Container(
         height: 40,
         clipBehavior: Clip.antiAlias,
-        decoration: ShapeDecoration(shape: StadiumBorder(side: contorno)),
+        // A borda transparente guarda o 1 px por fora dos segmentos; a visível
+        // vem por cima, para o fundo do segmento cheio não a cobrir na curva.
+        decoration: ShapeDecoration(
+          shape: StadiumBorder(
+            side: contorno.copyWith(color: Colors.transparent),
+          ),
+        ),
+        foregroundDecoration: ShapeDecoration(
+          shape: StadiumBorder(side: contorno),
+        ),
         child: IntrinsicWidth(
           child: Row(
             children: [
