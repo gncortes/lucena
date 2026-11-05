@@ -3,7 +3,7 @@
 Versão 1, em vigor desde [DATA].
 
 ## 1. Quem somos
-O Lucena é oferecido por [RAZÃO SOCIAL], nome fantasia Lucena, CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. Para falar com a gente, escreva para gncortes.apps@gmail.com. Respondemos em até 5 dias.
+O Lucena é oferecido por [RAZÃO SOCIAL], nome fantasia [NOME FANTASIA], CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. Para falar com a gente, escreva para gncortes.apps@gmail.com. Respondemos em até 5 dias.
 
 ## 2. O que é o Lucena
 O Lucena é um app de treino de xadrez. Você joga finais contra o Maia (níveis humanos de 1000 a 2600) ou contra o Stockfish (nível máximo) e faz o curso Pilares do Xadrez. O app é grátis, com anúncios no capítulo grátis do Pilares. Ao usar o Lucena, você aceita estes Termos.

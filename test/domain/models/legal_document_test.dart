@@ -65,4 +65,12 @@ Fim.
     expect(text, isNot(contains('Privacidade e dados, Excluir conta')));
     expect(text, isNot(contains('nome fantasia Lucena')));
   });
+
+  test('Termos e Política dão o mesmo nome fantasia', () {
+    for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
+      final text = File('assets/legal/$arquivo').readAsStringSync();
+      expect(text, contains('nome fantasia [NOME FANTASIA]'), reason: arquivo);
+      expect(text, isNot(contains('nome fantasia Lucena')), reason: arquivo);
+    }
+  });
 }
