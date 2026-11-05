@@ -49,7 +49,20 @@ Fim.
     expect(privacy.sections, hasLength(13));
     expect(
       privacy.sections[1].blocks.whereType<LegalTable>().single.rows,
-      hasLength(9),
+      hasLength(10),
     );
+  });
+
+  // Decisões do Gabriel (04/11) sobre a exclusão da conta.
+  test('a Política diz o que é apagado, o prazo e o caminho do app', () {
+    final text = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    expect(text, isNot(contains('[PRAZO EXCLUSÃO]')));
+    expect(text, contains('em até 15 dias a contar do pedido'));
+    for (final item in ['região', 'Lichess', 'preferências']) {
+      expect(text, contains(item), reason: item);
+    }
+    expect(text, contains('em Perfil, Excluir a conta'));
+    expect(text, isNot(contains('Privacidade e dados, Excluir conta')));
+    expect(text, isNot(contains('nome fantasia Lucena')));
   });
 }

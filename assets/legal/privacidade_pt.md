@@ -3,7 +3,7 @@
 Versão 1, em vigor desde [DATA]. Esta Política segue a Lei Geral de Proteção de Dados (Lei 13.709/2018) e o Marco Civil da Internet (Lei 12.965/2014).
 
 ## 1. Quem decide sobre seus dados
-O controlador dos seus dados é [RAZÃO SOCIAL], nome fantasia Lucena, CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. O encarregado de dados atende pelo e-mail gncortes.apps@gmail.com ou em Perfil, Privacidade e dados, Falar sobre meus dados.
+O controlador dos seus dados é [RAZÃO SOCIAL], nome fantasia [NOME FANTASIA], CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. O encarregado de dados atende pelo e-mail gncortes.apps@gmail.com ou em Perfil, Privacidade e dados, Falar sobre meus dados.
 
 ## 2. O que o Lucena guarda e por quê
 Sem conta, o app funciona no seu celular e guarda seus dados no aparelho. Com conta, guardamos também os dados abaixo.
@@ -11,6 +11,7 @@ Sem conta, o app funciona no seu celular e guarda seus dados no aparelho. Com co
 | Dado | Para quê | Base legal (LGPD) |
 |---|---|---|
 | Nome, e-mail e foto da conta | Criar e manter sua conta e mostrar seu perfil | Execução do contrato (art. 7º V) |
+| Perfil (apelido, objetivo e nível), região, usuário do Lichess e preferências do app | Personalizar o treino e manter seus ajustes entre celulares | Execução do contrato (art. 7º V) |
 | Progresso nas lições, partidas, rating e conquistas | Salvar seu avanço e sincronizar entre celulares | Execução do contrato (art. 7º V) |
 | Compras (código do pedido, data, valor, tipo de acesso) | Liberar seu acesso e cumprir obrigações legais | Execução do contrato e obrigação legal (art. 7º V e II) |
 | Eventos de uso (lições abertas, acertos, erros, passos do tour) | Entender o que funciona e melhorar as lições | Legítimo interesse (art. 7º IX) |
@@ -44,14 +45,14 @@ O Google trata dados em servidores no Brasil e em outros países, entre eles os 
 Os dados trafegam e ficam guardados com criptografia nos serviços do Google. Só você acessa os dados da sua conta, por regras de acesso do banco de dados. Se acontecer um incidente de segurança com risco relevante para você, avisamos você e a Autoridade Nacional de Proteção de Dados (ANPD).
 
 ## 10. Por quanto tempo guardamos
-Guardamos seus dados enquanto sua conta existir. Quando você exclui a conta, apagamos seus dados em até [PRAZO EXCLUSÃO]. Ficam guardados só os dados que a lei manda manter, como o registro da compra, pelo prazo legal. Os dados de uso e de falhas ficam pelo menor prazo que a ferramenta permite. Os registros técnicos de acesso a serviços são mantidos pelo prazo do Marco Civil da Internet.
+Guardamos seus dados enquanto sua conta existir. Quando você exclui a conta, apagamos seus dados em até 15 dias a contar do pedido: nome, e-mail e foto; perfil, região, usuário do Lichess e preferências; progresso nas lições, partidas, rating e conquistas; e o código de notificação do aparelho. Ficam guardados só os dados que a lei manda manter, como o registro da compra, pelo prazo legal. Os dados de uso e de falhas ficam pelo menor prazo que a ferramenta permite. Os registros técnicos de acesso a serviços são mantidos pelo prazo do Marco Civil da Internet.
 
 ## 11. Seus direitos
 Você pode, a qualquer momento:
 - confirmar se tratamos seus dados e acessá-los;
 - baixar seus dados, em Perfil, Privacidade e dados, Baixar meus dados;
 - corrigir dados incorretos;
-- excluir sua conta e seus dados, em Perfil, Privacidade e dados, Excluir conta, ou em playlucena.com/excluir-conta, mesmo sem o app instalado;
+- excluir sua conta e seus dados, em Perfil, Excluir a conta, ou em playlucena.com/excluir-conta, mesmo sem o app instalado;
 - pedir a anonimização, o bloqueio ou a eliminação de dados desnecessários;
 - saber com quem compartilhamos seus dados;
 - retirar um consentimento que você tenha dado;
