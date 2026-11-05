@@ -10,7 +10,7 @@ import 'package:lucena/domain/models/training/theme_cycle.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
-import 'package:lucena/ui/core/widgets/animated_progress.dart';
+import 'package:lucena/ui/core/motion/barra_que_enche.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
 import 'package:lucena/ui/course_guide/widgets/training_progress_tab.dart';
@@ -106,8 +106,8 @@ void main() {
       );
       expect(
         tester
-            .widget<AnimatedProgress>(find.byType(AnimatedProgress))
-            .backgroundColor,
+            .widget<BarraQueEnche>(find.byType(BarraQueEnche))
+            .corDoTrilho,
         Theme.of(context).scaffoldBackgroundColor,
       );
       expect(tester.takeException(), isNull);
