@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/keys/training_goal_keys.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_card.dart';
@@ -44,31 +45,38 @@ class TrainingWeekScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           if (w.chapterIds.isEmpty) Text(t.treinoWeekReviewOnly),
-          for (final id in w.chapterIds)
-            if (view.chapter(id) case final c?)
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: LucenaCard(
-                  onTap: () => onChapter(c.id),
-                  child: Column(
-                    key: TrainingGoalKeys.weekChapter(c.id),
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        t.treinoChapterLine(view.chapterNumber(c.id), c.title),
-                        style: theme.textTheme.titleMedium,
+          ListaEmOrdem(
+            itens: [
+              for (final id in w.chapterIds)
+                if (view.chapter(id) case final c?)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: LucenaCard(
+                      onTap: () => onChapter(c.id),
+                      child: Column(
+                        key: TrainingGoalKeys.weekChapter(c.id),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t.treinoChapterLine(
+                              view.chapterNumber(c.id),
+                              c.title,
+                            ),
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          Text(
+                            t.treinoLessonsDone(
+                              view.progress(c).lessonsDone,
+                              c.lessonIds.length,
+                            ),
+                          ),
+                          if (c.testId != null) Text(t.treinoChapterTest),
+                        ],
                       ),
-                      Text(
-                        t.treinoLessonsDone(
-                          view.progress(c).lessonsDone,
-                          c.lessonIds.length,
-                        ),
-                      ),
-                      if (c.testId != null) Text(t.treinoChapterTest),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+            ],
+          ),
         ];
       },
     );
