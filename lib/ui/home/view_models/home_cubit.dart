@@ -5,6 +5,7 @@ import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import 'package:dartchess/dartchess.dart' show Move, Side;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/lesson_content.dart';
 import '../../../data/repositories/training/course_training_repository.dart'
@@ -589,10 +590,7 @@ class HomeCubit extends Cubit<HomeState> {
         endgame: endgame,
         nickname: profile.nickname,
         level: profile.level,
-        ratingChange: history.length < 2
-            ? null
-            : history.last.rating.rounded -
-                  history[history.length - 2].rating.rounded,
+        ratingChange: history.lastChange,
         layout: layout,
         featured: featured,
         goal: goal,
@@ -602,7 +600,7 @@ class HomeCubit extends Cubit<HomeState> {
         journeyStarted: fulfilled.isNotEmpty,
         streak: streak,
         placementDone: placementDone,
-        ratedGames: history.where((entry) => !entry.isBonus).length,
+        ratedGames: history.ratedGames,
         training: training,
       ),
     );

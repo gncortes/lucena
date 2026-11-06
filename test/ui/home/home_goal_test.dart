@@ -228,7 +228,11 @@ void main() {
 
       for (var i = 0; i < 3; i++) {
         ratings.entries.add(
-          RatingEntry(rating: PlayerRating.start(800 + i), at: now()),
+          RatingEntry(
+            rating: PlayerRating.start(800 + i),
+            at: now(),
+            gameId: i + 1,
+          ),
         );
       }
       final state = await load(GoalPreference.learn, ratings: ratings);

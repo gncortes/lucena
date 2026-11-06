@@ -23,6 +23,7 @@ import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/level_source.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/platform_rating.dart';
+import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
@@ -222,10 +223,14 @@ class LevelCubit extends Cubit<LevelState> {
     this._accounts,
     this._sync,
     this._now = const SystemNow(),
+    this._rating,
   }) : super(LevelState(choice: inTour ? LevelChoice.zero : LevelChoice.test));
 
   final AnalyticsRepository _analytics;
   final AccountRepository? _accounts;
+
+  /// O rating do app: o nível escolhido vira o atual, mesmo com partidas.
+  final RatingRepository? _rating;
   final SyncScheduler? _sync;
   final Now _now;
   StreamSubscription<Account?>? _accountSubscription;
@@ -558,6 +563,7 @@ class LevelCubit extends Cubit<LevelState> {
         goal: zero ? GoalPreference.learn : saved.goal,
       );
       await _profile.save(profile);
+      await _rating?.setLevel(rating);
       unawaited(_counted(source, rating, via: via));
       final lichess = source == LevelSource.lichess;
       if (lichess) {

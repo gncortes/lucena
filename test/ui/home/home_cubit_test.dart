@@ -410,8 +410,8 @@ void main() {
     );
     await progress.addAttempt(game);
     await progress.addAttempt(game.copyWith(outcome: AttemptOutcome.loss));
-    await rating.rate(game, userSide: Side.white, drawGoal: false);
-    await rating.rate(game, userSide: Side.white, drawGoal: false);
+    await rating.rate(game, userSide: Side.white, drawGoal: false, gameId: 1);
+    await rating.rate(game, userSide: Side.white, drawGoal: false, gameId: 2);
 
     final home = cubit();
     await home.load();
