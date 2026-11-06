@@ -27,6 +27,7 @@ import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/complete_training_lesson.dart';
+import '../../../domain/use_cases/training/training_date.dart';
 import '../../../domain/use_cases/training/double_training_goals.dart';
 import '../../core/utils/save_retry.dart';
 
@@ -156,6 +157,15 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
       onError: (Object error, StackTrace stack) {},
     );
     return next;
+  }
+
+  /// Lições concluídas no dia de hoje (data pelo `Now` injetado).
+  int get lessonsToday {
+    final today = trainingDate(now());
+    return state.training?.completedLessons.values
+            .where((date) => date == today)
+            .length ??
+        0;
   }
 
   Future<void> load() => _serial(() async {

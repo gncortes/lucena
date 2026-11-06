@@ -111,7 +111,12 @@ void main() {
           final card = find.byKey(CourseGuideKeys.chapterLesson('actual-test'));
           if (sample == 'locked' || sample == 'open') {
             expect(card, findsNothing);
-            expect(find.text(t.trainingProgressEmptyTitle), findsOneWidget);
+            // Uma lição concluída já conta como progresso (S5); o vazio só
+            // aparece se nada foi feito.
+            expect(
+              find.text(t.trainingProgressEmptyTitle),
+              sample == 'open' ? findsNothing : findsOneWidget,
+            );
             expect(find.byKey(CourseGuideKeys.levelTest), findsNothing);
             expect(tester.takeException(), isNull);
             return;

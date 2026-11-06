@@ -9,6 +9,7 @@ abstract final class TrainingKeys {
   static const exercisePage = Key('training.exercisePage');
   static const exerciseAnalyze = Key('training.exerciseAnalyze');
   static const progressEmpty = Key('training.progressEmpty');
+  static const progressToday = Key('training.progressToday');
   static const testLeaveDialog = Key('training.testLeaveDialog');
   static const testContinue = Key('training.testContinue');
   static const testLeave = Key('training.testLeave');

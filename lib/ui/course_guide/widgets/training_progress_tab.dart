@@ -21,6 +21,7 @@ import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/motion/abas_fade_through.dart';
 import '../../core/motion/barra_que_enche.dart';
 import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/numero_que_conta.dart';
@@ -175,9 +176,12 @@ class TrainingProgressTab extends StatelessWidget {
       }
       final cycles = Map.fromEntries(
         training.cycles.entries.where(
-          (entry) => entry.value.cycleDays.isNotEmpty,
+          (entry) =>
+              entry.value.cycleDays.isNotEmpty ||
+              training.completedLessons.containsKey(entry.key),
         ),
       );
+      final lessonsToday = context.read<CourseGuideCubit>().lessonsToday;
       final tracks = Map.fromEntries(
         activeOpeningTracks(training, data).where(
           (entry) =>
@@ -201,6 +205,7 @@ class TrainingProgressTab extends StatelessWidget {
           .toList();
       final levelTest = state.levelTestProgress;
       if (cycles.isEmpty &&
+          lessonsToday == 0 &&
           tracks.isEmpty &&
           tests.isEmpty &&
           levelTest == null) {
@@ -211,16 +216,19 @@ class TrainingProgressTab extends StatelessWidget {
           title: t.trainingProgressEmptyTitle,
           message: t.trainingProgressEmptyBody,
         );
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: footer == null
-              ? Center(child: empty)
-              : Column(
-                  children: [
-                    Expanded(child: Center(child: empty)),
-                    footer!,
-                  ],
-                ),
+        return AbasFadeThrough(
+          child: Padding(
+            key: const ValueKey('progress-empty'),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: footer == null
+                ? Center(child: empty)
+                : Column(
+                    children: [
+                      Expanded(child: Center(child: empty)),
+                      footer!,
+                    ],
+                  ),
+          ),
         );
       }
       final themes =
@@ -233,309 +241,369 @@ class TrainingProgressTab extends StatelessWidget {
               return openA ? 0 : ca.score.compareTo(cb.score);
             });
       final colors = Theme.of(context).colorScheme;
-      return ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        children: [
-          if (themes.isNotEmpty)
-            _card(
-              context,
-              children: [
-                Text(
-                  t.trainingMasteryTitle,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Text(
-                  t.trainingMasteryNote,
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(letterSpacing: 0),
-                ),
-                for (final lesson in themes)
-                  InkWell(
-                    key: TrainingKeys.masteryRow(lesson.id),
-                    onTap: () => onTheme(lesson.id),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Column(
-                        spacing: 6,
-                        children: [
-                          Row(
-                            spacing: 8,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  trainingMasteryLessonTitle(context, lesson),
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                        letterSpacing: 0,
-                                      ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              ValorQueAnima(
-                                valor:
-                                    (cycles[lesson.id]!.cycleDays.length < 7
-                                            ? cycles[lesson.id]!
-                                                  .cycleDays
-                                                  .length
-                                            : cycles[lesson.id]!.score)
-                                        .toDouble(),
-                                duracao: LucenaMotion.numeroConta,
-                                builder: (context, agora) => Text(
-                                  cycles[lesson.id]!.cycleDays.length < 7
-                                      ? t.trainingCycleDays(agora.round())
-                                      : t.trainingPercent(agora.round()),
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                        fontFeatures: const [
-                                          FontFeature.tabularFigures(),
-                                        ],
-                                      ),
-                                ),
-                              ),
-                              const Icon(Icons.chevron_right),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsetsDirectional.only(end: 28),
-                            child: SizedBox(
-                              height: 14,
-                              child: LayoutBuilder(
-                                builder: (context, _) {
-                                  final cycle = cycles[lesson.id]!;
-                                  final incomplete = cycle.cycleDays.length < 7;
-                                  final color = incomplete
-                                      ? colors.outlineVariant
-                                      : cycle.score >= 70
-                                      ? AppColors.trainingDayCorrect
-                                      : cycle.score >= 30
-                                      ? AppColors.trainingMasteryDeveloping
-                                      : colors.error;
-                                  return Center(
-                                    child: SizedBox(
-                                      height: 8,
-                                      child: BarraQueEnche(
-                                        valor: incomplete
-                                            ? cycle.cycleDays.length / 7
-                                            : cycle.score / 100,
-                                        cor: color,
-                                        corDoTrilho: Theme.of(context)
-                                            .scaffoldBackgroundColor,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+      return AbasFadeThrough(
+        child: ListView(
+          key: const ValueKey('progress-content'),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          children: [
+            if (lessonsToday > 0) ...[
+              _todayCard(context, lessonsToday),
+              const SizedBox(height: 12),
+            ],
+            if (themes.isNotEmpty)
+              _card(
+                context,
+                children: [
+                  Text(
+                    t.trainingMasteryTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-              ],
-            ),
-          if (tracks.isNotEmpty) ...[
-            if (themes.isNotEmpty) const SizedBox(height: 12),
-            _card(
-              context,
-              children: [
-                Text(
-                  t.trainingOpeningsTitle,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Text(
-                  t.trainingOpeningAccuracyNote,
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(letterSpacing: 0),
-                ),
-                for (final entry in tracks.entries)
-                  InkWell(
-                    key: TrainingKeys.openingCard(entry.key),
-                    onTap: onOpenings,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 6,
-                      children: [
-                        Row(
-                          spacing: 8,
+                  Text(
+                    t.trainingMasteryNote,
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(letterSpacing: 0),
+                  ),
+                  for (final lesson in themes)
+                    InkWell(
+                      key: TrainingKeys.masteryRow(lesson.id),
+                      onTap: () => onTheme(lesson.id),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Column(
+                          spacing: 6,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    trainingProgressOpeningTitle(
-                                      context,
-                                      data.openings[entry.key]!.first,
-                                    ),
+                            Row(
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    trainingMasteryLessonTitle(context, lesson),
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
-                                        ?.copyWith(fontWeight: FontWeight.w500),
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          letterSpacing: 0,
+                                        ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  Text(
-                                    data.openings[entry.key]!.first.black
-                                        ? t.sideBlack
-                                        : t.sideWhite,
+                                ),
+                                ValorQueAnima(
+                                  valor:
+                                      (cycles[lesson.id]!.cycleDays.length < 7
+                                              ? cycles[lesson.id]!
+                                                    .cycleDays
+                                                    .length
+                                              : cycles[lesson.id]!.score)
+                                          .toDouble(),
+                                  duracao: LucenaMotion.numeroConta,
+                                  builder: (context, agora) => Text(
+                                    cycles[lesson.id]!.cycleDays.length < 7
+                                        ? t.trainingCycleDays(agora.round())
+                                        : t.trainingPercent(agora.round()),
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodySmall,
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          fontFeatures: const [
+                                            FontFeature.tabularFigures(),
+                                          ],
+                                        ),
                                   ),
-                                ],
+                                ),
+                                const Icon(Icons.chevron_right),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                end: 28,
                               ),
-                            ),
-                            Text(
-                              OpeningTrechoRules.currentProgress(
-                                        entry.value,
-                                        data.openings[entry.key]!,
-                                      ).done >=
-                                      data.openings[entry.key]!.length
-                                  ? t.trainingOpeningAllDoneShort
-                                  : t.trainingOpeningPartsSummary(
-                                      OpeningTrechoRules.currentProgress(
-                                        entry.value,
-                                        data.openings[entry.key]!,
-                                      ).done,
-                                      data.openings[entry.key]!.length,
-                                    ),
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.w500),
-                            ),
-                            const Icon(Icons.chevron_right),
-                          ],
-                        ),
-                        Row(
-                          spacing: 4,
-                          children: [
-                            for (final part in data.openings[entry.key]!)
-                              Expanded(
-                                child: Builder(
-                                  builder: (context) {
-                                    final values =
-                                        entry.value.firstTry[part.id] ??
-                                        const <bool>[];
-                                    final percent = values.isEmpty
-                                        ? 0
-                                        : (100 *
-                                                  values
-                                                      .where((v) => v)
-                                                      .length /
-                                                  values.length)
-                                              .round();
-                                    return SizedBox(
-                                      height: 8,
-                                      child: DecoratedBox(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            AppShape.full,
-                                          ),
-                                          color: values.isEmpty
-                                              ? Theme.of(context)
-                                                    .scaffoldBackgroundColor
-                                              : openingAccuracyColor(percent),
+                              child: SizedBox(
+                                height: 14,
+                                child: LayoutBuilder(
+                                  builder: (context, _) {
+                                    final cycle = cycles[lesson.id]!;
+                                    final incomplete =
+                                        cycle.cycleDays.length < 7;
+                                    final color = incomplete
+                                        ? colors.outlineVariant
+                                        : cycle.score >= 70
+                                        ? AppColors.trainingDayCorrect
+                                        : cycle.score >= 30
+                                        ? AppColors.trainingMasteryDeveloping
+                                        : colors.error;
+                                    return Center(
+                                      child: SizedBox(
+                                        height: 8,
+                                        child: BarraQueEnche(
+                                          valor: incomplete
+                                              ? cycle.cycleDays.length / 7
+                                              : cycle.score / 100,
+                                          cor: color,
+                                          corDoTrilho: Theme.of(context)
+                                              .scaffoldBackgroundColor,
                                         ),
                                       ),
                                     );
                                   },
                                 ),
                               ),
+                            ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
+                ],
+              ),
+            if (tracks.isNotEmpty) ...[
+              if (themes.isNotEmpty) const SizedBox(height: 12),
+              _card(
+                context,
+                children: [
+                  Text(
+                    t.trainingOpeningsTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-              ],
-            ),
-          ],
-          if (tests.isNotEmpty || levelTest != null) ...[
-            if (themes.isNotEmpty || tracks.isNotEmpty)
-              const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-              child: Text(
-                t.trainingTestsTitle,
-                style: Theme.of(context).textTheme.titleMedium,
+                  Text(
+                    t.trainingOpeningAccuracyNote,
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(letterSpacing: 0),
+                  ),
+                  for (final entry in tracks.entries)
+                    InkWell(
+                      key: TrainingKeys.openingCard(entry.key),
+                      onTap: onOpenings,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 6,
+                        children: [
+                          Row(
+                            spacing: 8,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      trainingProgressOpeningTitle(
+                                        context,
+                                        data.openings[entry.key]!.first,
+                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                    ),
+                                    Text(
+                                      data.openings[entry.key]!.first.black
+                                          ? t.sideBlack
+                                          : t.sideWhite,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                OpeningTrechoRules.currentProgress(
+                                          entry.value,
+                                          data.openings[entry.key]!,
+                                        ).done >=
+                                        data.openings[entry.key]!.length
+                                    ? t.trainingOpeningAllDoneShort
+                                    : t.trainingOpeningPartsSummary(
+                                        OpeningTrechoRules.currentProgress(
+                                          entry.value,
+                                          data.openings[entry.key]!,
+                                        ).done,
+                                        data.openings[entry.key]!.length,
+                                      ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                              ),
+                              const Icon(Icons.chevron_right),
+                            ],
+                          ),
+                          Row(
+                            spacing: 4,
+                            children: [
+                              for (final part in data.openings[entry.key]!)
+                                Expanded(
+                                  child: Builder(
+                                    builder: (context) {
+                                      final values =
+                                          entry.value.firstTry[part.id] ??
+                                          const <bool>[];
+                                      final percent = values.isEmpty
+                                          ? 0
+                                          : (100 *
+                                                    values
+                                                        .where((v) => v)
+                                                        .length /
+                                                    values.length)
+                                                .round();
+                                      return SizedBox(
+                                        height: 8,
+                                        child: DecoratedBox(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              AppShape.full,
+                                            ),
+                                            color: values.isEmpty
+                                                ? Theme.of(context)
+                                                      .scaffoldBackgroundColor
+                                                : openingAccuracyColor(percent),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
-            ),
-            if (levelTest != null) ...[
-              const SizedBox(height: 8),
-              CourseItemTile(
-                key: TrainingKeys.progressLevelTest,
-                state: levelTest.score * 4 >= levelTest.maxScore * 3
-                    ? CourseItemState.approved
-                    : CourseItemState.open,
-                title: t.placementTitle,
-                medal: GradeMedal(
-                  grade:
-                      ExerciseGrade.values[ChapterTestScores.gradeIndex(
-                        levelTest.score,
-                        levelTest.maxScore,
-                      )],
-                  size: CourseItemTile.medalSize,
-                  sideRatio: GradeMedal.compactSideRatio,
+            ],
+            if (tests.isNotEmpty || levelTest != null) ...[
+              if (themes.isNotEmpty || tracks.isNotEmpty)
+                const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                child: Text(
+                  t.trainingTestsTitle,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                onTap: onLevelTest,
               ),
+              if (levelTest != null) ...[
+                const SizedBox(height: 8),
+                CourseItemTile(
+                  key: TrainingKeys.progressLevelTest,
+                  state: levelTest.score * 4 >= levelTest.maxScore * 3
+                      ? CourseItemState.approved
+                      : CourseItemState.open,
+                  title: t.placementTitle,
+                  medal: GradeMedal(
+                    grade:
+                        ExerciseGrade.values[ChapterTestScores.gradeIndex(
+                          levelTest.score,
+                          levelTest.maxScore,
+                        )],
+                    size: CourseItemTile.medalSize,
+                    sideRatio: GradeMedal.compactSideRatio,
+                  ),
+                  onTap: onLevelTest,
+                ),
+              ],
+              for (final test in tests) ...[
+                const SizedBox(height: 8),
+                Builder(
+                  builder: (context) {
+                    final raw = testProgress[test.id];
+                    final percent =
+                        testScores[test.id] ??
+                        (raw == null || raw.maxScore == 0
+                            ? 0
+                            : (100 * raw.score / raw.maxScore).round());
+                    final grade = test.id.startsWith('pilares.') && raw != null
+                        ? ExerciseGrade.values[ChapterTestScores.gradeIndex(
+                            raw.score,
+                            raw.maxScore,
+                          )]
+                        : percent == 100
+                        ? ExerciseGrade.perfect
+                        : percent >= 92
+                        ? ExerciseGrade.excellent
+                        : percent >= 83
+                        ? ExerciseGrade.good
+                        : percent >= 75
+                        ? ExerciseGrade.passed
+                        : ExerciseGrade.below;
+                    final groups = data.lessons
+                        .map((l) => l.groupId)
+                        .toSet()
+                        .toList();
+                    return CourseItemTile(
+                      key: CourseGuideKeys.chapterLesson(test.id),
+                      state: percent >= 75
+                          ? CourseItemState.approved
+                          : CourseItemState.open,
+                      title: t.trainingChapterLabel(
+                        groups.indexOf(test.groupId) + 1,
+                      ),
+                      medal: GradeMedal(
+                        grade: grade,
+                        size: CourseItemTile.medalSize,
+                        sideRatio: GradeMedal.compactSideRatio,
+                      ),
+                      onTap: onTest == null ? null : () => onTest!(test.id),
+                    );
+                  },
+                ),
+              ],
             ],
-            for (final test in tests) ...[
-              const SizedBox(height: 8),
-              Builder(
-                builder: (context) {
-                  final raw = testProgress[test.id];
-                  final percent =
-                      testScores[test.id] ??
-                      (raw == null || raw.maxScore == 0
-                          ? 0
-                          : (100 * raw.score / raw.maxScore).round());
-                  final grade = test.id.startsWith('pilares.') && raw != null
-                      ? ExerciseGrade.values[ChapterTestScores.gradeIndex(
-                          raw.score,
-                          raw.maxScore,
-                        )]
-                      : percent == 100
-                      ? ExerciseGrade.perfect
-                      : percent >= 92
-                      ? ExerciseGrade.excellent
-                      : percent >= 83
-                      ? ExerciseGrade.good
-                      : percent >= 75
-                      ? ExerciseGrade.passed
-                      : ExerciseGrade.below;
-                  final groups = data.lessons
-                      .map((l) => l.groupId)
-                      .toSet()
-                      .toList();
-                  return CourseItemTile(
-                    key: CourseGuideKeys.chapterLesson(test.id),
-                    state: percent >= 75
-                        ? CourseItemState.approved
-                        : CourseItemState.open,
-                    title: t.trainingChapterLabel(
-                      groups.indexOf(test.groupId) + 1,
-                    ),
-                    medal: GradeMedal(
-                      grade: grade,
-                      size: CourseItemTile.medalSize,
-                      sideRatio: GradeMedal.compactSideRatio,
-                    ),
-                    onTap: onTest == null ? null : () => onTest!(test.id),
-                  );
-                },
-              ),
-            ],
-          ],
-          const SizedBox(height: 12),
-          const _ProgressLegend(),
-          if (footer case final footer?) ...[
             const SizedBox(height: 12),
-            footer,
+            const _ProgressLegend(),
+            if (footer case final footer?) ...[
+              const SizedBox(height: 12),
+              footer,
+            ],
           ],
-        ],
+        ),
       );
     },
   );
+  static Widget _todayCard(BuildContext context, int lessons) {
+    final t = context.l10n, text = Theme.of(context).textTheme;
+    return Material(
+      key: TrainingKeys.progressToday,
+      color: AppColors.cardSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppShape.card),
+        side: const BorderSide(color: AppColors.cardOutline),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          spacing: 12,
+          children: [
+            const Icon(
+              Icons.check_circle,
+              size: 28,
+              color: AppColors.trainingDayCorrect,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    t.trainingGoalsToday,
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    t.trainingProgressTodayLessons(lessons),
+                    style: text.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   static Widget _card(BuildContext context, {required List<Widget> children}) =>
       Material(
         // Cartão do canvas: #FAFBF9 com contorno, não o branco puro.
