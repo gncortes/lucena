@@ -122,6 +122,22 @@ void main() {
       },
     );
 
+    test('tudo "Não sei": o nível real fica abaixo de 1000, Iniciante, sem '
+        'corte no piso', () {
+      var state = engine.start(seed: 1);
+      while (!state.isFinished) {
+        state = engine.answer(
+          state,
+          engine.next(state)!,
+          PlacementOutcome.dontKnow,
+        );
+      }
+      final result = engine.result(state, takenAt: DateTime.utc(2026));
+      expect(result.theta, lessThan(1000));
+      expect(result.level, RatingLevel.beginner);
+      expect(result.low, lessThanOrEqualTo(result.theta));
+    });
+
     test('faixa já escolhida: θ parte do meio dela', () {
       final state = engine.start(seed: 1, prior: RatingLevel.expert);
       expect(state.theta, 2050);

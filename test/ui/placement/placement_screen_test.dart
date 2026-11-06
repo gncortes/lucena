@@ -43,6 +43,7 @@ void main() {
   final geometryJson = syntheticItemsJson();
   for (final item in geometryJson['items'] as List<Map<String, dynamic>>) {
     item['prompt'] = 'placementCheckMateNone';
+    if (item['type'] == 'squares') item['squares'] = ['c3', 'd4', 'e5'];
     if (item['type'] == 'choice') {
       item['options'] = ['check', 'mate', 'stalemate', 'none'];
       item['answer'] = 'check';
@@ -683,6 +684,74 @@ void main() {
       final fim = '${result.theta}';
       expect(texto(), fim);
       expect(comeco, isNot(fim));
+    });
+
+    testWidgets(
+      'resultado: o número mostrado é o do perfil e cabe na '
+      'escala (o início dela desce até o valor); a lista tem barra de rolagem sempre visível',
+      (tester) async {
+        final (cubit, profile) = await pump(tester);
+        await cubit.start();
+        for (var i = 0; i < PlacementState.questionCount; i++) {
+          await cubit.answer(PlacementOutcome.dontKnow);
+        }
+        await tester.pumpAndSettle();
+        final numero = find.descendant(
+          of: find.byKey(PlacementKeys.level),
+          matching: find.byType(NumeroQueConta),
+        );
+        final shown = int.parse(
+          tester
+              .widget<Text>(
+                find.descendant(of: numero, matching: find.byType(Text)),
+              )
+              .data!,
+        );
+        expect(shown, lessThan(1000));
+        final start = int.parse(
+          tester.widget<Text>(find.byKey(PlacementKeys.rulerStart)).data!,
+        );
+        expect(start, lessThanOrEqualTo(shown));
+        final result = cubit.state.result!;
+        expect(start, result.low < shown ? result.low : shown);
+        await tester.tap(find.byKey(PlacementKeys.useLevel));
+        await tester.pumpAndSettle();
+        expect(profile.profile.rating, shown);
+
+        final bar = find.descendant(
+          of: find.byKey(PlacementKeys.result),
+          matching: find.byType(Scrollbar),
+        );
+        expect(bar, findsOneWidget);
+        expect(tester.widget<Scrollbar>(bar).thumbVisibility, isTrue);
+      },
+    );
+
+    testWidgets('pergunta de casas: diz quantas casas faltam marcar', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, geometry: true);
+      await cubit.start();
+      while (cubit.state.item?.type != PlacementItemType.squares) {
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      final item = cubit.state.item!;
+      final total = item.squares.toSet().length;
+      final hint = find.byKey(PlacementKeys.squaresLeft);
+      expect(hint, findsOneWidget);
+      String texto() => tester.widget<Text>(hint).data!;
+      expect(texto(), total == 1 ? 'Falta 1 casa' : 'Faltam $total casas');
+      cubit.toggleSquare(item.squares.first);
+      await tester.pumpAndSettle();
+      expect(
+        texto(),
+        total == 1
+            ? 'Pode confirmar'
+            : total == 2
+            ? 'Falta 1 casa'
+            : 'Faltam ${total - 1} casas',
+      );
     });
   });
 }
