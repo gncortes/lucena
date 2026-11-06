@@ -1634,7 +1634,7 @@ void main() {
           // Com fala curta, longa ou sem fala: o mesmo tabuleiro (D11 V2).
           if (original != null) expect(board, original);
           original = board;
-          expect(board.width, lessThan(size.width));
+          expect(board.width, lessThanOrEqualTo(size.width));
           expect(find.text('Coco'), findsOneWidget);
           if (text == null) {
             expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
@@ -1678,6 +1678,32 @@ void main() {
         expect(tester.takeException(), isNull);
       }
     });
+    // Em tela mais baixa (360×800) a altura livre limita o lado: a partida não
+    // rola. Nas telas do vídeo (411×914) ele vai de ponta a ponta.
+    for (final size in const [Size(411, 914), Size(412, 915)]) {
+      testWidgets(
+        'T85 $size: contra personagem sem relógio, tabuleiro de ponta a ponta',
+        (tester) async {
+          await pumpScreen(
+            tester,
+            screen: size * 2.625,
+            systemInsets: const EdgeInsets.only(top: 52, bottom: 24),
+            mode: machine,
+            characters: _BubbleCharacters(shortSpeech),
+          );
+          await talk.settled();
+          await tester.pumpAndSettle();
+          final context = tester.element(find.byType(FreeBoardScreen));
+          // O caso do vídeo: personagem que fala, com o espaço da fala.
+          expect(context.read<TalkCubit>().state.character, isNotNull);
+          final board = boardRect(tester);
+          expect(board.width, closeTo(size.width, .5));
+          expect(board.left, closeTo(0, .5));
+          expectScreenBoardCenter(tester, board);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
     for (final insets in const [
       EdgeInsets.only(top: 52, bottom: 24),
       EdgeInsets.only(top: 24, bottom: 48),
@@ -3872,13 +3898,11 @@ void main() {
         above +
         (clocks == ClockPosition.bottom ? speechRoom + 4 : speechRoom - 12);
     topExtent = topReserve + 8;
-    // Tela baixa: o piso de 0,8 nunca passa da altura livre (sem rolar).
+    // De ponta a ponta: só diminui se a altura livre não couber a largura.
     final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea)).height;
     final below = clocks == ClockPosition.top ? 0.0 : 68.0 + 8;
     final fit = area - topExtent - below - GameActionsBar.height;
-    side = (2 * (center - contentTop - topExtent))
-        .clamp(min(width * .8, max(0, fit)), width)
-        .toDouble();
+    side = min(width, max(0, fit)).toDouble();
   }
   return (side: side, center: max(center, contentTop + topExtent + side / 2));
 }

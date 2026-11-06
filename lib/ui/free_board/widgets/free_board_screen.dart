@@ -612,24 +612,20 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                         (clocks == ClockPosition.bottom
                             ? speechRoom + 4
                             : math.max(0, speechRoom - 12));
-                    // Tela baixa: abaixo de [_minBoardFraction] da largura, o
-                    // tabuleiro desce do meio, mas nunca passa da altura livre
-                    // (a partida não rola; o tamanho segue fixo na partida).
+                    // O tabuleiro ocupa a largura toda (de ponta a ponta) e
+                    // desce do meio o necessário; só diminui quando a altura
+                    // livre não cabe a largura (a partida não rola; o tamanho
+                    // segue fixo na partida).
                     final fitHeight =
                         constraints.maxHeight -
                         reserveTop -
                         _boardGap -
                         (clocksBelow > 0 ? clocksBelow + _boardGap : 0) -
                         footerHeight;
-                    boardSide = (2 * (screenCenter - reserveTop - _boardGap))
-                        .clamp(
-                          math.min(
-                            constraints.maxWidth * _minBoardFraction,
-                            math.max(0, fitHeight),
-                          ),
-                          constraints.maxWidth,
-                        )
-                        .toDouble();
+                    boardSide = math.min(
+                      constraints.maxWidth,
+                      math.max(0, fitHeight),
+                    );
                   }
                   final topExtent = reserveTop > 0
                       ? reserveTop + _boardGap
@@ -1153,7 +1149,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   }
 
   /// O menor tabuleiro com o espaço fixo da fala, em fração da largura.
-  static const _minBoardFraction = 0.8;
 }
 
 /// O rodapé da partida terminada contra a máquina: só "Ver o resultado"
