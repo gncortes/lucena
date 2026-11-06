@@ -389,7 +389,10 @@ class SaleSummaryChapter extends StatelessWidget {
     return _SaleTopBorderBlock(
       key: CoursePreviewKeys.summaryChapter(n),
       children: [
-        Text('$n · ${chapter.title}', style: saleStrong(context, size: 15)),
+        Text(
+          context.l10n.venSummaryChapterTitle(n, chapter.title),
+          style: saleStrong(context, size: 15),
+        ),
         for (final (j, lesson) in chapter.lessons.indexed)
           _SaleNumberedRow(mark: '$n.${j + 1}', text: lesson),
         _SaleNumberedRow(

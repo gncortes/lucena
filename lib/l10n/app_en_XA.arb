@@ -2646,6 +2646,7 @@
   "venRefMonthly": "[Ŕ$ 19.90 one]",
   "venSaleBuy": "[Šéé bûýîñĝ öptîöñš one two]",
   "venChapterTest": "[Çhåptéŕ téšt · {count} éxéŕçîšéš one two three]",
+  "venSummaryChapterTitle": "[{number} · {title} one two]",
   "venAboutTitle": "[Åböût Pîlåŕéš one two]",
   "venAboutCardLine": "[Çöñtéñt, plåñ åñd qûéštîöñš åböût Pîlåŕéš dö Xådŕéž. one two three four five]",
   "venAboutHow": "[Höw thé çöûŕšé wöŕkš one two]",

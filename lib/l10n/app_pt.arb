@@ -2892,6 +2892,7 @@
       }
     }
   },
+  "venSummaryChapterTitle": "{number} · {title}",
   "venAboutTitle": "Sobre o Pilares",
   "venAboutCardLine": "Conteúdo, plano e dúvidas do Pilares do Xadrez.",
   "venAboutHow": "Como o curso funciona",

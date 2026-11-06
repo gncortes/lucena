@@ -12334,6 +12334,7 @@
   },
   "desafiosFeaturedTournamentFinals": "{count, plural, =1{One endgame to practice} other{{count} endgames to practice}}",
   "@desafiosFeaturedTournamentFinals": {
+    "description": "Challenges: count of endgames from the featured tournament",
     "placeholders": {
       "count": {
         "type": "int"
@@ -12342,6 +12343,7 @@
   },
   "desafiosTournamentDates": "{start} to {end}",
   "@desafiosTournamentDates": {
+    "description": "Challenges: tournament date range (start and end dates)",
     "placeholders": {
       "start": {
         "type": "String"
@@ -12353,6 +12355,7 @@
   },
   "desafiosRaceHeadline": "{minutes}-min race · {reason}",
   "@desafiosRaceHeadline": {
+    "description": "Challenges: race result headline with its length in minutes and how it ended",
     "placeholders": {
       "minutes": {
         "type": "int"
@@ -12363,13 +12366,20 @@
     }
   },
   "desafiosRaceEndTime": "time is up",
-  "@desafiosRaceEndTime": {},
+  "@desafiosRaceEndTime": {
+    "description": "Challenges: race ending reason, the clock ran out (lowercase, goes inside the headline)"
+  },
   "desafiosRaceEndErrors": "3 mistakes",
-  "@desafiosRaceEndErrors": {},
+  "@desafiosRaceEndErrors": {
+    "description": "Challenges: race ending reason, three mistakes (lowercase, goes inside the headline)"
+  },
   "desafiosRaceEndQuit": "quit",
-  "@desafiosRaceEndQuit": {},
+  "@desafiosRaceEndQuit": {
+    "description": "Challenges: race ending reason, the player quit (lowercase, goes inside the headline)"
+  },
   "desafiosRaceNewRecord": "New {minutes}-min record! It was {previous}",
   "@desafiosRaceNewRecord": {
+    "description": "Challenges: new race record with the previous best score",
     "placeholders": {
       "minutes": {
         "type": "int"
@@ -12381,6 +12391,7 @@
   },
   "desafiosRaceSeeAll": "See all {count}",
   "@desafiosRaceSeeAll": {
+    "description": "Challenges: link that opens the full list of races",
     "placeholders": {
       "count": {
         "type": "int"
@@ -12388,9 +12399,13 @@
     }
   },
   "desafiosShareError": "Could not share the link.",
-  "@desafiosShareError": {},
+  "@desafiosShareError": {
+    "description": "Challenges: error when sharing the challenge link fails"
+  },
   "desafiosSpeedrunEmpty": "No speedruns at this level.",
-  "@desafiosSpeedrunEmpty": {},
+  "@desafiosSpeedrunEmpty": {
+    "description": "Challenges: empty state when the level has no speedruns"
+  },
   "partidaConclusaoVerAnalise": "View analysis",
   "@partidaConclusaoVerAnalise": {
     "description": "Footer button on the win conclusion that opens the game analysis"
@@ -12408,7 +12423,9 @@
     "description": "Training goal flow copy."
   },
   "desafiosSpeedrunRecordHere": "Your record for this speedrun",
-  "@desafiosSpeedrunRecordHere": {},
+  "@desafiosSpeedrunRecordHere": {
+    "description": "Challenges: label of the player's own record in the speedrun list"
+  },
   "partidaAnaliseAntiga": "This game is from before automatic analysis. A quick analysis takes a few seconds; a deep one, about a minute.",
   "@partidaAnaliseAntiga": {
     "description": "Game details: explains that an old game has no analysis yet, shown above the Analyze button"
@@ -13831,6 +13848,18 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "venSummaryChapterTitle": "{number} · {title}",
+  "@venSummaryChapterTitle": {
+    "description": "Course sale summary: chapter number and title",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
       }
     }
   },
