@@ -2726,5 +2726,6 @@
   "conProgressHistory": "[Hîštöŕý one]",
   "conProgressAchievements": "[Åçhîévéméñtš one two]",
   "conProgressSeeAll": "[Šéé åll one]",
-  "trainingProgressTodayLessons": "{count, plural, =1{[1 léššöñ çömplétéd one two]} other{[{count} léššöñš çömplétéd one two three]}}"
+  "trainingProgressTodayLessons": "{count, plural, =1{[1 léššöñ çömplétéd one two]} other{[{count} léššöñš çömplétéd one two three]}}",
+  "trainingDoubleOfferMinutes": "[Thåt åddš åböût {minutes} mîñ öf štûdý tödåý. one two three four]"
 }

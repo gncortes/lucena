@@ -5,6 +5,7 @@ import '../../models/training/training_resources.dart';
 import '../../models/training/training_state.dart';
 import '../now.dart';
 import 'goal/plan_status.dart';
+import 'goal_minutes.dart';
 import 'training_date.dart';
 import 'opening_trecho_rules.dart';
 
@@ -57,19 +58,44 @@ final class BuildDayGoals {
     // Pending lessons retain their place without accumulating a missed day's quota.
     lessons.addAll(pending);
     lessons.addAll(_courseLessons(state, resources, date, quota, lessons));
+    final followUps = config.followUps.build(state, resources, now);
+    if (quota > 0) {
+      lessons.addAll(
+        _lessonsToFillPlan(state, resources, date, lessons, followUps),
+      );
+    }
     final hasLesson = lessons.isNotEmpty;
     return state.copyWith(
       day: DayGoals(
         date: date,
         plan: state.plan,
         studyDay: true,
-        goals: [...lessons, ...config.followUps.build(state, resources, now)],
+        goals: [...lessons, ...followUps],
         lessonsLocked: resources.lockedLessons.isNotEmpty,
       ),
       lastLessonDate: hasLesson ? date : null,
       offDayCredits: [],
       deferredGoals: [],
     );
+  }
+
+  /// Dia sem exercício nem abertura (os primeiros dias de curso, em que nenhum
+  /// tema tem ciclo ainda): a lição da cota sozinha vale menos que o plano
+  /// (15 min contra 30), então entra mais uma lição, na ordem do curso, para o
+  /// dia só fechar com o tempo do plano. Com exercícios no dia, o plano é
+  /// "uma lição nova por dia, mais os exercícios" e nada entra. Só vale para o
+  /// curso com [TrainingCourseConfig.fillsPlanMinutes].
+  List<TrainingGoal> _lessonsToFillPlan(
+    TrainingState state,
+    TrainingResources resources,
+    String date,
+    List<TrainingGoal> lessons,
+    List<TrainingGoal> followUps,
+  ) {
+    if (!config.fillsPlanMinutes || followUps.isNotEmpty) return const [];
+    final total = GoalMinutes(config).ofGoals(lessons);
+    if (total >= state.plan.minutes) return const [];
+    return _courseLessons(state, resources, date, lessons.length + 1, lessons);
   }
 
   /// The next lessons in course order, up to [quota] counting [taken].

@@ -140,6 +140,11 @@ class TrainingGoalsTab extends StatelessWidget {
                   count: cubit.config.option(day.plan.minutes).lessonsPerDay,
                 ),
               ),
+              if (cubit.doubleMinutes() case final minutes when minutes > 0)
+                Text(
+                  t.trainingDoubleOfferMinutes(minutes),
+                  key: TrainingKeys.doubleMinutes,
+                ),
               FilledButton(
                 key: TrainingKeys.doubleButton,
                 style: FilledButton.styleFrom(
@@ -225,6 +230,9 @@ class TrainingGoalsTab extends StatelessWidget {
                   else
                     ValorQueAnima(
                       valor: (counts.total - counts.remaining).toDouble(),
+                      // Dobrar nasce de um toque na própria tela: o número real
+                      // aparece já no primeiro quadro.
+                      contarNaEntrada: !day.doubled,
                       duracao: LucenaMotion.numeroConta,
                       builder: (context, feito) => Text(
                         t.trainingGoalsLeft(

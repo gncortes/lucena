@@ -14193,5 +14193,14 @@
         "type": "int"
       }
     }
+  },
+  "trainingDoubleOfferMinutes": "That adds about {minutes} min of study today.",
+  "@trainingDoubleOfferMinutes": {
+    "description": "Daily goals: minutes the Double action adds to the day.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   }
 }

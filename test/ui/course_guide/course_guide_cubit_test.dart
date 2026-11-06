@@ -160,7 +160,7 @@ void main() {
       expect(cubit.state.training!.day, isNull);
       expect(repository.writes, 0);
       await cubit.start(const TrainingPlan(minutes: 240));
-      expect(cubit.state.training!.day!.goals, hasLength(2));
+      expect(cubit.state.training!.day!.goals, hasLength(3));
       expect(cubit.state.training!.day!.plan.minutes, 240);
     },
   );

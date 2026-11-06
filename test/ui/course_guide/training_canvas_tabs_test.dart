@@ -440,7 +440,9 @@ void main() {
                 matching: find.byType(Material),
               )
               .first;
-          expect(tester.getRect(notice).top, 344);
+          // 470: a primeira meta do plano de 30 min tem 2 lições (B2a), com o
+          // cabeçalho "Lições", e o aviso desce.
+          expect(tester.getRect(notice).top, 470);
         }
         if (name.startsWith('Tour')) {
           for (var i = 1; i < int.parse(name.substring(4)); i++) {

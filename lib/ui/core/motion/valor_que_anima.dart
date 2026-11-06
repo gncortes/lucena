@@ -18,12 +18,18 @@ class ValorQueAnima extends StatefulWidget {
     required this.duracao,
     required this.builder,
     this.curva = LucenaMotion.emphasized,
+    this.contarNaEntrada = true,
     super.key,
   });
 
   final double valor;
   final Duration duracao;
   final Curve curva;
+
+  /// `false` quando o número nasce no meio de uma tela já vista (um painel
+  /// que troca de lugar depois de um toque): mostra o valor real no primeiro
+  /// quadro, sem recomeçar a contagem do zero.
+  final bool contarNaEntrada;
   final Widget Function(BuildContext context, double valor) builder;
 
   @override
@@ -49,7 +55,9 @@ class _ValorQueAnimaState extends State<ValorQueAnima>
     super.didChangeDependencies();
     if (_tween != null) return;
     final tempo = TempoDaContagem.maybeOf(context);
-    final animar = tempo == null
+    final animar = !widget.contarNaEntrada
+        ? false
+        : tempo == null
         ? MovimentoReduzido.animarEntrada(context)
         : tempo.animar && !MovimentoReduzido.of(context);
     if (animar && tempo != null && tempo.atraso > Duration.zero) {

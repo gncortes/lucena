@@ -39,6 +39,9 @@ final class TrainingCourseConfig {
     this.defaultMinutes = 30,
     this.titleKey = 'trainingPilaresTitle',
     this.lessonMinutes = 30,
+    this.exerciseMinutes = 3,
+    this.openingMinutes = 5,
+    this.fillsPlanMinutes = false,
     this.hasHelp = true,
     this.hasLevelTest = false,
     this.doubleRequiresExtraLesson = true,
@@ -72,7 +75,10 @@ final class TrainingCourseConfig {
   final List<TrainingPlanOption> planOptions;
   final TrainingFollowUps followUps;
   final List<GoalSection> sections;
-  final int defaultMinutes, lessonMinutes;
+  final int defaultMinutes, lessonMinutes, exerciseMinutes, openingMinutes;
+
+  /// A meta do dia soma lições até cobrir os minutos do plano.
+  final bool fillsPlanMinutes;
   final bool hasHelp;
   final bool hasLevelTest;
   final bool doubleRequiresExtraLesson;
@@ -140,6 +146,7 @@ final class TrainingCourseConfig {
   static const pilares = TrainingCourseConfig(
     course: TrainingCourse.pilares,
     lessonMinutes: 15,
+    fillsPlanMinutes: true,
     hasLevelTest: true,
     indexSource: 'assets/courses/pilares/index.json',
     followUps: PilaresFollowUps(),
