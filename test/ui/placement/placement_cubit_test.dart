@@ -196,6 +196,20 @@ void main() {
     await placement.start();
     expect(placement.state.test!.initialTheta, greaterThan(1500));
   });
+
+  test('tudo "Não sei": o perfil recebe o mesmo rating do resultado, dentro '
+      'real (abaixo de 1000, sem piso)', () async {
+    final placement = cubit();
+    await placement.load();
+    await placement.start();
+    for (var i = 0; i < PlacementState.questionCount; i++) {
+      await placement.answer(PlacementOutcome.dontKnow);
+    }
+    final result = placement.state.result!;
+    expect(result.theta, lessThan(1000));
+    await placement.apply();
+    expect(profile.profile.rating, result.theta);
+  });
 }
 
 /// O curso que ainda não baixou: ler as aulas falha como no app sem pacote.

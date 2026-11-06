@@ -3023,5 +3023,13 @@
   "conProgressHistory": "Histórico",
   "conProgressAchievements": "Conquistas",
   "conProgressSeeAll": "Ver todas",
-  "trainingProgressTodayLessons": "{count, plural, =0{Nenhuma lição concluída} =1{1 lição concluída} other{{count} lições concluídas}}"
+  "trainingProgressTodayLessons": "{count, plural, =0{Nenhuma lição concluída} =1{1 lição concluída} other{{count} lições concluídas}}",
+  "placementSquaresLeft": "{count, plural, =0{Pode confirmar} =1{Falta 1 casa} other{Faltam {count} casas}}",
+  "@placementSquaresLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -414,6 +414,21 @@ class _Answers extends StatelessWidget {
                 ],
               ),
             ],
+          if (item.type == PlacementItemType.squares &&
+              item.squares.isNotEmpty) ...[
+            Text(
+              l10n.placementSquaresLeft(
+                (item.squares.toSet().length - state.selected.length).clamp(
+                  0,
+                  item.squares.length,
+                ),
+              ),
+              key: PlacementKeys.squaresLeft,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
           if (item.type == PlacementItemType.squares)
             FilledButton(
               key: PlacementKeys.confirm,

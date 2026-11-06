@@ -14193,5 +14193,14 @@
         "type": "int"
       }
     }
+  },
+  "placementSquaresLeft": "{count, plural, =0{You can confirm} =1{1 square left} other{{count} squares left}}",
+  "@placementSquaresLeft": {
+    "description": "Placement test, squares question: how many more squares to mark before confirming.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
