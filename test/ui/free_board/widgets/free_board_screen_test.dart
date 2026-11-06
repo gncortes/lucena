@@ -1718,6 +1718,12 @@ void main() {
       );
       await talk.settled();
       await tester.pumpAndSettle();
+      // As imagens (peças e avatar) decodificam fora do relógio falso: sem
+      // esperar, o print depende de o cache já estar quente (ordem dos testes).
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 500)),
+      );
+      await tester.pumpAndSettle();
       await expectLater(
         find.byType(FreeBoardScreen),
         matchesGoldenFile('goldens/t85/ponta_a_ponta_411x914.png'),

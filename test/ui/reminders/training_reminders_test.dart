@@ -305,14 +305,21 @@ void escolaPayloadTests() {
     };
   }
 
-  test('Escola: lembrete de hoje abre a lição pendente', () async {
-    final result = await payloads(
-      (s) => s.schoolDayOne().copyWith(
-        plan: const TrainingPlan(reminderOn: true, reminderHour: 19),
-      ),
-    );
-    final today = result[RemindersCubit.trainingFirstId + 1];
-    expect(today, startsWith('/school/'));
-    expect(today, contains('origem=treino_lembrete'));
-  });
+  test(
+    'Escola: lembrete de hoje abre a lição pendente',
+    () async {
+      final result = await payloads(
+        (s) => s.schoolDayOne().copyWith(
+          plan: const TrainingPlan(reminderOn: true, reminderHour: 19),
+        ),
+      );
+      final today = result[RemindersCubit.trainingFirstId + 1];
+      expect(today, startsWith('/school/'));
+      expect(today, contains('origem=treino_lembrete'));
+    },
+    // Conteúdo privado: fora do Git e do CI.
+    skip:
+        !File('assets/lessons/course.json').existsSync() ||
+        !File('assets/lessons/pt/lessons.json').existsSync(),
+  );
 }

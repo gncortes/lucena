@@ -17,6 +17,14 @@ class _Files extends AssetService {
 /// T85-D3 (Escola), H-ESC-09 a 13: a lição da Escola com as falas e os
 /// roteiros reais (A torre, Mate de torre).
 void main() {
+  if (!(Directory('assets/lessons/roteiros').existsSync())) {
+    test(
+      'private content required for full Escola scenarios',
+      () {},
+      skip: true,
+    );
+    return;
+  }
   Future<({LessonScriptCubit cubit, FakeLessonSource source})> open(
     String lesson, {
     int stage = 0,

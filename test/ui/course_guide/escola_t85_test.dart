@@ -31,6 +31,15 @@ import '../../../testing/training/training_scenario_builder.dart';
 /// T85-D3 (Escola): textos e estrutura das abas do guia, H-ESC-04, 07, 08,
 /// 19 e 20. Usa o índice real `assets/lessons/course.json`.
 void main() {
+  if (!(File('assets/lessons/course.json').existsSync() &&
+      File('assets/lessons/pt/lessons.json').existsSync())) {
+    test(
+      'private content required for full Escola scenarios',
+      () {},
+      skip: true,
+    );
+    return;
+  }
   late TrainingResources escola;
   setUpAll(() {
     final course = AssetLessonRepository.parseCourse(

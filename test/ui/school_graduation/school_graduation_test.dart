@@ -23,6 +23,15 @@ import '../../../testing/training/training_scenario_builder.dart';
 
 /// T85-D3 H-ESC-22: o diploma da Escola, o resumo por módulo e os destinos.
 void main() {
+  if (!(File('assets/lessons/course.json').existsSync() &&
+      File('assets/lessons/pt/lessons.json').existsSync())) {
+    test(
+      'private content required for full Escola scenarios',
+      () {},
+      skip: true,
+    );
+    return;
+  }
   late List<String> visited;
   late FakeOpeningOfferRepository offer;
 

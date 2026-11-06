@@ -34,6 +34,15 @@ import '../core/motion/entrada_helpers.dart';
 /// T85-D6 L3 (Escola, área Iniciante): H-ANI-07, 16, 17 e 25 nas abas do
 /// guia do curso da Escola.
 void main() {
+  if (!(File('assets/lessons/course.json').existsSync() &&
+      File('assets/lessons/pt/lessons.json').existsSync())) {
+    test(
+      'private content required for full Escola scenarios',
+      () {},
+      skip: true,
+    );
+    return;
+  }
   late TrainingResources escola;
   setUpAll(() {
     final course = AssetLessonRepository.parseCourse(
