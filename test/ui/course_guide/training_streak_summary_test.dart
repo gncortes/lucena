@@ -74,11 +74,12 @@ void main() {
 
   testWidgets('print do cartão com a sequência (411×914)', (tester) async {
     await Goldens.loadFonts();
-    await pump(
-      tester,
-      {d(26), d(27), d(28), d(1, 10)},
-      size: const Size(411, 914),
-    );
+    await pump(tester, {
+      d(26),
+      d(27),
+      d(28),
+      d(1, 10),
+    }, size: const Size(411, 914));
     await expectLater(
       find.byType(Scaffold).first,
       matchesGoldenFile('goldens/p8a/sequencia_411x914.png'),
