@@ -491,6 +491,7 @@ class Dependencies {
     trainingLearning = TrainingLearningBridge(
       courseTraining,
       courses: TrainingCourseConfig.all,
+      activity: activity,
     );
     final endgames = NotifyingEndgameProgressRepository(
       LocalEndgameProgressRepository(preferences),

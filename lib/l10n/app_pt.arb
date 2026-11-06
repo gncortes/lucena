@@ -3033,5 +3033,12 @@
     }
   },
   "lessonRestartNotice": "Você recomeça esta parte do início.",
-  "trainingDoubleOfferMinutes": "Isso soma cerca de {minutes} min de estudo hoje."
+  "trainingDoubleOfferMinutes": "Isso soma cerca de {minutes} min de estudo hoje.",
+  "trainingStreakDays": "{count, plural, =0{0 dias seguidos} =1{1 dia seguido} other{{count} dias seguidos}}",
+  "trainingStreakYesterday": "Ontem contou. Treinar hoje faz {next}.",
+  "trainingStreakToday": "Hoje já contou.",
+  "trainingStreakLost": "Ontem ficou sem treino. Treinar hoje recomeça.",
+  "trainingStreakFirst": "Sua sequência começa hoje",
+  "trainingStreakFirstHint": "Treinar hoje faz o dia 1.",
+  "trainingStreakRecord": "recorde {count}"
 }

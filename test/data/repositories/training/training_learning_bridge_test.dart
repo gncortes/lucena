@@ -17,6 +17,7 @@ import 'package:lucena/domain/use_cases/training/build_day_goals.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
+import '../../../../testing/fakes/fake_activity_repository.dart';
 import '../../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_school_repositories.dart';
@@ -201,6 +202,37 @@ void main() {
       );
     },
   );
+
+  for (final kind in ['endgame_lesson', 'school_lesson']) {
+    test('P8 A: concluir $kind marca o dia na sequência', () async {
+      final activity = FakeActivityRepository(now: now);
+      bridge = TrainingLearningBridge(repository, activity: activity);
+      expect(await activity.days(), isEmpty);
+      await bridge(
+        LearningUnitCompletion(
+          kind: kind,
+          unitId: 'pilares/c1/topic',
+          at: now(),
+          testPassed: false,
+        ),
+      );
+      expect(await activity.days(), {DateTime(2026, 10, 26)});
+    });
+  }
+
+  test('P8 A: unidade de outro tipo não marca o dia', () async {
+    final activity = FakeActivityRepository(now: now);
+    bridge = TrainingLearningBridge(repository, activity: activity);
+    await bridge(
+      LearningUnitCompletion(
+        kind: 'other',
+        unitId: 'x',
+        at: now(),
+        testPassed: false,
+      ),
+    );
+    expect(await activity.days(), isEmpty);
+  });
 
   test('LearningLessonSource aguarda observador local sem criar registro de conta para convidado', () async {
     final entered = Completer<void>(), gate = Completer<void>();

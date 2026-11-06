@@ -1,4 +1,5 @@
 import '../../../domain/models/learning_unit_completion.dart';
+import '../activity/activity_repository.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/use_cases/now.dart';
@@ -12,9 +13,13 @@ final class TrainingLearningBridge {
   const TrainingLearningBridge(
     this.repository, {
     this.courses = const [TrainingCourseConfig.pilares],
+    this.activity,
   });
   final TrainingRepository repository;
   final List<TrainingCourseConfig> courses;
+
+  /// Concluir lição ou capítulo é dia com atividade na sequência (E1.22).
+  final ActivityRepository? activity;
   Future<void> call(LearningUnitCompletion completion) async {
     if (!const {
       'endgame_lesson',
@@ -23,6 +28,7 @@ final class TrainingLearningBridge {
     }.contains(completion.kind)) {
       return;
     }
+    await activity?.markToday();
     final id = completion.kind == 'endgame_lesson'
         ? completion.unitId.replaceAll('/', '.')
         : completion.unitId;

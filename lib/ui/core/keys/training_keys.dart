@@ -106,4 +106,10 @@ abstract final class TrainingKeys {
   static const tourOverlay = Key('training.tourOverlay');
   static const tourClose = Key('training.tourClose');
   static const tourSkip = Key('training.tourSkip');
+
+  /// O cartão de Hoje com a sequência de dias (P8 A).
+  static const streakCard = Key('training.streakCard');
+  static const streakTitle = Key('training.streakTitle');
+  static const streakNote = Key('training.streakNote');
+  static const streakRecord = Key('training.streakRecord');
 }
