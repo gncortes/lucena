@@ -4,6 +4,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../domain/models/load_failure.dart';
 
@@ -151,7 +152,11 @@ class PlacementCubit extends Cubit<PlacementViewState> {
     this._endgameProgress,
     this.language = 'en',
     this._analytics = const NoAnalyticsRepository(),
+    this._rating,
   }) : super(const PlacementViewState());
+
+  /// O rating do app: o nível do teste vira o atual, mesmo com partidas.
+  final RatingRepository? _rating;
 
   final AnalyticsRepository _analytics;
 
@@ -304,6 +309,7 @@ class PlacementCubit extends Cubit<PlacementViewState> {
         : level.rating;
     final profile = await _profile.load();
     await _profile.save(profile.copyWith(rating: rating));
+    await _rating?.setLevel(rating);
     final onboarding = _onboarding;
     if (onboarding != null) {
       final saved = await onboarding.load();

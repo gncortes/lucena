@@ -599,6 +599,7 @@ GoRouter buildRouter({
             accounts: context.read<AccountRepository>(),
             sync: context.read<SyncScheduler>(),
             now: context.read<Now>(),
+            rating: context.read<RatingRepository>(),
           )..load(),
           child: const LevelScreen(),
         ),
@@ -637,6 +638,7 @@ GoRouter buildRouter({
               // Nos testes de ponta a ponta, sempre as mesmas perguntas.
               seed: isE2E ? 52 : null,
               analytics: context.analytics,
+              rating: context.read<RatingRepository>(),
             )..load(),
             // Volta com true quando o resultado foi usado.
             child: Builder(

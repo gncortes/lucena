@@ -17,6 +17,7 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/onboarding.dart';
+import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/platform_rating.dart';
 import 'package:lucena/domain/use_cases/rating_conversion.dart';
 import 'package:lucena/domain/models/user_profile.dart';
@@ -24,6 +25,7 @@ import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
+import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/profile/widgets/profile_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -31,6 +33,7 @@ import 'package:lucena/ui/settings/widgets/settings_screen.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_chesscom_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_home_layout_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
@@ -191,23 +194,48 @@ void main() {
     await expectEverywhere(tester, expected);
   });
 
-  testWidgets('Lichess com 1800: o app mostra 1800 em toda tela (a escala é '
-      'a mesma, sem conversão)', (tester) async {
+  /// Quem já jogou (1450 informado, uma vitória) abre a tela de nível pelo
+  /// Perfil, como no app, com repositórios reais.
+  Future<LevelCubit> levelAfterGames(FakeLichessRepository lichess) async {
+    await informedThenWon();
+    final cubit = LevelCubit(
+      onboarding: FakeOnboardingRepository(
+        const Onboarding(done: true, boardControlsDone: true),
+      ),
+      profile: profiles,
+      characters: FakeCharacterRepository(),
+      lichess: lichess,
+      chessCom: FakeChessComRepository(),
+      home: FakeHomeLayoutRepository(),
+      fromProfile: true,
+      rating: ratings,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    return cubit;
+  }
+
+  testWidgets('conectar o Lichess (1800) depois de partidas: o 1800 vira o '
+      'rating em toda tela', (tester) async {
     final lichess = PlatformRating(
       user: 'zuri',
       readAt: DateTime.utc(2026, 10, 4),
       blitz: const ModeRating(rating: 1800, games: 200),
     );
-    // O mesmo caminho do "Usar esse rating": rating do modo principal.
-    final converted = lichess.main!.rating;
-    expect(RatingConversion.toLucena(RatingOrigin.lichess, converted), 1800);
-    await profiles.save(
-      UserProfile(
-        rating: converted,
-        levelSource: LevelSource.lichess,
-        lichessUser: lichess.user,
-      ),
-    );
+    expect(RatingConversion.toLucena(RatingOrigin.lichess, 1800), 1800);
+    final level = await levelAfterGames(FakeLichessRepository(rating: lichess));
+    level.select(LevelChoice.lichess);
+    await level.connectLichess();
+    await level.useLichess();
     await expectEverywhere(tester, 1800);
+  });
+
+  testWidgets('escolher a faixa depois de partidas: a faixa vira o rating '
+      'em toda tela', (tester) async {
+    final level = await levelAfterGames(FakeLichessRepository());
+    level.select(LevelChoice.band);
+    level.selectBand(RatingLevel.advanced);
+    await level.finish();
+    await expectEverywhere(tester, RatingLevel.advanced.rating);
   });
 }

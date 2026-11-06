@@ -189,6 +189,15 @@ class TestApp extends StatelessWidget {
   final bool trainingAccess;
   final TransitionBuilder? mediaBuilder;
 
+  /// O rating que o teste já pôs acima do [TestApp], se pôs.
+  static RatingRepository? _outerRating(BuildContext context) {
+    try {
+      return context.read<RatingRepository>();
+    } on Object {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final settingsCubit = this.settingsCubit;
@@ -275,6 +284,7 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<RatingRepository>.value(
           value:
               ratingRepository ??
+              _outerRating(context) ??
               FakeRatingRepository(start: profileCubit?.state?.rating ?? 1150),
         ),
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),

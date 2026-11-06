@@ -8,6 +8,10 @@ import 'package:lucena/ui/placement/view_models/placement_cubit.dart';
 
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_rating_repository.dart';
+
+import 'package:lucena/domain/models/player_rating.dart';
+
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
@@ -167,6 +171,29 @@ void main() {
     expect(profile.profile.rating, result.theta);
     expect(onboarding.saved.startRung, isNotNull);
     expect(placement.state.applied, isTrue);
+  });
+
+  test('usar o nível, com partidas jogadas, faz dele o rating atual', () async {
+    final ratings = FakeRatingRepository(start: 1450)
+      ..entries.add(
+        RatingEntry(rating: const PlayerRating(rating: 1464), at: DateTime(0)),
+      );
+    final placement = PlacementCubit(
+      placement: repository,
+      profile: profile,
+      now: FakeNow(DateTime.utc(2026, 10, 8, 20)),
+      onboarding: onboarding,
+      seed: 7,
+      rating: ratings,
+    );
+    addTearDown(placement.close);
+    await placement.load();
+    await placement.start();
+    for (var i = 0; i < PlacementState.questionCount; i++) {
+      await placement.answer(PlacementOutcome.dontKnow);
+    }
+    await placement.apply();
+    expect((await ratings.current()).rounded, placement.state.result!.theta);
   });
 
   test('intervalo entre duas faixas: a escolhida vale o rating dela', () async {

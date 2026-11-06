@@ -574,10 +574,7 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     final index = history.indexWhere((entry) => entry.gameId == gameId);
     if (index < 0) return (null, null);
     final goal = (await _profile?.load())?.goal;
-    final rated = history
-        .take(index + 1)
-        .where((entry) => !entry.isBonus)
-        .length;
+    final rated = history.take(index + 1).toList().ratedGames;
     if (!BeginnerHome.showsRating(goal, rated)) return (null, null);
     final after = history[index].rating;
     final before = index > 0

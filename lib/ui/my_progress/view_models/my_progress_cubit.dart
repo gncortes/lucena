@@ -7,6 +7,7 @@ import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/achievements/achievements_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
+import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/achievement.dart';
 import '../../../domain/models/character.dart';
 
@@ -96,11 +97,8 @@ class MyProgressCubit extends Cubit<MyProgressState> {
       MyProgressState(
         loaded: true,
         rating: current.rounded,
-        change: history.length < 2
-            ? null
-            : history.last.rating.rounded -
-                  history[history.length - 2].rating.rounded,
-        games: history.where((entry) => !entry.isBonus).length,
+        change: history.lastChange,
+        games: history.ratedGames,
         medals: medals,
         unlocked: unlocked,
         characters: characters,
