@@ -11,6 +11,9 @@ import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
 
 import 'fakes/fake_placement_repository.dart';
+import 'fakes/fake_rating_repository.dart';
+
+import 'package:lucena/data/repositories/rating/rating_repository.dart';
 
 import 'fakes/fake_course_download_repository.dart';
 import 'fakes/fake_account_repository.dart';
@@ -97,6 +100,7 @@ class TestApp extends StatelessWidget {
     this.schoolProgressRepository,
     this.endgameProgressRepository,
     this.placementRepository,
+    this.ratingRepository,
     super.key,
   });
 
@@ -176,6 +180,9 @@ class TestApp extends StatelessWidget {
   final SchoolProgressRepository? schoolProgressRepository;
   final EndgameProgressRepository? endgameProgressRepository;
   final PlacementRepository? placementRepository;
+
+  /// O rating do jogador. Sem ele, um falso que parte do rating do perfil.
+  final RatingRepository? ratingRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -264,6 +271,11 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<PlacementRepository>.value(
           value: placementRepository ?? FakePlacementRepository(),
+        ),
+        RepositoryProvider<RatingRepository>.value(
+          value:
+              ratingRepository ??
+              FakeRatingRepository(start: profileCubit?.state?.rating ?? 1150),
         ),
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
         RepositoryProvider<SurveyRepository>.value(

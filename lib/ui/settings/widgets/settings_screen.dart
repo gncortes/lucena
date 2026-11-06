@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
 import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/store/store_listing_repository.dart';
 import '../../../domain/models/account.dart';
 import '../../../domain/models/analytics_event.dart';
@@ -26,6 +27,7 @@ import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_ui.dart';
+import '../../profile/view_models/current_rating_cubit.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/profile_rows.dart';
 import 'open_link_dialog.dart';
@@ -59,7 +61,12 @@ class SettingsScreen extends StatelessWidget {
           children: [
             ListaEmOrdem(
               itens: [
-                const _PersonRow(),
+                BlocProvider(
+                  create: (context) =>
+                      CurrentRatingCubit(context.read<RatingRepository>())
+                        ..load(),
+                  child: const _PersonRow(),
+                ),
                 SectionTitle(l10n.settingsSectionApp, inset: AppSpacing.xs),
                 ProfileRowGroup(
                   children: [
@@ -187,6 +194,7 @@ class _PersonRow extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final profile = context.select((ProfileCubit cubit) => cubit.state);
+    final rating = context.watch<CurrentRatingCubit>().state;
     final accounts = context.read<AccountRepository>();
     return StreamBuilder<Account?>(
       stream: accounts.changes,
@@ -233,7 +241,7 @@ class _PersonRow extends StatelessWidget {
                           Text(
                             profile == null
                                 ? ''
-                                : _summary(l10n, profile, account),
+                                : _summary(l10n, profile, account, rating),
                             key: SettingsKeys.profileValue,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
@@ -261,10 +269,11 @@ class _PersonRow extends StatelessWidget {
     AppLocalizations l10n,
     UserProfile profile,
     Account? account,
+    int? rating,
   ) => [
     account == null ? l10n.profileNoAccount : account.email ?? account.name,
     ?profile.goal?.title(l10n),
-    '${profile.rating}',
+    '${rating ?? profile.rating}',
   ].nonNulls.where((part) => part.isNotEmpty).join(' · ');
 }
 

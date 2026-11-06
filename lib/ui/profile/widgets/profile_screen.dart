@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
 import '../../../domain/models/level_source.dart';
@@ -32,6 +33,7 @@ import '../../goal/widgets/goal_sheet.dart';
 import '../../goal/widgets/goal_ui.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../../pilares_sale/widgets/pilares_course_card.dart';
+import '../view_models/current_rating_cubit.dart';
 import '../view_models/profile_account_cubit.dart';
 import '../view_models/profile_cubit.dart';
 import 'account_delete_sheet.dart';
@@ -64,14 +66,22 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _build(BuildContext context) => BlocProvider(
-    create: (context) => ProfileAccountCubit(
-      accounts: context.read<AccountRepository>(),
-      sync: context.read<SyncScheduler>(),
-      lichess: context.read<LichessRepository>(),
-      profile: context.read<ProfileRepository>(),
-      analytics: context.analytics,
-    )..load(),
+  Widget _build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => ProfileAccountCubit(
+          accounts: context.read<AccountRepository>(),
+          sync: context.read<SyncScheduler>(),
+          lichess: context.read<LichessRepository>(),
+          profile: context.read<ProfileRepository>(),
+          analytics: context.analytics,
+        )..load(),
+      ),
+      BlocProvider(
+        create: (context) =>
+            CurrentRatingCubit(context.read<RatingRepository>())..load(),
+      ),
+    ],
     child: const _ProfileView(),
   );
 }
@@ -89,9 +99,11 @@ class _ProfileView extends StatelessWidget {
   Future<void> _openLevel(BuildContext context) async {
     final profile = context.read<ProfileCubit>();
     final account = context.read<ProfileAccountCubit>();
+    final rating = context.read<CurrentRatingCubit>();
     await context.push(Routes.levelFrom('profile'));
     await profile.load();
     await account.load();
+    await rating.load();
   }
 
   Future<void> _delete(BuildContext context) async {
@@ -114,6 +126,7 @@ class _ProfileView extends StatelessWidget {
     final l10n = context.l10n;
     final profile = context.watch<ProfileCubit>().state;
     final state = context.watch<ProfileAccountCubit>().state;
+    final rating = context.watch<CurrentRatingCubit>().state;
     final account = state.account;
     final lichess = state.lichess;
     final lichessUser = lichess?.user ?? profile?.lichessUser;
@@ -187,7 +200,7 @@ class _ProfileView extends StatelessWidget {
                   key: ProfileKeys.rowLevel,
                   icon: CanvasSymbols.showChart,
                   title: l10n.profileLevel,
-                  value: profile == null ? '' : _level(l10n, profile),
+                  value: profile == null ? '' : _level(l10n, profile, rating),
                   onTap: () => _openLevel(context),
                 ),
                 ProfileRow(
@@ -220,10 +233,15 @@ class _ProfileView extends StatelessWidget {
     );
   }
 
-  static String _level(AppLocalizations l10n, UserProfile profile) {
+  static String _level(
+    AppLocalizations l10n,
+    UserProfile profile,
+    int? rating,
+  ) {
     final source = profile.levelSource;
-    if (source == null) return '${profile.rating}';
-    return l10n.profileLevelValue(profile.rating, switch (source) {
+    final shown = rating ?? profile.rating;
+    if (source == null) return '$shown';
+    return l10n.profileLevelValue(shown, switch (source) {
       LevelSource.test => l10n.profileLevelSourceTest,
       LevelSource.lichess => l10n.profileLevelSourceLichess,
       LevelSource.chesscom => l10n.profileLevelSourceChessCom,
