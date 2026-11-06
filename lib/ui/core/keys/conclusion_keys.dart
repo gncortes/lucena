@@ -35,6 +35,12 @@ abstract final class ConclusionKeys {
   static const share = Key('conclusion.share');
   static const review = Key('conclusion.review');
 
+  /// A lista "Para aprender com ela" da derrota por desistência e os dois
+  /// itens dela.
+  static const learn = Key('conclusion.learn');
+  static const learnGame = Key('conclusion.learn.game');
+  static const learnFinal = Key('conclusion.learn.final');
+
   /// O cartão da análise rápida como entra na imagem de compartilhar.
   static const analysisShared = Key('conclusion.review.shared');
 

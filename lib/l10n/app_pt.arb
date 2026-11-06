@@ -3040,5 +3040,10 @@
   "trainingStreakLost": "Ontem ficou sem treino. Treinar hoje recomeça.",
   "trainingStreakFirst": "Sua sequência começa hoje",
   "trainingStreakFirstHint": "Treinar hoje faz o dia 1.",
-  "trainingStreakRecord": "recorde {count}"
+  "trainingStreakRecord": "recorde {count}",
+  "conclusionLearnTitle": "Para aprender com ela",
+  "conclusionLearnGame": "Ver a partida",
+  "conclusionLearnGameBody": "Lance a lance, com a análise",
+  "conclusionLearnFinal": "Treinar este final",
+  "conclusionLearnFinalBody": "{endgame} · volte à lição"
 }

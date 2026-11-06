@@ -2736,5 +2736,10 @@
   "trainingStreakLost": "[Ýéštéŕdåý håd ñö tŕåîñîñĝ. Tŕåîñîñĝ tödåý štåŕtš åĝåîñ. one two three four five]",
   "trainingStreakFirst": "[Ýöûŕ štŕéåk štåŕtš tödåý one two three]",
   "trainingStreakFirstHint": "[Tŕåîñîñĝ tödåý måkéš dåý 1. one two three]",
-  "trainingStreakRecord": "[ŕéçöŕd {count} one two]"
+  "trainingStreakRecord": "[ŕéçöŕd {count} one two]",
+  "conclusionLearnTitle": "[Léåŕñ fŕöm ît one two]",
+  "conclusionLearnGame": "[Vîéw thé ĝåmé one two]",
+  "conclusionLearnGameBody": "[Mövé bý mövé, wîth åñålýšîš one two three]",
+  "conclusionLearnFinal": "[Tŕåîñ thîš éñdĝåmé one two]",
+  "conclusionLearnFinalBody": "[{endgame} · båçk tö thé léššöñ one two three]"
 }

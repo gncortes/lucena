@@ -35,6 +35,7 @@ import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/mastery.dart';
 import '../../../domain/use_cases/review_rules.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/race_diagnosis.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 import '../../../routing/routes.dart';
 import '../../achievements/view_models/achievement_facts_loader.dart';
@@ -78,6 +79,7 @@ class ConclusionState {
     this.bestPly = -1,
     this.bestLineRunning = false,
     this.bestLineDone = false,
+    this.finalLesson,
   });
 
   final bool ready;
@@ -132,6 +134,10 @@ class ConclusionState {
   /// A melhor linha terminou (dá para andar e voltar nela).
   final bool bestLineDone;
 
+  /// A aula do final da posição jogada, quando o app tem uma liberada.
+  /// Só vem preenchida na derrota por desistência ("Treinar este final").
+  final RaceFinalLesson? finalLesson;
+
   ConclusionState copyWith({
     bool? failed,
     GameReview? review,
@@ -162,6 +168,7 @@ class ConclusionState {
     bestPly: bestPly ?? this.bestPly,
     bestLineRunning: bestLineRunning ?? this.bestLineRunning,
     bestLineDone: bestLineDone ?? this.bestLineDone,
+    finalLesson: finalLesson,
   );
 }
 
@@ -362,10 +369,17 @@ class ConclusionCubit extends Cubit<ConclusionState> {
               ),
         autoReview: auto,
         reviewing: auto,
+        finalLesson: _resignedLoss(game, result)
+            ? RaceFinalLesson.forSubcategory(position?.subcategory)
+            : null,
       ),
     );
     unawaited(_background(gameId));
   }
+
+  // Perdeu desistindo: a única derrota que oferece "Treinar este final".
+  bool _resignedLoss(Attempt game, ConclusionResult result) =>
+      result == ConclusionResult.lost && game.endReason == GameEndReason.resign;
 
   // Em segundo plano, sem travar as ações: uma análise já feita (a rápida
   // daqui ou a da revisão) aparece pronta; sem ela, a partida curta faz a
