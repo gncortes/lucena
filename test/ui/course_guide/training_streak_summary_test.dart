@@ -162,4 +162,47 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('ao voltar de uma lição o guia recarrega e o cartão atualiza', (
+    tester,
+  ) async {
+    setPhoneSize(tester, const Size(360, 640));
+    final scenario = TrainingScenarioBuilder(
+      TrainingCourse.pilares,
+      date: thursday,
+    );
+    final repository = scenario.repository(scenario.goalsScenario('middle'));
+    final activity = FakeActivityRepository(
+      days: {d(27), d(28)},
+      now: scenario.now,
+    );
+    final cubit = CourseGuideCubit(
+      repository: repository,
+      config: scenario.config,
+      now: scenario.now,
+      activity: activity,
+    );
+    addTearDown(cubit.close);
+    addTearDown(repository.dispose);
+    await cubit.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: BlocProvider.value(
+          value: cubit,
+          child: Scaffold(
+            body: TrainingGoalsTab(onGoal: (_) {}, onPlan: () {}),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Ontem contou. Treinar hoje faz 3.'), findsOneWidget);
+    // A lição conclui e marca o dia; o retorno (ReloadOnReturn) recarrega.
+    await activity.markToday();
+    await cubit.load();
+    await tester.pumpAndSettle();
+    expect(find.text('3 dias seguidos'), findsOneWidget);
+    expect(find.text('Hoje já contou.'), findsOneWidget);
+  });
 }
