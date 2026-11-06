@@ -14,6 +14,10 @@ abstract final class FeedbackKeys {
   /// O aviso "Ocorreu um erro inesperado" quando o envio falha.
   static const sendError = Key('feedback.sendError');
 
+  /// O aviso de que o feedback só vai com conta, com "Entrar".
+  static const needsAccount = Key('feedback.needsAccount');
+  static const needsAccountSignIn = Key('feedback.needsAccountSignIn');
+
   /// O "Feedback enviado": agradecimento do Viktor, X e "Voltar ao perfil".
   static const thanks = Key('feedback.thanks');
   static const thanksClose = Key('feedback.thanksClose');

@@ -16,16 +16,22 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 
 | Caminho | Quem lê | Quem grava |
 |---|---|---|
-| `users/{uid}` | o dono | o dono, só `name`, `language`, `createdAt` e `updatedAt` |
-| `users/{uid}/progress/{doc}` | o dono | o dono |
-| `users/{uid}/games/{id}` | o dono | o dono cria e apaga; não muda |
+| `users/{uid}` | o dono | o dono, só `name`, `language`, `legal`, `createdAt` (hora do servidor) e `updatedAt` |
+| `users/{uid}/progress/summary` | o dono | o dono; só o id `summary`, chaves e tetos do `ProgressSummary`, apelido até 20 |
+| `users/{uid}/games/{id}` | o dono | o dono cria (id `<micros>-<posição>`, chaves do `gameJson`, soma 1 em `cotas`) e apaga; não muda |
 | `users/{uid}/push/device` | o dono e o admin | o dono, só `token` e `updatedAt` (o último aparelho; sai no logout) |
-| `feedback/{id}` | admin | qualquer um cria (texto até 4000, `createdAt` = hora do servidor) |
-| `challenges/{code}` | quem tem o código (`get`) | o dono cria; o `result` entra uma vez |
+| `cotas/{uid}` | o dono e o admin | o dono só avança: `feedbackEm`/`feedbackId` (1 feedback por minuto) e `partidas` (+1, teto 20000); ninguém apaga |
+| `feedback/{id}` | admin e o autor | só com conta: `uid` do autor, chaves do `FeedbackEntry`, texto até 500, `createdAt` = hora do servidor, junto com `cotas` |
+| `bloqueios/{uid}` | o dono e o admin | admin (`motivo`, `regra`, `desde`, `ate`, `adminUid`); bloqueio vigente barra toda escrita da conta, menos apagar |
+| `inscritos/{topico}` | admin | ninguém pelo app (só Cloud Function) |
+| `challenges/{code}` | ninguém | ninguém (o app não usa; o desafio vai no link) |
 | `candidates/{id}` | admin | admin |
 | `featured/{id}` | todos | admin |
 | `admins/{uid}` | o próprio | ninguém pelo app (criar no console) |
-| Storage `users/{uid}/avatar.jpg` | o dono | o dono, imagem até 1 MB |
+| Storage `users/{uid}/avatar.jpg` | o dono | o dono, JPEG, PNG ou WebP até 1 MB |
+
+Testes das regras no emulador: `npm --prefix firebase/test ci` e `npm --prefix firebase/test test`
+(pede Java 21; o `rodar.sh` usa o do Android Studio se o do PATH for antigo).
 
 Direito pago (premium) nunca é gravado pelo app: vem do servidor (Admin SDK).
 

@@ -317,6 +317,7 @@ void main() {
         expect(await repository.accepted('u1'), isTrue);
         expect(await repository.pending(), isNull);
         expect(cloud.users['u1'], {
+          'updatedAt': DateTime.utc(2026, 11, 4, 9),
           'legal': {
             'acceptedVersion': LegalConsentRepository.version,
             'acceptedAt': '2026-11-04T09:00:00.000Z',

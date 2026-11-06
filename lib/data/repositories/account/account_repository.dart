@@ -50,6 +50,11 @@ abstract class AccountRepository {
   /// tem foto enviada), apaga antes a foto no Storage.
   /// [expectedUid] é a conta confirmada no diálogo. False: Google cancelado.
   Future<bool> deleteAccount({required String expectedUid, bool photo = false});
+
+  /// A conta atual foi suspensa pelo admin (`bloqueios/{uid}`): a nuvem
+  /// recusa as gravações, e o progresso segue no aparelho. Sem conta ou sem
+  /// rede, `false`.
+  Future<bool> isBlocked();
 }
 
 /// A conta no Firebase Auth, com o perfil em `users/{uid}` no Firestore.
@@ -90,6 +95,13 @@ class CloudAccountRepository implements AccountRepository {
 
   @override
   Stream<Account?> get changes => _auth.changes;
+
+  @override
+  Future<bool> isBlocked() async {
+    final uid = _auth.current?.uid;
+    if (uid == null) return false;
+    return _store.readBlocked(uid, _now());
+  }
 
   @override
   Future<Account?> signInWithGoogle() async {
@@ -292,6 +304,7 @@ class CloudAccountRepository implements AccountRepository {
                 : trimmed,
           'language': ?language,
           'updatedAt': now,
+          // O serviço troca pela hora do servidor (as regras exigem).
           if (created) 'createdAt': now,
         });
       } on Object catch (error) {

@@ -14,8 +14,12 @@ class FakeFeedbackRepository implements FeedbackRepository {
   /// Com `true`, o envio falha (sem espaço, servidor recusou).
   bool fail = false;
 
+  /// Com `true`, não há conta: o envio para com [FeedbackNeedsAccount].
+  bool needsAccount = false;
+
   @override
   Future<bool> send(FeedbackEntry entry, {String? level}) async {
+    if (needsAccount) throw const FeedbackNeedsAccount();
     if (fail) throw const CloudStoreException('permission-denied');
     if (FeedbackEntry.clip(entry.text).isEmpty) return false;
     sent.add(entry);

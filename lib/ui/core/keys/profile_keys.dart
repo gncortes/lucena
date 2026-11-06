@@ -19,6 +19,10 @@ abstract final class ProfileKeys {
   static const syncIcon = Key('profile.syncIcon');
   static const syncStatus = Key('profile.syncStatus');
 
+  /// O aviso da conta suspensa pelo admin (estado pronto no
+  /// `ProfileAccountCubit`; o desenho vem do canvas).
+  static const accountBlocked = Key('profile.accountBlocked');
+
   static const rowCountry = Key('profile.rowCountry');
   static const rowRegion = Key('profile.rowRegion');
   static const rowLanguage = Key('profile.rowLanguage');

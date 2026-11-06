@@ -90,6 +90,7 @@ String accountFailureText(AppLocalizations l10n, AccountFailure failure) =>
       AccountFailure.wrongCredentials => l10n.accountWrongCredentials,
       AccountFailure.emailInUse => l10n.accountEmailInUse,
       AccountFailure.tooManyAttempts => l10n.accountTooManyAttempts,
+      AccountFailure.disabled => l10n.accountDisabled,
       _ => l10n.accountFailed,
     };
 

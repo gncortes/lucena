@@ -7539,6 +7539,10 @@
   "@accountTooManyAttempts": {
     "description": "Account error: too many attempts."
   },
+  "accountDisabled": "This account has been suspended. Your progress on this device is still saved.",
+  "@accountDisabled": {
+    "description": "Account error: the account was suspended by the admin (Firebase user-disabled). Local progress is kept."
+  },
   "accountAvatarColor": "Color {number}",
   "@accountAvatarColor": {
     "description": "Your details screen: accessibility label of an avatar color.",
@@ -8342,6 +8346,10 @@
   "feedbackSend": "Send",
   "@feedbackSend": {
     "description": "Button that sends the feedback."
+  },
+  "feedbackNeedsAccount": "Sign in to send it. Your text stays saved.",
+  "@feedbackNeedsAccount": {
+    "description": "Snack bar on Send feedback when there is no account: feedback needs an account; the draft is kept. Action: Sign in."
   },
   "feedbackBack": "Back to profile",
   "@feedbackBack": {
