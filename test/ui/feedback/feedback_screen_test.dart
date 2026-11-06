@@ -175,7 +175,7 @@ void main() {
     expect(find.text('Feedback enviado'), findsOneWidget);
   });
 
-  testWidgets('abuso: sem conta, o aviso oferece Entrar e guarda o texto', (
+  testWidgets('abuso: sem conta, o aviso oferece Entrar e mantém o texto', (
     tester,
   ) async {
     feedback.needsAccount = true;
@@ -186,7 +186,7 @@ void main() {
 
     expect(find.byKey(FeedbackKeys.needsAccount), findsOneWidget);
     expect(
-      find.text('Entre na sua conta para enviar. O texto fica guardado.'),
+      find.text('Entre na sua conta para enviar. O texto continua salvo.'),
       findsOneWidget,
     );
     expect(find.byKey(FeedbackKeys.sendError), findsNothing);

@@ -1598,7 +1598,7 @@
   "feedbackTextHint": "Conte com suas palavras",
   "feedbackAttached": "Vão junto, sem identificar você: a versão do app e o modelo do celular, para acharmos o problema mais rápido.",
   "feedbackSend": "Enviar",
-  "feedbackNeedsAccount": "Entre na sua conta para enviar. O texto fica guardado.",
+  "feedbackNeedsAccount": "Entre na sua conta para enviar. O texto continua salvo.",
   "feedbackBack": "Voltar ao perfil",
   "alertsBlockedSummary": "Bloqueados nas Configurações do Android",
   "journeyChangePace": "Alterar ritmo",
