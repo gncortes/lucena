@@ -57,7 +57,7 @@ void main() {
         final saved = await repository.load(TrainingCourse.pilares);
         expect(saved.onboardingDone, isTrue);
         expect(saved.day!.plan.minutes, minutes);
-        expect(saved.day!.goals.length, minutes == 240 ? 2 : 1);
+        expect(saved.day!.goals.length, minutes == 240 ? 3 : 1);
         if (minutes == 15) {
           scenario.now.value = DateTime(2026, 10, 27, 12);
           final tomorrow =

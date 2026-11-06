@@ -266,11 +266,12 @@ void main() {
     final state = build(initial(), data);
     final edited = state.copyWith(plan: const TrainingPlan(minutes: 240));
     expect(identical(build(edited, data), edited), isTrue);
-    expect(edited.day!.goals, hasLength(1));
+    // Plano de 30 min, primeiro dia sem exercício: 2 lições de 15 min (B2a).
+    expect(edited.day!.goals, hasLength(2));
     now.advance(const Duration(days: 1));
     expect(
       build(edited, data).day!.goals.where((g) => g.kind == GoalKind.lesson),
-      hasLength(2),
+      hasLength(3), // cota de 240 min (2) + a lição que completa o tempo
     );
   });
 
@@ -348,7 +349,7 @@ void main() {
           initial().copyWith(plan: const TrainingPlan(minutes: 240)),
           data,
         ).day!.goals.where((g) => g.kind == GoalKind.lesson),
-        hasLength(2),
+        hasLength(3), // cota de 2 lições + 1 que completa o tempo (B2a)
       );
     },
   );
@@ -356,7 +357,9 @@ void main() {
   test('aula extra vira meta cumprida e tema só aparece no dia seguinte', () {
     final data = resources();
     var state = CompleteTrainingLesson(now, config)(initial(), data, first);
+    // A segunda lição já é meta do dia (30 min = 2 lições); a terceira é extra.
     state = CompleteTrainingLesson(now, config)(state, data, second);
+    state = CompleteTrainingLesson(now, config)(state, data, openingLesson);
     expect(
       state.day!.goals.where((g) => g.kind == GoalKind.extraLesson).single.done,
       isTrue,

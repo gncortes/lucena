@@ -3032,5 +3032,6 @@
       }
     }
   },
-  "lessonRestartNotice": "Você recomeça esta parte do início."
+  "lessonRestartNotice": "Você recomeça esta parte do início.",
+  "trainingDoubleOfferMinutes": "Isso soma cerca de {minutes} min de estudo hoje."
 }

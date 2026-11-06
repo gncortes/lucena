@@ -65,7 +65,10 @@ void main() {
           .toList();
 
   test('com o curso completo, a meta do dia segue para o Capítulo 2', () {
-    expect(lessonsOfToday(chapterOneDone(), content), ['pilares.c2.tema']);
+    expect(lessonsOfToday(chapterOneDone(), content), [
+      'pilares.c2.tema',
+      'pilares.c2.teste', // plano de 30 min: 2 lições no dia sem exercício
+    ]);
   });
 
   test('na demo, a meta do dia não oferece lição trancada', () {

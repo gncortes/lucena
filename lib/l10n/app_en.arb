@@ -14206,5 +14206,14 @@
   "lessonRestartNotice": "You restart this part from the beginning.",
   "@lessonRestartNotice": {
     "description": "Brief notice when a lesson left halfway reopens and the part restarts from its beginning"
+  },
+  "trainingDoubleOfferMinutes": "That adds about {minutes} min of study today.",
+  "@trainingDoubleOfferMinutes": {
+    "description": "Daily goals: minutes the Double action adds to the day.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   }
 }

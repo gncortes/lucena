@@ -29,6 +29,7 @@ import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/complete_training_lesson.dart';
 import '../../../domain/use_cases/training/training_date.dart';
 import '../../../domain/use_cases/training/double_training_goals.dart';
+import '../../../domain/use_cases/training/goal_minutes.dart';
 import '../../core/utils/save_retry.dart';
 
 typedef CourseTestProgress = ({int score, int maxScore, int solved, int total});
@@ -442,6 +443,17 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
       _change((s) => s.copyWith(plan: plan));
   Future<bool> markTourSeen() =>
       _change((s) => s.copyWith(tourSeen: true, tab: CourseGuideTab.lesson));
+
+  /// Minutos que "Dobrar a meta" soma ao dia de hoje, pela mesma regra que
+  /// dobra (0 sem dia ou sem conteúdo carregado).
+  int doubleMinutes() {
+    final training = state.training;
+    final resources = state.resources;
+    if (training == null || resources == null) return 0;
+    final doubled = DoubleTrainingGoals(now, config)(training, resources);
+    return GoalMinutes(config).addedByDoubling(training, doubled);
+  }
+
   Future<bool> doubleGoals() =>
       _change((s) => DoubleTrainingGoals(now, config)(s, state.resources!));
   Future<bool> observeLesson(TrainingLesson lesson, {bool redo = false}) =>

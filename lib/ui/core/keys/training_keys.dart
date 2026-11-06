@@ -41,6 +41,7 @@ abstract final class TrainingKeys {
   static Key goalTile(String kind, String ref) =>
       Key('training.goal.$kind.$ref');
   static const doubleOffer = Key('training.doubleOffer');
+  static const doubleMinutes = Key('training.doubleMinutes');
   static const doubleButton = Key('training.doubleButton');
   static const difficultyBadge = Key('training.difficultyBadge');
   static const hintBadge = Key('training.hintBadge');
