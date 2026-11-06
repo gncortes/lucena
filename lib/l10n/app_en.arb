@@ -14176,5 +14176,14 @@
   "conProgressSeeAll": "See all",
   "@conProgressSeeAll": {
     "description": "Link que abre a lista de conquistas, em Seu progresso."
+  },
+  "trainingProgressTodayLessons": "{count, plural, =1{1 lesson completed} other{{count} lessons completed}}",
+  "@trainingProgressTodayLessons": {
+    "description": "Statistics tab, Today card: how many lessons the person completed today.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

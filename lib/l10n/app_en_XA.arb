@@ -2723,5 +2723,6 @@
   "conProgressGames": "{count, plural, =0{[0 ĝåméš one]} =1{[1 ĝåmé one]} other{[{count} ĝåméš one two]}}",
   "conProgressHistory": "[Hîštöŕý one]",
   "conProgressAchievements": "[Åçhîévéméñtš one two]",
-  "conProgressSeeAll": "[Šéé åll one]"
+  "conProgressSeeAll": "[Šéé åll one]",
+  "trainingProgressTodayLessons": "{count, plural, =1{[1 léššöñ çömplétéd one two]} other{[{count} léššöñš çömplétéd one two three]}}"
 }
