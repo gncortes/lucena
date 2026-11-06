@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/training/training_course.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/purchase_keys.dart';
@@ -88,8 +89,10 @@ class PilaresPurchasePendingScreen extends StatelessWidget {
 
 /// Os botões de quem acabou de ter o curso: "Escolher meu objetivo" (com o
 /// estádio) e o outro caminho ("Ver o curso" na Concluída; "Continuar o
-/// curso", que vem primeiro, na Restaurada). Os dois levam ao perfil com o
-/// cartão do curso (H-VEN-09) ou a "Seu objetivo" (H-TRE-06).
+/// curso", que vem primeiro, na Restaurada). O do curso abre o Guia do
+/// Pilares (sugestão S1 do T85, aprovada pelo Gabriel em 06/11: antes ia ao
+/// Perfil); o do objetivo, "Seu objetivo" (H-TRE-06). Na Concluída o do curso
+/// é contornado, para não parecer um link solto sob o botão principal.
 List<Widget> pilaresOwnedActions(
   BuildContext context, {
   required bool goalFirst,
@@ -99,7 +102,7 @@ List<Widget> pilaresOwnedActions(
 }) {
   final l10n = context.l10n;
   void goal() => context.go(D2Paths.pilaresGoal);
-  void course() => context.go(Routes.settingsProfile);
+  void course() => context.go(Routes.training(TrainingCourse.pilares.name));
   return goalFirst
       ? [
           BusyButton(
@@ -110,7 +113,7 @@ List<Widget> pilaresOwnedActions(
           ),
           BusyButton(
             buttonKey: otherKey,
-            style: BusyButtonStyle.text,
+            style: BusyButtonStyle.outlined,
             label: other,
             onPressed: course,
           ),

@@ -12,6 +12,7 @@ import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/core/widgets/busy_button.dart';
 import 'package:lucena/ui/pilares_sale/view_models/pilares_purchase_watch_cubit.dart';
 import 'package:lucena/ui/pilares_sale/widgets/pilares_purchase_bridge.dart';
 
@@ -244,6 +245,27 @@ void main() {
       await tester.tap(find.byKey(PurchaseKeys.restoreSearch));
       await tester.pumpAndSettle();
       expect(find.byKey(PurchaseKeys.restoredScreen), findsOneWidget);
+    });
+
+    testWidgets('S1: "Ver o curso" é botão contornado e abre o Guia', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresPurchaseDone);
+      final button = tester.widget<BusyButton>(
+        find
+            .ancestor(
+              of: find.byKey(PurchaseKeys.doneSeeCourse),
+              matching: find.byType(BusyButton),
+            )
+            .first,
+      );
+      expect(button.style, BusyButtonStyle.outlined);
+      await tester.tap(find.byKey(PurchaseKeys.doneSeeCourse));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('treino ${Routes.training(TrainingCourse.pilares.name)}'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('não achou: aviso e Entrar com outra conta', (tester) async {
