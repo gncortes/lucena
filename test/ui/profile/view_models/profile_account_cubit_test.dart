@@ -88,6 +88,37 @@ void main() {
       expect(cubit.state.syncPhase, ProfileSyncPhase.offline);
     });
 
+    testWidgets('envio que não confirma em 10 s vai a offline e depois salvo', (
+      tester,
+    ) async {
+      // O relógio do testWidgets é falso (fake_async): sem espera real.
+      accounts.account = FakeAccountRepository.google;
+      final gate = sync.gate = Completer<void>();
+      final scheduler = SyncScheduler(accounts, sync);
+      final cubit = ProfileAccountCubit(
+        accounts: accounts,
+        sync: scheduler,
+        lichess: lichess,
+        profile: profiles,
+      );
+      addTearDown(() {
+        unawaited(cubit.close());
+        unawaited(scheduler.dispose());
+      });
+      unawaited(cubit.load());
+      await tester.pump();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.saving);
+
+      await tester.pump(const Duration(seconds: 9));
+      expect(cubit.state.syncPhase, ProfileSyncPhase.saving);
+      await tester.pump(const Duration(seconds: 2));
+      expect(cubit.state.syncPhase, ProfileSyncPhase.offline);
+
+      gate.complete();
+      await tester.pump();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.saved);
+    });
+
     test('conta criada agora: salvando, salvo', () async {
       final gate = sync.gate = Completer<void>();
       final cubit = await build();

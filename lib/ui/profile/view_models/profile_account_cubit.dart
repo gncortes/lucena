@@ -97,6 +97,7 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     required this._lichess,
     required this._profile,
     this._analytics = const NoAnalyticsRepository(),
+    this.saveTimeout = const Duration(seconds: 10),
   }) : super(ProfileAccountState(account: _accounts.current));
 
   final AccountRepository _accounts;
@@ -104,6 +105,9 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   final LichessRepository _lichess;
   final ProfileRepository _profile;
   final AnalyticsRepository _analytics;
+
+  /// Quanto o cartão espera o envio antes de dizer que ficou no celular.
+  final Duration saveTimeout;
   StreamSubscription<Account?>? _accountSubscription;
   StreamSubscription<String>? _syncSubscription;
 
@@ -130,16 +134,35 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     await _readSyncedAt(account.uid);
     // Abrir o Perfil com conta sobe o que estiver pendente.
     if (!isClosed) emit(state.copyWith(syncPhase: ProfileSyncPhase.saving));
+    final save = _sync.saveNow(account.uid);
     var phase = ProfileSyncPhase.saved;
     try {
-      await _sync.saveNow(account.uid);
+      await save.timeout(saveTimeout);
     } on SyncException {
       // Sem rede ou envio que falhou: o cartão mostra a última vez e o aviso de offline.
       phase = ProfileSyncPhase.offline;
+    } on TimeoutException {
+      // Sem rede, a escrita só termina quando o servidor confirma: o cartão
+      // diz que fica no celular e, se a confirmação vier depois, vira "salvo".
+      phase = ProfileSyncPhase.offline;
+      unawaited(_savedLater(save, account.uid));
     }
-    if (isClosed || state.account?.uid != account.uid) return;
+    await _finish(account.uid, phase);
+  }
+
+  Future<void> _savedLater(Future<Object?> save, String uid) async {
+    try {
+      await save;
+    } on Object {
+      return;
+    }
+    await _finish(uid, ProfileSyncPhase.saved);
+  }
+
+  Future<void> _finish(String uid, ProfileSyncPhase phase) async {
+    if (isClosed || state.account?.uid != uid) return;
     emit(state.copyWith(syncPhase: phase));
-    await _readSyncedAt(account.uid);
+    await _readSyncedAt(uid);
   }
 
   Future<void> _readSyncedAt(String uid) async {
