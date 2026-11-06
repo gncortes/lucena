@@ -10,6 +10,9 @@ class FakeSyncRepository implements SyncRepository {
 
   ProgressSummary? remote;
   bool offline;
+
+  /// A leitura vai bem, mas o envio à conta falha.
+  bool pushFails = false;
   DateTime? at;
   final synced = <String>[];
 
@@ -26,5 +29,10 @@ class FakeSyncRepository implements SyncRepository {
     synced.add(uid);
     final summary = remote ?? const ProgressSummary();
     return SyncResult(summary: summary, hadRemote: !summary.isEmpty);
+  }
+
+  @override
+  Future<void> flush(String uid) async {
+    if (pushFails) throw const SyncException();
   }
 }

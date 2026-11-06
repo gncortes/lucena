@@ -132,9 +132,9 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     if (!isClosed) emit(state.copyWith(syncPhase: ProfileSyncPhase.saving));
     var phase = ProfileSyncPhase.saved;
     try {
-      await _sync.syncNow(account.uid);
+      await _sync.saveNow(account.uid);
     } on SyncException {
-      // Sem rede: o cartão mostra a última vez e o aviso de offline.
+      // Sem rede ou envio que falhou: o cartão mostra a última vez e o aviso de offline.
       phase = ProfileSyncPhase.offline;
     }
     if (isClosed || state.account?.uid != account.uid) return;

@@ -81,6 +81,13 @@ void main() {
       expect(cubit.state.syncPhase, ProfileSyncPhase.offline);
     });
 
+    test('envio que falha não diz salvo: vai a offline', () async {
+      accounts.account = FakeAccountRepository.google;
+      sync.pushFails = true;
+      final cubit = await build();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.offline);
+    });
+
     test('conta criada agora: salvando, salvo', () async {
       final gate = sync.gate = Completer<void>();
       final cubit = await build();

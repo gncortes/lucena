@@ -424,6 +424,13 @@ void main() {
       expect(find.text(_offlineNote), findsNothing);
     });
 
+    testWidgets('S4: envio que falha não mostra "Salvo agora"', (tester) async {
+      sync.pushFails = true;
+      await pumpScreen(tester);
+      expect(find.text('Salvo agora'), findsNothing);
+      expect(find.text(_offlineNote), findsOneWidget);
+    });
+
     testWidgets('S4: sem rede, diz o que acontece e mantém a última vez', (
       tester,
     ) async {
