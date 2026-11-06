@@ -49,6 +49,14 @@ TrainingResources _realPilares() {
 }
 
 void main() {
+  if (!File('assets/courses/pilares/index.json').existsSync()) {
+    test(
+      'private content required for Pilares plan minutes',
+      () {},
+      skip: true,
+    );
+    return;
+  }
   final config = TrainingCourseConfig.pilares;
   late FakeNow now;
   late TrainingResources resources;

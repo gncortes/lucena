@@ -8,6 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// do iniciante; o tour (Abertura) e o roteiro genérico (Pilares e
 /// finais) não entram.
 void main() {
+  if (!Directory('assets/lessons/pt/iniciante').existsSync()) {
+    test('private content required for Escola texts', () {}, skip: true);
+    return;
+  }
   final click = RegExp(r'\b(cliqu\w*|clic\w*)\b', caseSensitive: false);
 
   Iterable<MapEntry<String, String>> texts(String path) {
