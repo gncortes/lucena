@@ -72,7 +72,8 @@ void main() {
     await bridge(event);
     await bridge(event);
     final state = await repository.load(config.course);
-    expect(state.day!.goals.single.done, isTrue);
+    // O plano de 30 min põe duas lições no 1º dia (B2): a concluída é a do tópico.
+    expect(state.day!.goals.singleWhere((g) => g.ref == topic.id).done, isTrue);
     expect(state.cycles[topic.id]!.startedOn, '2026-10-26');
     expect(state.cycles[topic.id]!.days, isEmpty);
     expect(repository.writes, 1);
