@@ -14215,5 +14215,48 @@
         "type": "int"
       }
     }
+  },
+  "trainingStreakDays": "{count, plural, =0{0 days in a row} =1{1 day in a row} other{{count} days in a row}}",
+  "@trainingStreakDays": {
+    "description": "Daily goals card: current streak.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingStreakYesterday": "Yesterday counted. Training today makes {next}.",
+  "@trainingStreakYesterday": {
+    "description": "Daily goals card: yesterday counted, today not yet.",
+    "placeholders": {
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingStreakToday": "Today counted.",
+  "@trainingStreakToday": {
+    "description": "Daily goals card: today already counted."
+  },
+  "trainingStreakLost": "Yesterday had no training. Training today starts again.",
+  "@trainingStreakLost": {
+    "description": "Daily goals card: streak at zero, with a past record."
+  },
+  "trainingStreakFirst": "Your streak starts today",
+  "@trainingStreakFirst": {
+    "description": "Daily goals card: title when there was never a day."
+  },
+  "trainingStreakFirstHint": "Training today makes day 1.",
+  "@trainingStreakFirstHint": {
+    "description": "Daily goals card: first day hint."
+  },
+  "trainingStreakRecord": "record {count}",
+  "@trainingStreakRecord": {
+    "description": "Daily goals card: best streak.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

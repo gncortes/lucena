@@ -26,6 +26,7 @@ import '../../core/widgets/teacher_speech.dart';
 import '../view_models/course_guide_cubit.dart';
 import '../../training_goal/widgets/training_goal_card.dart';
 import 'course_guide_copy.dart';
+import 'training_streak_summary.dart';
 import '../../training_opening/widgets/opening_goal_cards.dart';
 import '../../course_entry/widgets/course_content_states.dart';
 
@@ -271,6 +272,11 @@ class TrainingGoalsTab extends StatelessWidget {
                             : (counts.total - counts.remaining) / counts.total,
                       ),
               ),
+              if (!_demo && state.streak != null) ...[
+                const Divider(height: 1),
+                TrainingStreakSummary(state: state.streak!),
+                const Divider(height: 1),
+              ],
               if (!_demo) _planLine(context, day),
             ],
           ),

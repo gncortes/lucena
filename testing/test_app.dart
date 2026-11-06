@@ -1,3 +1,4 @@
+import 'package:lucena/data/repositories/activity/activity_repository.dart';
 import 'package:lucena/data/repositories/data_export/data_export_repository.dart';
 
 import 'fakes/fake_data_export_repository.dart';
@@ -53,6 +54,7 @@ import 'fakes/fake_link_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 import 'fakes/fake_endgame_repositories.dart';
 import 'fakes/fake_feedback_repositories.dart';
+import 'fakes/fake_activity_repository.dart';
 import 'fakes/fake_school_repositories.dart';
 
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
@@ -98,6 +100,7 @@ class TestApp extends StatelessWidget {
     this.feedbackDraftRepository,
     this.reviewRepository,
     this.schoolProgressRepository,
+    this.activityRepository,
     this.endgameProgressRepository,
     this.placementRepository,
     this.ratingRepository,
@@ -178,6 +181,7 @@ class TestApp extends StatelessWidget {
 
   /// O progresso que conta as aulas concluídas do convite.
   final SchoolProgressRepository? schoolProgressRepository;
+  final ActivityRepository? activityRepository;
   final EndgameProgressRepository? endgameProgressRepository;
   final PlacementRepository? placementRepository;
 
@@ -305,6 +309,9 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: reviewRepository ?? FakeReviewRepository(),
+        ),
+        RepositoryProvider<ActivityRepository>.value(
+          value: activityRepository ?? FakeActivityRepository(),
         ),
         RepositoryProvider<SchoolProgressRepository>.value(
           value: schoolProgressRepository ?? FakeSchoolProgressRepository(),

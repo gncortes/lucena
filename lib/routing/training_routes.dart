@@ -1,5 +1,6 @@
 import 'training_lesson_scope.dart';
 import 'abre_do_cartao.dart';
+import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/placement/placement_repository.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 
@@ -324,6 +325,7 @@ Widget _guide(
         testProgress: context.read<EndgameProgressRepository>(),
         placement: context.read<PlacementRepository>(),
         schoolProgress: context.read<SchoolProgressRepository>(),
+        activity: context.read<ActivityRepository>(),
         beforeLoad: () async {
           final history = context.read<TrainingHistorySource>();
           final repository = context.read<course_training.TrainingRepository>();

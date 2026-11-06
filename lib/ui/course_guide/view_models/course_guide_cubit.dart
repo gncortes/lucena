@@ -9,6 +9,7 @@ import '../../../domain/use_cases/training/training_analytics.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
@@ -25,12 +26,14 @@ import '../../../domain/models/training/training_plan.dart';
 import '../../../domain/models/training/training_resources.dart';
 import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/streak_rules.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/complete_training_lesson.dart';
 import '../../../domain/use_cases/training/training_date.dart';
 import '../../../domain/use_cases/training/double_training_goals.dart';
 import '../../../domain/use_cases/training/goal_minutes.dart';
 import '../../core/utils/save_retry.dart';
+import '../../streak/view_models/streak_cubit.dart' show StreakState;
 
 typedef CourseTestProgress = ({int score, int maxScore, int solved, int total});
 
@@ -48,11 +51,16 @@ final class CourseGuideState {
     this.levelTestProgress,
     this.lessonCheckpoint,
     this.partial = false,
+    this.streak,
   });
 
   /// As [resources] são só a lista de lições guardada da última vez (sem os
   /// bancos de exercícios); a leitura completa vem logo depois.
   final bool partial;
+
+  /// A sequência de dias e a semana do cartão de Hoje (P8 A); nula sem o
+  /// repositório de atividade ou se a leitura falhou.
+  final StreakState? streak;
   final TrainingState? training;
   final TrainingResources? resources;
   final Character? teacher;
@@ -99,6 +107,7 @@ final class CourseGuideState {
     LoadFailure? failure,
     bool? partial,
   }) => CourseGuideState(
+    streak: streak,
     partial: partial ?? this.partial,
     training: training ?? this.training,
     resources: resources ?? this.resources,
@@ -129,6 +138,7 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
     this.placement,
     this.schoolProgress,
     this.beforeOpeningProfileLoad,
+    this.activity,
   }) : super(const CourseGuideState());
   final Future<void> Function()? beforeLoad;
   final Future<void> Function()? beforeOpeningProfileLoad;
@@ -149,6 +159,7 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
   final EndgameProgressRepository? testProgress;
   final PlacementRepository? placement;
   final SchoolProgressRepository? schoolProgress;
+  final ActivityRepository? activity;
   Future<void> _pending = Future.value();
   final _saveRetry = SaveRetry();
 
@@ -193,6 +204,7 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
           ? await placement?.result()
           : null;
       final levelAnswers = levelResult?.answers;
+      final streak = await _streak();
       final before = await repository.load(config.course);
       final training = before.onboardingDone
           ? await repository.update(
@@ -203,6 +215,7 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
       if (!isClosed) {
         emit(
           CourseGuideState(
+            streak: streak,
             training: training,
             resources: resources,
             loading: false,
@@ -236,6 +249,27 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
       }
     }
   });
+
+  /// Os dias com atividade de hoje para o cartão de Hoje. Sem o repositório
+  /// ou com falha na leitura, o cartão fica sem a sequência.
+  Future<StreakState?> _streak() async {
+    final source = activity;
+    if (source == null) return null;
+    try {
+      final days = await source.days();
+      final at = now();
+      return StreakState(
+        ready: true,
+        streak: StreakRules.of(days, at),
+        today: StreakRules.day(at),
+        active: {for (final day in days) StreakRules.day(day)},
+        run: StreakRules.run(days, at).toSet(),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      return null;
+    }
+  }
 
   /// Segunda abertura em diante: a lista de lições da última vez entra já,
   /// sem esqueleto, e a leitura completa troca por ela logo depois. O dia

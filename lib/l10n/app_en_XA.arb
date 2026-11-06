@@ -2729,5 +2729,12 @@
   "trainingProgressTodayLessons": "{count, plural, =1{[1 léššöñ çömplétéd one two]} other{[{count} léššöñš çömplétéd one two three]}}",
   "placementSquaresLeft": "{count, plural, =0{[Ýöû çåñ çöñfîŕm one two]} =1{[1 šqûåŕé léft one two]} other{[{count} šqûåŕéš léft one two]}}",
   "lessonRestartNotice": "[Ýöû ŕéštåŕt thîš påŕt fŕöm thé béĝîññîñĝ. one two three four]",
-  "trainingDoubleOfferMinutes": "[Thåt åddš åböût {minutes} mîñ öf štûdý tödåý. one two three four]"
+  "trainingDoubleOfferMinutes": "[Thåt åddš åböût {minutes} mîñ öf štûdý tödåý. one two three four]",
+  "trainingStreakDays": "{count, plural, =0{[0 dåýš îñ å ŕöw one two]} =1{[1 dåý îñ å ŕöw one two]} other{[{count} dåýš îñ å ŕöw one two three]}}",
+  "trainingStreakYesterday": "[Ýéštéŕdåý çöûñtéd. Tŕåîñîñĝ tödåý måkéš {next}. one two three four]",
+  "trainingStreakToday": "[Tödåý çöûñtéd. one two]",
+  "trainingStreakLost": "[Ýéštéŕdåý håd ñö tŕåîñîñĝ. Tŕåîñîñĝ tödåý štåŕtš åĝåîñ. one two three four five]",
+  "trainingStreakFirst": "[Ýöûŕ štŕéåk štåŕtš tödåý one two three]",
+  "trainingStreakFirstHint": "[Tŕåîñîñĝ tödåý måkéš dåý 1. one two three]",
+  "trainingStreakRecord": "[ŕéçöŕd {count} one two]"
 }
