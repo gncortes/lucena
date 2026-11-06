@@ -49,6 +49,7 @@ class ProfileAccountState {
     this.busy = false,
     this.notice,
     this.noticeCount = 0,
+    this.blocked = false,
   });
 
   /// Nulo: sem conta.
@@ -70,6 +71,11 @@ class ProfileAccountState {
   /// Muda a cada aviso, para a tela mostrar o mesmo aviso de novo.
   final int noticeCount;
 
+  /// A conta foi suspensa pelo admin: a nuvem recusa as gravações e o
+  /// progresso segue no aparelho. O aviso da tela vem do canvas
+  /// (`ProfileKeys.accountBlocked`).
+  final bool blocked;
+
   ProfileAccountState copyWith({
     Account? Function()? account,
     PlatformRating? Function()? lichess,
@@ -77,6 +83,7 @@ class ProfileAccountState {
     ProfileSyncPhase? syncPhase,
     bool? busy,
     ProfileNotice? notice,
+    bool? blocked,
   }) => ProfileAccountState(
     account: account == null ? this.account : account(),
     lichess: lichess == null ? this.lichess : lichess(),
@@ -85,6 +92,7 @@ class ProfileAccountState {
     busy: busy ?? this.busy,
     notice: notice ?? this.notice,
     noticeCount: notice == null ? noticeCount : noticeCount + 1,
+    blocked: blocked ?? this.blocked,
   );
 }
 
@@ -128,10 +136,12 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
         account: () => account,
         syncedAt: same ? null : () => null,
         syncPhase: same ? null : ProfileSyncPhase.idle,
+        blocked: same ? null : false,
       ),
     );
     if (account == null) return;
     await _readSyncedAt(account.uid);
+    await _readBlocked(account.uid);
     // Abrir o Perfil com conta sobe o que estiver pendente.
     if (!isClosed) emit(state.copyWith(syncPhase: ProfileSyncPhase.saving));
     final save = _sync.saveNow(account.uid);
@@ -163,6 +173,20 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     if (isClosed || state.account?.uid != uid) return;
     emit(state.copyWith(syncPhase: phase));
     await _readSyncedAt(uid);
+  }
+
+  Future<void> _readBlocked(String uid) async {
+    bool blocked;
+    try {
+      blocked = await _accounts.isBlocked();
+    } on Object catch (error, stack) {
+      // Sem a leitura, o cartão segue como sempre; o servidor recusa igual.
+      reportHandledError(error, stack);
+      return;
+    }
+    if (!isClosed && state.account?.uid == uid) {
+      emit(state.copyWith(blocked: blocked));
+    }
   }
 
   Future<void> _readSyncedAt(String uid) async {

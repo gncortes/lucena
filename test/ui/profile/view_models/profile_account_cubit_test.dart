@@ -132,6 +132,24 @@ void main() {
     });
   });
 
+  test(
+    'abuso: conta suspensa pelo admin fica marcada; a conta segue',
+    () async {
+      accounts
+        ..account = FakeAccountRepository.google
+        ..blocked = true;
+      final cubit = await build();
+      expect(cubit.state.blocked, isTrue);
+      expect(cubit.state.account, FakeAccountRepository.google);
+    },
+  );
+
+  test('abuso: conta sem bloqueio não fica marcada', () async {
+    accounts.account = FakeAccountRepository.google;
+    final cubit = await build();
+    expect(cubit.state.blocked, isFalse);
+  });
+
   test('sem conta, nada sobe', () async {
     final cubit = await build();
     expect(cubit.state.account, isNull);

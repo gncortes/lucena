@@ -286,7 +286,7 @@ class FirebaseAuthService implements AuthService {
     try {
       return await action();
     } on FirebaseAuthException catch (error) {
-      throw AccountException(_failure(error.code));
+      throw AccountException(failureOf(error.code));
     }
   }
 
@@ -304,7 +304,9 @@ class FirebaseAuthService implements AuthService {
     );
   }
 
-  static AccountFailure _failure(String code) => switch (code) {
+  /// O código do Firebase Auth traduzido para o app.
+  @visibleForTesting
+  static AccountFailure failureOf(String code) => switch (code) {
     'invalid-email' => AccountFailure.invalidEmail,
     'weak-password' => AccountFailure.weakPassword,
     'invalid-credential' ||
@@ -317,6 +319,7 @@ class FirebaseAuthService implements AuthService {
     'requires-recent-login' => AccountFailure.recentLoginRequired,
     'user-mismatch' || 'no-current-user' => AccountFailure.userMismatch,
     'operation-not-allowed' => AccountFailure.unavailable,
+    'user-disabled' => AccountFailure.disabled,
     _ => AccountFailure.unknown,
   };
 }

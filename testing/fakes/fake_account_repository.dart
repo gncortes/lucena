@@ -23,6 +23,12 @@ class FakeAccountRepository implements AccountRepository {
     name: 'Teste',
   );
 
+  /// A conta foi suspensa pelo admin (`bloqueios/{uid}`).
+  bool blocked = false;
+
+  @override
+  Future<bool> isBlocked() async => account != null && blocked;
+
   @override
   Account? get current => account;
 
