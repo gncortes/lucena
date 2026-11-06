@@ -41,7 +41,7 @@ void main() {
   test(
     'optional feedback is read separately and preserves the question',
     () async {
-      final content = MemoryContent();
+      final content = _Package();
       content.files['assets/courses/pilares/index.json'] = jsonEncode({
         'partes': [
           {
@@ -82,6 +82,8 @@ void main() {
       content.files['assets/lessons/treino/pt/lesson.json'] = jsonEncode({
         'e.1.d2d4': text,
       });
+      // Um pacote novo ativado muda o escopo e invalida a leitura guardada.
+      content.scope = 'novo';
       resources = await repository.resources(TrainingCourse.pilares);
       expect(resources.errorFeedback['lesson']!['e.1.d2d4'], text);
       expect(
@@ -90,4 +92,10 @@ void main() {
       );
     },
   );
+}
+
+class _Package extends MemoryContent {
+  Object scope = 'inicial';
+  @override
+  Object get cacheScope => scope;
 }

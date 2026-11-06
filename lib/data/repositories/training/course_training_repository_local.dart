@@ -116,6 +116,24 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     }
   }
 
+  static String outlineKey(TrainingCourse course) =>
+      'training.outline.v1.${course.name}';
+
+  /// O que muda o resultado de [resources] além dos arquivos do pacote.
+  static String _profileKey(TrainingState saved) =>
+      '${saved.openingProfile}|${saved.openingProfileStartPart}';
+
+  /// Uma leitura só por pacote instalado: a abertura do Guia pedia a lista
+  /// cinco vezes seguidas (cubit do curso, observador do histórico duas vezes,
+  /// cubit do Guia), cada uma abrindo centenas de arquivos. O resultado vale
+  /// enquanto o pacote (`cacheScope`) e o perfil de abertura não mudam; leitura
+  /// com capítulo sem rede não fica guardada.
+  final _memo =
+      <
+        TrainingCourse,
+        ({Object scope, String profile, Future<TrainingResources> value})
+      >{};
+
   @override
   Future<TrainingResources> resources(TrainingCourse course) async {
     final config = configs[course];
@@ -124,9 +142,77 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     }
     final source = contentSources[config.indexSource];
     if (source != null) return source();
+    final saved = await _read(course);
+    final scope = content.cacheScope;
+    final profile = _profileKey(saved);
+    final memo = _memo[course];
+    if (memo != null && memo.scope == scope && memo.profile == profile) {
+      return memo.value;
+    }
+    final value = _loadResources(course, config, saved);
+    _memo[course] = (scope: scope, profile: profile, value: value);
+    try {
+      final loaded = await value;
+      if (loaded.offlineChapters.isNotEmpty || loaded.lessons.isEmpty) {
+        if (_memo[course]?.value == value) _memo.remove(course);
+      } else {
+        unawaited(_saveOutline(course, profile, loaded));
+      }
+      return loaded;
+    } on Object {
+      if (_memo[course]?.value == value) _memo.remove(course);
+      rethrow;
+    }
+  }
+
+  Future<void> _saveOutline(
+    TrainingCourse course,
+    String profile,
+    TrainingResources loaded,
+  ) async {
+    try {
+      await preferences.setString(
+        outlineKey(course),
+        jsonEncode({
+          'profile': profile,
+          'unpublished': loaded.hasUnpublishedContent,
+          'lessons': [for (final l in loaded.lessons) l.toJson()],
+        }),
+      );
+    } on Object {
+      // O cache é só um atalho: sem ele a tela espera a leitura completa.
+    }
+  }
+
+  @override
+  Future<TrainingResources?> cachedOutline(TrainingCourse course) async {
+    try {
+      final raw = await preferences.getString(outlineKey(course));
+      if (raw == null) return null;
+      final json = jsonDecode(raw) as Map<String, dynamic>;
+      final saved = await _read(course);
+      if (json['profile'] != _profileKey(saved)) return null;
+      final lessons = [
+        for (final l in json['lessons'] as List)
+          TrainingLesson.fromJson(Map<String, dynamic>.from(l as Map)),
+      ];
+      if (lessons.isEmpty) return null;
+      return TrainingResources(
+        lessons: lessons,
+        hasUnpublishedContent: json['unpublished'] == true,
+      );
+    } on Object {
+      return null;
+    }
+  }
+
+  Future<TrainingResources> _loadResources(
+    TrainingCourse course,
+    TrainingCourseConfig config,
+    TrainingState saved,
+  ) async {
     final index = await _json(config.indexSource);
     if (index == null) return TrainingResources();
-    final saved = await _read(course);
     final lessons = <TrainingLesson>[];
     var hasUnpublishedContent = false;
     final unpublished = <String>{};

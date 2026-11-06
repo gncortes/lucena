@@ -14,6 +14,8 @@ import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_entry_keys.dart';
+import 'package:lucena/ui/core/widgets/course/course_navigation_bar.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:lucena/ui/course_entry/widgets/course_entry_gate.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
@@ -39,7 +41,11 @@ const _content = Key('test.courseContent');
 /// T85-D1, H-ANI-07 e H-ANI-08 na entrada do curso (CursoBaixando,
 /// CapituloBaixando, CapituloSemEspaco).
 void main() {
-  Future<_Downloads> mount(WidgetTester tester, {String? chapterId}) async {
+  Future<_Downloads> mount(
+    WidgetTester tester, {
+    String? chapterId,
+    bool chrome = false,
+  }) async {
     setPhoneSize(tester, const Size(412, 917));
     final downloads = _Downloads();
     final accounts = FakeAccountRepository()
@@ -65,7 +71,18 @@ void main() {
             child: CourseEntryGate(
               config: TrainingCourseConfig.pilares,
               chapterId: chapterId,
-              child: const Scaffold(body: Text('curso', key: _content)),
+              child: chrome
+                  ? Scaffold(
+                      appBar: LucenaAppBar(
+                        centerTitle: false,
+                        titleSpacing: 0,
+                        leading: const BackButton(),
+                        title: const Text('Pilares do Xadrez'),
+                      ),
+                      body: const Text('curso', key: _content),
+                      bottomNavigationBar: const CourseNavigationBar(),
+                    )
+                  : const Scaffold(body: Text('curso', key: _content)),
             ),
           ),
         ),
@@ -94,20 +111,38 @@ void main() {
     expect(tester.getTopLeft(titulo).dx, lessThan(64));
   });
 
-  testWidgets('H-ANI-07: o esqueleto brilha e se dissolve no conteúdo', (
-    tester,
-  ) async {
+  testWidgets('H-ANI-07: o esqueleto brilha até o pacote ficar pronto e a '
+      'tela do curso entra seca', (tester) async {
     final downloads = await mount(tester);
     expect(find.byKey(MotionKeys.shimmerEsqueleto), findsOneWidget);
     expect(find.byKey(_content), findsNothing);
     downloads.calls.single.complete();
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 125));
-    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsOneWidget);
-    expect(find.byKey(MotionKeys.shimmerConteudo), findsOneWidget);
-    await tester.pump(const Duration(milliseconds: 200));
     expect(find.byKey(MotionKeys.shimmerEsqueleto), findsNothing);
     expect(find.byKey(_content), findsOneWidget);
+  });
+
+  testWidgets('a app bar e a barra de baixo não se mexem nem piscam na troca '
+      'do esqueleto para o conteúdo', (tester) async {
+    final downloads = await mount(tester, chrome: true);
+    final barra = find.byType(AppBar);
+    final abas = find.byType(NavigationBar);
+    expect(barra, findsOneWidget);
+    expect(abas, findsOneWidget);
+    final barraAntes = tester.getRect(barra);
+    final abasAntes = tester.getRect(abas);
+    downloads.calls.single.complete();
+    // Cada quadro da troca e da entrada do corpo: sempre uma só barra de cada,
+    // no mesmo lugar (sem subir, sem sobrepor duas cópias).
+    for (var ms = 0; ms <= 600; ms += 16) {
+      await tester.pump(Duration(milliseconds: ms == 0 ? 0 : 16));
+      expect(barra, findsOneWidget, reason: 'app bar duplicada em $ms ms');
+      expect(abas, findsOneWidget, reason: 'barra de baixo duplicada');
+      expect(tester.getRect(barra), barraAntes, reason: 'app bar em $ms ms');
+      expect(tester.getRect(abas), abasAntes, reason: 'abas em $ms ms');
+    }
+    expect(find.byKey(_content), findsOneWidget);
+    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsNothing);
   });
 
   testWidgets('H-ANI-08: sem espaço, "Tentar novamente" gira até a nova '

@@ -47,9 +47,20 @@ final class FakeTrainingRepository implements TrainingRepository {
 
   @override
   Future<TrainingResources> resources(TrainingCourse course) async {
+    resourceReads++;
     await beforeResources;
     return content[course] ?? TrainingResources();
   }
+
+  /// Quantas vezes a lista completa foi lida.
+  int resourceReads = 0;
+
+  /// A lista guardada da última abertura, por curso (nula: primeira vez).
+  final Map<TrainingCourse, TrainingResources> outline = {};
+
+  @override
+  Future<TrainingResources?> cachedOutline(TrainingCourse course) async =>
+      outline[course];
 
   @override
   Future<TrainingState> update(

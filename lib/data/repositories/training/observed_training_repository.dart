@@ -25,6 +25,9 @@ final class ObservedTrainingRepository implements TrainingRepository {
   Future<TrainingResources> resources(TrainingCourse course) =>
       inner.resources(course);
   @override
+  Future<TrainingResources?> cachedOutline(TrainingCourse course) =>
+      inner.cachedOutline(course);
+  @override
   Future<TrainingState> load(TrainingCourse course) =>
       observers.containsKey(course)
       ? transact(course, (s) => s)

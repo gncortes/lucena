@@ -38,6 +38,7 @@ class TrainingGuideTab extends StatelessWidget {
         config: guide.config,
         now: guide.now,
         analytics: guide.analytics,
+        initialResources: guide.state.partial ? null : guide.state.resources,
         afterSave: (_) async {
           try {
             await context.read<RemindersCubit>().refresh();

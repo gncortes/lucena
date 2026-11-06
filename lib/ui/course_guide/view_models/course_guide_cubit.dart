@@ -45,7 +45,12 @@ final class CourseGuideState {
     this.testProgress = const {},
     this.levelTestProgress,
     this.lessonCheckpoint,
+    this.partial = false,
   });
+
+  /// As [resources] são só a lista de lições guardada da última vez (sem os
+  /// bancos de exercícios); a leitura completa vem logo depois.
+  final bool partial;
   final TrainingState? training;
   final TrainingResources? resources;
   final Character? teacher;
@@ -90,7 +95,9 @@ final class CourseGuideState {
     bool? saving,
     bool? failed,
     LoadFailure? failure,
+    bool? partial,
   }) => CourseGuideState(
+    partial: partial ?? this.partial,
     training: training ?? this.training,
     resources: resources ?? this.resources,
     loading: loading ?? this.loading,
@@ -164,6 +171,7 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
     // the initiating button owns its progress indicator.
     try {
       await beforeLoad?.call();
+      await _emitCachedOutline();
       final resources = await repository.resources(config.course);
       final teachers = await characters?.characters();
       final scores = await _testScores(resources);
@@ -217,6 +225,29 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
       }
     }
   });
+
+  /// Segunda abertura em diante: a lista de lições da última vez entra já,
+  /// sem esqueleto, e a leitura completa troca por ela logo depois. O dia
+  /// (metas) só é refeito na leitura completa.
+  Future<void> _emitCachedOutline() async {
+    if (state.resources != null) return;
+    try {
+      final cached = await repository.cachedOutline(config.course);
+      if (cached == null || isClosed || state.resources != null) return;
+      final training = await repository.load(config.course);
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          training: training,
+          resources: cached,
+          loading: false,
+          partial: true,
+        ),
+      );
+    } on Object {
+      // Sem o atalho, a tela espera a leitura completa (esqueleto).
+    }
+  }
 
   Future<({Map<String, int?> scores, Map<String, CourseTestProgress> details})>
   _testScores(TrainingResources resources) async {

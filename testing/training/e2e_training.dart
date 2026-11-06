@@ -113,6 +113,9 @@ final class E2ETrainingRepository implements TrainingRepository {
   ) => _local.transact(course, change);
 
   @override
+  Future<TrainingResources?> cachedOutline(TrainingCourse course) async => null;
+
+  @override
   Future<TrainingResources> resources(TrainingCourse course) =>
       _resources.putIfAbsent(course, () async {
         final index = await _local.resources(course);
