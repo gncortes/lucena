@@ -59,8 +59,13 @@ class ExercisesIntroScreen extends StatelessWidget {
       return TestCanvasIntroPage(
         chapter: chapter,
         count: state.exerciseCount,
+        // Teste já feito (todos respondidos): o botão leva ao resultado,
+        // que tem o Refazer; nunca um Começar sem ação.
+        finished: next == null,
         onStart: next == null
-            ? null
+            ? () => context.pushReplacement(
+                Routes.endgameExercisesDone(lesson.id),
+              )
             : () => context.pushReplacement(
                 Routes.endgameExercise(lesson.id, next.id),
               ),
@@ -279,10 +284,14 @@ class TestCanvasIntroPage extends StatelessWidget {
     required this.chapter,
     required this.count,
     this.onStart,
+    this.finished = false,
     super.key,
   });
   final int chapter, count;
   final VoidCallback? onStart;
+
+  /// O teste já foi feito: o botão vira "Ver o resultado".
+  final bool finished;
 
   @override
   Widget build(BuildContext context) {
@@ -472,8 +481,12 @@ class TestCanvasIntroPage extends StatelessWidget {
                 FilledButton.icon(
                   key: ExercisesIntroKeys.start,
                   onPressed: onStart,
-                  icon: const Icon(CanvasSymbols.playArrow),
-                  label: Text(t.endgamePartStart),
+                  icon: Icon(
+                    finished
+                        ? Icons.emoji_events_outlined
+                        : CanvasSymbols.playArrow,
+                  ),
+                  label: Text(finished ? t.gameSeeResult : t.endgamePartStart),
                 ),
               ],
             ),

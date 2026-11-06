@@ -552,18 +552,14 @@ void main() {
     },
   );
 
-  // BUG PARA DECISÃO DE PRODUTO (não corrigido): com o teste fechado
-  // (aprovado ou não), tocar nele no Catálogo abre a introdução com o "Começar"
-  // sem ação (`nextExercise` é nulo com todos respondidos). Falta decidir o
-  // destino: ir direto ao resultado, ou a introdução com "Refazer". Tire o
-  // `skip` quando a decisão sair; o teste já cobre os dois casos.
+  // Com o teste fechado (aprovado ou não), tocar nele no Catálogo abre a
+  // introdução com "Ver o resultado", que leva ao resultado (com o Refazer).
   for (final (name, wrong) in [
     ('aprovado (39 de 39)', <int>{}),
     ('não passou (29 de 39)', {for (var i = 0; i < 39; i += 4) i}),
   ]) {
     testWidgets(
       'teste fechado $name: tocar de novo no Catálogo não é beco sem saída',
-      skip: true,
       (tester) async {
         final session = await launch(tester);
         await session.openTestFromCatalog();
@@ -574,13 +570,10 @@ void main() {
         await settle(tester);
         expect(session.path, '/guide');
         await session.openTestFromCatalog();
-        // Ou vê o resultado, ou pode refazer: nunca um Começar morto.
-        final start = find.byKey(ExercisesIntroKeys.start);
-        if (start.evaluate().isNotEmpty) {
-          expect(tester.widget<FilledButton>(start).onPressed, isNotNull);
-        } else {
-          expect(session.path, Routes.endgameExercisesDone(_chapter));
-        }
+        expect(find.text('Ver o resultado'), findsOneWidget);
+        await tester.tap(find.byKey(ExercisesIntroKeys.start));
+        await settle(tester);
+        expect(session.path, Routes.endgameExercisesDone(_chapter));
       },
     );
   }
