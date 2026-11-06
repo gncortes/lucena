@@ -488,4 +488,28 @@ abstract final class LucenaMotion {
   /// "META DOBRADA" sobe 6 px em 300 ms (DEC), depois dos cartões e da barra.
   static const seloDaMetaDobrada = Duration(milliseconds: 300);
   static const subidaDoSeloDobrado = 6.0;
+
+  // T85 · S3b · Resultado em faixas e aviso de conquista na AppBar.
+
+  /// Cada faixa do resultado entra com fade e sobe [subidaDaFaixa] px.
+  static const faixaEntra = Duration(milliseconds: 280);
+  static const subidaDaFaixa = 14.0;
+
+  /// O intervalo entre o começo de uma faixa e o da seguinte.
+  static const intervaloDasFaixas = Duration(milliseconds: 100);
+
+  /// O rating e o delta contam enquanto a faixa entra.
+  static const contagemDaFaixa = Duration(milliseconds: 600);
+
+  /// A casca (esqueleto) só aparece se o dado demora mais que isto.
+  static const atrasoDaCasca = Duration(milliseconds: 300);
+  static const fadeDaCasca = Duration(milliseconds: 150);
+
+  /// O aviso de conquista cai [quedaDoAviso] px com mola leve em
+  /// [avisoEntra]; o anterior sai para cima em [avisoSai] e o próximo entra
+  /// [intervaloDoAviso] depois do começo da saída.
+  static const avisoEntra = Duration(milliseconds: 480);
+  static const avisoSai = Duration(milliseconds: 240);
+  static const intervaloDoAviso = Duration(milliseconds: 120);
+  static const quedaDoAviso = 64.0;
 }
