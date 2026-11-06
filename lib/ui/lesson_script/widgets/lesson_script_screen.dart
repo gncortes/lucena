@@ -101,6 +101,15 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           _contentUnavailable = false;
           _loadFailure = null;
         });
+        // Parte largada no meio recomeça do início: um aviso, uma vez.
+        if (cubit.state.restartNotice) {
+          cubit.noticeShown();
+          showLucenaSnackBar(
+            context,
+            context.l10n.lessonRestartNotice,
+            key: LessonScriptKeys.restartNotice,
+          );
+        }
       }
     } on Object catch (error, stack) {
       reportHandledError(error, stack);

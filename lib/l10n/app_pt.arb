@@ -3031,5 +3031,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "lessonRestartNotice": "Você recomeça esta parte do início."
 }

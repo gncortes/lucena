@@ -644,7 +644,27 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         ? checkpoint!.step
         : initialStage;
     await _enterStage(savedStage.clamp(0, last));
+    if (!isClosed && _leftMidway(checkpoint)) {
+      emit(state.copyWith(restartNotice: true));
+    }
     await _checkpointWrites;
+  }
+
+  /// O ponto salvo é desta parte e já passou do começo dela: ao reabrir, a
+  /// parte recomeça do início da etapa.
+  bool _leftMidway(LessonCheckpoint? checkpoint) =>
+      checkpoint != null &&
+      checkpoint.lessonId == lessonId &&
+      checkpoint.part == partId &&
+      (checkpoint.step > 0 ||
+          (checkpoint.scriptExample ?? 0) > 0 ||
+          checkpoint.scriptHead > 0 ||
+          checkpoint.moves.isNotEmpty ||
+          checkpoint.collected.isNotEmpty);
+
+  /// A tela já mostrou o aviso de recomeço.
+  void noticeShown() {
+    if (state.restartNotice) emit(state.copyWith(restartNotice: false));
   }
 
   String get _scriptIdentity => '${_stageData.id}/${_example.id}';

@@ -14202,5 +14202,9 @@
         "type": "int"
       }
     }
+  },
+  "lessonRestartNotice": "You restart this part from the beginning.",
+  "@lessonRestartNotice": {
+    "description": "Brief notice when a lesson left halfway reopens and the part restarts from its beginning"
   }
 }

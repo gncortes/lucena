@@ -38,6 +38,7 @@ void main() {
     WidgetTester tester,
     _Downloads downloads, {
     bool signedIn = false,
+    String? from,
   }) async {
     setPhoneSize(tester, const Size(412, 917));
     final accounts = FakeAccountRepository();
@@ -46,7 +47,7 @@ void main() {
     addTearDown(scheduler.dispose);
     final pushed = <String>[];
     final router = GoRouter(
-      initialLocation: '/school',
+      initialLocation: from ?? '/school',
       routes: [
         GoRoute(
           path: '/school',
@@ -84,6 +85,11 @@ void main() {
         child: const SizedBox(),
       ),
     );
+    if (from != null) {
+      // A Escola abre por cima da tela anterior (push), como o atalho de
+      // quem tem pilha.
+      unawaited(router.push('/school'));
+    }
     if (downloads.loading) {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
@@ -127,9 +133,21 @@ void main() {
 
   testWidgets('voltar vai ao Início', (tester) async {
     await mount(tester, _Downloads());
-    await tester.tap(find.byKey(TrainingEntryKeys.back));
+    await tester.tap(find.byKey(TrainingEntryKeys.accountBack));
     await tester.pumpAndSettle();
     expect(find.text('inicio'), findsOneWidget);
+  });
+
+  testWidgets('T85-B5a: a tela de conta tem a seta e ela volta à anterior', (
+    tester,
+  ) async {
+    final r = await mount(tester, _Downloads(), from: Routes.home);
+    expect(find.byKey(TrainingEntryKeys.accountBack), findsOneWidget);
+    await tester.tap(find.byKey(TrainingEntryKeys.accountBack));
+    await tester.pumpAndSettle();
+    expect(find.text('inicio'), findsOneWidget);
+    expect(find.byKey(TrainingEntryKeys.account), findsNothing);
+    expect(r.pushed, isEmpty);
   });
 
   testWidgets('baixando: esqueleto com as quatro abas', (tester) async {

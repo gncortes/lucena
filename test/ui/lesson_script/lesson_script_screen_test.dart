@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/widgets/actions_footer.dart';
 import 'package:go_router/go_router.dart';
@@ -1525,5 +1526,37 @@ void main() {
     await _tap(tester, LessonScriptKeys.primary);
     expect(s.cubit.state.stageId, 'pratica');
     expect(tester.takeException(), isNull);
+  });
+
+  group('T85-B5b aviso de recomeço na tela', () {
+    testWidgets('parte largada no meio: o aviso aparece uma vez', (
+      tester,
+    ) async {
+      final source = FakeLessonSource()
+        ..checkpoints.add(
+          const LessonCheckpoint(
+            lessonId: 'pawns.test',
+            part: 'distant',
+            step: 1,
+          ),
+        );
+      final s = await _open(tester, const Size(412, 917), source: source);
+      expect(find.byKey(LessonScriptKeys.restartNotice), findsOneWidget);
+      expect(find.text('Você recomeça esta parte do início.'), findsOneWidget);
+      expect(s.cubit.state.restartNotice, isFalse);
+    });
+
+    testWidgets('lição nova: sem aviso', (tester) async {
+      await _open(tester, const Size(412, 917));
+      expect(find.byKey(LessonScriptKeys.restartNotice), findsNothing);
+    });
+
+    testWidgets('volta do segundo plano: sem aviso', (tester) async {
+      await _open(tester, const Size(412, 917));
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.byKey(LessonScriptKeys.restartNotice), findsNothing);
+    });
   });
 }

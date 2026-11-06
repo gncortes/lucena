@@ -268,5 +268,9 @@ abstract class LessonScriptState with _$LessonScriptState {
 
     /// Preenchido quando a parte foi concluída (`finishPart`).
     LessonOutcome? outcome,
+
+    /// A parte foi largada no meio e reabriu do início: a tela avisa uma vez
+    /// (T85-B5b). Segundo plano não passa por aqui: o estado é mantido.
+    @Default(false) bool restartNotice,
   }) = _LessonScriptState;
 }
