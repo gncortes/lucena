@@ -25,11 +25,27 @@ enum ProfileNotice {
   failed,
 }
 
+/// Onde está o envio do progresso para a conta (cartão do Perfil).
+enum ProfileSyncPhase {
+  /// Ainda não tentou neste Perfil: o cartão mostra a última vez salva.
+  idle,
+
+  /// Enviando: "Salvando…".
+  saving,
+
+  /// Terminou bem: "Salvo agora".
+  saved,
+
+  /// Sem rede: a última vez salva e o aviso de que fica no celular.
+  offline,
+}
+
 class ProfileAccountState {
   const ProfileAccountState({
     this.account,
     this.lichess,
     this.syncedAt,
+    this.syncPhase = ProfileSyncPhase.idle,
     this.busy = false,
     this.notice,
     this.noticeCount = 0,
@@ -44,6 +60,9 @@ class ProfileAccountState {
   /// A última sincronização da conta neste aparelho.
   final DateTime? syncedAt;
 
+  /// O envio de agora; o cartão da conta se desenha por ele.
+  final ProfileSyncPhase syncPhase;
+
   /// Lendo o Lichess.
   final bool busy;
   final ProfileNotice? notice;
@@ -55,12 +74,14 @@ class ProfileAccountState {
     Account? Function()? account,
     PlatformRating? Function()? lichess,
     DateTime? Function()? syncedAt,
+    ProfileSyncPhase? syncPhase,
     bool? busy,
     ProfileNotice? notice,
   }) => ProfileAccountState(
     account: account == null ? this.account : account(),
     lichess: lichess == null ? this.lichess : lichess(),
     syncedAt: syncedAt == null ? this.syncedAt : syncedAt(),
+    syncPhase: syncPhase ?? this.syncPhase,
     busy: busy ?? this.busy,
     notice: notice ?? this.notice,
     noticeCount: notice == null ? noticeCount : noticeCount + 1,
@@ -76,6 +97,7 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     required this._lichess,
     required this._profile,
     this._analytics = const NoAnalyticsRepository(),
+    this.saveTimeout = const Duration(seconds: 10),
   }) : super(ProfileAccountState(account: _accounts.current));
 
   final AccountRepository _accounts;
@@ -83,6 +105,9 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   final LichessRepository _lichess;
   final ProfileRepository _profile;
   final AnalyticsRepository _analytics;
+
+  /// Quanto o cartão espera o envio antes de dizer que ficou no celular.
+  final Duration saveTimeout;
   StreamSubscription<Account?>? _accountSubscription;
   StreamSubscription<String>? _syncSubscription;
 
@@ -102,16 +127,42 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
       state.copyWith(
         account: () => account,
         syncedAt: same ? null : () => null,
+        syncPhase: same ? null : ProfileSyncPhase.idle,
       ),
     );
     if (account == null) return;
     await _readSyncedAt(account.uid);
     // Abrir o Perfil com conta sobe o que estiver pendente.
+    if (!isClosed) emit(state.copyWith(syncPhase: ProfileSyncPhase.saving));
+    final save = _sync.saveNow(account.uid);
+    var phase = ProfileSyncPhase.saved;
     try {
-      await _sync.syncNow(account.uid);
+      await save.timeout(saveTimeout);
     } on SyncException {
-      // Sem rede: o cartão mostra a última vez e o aviso de offline.
+      // Sem rede ou envio que falhou: o cartão mostra a última vez e o aviso de offline.
+      phase = ProfileSyncPhase.offline;
+    } on TimeoutException {
+      // Sem rede, a escrita só termina quando o servidor confirma: o cartão
+      // diz que fica no celular e, se a confirmação vier depois, vira "salvo".
+      phase = ProfileSyncPhase.offline;
+      unawaited(_savedLater(save, account.uid));
     }
+    await _finish(account.uid, phase);
+  }
+
+  Future<void> _savedLater(Future<Object?> save, String uid) async {
+    try {
+      await save;
+    } on Object {
+      return;
+    }
+    await _finish(uid, ProfileSyncPhase.saved);
+  }
+
+  Future<void> _finish(String uid, ProfileSyncPhase phase) async {
+    if (isClosed || state.account?.uid != uid) return;
+    emit(state.copyWith(syncPhase: phase));
+    await _readSyncedAt(uid);
   }
 
   Future<void> _readSyncedAt(String uid) async {

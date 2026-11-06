@@ -53,6 +53,11 @@ abstract class SyncRepository {
   /// junção aqui e a manda para a conta, com as partidas novas. Lança
   /// [SyncException] se não deu para ler a conta.
   Future<SyncResult> sync(String uid);
+
+  /// Espera o envio que o último [sync] deixou andando. Lança
+  /// [SyncException] se o envio falhou: só depois de voltar sem erro é que
+  /// a conta tem o progresso de fato.
+  Future<void> flush(String uid);
 }
 
 /// Sem conta na nuvem (testes, build sem Firebase): a conta nunca responde.
@@ -64,6 +69,9 @@ class NoSyncRepository implements SyncRepository {
 
   @override
   Future<SyncResult> sync(String uid) async => throw const SyncException();
+
+  @override
+  Future<void> flush(String uid) async => throw const SyncException();
 }
 
 class CloudSyncRepository implements SyncRepository {
@@ -101,6 +109,9 @@ class CloudSyncRepository implements SyncRepository {
   final RaceRepository _race;
   final FeaturedProgressRepository _featured;
 
+  /// O envio do último [sync], por conta.
+  final _pushes = <String, Future<bool>>{};
+
   static String _syncedKey(String uid) => 'sync.$uid.at';
 
   /// O id local da última partida enviada.
@@ -128,7 +139,7 @@ class CloudSyncRepository implements SyncRepository {
     // The local account-scoped records remain durable if the transaction
     // cannot run offline. A new sync (login/app opening/next activity/manual)
     // retries; no transaction is claimed to be queued by Firestore offline.
-    unawaited(_push(uid, merged));
+    _pushes[uid] = _push(uid, merged);
     return SyncResult(
       summary: merged,
       hadRemote: remote != null && !remote.isEmpty,
@@ -198,7 +209,14 @@ class CloudSyncRepository implements SyncRepository {
     }
   }
 
-  Future<void> _push(String uid, ProgressSummary summary) async {
+  @override
+  Future<void> flush(String uid) async {
+    final push = _pushes[uid];
+    if (push != null && !await push) throw const SyncException();
+  }
+
+  /// Verdadeiro se a conta recebeu tudo.
+  Future<bool> _push(String uid, ProgressSummary summary) async {
     try {
       await _store.writeProgress(uid, {
         ...summary.toJson(),
@@ -206,8 +224,10 @@ class CloudSyncRepository implements SyncRepository {
       });
       await _preferences.setString(_syncedKey(uid), _now().toIso8601String());
       await _pushGames(uid);
+      return true;
     } on Object catch (error) {
       debugPrint('Progresso não enviado: $error');
+      return false;
     }
   }
 

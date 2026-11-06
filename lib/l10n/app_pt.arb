@@ -1420,6 +1420,8 @@
   "profileSyncedAt": "Salvo {when}",
   "profileSyncedToday": "hoje, {time}",
   "profileSyncedNever": "Ainda não salvo",
+  "profileSyncing": "Salvando…",
+  "profileSyncedNow": "Salvo agora",
   "profileSyncOffline": "Sem internet, o que você faz fica no celular e é salvo na conta quando a conexão voltar.",
   "profileSignOut": "Sair da conta",
   "profileDeleteAccount": "Excluir a conta",

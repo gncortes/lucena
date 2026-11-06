@@ -15,6 +15,10 @@ abstract final class ProfileKeys {
   /// Com conta: "Tudo guardado na conta".
   static const syncCard = Key('profile.syncCard');
 
+  /// O ícone e a frase do cartão: salvando, salvo agora, última vez.
+  static const syncIcon = Key('profile.syncIcon');
+  static const syncStatus = Key('profile.syncStatus');
+
   static const rowCountry = Key('profile.rowCountry');
   static const rowRegion = Key('profile.rowRegion');
   static const rowLanguage = Key('profile.rowLanguage');

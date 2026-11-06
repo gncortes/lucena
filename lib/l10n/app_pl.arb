@@ -1439,6 +1439,8 @@
   "profileSyncedAt": "Last sync: {when}",
   "profileSyncedToday": "today, {time}",
   "profileSyncedNever": "not yet",
+  "profileSyncing": "Saving…",
+  "profileSyncedNow": "Saved just now",
   "profileSyncOffline": "Without internet, what you do stays on the phone and goes up by itself when the connection is back.",
   "profileSignOut": "Sign out",
   "profileDeleteAccount": "Delete the account",
