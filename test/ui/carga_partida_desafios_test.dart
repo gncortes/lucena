@@ -12,7 +12,7 @@ void main() {
     'catalog/widgets/catalog_screen.dart',
     'catalog/widgets/category_screen.dart',
     'challenge/widgets/challenge_link_screen.dart',
-    'conclusion/widgets/conclusion_screen.dart',
+    // O resultado (S3b) usa a `CascaComAtraso`: casca só após 0,3 s.
     'featured/widgets/featured_list_screen.dart',
     'journey/widgets/challenge_screen.dart',
     'journey/widgets/journey_screen.dart',

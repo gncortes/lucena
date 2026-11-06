@@ -22,7 +22,9 @@ import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
+import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
@@ -580,24 +582,151 @@ void main() {
     });
   });
 
-  group('aviso de conquista', () {
+  group('aviso de conquista na AppBar (S3b)', () {
     for (final size in const [Size(360, 740), Size(412, 917)]) {
-      testWidgets('fica no alto, acima do título (${size.width.toInt()})', (
-        tester,
-      ) async {
-        await open(tester, size: size, fresh: true, settled: false);
-        await tester.pump(AchievementToasts.duration * 0.3);
-        final toast = tester.getRect(find.byKey(AchievementsKeys.toast));
-        final title = tester.getRect(find.byKey(ConclusionKeys.title));
-        expect(toast.top, closeTo(8, 1));
-        expect(toast.bottom, lessThanOrEqualTo(title.top));
-        // Some sozinho e o título fica livre.
-        await tester.pump(AchievementToasts.duration);
+      testWidgets('fica na faixa da AppBar, sem cobrir X, + nem compartilhar '
+          '(${size.width.toInt()})', (tester) async {
+        await open(size: size, tester, fresh: true, settled: false);
+        final bar = find.byType(AppBar);
+        var vistos = 0;
+        for (var ms = 0; ms < 1400; ms += 40) {
+          await tester.pump(const Duration(milliseconds: 40));
+          final aviso = find.byKey(AchievementsKeys.toast);
+          if (aviso.evaluate().isEmpty) continue;
+          vistos++;
+          final toast = tester.getRect(aviso);
+          for (final key in [
+            ConclusionKeys.close,
+            ConclusionKeys.appBarNewGame,
+            ConclusionKeys.share,
+          ]) {
+            final icone = find.byKey(key);
+            if (icone.evaluate().isEmpty) continue;
+            expect(
+              toast.overlaps(tester.getRect(icone)),
+              isFalse,
+              reason: '$key em ${ms}ms: $toast x ${tester.getRect(icone)}',
+            );
+          }
+          // Cai de cima: nunca passa da base da AppBar.
+          expect(toast.bottom, lessThanOrEqualTo(tester.getRect(bar).bottom));
+        }
+        expect(vistos, greaterThan(10));
+        // Some sozinho e a AppBar fica livre.
+        await tester.pump(AchievementToasts.duration * 3);
         await tester.pumpAndSettle();
-        expect(find.byKey(AchievementsKeys.toast).hitTestable(), findsNothing);
-        expect(find.byKey(ConclusionKeys.title).hitTestable(), findsOneWidget);
+        expect(find.byKey(AchievementsKeys.toast), findsNothing);
       });
     }
+
+    testWidgets('a AppBar não se move durante a entrada', (tester) async {
+      await open(tester, fresh: true, settled: false);
+      final bar = find.byType(AppBar);
+      expect(bar, findsOneWidget);
+      final inicio = tester.getRect(bar);
+      expect(find.byKey(ConclusionKeys.close), findsOneWidget);
+      for (var ms = 0; ms < 1600; ms += 80) {
+        await tester.pump(const Duration(milliseconds: 80));
+        expect(tester.getRect(bar), inicio, reason: '${ms}ms');
+        expect(find.byKey(ConclusionKeys.close), findsOneWidget);
+      }
+      await tester.pumpAndSettle();
+    });
+  });
+
+  group('S3b entrada e fala', () {
+    testWidgets('sem esqueleto à vista nos primeiros quadros e botões '
+        'habilitados ao fim', (tester) async {
+      await open(
+        tester,
+        settled: false,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      expect(find.byKey(MotionKeys.shimmerEsqueleto), findsNothing);
+      await tester.pump(const Duration(milliseconds: 1300));
+      final principal = tester.widget<FilledButton>(
+        find.byKey(ConclusionKeys.action(ConclusionAction.playAgain)),
+      );
+      expect(principal.onPressed, isNotNull);
+      expect(
+        opacidadeDaParte(
+          tester,
+          find.byKey(MotionKeys.parteDoResultado('botoes')),
+        ),
+        1,
+      );
+      await settle(tester);
+    });
+
+    testWidgets('as faixas entram escalonadas, na ordem, sem pular', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        settled: false,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      const ordem = ['titulo', 'placar', 'viktor', 'botoes'];
+      await tester.pump(const Duration(milliseconds: 16));
+      await tester.pump(const Duration(milliseconds: 150));
+      double op(String p) =>
+          opacidadeDaParte(tester, find.byKey(MotionKeys.parteDoResultado(p)));
+      // Em 150 ms o cabeçalho já aparece e as últimas faixas ainda não.
+      expect(op('titulo'), greaterThan(0));
+      expect(op('botoes'), 0);
+      await tester.pump(const Duration(milliseconds: 1000));
+      for (final p in ordem) {
+        expect(op(p), 1, reason: p);
+      }
+      await settle(tester);
+    });
+
+    testWidgets('a fala é o componente de fala do professor, com a ponta '
+        'para cima e avatar de 56', (tester) async {
+      await open(
+        tester,
+        fresh: true,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      final fala = tester.widget<TeacherSpeech>(
+        find.byKey(ConclusionKeys.comment),
+      );
+      expect(fala.speechContext, SpeechContext.teaching);
+      expect(
+        tester.getSize(
+          find.descendant(
+            of: find.byKey(ConclusionKeys.comment),
+            matching: find.byType(CharacterAvatar),
+          ),
+        ),
+        const Size(56, 56),
+      );
+    });
+
+    testWidgets('a conquista da partida é um cartão, não a linha de '
+        'confete', (tester) async {
+      await open(
+        tester,
+        fresh: true,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+        locale: const Locale('pt'),
+      );
+      expect(find.text('Conquista desbloqueada'), findsNothing);
+      expect(find.byIcon(Icons.celebration_rounded), findsNothing);
+      final cartoes = find.descendant(
+        of: find.byKey(FreeBoardKeys.report),
+        matching: find.byType(Card),
+      );
+      expect(cartoes, findsWidgets);
+      expect(
+        find.descendant(of: cartoes.first, matching: find.byType(Icon)),
+        findsOneWidget,
+      );
+    });
   });
 
   group('convite da conta', () {
