@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../../routing/frentes/d2_routes.dart';
@@ -243,7 +244,13 @@ class _HomeScreenState extends State<HomeScreen>
       child: child,
     );
     return [
-      if (state.hero != null) gap(HeroCard(state: state), AppSpacing.xl),
+      if (state.hero != null)
+        gap(
+          // Aprender a jogar: o cartão do objetivo (a aula da Escola, ou a Jornada
+          // enquanto a Escola não está no app) entra com pop (S6 do T85).
+          HeroCard(state: state, pop: state.goal == GoalPreference.learn),
+          AppSpacing.xl,
+        ),
       if (state.showsFeatured && state.featured != null)
         gap(_featured(context, state.featured!), AppSpacing.xl),
       ..._shortcuts(context, state),
