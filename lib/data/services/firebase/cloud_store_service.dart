@@ -14,11 +14,15 @@ import '../../../domain/models/learning_record.dart';
 ///   conta entrou (um só por conta);
 /// - `daily/{aaaa-mm-dd}` e `featured/{id}`: abertos a todos, só leitura
 ///   (o "x% acertaram" da E1.24 vem neles);
-/// - `feedback/{id}`: só criação, sem conta (E1.26).
+/// - `feedback/{id}`: só com conta, com o uid do autor (E1.26);
+/// - `cotas/{uid}`: o ritmo do feedback e a contagem das partidas, gravados no
+///   mesmo lote que eles (as regras conferem);
+/// - `bloqueios/{uid}`: a conta suspensa pelo admin (só leitura no app).
 ///
 /// O Firestore guarda as gravações sem rede e as manda quando ela volta.
 abstract class CloudStoreService {
-  /// Junta [data] ao perfil (cria se não existe).
+  /// Junta [data] ao perfil (cria se não existe). O `createdAt` vai com a hora
+  /// do servidor, seja qual for o valor em [data] (as regras exigem).
   Future<void> mergeUser(String uid, Map<String, Object?> data);
 
   /// O resumo do progresso (`progress/summary`). Nulo: a conta ainda não
@@ -28,8 +32,9 @@ abstract class CloudStoreService {
   /// Troca o resumo do progresso. Termina quando o servidor confirma.
   Future<void> writeProgress(String uid, Map<String, Object?> data);
 
-  /// Grava uma partida em `games/{id}`. A partida não muda depois de
-  /// gravada: se o [id] já existe, nada acontece.
+  /// Grava uma partida em `games/{id}` e soma 1 em `cotas/{uid}.partidas`, no
+  /// mesmo lote. A partida não muda depois de gravada: se o [id] já existe,
+  /// nada acontece.
   Future<void> writeGame(String uid, String id, Map<String, Object?> data);
 
   /// O token do push gravado na conta (`push/device`). Nulo: não tem.
@@ -42,7 +47,8 @@ abstract class CloudStoreService {
   /// Apaga o token do push da conta.
   Future<void> deletePushToken(String uid);
 
-  /// Apaga o perfil e tudo abaixo dele que o app grava. Precisa de rede:
+  /// Apaga o perfil, tudo abaixo dele que o app grava e os feedbacks que a
+  /// conta mandou. Precisa de rede:
   /// sem ela lança [CloudStoreException] em vez de apagar só a cópia local.
   Future<void> deleteUser(String uid);
 
@@ -50,9 +56,17 @@ abstract class CloudStoreService {
   /// existe. Lança [CloudStoreException] sem rede e sem cópia no aparelho.
   Future<Map<String, Object?>?> readPublic(String collection, String id);
 
-  /// Cria um documento em `feedback/{id automático}` com o `createdAt` do
-  /// servidor. Termina quando o servidor confirma; sem rede, fica na fila.
+  /// Cria um documento em `feedback/{id automático}` com o uid de quem está
+  /// logado e o `createdAt` do servidor, e marca o envio em `cotas/{uid}` no
+  /// mesmo lote (um por minuto). Sem conta, lança [CloudStoreException] com
+  /// `unauthenticated`. Termina quando o servidor confirma; sem rede, fica na
+  /// fila.
   Future<void> addFeedback(Map<String, Object?> data);
+
+  /// A conta [uid] está suspensa pelo admin (`bloqueios/{uid}` com `ate`
+  /// vazio ou no futuro, comparado com [now]). Sem rede e sem cópia, `false`:
+  /// o servidor recusa as gravações de qualquer forma.
+  Future<bool> readBlocked(String uid, DateTime now);
 
   /// Tudo o que a conta [uid] tem na nuvem, do servidor ("Baixar meus
   /// dados", H-CON-21). Datas viram texto ISO 8601. Lança
@@ -124,6 +138,9 @@ class NoCloudStoreService implements CloudStoreService {
   Future<void> addFeedback(Map<String, Object?> data) async {}
 
   @override
+  Future<bool> readBlocked(String uid, DateTime now) async => false;
+
+  @override
   Future<CloudExport> exportUser(String uid) async => const CloudExport();
 }
 
@@ -151,8 +168,15 @@ class FirestoreCloudStoreService implements CloudStoreService {
       _db.collection('users').doc(uid);
 
   @override
-  Future<void> mergeUser(String uid, Map<String, Object?> data) =>
-      _user(uid).set(data, SetOptions(merge: true));
+  Future<void> mergeUser(String uid, Map<String, Object?> data) => _user(uid)
+      .set({
+        ...data,
+        if (data.containsKey('createdAt'))
+          'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+  DocumentReference<Map<String, dynamic>> _cota(String uid) =>
+      _db.collection('cotas').doc(uid);
 
   DocumentReference<Map<String, dynamic>> _device(String uid) =>
       _user(uid).collection('push').doc('device');
@@ -217,11 +241,18 @@ class FirestoreCloudStoreService implements CloudStoreService {
     Map<String, Object?> data,
   ) async {
     try {
-      await _user(uid).collection('games').doc(id).set(data);
+      // A contagem sobe no mesmo lote: as regras recusam a partida sem ela.
+      final batch = _db.batch()
+        ..set(_user(uid).collection('games').doc(id), data)
+        ..set(_cota(uid), {
+          'partidas': FieldValue.increment(1),
+        }, SetOptions(merge: true));
+      await batch.commit();
     } on FirebaseException catch (error) {
       // As regras não deixam mudar uma partida: o id já existe, ela já está
       // lá. Mas a mesma recusa vem sem login ou com o token vencido; aí não
-      // é "já gravada".
+      // é "já gravada". A conta suspensa também cai aqui: a partida fica no
+      // aparelho.
       if (error.code == 'permission-denied' && _currentUid() == uid) return;
       throw CloudStoreException(error.code);
     }
@@ -238,13 +269,35 @@ class FirestoreCloudStoreService implements CloudStoreService {
 
   @override
   Future<void> addFeedback(Map<String, Object?> data) async {
+    final uid = _currentUid();
+    if (uid == null) throw const CloudStoreException('unauthenticated');
     try {
-      await _db.collection('feedback').add({
-        ...data,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      final doc = _db.collection('feedback').doc();
+      final batch = _db.batch()
+        ..set(doc, {
+          ...data,
+          'uid': uid,
+          'createdAt': FieldValue.serverTimestamp(),
+        })
+        ..set(_cota(uid), {
+          'feedbackEm': FieldValue.serverTimestamp(),
+          'feedbackId': doc.id,
+        }, SetOptions(merge: true));
+      await batch.commit();
     } on FirebaseException catch (error) {
       throw CloudStoreException(error.code);
+    }
+  }
+
+  @override
+  Future<bool> readBlocked(String uid, DateTime now) async {
+    try {
+      final data = (await _db.collection('bloqueios').doc(uid).get()).data();
+      if (data == null) return false;
+      final until = data['ate'];
+      return until is! Timestamp || until.toDate().isAfter(now);
+    } on FirebaseException {
+      return false;
     }
   }
 
@@ -297,6 +350,15 @@ class FirestoreCloudStoreService implements CloudStoreService {
             started = true;
             await doc.reference.delete();
           }
+        }
+        // Os feedbacks levam o uid: saem junto com a conta.
+        final sent = await _db
+            .collection('feedback')
+            .where('uid', isEqualTo: uid)
+            .get(server);
+        for (final doc in sent.docs) {
+          started = true;
+          await doc.reference.delete();
         }
         started = true;
         await user.delete();

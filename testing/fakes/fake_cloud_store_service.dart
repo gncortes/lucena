@@ -17,8 +17,16 @@ class FakeCloudStoreService implements CloudStoreService {
   final public = <String, Map<String, Object?>>{};
   bool offline = false;
 
-  /// Os documentos criados em `feedback/` (sem o `createdAt` do servidor).
+  /// Os documentos criados em `feedback/` (com o uid de [currentUid], sem o
+  /// `createdAt` do servidor).
   final feedback = <Map<String, Object?>>[];
+
+  /// Quem está logado no Auth. Nulo: o feedback é recusado
+  /// (`unauthenticated`), como no serviço de verdade.
+  String? currentUid = 'me';
+
+  /// As contas suspensas pelo admin (`bloqueios/{uid}`).
+  final blocked = <String>{};
 
   /// Com `true`, a regra recusa o `feedback/` (a gravação falha na hora).
   bool refuseFeedback = false;
@@ -62,6 +70,7 @@ class FakeCloudStoreService implements CloudStoreService {
     progress.remove(uid);
     games.remove(uid);
     pushTokens.remove(uid);
+    feedback.removeWhere((doc) => doc['uid'] == uid);
   }
 
   @override
@@ -95,10 +104,18 @@ class FakeCloudStoreService implements CloudStoreService {
     if (refuseFeedback) {
       return Future.error(const CloudStoreException('permission-denied'));
     }
+    final uid = currentUid;
+    if (uid == null) {
+      return Future.error(const CloudStoreException('unauthenticated'));
+    }
     if (offline) return Completer<void>().future;
-    feedback.add(data);
+    feedback.add({...data, 'uid': uid});
     return Future.value();
   }
+
+  @override
+  Future<bool> readBlocked(String uid, DateTime now) async =>
+      !offline && blocked.contains(uid);
 
   @override
   Future<CloudExport> exportUser(String uid) async {

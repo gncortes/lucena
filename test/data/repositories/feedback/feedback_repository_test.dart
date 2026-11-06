@@ -22,25 +22,29 @@ void main() {
     wait: Duration.zero,
   );
 
-  test('o texto livre vai com assunto, versão e modelo, sem uid', () async {
-    final ok = await repository().send(
-      const FeedbackEntry.free(
-        type: FeedbackType.idea,
-        text: '  Mais finais de torre  ',
-        language: 'pt',
-      ),
-    );
-    expect(ok, isTrue);
-    expect(store.feedback.single, {
-      'kind': 'livre',
-      'type': 'ideia',
-      'text': 'Mais finais de torre',
-      'appVersion': '1.4.0',
-      'model': 'Pixel 8',
-      'manufacturer': 'Google',
-      'language': 'pt',
-    });
-  });
+  test(
+    'o texto livre vai com assunto, versão, modelo e o uid de quem mandou',
+    () async {
+      final ok = await repository().send(
+        const FeedbackEntry.free(
+          type: FeedbackType.idea,
+          text: '  Mais finais de torre  ',
+          language: 'pt',
+        ),
+      );
+      expect(ok, isTrue);
+      expect(store.feedback.single, {
+        'uid': 'me',
+        'kind': 'livre',
+        'type': 'ideia',
+        'text': 'Mais finais de torre',
+        'appVersion': '1.4.0',
+        'model': 'Pixel 8',
+        'manufacturer': 'Google',
+        'language': 'pt',
+      });
+    },
+  );
 
   test('a origem da 1ª abertura vai junto (E1.03)', () async {
     final ok = await CloudFeedbackRepository(
@@ -54,6 +58,35 @@ void main() {
     expect(ok, isTrue);
     expect(store.feedback.single['origin'], 'link');
   });
+
+  test(
+    'abuso: sem conta, o envio para com FeedbackNeedsAccount e nada vai',
+    () async {
+      store.currentUid = null;
+      await expectLater(
+        repository().send(
+          const FeedbackEntry.free(type: FeedbackType.idea, text: 'Oi'),
+        ),
+        throwsA(isA<FeedbackNeedsAccount>()),
+      );
+      expect(store.feedback, isEmpty);
+    },
+  );
+
+  test(
+    'abuso: apagar a conta leva os feedbacks dela, não os de outras',
+    () async {
+      await repository().send(
+        const FeedbackEntry.free(type: FeedbackType.idea, text: 'Meu'),
+      );
+      store.currentUid = 'outra';
+      await repository().send(
+        const FeedbackEntry.free(type: FeedbackType.idea, text: 'Dela'),
+      );
+      await store.deleteUser('me');
+      expect(store.feedback.map((doc) => doc['text']), ['Dela']);
+    },
+  );
 
   test('o texto é cortado em 500 letras', () async {
     await repository().send(

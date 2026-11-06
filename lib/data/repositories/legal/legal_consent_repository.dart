@@ -69,6 +69,8 @@ class LocalLegalConsentRepository implements LegalConsentRepository {
     unawaited(
       _cloud
           .mergeUser(uid, {
+            // As regras pedem o updatedAt em toda gravação do perfil.
+            'updatedAt': _now(),
             'legal': {
               'acceptedVersion': LegalConsentRepository.version,
               'acceptedAt': _now().toUtc().toIso8601String(),

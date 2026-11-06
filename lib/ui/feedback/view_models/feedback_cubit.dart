@@ -24,6 +24,7 @@ class FeedbackState {
     this.sending = false,
     this.sent = false,
     this.sendErrors = 0,
+    this.needsAccount = 0,
   });
 
   final FeedbackType? type;
@@ -37,6 +38,10 @@ class FeedbackState {
   /// assunto e o texto ficam.
   final int sendErrors;
 
+  /// Quantas vezes o envio parou por falta de conta: cada uma mostra o aviso
+  /// com "Entrar", e o assunto e o texto ficam no rascunho.
+  final int needsAccount;
+
   /// Com o assunto escolhido e algum texto.
   bool get canSend =>
       type != null && FeedbackEntry.clip(text).isNotEmpty && !sending;
@@ -49,6 +54,7 @@ class FeedbackState {
     bool? sending,
     bool? sent,
     int? sendErrors,
+    int? needsAccount,
   }) => FeedbackState(
     ready: ready ?? this.ready,
     failure: failure,
@@ -58,6 +64,7 @@ class FeedbackState {
     sending: sending ?? this.sending,
     sent: sent ?? this.sent,
     sendErrors: sendErrors ?? this.sendErrors,
+    needsAccount: needsAccount ?? this.needsAccount,
   );
 }
 
@@ -156,6 +163,14 @@ class FeedbackCubit extends Cubit<FeedbackState> {
       ok = await _feedback.send(
         FeedbackEntry.free(type: type, text: state.text, language: language),
       );
+    } on FeedbackNeedsAccount {
+      // Não é falha: o feedback só vai com conta (proteção contra abuso).
+      if (!isClosed) {
+        emit(
+          state.copyWith(sending: false, needsAccount: state.needsAccount + 1),
+        );
+      }
+      return;
     } on Object catch (error, stack) {
       reportHandledError(error, stack);
       if (!isClosed) {

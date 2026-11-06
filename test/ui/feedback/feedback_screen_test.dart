@@ -32,6 +32,11 @@ void main() {
       initialLocation: '/feedback',
       routes: [
         GoRoute(
+          path: '/conta',
+          builder: (_, state) =>
+              Text('Conta de ${state.uri.queryParameters['from']}'),
+        ),
+        GoRoute(
           path: '/',
           builder: (_, _) => const Scaffold(body: Text('Perfil')),
           routes: [
@@ -168,6 +173,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(feedback.sent.single.text, 'O som some');
     expect(find.text('Feedback enviado'), findsOneWidget);
+  });
+
+  testWidgets('abuso: sem conta, o aviso oferece Entrar e guarda o texto', (
+    tester,
+  ) async {
+    feedback.needsAccount = true;
+    await pump(tester);
+    await fill(tester, 'Mais finais');
+    await tester.tap(find.byKey(FeedbackKeys.send));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(FeedbackKeys.needsAccount), findsOneWidget);
+    expect(
+      find.text('Entre na sua conta para enviar. O texto fica guardado.'),
+      findsOneWidget,
+    );
+    expect(find.byKey(FeedbackKeys.sendError), findsNothing);
+    expect(feedback.sent, isEmpty);
+    expect(drafts.draft?.text, 'Mais finais');
+
+    await tester.tap(find.byKey(FeedbackKeys.needsAccountSignIn));
+    await tester.pumpAndSettle();
+    expect(find.text('Conta de /settings/feedback'), findsOneWidget);
   });
 
   testWidgets('o texto para em 500 letras', (tester) async {
