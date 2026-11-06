@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
@@ -48,6 +50,48 @@ void main() {
     expect(cubit.state.account, FakeAccountRepository.google);
     expect(cubit.state.syncedAt, DateTime(2026, 10, 22, 9));
     expect(sync.synced, ['google-uid']);
+  });
+
+  group('S4 · Salvando, depois Salvo', () {
+    test('com conta, passa por salvando e termina salvo', () async {
+      accounts.account = FakeAccountRepository.google;
+      final gate = sync.gate = Completer<void>();
+      final scheduler = SyncScheduler(accounts, sync);
+      addTearDown(scheduler.dispose);
+      final cubit = ProfileAccountCubit(
+        accounts: accounts,
+        sync: scheduler,
+        lichess: lichess,
+        profile: profiles,
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      await pumpEventQueue();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.saving);
+
+      gate.complete();
+      await pumpEventQueue();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.saved);
+    });
+
+    test('sem rede termina offline, e só então', () async {
+      accounts.account = FakeAccountRepository.google;
+      sync.offline = true;
+      final cubit = await build();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.offline);
+    });
+
+    test('conta criada agora: salvando, salvo', () async {
+      final gate = sync.gate = Completer<void>();
+      final cubit = await build();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.idle);
+      await accounts.signInWithGoogle();
+      await pumpEventQueue();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.saving);
+      gate.complete();
+      await pumpEventQueue();
+      expect(cubit.state.syncPhase, ProfileSyncPhase.saved);
+    });
   });
 
   test('sem conta, nada sobe', () async {

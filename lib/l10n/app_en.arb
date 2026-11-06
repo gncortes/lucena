@@ -7467,6 +7467,14 @@
   "@profileSyncedNever": {
     "description": "Profile sync time: never synced."
   },
+  "profileSyncing": "Saving…",
+  "@profileSyncing": {
+    "description": "Profile with account: sync card line while the progress is being sent."
+  },
+  "profileSyncedNow": "Saved just now",
+  "@profileSyncedNow": {
+    "description": "Profile with account: sync card line right after the sync finished."
+  },
   "profileSyncOffline": "Without internet, what you do stays on the phone and is saved to the account when the connection is back.",
   "@profileSyncOffline": {
     "description": "Profile with account: offline note on the sync card."

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:lucena/data/repositories/sync/sync_repository.dart';
 import 'package:lucena/domain/models/progress_summary.dart';
 
@@ -11,11 +13,15 @@ class FakeSyncRepository implements SyncRepository {
   DateTime? at;
   final synced = <String>[];
 
+  /// Com valor, [sync] espera por ele: o "salvando" fica de pé no teste.
+  Completer<void>? gate;
+
   @override
   Future<DateTime?> lastSyncedAt(String uid) async => at;
 
   @override
   Future<SyncResult> sync(String uid) async {
+    await gate?.future;
     if (offline) throw const SyncException();
     synced.add(uid);
     final summary = remote ?? const ProgressSummary();

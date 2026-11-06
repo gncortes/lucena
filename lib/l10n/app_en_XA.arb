@@ -1398,6 +1398,8 @@
   "profileSyncedAt": "[Šåvéd {when} one two]",
   "profileSyncedToday": "[tödåý, {time} one two]",
   "profileSyncedNever": "[Ñöt šåvéd ýét one two]",
+  "profileSyncing": "[Šåvîñĝ… one]",
+  "profileSyncedNow": "[Šåvéd jûšt ñöw one two]",
   "profileSyncOffline": "[Wîthöût îñtéŕñét, whåt ýöû dö štåýš öñ thé phöñé åñd îš šåvéd tö thé åççöûñt whéñ thé çöññéçtîöñ îš båçk. one two three four five six seven eight nine]",
   "profileSignOut": "[Šîĝñ öût one]",
   "profileDeleteAccount": "[Délété thé åççöûñt one two]",

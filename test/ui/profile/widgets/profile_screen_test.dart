@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,6 +42,10 @@ import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_store_listing_repository.dart';
 import '../../../../testing/fakes/fake_sync_repository.dart';
 import '../../../../testing/test_app.dart';
+
+const _offlineNote =
+    'Sem internet, o que você faz fica no celular e é salvo na conta '
+    'quando a conexão voltar.';
 
 void main() {
   late FakeProfileRepository profiles;
@@ -395,27 +401,54 @@ void main() {
       expect(find.text('teste@example.com · Google'), findsOneWidget);
       expect(find.byKey(ProfileKeys.localCard), findsNothing);
       expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
-      expect(find.text('Salvo hoje, 09:05'), findsOneWidget);
+      expect(find.text('Salvo agora'), findsOneWidget);
       // Abrir o Perfil com conta sobe o que estiver pendente.
       expect(sync.synced, contains('google-uid'));
     });
 
-    testWidgets('H-CON-13: nunca sincronizou diz "ainda não"', (tester) async {
+    testWidgets('S4: com rede, salvando e depois "Salvo agora"', (
+      tester,
+    ) async {
+      final gate = sync.gate = Completer<void>();
+      await pumpScreen(tester);
+      expect(find.text('Salvando…'), findsOneWidget);
+      expect(find.byIcon(Icons.sync), findsOneWidget);
+      expect(find.text(_offlineNote), findsNothing);
+
+      gate.complete();
+      await tester.pumpAndSettle();
+      expect(find.text('Salvo agora'), findsOneWidget);
+      expect(find.byIcon(Icons.cloud_done), findsOneWidget);
+      expect(find.text('Salvando…'), findsNothing);
+      expect(find.text('Ainda não salvo'), findsNothing);
+      expect(find.text(_offlineNote), findsNothing);
+    });
+
+    testWidgets('S4: sem rede, diz o que acontece e mantém a última vez', (
+      tester,
+    ) async {
+      sync.offline = true;
+      sync.at = DateTime(2026, 10, 22, 9, 5);
+      await pumpScreen(tester);
+      expect(find.text('Salvo hoje, 09:05'), findsOneWidget);
+      expect(find.text(_offlineNote), findsOneWidget);
+      expect(find.text('Salvo agora'), findsNothing);
+    });
+
+    testWidgets('H-CON-13: sem rede e nunca salvo diz "ainda não"', (
+      tester,
+    ) async {
+      sync.offline = true;
       await pumpScreen(tester);
       expect(find.text('Ainda não salvo'), findsOneWidget);
       // Critério 4: o cartão diz o que acontece sem internet.
-      expect(
-        find.text(
-          'Sem internet, o que você faz fica no celular e é salvo na conta '
-          'quando a conexão voltar.',
-        ),
-        findsOneWidget,
-      );
+      expect(find.text(_offlineNote), findsOneWidget);
     });
 
     testWidgets('H-CON-13: sincronizou noutro dia mostra a data', (
       tester,
     ) async {
+      sync.offline = true;
       sync.at = DateTime(2026, 10, 20, 21, 40);
       await pumpScreen(tester);
       expect(find.text('Salvo em 20/10'), findsOneWidget);

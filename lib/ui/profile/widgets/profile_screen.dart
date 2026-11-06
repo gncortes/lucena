@@ -20,6 +20,7 @@ import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/account_avatar.dart';
@@ -138,7 +139,7 @@ class _ProfileView extends StatelessWidget {
             if (account == null)
               const _LocalCard()
             else
-              _SyncCard(syncedAt: state.syncedAt),
+              _SyncCard(syncedAt: state.syncedAt, phase: state.syncPhase),
             const SizedBox(height: AppSpacing.lg),
             ProfileRowGroup(
               children: [
@@ -365,12 +366,15 @@ class _LocalCard extends StatelessWidget {
 
 /// Com conta: "Tudo guardado na conta" e a última sincronização.
 class _SyncCard extends StatelessWidget {
-  const _SyncCard({required this.syncedAt});
+  const _SyncCard({required this.syncedAt, required this.phase});
 
   final DateTime? syncedAt;
+  final ProfileSyncPhase phase;
 
   String _when(BuildContext context) {
     final l10n = context.l10n;
+    if (phase == ProfileSyncPhase.saving) return l10n.profileSyncing;
+    if (phase == ProfileSyncPhase.saved) return l10n.profileSyncedNow;
     final at = syncedAt?.toLocal();
     if (at == null) return l10n.profileSyncedNever;
     final locale = Localizations.localeOf(context).toString();
@@ -396,11 +400,7 @@ class _SyncCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(
-              Icons.cloud_done,
-              size: AppIconSize.standard,
-              color: AppColors.record,
-            ),
+            _SyncIcon(phase: phase),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
@@ -412,15 +412,76 @@ class _SyncCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Text(_when(context), style: muted),
+                  Text(
+                    _when(context),
+                    key: ProfileKeys.syncStatus,
+                    style: muted,
+                  ),
                 ],
               ),
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(l10n.profileSyncOffline, style: muted),
+        // O aviso só aparece com a rede de fato fora.
+        if (phase == ProfileSyncPhase.offline) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(l10n.profileSyncOffline, style: muted),
+        ],
       ],
+    );
+  }
+}
+
+/// Sincronia enquanto salva; nuvem pronta quando termina, com um pop curto
+/// (1 → 1,08 → 1) ao passar de "salvando" para "salvo". Sem pop com
+/// "remover animações".
+class _SyncIcon extends StatefulWidget {
+  const _SyncIcon({required this.phase});
+
+  final ProfileSyncPhase phase;
+
+  @override
+  State<_SyncIcon> createState() => _SyncIconState();
+}
+
+class _SyncIconState extends State<_SyncIcon>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(vsync: this, value: 1);
+  late final _scale = TweenSequence(
+    [
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.08), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 1.08, end: 1.0), weight: 1),
+    ],
+  ).animate(CurvedAnimation(parent: _controller, curve: AppMotion.revealCurve));
+
+  @override
+  void didUpdateWidget(_SyncIcon old) {
+    super.didUpdateWidget(old);
+    if (old.phase == ProfileSyncPhase.saving &&
+        widget.phase == ProfileSyncPhase.saved &&
+        !AppMotion.reduced(context)) {
+      _controller.duration = AppMotion.panel;
+      _controller.forward(from: 0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final saving = widget.phase == ProfileSyncPhase.saving;
+    return ScaleTransition(
+      scale: _scale,
+      child: Icon(
+        saving ? Icons.sync : Icons.cloud_done,
+        key: ProfileKeys.syncIcon,
+        size: AppIconSize.standard,
+        color: AppColors.record,
+      ),
     );
   }
 }

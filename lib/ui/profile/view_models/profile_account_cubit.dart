@@ -25,11 +25,27 @@ enum ProfileNotice {
   failed,
 }
 
+/// Onde está o envio do progresso para a conta (cartão do Perfil).
+enum ProfileSyncPhase {
+  /// Ainda não tentou neste Perfil: o cartão mostra a última vez salva.
+  idle,
+
+  /// Enviando: "Salvando…".
+  saving,
+
+  /// Terminou bem: "Salvo agora".
+  saved,
+
+  /// Sem rede: a última vez salva e o aviso de que fica no celular.
+  offline,
+}
+
 class ProfileAccountState {
   const ProfileAccountState({
     this.account,
     this.lichess,
     this.syncedAt,
+    this.syncPhase = ProfileSyncPhase.idle,
     this.busy = false,
     this.notice,
     this.noticeCount = 0,
@@ -44,6 +60,9 @@ class ProfileAccountState {
   /// A última sincronização da conta neste aparelho.
   final DateTime? syncedAt;
 
+  /// O envio de agora; o cartão da conta se desenha por ele.
+  final ProfileSyncPhase syncPhase;
+
   /// Lendo o Lichess.
   final bool busy;
   final ProfileNotice? notice;
@@ -55,12 +74,14 @@ class ProfileAccountState {
     Account? Function()? account,
     PlatformRating? Function()? lichess,
     DateTime? Function()? syncedAt,
+    ProfileSyncPhase? syncPhase,
     bool? busy,
     ProfileNotice? notice,
   }) => ProfileAccountState(
     account: account == null ? this.account : account(),
     lichess: lichess == null ? this.lichess : lichess(),
     syncedAt: syncedAt == null ? this.syncedAt : syncedAt(),
+    syncPhase: syncPhase ?? this.syncPhase,
     busy: busy ?? this.busy,
     notice: notice ?? this.notice,
     noticeCount: notice == null ? noticeCount : noticeCount + 1,
@@ -102,16 +123,23 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
       state.copyWith(
         account: () => account,
         syncedAt: same ? null : () => null,
+        syncPhase: same ? null : ProfileSyncPhase.idle,
       ),
     );
     if (account == null) return;
     await _readSyncedAt(account.uid);
     // Abrir o Perfil com conta sobe o que estiver pendente.
+    if (!isClosed) emit(state.copyWith(syncPhase: ProfileSyncPhase.saving));
+    var phase = ProfileSyncPhase.saved;
     try {
       await _sync.syncNow(account.uid);
     } on SyncException {
       // Sem rede: o cartão mostra a última vez e o aviso de offline.
+      phase = ProfileSyncPhase.offline;
     }
+    if (isClosed || state.account?.uid != account.uid) return;
+    emit(state.copyWith(syncPhase: phase));
+    await _readSyncedAt(account.uid);
   }
 
   Future<void> _readSyncedAt(String uid) async {
