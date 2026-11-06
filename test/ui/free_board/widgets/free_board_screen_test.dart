@@ -1704,6 +1704,25 @@ void main() {
         },
       );
     }
+    testWidgets('T85 print: partida contra personagem (411×914)', (
+      tester,
+    ) async {
+      await Goldens.loadFonts();
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        screen: const Size(411, 914) * 2.625,
+        systemInsets: const EdgeInsets.only(top: 52, bottom: 24),
+        mode: machine,
+        characters: _BubbleCharacters(shortSpeech),
+      );
+      await talk.settled();
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(FreeBoardScreen),
+        matchesGoldenFile('goldens/t85/ponta_a_ponta_411x914.png'),
+      );
+    });
     for (final insets in const [
       EdgeInsets.only(top: 52, bottom: 24),
       EdgeInsets.only(top: 24, bottom: 48),

@@ -8,6 +8,7 @@ import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/training_goals_tab.dart';
 
 import '../../../testing/fakes/fake_activity_repository.dart';
+import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/training/training_scenario_builder.dart';
@@ -69,6 +70,19 @@ void main() {
     );
     final card = tester.getRect(find.byKey(TrainingKeys.goalsSummary));
     expect(tester.getRect(week).bottom, lessThan(card.bottom));
+  });
+
+  testWidgets('print do cartão com a sequência (411×914)', (tester) async {
+    await Goldens.loadFonts();
+    await pump(
+      tester,
+      {d(26), d(27), d(28), d(1, 10)},
+      size: const Size(411, 914),
+    );
+    await expectLater(
+      find.byType(Scaffold).first,
+      matchesGoldenFile('goldens/p8a/sequencia_411x914.png'),
+    );
   });
 
   testWidgets('hoje já treinado: a nota diz que hoje contou', (tester) async {
