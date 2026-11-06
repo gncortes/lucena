@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/race.dart';
+import '../../../domain/use_cases/race_diagnosis.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/motion/entrada_de_resultado.dart';
@@ -17,19 +18,15 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/next_steps.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
-import '../../home/widgets/path_card.dart';
 import '../view_models/race_cubit.dart';
 import 'race_problems_screen.dart';
-import 'race_progress_card.dart';
 
-/// O resultado (canvas V2 · Ligações, L5 e L6): por que acabou, quantos
-/// acertos, o recorde, três números, a linha do desempenho por final (ou
-/// quantas Corridas faltam para ele), a linha dos dados e os problemas que
-/// apareceram (certos e errados).
+/// O resultado (canvas SugP2CorridaFimA): por que acabou, quantos acertos, o
+/// cartão "O que contou" (acertos e recorde, nível, desempenho por final) e os
+/// problemas que apareceram (certos e errados).
 class RaceResultView extends StatelessWidget {
   const RaceResultView({required this.state, super.key});
 
@@ -50,15 +47,6 @@ class RaceResultView extends StatelessWidget {
     final run = result.run;
     final mistakes = state.mistakes;
     final diagnosis = state.diagnosis;
-    // Quanto tempo a Corrida durou, no máximo o limite.
-    final elapsed = result.finishedAt.difference(run.startedAt);
-    final limit = run.duration.limit;
-    final used = elapsed > limit ? limit : elapsed;
-    final pace = run.answers.isEmpty
-        ? '-'
-        : l10n.raceStatPaceValue(
-            (used.inMilliseconds / run.answers.length / 1000).round(),
-          );
     // H-ANI-25: o título sobe, os acertos contam, o resto do resultado entra
     // e os botões deslizam por último. Cada Corrida é um resultado novo.
     return KeyedSubtree(
@@ -66,11 +54,11 @@ class RaceResultView extends StatelessWidget {
       child: EntradaDeResultado(
         id: 'corrida-${run.startedAt.microsecondsSinceEpoch}',
         titulo: Text(
-          l10n.desafiosRaceHeadline(run.duration.minutes, switch (result.end) {
-            RaceEnd.time => l10n.desafiosRaceEndTime,
-            RaceEnd.errors => l10n.desafiosRaceEndErrors,
-            RaceEnd.quit => l10n.desafiosRaceEndQuit,
-          }),
+          switch (result.end) {
+            RaceEnd.time => l10n.raceEndTime,
+            RaceEnd.errors => l10n.raceEndErrors,
+            RaceEnd.quit => l10n.raceEndQuit,
+          },
           key: RaceKeys.resultTitle,
           textAlign: TextAlign.center,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -121,41 +109,19 @@ class RaceResultView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: AppSpacing.lg),
-            Row(
-              spacing: AppSpacing.sm,
-              children: [
-                _Stat(
-                  key: RaceKeys.statErrors,
-                  value: '${run.errors}',
-                  label: l10n.raceStatErrors(run.errors),
-                ),
-                _Stat(
-                  key: RaceKeys.statHardest,
-                  value: run.hardestSolved == 0 ? '-' : '${run.hardestSolved}',
-                  label: l10n.raceStatHardest,
-                ),
-                _Stat(
-                  key: RaceKeys.statPace,
-                  value: pace,
-                  label: l10n.raceStatPace,
-                ),
-              ],
+            // O que contou (canvas SugP2CorridaFimA): os acertos e o recorde,
+            // o nível alcançado e o desempenho por final. Sem ponto fraco no
+            // resultado: pronto, a linha abre o desempenho por final.
+            _CountedCard(
+              key: RaceKeys.counted,
+              minutes: run.duration.minutes,
+              corrects: run.corrects,
+              record: math.max(outcome.previous.corrects, run.corrects),
+              hardest: run.hardestSolved,
+              diagnosis: diagnosis,
+              onPerformance: () => context.push(Routes.racePerformance),
             ),
-            const SizedBox(height: AppSpacing.md),
-            // Sem ponto fraco no resultado (canvas L6): o desempenho por
-            // final fica a um toque; antes de 3 Corridas, quantas faltam (L5).
-            if (diagnosis.ready)
-              PathCard(
-                key: RaceKeys.performance,
-                icon: Icons.query_stats,
-                title: l10n.racePerformanceLine,
-                body: l10n.racePerformanceLineBody,
-                onTap: () => context.push(Routes.racePerformance),
-              )
-            else
-              RaceProgressCard(diagnosis: diagnosis),
             const SizedBox(height: AppSpacing.lg),
-            const ResultsInfoLine(),
             // O título sem o recuo próprio: alinhado aos cartões de cima.
             SectionTitle(
               l10n.raceProblemsTitle,
@@ -232,39 +198,125 @@ class RaceResultView extends StatelessWidget {
   }
 }
 
-class _Stat extends StatelessWidget {
-  const _Stat({required this.value, required this.label, super.key});
+/// O cartão "O que contou": até três linhas com ícone, como os fatos da
+/// abertura. Sem acerto, não há nível para contar e a linha some.
+class _CountedCard extends StatelessWidget {
+  const _CountedCard({
+    required this.minutes,
+    required this.corrects,
+    required this.record,
+    required this.hardest,
+    required this.diagnosis,
+    required this.onPerformance,
+    super.key,
+  });
 
-  final String value;
-  final String label;
+  final int minutes;
+  final int corrects;
+
+  /// O recorde da duração, já contando esta Corrida.
+  final int record;
+  final int hardest;
+  final RaceDiagnosis diagnosis;
+  final VoidCallback onPerformance;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    const total = RaceDiagnosis.neededRuns;
+    // Com as Corridas feitas mas sem problemas bastantes de nenhum final,
+    // ainda falta uma.
+    final done = diagnosis.runs.clamp(0, total - 1);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: AppSpacing.sm,
+          children: [
+            Text(
+              l10n.raceCountedTitle,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            _CountedLine(
+              key: RaceKeys.countedCorrects,
+              icon: Icons.emoji_events,
+              text: l10n.raceCountedCorrects(corrects, minutes, record),
+            ),
+            if (hardest > 0)
+              _CountedLine(
+                key: RaceKeys.countedLevel,
+                icon: Icons.trending_up,
+                text: l10n.raceCountedLevel(hardest),
+              ),
+            if (diagnosis.ready)
+              _CountedLine(
+                key: RaceKeys.performance,
+                icon: Icons.query_stats,
+                text: l10n.racePerformanceLine,
+                onTap: onPerformance,
+              )
+            else
+              _CountedLine(
+                key: RaceKeys.diagnosisProgress,
+                icon: Icons.query_stats,
+                text: l10n.raceCountedPerformance(done, total),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CountedLine extends StatelessWidget {
+  const _CountedLine({
+    required this.icon,
+    required this.text,
+    this.onTap,
+    super.key,
+  });
+
+  final IconData icon;
+  final String text;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Expanded(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppSpacing.md,
-            horizontal: AppSpacing.sm,
-          ),
-          child: Column(
-            children: [
-              Text(
-                value,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
+    final colors = theme.colorScheme;
+    return InkWell(
+      onTap: onTap,
+      child: ConstrainedBox(
+        // O alvo de toque mínimo quando a linha abre algo.
+        constraints: BoxConstraints(minHeight: onTap == null ? 0 : 48),
+        child: Row(
+          spacing: AppSpacing.md,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                icon,
+                size: AppIconSize.notice,
+                color: colors.primary,
+              ),
+            ),
+            Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
+            if (onTap != null)
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.chevron_right,
+                  size: AppIconSize.standard,
+                  color: colors.onSurfaceVariant,
                 ),
               ),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

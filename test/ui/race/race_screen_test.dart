@@ -95,12 +95,12 @@ void main() {
     );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
-    final porque = opacidadeAcima(tester, find.byKey(RaceKeys.whyEndgames));
+    final porque = opacidadeAcima(tester, find.byKey(RaceKeys.facts));
     final comecar = opacidadeAcima(tester, find.byKey(RaceKeys.start));
     expect(porque, greaterThan(0));
     expect(comecar, lessThan(porque));
     await tester.pump(const Duration(milliseconds: 1000));
-    expect(opacidadeAcima(tester, find.byKey(RaceKeys.whyEndgames)), 1);
+    expect(opacidadeAcima(tester, find.byKey(RaceKeys.facts)), 1);
     expect(opacidadeAcima(tester, find.byKey(RaceKeys.start)), 1);
     await tester.pumpAndSettle();
   });
@@ -119,25 +119,23 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('abertura: regras, filtro de finais, recorde vazio e Começar', (
-    tester,
-  ) async {
+  testWidgets('abertura: três fatos, filtro de finais, recorde vazio e '
+      'Começar', (tester) async {
     await pumpRace(tester);
 
     expect(find.byKey(RaceKeys.introView), findsOneWidget);
-    expect(find.text('3 minutes'), findsOneWidget);
-    // Por que só finais, logo abaixo do título (canvas V2 · Ligações, L4).
-    expect(find.byKey(RaceKeys.whyEndgames), findsOneWidget);
-    expect(find.textContaining('Why only endgames?'), findsOneWidget);
-    expect(find.text('Three mistakes and it is over'), findsOneWidget);
+    expect(find.text('Selected endgame puzzles'), findsOneWidget);
+    // Os três fatos de uma linha; o texto longo e o quadro "Por que só
+    // finais?" saíram (canvas SugP2CorridaIntroA).
+    expect(find.byKey(RaceKeys.facts), findsOneWidget);
+    expect(find.textContaining('3 minutes', findRichText: true), findsOne);
+    expect(find.textContaining('3 mistakes', findRichText: true), findsOne);
+    expect(find.text('Each correct answer raises the level'), findsOne);
+    expect(find.textContaining('Why only endgames?'), findsNothing);
+    expect(find.text('Three mistakes and it is over'), findsNothing);
     final list = find.descendant(
       of: find.byKey(RaceKeys.introView),
       matching: find.byType(Scrollable),
-    );
-    await tester.scrollUntilVisible(
-      find.text('The shortest path counts'),
-      200,
-      scrollable: list,
     );
     // A linha de filtros resume o objetivo e os finais.
     await tester.scrollUntilVisible(
@@ -246,10 +244,10 @@ void main() {
   testWidgets('duração: 5 min troca a regra e fica guardada', (tester) async {
     final cubit = await pumpRace(tester);
 
-    // A seção Duração vem acima das regras (E1.33, opção B).
+    // A seção Duração vem acima dos fatos (E1.33, opção B).
     expect(
       tester.getTopLeft(find.byKey(RaceKeys.duration)).dy,
-      lessThan(tester.getTopLeft(find.text('3 minutes')).dy),
+      lessThan(tester.getTopLeft(find.byKey(RaceKeys.facts)).dy),
     );
     await tester.tap(
       find.byKey(RaceKeys.durationOption(RaceDuration.fiveMinutes)),
@@ -257,7 +255,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(cubit.state.duration, RaceDuration.fiveMinutes);
-    expect(find.text('5 minutes'), findsOneWidget);
+    expect(find.textContaining('5 minutes', findRichText: true), findsOne);
     expect(await repository.duration(), RaceDuration.fiveMinutes);
   });
 
@@ -364,7 +362,7 @@ void main() {
     }
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
-    expect(find.text('3-min race · 3 mistakes'), findsOneWidget);
+    expect(find.text('Three mistakes and the run ended'), findsOneWidget);
     // Só 3 problemas: nada de "Ver os N".
     expect(find.byKey(RaceKeys.seeAllProblems), findsNothing);
     expect(acertos(tester), '0');
@@ -372,7 +370,10 @@ void main() {
     expect(find.text('Review the 3 mistakes'), findsOneWidget);
     // Antes de 3 Corridas: quantas faltam para o desempenho por final (L5).
     expect(find.byKey(RaceKeys.diagnosisProgress), findsOneWidget);
-    expect(find.text('1 of 3'), findsOneWidget);
+    expect(
+      find.text('You entered your per-ending performance: 1 of 3'),
+      findsOneWidget,
+    );
     expect(find.byKey(RaceKeys.performance), findsNothing);
 
     await tester.tap(find.byKey(RaceKeys.reviewMistakes));
@@ -493,7 +494,8 @@ void main() {
     expect(find.byKey(RaceKeys.diagnosisProgress), findsNothing);
     expect(find.byKey(RaceKeys.performance), findsOneWidget);
     expect(find.text('Your performance by endgame'), findsOneWidget);
-    expect(find.byKey(NextStepsKeys.resultsInfo), findsOneWidget);
+    // A linha dos dados saiu do resultado da Corrida (canvas SugP2CorridaFimA).
+    expect(find.byKey(NextStepsKeys.resultsInfo), findsNothing);
   });
 
   testWidgets('resultado com 9 problemas: 8 na grade e Ver os 9 abre a lista '
@@ -517,7 +519,7 @@ void main() {
     await pumpRace(tester);
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
-    expect(find.text('3-min race · time is up'), findsOneWidget);
+    expect(find.text('Time is up'), findsOneWidget);
     expect(find.byKey(RaceKeys.problemTile(7)), findsOneWidget);
     expect(find.byKey(RaceKeys.problemTile(8)), findsNothing);
     expect(find.text('See all 9'), findsOneWidget);
@@ -560,7 +562,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
-    expect(find.text('3-min race · time is up'), findsOneWidget);
+    expect(find.text('Time is up'), findsOneWidget);
     expect(acertos(tester), '1');
     // Sem erros: não há o que revisar.
     expect(find.byKey(RaceKeys.reviewMistakes), findsNothing);

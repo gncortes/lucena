@@ -4,24 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/race.dart';
+import '../../../domain/use_cases/race_rules.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/one_line.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';
 import 'race_filter_screen.dart';
 import '../../core/motion/entrada_em_cascata.dart';
 
-/// A abertura da Corrida: o que é, a duração (3 ou 5 min), as regras, a
-/// linha dos filtros (objetivo e finais, em tela cheia), o recorde da duração
-/// escolhida e o "Começar".
+/// A abertura da Corrida (canvas SugP2CorridaIntroA): o título, a duração (3
+/// ou 5 min), três fatos de uma linha, o recorde da duração escolhida, a linha
+/// dos filtros (objetivo e finais, em tela cheia) e o "Começar". As regras
+/// completas ficam na folha do (i) da barra.
 class RaceIntroView extends StatelessWidget {
   const RaceIntroView({required this.state, super.key});
 
@@ -64,81 +64,26 @@ class RaceIntroView extends StatelessWidget {
         ],
       ),
       itens: [
+        // O título curto e uma linha de apoio (canvas SugP2CorridaIntroA); as
+        // regras completas ficam na folha do (i).
         ItemDaCascata.titulo(
-          Row(
-            spacing: AppSpacing.lg,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: AppSpacing.xs,
             children: [
-              ExcludeSemantics(
-                child: PositionBoard(
-                  fen: state.problems.first.fen,
-                  size: 112,
-                  radius: AppShape.small,
+              Text(
+                l10n.raceIntroSubtitle,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.raceIntroSubtitle,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      l10n.raceIntroBody,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+              Text(
+                l10n.raceIntroLine,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
                 ),
               ),
             ],
-          ),
-        ),
-        const ItemDaCascata.texto(SizedBox(height: AppSpacing.lg)),
-        // O porquê de ser só de finais e para que serve (canvas V2 ·
-        // Ligações, L4).
-        ItemDaCascata.texto(
-          Container(
-            key: RaceKeys.whyEndgames,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: colors.secondaryContainer,
-              borderRadius: BorderRadius.circular(AppShape.medium),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.sm,
-              children: [
-                Icon(
-                  Icons.lightbulb,
-                  size: AppIconSize.button,
-                  color: colors.onSecondaryContainer,
-                ),
-                Expanded(
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: l10n.raceWhyEndgamesTitle,
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        TextSpan(text: ' ${l10n.raceWhyEndgamesBody}'),
-                      ],
-                    ),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSecondaryContainer,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
         // Duração em seção própria, acima das regras (E1.33, opção B).
@@ -169,33 +114,30 @@ class RaceIntroView extends StatelessWidget {
             ],
           ),
         ),
+        // Três fatos de uma linha; os minutos seguem a duração escolhida.
         ItemDaCascata.texto(
-          _Rule(
-            icon: Icons.timer,
-            title: l10n.raceRuleTimeTitle(state.duration.minutes),
-            body: l10n.raceRuleTimeBody,
+          Column(
+            key: RaceKeys.facts,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.md,
+            children: [
+              _Fact(
+                icon: Icons.timer,
+                lead: l10n.raceRuleTimeTitle(state.duration.minutes),
+                rest: l10n.raceFactTimeRest,
+              ),
+              _Fact(
+                icon: Icons.close,
+                lead: l10n.raceFactErrorsLead(RaceRules.maxErrors),
+                rest: l10n.raceFactErrorsRest,
+              ),
+              _Fact(icon: Icons.trending_up, rest: l10n.raceFactLevel),
+              const SizedBox(height: AppSpacing.sm),
+            ],
           ),
         ),
         ItemDaCascata.texto(
-          _Rule(
-            icon: Icons.trending_up,
-            title: l10n.raceRuleHarderTitle,
-            body: l10n.raceRuleHarderBody,
-          ),
-        ),
-        ItemDaCascata.texto(
-          _Rule(
-            icon: Icons.close,
-            title: l10n.raceRuleErrorsTitle,
-            body: l10n.raceRuleErrorsBody,
-          ),
-        ),
-        ItemDaCascata.texto(
-          _Rule(
-            icon: Icons.bolt,
-            title: l10n.raceRuleShortestTitle,
-            body: l10n.raceRuleShortestBody,
-          ),
+          _RecordCard(record: state.record, duration: state.duration),
         ),
         ItemDaCascata.texto(
           Column(
@@ -206,9 +148,6 @@ class RaceIntroView extends StatelessWidget {
               const SizedBox(height: AppSpacing.lg),
             ],
           ),
-        ),
-        ItemDaCascata.texto(
-          _RecordCard(record: state.record, duration: state.duration),
         ),
         // A nota fica no pé, sobre o "Começar" (canvas).
         ItemDaCascata.texto(
@@ -314,55 +253,46 @@ class _FilterRow extends StatelessWidget {
   }
 }
 
-class _Rule extends StatelessWidget {
-  const _Rule({required this.icon, required this.title, required this.body});
+/// Um fato de uma linha: o ícone e o texto, com o começo em negrito.
+class _Fact extends StatelessWidget {
+  const _Fact({required this.icon, required this.rest, this.lead});
 
   final IconData icon;
-  final String title;
-  final String body;
+
+  /// O começo em negrito ("3 minutos"); nulo, a linha é só texto.
+  final String? lead;
+  final String rest;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.md,
-        children: [
-          ExcludeSemantics(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(AppShape.medium),
-              ),
-              child: SizedBox.square(
-                dimension: 40,
-                child: Icon(
-                  icon,
-                  size: AppIconSize.button,
-                  color: colors.onPrimaryContainer,
-                ),
-              ),
-            ),
+    final lead = this.lead;
+    return Row(
+      spacing: AppSpacing.md,
+      children: [
+        ExcludeSemantics(
+          child: Icon(
+            icon,
+            size: AppIconSize.notice,
+            color: theme.colorScheme.primary,
           ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        Expanded(
+          child: Text.rich(
+            TextSpan(
               children: [
-                Text(title, style: theme.textTheme.titleSmall),
-                Text(
-                  body,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
+                if (lead != null)
+                  TextSpan(
+                    text: '$lead ',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                ),
+                TextSpan(text: rest),
               ],
             ),
+            style: theme.textTheme.bodyLarge,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
