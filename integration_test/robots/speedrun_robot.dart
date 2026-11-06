@@ -59,7 +59,11 @@ class SpeedrunRobot {
   /// A Maratona terminou: a conclusão dela abriu sozinha, com o total.
   Future<void> expectMarathonSummary() async {
     final conclusion = ConclusionRobot($);
-    await conclusion.expectTitle('Marathon completed!');
+    // Sem texto fixo (vale em qualquer idioma): só o fim da Maratona tem a
+    // seta de voltar à lista, e ele oferece o resumo e tentar de novo.
+    await conclusion.waitConclusion();
+    expect(find.byKey(ConclusionKeys.back), findsOneWidget);
+    await conclusion.expectAction(ConclusionAction.summary);
     await $(ConclusionKeys.total).scrollTo();
     await conclusion.expectAction(ConclusionAction.retry);
   }

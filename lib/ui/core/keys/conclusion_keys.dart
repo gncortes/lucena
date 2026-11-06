@@ -72,4 +72,7 @@ abstract final class ConclusionKeys {
   /// O botão da ação [action].
   static Key action(ConclusionAction action) =>
       Key('conclusion.action.${action.name}');
+
+  /// A seta de voltar do fim do speedrun e da Maratona: leva à lista.
+  static const back = Key('conclusion.back');
 }

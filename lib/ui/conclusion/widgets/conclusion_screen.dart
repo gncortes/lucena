@@ -167,12 +167,21 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                   ),
                 )
               : null,
-          leading: IconButton(
-            key: ConclusionKeys.close,
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            icon: const Icon(Icons.close_rounded),
-            onPressed: () => _close(context),
-          ),
+          // O fim do speedrun e da Maratona abre por `go`, sem tela por baixo:
+          // a seta leva à lista dos Speedruns, de onde o jogador veio.
+          leading: _endsRun(conclusion)
+              ? IconButton(
+                  key: ConclusionKeys.back,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  icon: const BackButtonIcon(),
+                  onPressed: () => context.go(Routes.speedruns),
+                )
+              : IconButton(
+                  key: ConclusionKeys.close,
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => _close(context),
+                ),
           actions: [
             if (conclusion != null && _winNewGame(conclusion, state))
               IconButton(
@@ -222,6 +231,10 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     );
   }
 }
+
+bool _endsRun(Conclusion? conclusion) =>
+    conclusion?.kind == ConclusionKind.speedrunEnd ||
+    conclusion?.kind == ConclusionKind.marathonEnd;
 
 // Entre etapas do Clássico, fecha no detalhe sem iniciar a próxima partida.
 // A Maratona mantém a continuação própria; os demais resultados voltam.
