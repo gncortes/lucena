@@ -11881,6 +11881,107 @@
   "@treinoRegisterTournament": {
     "description": "Training goal flow copy."
   },
+  "treinoGoalRemove": "Go without a goal",
+  "@treinoGoalRemove": {
+    "description": "Button on the goal screen: removes the current training goal."
+  },
+  "treinoGoalRemoveTitle": "Go without a goal?",
+  "@treinoGoalRemoveTitle": {
+    "description": "Dialog title before removing the training goal."
+  },
+  "treinoGoalRemoveBody": "The plan is removed. Lessons, exercises, level test and logged tournaments stay.",
+  "@treinoGoalRemoveBody": {
+    "description": "Dialog body before removing the training goal."
+  },
+  "treinoGoalRemoved": "You have no goal now.",
+  "@treinoGoalRemoved": {
+    "description": "Snackbar after removing the training goal (has an Undo action)."
+  },
+  "treinoGoalChangeTitle": "Change your goal?",
+  "@treinoGoalChangeTitle": {
+    "description": "Dialog title before changing the training goal when there is a plan."
+  },
+  "treinoGoalChangeBody": "The plan is rebuilt for the new goal. Lessons, exercises, level test and logged tournaments stay.",
+  "@treinoGoalChangeBody": {
+    "description": "Dialog body before changing the training goal."
+  },
+  "treinoGoalChangeConfirm": "Change",
+  "@treinoGoalChangeConfirm": {
+    "description": "Dialog button that confirms changing the goal."
+  },
+  "treinoGoalChanged": "Goal changed.",
+  "@treinoGoalChanged": {
+    "description": "Snackbar after changing the goal (has an Undo action)."
+  },
+  "treinoGoalName": "Tournament name (optional)",
+  "@treinoGoalName": {
+    "description": "Field label for the goal tournament name."
+  },
+  "treinoGoalNameSaved": "Name saved.",
+  "@treinoGoalNameSaved": {
+    "description": "Snackbar after saving only the tournament name."
+  },
+  "treinoUndo": "Undo",
+  "@treinoUndo": {
+    "description": "Snackbar action that undoes the last goal or tournament change."
+  },
+  "treinoUndone": "Undone.",
+  "@treinoUndone": {
+    "description": "Snackbar after undoing."
+  },
+  "treinoCancel": "Cancel",
+  "@treinoCancel": {
+    "description": "Dialog button that closes without changing anything."
+  },
+  "treinoTournamentDeleteTitle": "Delete this tournament?",
+  "@treinoTournamentDeleteTitle": {
+    "description": "Dialog title before deleting a logged tournament."
+  },
+  "treinoTournamentDeleteBody": "The entry will be removed from My tournaments.",
+  "@treinoTournamentDeleteBody": {
+    "description": "Dialog body before deleting a logged tournament."
+  },
+  "treinoTournamentDelete": "Delete tournament",
+  "@treinoTournamentDelete": {
+    "description": "Button that deletes a logged tournament."
+  },
+  "treinoTournamentDeleted": "Tournament deleted.",
+  "@treinoTournamentDeleted": {
+    "description": "Snackbar after deleting a tournament (has an Undo action)."
+  },
+  "treinoDraftDiscardTitle": "Discard this entry?",
+  "@treinoDraftDiscardTitle": {
+    "description": "Dialog title when leaving a changed tournament entry."
+  },
+  "treinoDraftDiscard": "Discard",
+  "@treinoDraftDiscard": {
+    "description": "Dialog button that discards the tournament entry."
+  },
+  "treinoDraftKeepEditing": "Keep editing",
+  "@treinoDraftKeepEditing": {
+    "description": "Dialog button that returns to the tournament entry."
+  },
+  "treinoRoundsMax": "Up to 30 rounds.",
+  "@treinoRoundsMax": {
+    "description": "Error under the rounds field."
+  },
+  "treinoTournamentsLimit": "{count, plural, one{You reached the limit of {count} saved tournament. Delete one in My tournaments to log another.} other{You reached the limit of {count} saved tournaments. Delete one in My tournaments to log another.}}",
+  "@treinoTournamentsLimit": {
+    "description": "Banner on the log screen when the tournament list is full; count is the limit (100).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinoSaveFailedNoSpace": "Couldn't save. Your phone is out of space.",
+  "@treinoSaveFailedNoSpace": {
+    "description": "Snackbar when saving failed for lack of storage; action reuses loadErrorRetry."
+  },
+  "treinoSaveFailed": "Couldn't save.",
+  "@treinoSaveFailed": {
+    "description": "Snackbar when saving failed; action reuses loadErrorRetry."
+  },
   "treinoLateBadge": "Behind",
   "@treinoLateBadge": {
     "description": "Training goal flow copy."
