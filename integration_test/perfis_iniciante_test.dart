@@ -274,7 +274,7 @@ void main() {
     await $.pumpAndSettle();
     await $(TrainingEntryKeys.signIn).waitUntilVisible();
     await _hold($, 1000);
-    await $(TrainingEntryKeys.back).tap();
+    await $(TrainingEntryKeys.accountBack).tap();
     await $(HomeKeys.screen).waitUntilVisible();
     await _hold($, 1500);
     // O login de verdade não existe no teste: reabre o app já com a conta

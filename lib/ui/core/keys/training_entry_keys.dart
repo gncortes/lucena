@@ -15,4 +15,5 @@ abstract final class TrainingEntryKeys {
   static const storage = ValueKey('training-entry-storage');
   static const offline = ValueKey('training-goals-offline');
   static const unpublished = ValueKey('training-unpublished');
+  static const accountBack = ValueKey('training-entry-account-back');
 }

@@ -2050,4 +2050,43 @@ void main() {
       );
     });
   });
+
+  group('T85-B5b aviso de recomeço da parte', () {
+    Future<LessonCheckpoint> left() async {
+      final r = await _Rig.open();
+      await r.next();
+      return r.source.checkpoints.last.copyWith(open: false);
+    }
+
+    test('havia progresso largado: o aviso aparece, uma vez', () async {
+      final r = await _Rig.open(checkpoint: await left());
+      expect(r.s.restartNotice, isTrue);
+      r.cubit.noticeShown();
+      expect(r.s.restartNotice, isFalse);
+    });
+
+    test('lição nova: sem aviso', () async {
+      final r = await _Rig.open();
+      expect(r.s.restartNotice, isFalse);
+    });
+
+    test('checkpoint no começo da parte: sem aviso', () async {
+      final r = await _Rig.open(
+        checkpoint: const LessonCheckpoint(
+          lessonId: _lessonId,
+          part: _partId,
+          step: 0,
+        ),
+      );
+      expect(r.s.restartNotice, isFalse);
+    });
+
+    test('volta do segundo plano: sem aviso novo', () async {
+      final r = await _Rig.open();
+      await r.next();
+      r.cubit.pauseForBackground();
+      r.cubit.resumeFromBackground();
+      expect(r.s.restartNotice, isFalse);
+    });
+  });
 }

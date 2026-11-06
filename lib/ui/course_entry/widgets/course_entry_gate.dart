@@ -29,8 +29,8 @@ import '../../course_guide/widgets/course_guide_copy.dart';
 import '../view_models/course_entry_cubit.dart';
 import 'course_content_states.dart';
 
-Widget _backButton(BuildContext context) => BackButton(
-  key: TrainingEntryKeys.back,
+Widget _backButton(BuildContext context, {Key? key}) => BackButton(
+  key: key ?? TrainingEntryKeys.back,
   onPressed: () => context.canPop() ? context.pop() : context.go(Routes.home),
 );
 
@@ -167,7 +167,7 @@ class _AccountEntry extends StatelessWidget {
       child: Scaffold(
         key: TrainingEntryKeys.account,
         appBar: LucenaAppBar(
-          leading: _backButton(context),
+          leading: _backButton(context, key: TrainingEntryKeys.accountBack),
           title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
         ),
         body: SingleChildScrollView(

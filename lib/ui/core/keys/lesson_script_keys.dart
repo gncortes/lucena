@@ -85,4 +85,7 @@ abstract final class LessonScriptKeys {
 
   /// O som e a voz do Viktor no cabeçalho da fala.
   static const lessonVoiceToggle = VoiceKeys.speakButton;
+
+  /// Aviso de que a parte largada no meio recomeçou do início (T85-B5b).
+  static const restartNotice = ValueKey('lesson-script-restart-notice');
 }
