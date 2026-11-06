@@ -3023,5 +3023,5 @@
   "conProgressHistory": "Histórico",
   "conProgressAchievements": "Conquistas",
   "conProgressSeeAll": "Ver todas",
-  "trainingProgressTodayLessons": "{count, plural, =1{1 lição concluída} other{{count} lições concluídas}}"
+  "trainingProgressTodayLessons": "{count, plural, =0{Nenhuma lição concluída} =1{1 lição concluída} other{{count} lições concluídas}}"
 }
