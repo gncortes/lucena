@@ -1,17 +1,18 @@
 rules_version = '2';
 
 // O Storage do Lucena (§2.12). Só a foto de perfil enviada pelo usuário; o
-// resto fica fechado. Resumo em firebase/README.md.
+// resto fica fechado. Resumo em firebase/README.md; testes em firebase/test.
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // users/{uid}/avatar.jpg: só o dono lê, troca e apaga. Imagem até 1 MB
-    // (a tela já manda o JPEG reduzido).
+    // users/{uid}/avatar.jpg: só o dono lê, troca e apaga. JPEG, PNG ou WebP
+    // até 1 MB (a tela já manda o JPEG reduzido). SVG e outros tipos não
+    // entram. O conteúdo em si não é conferido pelas regras (P2-1).
     match /users/{uid}/avatar.jpg {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow write: if request.auth != null && request.auth.uid == uid
-        && request.resource.size < 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && request.resource.size <= 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
     }
   }
 }

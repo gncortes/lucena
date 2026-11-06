@@ -142,7 +142,7 @@ const bloquear = (uid, campos = {}) =>
 
 describe('feedback (P0-1, P1-2, achado B)', () => {
   test('sem conta é recusado', async () => {
-    await assertFails(db(null).collection('feedback').add(feedbackReal(undefined, { uid: undefined })));
+    await assertFails(db(null).collection('feedback').add(feedbackReal('ana')));
     const { uid, ...semUid } = feedbackReal('x');
     await assertFails(db(null).collection('feedback').add(semUid));
   });

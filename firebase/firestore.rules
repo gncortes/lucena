@@ -1,7 +1,9 @@
 rules_version = '2';
 
 // O Firestore do Lucena (E1.02). Tudo fechado por padrão; cada coleção abre só
-// o que o app usa. Resumo das coleções em firebase/README.md.
+// o que o app usa, com lista fechada de chaves, tipos e tamanhos iguais aos do
+// app. Resumo em firebase/README.md; ficha de abuso em docs/fluxos/abuso.md;
+// testes no emulador em firebase/test (npm --prefix firebase/test test).
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -19,29 +21,88 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
-    function onlyKeys(allowed) {
-      return request.resource.data.keys().hasOnly(allowed);
+    // Bloqueio (P0-4): bloqueios/{uid}, gravado só pelo admin. Vale enquanto
+    // existir e não tiver `ate` no passado. Fica fora de users/{uid} porque o
+    // dono pode apagar o próprio perfil. Apagar continua liberado (LGPD).
+    function blocked(uid) {
+      let path = /databases/$(database)/documents/bloqueios/$(uid);
+      return exists(path) && (
+        !('ate' in get(path).data) ||
+        get(path).data.ate == null ||
+        get(path).data.ate > request.time);
     }
 
-    function shortString(field, max) {
-      return !(field in request.resource.data) ||
-        (request.resource.data[field] is string &&
-         request.resource.data[field].size() <= max);
+    // O dono, sem bloqueio vigente.
+    function canWrite(uid) {
+      return isOwner(uid) && !blocked(uid);
+    }
+
+    function data() {
+      return request.resource.data;
+    }
+
+    function onlyKeys(allowed) {
+      return data().keys().hasOnly(allowed);
+    }
+
+    // [field] ausente ou texto até [max] caracteres, dentro de [map].
+    function optString(map, field, max) {
+      return !(field in map) || (map[field] is string && map[field].size() <= max);
+    }
+
+    function optInt(map, field) {
+      return !(field in map) || map[field] is int;
+    }
+
+    function optTimestamp(map, field) {
+      return !(field in map) || map[field] is timestamp;
+    }
+
+    function optList(map, field, max) {
+      return !(field in map) || (map[field] is list && map[field].size() <= max);
+    }
+
+    function optMap(map, field, max) {
+      return !(field in map) || (map[field] is map && map[field].size() <= max);
+    }
+
+    // O que o documento tinha antes (vazio na criação).
+    function previous() {
+      return resource == null ? {} : resource.data;
+    }
+
+    function changed() {
+      return data().diff(previous()).affectedKeys();
+    }
+
+    // ---------------------------------------------------------------- perfil
+
+    // O aceite dos Termos (legal_consent_repository.dart).
+    function validLegal(legal) {
+      return legal is map
+        && legal.keys().hasOnly(['acceptedVersion', 'acceptedAt'])
+        && optInt(legal, 'acceptedVersion')
+        && optString(legal, 'acceptedAt', 40);
     }
 
     // O perfil. Direitos pagos (premium) nunca são gravados pelo app: chegam
     // pelo servidor (Admin SDK), que passa por cima destas regras.
     match /users/{uid} {
       allow read, delete: if isOwner(uid);
-      allow create, update: if isOwner(uid)
-        && onlyKeys(['name', 'language', 'createdAt', 'updatedAt'])
-        && shortString('name', 80)
-        && shortString('language', 16)
-        && request.resource.data.updatedAt is timestamp;
+      allow create, update: if canWrite(uid)
+        && onlyKeys(['name', 'language', 'createdAt', 'updatedAt', 'legal'])
+        && optString(data(), 'name', 80)
+        && optString(data(), 'language', 16)
+        && data().updatedAt is timestamp
+        && (!('legal' in data()) || validLegal(data().legal))
+        // createdAt: só a hora do servidor, quando muda.
+        && (!changed().hasAny(['createdAt']) || data().createdAt == request.time);
 
-      // O resumo do progresso (E1.13).
+      // O resumo do progresso (E1.13): um documento só, `summary`.
       match /progress/{doc} {
-        allow read, write: if isOwner(uid);
+        allow read, delete: if isOwner(uid);
+        allow create, update: if canWrite(uid) && doc == 'summary'
+          && validSummary(data());
       }
 
       // O token do push do último aparelho em que a conta entrou (um só).
@@ -49,48 +110,200 @@ service cloud.firestore {
       match /push/{doc} {
         allow read: if isOwner(uid) || isAdmin();
         allow delete: if isOwner(uid);
-        allow create, update: if isOwner(uid) && doc == 'device'
+        allow create, update: if canWrite(uid) && doc == 'device'
           && onlyKeys(['token', 'updatedAt'])
-          && request.resource.data.token is string
-          && shortString('token', 4096)
-          && request.resource.data.updatedAt is timestamp;
+          && data().token is string
+          && optString(data(), 'token', 4096)
+          && data().updatedAt is timestamp;
       }
 
-      // Uma partida terminada por documento: não muda depois de gravada.
+      // Uma partida terminada por documento: não muda depois de gravada. Id
+      // `<microssegundos>-<posição>` (SyncRepository.gameId). Cada partida
+      // nova soma 1 em cotas/{uid}.partidas, no mesmo lote, até o teto.
       match /games/{game} {
-        allow read, create, delete: if isOwner(uid);
+        allow read, delete: if isOwner(uid);
+        allow create: if canWrite(uid)
+          && game.matches('^[0-9]{1,20}-[A-Za-z0-9_-]{1,80}$')
+          && validGame(data())
+          && gamesAfter(uid) == gamesBefore(uid) + 1;
       }
     }
 
-    // Os avisos de problema e as sugestões (E1.19). Com ou sem conta.
-    match /feedback/{id} {
-      allow create: if onlyKeys(['uid', 'kind', 'text', 'appVersion',
-                                 'language', 'context', 'createdAt'])
-        && request.resource.data.text is string
-        && request.resource.data.text.size() > 0
-        && request.resource.data.text.size() <= 4000
-        && shortString('kind', 32)
-        && shortString('appVersion', 32)
-        && shortString('language', 16)
-        && (!('uid' in request.resource.data) ||
-            isOwner(request.resource.data.uid))
-        && request.resource.data.createdAt == request.time;
-      allow read, update, delete: if isAdmin();
+    // O ProgressSummary.toJson (progress_summary.dart). As listas e mapas têm
+    // teto; o apelido tem 20 caracteres, como no app (user_profile.dart).
+    function validSummary(d) {
+      return d.keys().hasOnly(['learningV1', 'profile', 'rating', 'lessons',
+          'school', 'stars', 'challenges', 'positions', 'startRung',
+          'speedruns', 'race', 'featured', 'updatedAt'])
+        && d.profile is map
+        && validProfile(d.profile)
+        && optList(d, 'learningV1', 5000)
+        && (!('rating' in d) || (d.rating is map
+            && d.rating.keys().hasOnly(['rating', 'deviation', 'volatility'])))
+        && optMap(d, 'lessons', 2000)
+        && optList(d, 'school', 5000)
+        && optMap(d, 'stars', 5000)
+        && optList(d, 'challenges', 5000)
+        && optList(d, 'positions', 5000)
+        && optInt(d, 'startRung')
+        && optMap(d, 'speedruns', 500)
+        && optMap(d, 'race', 50)
+        && optList(d, 'featured', 5000)
+        && optTimestamp(d, 'updatedAt');
     }
 
-    // Os desafios por link (V1.1): quem tem o código lê; o dono cria; o
-    // resultado de quem aceitou entra uma vez só.
+    function validProfile(p) {
+      return p.keys().hasOnly(['nickname', 'rating', 'goal', 'levelSource',
+          'lichessUser', 'lichessLinkedAt', 'chessComUser', 'avatarColor',
+          'photo', 'photoUrl', 'country', 'state', 'city', 'googlePhoto'])
+        && optString(p, 'nickname', 20)
+        && optInt(p, 'rating')
+        && optString(p, 'goal', 32)
+        && optString(p, 'levelSource', 32)
+        && optString(p, 'lichessUser', 50)
+        && optString(p, 'lichessLinkedAt', 40)
+        && optString(p, 'chessComUser', 50)
+        && optInt(p, 'avatarColor')
+        && optString(p, 'photo', 16)
+        && optString(p, 'photoUrl', 2048)
+        && optString(p, 'country', 8)
+        && optString(p, 'state', 64)
+        && optString(p, 'city', 120)
+        && (!('googlePhoto' in p) || p.googlePhoto is bool);
+    }
+
+    // O SyncRepository.gameJson (sync_repository.dart).
+    function validGame(g) {
+      return g.keys().hasOnly(['positionId', 'playedAt', 'outcome',
+          'fulfilled', 'opponent', 'opponentLevel', 'startedAt', 'startFen',
+          'moves', 'userSide', 'endReason', 'challengeId'])
+        && g.positionId is string && g.positionId.size() <= 100
+        && g.playedAt is timestamp
+        && optString(g, 'outcome', 16)
+        && (!('fulfilled' in g) || g.fulfilled is bool)
+        && optString(g, 'opponent', 32)
+        && optInt(g, 'opponentLevel')
+        && optTimestamp(g, 'startedAt')
+        && optString(g, 'startFen', 100)
+        && optString(g, 'moves', 6000)
+        && optString(g, 'userSide', 8)
+        && optString(g, 'endReason', 32)
+        && optString(g, 'challengeId', 100);
+    }
+
+    // ----------------------------------------------------------------- cotas
+
+    // cotas/{uid}: o ritmo do feedback e a contagem de partidas. O dono só
+    // avança (nunca volta nem apaga); some sozinho com a política de TTL em
+    // `feedbackEm` (docs/tasks/T85-app-check-passos.md).
+    function cota(uid) {
+      return /databases/$(database)/documents/cotas/$(uid);
+    }
+
+    function gamesBefore(uid) {
+      return exists(cota(uid)) && ('partidas' in get(cota(uid)).data)
+        ? get(cota(uid)).data.partidas : 0;
+    }
+
+    function gamesAfter(uid) {
+      return existsAfter(cota(uid)) && ('partidas' in getAfter(cota(uid)).data)
+        ? getAfter(cota(uid)).data.partidas : 0;
+    }
+
+    // O teto de partidas por conta.
+    function maxGames() {
+      return 20000;
+    }
+
+    // O intervalo mínimo entre dois feedbacks da mesma conta.
+    function feedbackGap() {
+      return duration.value(60, 's');
+    }
+
+    function feedbackStep() {
+      return changed().hasOnly(['feedbackEm', 'feedbackId'])
+        && data().feedbackEm == request.time
+        && data().feedbackId is string
+        && data().feedbackId.size() <= 40
+        && existsAfter(/databases/$(database)/documents/feedback/$(data().feedbackId))
+        && (!('feedbackEm' in previous())
+            || previous().feedbackEm + feedbackGap() <= request.time);
+    }
+
+    function gamesStep() {
+      return changed().hasOnly(['partidas'])
+        && data().partidas is int
+        && data().partidas == (('partidas' in previous()) ? previous().partidas : 0) + 1
+        && data().partidas <= maxGames();
+    }
+
+    match /cotas/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow create, update: if canWrite(uid)
+        && onlyKeys(['feedbackEm', 'feedbackId', 'partidas'])
+        && (feedbackStep() || gamesStep());
+    }
+
+    // -------------------------------------------------------------- feedback
+
+    // Os avisos de problema e as sugestões (E1.26): só com conta, com o uid
+    // do autor, chaves do FeedbackEntry.toJson, texto até 500 (o do app) e
+    // um envio por minuto por conta (cotas/{uid}, no mesmo lote).
+    match /feedback/{id} {
+      allow create: if signedIn() && !blocked(request.auth.uid)
+        && onlyKeys(['uid', 'kind', 'type', 'text', 'level', 'origin',
+                     'appVersion', 'model', 'manufacturer', 'language',
+                     'createdAt'])
+        && data().uid == request.auth.uid
+        && data().text is string
+        && data().text.size() > 0
+        && data().text.size() <= 500
+        && optString(data(), 'kind', 32)
+        && (!('type' in data()) || data().type in ['problema', 'ideia', 'elogio'])
+        && optString(data(), 'level', 32)
+        && optString(data(), 'origin', 32)
+        && optString(data(), 'appVersion', 32)
+        && optString(data(), 'model', 64)
+        && optString(data(), 'manufacturer', 64)
+        && optString(data(), 'language', 32)
+        && data().createdAt == request.time
+        && getAfter(cota(request.auth.uid)).data.feedbackId == id
+        && getAfter(cota(request.auth.uid)).data.feedbackEm == request.time;
+      // O dono lê e apaga o que mandou (exclusão da conta); a consulta tem de
+      // filtrar por uid.
+      allow get, list, delete: if isAdmin()
+        || (signedIn() && resource.data.uid == request.auth.uid);
+      allow update: if isAdmin();
+    }
+
+    // ------------------------------------------------------- só o servidor
+
+    // Bloqueio vigente da conta: o admin grava (painel), o dono lê para o app
+    // mostrar o estado. O histórico (moderacao/*) fica para a Cloud Function.
+    match /bloqueios/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update: if isAdmin()
+        && onlyKeys(['motivo', 'regra', 'desde', 'ate', 'adminUid'])
+        && data().motivo is string && data().motivo.size() <= 64
+        && optString(data(), 'regra', 16)
+        && data().desde is timestamp
+        && (!('ate' in data()) || data().ate == null || data().ate is timestamp)
+        && optString(data(), 'adminUid', 128);
+      allow delete: if isAdmin();
+    }
+
+    // Contagem de aparelhos por tópico (TopicCountService): só uma Cloud
+    // Function (Admin SDK) grava; o painel lê.
+    match /inscritos/{topic} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Os desafios por link (V1.1): o app não usa a coleção (o desafio vai no
+    // próprio link). Fechada até existir uso, com regra própria.
     match /challenges/{code} {
-      allow get: if true;
-      allow list: if false;
-      allow create: if signedIn()
-        && request.resource.data.owner == request.auth.uid
-        && !('result' in request.resource.data);
-      allow update: if signedIn()
-        && !('result' in resource.data)
-        && request.resource.data.diff(resource.data).affectedKeys()
-             .hasOnly(['result']);
-      allow delete: if signedIn() && resource.data.owner == request.auth.uid;
+      allow read, write: if false;
     }
 
     // As posições candidatas a final em destaque: só o painel do Gabriel.
