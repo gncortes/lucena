@@ -8,6 +8,12 @@
   "storage": {
     "rules": "firebase/storage.rules"
   },
+  "emulators": {
+    "singleProjectMode": true,
+    "firestore": { "port": 8085 },
+    "storage": { "port": 9198 },
+    "ui": { "enabled": false }
+  },
   "remoteconfig": {
     "template": "firebase/remoteconfig.template.json"
   },
