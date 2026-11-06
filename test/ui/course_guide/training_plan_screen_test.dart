@@ -302,6 +302,26 @@ void main() {
     expect(push.permissionRequests, 0);
   });
 
+  testWidgets('B4b: lembrete ligado sem permissão pede o aviso ao confirmar '
+      'o plano e só grava ligado se o Android permitir', (tester) async {
+    push.allowed = false;
+    push.granted = true;
+    await show(tester);
+    expect(cubit.state.draft.reminderOn, isTrue);
+    await reveal(tester, TrainingKeys.planSave);
+    await tester.tap(find.byKey(TrainingKeys.planSave));
+    await tester.pumpAndSettle();
+    expect(push.permissionRequests, 0);
+    await tester.tap(find.byKey(TrainingKeys.permissionAllow));
+    await tester.pumpAndSettle();
+    expect(push.permissionRequests, 1);
+    expect(saved, 1);
+    expect(
+      (await repository.load(TrainingCourse.pilares)).plan.reminderOn,
+      isTrue,
+    );
+  });
+
   testWidgets(
     'first save denial stays on plan before continuing without reminder',
     (tester) async {
