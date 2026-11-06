@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/goal/study_plan.dart';
+import 'package:lucena/domain/models/training/goal/tournament_record.dart';
 import 'package:lucena/domain/models/training/goal/training_objective.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
@@ -27,6 +28,7 @@ Future<FakeTrainingRepository> pump(
   StudyPlan? plan,
   StudyPlan? previous,
   bool? catalogOnlyPlan,
+  List<TournamentRecord> tournaments = const [],
   bool settle = true,
   bool reduzir = false,
 }) async {
@@ -52,6 +54,7 @@ Future<FakeTrainingRepository> pump(
         studyPlan: plan,
         previousStudyPlan: previous,
         catalogOnlyPlan: catalogOnlyPlan,
+        tournaments: tournaments,
       ),
     },
   );
@@ -263,6 +266,67 @@ void main() {
     await tester.tap(find.byKey(TrainingGoalKeys.catalogAbout));
     await tester.pumpAndSettle();
     expect(find.text('Sobre o Pilares'), findsOneWidget);
+  });
+
+  group('G11: "Registrar torneio" com key própria', () {
+    const improve = TrainingObjective(
+      kind: ObjectiveKind.improve,
+      setOn: '2026-11-04',
+    );
+    const record = TournamentRecord(
+      id: 'a',
+      name: 'Aberto',
+      date: '2026-11-01',
+      tenthsPoints: 35,
+      rounds: 5,
+    );
+
+    testWidgets('melhorar sem registro: o botão tem a key dele', (
+      tester,
+    ) async {
+      await pump(tester, tab: CourseGuideTab.guide, objective: improve);
+      expect(
+        find.byKey(TrainingGoalKeys.guideRegisterTournament),
+        findsOneWidget,
+      );
+      expect(find.byKey(TrainingGoalKeys.guideMyTournaments), findsNothing);
+    });
+
+    testWidgets('torneio passado e registrado: "Meus torneios" e o botão', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        tab: CourseGuideTab.guide,
+        objective: const TrainingObjective(
+          kind: ObjectiveKind.tournament,
+          setOn: '2026-10-01',
+          tournamentDate: '2026-11-01',
+        ),
+        tournaments: const [record],
+      );
+      expect(find.byKey(TrainingGoalKeys.guideMyTournaments), findsOneWidget);
+      expect(
+        find.byKey(TrainingGoalKeys.guideRegisterTournament),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('torneio daqui a 10 dias: sem o botão', (tester) async {
+      await pump(
+        tester,
+        tab: CourseGuideTab.guide,
+        objective: const TrainingObjective(
+          kind: ObjectiveKind.tournament,
+          setOn: '2026-11-04',
+          tournamentDate: '2026-11-14',
+        ),
+      );
+      expect(
+        find.byKey(TrainingGoalKeys.guideRegisterTournament),
+        findsNothing,
+      );
+    });
   });
 
   testWidgets('H-TRE-09: Voltar ao plano anterior troca o plano e some', (

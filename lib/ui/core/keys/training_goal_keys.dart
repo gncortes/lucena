@@ -64,6 +64,9 @@ abstract final class TrainingGoalKeys {
   static const guideRegister = Key('treinoGuide.register');
   static const guidePlanDone = Key('treinoGuide.planDone');
   static const guideMyTournaments = Key('treinoGuide.myTournaments');
+
+  /// "Registrar torneio" da Guia, separado de "Meus torneios" (G11).
+  static const guideRegisterTournament = Key('treinoGuide.registerTournament');
   static const guideImprove = Key('treinoGuide.improve');
   static const guidePushDenied = Key('treinoGuide.pushDenied');
   static const guidePushEnable = Key('treinoGuide.pushEnable');
@@ -105,4 +108,20 @@ abstract final class TrainingGoalKeys {
   static const nextGoalScreen = Key('treinoNext.screen');
   static const nextGoalTournament = Key('treinoNext.tournament');
   static const nextGoalImprove = Key('treinoNext.improve');
+
+  // Torneio como meta (contrato T85-torneio-meta §12).
+  static const goalName = Key('treinoGoal.name');
+  static const goalRemove = Key('treinoGoal.remove');
+  static const goalConfirmDialog = Key('treinoGoal.confirmDialog');
+  static const goalConfirm = Key('treinoGoal.confirm');
+  static const goalCancel = Key('treinoGoal.cancel');
+  static const undoAction = Key('treinoGoal.undo');
+  static const saveErrorRetry = Key('treinoGoal.saveErrorRetry');
+  static const registerDiscardDialog = Key('treinoRegister.discardDialog');
+  static const registerDiscard = Key('treinoRegister.discard');
+  static const registerKeepEditing = Key('treinoRegister.keepEditing');
+  static const registerLimit = Key('treinoRegister.limit');
+  static const tournamentDetail = Key('treinoTournaments.detail');
+  static const tournamentDelete = Key('treinoTournaments.delete');
+  static const tournamentDeleteConfirm = Key('treinoTournaments.deleteConfirm');
 }

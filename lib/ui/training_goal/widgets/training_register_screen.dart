@@ -71,7 +71,7 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
       onBack: widget.onBack,
       builder: (context, view) {
         if (!_loaded) _fill(view.registerDraft);
-        final error = _submitted ? draftError(_draft) : null;
+        final error = _submitted ? draftError(_draft, today: view.today) : null;
         final before = int.tryParse(_draft.ratingBefore);
         final after = int.tryParse(_draft.ratingAfter);
         return [
@@ -125,6 +125,8 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
                     labelText: t.treinoFieldRounds,
                     errorText: error == DraftError.rounds
                         ? t.treinoRoundsRequired
+                        : error == DraftError.roundsTooMany
+                        ? t.treinoRoundsMax
                         : null,
                   ),
                   onChanged: (v) => _change(_draft.copyWith(rounds: v)),
@@ -255,7 +257,7 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
               busy: state.saving,
               onPressed: () async {
                 setState(() => _submitted = true);
-                if (draftError(_draft) != null) return;
+                if (draftError(_draft, today: view.today) != null) return;
                 final messenger = ScaffoldMessenger.of(context);
                 if (await cubit.register(_draft)) {
                   messenger.showSnackBar(

@@ -450,10 +450,10 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
           title: Text(t.treinoMyTournaments),
           trailing: Text(t.treinoSeeAll),
           onTap: () => _go(RouteNames.trainingTournaments),
-        )
-      else if (view.hasObjective)
+        ),
+      if (view.offersRegisterTournament)
         TextButton(
-          key: TrainingGoalKeys.guideMyTournaments,
+          key: TrainingGoalKeys.guideRegisterTournament,
           onPressed: () => _go(RouteNames.trainingTournamentRegister),
           child: Text(t.treinoRegisterTournament),
         ),
