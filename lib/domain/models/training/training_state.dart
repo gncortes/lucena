@@ -2,6 +2,7 @@ import 'day_goals.dart';
 import 'training_analytics_state.dart';
 import 'school_training_progress.dart';
 import 'opening_track.dart';
+import 'goal/goal_undo.dart';
 import 'goal/study_plan.dart';
 import 'goal/tournament_record.dart';
 import 'goal/training_diagnostic.dart';
@@ -74,6 +75,9 @@ final class TrainingState {
     this.missedDayNoticeOn,
     this.missedDayMinutes,
     this.tournamentPushFor,
+    this.undoSlot,
+    this.objectiveDraft,
+    this.tournamentEdit,
   }) : completedLessons = Map.unmodifiable(completedLessons),
        cycles = Map.unmodifiable(cycles),
        openings = Map.unmodifiable(openings),
@@ -134,6 +138,15 @@ final class TrainingState {
 
   /// Data do torneio para o qual o aviso de "Como foi?" já foi agendado.
   final String? tournamentPushFor;
+
+  /// Cópia para o "Desfazer" da última troca de objetivo ou mexida num registro.
+  final GoalUndoSlot? undoSlot;
+
+  /// Escolha de "Seu objetivo" ainda não salva.
+  final ObjectiveDraft? objectiveDraft;
+
+  /// Edição de um registro em andamento.
+  final TournamentEdit? tournamentEdit;
   bool get mock => day?.goals.any((g) => g.mock) ?? false;
   TrainingState copyWith({
     String? openingProfile,
@@ -167,6 +180,9 @@ final class TrainingState {
     Object? missedDayNoticeOn = _keep,
     Object? missedDayMinutes = _keep,
     Object? tournamentPushFor = _keep,
+    Object? undoSlot = _keep,
+    Object? objectiveDraft = _keep,
+    Object? tournamentEdit = _keep,
   }) => TrainingState(
     course: course,
     installSeed: installSeed,
@@ -225,6 +241,15 @@ final class TrainingState {
     tournamentPushFor: identical(tournamentPushFor, _keep)
         ? this.tournamentPushFor
         : tournamentPushFor as String?,
+    undoSlot: identical(undoSlot, _keep)
+        ? this.undoSlot
+        : undoSlot as GoalUndoSlot?,
+    objectiveDraft: identical(objectiveDraft, _keep)
+        ? this.objectiveDraft
+        : objectiveDraft as ObjectiveDraft?,
+    tournamentEdit: identical(tournamentEdit, _keep)
+        ? this.tournamentEdit
+        : tournamentEdit as TournamentEdit?,
   );
   Map<String, Object?> toJson() => {
     'openingProfile': openingProfile,
@@ -264,6 +289,9 @@ final class TrainingState {
     if (missedDayNoticeOn != null) 'missedDayNoticeOn': missedDayNoticeOn,
     if (missedDayMinutes != null) 'missedDayMinutes': missedDayMinutes,
     if (tournamentPushFor != null) 'tournamentPushFor': tournamentPushFor,
+    if (undoSlot != null) 'undoSlot': undoSlot!.toJson(),
+    if (objectiveDraft != null) 'objectiveDraft': objectiveDraft!.toJson(),
+    if (tournamentEdit != null) 'tournamentEdit': tournamentEdit!.toJson(),
   };
   factory TrainingState.fromJson(Map<String, dynamic> j) {
     if (j['version'] != 1) {
@@ -346,6 +374,9 @@ final class TrainingState {
       missedDayNoticeOn: j['missedDayNoticeOn'] as String?,
       missedDayMinutes: j['missedDayMinutes'] as int?,
       tournamentPushFor: j['tournamentPushFor'] as String?,
+      undoSlot: GoalUndoSlot.tryFromJson(j['undoSlot']),
+      objectiveDraft: ObjectiveDraft.tryFromJson(j['objectiveDraft']),
+      tournamentEdit: TournamentEdit.tryFromJson(j['tournamentEdit']),
     );
   }
 }

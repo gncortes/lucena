@@ -1,15 +1,32 @@
+import '../../../models/training/goal/goal_undo.dart';
 import '../../../models/training/goal/study_plan.dart';
 import '../../../models/training/goal/tournament_record.dart';
 import '../../../models/training/goal/training_objective.dart';
 import '../../../models/training/training_resources.dart';
 import '../../../models/training/training_state.dart';
 import 'goal_actions.dart';
+import 'goal_limits.dart';
 import 'plan_chapters.dart';
 import 'plan_status.dart';
 import 'tournament_rules.dart';
 
 /// Capítulo atrasado: o capítulo e a semana (1 a partir de 1) em que devia estar.
 typedef LateChapter = ({PlanChapter chapter, int week});
+
+/// O que salvar em "Seu objetivo" faz com o objetivo de agora.
+enum ObjectiveChange {
+  /// Mesma escolha: nada a gravar (G3).
+  none,
+
+  /// Primeiro objetivo: sem confirmação nem desfazer.
+  first,
+
+  /// Só o nome do torneio: o plano fica (G5).
+  rename,
+
+  /// Outro tipo ou outra data: o plano recomeça, com desfazer (G2).
+  change,
+}
 
 /// Tudo o que as telas do treino por meta mostram, calculado do estado salvo
 /// e do dia de hoje (Dart puro, sem relógio próprio).
@@ -156,7 +173,90 @@ final class GoalView {
   int get minutesUntilTournament =>
       hasTournament ? studyMinutesUntil(state.plan, today, tournamentDate!) : 0;
 
-  /// Rascunho pronto para o registro.
-  TournamentDraft get registerDraft =>
-      state.tournamentDraft ?? draftFromObjective(objective, today);
+  /// Rascunho pronto para o registro. Rascunho antigo com data fora do
+  /// intervalo (futura, de antes da G6) volta com a data inicial de hoje.
+  TournamentDraft get registerDraft {
+    final initial = draftFromObjective(objective, today);
+    final saved = state.tournamentDraft;
+    if (saved == null) return initial;
+    return isValidRegisterDate(saved.date, today)
+        ? saved
+        : saved.copyWith(date: initial.date);
+  }
+
+  // ---- Torneio como meta (contrato T85-torneio-meta) ----
+
+  /// "Registrar torneio" na Guia (G6/G11): com "melhorar" e sem registros, ou
+  /// depois do torneio do objetivo já registrado. Antes do torneio, não.
+  bool get offersRegisterTournament {
+    if (!hasObjective || tournamentsFull) return false;
+    if (!hasTournament) return state.tournaments.isEmpty;
+    return canRegisterTournament(today, tournamentDate!) &&
+        tournamentRegistered;
+  }
+
+  /// 100 registros no curso: o registro novo é recusado (§8).
+  bool get tournamentsFull => state.tournaments.length >= maxTournaments;
+
+  /// Há "Desfazer" guardado (vale até a próxima ação de objetivo ou registro).
+  bool get canUndo => state.undoSlot != null;
+  UndoKind? get undoKind => state.undoSlot?.kind;
+
+  /// O que "Seu objetivo" mostra ao abrir: a escolha não salva ou a atual (G3).
+  ObjectiveDraft get objectiveChoice =>
+      state.objectiveDraft ??
+      ObjectiveDraft(
+        kind: objective?.kind,
+        date: objective?.tournamentDate,
+        name: objective?.tournamentName ?? '',
+      );
+
+  ObjectiveChange changeFor({
+    required ObjectiveKind kind,
+    String? date,
+    String name = '',
+  }) {
+    final current = objective;
+    if (current == null) return ObjectiveChange.first;
+    final tournament = kind == ObjectiveKind.tournament;
+    if (current.kind != kind ||
+        (tournament && current.tournamentDate != date)) {
+      return ObjectiveChange.change;
+    }
+    if (tournament &&
+        clampText(name, maxTournamentName) != current.tournamentName) {
+      return ObjectiveChange.rename;
+    }
+    return ObjectiveChange.none;
+  }
+
+  /// Trocar com plano pede confirmação (o plano recomeça); sem plano, não.
+  bool confirmChange({
+    required ObjectiveKind kind,
+    String? date,
+    String name = '',
+  }) =>
+      hasPlan &&
+      changeFor(kind: kind, date: date, name: name) == ObjectiveChange.change;
+
+  /// "Ficar sem objetivo" com plano pede confirmação.
+  bool get confirmRemove => hasPlan;
+
+  /// Datas aceitas no registro: de 2 anos atrás até hoje.
+  ({String first, String last}) get registerDates => registerDateRange(today);
+
+  /// Rascunho da edição de um registro: o em andamento ou o registro salvo.
+  TournamentDraft editDraft(String id) {
+    final edit = state.tournamentEdit;
+    if (edit != null && edit.id == id) return edit.draft;
+    for (final t in state.tournaments) {
+      if (t.id == id) return draftFromRecord(t);
+    }
+    return const TournamentDraft();
+  }
+
+  /// O rascunho mudou do inicial: fechar pede "Descartar" (G8).
+  bool draftChanged(TournamentDraft draft) =>
+      draft.toJson().toString() !=
+      draftFromObjective(objective, today).toJson().toString();
 }

@@ -1,6 +1,7 @@
 import '../../../models/training/training_state.dart';
 import '../../../models/training/training_plan.dart';
 import '../training_date.dart';
+import 'goal_limits.dart';
 
 /// Primeira data aceita para o torneio: amanhã.
 String earliestTournamentDate(String today) =>
@@ -39,6 +40,21 @@ TournamentPhase tournamentPhase(String today, String date) {
 /// Registrar só a partir do dia seguinte ao torneio (G24).
 bool canRegisterTournament(String today, String date) =>
     today.compareTo(date) > 0;
+
+/// Datas aceitas no registro: de 2 anos atrás até hoje (G6).
+({String first, String last}) registerDateRange(String today) {
+  final d = civilDate(today);
+  return (
+    first: trainingDate(DateTime(d.year - registerWindowYears, d.month, d.day)),
+    last: today,
+  );
+}
+
+bool isValidRegisterDate(String date, String today) {
+  if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(date)) return false;
+  final range = registerDateRange(today);
+  return date.compareTo(range.first) >= 0 && date.compareTo(range.last) <= 0;
+}
 
 String addDays(String date, int days) =>
     trainingDate(civilDate(date).add(Duration(days: days)));
