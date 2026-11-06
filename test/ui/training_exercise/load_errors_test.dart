@@ -32,6 +32,9 @@ class FailingTraining implements TrainingRepository {
   }
 
   @override
+  Future<TrainingResources?> cachedOutline(TrainingCourse course) async => null;
+
+  @override
   Future<TrainingState> load(TrainingCourse course) => delegate.load(course);
   @override
   Stream<TrainingState> get changes => delegate.changes;

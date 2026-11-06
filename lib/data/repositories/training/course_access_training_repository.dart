@@ -20,6 +20,14 @@ final class CourseAccessTrainingRepository implements TrainingRepository {
   Future<TrainingResources> resources(TrainingCourse course) async =>
       DemoGoals.forAccess(course, access.access, await inner.resources(course));
   @override
+  Future<TrainingResources?> cachedOutline(TrainingCourse course) async {
+    final cached = await inner.cachedOutline(course);
+    return cached == null
+        ? null
+        : DemoGoals.forAccess(course, access.access, cached);
+  }
+
+  @override
   Future<TrainingState> load(TrainingCourse course) => inner.load(course);
   @override
   Future<TrainingState> update(

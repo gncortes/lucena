@@ -64,6 +64,9 @@ class CourseEntryGate extends StatelessWidget {
           // conteúdo quando o pacote fica pronto.
           return ShimmerConteudo(
             carregando: downloading,
+            // A tela do curso (app bar e barra de baixo) entra parada; só o
+            // corpo anima, dentro dela.
+            trocaAnimada: false,
             // Mensageiro próprio: o aviso (SnackBar) da tela não aparece
             // também no esqueleto enquanto os dois se cruzam.
             esqueleto: ScaffoldMessenger(

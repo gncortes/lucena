@@ -17,8 +17,14 @@ class ShimmerConteudo extends StatefulWidget {
     required this.carregando,
     required this.esqueleto,
     required this.child,
+    this.trocaAnimada = true,
     super.key,
   });
+
+  /// Falso: a troca é seca, sem dissolver nem subir. Para quem envolve a tela
+  /// toda: a app bar e a barra de baixo não podem se mexer nem piscar, e o
+  /// corpo faz a própria troca por dentro.
+  final bool trocaAnimada;
 
   final bool carregando;
   final Widget esqueleto;
@@ -62,6 +68,9 @@ class _ShimmerConteudoState extends State<ShimmerConteudo>
   @override
   Widget build(BuildContext context) {
     if (widget.carregando) return _esqueleto;
+    if (!widget.trocaAnimada) {
+      return KeyedSubtree(key: MotionKeys.shimmerConteudo, child: widget.child);
+    }
     final reduzido = MovimentoReduzido.of(context);
     // O dissolve dura 250 dos 300 ms da subida.
     final dissolve = reduzido

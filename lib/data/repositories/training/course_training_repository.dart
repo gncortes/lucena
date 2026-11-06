@@ -15,6 +15,11 @@ abstract interface class TrainingRepository {
     FutureOr<TrainingState> Function(TrainingState) change,
   );
   Future<TrainingResources> resources(TrainingCourse course);
+
+  /// A última lista de lições lida (sem os bancos de exercícios), guardada no
+  /// aparelho: a tela do curso abre já com ela e troca pelo conteúdo completo
+  /// quando [resources] termina. Nulo na primeira abertura.
+  Future<TrainingResources?> cachedOutline(TrainingCourse course);
   Stream<TrainingState> get changes;
 }
 
@@ -26,6 +31,8 @@ final class NoTrainingRepository implements TrainingRepository {
   @override
   Future<TrainingResources> resources(TrainingCourse course) async =>
       TrainingResources();
+  @override
+  Future<TrainingResources?> cachedOutline(TrainingCourse course) async => null;
   @override
   Future<TrainingState> load(TrainingCourse course) async =>
       TrainingState(course: course, installSeed: 'disabled');

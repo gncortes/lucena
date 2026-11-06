@@ -8,6 +8,7 @@ import 'package:lucena/data/repositories/endgames/endgame_progress_repository.da
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_plan.dart';
+import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 
@@ -25,6 +26,7 @@ class _SavedProgress extends EndgameProgressRepository {
 }
 
 void main() {
+  _cacheTests();
   test('retomada prioriza uma lição publicada do próprio curso', () async {
     final scenario = TrainingScenarioBuilder(TrainingCourse.pilares);
     final repository = scenario.repository(
@@ -263,5 +265,59 @@ void main() {
     expect(cubit.state.failed, isFalse);
     expect(cubit.state.nextLesson, isNull);
     expect(cubit.state.training!.day!.goals, isEmpty);
+  });
+}
+
+/// T85-S2: a segunda abertura do curso já mostra a lista da última vez.
+void _cacheTests() {
+  test(
+    'lista guardada: entra sem esqueleto e a leitura completa a troca',
+    () async {
+      final scenario = TrainingScenarioBuilder(TrainingCourse.pilares);
+      final repository = scenario.repository(scenario.large());
+      repository.outline[TrainingCourse.pilares] = TrainingResources(
+        lessons: scenario.content.lessons,
+      );
+      final release = Completer<void>();
+      repository.beforeResources = release.future;
+      final cubit = CourseGuideCubit(
+        repository: repository,
+        config: TrainingCourseConfig.pilares,
+        now: scenario.now,
+      );
+      addTearDown(cubit.close);
+      addTearDown(repository.dispose);
+      final loading = cubit.load();
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.loading, isFalse);
+      expect(cubit.state.partial, isTrue);
+      expect(cubit.state.resources!.lessons, isNotEmpty);
+      release.complete();
+      await loading;
+      expect(cubit.state.partial, isFalse);
+      expect(cubit.state.resources!.banks, isNotEmpty);
+    },
+  );
+
+  test('sem lista guardada: espera a leitura completa (esqueleto)', () async {
+    final scenario = TrainingScenarioBuilder(TrainingCourse.pilares);
+    final repository = scenario.repository(scenario.large());
+    final release = Completer<void>();
+    repository.beforeResources = release.future;
+    final cubit = CourseGuideCubit(
+      repository: repository,
+      config: TrainingCourseConfig.pilares,
+      now: scenario.now,
+    );
+    addTearDown(cubit.close);
+    addTearDown(repository.dispose);
+    final loading = cubit.load();
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.loading, isTrue);
+    release.complete();
+    await loading;
+    expect(cubit.state.loading, isFalse);
+    expect(cubit.state.partial, isFalse);
   });
 }

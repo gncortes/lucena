@@ -58,7 +58,9 @@ final class TrainingGoalCubit extends Cubit<TrainingGoalState> {
     required this.now,
     this.analytics = const NoAnalyticsRepository(),
     this.afterSave,
-  }) : super(const TrainingGoalState());
+    TrainingResources? initialResources,
+  }) : _resources = initialResources,
+       super(const TrainingGoalState());
 
   final TrainingRepository repository;
   final TrainingCourseConfig config;
@@ -83,11 +85,14 @@ final class TrainingGoalCubit extends Cubit<TrainingGoalState> {
     if (state.saving) return;
     try {
       final saved = await repository.load(config.course);
-      _resources = await repository.resources(config.course);
+      // A tela do curso já leu a lista: não abre os arquivos de novo.
+      final resources = _resources ??= await repository.resources(
+        config.course,
+      );
       if (isClosed) return;
       emit(
         TrainingGoalState(
-          view: GoalView.of(saved, _resources!, today),
+          view: GoalView.of(saved, resources, today),
           loading: false,
         ),
       );

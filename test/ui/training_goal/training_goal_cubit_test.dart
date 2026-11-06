@@ -30,6 +30,29 @@ void main() {
     );
   });
 
+  test(
+    'com a lista vinda da tela do curso, não lê os arquivos de novo',
+    () async {
+      final cubit = TrainingGoalCubit(
+        repository: repository,
+        config: TrainingCourseConfig.pilares,
+        now: now,
+        initialResources: course(),
+      );
+      await cubit.load();
+      expect(cubit.view, isNotNull);
+      expect(repository.resourceReads, 0);
+      await cubit.close();
+    },
+  );
+
+  test('sem a lista pronta, lê uma vez', () async {
+    final cubit = make();
+    await cubit.load();
+    expect(repository.resourceReads, 1);
+    await cubit.close();
+  });
+
   test('sem objetivo, a tela convida a definir um', () async {
     final cubit = make();
     await cubit.load();
