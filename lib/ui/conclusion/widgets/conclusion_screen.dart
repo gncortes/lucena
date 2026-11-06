@@ -55,6 +55,7 @@ import '../../core/pace/pace_ui.dart';
 import '../../speedrun/widgets/speedrun_ui.dart';
 import '../view_models/conclusion_cubit.dart';
 import 'outcome_badge.dart';
+import 'resign_learn_list.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/theme/app_button.dart';
@@ -466,6 +467,16 @@ class _Body extends StatelessWidget {
       // de compartilhar.
       if (context.read<ConclusionCubit>().canPlayBestLine)
         _BestLine(state: state, conclusion: conclusion),
+      // Perdeu desistindo: rever a partida e treinar o final (P9 B).
+      if (conclusion.end?.reason == GameEndReason.resign &&
+          conclusion.result == ConclusionResult.lost &&
+          conclusion.run == null)
+        ?ResignLearnList.maybe(
+          gameId: (conclusion.game?.moves.isNotEmpty ?? false)
+              ? conclusion.gameId
+              : null,
+          lesson: state.finalLesson,
+        ),
       if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
       // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
       // curta, no toque na longa.
@@ -1852,6 +1863,18 @@ Widget? _outcome(
   }
   final fulfilled = conclusion.fulfilled;
   if (fulfilled == null) return null;
+  // Desistir não é falha de sistema: faixa cinza com a bandeira, sem o
+  // vermelho (P9 B).
+  if (!fulfilled &&
+      conclusion.result == ConclusionResult.lost &&
+      conclusion.end?.reason == GameEndReason.resign) {
+    return OutcomeStrip(
+      key: ConclusionKeys.goal,
+      mark: OutcomeMark.flag,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      title: l10n.resultNotFulfilled,
+    );
+  }
   return OutcomeStrip(
     key: ConclusionKeys.goal,
     mark: fulfilled ? OutcomeMark.check : OutcomeMark.cross,

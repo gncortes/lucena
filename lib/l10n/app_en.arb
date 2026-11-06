@@ -14215,5 +14215,30 @@
         "type": "int"
       }
     }
+  },
+  "conclusionLearnTitle": "Learn from it",
+  "@conclusionLearnTitle": {
+    "description": "Result of a game lost by resigning: heading of the list with review and train options."
+  },
+  "conclusionLearnGame": "View the game",
+  "@conclusionLearnGame": {
+    "description": "Result of a resigned game: item that opens the game review."
+  },
+  "conclusionLearnGameBody": "Move by move, with analysis",
+  "@conclusionLearnGameBody": {
+    "description": "Result of a resigned game: description of the view game item."
+  },
+  "conclusionLearnFinal": "Train this endgame",
+  "@conclusionLearnFinal": {
+    "description": "Result of a resigned game: item that opens the lesson of the endgame played."
+  },
+  "conclusionLearnFinalBody": "{endgame} · back to the lesson",
+  "@conclusionLearnFinalBody": {
+    "description": "Result of a resigned game: description of the train item, with the endgame name.",
+    "placeholders": {
+      "endgame": {
+        "type": "String"
+      }
+    }
   }
 }
