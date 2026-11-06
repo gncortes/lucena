@@ -39,6 +39,9 @@ abstract final class MotionKeys {
   /// A linha [i] da [ListaEmOrdem] (H-ANI-17).
   static Key itemDaLista(int i) => Key('motion.itemDaLista.$i');
 
+  /// O cartão do objetivo do Início entrando com pop (S6 do T85).
+  static const entradaDoObjetivo = Key('motion.entradaDoObjetivo');
+
   /// O passo [i] dos [PassosComConector] (H-ANI-17).
   static Key passo(int i) => Key('motion.passo.$i');
 

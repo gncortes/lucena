@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
@@ -270,8 +271,8 @@ void main() {
       'Escola, Jornada, Problemas e Estrelas', (tester) async {
     await pumpHome(tester, profile: learner);
 
-    // Aprender a jogar: a Jornada no cartão (H-INI-02).
-    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
+    // Aprender a jogar: a próxima aula da Escola no cartão (S6 do T85).
+    expect(text(tester, HomeKeys.heroLabel), 'Escola');
     expect(tiles(tester), [
       HomeKeys.schoolButton,
       HomeKeys.journeyButton,
@@ -282,7 +283,32 @@ void main() {
     expect(find.byKey(FeaturedKeys.homeSection), findsNothing);
   });
 
-  testWidgets('aprender a jogar, depois do Coco: a Jornada no cartão e a '
+  testWidgets('aprender a jogar: o cartão do objetivo é o primeiro do Início '
+      'e entra com pop', (tester) async {
+    Finder first() => find.descendant(
+      of: find.byKey(MotionKeys.itemDaLista(0)),
+      matching: find.byKey(HomeKeys.goalCard),
+    );
+
+    await pumpHome(tester, profile: learner);
+    expect(first(), findsOneWidget);
+    expect(text(tester, HomeKeys.goalTitle), 'The rook');
+    expect(action(tester), 'Continuar');
+    expect(find.byKey(MotionKeys.entradaDoObjetivo), findsOneWidget);
+  });
+
+  testWidgets('enfrentar desafios: a Jornada no cartão, sem a entrada do '
+      'objetivo', (tester) async {
+    await pumpHome(
+      tester,
+      profile: const UserProfile(rating: 800, goal: GoalPreference.challenge),
+    );
+
+    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
+    expect(find.byKey(MotionKeys.entradaDoObjetivo), findsNothing);
+  });
+
+  testWidgets('aprender a jogar, depois do Coco: a Escola no cartão e a '
       'Escola primeiro', (tester) async {
     await pumpHome(
       tester,
@@ -293,9 +319,8 @@ void main() {
       progress: await wonCoco(),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
-    expect(action(tester), 'Jogar');
-    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
+    expect(text(tester, HomeKeys.heroLabel), 'Escola');
+    expect(action(tester), 'Continuar');
     expect(tiles(tester), [
       HomeKeys.schoolButton,
       HomeKeys.journeyButton,

@@ -132,6 +132,9 @@ abstract final class LucenaMotion {
   /// A escala do balão ao começar a entrar.
   static const escalaDoBalao = .92;
 
+  /// A escala do cartão do objetivo ao começar a entrar no Início (S6).
+  static const escalaDoObjetivo = .92;
+
   /// Quanto o balão sobe ao entrar, em px.
   static const subidaDoBalao = 8.0;
 

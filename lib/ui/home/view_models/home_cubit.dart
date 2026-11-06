@@ -207,6 +207,9 @@ class HomeState {
       if (school != null) return HomeHero.school;
       return _journeyOr(null);
     }
+    // Aprender a jogar (S6 do T85): a próxima aula da Escola, quando a
+    // Escola está no app e ainda tem aula por fazer; senão, o que segue.
+    if (goal == GoalPreference.learn && school != null) return HomeHero.school;
     return switch (HomeSuggestion.goalPath(goal)) {
       HomePath.train => trainGoal != null ? HomeHero.train : null,
       HomePath.board => HomeHero.board,
@@ -338,11 +341,16 @@ class SchoolSummary {
     required this.total,
     required this.teacher,
     this.ongoingLessonId,
+    this.lessonTitle,
   });
 
   final int done;
   final int total;
   final Character? teacher;
+
+  /// O título da próxima aula (a começada ou a primeira por fazer), no idioma
+  /// da tela. Nulo: o cartão diz "Lição N".
+  final String? lessonTitle;
 
   /// A lição começada e não terminada: "continuar" abre direto nela.
   final String? ongoingLessonId;
@@ -521,7 +529,9 @@ class HomeCubit extends Cubit<HomeState> {
     final characters = await _characters.characters();
     final rating = await _rating.current();
     final history = await _rating.history();
-    final school = await _optionalContent(() => _schoolSummary(characters));
+    final school = await _optionalContent(
+      () => _schoolSummary(language, characters),
+    );
     final profile = await _profile.load();
     final saved = await _homeLayout?.load();
     final goal = profile.goal;
@@ -815,11 +825,18 @@ class HomeCubit extends Cubit<HomeState> {
 
   /// Para quem marcou "iniciante" e ainda não se formou, ou para quem tem
   /// uma lição começada (qualquer perfil): o cartão leva direto a ela.
-  Future<SchoolSummary?> _schoolSummary(List<Character> characters) async {
+  Future<SchoolSummary?> _schoolSummary(
+    String language,
+    List<Character> characters,
+  ) async {
     final profile = await _profile.load();
     final progress = await _school.load();
     final ongoing = progress.ongoing;
-    if (profile.level != RatingLevel.beginner && ongoing == null) return null;
+    if (profile.level != RatingLevel.beginner &&
+        profile.goal != GoalPreference.learn &&
+        ongoing == null) {
+      return null;
+    }
     final lessons = (await _lessons.course()).lessons;
     final completed = progress.completed;
     final done = lessons.where((lesson) => completed.contains(lesson.id));
@@ -828,11 +845,20 @@ class HomeCubit extends Cubit<HomeState> {
     for (final character in characters) {
       if (character.id == 'master') teacher = character;
     }
+    final next =
+        lessons.where((lesson) => lesson.id == ongoing?.lessonId).firstOrNull ??
+        lessons.where((lesson) => !completed.contains(lesson.id)).firstOrNull;
+    // O título da aula é do cartão do objetivo; os outros perfis seguem com
+    // "Lição N".
+    final texts = profile.goal == GoalPreference.learn
+        ? await _lessons.texts(language)
+        : null;
     return SchoolSummary(
       done: done.length,
       total: lessons.length,
       teacher: teacher,
       ongoingLessonId: ongoing?.lessonId,
+      lessonTitle: next == null ? null : texts?.plain('${next.id}.title'),
     );
   }
 

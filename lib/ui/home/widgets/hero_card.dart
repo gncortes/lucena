@@ -9,9 +9,12 @@ import '../../../domain/use_cases/training/home_course_card.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
+import '../../core/keys/motion_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/cartao_pressionavel.dart';
 import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/relogio_de_entrada.dart';
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -32,6 +35,7 @@ class HeroCard extends StatelessWidget {
   const HeroCard({
     required this.state,
     this.orientation = Side.white,
+    this.pop = false,
     super.key,
   });
 
@@ -41,14 +45,27 @@ class HeroCard extends StatelessWidget {
   final HomeState state;
   final Side orientation;
 
+  /// O cartão do objetivo do aprendiz: entra com fade e um pop curto (escala
+  /// de 0,92 a 1) em vez de só subir com a lista (S6 do T85).
+  final bool pop;
+
   @override
   Widget build(BuildContext context) {
     final data = _data(context);
     if (data == null) return const SizedBox.shrink();
-    final card = _HeroLayout(
+    Widget card = _HeroLayout(
       data: data,
       orientation: data.orientation ?? orientation,
     );
+    if (pop) {
+      card = EntradaNoTempo(
+        key: MotionKeys.entradaDoObjetivo,
+        inicio: Duration.zero,
+        duracao: LucenaMotion.itemDaLista,
+        escalaDe: LucenaMotion.escalaDoObjetivo,
+        child: card,
+      );
+    }
     return state.training == null
         ? card
         : KeyedSubtree(key: HomeKeys.courseCard, child: card);
@@ -68,7 +85,7 @@ class HeroCard extends StatelessWidget {
       ),
       HomeHero.school when school != null => _HeroData(
         label: l10n.homeHeroSchool,
-        title: l10n.homeHeroLesson(school.done + 1),
+        title: school.lessonTitle ?? l10n.homeHeroLesson(school.done + 1),
         progress: school.total == 0 ? 0 : school.done / school.total,
         action: l10n.homeContinue,
         avatar: school.teacher,

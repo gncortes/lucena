@@ -3,6 +3,7 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
+import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/home_shortcut.dart';
 import 'package:lucena/domain/models/onboarding.dart';
@@ -40,6 +41,7 @@ void main() {
     EndgameTrail? trail,
     FakeRatingRepository? ratings,
     FakePlacementRepository? placement,
+    FakeSchoolProgressRepository? schoolProgress,
   }) async {
     final cubit = HomeCubit(
       journey: FakeJourneyRepository(),
@@ -50,7 +52,7 @@ void main() {
       characters: FakeCharacterRepository(),
       rating: ratings ?? FakeRatingRepository(),
       lessons: FakeLessonRepository(),
-      school: FakeSchoolProgressRepository(),
+      school: schoolProgress ?? FakeSchoolProgressRepository(),
       profile: FakeProfileRepository(
         UserProfile(nickname: 'Ana', rating: rating, goal: goal),
       ),
@@ -126,18 +128,58 @@ void main() {
     expect(state.shortcuts.first, HomeShortcut.train);
   });
 
-  test('aprender a jogar sem a Escola: a Jornada no cartão', () async {
-    await playJourney();
+  test('aprender a jogar: o cartão do objetivo é a próxima aula da Escola '
+      '(S6 do T85)', () async {
     final state = await load(GoalPreference.learn, rating: 800);
 
-    expect(state.hero, HomeHero.journey);
-    expect(state.shortcuts, [
-      HomeShortcut.school,
-      HomeShortcut.journey,
-      HomeShortcut.race,
-      HomeShortcut.stars,
-    ]);
+    expect(state.hero, HomeHero.school);
+    expect(state.school!.lessonTitle, 'The rook');
+    expect(state.school!.done, 0);
   });
+
+  test(
+    'aprender a jogar: outros objetivos não ganham o cartão da Escola',
+    () async {
+      for (final goal in [
+        GoalPreference.train,
+        GoalPreference.explore,
+        GoalPreference.challenge,
+      ]) {
+        expect(
+          (await load(goal, rating: 800)).hero,
+          isNot(HomeHero.school),
+          reason: '$goal',
+        );
+      }
+    },
+  );
+
+  test(
+    'aprender a jogar com a Escola concluída: a Jornada no cartão',
+    () async {
+      await playJourney();
+      final state = await load(
+        GoalPreference.learn,
+        rating: 800,
+        schoolProgress: FakeSchoolProgressRepository(
+          SchoolProgress(
+            completed: {
+              for (final lesson in FakeLessonRepository.sample.lessons)
+                lesson.id,
+            },
+          ),
+        ),
+      );
+
+      expect(state.hero, HomeHero.journey);
+      expect(state.shortcuts, [
+        HomeShortcut.school,
+        HomeShortcut.journey,
+        HomeShortcut.race,
+        HomeShortcut.stars,
+      ]);
+    },
+  );
 
   test('aprender a jogar antes de vencer o Coco: os mesmos atalhos', () async {
     final state = await load(GoalPreference.learn, rating: 800);
