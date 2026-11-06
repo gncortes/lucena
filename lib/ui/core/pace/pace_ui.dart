@@ -93,7 +93,7 @@ class _PaceSheetState extends State<_PaceSheet> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (final MapEntry(key: category, value: times)
-                      in SpeedrunPaces.groups.entries) ...[
+                      in SpeedrunPaces.groupsCalmToFast.entries) ...[
                     const SizedBox(height: AppSpacing.lg),
                     Row(
                       children: [
@@ -109,6 +109,10 @@ class _PaceSheetState extends State<_PaceSheet> {
                             fontWeight: AppWeight.strong,
                           ),
                         ),
+                        if (category == SpeedrunPaces.recommendedCategory) ...[
+                          const SizedBox(width: AppSpacing.sm),
+                          const _RecommendedBadge(),
+                        ],
                       ],
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -155,6 +159,39 @@ class _PaceSheetState extends State<_PaceSheet> {
   }
 
   static IconData _icon(PaceCategory category) => paceIcon(category);
+}
+
+/// O selo "Recomendado" ao lado da categoria do ritmo padrão (canvas
+/// SugP2RitmoA: 12/16 em negrito, raio 8, 2 × 8 de respiro).
+class _RecommendedBadge extends StatelessWidget {
+  const _RecommendedBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return DecoratedBox(
+      key: PaceKeys.recommended,
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.small),
+      ),
+      child: Padding(
+        // 2 de respiro vertical: medida do selo no artboard SugP2RitmoA.
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: 2,
+        ),
+        child: Text(
+          context.l10n.paceRecommended,
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontWeight: AppWeight.strong,
+            color: colors.onPrimaryContainer,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// O ícone de cada categoria de ritmo.

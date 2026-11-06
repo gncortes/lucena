@@ -2741,5 +2741,20 @@
   "conclusionLearnGame": "[Vîéw thé ĝåmé one two]",
   "conclusionLearnGameBody": "[Mövé bý mövé, wîth åñålýšîš one two three]",
   "conclusionLearnFinal": "[Tŕåîñ thîš éñdĝåmé one two]",
-  "conclusionLearnFinalBody": "[{endgame} · båçk tö thé léššöñ one two three]"
+  "conclusionLearnFinalBody": "[{endgame} · båçk tö thé léššöñ one two three]",
+  "paceRecommended": "[Ŕéçömméñdéd one two]",
+  "raceIntroLine": "[Ýöû plåý tö çhéçkmåté; thé öppöñéñt ŕéplîéš öñ îtš öwñ. one two three four five]",
+  "raceFactTimeRest": "[tö šölvé åš måñý åš ýöû çåñ one two three]",
+  "raceFactErrorsLead": "{count, plural, =1{[1 mîštåké one]} other{[{count} mîštåkéš one two]}}",
+  "raceFactErrorsRest": "[åñd thé ŕûñ éñdš one two]",
+  "raceFactLevel": "[Éåçh çöŕŕéçt åñšwéŕ ŕåîšéš thé lévél one two three four]",
+  "raceHowTitle": "[Höw ît wöŕkš one two]",
+  "raceHowGotIt": "[Ĝöt ît one]",
+  "raceEndErrors": "[Thŕéé mîštåkéš åñd thé ŕûñ éñdéd one two three]",
+  "raceEndTime": "[Tîmé îš ûp one]",
+  "raceEndQuit": "[Ýöû léft thé ŕûñ one two]",
+  "raceCountedTitle": "[Whåt çöûñtéd one two]",
+  "raceCountedCorrects": "[{count, plural, =1{1 çöŕŕéçt} other{{count} çöŕŕéçt}}. Ýöûŕ béšt îñ {minutes} mîñ: {record} one two three four five six seven eight]",
+  "raceCountedLevel": "[Ýöû ŕéåçhéd lévél {level} one two three]",
+  "raceCountedPerformance": "[Ýöû éñtéŕéd ýöûŕ péŕ-éñdîñĝ péŕföŕmåñçé: {done} öf {total} one two three four five]"
 }

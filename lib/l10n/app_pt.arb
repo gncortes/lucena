@@ -3045,5 +3045,20 @@
   "conclusionLearnGame": "Ver a partida",
   "conclusionLearnGameBody": "Lance a lance, com a análise",
   "conclusionLearnFinal": "Treinar este final",
-  "conclusionLearnFinalBody": "{endgame} · volte à lição"
+  "conclusionLearnFinalBody": "{endgame} · volte à lição",
+  "paceRecommended": "Recomendado",
+  "raceIntroLine": "Você joga até o mate; o adversário responde sozinho.",
+  "raceFactTimeRest": "para resolver o máximo",
+  "raceFactErrorsLead": "{count, plural, =0{0 erros} =1{1 erro} other{{count} erros}}",
+  "raceFactErrorsRest": "e a corrida acaba",
+  "raceFactLevel": "Cada acerto sobe o nível",
+  "raceHowTitle": "Como funciona",
+  "raceHowGotIt": "Entendi",
+  "raceEndErrors": "Três erros e a corrida acabou",
+  "raceEndTime": "O tempo acabou",
+  "raceEndQuit": "Você saiu da corrida",
+  "raceCountedTitle": "O que contou",
+  "raceCountedCorrects": "{count, plural, =0{0 acertos} =1{1 acerto} other{{count} acertos}}. Seu recorde em {minutes} min: {record}",
+  "raceCountedLevel": "Chegou ao nível {level}",
+  "raceCountedPerformance": "Entrou no seu desempenho por final: {done} de {total}"
 }

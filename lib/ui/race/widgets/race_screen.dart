@@ -12,6 +12,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/race_cubit.dart';
 import 'race_game_view.dart';
+import 'race_how_sheet.dart';
 import 'race_intro_view.dart';
 import 'race_result_view.dart';
 import 'race_review_view.dart';
@@ -124,7 +125,23 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
             key: RaceKeys.reviewTitle,
           ),
         );
-      case RacePhase.loading || RacePhase.intro || RacePhase.playing:
+      case RacePhase.intro:
+        // O (i) abre as regras completas (canvas SugP2CorridaIntroA).
+        return LucenaAppBar(
+          centerTitle: true,
+          title: Text(l10n.raceTitle),
+          actions: [
+            IconButton(
+              key: RaceKeys.howButton,
+              icon: const Icon(Icons.info_outline),
+              tooltip: l10n.raceHowTitle,
+              onPressed: () => unawaited(
+                showRaceHowSheet(context, minutes: state.duration.minutes),
+              ),
+            ),
+          ],
+        );
+      case RacePhase.loading || RacePhase.playing:
         return LucenaAppBar(title: Text(l10n.raceTitle));
     }
   }

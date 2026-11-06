@@ -43,6 +43,24 @@ abstract final class SpeedrunPaces {
       ],
   };
 
+  /// Os grupos do mais calmo ao mais rápido, a ordem da folha "Escolha o
+  /// ritmo" (canvas SugP2RitmoA). [groups] segue a ordem do chess.com.
+  static Map<PaceCategory, List<TimeControl>> get groupsCalmToFast => {
+    for (final category in recommendedOrder)
+      category: groups[category] ?? const [],
+  };
+
+  /// A ordem das categorias na folha de ritmo: rápido, blitz, bullet, ultra.
+  static const recommendedOrder = [
+    PaceCategory.rapid,
+    PaceCategory.blitz,
+    PaceCategory.bullet,
+    PaceCategory.ultraBullet,
+  ];
+
+  /// A categoria marcada "Recomendado" na folha: a do ritmo [standard].
+  static PaceCategory get recommendedCategory => PaceCategory.of(standard);
+
   static const _separator = '@';
 
   /// O id do speedrun [baseId] no ritmo [time].

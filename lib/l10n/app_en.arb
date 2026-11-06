@@ -11209,7 +11209,9 @@
   "@licaoTesteFalaAbaixoTemas": {
     "description": "Lesson exercise and chapter test copy.",
     "placeholders": {
-      "temas": { "type": "String" }
+      "temas": {
+        "type": "String"
+      }
     }
   },
   "licaoTesteFalaMuitoAbaixo": "I strongly recommend reviewing this chapter's lessons before moving on.",
@@ -11220,15 +11222,21 @@
   "@licaoTesteFalaMuitoAbaixoTemas": {
     "description": "Lesson exercise and chapter test copy.",
     "placeholders": {
-      "temas": { "type": "String" }
+      "temas": {
+        "type": "String"
+      }
     }
   },
   "licaoTemasUltimo": "{lista} and {ultimo}",
   "@licaoTemasUltimo": {
     "description": "Lesson exercise and chapter test copy.",
     "placeholders": {
-      "lista": { "type": "String" },
-      "ultimo": { "type": "String" }
+      "lista": {
+        "type": "String"
+      },
+      "ultimo": {
+        "type": "String"
+      }
     }
   },
   "licaoExercicioDicaSeta": "Follow the arrow on the board.",
@@ -14281,6 +14289,95 @@
     "placeholders": {
       "endgame": {
         "type": "String"
+      }
+    }
+  },
+  "paceRecommended": "Recommended",
+  "@paceRecommended": {
+    "description": "Badge next to the pace category the app suggests (Blitz) in the pace sheet."
+  },
+  "raceIntroLine": "You play to checkmate; the opponent replies on its own.",
+  "@raceIntroLine": {
+    "description": "Intro subtitle line under the heading."
+  },
+  "raceFactTimeRest": "to solve as many as you can",
+  "@raceFactTimeRest": {
+    "description": "Intro fact: text after the bold duration (\"3 minutos\")."
+  },
+  "raceFactErrorsLead": "{count, plural, =1{1 mistake} other{{count} mistakes}}",
+  "@raceFactErrorsLead": {
+    "description": "Intro fact: bold lead with the error limit.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceFactErrorsRest": "and the run ends",
+  "@raceFactErrorsRest": {
+    "description": "Intro fact: text after the bold error limit."
+  },
+  "raceFactLevel": "Each correct answer raises the level",
+  "@raceFactLevel": {
+    "description": "Intro fact: difficulty rises with each correct answer."
+  },
+  "raceHowTitle": "How it works",
+  "@raceHowTitle": {
+    "description": "Race: title of the rules sheet and tooltip of the (i) button."
+  },
+  "raceHowGotIt": "Got it",
+  "@raceHowGotIt": {
+    "description": "Race: button that closes the rules sheet."
+  },
+  "raceEndErrors": "Three mistakes and the run ended",
+  "@raceEndErrors": {
+    "description": "Race result subtitle when the run ended by errors."
+  },
+  "raceEndTime": "Time is up",
+  "@raceEndTime": {
+    "description": "Race result subtitle when the run ended by time."
+  },
+  "raceEndQuit": "You left the run",
+  "@raceEndQuit": {
+    "description": "Race result subtitle when the player left the run."
+  },
+  "raceCountedTitle": "What counted",
+  "@raceCountedTitle": {
+    "description": "Race result: title of the card that sums up the run."
+  },
+  "raceCountedCorrects": "{count, plural, =1{1 correct} other{{count} correct}}. Your best in {minutes} min: {record}",
+  "@raceCountedCorrects": {
+    "description": "Race result card: corrects of this run and the record for the chosen duration.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      },
+      "record": {
+        "type": "int"
+      }
+    }
+  },
+  "raceCountedLevel": "You reached level {level}",
+  "@raceCountedLevel": {
+    "description": "Race result card: hardest level solved.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "raceCountedPerformance": "You entered your per-ending performance: {done} of {total}",
+  "@raceCountedPerformance": {
+    "description": "Race result card: progress toward the per-ending performance.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
       }
     }
   }
