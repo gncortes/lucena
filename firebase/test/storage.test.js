@@ -48,3 +48,16 @@ describe('avatar users/{uid}/avatar.jpg', () => {
     await assertFails(outro.put(bytes(1024), { contentType: 'image/jpeg' }));
   });
 });
+
+describe('content/releases/{release}/** (H-R5-38)', () => {
+  test('quem tem conta lê o lançamento; sem conta não; ninguém grava', async () => {
+    await env.withSecurityRulesDisabled((ctx) =>
+      ctx.storage().ref('content/releases/r2/manifest.json').put(bytes(10), { contentType: 'application/json' }),
+    );
+    await assertSucceeds(env.authenticatedContext('ana').storage().ref('content/releases/r2/manifest.json').getDownloadURL());
+    await assertFails(env.unauthenticatedContext().storage().ref('content/releases/r2/manifest.json').getDownloadURL());
+    await assertFails(
+      env.authenticatedContext('ana').storage().ref('content/releases/r9/manifest.json').put(bytes(10), { contentType: 'application/json' }),
+    );
+  });
+});

@@ -10,7 +10,16 @@ import { onCall } from 'firebase-functions/https';
 import { defineString } from 'firebase-functions/params';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
+import { getStorage } from 'firebase-admin/storage';
 import { decidirEntregaCore, marcarFonteConferidaCore } from './conteudo/entregas';
+import { leitorDoStorage } from './conteudo/storage';
+import {
+  conferirVersaoCore,
+  pedirCorrecaoCore,
+  publicarVersaoCore,
+  reverterVersaoCore,
+  type DepsVersoes,
+} from './conteudo/versoes';
 import { FUSO } from './comum/config';
 import { analyticsDoBigQuery, atencaoDoAnalytics, ativosDoBigQuery } from './fechamento/bigquery';
 import { ativosPeriodoCore } from './fechamento/periodo';
@@ -83,6 +92,46 @@ export const marcarFonteConferida = onCall(async (req) => {
   const db = getFirestore();
   const admin = await exigeAdmin(db, req.auth?.uid);
   return marcarFonteConferidaCore({ db, agora: new Date() }, admin, req.data);
+});
+
+let bucketDeTeste: string | null = null;
+
+/** Só para os testes no emulador: o bucket do Storage com o pacote de fixture. */
+export function usarBucket(nome: string | null): void {
+  bucketDeTeste = nome;
+}
+
+function depsVersoes(): DepsVersoes {
+  const bucket = bucketDeTeste ? getStorage().bucket(bucketDeTeste) : getStorage().bucket();
+  return { db: getFirestore(), conteudo: leitorDoStorage(bucket), agora: new Date() };
+}
+
+/** H-R5-38 · Publicar uma revisão no app de teste ou no dos alunos (`{id, destino}`). */
+export const publicarVersao = onCall(async (req) => {
+  const d = depsVersoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return publicarVersaoCore(d, admin, req.data);
+});
+
+/** H-R5-38 · "Marcar como conferida" no app de teste (`{id}`). */
+export const conferirVersao = onCall(async (req) => {
+  const d = depsVersoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return conferirVersaoCore(d, admin, req.data);
+});
+
+/** H-R5-38 · Voltar o app dos alunos para uma versão que já esteve no ar (`{id}`). */
+export const reverterVersao = onCall(async (req) => {
+  const d = depsVersoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return reverterVersaoCore(d, admin, req.data);
+});
+
+/** H-R5-38 · Pedir a correção de uma fala (`{chave, revisao, problema, texto?, numero?}`, R16). */
+export const pedirCorrecao = onCall(async (req) => {
+  const d = depsVersoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return pedirCorrecaoCore(d, admin, req.data);
 });
 
 /** Dataset do export do Analytics no BigQuery (`analytics_<id da propriedade>`), em `functions/.env.<projeto>`. */

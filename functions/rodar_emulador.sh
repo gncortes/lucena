@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Testes das Functions no emulador (Auth e Firestore). O emulador pede Java 21
+# Testes das Functions no emulador (Auth, Firestore e Storage). O emulador pede Java 21
 # ou mais novo: se o java do PATH for antigo, usa o do Android Studio.
 set -euo pipefail
 pasta="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,5 +15,5 @@ if [ "${versao:-0}" -lt 21 ]; then
 fi
 cd "$pasta"
 npm run build
-exec firebase emulators:exec --project demo-lucena --only auth,firestore \
+exec firebase emulators:exec --project demo-lucena --only auth,firestore,storage \
   --config ../firebase.json "node --test --test-concurrency=1 lib/test/emulador/*.emu.js"
