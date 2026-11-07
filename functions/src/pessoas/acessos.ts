@@ -10,7 +10,7 @@ import { CURSOS, cursoExiste } from '../comum/cursos';
 export interface Mensageiro {
   send(mensagem: {
     token: string;
-    notification: { title: string; body: string };
+    notification?: { title: string; body: string };
     data: Record<string, string>;
     android?: { priority: 'high' | 'normal' };
   }): Promise<string>;
@@ -102,7 +102,7 @@ export function lerPedidoDarCurso(data: unknown, agora: Date): PedidoDarCurso {
   };
 }
 
-async function pessoaDoAuth(auth: Auth, uid: string) {
+export async function pessoaDoAuth(auth: Auth, uid: string) {
   try {
     return await auth.getUser(uid);
   } catch (e) {
@@ -111,6 +111,13 @@ async function pessoaDoAuth(auth: Auth, uid: string) {
     }
     throw e;
   }
+}
+
+/** E-mail mascarado para o aviso de presente: "ra***@gmail.com" (o app confere a conta). */
+export function mascararEmail(email: string | undefined): string {
+  if (!email || !email.includes('@')) return '';
+  const [nome, dominio] = email.split('@');
+  return `${nome.slice(0, 2)}***@${dominio}`;
 }
 
 /** O texto do aviso de presente (R5 §7). */
@@ -169,7 +176,7 @@ export async function darCursoCore(
     return device.data();
   });
 
-  const push = await enviarPresente(deps, pedido, device, registroRef.id);
+  const push = await enviarPresente(deps, pedido, device, registroRef.id, mascararEmail(user.email));
   return { registroId: registroRef.id, push };
 }
 
@@ -178,6 +185,7 @@ async function enviarPresente(
   pedido: PedidoDarCurso,
   device: DocumentData | undefined,
   registroId: string,
+  conta: string,
 ): Promise<ResultadoPush> {
   const { db, mensageiro, agora } = deps;
   const registroRef = db.doc(`acessos/${pedido.uid}/registro/${registroId}`);
@@ -191,10 +199,11 @@ async function enviarPresente(
     return 'semPush';
   }
   try {
+    // Data-only (Dúvida 8): o app monta a notificação e confere uid/conta antes de mostrar.
+    const { title, body } = textoDoPresente(pedido.curso);
     await mensageiro.send({
       token,
-      notification: textoDoPresente(pedido.curso),
-      data: { tipo: 'presente', curso: pedido.curso },
+      data: { tipo: 'presente', curso: pedido.curso, titulo: title, texto: body, pushId: registroId, uid: pedido.uid, conta },
       android: { priority: 'high' },
     });
   } catch (e) {
