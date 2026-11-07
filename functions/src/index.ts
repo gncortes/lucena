@@ -7,7 +7,12 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
 import { onCall } from 'firebase-functions/https';
+import { defineString } from 'firebase-functions/params';
+import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
+import { FUSO } from './comum/config';
+import { analyticsDoBigQuery } from './fechamento/bigquery';
+import { atualizarHoje, fecharDia, type DepsFechamento } from './fechamento/fechar';
 import { darCursoCore, desfazerCore, revogarCursoCore, type Deps, type Mensageiro } from './pessoas/acessos';
 import { buscarPessoaPor, montarFicha } from './pessoas/ficha';
 
@@ -62,4 +67,26 @@ export const desfazer = onCall(async (req) => {
   const d = deps();
   const admin = await exigeAdmin(d.db, req.auth?.uid);
   return desfazerCore(d, admin, req.data);
+});
+
+/** Dataset do export do Analytics no BigQuery (`analytics_<id da propriedade>`), em `functions/.env.<projeto>`. */
+const DATASET_ANALYTICS = defineString('ANALYTICS_DATASET', {
+  description: 'Dataset do export do GA4 no BigQuery, ex.: analytics_123456789',
+});
+
+function depsFechamento(): DepsFechamento {
+  return { db: getFirestore(), analytics: analyticsDoBigQuery(DATASET_ANALYTICS.value()), agora: new Date() };
+}
+
+/** H-R5-34 · Fecha ontem às 03:00 (Brasília); sem o export, tenta de hora em hora até 14:00 (R18). */
+export const fechamentoDia = onSchedule(
+  { schedule: '0 3-14 * * *', timeZone: FUSO, timeoutSeconds: 540, retryCount: 0 },
+  async () => {
+    await fecharDia(depsFechamento());
+  },
+);
+
+/** H-R5-34 · Lote de hora em hora: só `painel/hoje`. */
+export const painelHoje = onSchedule({ schedule: '5 * * * *', timeZone: FUSO, retryCount: 0 }, async () => {
+  await atualizarHoje(depsFechamento());
 });
