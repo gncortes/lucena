@@ -2,6 +2,7 @@
 // O dia fechado não muda: o documento é criado numa transação que desiste se ele já existe.
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { CURSOS } from '../comum/cursos';
+import { decisoesRecentes } from '../conteudo/entregas';
 import { lerPontosAtencao, type FonteAtencao, type PontosAtencao } from './atencao';
 import type { LinhaEvento } from './consultas';
 import { diaLocal, horaLocal, inicioDoDia, somarDias, ultimoDoMes } from './datas';
@@ -116,6 +117,8 @@ export async function fecharDia(d: DepsFechamento): Promise<ResultadoFechamento>
     }
   }
 
+  const decisoes = await decisoesRecentes(d.db, dia);
+
   return d.db.runTransaction(async (tx) => {
     if ((await tx.get(refDia)).exists) return { dia, estado: 'jaFechado' as const };
     const anteriores = await tx.get(
@@ -142,7 +145,7 @@ export async function fecharDia(d: DepsFechamento): Promise<ResultadoFechamento>
 
     tx.create(refDia, resumo);
     tx.set(refMes, mes);
-    tx.set(d.db.doc(`relatorios/${dia}`), { ...relatorio, cortado });
+    tx.set(d.db.doc(`relatorios/${dia}`), { ...relatorio, decisoesRecentes: decisoes, cortado });
     tx.set(d.db.doc('painel/fechamento'), {
       dia,
       estado,

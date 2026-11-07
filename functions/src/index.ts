@@ -10,6 +10,7 @@ import { onCall } from 'firebase-functions/https';
 import { defineString } from 'firebase-functions/params';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
+import { decidirEntregaCore, marcarFonteConferidaCore } from './conteudo/entregas';
 import { FUSO } from './comum/config';
 import { analyticsDoBigQuery, atencaoDoAnalytics, ativosDoBigQuery } from './fechamento/bigquery';
 import { ativosPeriodoCore } from './fechamento/periodo';
@@ -68,6 +69,20 @@ export const desfazer = onCall(async (req) => {
   const d = deps();
   const admin = await exigeAdmin(d.db, req.auth?.uid);
   return desfazerCore(d, admin, req.data);
+});
+
+/** H-R5-37 · Aprovar ou reprovar um item da Caixa (`{id, decisao, motivo?, frase?, agendadoPara?}`, R9/R13). */
+export const decidirEntrega = onCall(async (req) => {
+  const db = getFirestore();
+  const admin = await exigeAdmin(db, req.auth?.uid);
+  return decidirEntregaCore({ db, agora: new Date() }, admin, req.data);
+});
+
+/** H-R5-37 · Marcar a fonte `indice` do item como conferida (`{id, indice}`, R13). */
+export const marcarFonteConferida = onCall(async (req) => {
+  const db = getFirestore();
+  const admin = await exigeAdmin(db, req.auth?.uid);
+  return marcarFonteConferidaCore({ db, agora: new Date() }, admin, req.data);
 });
 
 /** Dataset do export do Analytics no BigQuery (`analytics_<id da propriedade>`), em `functions/.env.<projeto>`. */

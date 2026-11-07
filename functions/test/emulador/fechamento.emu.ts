@@ -51,6 +51,8 @@ describe('fechamentoDia', () => {
     await acesso('b', '2026-11-25T16:00:00Z', { origem: 'presente', plano: 'vitalicio' });
     await acesso('c', '2026-11-25T17:00:00Z', { origem: 'presente', plano: 'vitalicio', revogadoEm: Timestamp.now() });
     await acesso('d', '2026-11-26T03:30:00Z', { origem: 'compra', plano: 'mensal' }); // já é dia 26 em Brasília
+    await db().collection('decisoes').add({ dia: '2026-11-24', entregaId: 'e1', acao: 'reprovar', motivo: 'temaRepetido' });
+    await db().collection('decisoes').add({ dia: '2026-11-18', entregaId: 'e0', acao: 'reprovar', motivo: 'outro' });
 
     assert.deepEqual(await fecharDia(em('2026-11-26T06:00:00Z')), { dia: '2026-11-25', estado: 'ok' });
     const dia = (await ler('resumosDia/2026-11-25'))!;
@@ -62,6 +64,10 @@ describe('fechamentoDia', () => {
     const rel = (await ler('relatorios/2026-11-25'))!;
     assert.equal(rel.acum, undefined);
     assert.equal(rel.cortado, false);
+    assert.deepEqual(
+      rel.decisoesRecentes.map((x: { entregaId: string }) => x.entregaId),
+      ['e1'],
+    ); // H-R5-37: só os 7 dias até o dia fechado
     assert.equal((await ler('painel/fechamento'))!.estado, 'ok');
 
     const antes = { dia, mes: await ler('resumosMes/2026-11') };
