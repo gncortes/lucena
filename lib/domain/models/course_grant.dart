@@ -116,19 +116,22 @@ final class CourseGrants {
   }
 
   /// "Curso liberado" ainda não apareceu para este acesso: nunca viu, ou o
-  /// curso foi dado de novo depois da última vez (H-R5-62).
+  /// curso foi dado de novo depois da última vez (H-R5-62). Compara só datas
+  /// do servidor: [seen] guarda o `dadoEm` do acesso visto (r2).
   bool unseen(String courseId, DateTime now) {
     final grant = active(courseId, now);
     if (grant == null) return false;
-    final seenAt = seen[courseId];
-    if (seenAt == null) return true;
+    final seenGivenAt = seen[courseId];
+    if (seenGivenAt == null) return true;
     final givenAt = grant.givenAt;
-    return givenAt != null && seenAt.isBefore(givenAt);
+    return givenAt != null && seenGivenAt.isBefore(givenAt);
   }
 
-  CourseGrants markSeen(String courseId, DateTime at) => CourseGrants(
+  /// Marca visto o acesso de agora: guarda o `dadoEm` dele, não o relógio do
+  /// aparelho, que pode estar atrasado. [now] só vale para acesso sem data.
+  CourseGrants markSeen(String courseId, DateTime now) => CourseGrants(
     courses: courses,
-    seen: {...seen, courseId: at},
+    seen: {...seen, courseId: courses[courseId]?.givenAt ?? now},
     blocked: blocked,
     blockedUntil: blockedUntil,
   );

@@ -343,6 +343,46 @@ void main() {
       );
     });
 
+    // Bug r2: o visto vinha do relógio do aparelho e o dadoEm do servidor;
+    // com o celular atrasado, o curso seguia "não visto" e reabria.
+    test('relógio do aparelho atrasado: visto fica visto', () async {
+      final given = DateTime.utc(2026, 11, 6, 12, 0, 0, 300);
+      now.value = DateTime.utc(2026, 11, 6, 12);
+      service.docs['u1'] = doc(given: given);
+      await grants.start();
+      await settle();
+      await grants.markSeen(pilaresCourseId);
+      await settle();
+      expect(grants.current.unseen(pilaresCourseId, now()), isFalse);
+      // O snapshot do servidor com o visto gravado também não reabre.
+      expect(service.seenWrites.single.$3, given);
+      service.put('u1', {
+        ...doc(given: given),
+        'vistos': {pilaresCourseId: service.seenWrites.single.$3},
+      });
+      await settle();
+      expect(grants.current.unseen(pilaresCourseId, now()), isFalse);
+    });
+
+    test('desfazer a revogação mantém o dadoEm: não reabre', () async {
+      final given = DateTime.utc(2026, 11, 6, 12, 0, 0, 300);
+      service.docs['u1'] = doc(given: given);
+      await grants.start();
+      await settle();
+      await grants.markSeen(pilaresCourseId);
+      await settle();
+      final seen = {pilaresCourseId: service.seenWrites.single.$3};
+      service.put('u1', {
+        ...doc(given: given, revoked: DateTime.utc(2026, 11, 6, 13)),
+        'vistos': seen,
+      });
+      await settle();
+      now.value = DateTime.utc(2026, 11, 6, 14);
+      service.put('u1', {...doc(given: given), 'vistos': seen});
+      await settle();
+      expect(grants.current.unseen(pilaresCourseId, now()), isFalse);
+    });
+
     test('o servidor sem o visto não desfaz o local', () async {
       service.docs['u1'] = doc();
       await grants.start();

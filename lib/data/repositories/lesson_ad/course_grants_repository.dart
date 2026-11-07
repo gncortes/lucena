@@ -161,8 +161,8 @@ final class CloudCourseGrantsRepository implements CourseGrantsRepository {
   Future<void> markSeen(String courseId) async {
     final uid = _uid;
     if (uid == null || !_current.courses.containsKey(courseId)) return;
-    final at = _now();
-    _emit(_current.markSeen(courseId, at));
+    _emit(_current.markSeen(courseId, _now()));
+    final at = _current.seen[courseId]!;
     await _preferences.setString(cacheKey(uid), jsonEncode(_current.toJson()));
     // Sem rede, o Firestore guarda na fila; a tela não espera.
     unawaited(

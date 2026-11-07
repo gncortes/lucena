@@ -9,7 +9,8 @@ abstract interface class CourseGrantsService {
   /// existe. Sem rede, a cópia do Firestore (se houver) e depois o servidor.
   Stream<Map<String, Object?>?> watch(String uid);
 
-  /// Grava `vistos.{courseId}`. Só funciona com o documento já criado pela
+  /// Grava `vistos.{courseId}` com [at], o `dadoEm` do acesso visto (nunca o
+  /// relógio do aparelho). Só funciona com o documento já criado pela
   /// Function (as regras recusam criar).
   Future<void> markSeen(String uid, String courseId, DateTime at);
 }

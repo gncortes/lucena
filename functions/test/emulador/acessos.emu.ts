@@ -133,6 +133,7 @@ describe('revogarCurso e desfazer', () => {
       curso: 'pilares',
       motivo: 'Dado por engano',
     });
+    const dadoEm = (await acessos('rafael'))!.cursos.pilares.dadoEm;
     assert.ok((await acessos('rafael'))!.cursos.pilares.revogadoEm);
     assert.equal(
       await codigoDoErro(chamar(revogarCurso, 'admin', { uid: 'rafael', curso: 'pilares', motivo: 'de novo' })),
@@ -143,6 +144,8 @@ describe('revogarCurso e desfazer', () => {
     const a = (await acessos('rafael'))!.cursos.pilares;
     assert.equal(a.revogadoEm, undefined);
     assert.equal(a.motivoRevogacao, undefined);
+    // O app compara o visto com o dadoEm: mudar a data reabriria o Curso liberado.
+    assert.ok(a.dadoEm.isEqual(dadoEm));
     assert.equal(
       await codigoDoErro(chamar(desfazer, 'admin', { uid: 'rafael', registroId: rev.registroId })),
       'failed-precondition',
