@@ -28,6 +28,14 @@ import { darCursoCore, desfazerCore, revogarCursoCore, type Deps, type Mensageir
 import { bloquearContaCore, desbloquearContaCore } from './pessoas/bloqueio';
 import { buscarPessoaPor, montarFicha } from './pessoas/ficha';
 import { playNaoConfigurada } from './promocoes/play';
+import { conferirCompraCore } from './compras/compras';
+import {
+  playComprasNaoConfigurada,
+  playComprasSimulada,
+  playSimuladaNoAmbiente,
+  type PlayCompras,
+} from './compras/play';
+import { PRODUTO } from './promocoes/regras';
 import {
   criarPromocaoCore,
   editarPromocaoCore,
@@ -268,3 +276,22 @@ export const validarCupom = onCall(async (req) => validarCupomCore(depsPromocoes
 
 /** H-R5-74 · App: segura a vaga do link por 30 min antes de comprar (`{codigo}`, R24). */
 export const reservarVaga = onCall(async (req) => reservarVagaCore(depsPromocoes(), req.auth?.uid, req.data));
+
+let playComprasDeTeste: PlayCompras | null = null;
+// Dev e emulador: Play simulada por tokens `teste:` (decisão do Gabriel); produção: a real, quando ligada.
+const playComprasDoAmbiente: PlayCompras = playSimuladaNoAmbiente() ? playComprasSimulada(PRODUTO) : playComprasNaoConfigurada;
+
+/** Só para os testes: troca a conferência de compras da Play (null volta à do ambiente). */
+export function usarPlayCompras(p: PlayCompras | null): void {
+  playComprasDeTeste = p;
+}
+
+/** H-R5-3A · App: confere a compra pelo token (`{token}`, R24) e libera o curso. */
+export const conferirCompra = onCall(async (req) => {
+  const p = depsPromocoes();
+  return conferirCompraCore(
+    { db: p.db, play: playComprasDeTeste ?? playComprasDoAmbiente, ofertas: p.play, agora: p.agora },
+    req.auth?.uid,
+    req.data,
+  );
+});
