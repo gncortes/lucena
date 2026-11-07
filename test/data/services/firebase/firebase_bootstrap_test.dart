@@ -22,6 +22,65 @@ void main() {
     );
   });
 
+  group('Emulator Suite do QA', () {
+    test('desligado por padrão e nunca no prod', () {
+      expect(FirebaseEmulador.ligado(define: false), isFalse);
+      expect(
+        FirebaseEmulador.ligado(define: true, ambiente: Ambiente.dev),
+        isTrue,
+      );
+      expect(
+        FirebaseEmulador.ligado(define: true, ambiente: Ambiente.prod),
+        isFalse,
+      );
+      expect(FirebaseEmulador.host, '10.0.2.2');
+      expect(
+        [
+          FirebaseEmulador.authPort,
+          FirebaseEmulador.firestorePort,
+          FirebaseEmulador.functionsPort,
+        ],
+        [9099, 8080, 5001],
+      );
+    });
+
+    test('ligado, aponta para o emulador antes do App Check', () async {
+      final order = <String>[];
+      final firebase = await startFirebase(
+        initialize: () async => order.add('init'),
+        emulador: true,
+        useEmulator: () async => order.add('emulador'),
+        appCheck: (_) async => order.add('appCheck'),
+      );
+      expect(firebase, isTrue);
+      expect(order, ['init', 'emulador', 'appCheck']);
+    });
+
+    test('desligado, não toca no emulador', () async {
+      var used = false;
+      await startFirebase(
+        initialize: () async {},
+        emulador: false,
+        useEmulator: () async => used = true,
+        appCheck: (_) async {},
+      );
+      expect(used, isFalse);
+    });
+
+    test(
+      'emulador fora: o app sobe sem Firebase, nunca no projeto real',
+      () async {
+        final firebase = await startFirebase(
+          initialize: () async {},
+          emulador: true,
+          useEmulator: () async => throw StateError('recusado'),
+          appCheck: (_) async {},
+        );
+        expect(firebase, isFalse);
+      },
+    );
+  });
+
   group('App Check (abuso)', () {
     test('o app da Play atesta pelo Play Integrity', () async {
       AndroidAppCheckProvider? used;

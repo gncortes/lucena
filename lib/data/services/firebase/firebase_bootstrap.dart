@@ -1,4 +1,6 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
@@ -17,11 +19,15 @@ const firebaseStartTimeout = Duration(seconds: 4);
 /// F-Droid) o app sobe sem Firebase e as peças que dependem dele ficam
 /// desligadas. Devolve se o Firebase está disponível. O App Check que falha
 /// não desliga o Firebase: enquanto o console não exige o atestado, tudo
-/// segue igual. [initialize], [appCheck] e [timeout] existem para o teste.
+/// segue igual. Com [FirebaseEmulador.ligado], Auth e Firestore vão para o
+/// Emulator Suite. [initialize], [appCheck], [emulador], [useEmulator] e
+/// [timeout] existem para o teste.
 Future<bool> startFirebase({
   Future<void> Function()? initialize,
   Future<void> Function(AndroidAppCheckProvider provider)? appCheck,
   Ambiente? ambiente,
+  bool? emulador,
+  Future<void> Function()? useEmulator,
   Duration timeout = firebaseStartTimeout,
 }) async {
   try {
@@ -29,6 +35,15 @@ Future<bool> startFirebase({
   } on Object catch (error) {
     debugPrint('Firebase desligado: $error');
     return false;
+  }
+  if (emulador ?? FirebaseEmulador.ligado()) {
+    try {
+      await (useEmulator?.call() ?? useFirebaseEmulator()).timeout(timeout);
+    } on Object catch (error) {
+      // Sem o emulador o QA não pode cair no projeto de verdade.
+      debugPrint('Emulador do Firebase fora: $error');
+      return false;
+    }
   }
   final provider = appCheckProvider(ambiente ?? Ambiente.atual());
   try {
@@ -39,6 +54,18 @@ Future<bool> startFirebase({
     debugPrint('App Check desligado: $error');
   }
   return true;
+}
+
+/// Aponta o Auth e o Firestore para o Emulator Suite do computador.
+Future<void> useFirebaseEmulator() async {
+  await FirebaseAuth.instance.useAuthEmulator(
+    FirebaseEmulador.host,
+    FirebaseEmulador.authPort,
+  );
+  FirebaseFirestore.instance.useFirestoreEmulator(
+    FirebaseEmulador.host,
+    FirebaseEmulador.firestorePort,
+  );
 }
 
 /// O atestado do App Check por ambiente: Play Integrity no app da Play; no
