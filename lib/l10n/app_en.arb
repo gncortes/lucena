@@ -13606,6 +13606,26 @@
   "@unlockedGoToCourse": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },
+  "giftOpening": "Opening your gift…",
+  "@giftOpening": {
+    "description": "Push do presente (H-R5-63): PresenteAbrindo e PresenteSemConta."
+  },
+  "giftFailed": "Couldn't open your gift right now.",
+  "@giftFailed": {
+    "description": "Push do presente (H-R5-63): PresenteAbrindo e PresenteSemConta."
+  },
+  "giftSignInTitle": "Sign in to see your gift",
+  "@giftSignInTitle": {
+    "description": "Push do presente (H-R5-63): PresenteAbrindo e PresenteSemConta."
+  },
+  "giftSignInAccount": "You got Pilares do Xadrez. The gift is in the account {account}.",
+  "@giftSignInAccount": {
+    "description": "Push do presente (H-R5-63): PresenteAbrindo e PresenteSemConta."
+  },
+  "giftSignInNoAccount": "You got Pilares do Xadrez. Sign in with the account that received it.",
+  "@giftSignInNoAccount": {
+    "description": "Push do presente (H-R5-63): PresenteAbrindo e PresenteSemConta."
+  },
   "venPendingTitle": "Payment pending",
   "@venPendingTitle": {
     "description": "Compra pendente (H-VEN-06)."

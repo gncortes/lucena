@@ -53,6 +53,16 @@ void main() {
     );
   });
 
+  test('o curso e o capítulo (H-R5-63)', () async {
+    expect(await route('/curso/pilares'), Routes.training('pilares'));
+    expect(
+      await route('/curso/pilares/3'),
+      Routes.trainingChapter('pilares', '3'),
+    );
+    expect(await route('/course/escola'), Routes.training('escola'));
+    expect(await route('/curso/xadrez-total'), isNull);
+  });
+
   test(
     'aula já terminada, outro site ou tela desconhecida: sem destino',
     () async {

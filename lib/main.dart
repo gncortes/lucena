@@ -118,6 +118,8 @@ import 'domain/models/app_settings.dart';
 import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/push_route.dart';
+import 'routing/frentes/d2_routes.dart';
+import 'data/repositories/lesson_ad/course_grants_repository.dart';
 import 'routing/router.dart';
 import 'routing/screen_tracker.dart';
 import 'routing/stream_refresh.dart';
@@ -533,6 +535,11 @@ class _LucenaAppState extends State<LucenaApp> {
     // dia, aula, final ou torneio).
     _pushLinks ??= push.opened.listen((opening) {
       unawaited(_analytics.pushOpened(opening));
+      // O presente abre por cima da tela atual (H-R5-63).
+      if (_giftRoute(opening) case final route?) {
+        unawaited(_router?.push(route));
+        return;
+      }
       final uri = opening.link;
       // Sem link: o toque só traz o app para a frente.
       if (uri == null) return;
@@ -545,7 +552,12 @@ class _LucenaAppState extends State<LucenaApp> {
       }
     });
     if (pushOpening != null) unawaited(_analytics.pushOpened(pushOpening));
-    if (opened == null && pushed != null && deepLinks.parse(pushed) == null) {
+    final gift = opened == null ? _giftRoute(pushOpening) : null;
+    if (gift != null) {
+      unawaited(_router?.push(gift));
+    } else if (opened == null &&
+        pushed != null &&
+        deepLinks.parse(pushed) == null) {
       await _openPushed(pushed);
     }
   }
@@ -558,6 +570,16 @@ class _LucenaAppState extends State<LucenaApp> {
       }),
     );
   }
+
+  // O toque no push do presente: "Abrindo o seu presente…" (H-R5-63).
+  static String? _giftRoute(PushOpening? opening) =>
+      opening != null && opening.isGift
+      ? D2Paths.giftOpening(
+          course: opening.course!,
+          uid: opening.uid,
+          account: opening.account,
+        )
+      : null;
 
   // A tela do link do aviso; sem destino, o usuário fica onde está: trocar a
   // pilha tiraria da partida e apagaria a retomada.
@@ -643,6 +665,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<PushRepository>.value(
           value: dependencies.pushRepository,
+        ),
+        RepositoryProvider<CourseGrantsRepository>.value(
+          value: dependencies.courseGrantsRepository,
         ),
         RepositoryProvider<AlertsRepository>.value(
           value: dependencies.alertsRepository,

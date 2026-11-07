@@ -35,6 +35,11 @@ import '../../ui/pilares_sale/widgets/pilares_offer_screen.dart';
 import '../../ui/pilares_sale/widgets/pilares_purchase_result_screens.dart';
 import '../../ui/pilares_sale/widgets/pilares_restore_screen.dart';
 import '../route_names.dart';
+import '../../data/repositories/lesson_ad/course_grants_repository.dart';
+import '../../domain/models/course_grant.dart';
+import '../../domain/use_cases/now.dart';
+import '../../ui/gift_opening/view_models/gift_opening_cubit.dart';
+import '../../ui/gift_opening/widgets/gift_opening_screen.dart';
 import '../router.dart' show appRoute;
 
 import '../../domain/models/pilares_access.dart';
@@ -86,6 +91,18 @@ abstract final class D2Paths {
 
   /// O Curso liberado pelo presente (H-R5-62).
   static const pilaresGiftDone = '/pilares/gift/done';
+
+  /// O toque no push do presente (H-R5-63): abre o presente do curso
+  /// `curso` dado à conta `uid` (`conta`: o e-mail dela mascarado).
+  static const pilaresGiftOpening = '/pilares/gift/opening';
+  static String giftOpening({
+    required String course,
+    String? uid,
+    String? account,
+  }) => Uri(
+    path: pilaresGiftOpening,
+    queryParameters: {'curso': course, 'uid': ?uid, 'conta': ?account},
+  ).toString();
 
   /// Compra pendente (H-VEN-08).
   static const pilaresPurchasePending = '/pilares/purchase/pending';
@@ -266,6 +283,24 @@ final List<RouteBase> d2Routes = [
     name: RouteNames.pilaresGiftDone,
     path: D2Paths.pilaresGiftDone,
     builder: (context, state) => _courseUnlocked(CourseUnlockedOrigin.gift),
+  ),
+  appRoute(
+    name: RouteNames.pilaresGiftOpening,
+    path: D2Paths.pilaresGiftOpening,
+    builder: (context, state) {
+      final query = state.uri.queryParameters;
+      final course = query['curso'] ?? pilaresCourseId;
+      return BlocProvider(
+        create: (context) => GiftOpeningCubit(
+          accounts: context.read<AccountRepository>(),
+          grants: context.read<CourseGrantsRepository>(),
+          course: course,
+          uid: query['uid'],
+          now: context.read<Now>(),
+        )..start(),
+        child: GiftOpeningScreen(course: course, account: query['conta']),
+      );
+    },
   ),
   appRoute(
     name: RouteNames.pilaresPurchasePending,

@@ -122,6 +122,7 @@ abstract final class RouteNames {
   static const pilaresPurchaseProcessing = 'pilaresPurchaseProcessing';
   static const pilaresPurchaseDone = 'pilaresPurchaseDone';
   static const pilaresGiftDone = 'pilaresGiftDone';
+  static const pilaresGiftOpening = 'pilaresGiftOpening';
   static const pilaresPurchasePending = 'pilaresPurchasePending';
   static const pilaresRestore = 'pilaresRestore';
   static const pilaresOwned = 'pilaresOwned';

@@ -53,14 +53,24 @@ class _PilaresPurchaseBridgeState extends State<PilaresPurchaseBridge> {
             widget.router.push(D2Paths.pilaresSubscriptionEnded),
           ),
           // O curso dado pelo servidor vem por cima; o X volta (H-R5-62).
-          PurchaseScreen.gift => unawaited(
-            widget.router.push(D2Paths.pilaresGiftDone),
-          ),
-          PurchaseScreen.granted => unawaited(
-            widget.router.push(D2Paths.pilaresPurchaseDone),
-          ),
+          PurchaseScreen.gift => _unlocked(D2Paths.pilaresGiftDone),
+          PurchaseScreen.granted => _unlocked(D2Paths.pilaresPurchaseDone),
           null => null,
         },
         child: widget.child,
       );
+
+  // O toque no push do presente já abre o Curso liberado (H-R5-63): não
+  // empilha outro sobre ele nem sobre "Abrindo o seu presente…".
+  void _unlocked(String path) {
+    final top = widget.router.routerDelegate.currentConfiguration.uri.path;
+    if (const {
+      D2Paths.pilaresGiftOpening,
+      D2Paths.pilaresGiftDone,
+      D2Paths.pilaresPurchaseDone,
+    }.contains(top)) {
+      return;
+    }
+    unawaited(widget.router.push(path));
+  }
 }
