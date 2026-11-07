@@ -6,56 +6,8 @@ import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/purchase_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/motion/sucesso_da_compra.dart';
 import '../../core/widgets/busy_button.dart';
 import 'pilares_sale_parts.dart';
-
-/// "O curso completo é seu" (H-VEN-05). Voltar vai ao Início, nunca de
-/// volta à oferta.
-class PilaresPurchaseDoneScreen extends StatelessWidget {
-  const PilaresPurchaseDoneScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    return KeyedSubtree(
-      key: PurchaseKeys.doneScreen,
-      child: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {
-          if (!didPop) context.go(Routes.home);
-        },
-        child: Scaffold(
-          body: SafeArea(
-            child: SucessoDaCompra(
-              titulo: Text(
-                l10n.venDoneTitle,
-                key: PurchaseKeys.doneTitle,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineSmall,
-              ),
-              texto: Text(
-                l10n.venDoneText,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              botoes: pilaresOwnedActions(
-                context,
-                goalFirst: true,
-                goalKey: PurchaseKeys.doneGoal,
-                otherKey: PurchaseKeys.doneSeeCourse,
-                other: l10n.venSeeCourse,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 /// "Pagamento pendente" (H-VEN-06): "Entendi" volta para quem abriu a oferta.
 class PilaresPurchasePendingScreen extends StatelessWidget {

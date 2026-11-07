@@ -21,6 +21,9 @@ class SucessoDaCompra extends StatelessWidget {
     required this.texto,
     required this.botoes,
     this.tamanho = 88,
+    this.icone = Icons.check_rounded,
+    this.fundo = AppColors.successSurface,
+    this.cor = AppColors.successOnSurface,
     super.key,
   });
 
@@ -30,6 +33,12 @@ class SucessoDaCompra extends StatelessWidget {
 
   /// O diâmetro do círculo.
   final double tamanho;
+
+  /// O ícone no círculo, o [fundo] do círculo e a [cor] do ícone e do anel:
+  /// o ✓ verde da compra; o presente azul no Curso liberado (H-R5-62).
+  final IconData icone;
+  final Color fundo;
+  final Color cor;
 
   static Duration _inicioDoBotao(int i) =>
       LucenaMotion.botoesDaCompra + LucenaMotion.intervaloDosBotoes * i;
@@ -131,10 +140,7 @@ class SucessoDaCompra extends StatelessWidget {
                           height: tamanho,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: AppColors.successOnSurface,
-                              width: 2,
-                            ),
+                            border: Border.all(color: cor, width: 2),
                           ),
                         ),
                       ),
@@ -153,10 +159,7 @@ class SucessoDaCompra extends StatelessWidget {
               child: Container(
                 width: tamanho,
                 height: tamanho,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.successSurface,
-                ),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: fundo),
                 alignment: Alignment.center,
                 child: NoTempo(
                   inicio: Duration.zero,
@@ -167,11 +170,7 @@ class SucessoDaCompra extends StatelessWidget {
                     scale: _check.transform(v),
                     child: filho,
                   ),
-                  child: Icon(
-                    Icons.check_rounded,
-                    color: AppColors.successOnSurface,
-                    size: tamanho * .5,
-                  ),
+                  child: Icon(icone, color: cor, size: tamanho * .58),
                 ),
               ),
             ),

@@ -8,6 +8,7 @@ import 'package:lucena/data/repositories/training/course_training_repository.dar
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
@@ -16,11 +17,10 @@ import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/endgames/view_models/endgame_lesson_cubit.dart';
-import 'package:lucena/routing/routes.dart';
 import 'package:patrol/patrol.dart';
 
-import '../testing/training/e2e_training.dart';
 import '../testing/e2e_dependencies.dart';
+import '../testing/training/e2e_training.dart';
 import 'robots/app_robot.dart';
 import 'robots/training_capture_robot.dart';
 

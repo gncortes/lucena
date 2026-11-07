@@ -7,7 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../view_models/pilares_purchase_watch_cubit.dart';
 
-/// Abre as telas da compra por cima do app (Concluída, Assinatura encerrada)
+/// Abre as telas da compra por cima do app (Curso liberado, Assinatura
+/// encerrada)
 /// e consulta a loja ao voltar do segundo plano (H-VEN-05/06/10).
 class PilaresPurchaseBridge extends StatefulWidget {
   const PilaresPurchaseBridge({
@@ -50,6 +51,13 @@ class _PilaresPurchaseBridgeState extends State<PilaresPurchaseBridge> {
           PurchaseScreen.done => widget.router.go(D2Paths.pilaresPurchaseDone),
           PurchaseScreen.ended => unawaited(
             widget.router.push(D2Paths.pilaresSubscriptionEnded),
+          ),
+          // O curso dado pelo servidor vem por cima; o X volta (H-R5-62).
+          PurchaseScreen.gift => unawaited(
+            widget.router.push(D2Paths.pilaresGiftDone),
+          ),
+          PurchaseScreen.granted => unawaited(
+            widget.router.push(D2Paths.pilaresPurchaseDone),
           ),
           null => null,
         },

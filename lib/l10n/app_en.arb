@@ -13558,14 +13558,6 @@
   "@venOfflineBanner": {
     "description": "Aviso sem internet na compra (H-VEN-06)."
   },
-  "venDoneTitle": "The full course is yours",
-  "@venDoneTitle": {
-    "description": "Compra concluída (H-VEN-05)."
-  },
-  "venDoneText": "All 20 chapters are unlocked. With your goal, we plan your study routine together.",
-  "@venDoneText": {
-    "description": "Compra concluída (H-VEN-05)."
-  },
   "venDefineGoal": "Set my goal",
   "@venDefineGoal": {
     "description": "Botão da compra concluída e restaurada (H-VEN-05/08, V-gap 10)."
@@ -13573,6 +13565,46 @@
   "venSeeCourse": "See the course",
   "@venSeeCourse": {
     "description": "Botão da compra concluída (H-VEN-05)."
+  },
+  "unlockedGiftTitle": "You got Pilares do Xadrez",
+  "@unlockedGiftTitle": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedPurchaseTitle": "The full course is yours",
+  "@unlockedPurchaseTitle": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedGiftHello": "{name}, you got Pilares do Xadrez!",
+  "@unlockedGiftHello": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedGiftHelloNoName": "You got Pilares do Xadrez!",
+  "@unlockedGiftHelloNoName": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedPurchaseHello": "Welcome to Pilares do Xadrez, {name}.",
+  "@unlockedPurchaseHello": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedPurchaseHelloNoName": "Welcome to Pilares do Xadrez.",
+  "@unlockedPurchaseHelloNoName": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedChapters": "All 20 chapters are open; make the most of every lesson.",
+  "@unlockedChapters": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedPlanFirst": "Let us start with your plan.",
+  "@unlockedPlanFirst": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedMakePlan": "Build my plan",
+  "@unlockedMakePlan": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
+  },
+  "unlockedGoToCourse": "Go to the course",
+  "@unlockedGoToCourse": {
+    "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },
   "venPendingTitle": "Payment pending",
   "@venPendingTitle": {

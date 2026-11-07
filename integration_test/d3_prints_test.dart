@@ -13,23 +13,24 @@ import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
+import 'package:lucena/ui/core/keys/course_unlocked_keys.dart';
 import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/keys/featured_keys.dart';
-import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
-import 'package:lucena/ui/core/keys/speedrun_keys.dart';
-import 'package:lucena/ui/core/keys/conclusion_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
-import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
+import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/keys/week_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
@@ -43,9 +44,9 @@ import 'robots/blind_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/game_details_robot.dart';
 import 'robots/journey_robot.dart';
-import 'robots/speedrun_robot.dart';
 import 'robots/placement_robot.dart';
 import 'robots/race_robot.dart';
+import 'robots/speedrun_robot.dart';
 import 'robots/tour_robot.dart';
 import 'robots/training_capture_robot.dart';
 
@@ -341,11 +342,11 @@ void main() {
         GoRouter.of($.tester.element(find.byKey(CoursePreviewKeys.sale)))
             .push<void>(D2Paths.pilaresPurchaseDone),
       );
-      await $(PurchaseKeys.doneScreen).waitUntilVisible();
+      await $(CourseUnlockedKeys.screen).waitUntilVisible();
       await $.pumpAndSettle();
       await $.pump(const Duration(milliseconds: 1500));
       // O voltar da compra concluída leva ao Início; de lá, as Metas.
-      GoRouter.of($.tester.element(find.byKey(PurchaseKeys.doneScreen)))
+      GoRouter.of($.tester.element(find.byKey(CourseUnlockedKeys.screen)))
           .go(Routes.home);
       await $(HomeKeys.screen).waitUntilVisible();
       await $.pump(const Duration(milliseconds: 800));
@@ -402,9 +403,9 @@ void main() {
       GoRouter.of($.tester.element(find.byKey(CoursePreviewKeys.sale)))
           .push<void>(D2Paths.pilaresPurchaseDone),
     );
-    await $(PurchaseKeys.doneScreen).waitUntilVisible();
+    await $(CourseUnlockedKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
-    GoRouter.of($.tester.element(find.byKey(PurchaseKeys.doneScreen)))
+    GoRouter.of($.tester.element(find.byKey(CourseUnlockedKeys.screen)))
         .go(Routes.home);
     await $(HomeKeys.screen).waitUntilVisible();
     unawaited(

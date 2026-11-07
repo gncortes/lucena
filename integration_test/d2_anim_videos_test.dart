@@ -10,6 +10,7 @@ import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/alerts_keys.dart';
+import 'package:lucena/ui/core/keys/course_unlocked_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/my_progress_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
@@ -122,6 +123,6 @@ void main() {
     await hold($, 900);
     push($, D2Paths.pilaresPurchaseDone);
     await hold($, 2500);
-    await capture.end('d2-compra', ready: PurchaseKeys.doneScreen);
+    await capture.end('d2-compra', ready: CourseUnlockedKeys.screen);
   }, tags: ['d2-videos']);
 }

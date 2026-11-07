@@ -9,8 +9,8 @@ import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:patrol/patrol.dart';
 
-import 'home_robot.dart';
 import '../../testing/board_gestures.dart';
+import 'home_robot.dart';
 
 /// Native frames from the host handshake, after Flutter has settled.
 /// The host must run tools/capture/t85_capture_server.py on loopback
