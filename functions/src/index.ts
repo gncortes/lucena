@@ -27,6 +27,25 @@ import { atualizarHoje, fecharDia, type DepsFechamento } from './fechamento/fech
 import { darCursoCore, desfazerCore, revogarCursoCore, type Deps, type Mensageiro } from './pessoas/acessos';
 import { bloquearContaCore, desbloquearContaCore } from './pessoas/bloqueio';
 import { buscarPessoaPor, montarFicha } from './pessoas/ficha';
+import { playNaoConfigurada } from './promocoes/play';
+import { conferirCompraCore } from './compras/compras';
+import {
+  playComprasNaoConfigurada,
+  playComprasSimulada,
+  playSimuladaNoAmbiente,
+  type PlayCompras,
+} from './compras/play';
+import { PRODUTO } from './promocoes/regras';
+import {
+  criarPromocaoCore,
+  editarPromocaoCore,
+  encerrarPromocaoCore,
+  republicarPromocaoCore,
+  reservarVagaCore,
+  validarCupomCore,
+  type DepsPromocoes,
+  type PlayOfertas,
+} from './promocoes/promocoes';
 import { cancelarPushCore, contarPublicoCore, dispararAgendadosCore, enviarPushCore } from './pessoas/push';
 
 initializeApp();
@@ -211,4 +230,68 @@ export const pushesAgendados = onSchedule(
 /** H-R5-34 · Lote de hora em hora: só `painel/hoje`. */
 export const painelHoje = onSchedule({ schedule: '5 * * * *', timeZone: FUSO, retryCount: 0 }, async () => {
   await atualizarHoje(depsFechamento());
+});
+
+let playDeTeste: PlayOfertas | null = null;
+
+/** Só para os testes: troca a Play Developer API por um fake (null volta à real). */
+export function usarPlay(p: PlayOfertas | null): void {
+  playDeTeste = p;
+}
+
+function depsPromocoes(): DepsPromocoes {
+  return { db: getFirestore(), play: playDeTeste ?? playNaoConfigurada, agora: new Date() };
+}
+
+/** H-R5-74 · Criar Para todos ou link (`{tipo, nome, desconto, inicio?, fim?, origem?, parceiro?, codigo?, limite?}`, R21/R22). */
+export const criarPromocao = onCall(async (req) => {
+  const d = depsPromocoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return criarPromocaoCore(d, admin, req.data);
+});
+
+/** H-R5-74 · Só nome e limite de usos (`{id, nome?, limite?}`, regra 7). */
+export const editarPromocao = onCall(async (req) => {
+  const d = depsPromocoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return editarPromocaoCore(d, admin, req.data);
+});
+
+/** H-R5-74 · Encerrar à mão (`{id}`, R25). */
+export const encerrarPromocao = onCall(async (req) => {
+  const d = depsPromocoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return encerrarPromocaoCore(d, admin, req.data);
+});
+
+/** H-R5-74 · Tentar de novo uma "Não publicada" (`{id}`). */
+export const republicarPromocao = onCall(async (req) => {
+  const d = depsPromocoes();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return republicarPromocaoCore(d, admin, req.data);
+});
+
+/** H-R5-74 · App: o código do link vale? (`{codigo}`, R23; pede conta). */
+export const validarCupom = onCall(async (req) => validarCupomCore(depsPromocoes(), req.auth?.uid, req.data));
+
+/** H-R5-74 · App: segura a vaga do link por 30 min antes de comprar (`{codigo}`, R24). */
+export const reservarVaga = onCall(async (req) => reservarVagaCore(depsPromocoes(), req.auth?.uid, req.data));
+
+let playComprasDeTeste: PlayCompras | null = null;
+// Dev e emulador: Play simulada por tokens `teste:` (decisão do Gabriel); produção: a real, quando ligada.
+const playComprasDoAmbiente: PlayCompras = playSimuladaNoAmbiente() ? playComprasSimulada(PRODUTO) : playComprasNaoConfigurada;
+
+/** Só para os testes: troca a conferência de compras da Play (null volta à do ambiente). */
+export function usarPlayCompras(p: PlayCompras | null): void {
+  playComprasDeTeste = p;
+}
+
+/** H-R5-3A · App: confere a compra pelo token (`{token}`, R24) e libera o curso. */
+export const conferirCompra = onCall(async (req) => {
+  const p = depsPromocoes();
+  return conferirCompraCore(
+    { db: p.db, play: playComprasDeTeste ?? playComprasDoAmbiente, ofertas: p.play, agora: p.agora },
+    req.auth?.uid,
+    req.data,
+  );
 });
