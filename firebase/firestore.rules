@@ -361,6 +361,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Os índices de pacotes (H-R5-38): conteudo/teste (app de teste) e
+    // conteudo/alunos. Quem tem conta lê; só publicarVersao e reverterVersao gravam.
+    match /conteudo/{indice} {
+      allow get: if signedIn() && indice in ['teste', 'alunos'];
+      allow list, write: if false;
+    }
+
     // O que o agente sugere (pelo Admin SDK) e o que o Gabriel decide (pela
     // Function decidirEntrega): pelo app, só leitura do admin.
     match /entregas/{id} {

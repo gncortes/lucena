@@ -8,7 +8,7 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 |---|---|
 | Auth | Google e e-mail/senha. A proteção contra enumeração de e-mail está ligada. |
 | Firestore | `(default)` em `nam5` (EUA multirregião), regras em `firestore.rules`. |
-| Storage | Só a foto de perfil enviada (`users/{uid}/avatar.jpg`), regras em `storage.rules`. O bucket padrão precisa ser criado no console (pede o plano Blaze). |
+| Storage | A foto de perfil enviada (`users/{uid}/avatar.jpg`) e os lançamentos do conteúdo (`content/releases/{release}/`), regras em `storage.rules`. O bucket padrão precisa ser criado no console (pede o plano Blaze). |
 | Cloud Functions | `functions/` (TypeScript, Node 22, v2, `southamerica-east1`). Testes: `npm --prefix functions test`. |
 | Cloud Messaging | Tópico `all` (todo aparelho entra ao abrir o app). Aviso com `link` nos dados abre o desafio. |
 | Hosting | https://lucena-2f4de.web.app: a landing, `/.well-known/assetlinks.json` e `/p/**` (link de desafio sem o app → landing). |
@@ -33,6 +33,8 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 | `featured/{id}` | todos | admin |
 | `admins/{uid}` | o próprio | ninguém pelo app (criar no console) |
 | Storage `users/{uid}/avatar.jpg` | o dono | o dono, JPEG, PNG ou WebP até 1 MB |
+| `conteudo/teste`, `conteudo/alunos` (índices de pacotes) | quem tem conta | ninguém pelo app (`publicarVersao`, `reverterVersao`) |
+| Storage `content/releases/{release}/**` | quem tem conta | ninguém pelo app (PC e Functions pelo Admin SDK) |
 
 Testes das regras no emulador: `npm --prefix firebase/test ci` e `npm --prefix firebase/test test`
 (pede Java 21; o `rodar.sh` usa o do Android Studio se o do PATH for antigo).

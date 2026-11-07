@@ -18,6 +18,9 @@ export interface Mensageiro {
 
 export type ResultadoPush = 'enviado' | 'semPush' | 'naoPedido' | 'falhou';
 
+/** Código do FCM para token que não existe mais (o app chama `deleteToken` ao sair). */
+export const TOKEN_NAO_REGISTRADO = 'messaging/registration-token-not-registered';
+
 export interface Deps {
   db: Firestore;
   auth: Auth;
@@ -194,11 +197,13 @@ async function enviarPresente(
       data: { tipo: 'presente', curso: pedido.curso },
       android: { priority: 'high' },
     });
-  } catch {
-    // Token velho ou FCM fora: o acesso já está garantido; o app mostra o
-    // presente na próxima abertura.
-    await registroRef.update({ push: 'falhou' });
-    return 'falhou';
+  } catch (e) {
+    // O acesso já está garantido; o app mostra o presente na próxima abertura.
+    // Token que o app invalidou ao sair da conta (Dúvida 3) = sem push; o resto (FCM fora) = falhou.
+    const semPush = (e as { code?: unknown })?.code === TOKEN_NAO_REGISTRADO;
+    const resultado: ResultadoPush = semPush ? 'semPush' : 'falhou';
+    await registroRef.update({ push: resultado });
+    return resultado;
   }
   const quando = Timestamp.fromDate(agora);
   await db.doc(`acessos/${pedido.uid}`).update({ [`cursos.${pedido.curso}.pushEm`]: quando });

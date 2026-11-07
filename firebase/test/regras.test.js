@@ -454,3 +454,16 @@ describe('coleções só do servidor (H-R5-31)', () => {
     });
   }
 });
+
+describe('conteudo/{teste|alunos} (H-R5-38): índices de pacotes', () => {
+  test('quem tem conta lê os dois; sem conta não; ninguém grava nem lista', async () => {
+    await semRegras((f) => f.doc('conteudo/alunos').set({ format: 1, release: 'r2' }));
+    await assertSucceeds(db('ana').doc('conteudo/alunos').get());
+    await assertSucceeds(db('ana').doc('conteudo/teste').get());
+    await assertFails(db(null).doc('conteudo/alunos').get());
+    await assertFails(db('ana').doc('conteudo/outro').get());
+    await assertFails(db('ana').collection('conteudo').get());
+    await assertFails(db('admin').doc('conteudo/alunos').set({ format: 1, release: 'r9' }));
+    await assertFails(db('ana').doc('conteudo/teste').set({ format: 1 }));
+  });
+});

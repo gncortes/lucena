@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { darCurso, desfazer, revogarCurso, usarMensageiro } from '../../src/index';
-import type { Mensageiro, ResultadoPush } from '../../src/pessoas/acessos';
+import { TOKEN_NAO_REGISTRADO, type Mensageiro, type ResultadoPush } from '../../src/pessoas/acessos';
 import { chamar, codigoDoErro, criarAdmin, criarPessoa, limpar } from './apoio';
 
 type Enviada = Parameters<Mensageiro['send']>[0];
@@ -17,7 +17,8 @@ beforeEach(async () => {
   fcmFalha = false;
   usarMensageiro({
     async send(m) {
-      if (fcmFalha) throw new Error('registration-token-not-registered');
+      if (fcmFalha) throw new Error('unavailable');
+      if (m.token === 'tok-velho') throw Object.assign(new Error('not registered'), { code: TOKEN_NAO_REGISTRADO });
       enviadas.push(m);
       return 'msg-1';
     },
@@ -85,6 +86,14 @@ describe('darCurso', () => {
     const r = await chamar<Dado>(darCurso, 'admin', { uid: 'rafael', curso: 'pilares' });
     assert.equal(r.push, 'falhou');
     assert.ok((await acessos('rafael'))!.cursos.pilares.dadoEm);
+  });
+
+  test('token que o app invalidou ao sair da conta: "Sem push", não "falhou"', async () => {
+    await criarPessoa('marina', 'marina@exemplo.com');
+    await aparelho('marina', 'permitida', 'tok-velho');
+    const r = await chamar<Dado>(darCurso, 'admin', { uid: 'marina', curso: 'pilares' });
+    assert.equal(r.push, 'semPush');
+    assert.equal(((await registros('marina'))[0] as Record<string, unknown>).push, 'semPush');
   });
 
   test('quem já tem: "Rafael já tem o Pilares"; não admin, sem pessoa e curso inexistente', async () => {
