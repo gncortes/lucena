@@ -82,7 +82,7 @@ jobs:
       # Só confere que o build de release compila (assinado com a chave de debug).
       # O APK para instalar vem do workflow QA (App Distribution) ou da Release.
       - name: Build
-        run: flutter build apk --release
+        run: flutter build apk --release --flavor prod
 
       - name: Conteúdo privado fora do APK
-        run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/flutter-apk/app-release.apk
+        run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/flutter-apk/app-prod-release.apk

@@ -48,15 +48,25 @@ git clone https://github.com/gncortes/lucena.git
 cd lucena
 cp .env.example .env   # local machine settings, never committed
 flutter pub get
-flutter run
+flutter run --flavor dev
 ```
+
+Flavors Android: `dev` (`com.gncortes.lucena.dev`, "Lucena Dev", Firebase `lucena-dev-gnc`) and `prod`
+(`com.gncortes.lucena`, Firebase `lucena-2f4de`); both install side by side. The app builds without any
+`google-services.json` (no Firebase). To use Firebase in dev, download its config (not versioned):
+
+```bash
+firebase apps:sdkconfig ANDROID 1:869896840973:android:7a62f96c9c56e9321fb244 -o android/app/src/dev/google-services.json
+```
+
+The prod file goes in `android/app/src/prod/google-services.json`.
 
 Run the tests:
 
 ```bash
 flutter analyze
 flutter test
-patrol test --dart-define=E2E=true
+patrol test --flavor dev --package-name com.gncortes.lucena.dev --dart-define=E2E=true
 ```
 
 ## Contributing

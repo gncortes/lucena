@@ -20,12 +20,13 @@ enum Ambiente {
 
 /// O Firebase Emulator Suite para o QA (`--dart-define=FIREBASE_EMULADOR=true`),
 /// desligado por padrão e nunca no `prod`. O emulador Android enxerga o
-/// computador em [host]. O app usa só o Auth e o Firestore; as Functions do
-/// emulador ([functionsPort]) reagem ao Firestore dele, sem chamada do app.
+/// computador em [host]. As portas são as do `firebase.json`. O app usa só o
+/// Auth e o Firestore; as Functions do emulador ([functionsPort]) reagem ao
+/// Firestore dele, sem chamada do app.
 abstract final class FirebaseEmulador {
   static const host = '10.0.2.2';
   static const authPort = 9099;
-  static const firestorePort = 8080;
+  static const firestorePort = 8085;
   static const functionsPort = 5001;
 
   /// Se o build aponta para o emulador. [define] e [ambiente] existem para o

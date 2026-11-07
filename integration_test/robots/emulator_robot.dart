@@ -18,7 +18,7 @@ import 'profile_robot.dart';
 /// `docs/tasks/E1.19-qa-r5.md`), com o [admin] do outro lado.
 ///
 /// Rodar com `--dart-define=E2E=true --dart-define=FIREBASE_EMULADOR=true`,
-/// o emulador do Firebase ligado no computador (Auth 9099, Firestore 8080,
+/// o emulador do Firebase ligado no computador (Auth 9099, Firestore 8085,
 /// Functions 5001, projeto do `google-services.json` do flavor dev) e as
 /// contas de `tools/emulador_contas_qa.py`.
 class EmulatorRobot {

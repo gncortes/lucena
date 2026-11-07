@@ -44,6 +44,7 @@ integration_test/test_bundle.dart
 test/goldens/failures/
 __pycache__/
 android/app/google-services.json
+android/app/src/*/google-services.json
 PLANO-MVP-finais.md
 docs/
 scratchpad/

@@ -40,7 +40,7 @@ void main() {
           FirebaseEmulador.firestorePort,
           FirebaseEmulador.functionsPort,
         ],
-        [9099, 8080, 5001],
+        [9099, 8085, 5001],
       );
     });
 
