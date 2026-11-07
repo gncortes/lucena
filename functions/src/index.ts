@@ -5,11 +5,29 @@ import './comum/config';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
 import { onCall } from 'firebase-functions/https';
 import { exigeAdmin } from './comum/admin';
+import { darCursoCore, desfazerCore, revogarCursoCore, type Deps, type Mensageiro } from './pessoas/acessos';
 import { buscarPessoaPor, montarFicha } from './pessoas/ficha';
 
 initializeApp();
+
+let mensageiroDeTeste: Mensageiro | null = null;
+
+/** Só para os testes no emulador: troca o FCM por um fake (null volta ao real). */
+export function usarMensageiro(m: Mensageiro | null): void {
+  mensageiroDeTeste = m;
+}
+
+function deps(): Deps {
+  return {
+    db: getFirestore(),
+    auth: getAuth(),
+    mensageiro: mensageiroDeTeste ?? getMessaging(),
+    agora: new Date(),
+  };
+}
 
 /** H-R5-32 · A 1ª carga da Ficha (`{uid}`). */
 export const fichaUsuario = onCall(async (req) => {
@@ -23,4 +41,25 @@ export const buscarPessoa = onCall(async (req) => {
   const db = getFirestore();
   await exigeAdmin(db, req.auth?.uid);
   return buscarPessoaPor(db, getAuth(), req.data?.termo);
+});
+
+/** H-R5-33 · Dar curso (`{uid, curso, origem?, plano?, ate?, motivo?, enviarPush?}`). */
+export const darCurso = onCall(async (req) => {
+  const d = deps();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return darCursoCore(d, admin, req.data);
+});
+
+/** H-R5-33 · Revogar curso (`{uid, curso, motivo}`). */
+export const revogarCurso = onCall(async (req) => {
+  const d = deps();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return revogarCursoCore(d, admin, req.data);
+});
+
+/** H-R5-33 · Desfazer o último dar/revogar de um curso (`{uid, registroId}`, R19). */
+export const desfazer = onCall(async (req) => {
+  const d = deps();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return desfazerCore(d, admin, req.data);
 });
