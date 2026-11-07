@@ -16,6 +16,7 @@ class StoreProduct {
     required this.price,
     this.rawPrice,
     this.currency,
+    this.offers = const [],
   });
 
   final String id;
@@ -24,6 +25,50 @@ class StoreProduct {
   /// O valor e a moeda, para o evento `purchase`.
   final double? rawPrice;
   final String? currency;
+
+  /// As ofertas com desconto do produto (só o vitalício tem, regra 10).
+  final List<StoreOffer> offers;
+}
+
+/// A tag das ofertas que só o link libera (contrato de promoções, R23).
+const linkOfferTag = 'lucena-link';
+
+/// Uma oferta com desconto da Play (one-time product offer): id, tags,
+/// percentual, janela de validade e o preço já formatado pela loja.
+class StoreOffer {
+  const StoreOffer({
+    required this.id,
+    required this.price,
+    required this.percent,
+    required this.token,
+    this.tags = const [],
+    this.startsAt,
+    this.endsAt,
+    this.name,
+  });
+
+  final String id;
+  final String price;
+  final int percent;
+
+  /// O `offerToken` que vai no `launchBillingFlow`.
+  final String token;
+  final List<String> tags;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
+
+  /// O nome da promoção para todos ("Black Friday").
+  final String? name;
+
+  /// Só o link libera esta oferta.
+  bool get onlyByLink => tags.contains(linkOfferTag);
+
+  bool activeAt(DateTime now) {
+    final start = startsAt;
+    final end = endsAt;
+    if (start != null && now.isBefore(start)) return false;
+    return end == null || now.isBefore(end);
+  }
 }
 
 enum StorePurchaseStatus { pending, purchased, restored, canceled, error }
@@ -38,6 +83,8 @@ class StorePurchase {
     this.purchasedAt,
     this.renewsAt,
     this.graceUntil,
+    this.token,
+    this.offerId,
   });
 
   final String productId;
@@ -50,6 +97,12 @@ class StorePurchase {
 
   /// A loja não conseguiu cobrar e dá até esta data para regularizar.
   final DateTime? graceUntil;
+
+  /// O token da compra, que o servidor confere (`conferirCompra`).
+  final String? token;
+
+  /// A oferta com desconto usada na compra.
+  final String? offerId;
 }
 
 /// A loja não respondeu por falta de rede.
@@ -67,8 +120,13 @@ abstract class PurchaseService {
   /// O produto [id], ou nulo se a loja não o conhece.
   Future<StoreProduct?> product(String id);
 
-  /// Abre a janela de pagamento (ou de assinatura) da Play.
-  Future<void> buy(StoreProduct product);
+  /// Abre a janela de pagamento (ou de assinatura) da Play, com a
+  /// [offer] com desconto e a conta [accountId] (`obfuscatedAccountId`).
+  Future<void> buy(
+    StoreProduct product, {
+    StoreOffer? offer,
+    String? accountId,
+  });
 
   /// Reconhece a compra.
   Future<void> complete(StorePurchase purchase);
@@ -92,7 +150,11 @@ class NoPurchaseService implements PurchaseService {
   Future<StoreProduct?> product(String id) async => null;
 
   @override
-  Future<void> buy(StoreProduct product) async {}
+  Future<void> buy(
+    StoreProduct product, {
+    StoreOffer? offer,
+    String? accountId,
+  }) async {}
 
   @override
   Future<void> complete(StorePurchase purchase) async {}

@@ -6,8 +6,10 @@ import '../domain/models/daily_final.dart';
 import '../domain/models/game_setup.dart';
 import '../domain/models/journey.dart';
 import '../domain/models/linked_lesson.dart';
+import '../domain/models/offer_discount.dart';
 import '../domain/models/survey.dart';
 import '../domain/models/load_failure.dart';
+import 'frentes/d2_routes.dart' show D2Paths;
 
 abstract final class Routes {
   static const loadError = '/load-error';
@@ -49,6 +51,9 @@ abstract final class Routes {
         query: uri.hasQuery ? uri.query : null,
       ).toString();
     }
+    // O link com desconto (regra 6) abre a Oferta com o código.
+    final code = OfferCodes.fromLink(uri);
+    if (code != null) return D2Paths.offer(origin: 'link', code: code);
     try {
       if (RegExp(r'^/p/[^/]+/?$').hasMatch(uri.path) &&
           ChallengeLink.tryParse(uri) != null) {

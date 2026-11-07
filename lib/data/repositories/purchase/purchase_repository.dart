@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../../../domain/models/analytics_event.dart';
+import '../../../domain/models/offer_discount.dart';
 import '../../../domain/models/pilares_access.dart';
+import '../../../domain/use_cases/best_discount.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../services/coupon_service.dart';
 import '../../services/preferences_service.dart';
 import '../../services/purchase_service.dart';
 import '../analytics/analytics_repository.dart';
@@ -26,6 +29,8 @@ class PurchaseState {
     this.pending = false,
     this.outcome,
     this.plan,
+    this.discount,
+    this.linkGone = false,
   });
 
   final PilaresAccess access;
@@ -46,6 +51,13 @@ class PurchaseState {
   /// O plano da última compra.
   final PilaresPlan? plan;
 
+  /// O desconto do vitalício que vale agora (regras 5 e 10), com o preço da
+  /// loja; nulo sem promoção nem link.
+  final OfferDiscount? discount;
+
+  /// O link guardado não vale mais: a Oferta avisa uma vez.
+  final bool linkGone;
+
   /// Comprador não vê anúncio.
   bool get adFree => access.owns;
 
@@ -58,6 +70,9 @@ class PurchaseState {
     PurchaseOutcome? outcome,
     bool clearOutcome = false,
     PilaresPlan? plan,
+    OfferDiscount? discount,
+    bool clearDiscount = false,
+    bool? linkGone,
   }) => PurchaseState(
     access: access ?? this.access,
     prices: prices ?? this.prices,
@@ -66,6 +81,8 @@ class PurchaseState {
     pending: pending ?? this.pending,
     outcome: clearOutcome ? null : outcome ?? this.outcome,
     plan: plan ?? this.plan,
+    discount: clearDiscount ? discount : discount ?? this.discount,
+    linkGone: linkGone ?? this.linkGone,
   );
 
   @override
@@ -77,7 +94,9 @@ class PurchaseState {
       other.processing == processing &&
       other.pending == pending &&
       other.outcome == outcome &&
-      other.plan == plan;
+      other.plan == plan &&
+      other.discount == discount &&
+      other.linkGone == linkGone;
 
   static bool _samePrices(
     Map<PilaresPlan, String> a,
@@ -93,6 +112,8 @@ class PurchaseState {
     pending,
     outcome,
     plan,
+    discount,
+    linkGone,
   );
 }
 
@@ -120,6 +141,13 @@ abstract class PurchaseRepository {
 
   /// "Sua assinatura terminou" já apareceu (H-VEN-10).
   Future<void> markEndedSeen();
+
+  /// O código do link de desconto (`/oferta/<código>`, regra 10): fica 30
+  /// dias no aparelho, espera a conta e só vira desconto com o preço da loja.
+  Future<void> useOfferCode(String code);
+
+  /// O aviso "Este link de desconto não vale mais." já apareceu.
+  Future<void> dismissLinkNotice();
 }
 
 /// Play Billing e a compra do site, com a cópia do acesso no aparelho: sem
@@ -132,6 +160,8 @@ class PlayPurchaseRepository implements PurchaseRepository {
     this._now = const SystemNow(),
     this._analytics,
     this._accountChanges,
+    this._coupons = const NoCouponService(),
+    this._uid,
   });
 
   final PurchaseService _service;
@@ -140,6 +170,10 @@ class PlayPurchaseRepository implements PurchaseRepository {
   final Now _now;
   final AnalyticsRepository? _analytics;
   final Stream<Object?>? _accountChanges;
+  final CouponService _coupons;
+
+  /// O uid da conta entrada (o link só vale com conta, `obfuscatedAccountId`).
+  final String? Function()? _uid;
 
   static const accessKey = 'purchase.pilares.access';
   static const pendingKey = 'purchase.pilares.pending';
@@ -147,6 +181,12 @@ class PlayPurchaseRepository implements PurchaseRepository {
   /// O plano da janela de pagamento aberta: sobrevive a fechar à força no
   /// meio da compra, para "Concluída" aparecer na volta.
   static const buyingKey = 'purchase.pilares.buying';
+
+  /// O código do link e quando chegou (`{"code", "savedAt"}`).
+  static const offerCodeKey = 'purchase.offer.code';
+
+  /// O link guardado deixou de valer e o aviso ainda não apareceu.
+  static const linkGoneKey = 'purchase.offer.linkGone';
 
   final _changes = StreamController<PurchaseState>.broadcast();
   final _subscriptions = <StreamSubscription<Object?>>[];
@@ -196,11 +236,13 @@ class PlayPurchaseRepository implements PurchaseRepository {
     }
     final pending = await _preferences.getBool(pendingKey) ?? false;
     final buying = _planFromName(await _preferences.getString(buyingKey));
+    final linkGone = await _preferences.getBool(linkGoneKey) ?? false;
     _emit(
       _state.copyWith(
         access: access.offline(_now()),
         pending: pending && !access.owns,
         plan: buying,
+        linkGone: linkGone,
       ),
     );
     _subscriptions.add(_service.purchases.listen(_onPurchase));
@@ -231,13 +273,130 @@ class PlayPurchaseRepository implements PurchaseRepository {
         pricesReady: true,
       ),
     );
+    await _resolveDiscount();
     await _sync();
   }
 
   @override
   Future<void> refresh() async {
     await start();
+    await _resolveDiscount();
     await _sync();
+  }
+
+  /// O código guardado há menos de 30 dias, ou nulo.
+  Future<String?> _savedCode() async {
+    final stored = await _preferences.getString(offerCodeKey);
+    if (stored == null) return null;
+    try {
+      final json = (jsonDecode(stored) as Map).cast<String, Object?>();
+      final code = json['code'] as String;
+      final savedAt = DateTime.parse(json['savedAt'] as String);
+      if (_now().isBefore(savedAt.add(OfferCodes.keepFor))) return code;
+    } on FormatException {
+      // Cópia ilegível: some.
+    } on TypeError {
+      // Idem.
+    }
+    await _preferences.remove(offerCodeKey);
+    return null;
+  }
+
+  /// O link guardado que o servidor acabou de dizer que vale.
+  String? _validCode;
+
+  /// As ofertas da loja que valem agora e, com conta, a do link; vence a
+  /// maior (regra 5). Link que não vale some e deixa o aviso.
+  Future<void> _resolveDiscount() async {
+    final lifetime = _products[PilaresPlan.lifetime];
+    _validCode = null;
+    if (lifetime == null) {
+      _emit(_state.copyWith(clearDiscount: true));
+      return;
+    }
+    final now = _now();
+    final found = [
+      for (final offer in lifetime.offers)
+        if (!offer.onlyByLink && offer.activeAt(now))
+          _discountOf(lifetime, offer, DiscountKind.everyone, offer.endsAt),
+    ];
+    var gone = false;
+    final code = await _savedCode();
+    if (code != null && _uid?.call() != null) {
+      CouponCheck? check;
+      try {
+        check = await _coupons.validate(code);
+      } on Exception {
+        check = null; // Sem rede: o código espera a próxima conferência.
+      }
+      switch (check) {
+        case CouponValid(:final offerId, :final endsAt):
+          final offer = lifetime.offers
+              .where((o) => o.id == offerId && o.onlyByLink)
+              .firstOrNull;
+          final end = endsAt ?? offer?.endsAt;
+          if (offer != null &&
+              offer.activeAt(now) &&
+              (end == null || now.isBefore(end))) {
+            _validCode = code;
+            found.add(_discountOf(lifetime, offer, DiscountKind.link, end));
+          } else {
+            gone = true;
+          }
+        case CouponInvalid():
+          gone = true;
+        case null:
+          break;
+      }
+    }
+    if (gone) await _dropCode();
+    _emit(
+      _state.copyWith(
+        discount: bestDiscount(found),
+        clearDiscount: true,
+        linkGone: gone ? true : null,
+      ),
+    );
+  }
+
+  static OfferDiscount _discountOf(
+    StoreProduct product,
+    StoreOffer offer,
+    DiscountKind kind,
+    DateTime? endsAt,
+  ) => OfferDiscount(
+    kind: kind,
+    offerId: offer.id,
+    percent: offer.percent,
+    price: offer.price,
+    fullPrice: product.price,
+    endsAt: endsAt,
+    name: offer.name,
+  );
+
+  Future<void> _dropCode() async {
+    await _preferences.remove(offerCodeKey);
+    await _preferences.setBool(linkGoneKey, value: true);
+  }
+
+  @override
+  Future<void> useOfferCode(String code) async {
+    final upper = code.toUpperCase();
+    if (!OfferCodes.isValid(upper)) return;
+    await _preferences.setString(
+      offerCodeKey,
+      jsonEncode({'code': upper, 'savedAt': _now().toIso8601String()}),
+    );
+    await _preferences.remove(linkGoneKey);
+    _emit(_state.copyWith(linkGone: false));
+    await start();
+    await _resolveDiscount();
+  }
+
+  @override
+  Future<void> dismissLinkNotice() async {
+    await _preferences.remove(linkGoneKey);
+    _emit(_state.copyWith(linkGone: false));
   }
 
   /// Confere a loja e o site. Devolve se achou compra; nulo sem rede.
@@ -353,6 +512,14 @@ class PlayPurchaseRepository implements PurchaseRepository {
         await _preferences.remove(pendingKey);
         await _preferences.remove(buyingKey);
         if (purchase.needsCompletion) await _service.complete(purchase);
+        final token = purchase.token;
+        if (token != null && purchase.status == StorePurchaseStatus.purchased) {
+          await _confirm(token);
+        }
+        if (plan == PilaresPlan.lifetime) {
+          await _preferences.remove(offerCodeKey);
+          _validCode = null;
+        }
         final bought = purchase.status == StorePurchaseStatus.purchased;
         _emit(
           _state.copyWith(
@@ -393,6 +560,16 @@ class PlayPurchaseRepository implements PurchaseRepository {
     }
   }
 
+  /// O servidor libera o curso pelo token (`conferirCompra`); sem rede, a
+  /// Play reenvia a compra e o servidor confere na próxima vez.
+  Future<void> _confirm(String token) async {
+    try {
+      await _coupons.confirmPurchase(token);
+    } on Exception {
+      // Idem.
+    }
+  }
+
   Future<void> _logPurchase(PilaresPlan plan) async {
     final product = _products[plan];
     await _analytics?.log(
@@ -418,8 +595,24 @@ class PlayPurchaseRepository implements PurchaseRepository {
         if (product == null) throw const StoreOfflineException();
         _products[plan] = product;
       }
+      final discount = plan == PilaresPlan.lifetime ? _state.discount : null;
+      final offer = discount == null
+          ? null
+          : product.offers.where((o) => o.id == discount.offerId).firstOrNull;
+      final code = _validCode;
+      if (discount?.kind == DiscountKind.link && code != null) {
+        try {
+          await _coupons.reserve(code);
+        } on CouponGoneException {
+          // As vagas acabaram: preço cheio (ou a promoção) e o aviso.
+          await _dropCode();
+          await _resolveDiscount();
+          _emit(_state.copyWith(processing: false, linkGone: true));
+          return;
+        }
+      }
       await _preferences.setString(buyingKey, plan.name);
-      await _service.buy(product);
+      await _service.buy(product, offer: offer, accountId: _uid?.call());
     } on StoreOfflineException {
       await _preferences.remove(buyingKey);
       _emit(
@@ -492,4 +685,10 @@ class NoPurchaseRepository implements PurchaseRepository {
 
   @override
   Future<void> markEndedSeen() async {}
+
+  @override
+  Future<void> useOfferCode(String code) async {}
+
+  @override
+  Future<void> dismissLinkNotice() async {}
 }

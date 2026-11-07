@@ -13,9 +13,13 @@ class FakePurchaseService implements PurchaseService {
       pilaresMonthlyProductId: 'R\$ 17,90',
     },
     this.isAvailable = true,
+    this.offers = const [],
   });
 
   final Map<String, String> prices;
+
+  /// As ofertas com desconto do vitalício.
+  List<StoreOffer> offers;
   bool isAvailable;
 
   /// O `owned()` lança [StoreOfflineException].
@@ -40,11 +44,29 @@ class FakePurchaseService implements PurchaseService {
     final price = prices[id];
     return price == null
         ? null
-        : StoreProduct(id: id, price: price, rawPrice: 89.9, currency: 'BRL');
+        : StoreProduct(
+            id: id,
+            price: price,
+            rawPrice: 89.9,
+            currency: 'BRL',
+            offers: id == pilaresLifetimeProductId ? offers : const [],
+          );
   }
 
+  /// A oferta e a conta de cada [bought].
+  final boughtOffers = <StoreOffer?>[];
+  final boughtAccounts = <String?>[];
+
   @override
-  Future<void> buy(StoreProduct product) async => bought.add(product);
+  Future<void> buy(
+    StoreProduct product, {
+    StoreOffer? offer,
+    String? accountId,
+  }) async {
+    bought.add(product);
+    boughtOffers.add(offer);
+    boughtAccounts.add(accountId);
+  }
 
   @override
   Future<void> complete(StorePurchase purchase) async =>
@@ -109,4 +131,16 @@ class FakePurchaseRepository implements PurchaseRepository {
   @override
   Future<void> markEndedSeen() async =>
       state = _state.copyWith(access: _state.access.copyWith(endedSeen: true));
+
+  final offerCodes = <String>[];
+  int linkNoticesDismissed = 0;
+
+  @override
+  Future<void> useOfferCode(String code) async => offerCodes.add(code);
+
+  @override
+  Future<void> dismissLinkNotice() async {
+    linkNoticesDismissed++;
+    state = _state.copyWith(linkGone: false);
+  }
 }

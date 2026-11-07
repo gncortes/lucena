@@ -8,6 +8,13 @@ abstract final class PurchaseKeys {
   static const planLifetime = Key('purchase.offer.planLifetime');
   static const planMonthly = Key('purchase.offer.planMonthly');
   static const planBest = Key('purchase.offer.planBest');
+
+  /// O desconto do vitalício (H-R5-66): selo, prazo, preço cheio riscado e
+  /// o aviso do link que não vale mais.
+  static const discountBadge = Key('purchase.offer.discountBadge');
+  static const discountDeadline = Key('purchase.offer.discountDeadline');
+  static const fullPrice = Key('purchase.offer.fullPrice');
+  static const linkGone = Key('purchase.offer.linkGone');
   static const subscriptionInfo = Key('purchase.offer.subscriptionInfo');
   static const buy = Key('purchase.offer.buy');
   static const restore = Key('purchase.offer.restore');

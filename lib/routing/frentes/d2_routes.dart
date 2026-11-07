@@ -152,11 +152,13 @@ abstract final class D2Paths {
   static String offer({
     PilaresPlan plan = PilaresPlan.lifetime,
     String? origin,
+    String? code,
   }) => Uri(
     path: pilaresOffer,
     queryParameters: {
       if (plan == PilaresPlan.monthly) 'plano': plan.analytics,
       'origem': ?origin,
+      'codigo': ?code,
     },
   ).toString();
 
@@ -259,7 +261,7 @@ final List<RouteBase> d2Routes = [
     ),
   ),
   // A oferta (H-VEN-03): `plano=mensal` marca o mensal; `origem` vai ao
-  // analytics.
+  // analytics; `codigo` é o do link com desconto (H-R5-66).
   appRoute(
     name: RouteNames.pilaresOffer,
     path: D2Paths.pilaresOffer,
@@ -270,6 +272,7 @@ final List<RouteBase> d2Routes = [
         analytics: context.analytics,
         plan: D2Paths.planOf(state.uri.queryParameters['plano']),
         origin: state.uri.queryParameters['origem'] ?? 'perfil',
+        offerCode: state.uri.queryParameters['codigo'],
       ),
       child: const PilaresOfferScreen(),
     ),

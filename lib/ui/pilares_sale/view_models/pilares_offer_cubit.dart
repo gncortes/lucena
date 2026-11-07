@@ -6,6 +6,7 @@ import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/purchase/purchase_repository.dart';
 import '../../../domain/models/analytics_event.dart';
+import '../../../domain/models/offer_discount.dart';
 import '../../../domain/models/pilares_access.dart';
 
 /// O aviso no topo da oferta quando a compra não terminou (H-VEN-06).
@@ -44,6 +45,12 @@ class PilaresOfferState {
   /// Pagamento pendente: "Comprar" desligado até a loja confirmar.
   bool get pending => purchase.pending;
 
+  /// O desconto do vitalício (regra 10), só com o preço da loja.
+  OfferDiscount? get discount => purchase.discount;
+
+  /// O link de desconto não vale mais: o aviso no topo, uma vez.
+  bool get linkGone => purchase.linkGone;
+
   PilaresOfferState copyWith({
     PilaresPlan? plan,
     PurchaseState? purchase,
@@ -70,10 +77,13 @@ class PilaresOfferCubit extends Cubit<PilaresOfferState> {
     required this._analytics,
     PilaresPlan plan = PilaresPlan.lifetime,
     this._origin = 'perfil',
+    String? offerCode,
   }) : _purchases = purchases,
        super(PilaresOfferState(plan: plan, purchase: purchases.state)) {
     _subscription = purchases.changes.listen(_onPurchase);
     unawaited(_purchases.start());
+    // Veio do link com desconto: o código fica guardado (H-R5-66).
+    if (offerCode != null) unawaited(_purchases.useOfferCode(offerCode));
     unawaited(
       _analytics.log(
         AnalyticsEvents.pilaresOfertaVista(origem: _origin, destaque: 'oferta'),
@@ -143,6 +153,8 @@ class PilaresOfferCubit extends Cubit<PilaresOfferState> {
   @override
   Future<void> close() async {
     await _subscription.cancel();
+    // O aviso do link aparece uma vez só.
+    if (state.linkGone) unawaited(_purchases.dismissLinkNotice());
     return super.close();
   }
 }

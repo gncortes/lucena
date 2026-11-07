@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
+import '../../../domain/models/offer_discount.dart';
 import '../../../domain/models/pilares_access.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
@@ -57,6 +59,9 @@ class PilaresOfferScreen extends StatelessWidget {
         state.priceOf(PilaresPlan.monthly) ?? l10n.venRefMonthly;
     final locked = state.processing;
     final monthly = state.plan == PilaresPlan.monthly;
+    // O desconto só aparece com o preço da loja (regras 2 e 10).
+    final discount = state.discount;
+    final buyLifetimePrice = discount?.price ?? lifetimePrice;
     return BlocListener<PilaresOfferCubit, PilaresOfferState>(
       listenWhen: (a, b) => a.signalId != b.signalId,
       listener: (context, state) {
@@ -167,6 +172,40 @@ class PilaresOfferScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.xl),
+              // O link guardado não vale mais (PropV2OfertaLinkSemValer): o
+              // aviso acima das opções, uma vez, com o preço cheio.
+              if (state.linkGone) ...[
+                Container(
+                  key: PurchaseKeys.linkGone,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(AppShape.large),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        CanvasSymbols.info,
+                        size: AppIconSize.standard,
+                        color: colors.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Text(
+                          l10n.venLinkGone,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
               Text(
                 l10n.venOfferChoose,
                 style: theme.textTheme.titleSmall?.copyWith(
@@ -181,6 +220,7 @@ class PilaresOfferScreen extends StatelessWidget {
                 badgeKey: PurchaseKeys.planBest,
                 text: l10n.venPlanLifetimeText,
                 price: l10n.venPlanLifetimePrice(lifetimePrice),
+                discount: discount,
                 loading: state.loadingPrices,
                 selected: !monthly,
                 onTap: locked
@@ -231,7 +271,7 @@ class PilaresOfferScreen extends StatelessWidget {
                     ? l10n.loadErrorRetry
                     : monthly
                     ? l10n.venBuyMonthly(monthlyPrice)
-                    : l10n.venBuyLifetime(lifetimePrice),
+                    : l10n.venBuyLifetime(buyLifetimePrice),
                 onPressed: state.loadingPrices || state.pending
                     ? null
                     : () => _buy(context),
@@ -270,6 +310,7 @@ class _PlanoDaOferta extends StatelessWidget {
     this.badge,
     this.badgeKey,
     this.loading = false,
+    this.discount,
     super.key,
   });
 
@@ -282,10 +323,55 @@ class _PlanoDaOferta extends StatelessWidget {
   final Key? badgeKey;
   final bool loading;
 
+  /// O desconto (PropV2OfertaPromocao, PropV2OfertaLink): o selo ao lado
+  /// do "Melhor escolha", o prazo e o preço cheio riscado.
+  final OfferDiscount? discount;
+
+  Widget _chip(
+    BuildContext context, {
+    required Key? key,
+    required String text,
+    required Color background,
+    required Color foreground,
+    FontWeight? weight,
+  }) => Container(
+    key: key,
+    height: 22,
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+    alignment: Alignment.center,
+    decoration: ShapeDecoration(
+      color: background,
+      shape: const StadiumBorder(),
+    ),
+    child: Text(
+      text,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: foreground,
+        fontSize: 12,
+        height: 1,
+        fontWeight: weight,
+      ),
+    ),
+  );
+
+  String _deadline(BuildContext context, OfferDiscount discount) {
+    final l10n = context.l10n;
+    final name = switch (discount.kind) {
+      DiscountKind.link => l10n.venDiscountLink,
+      DiscountKind.everyone => discount.name ?? l10n.venDiscountPromo,
+    };
+    final end = discount.endsAt;
+    if (end == null) return name;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    return l10n.venDiscountUntil(name, DateFormat('dd/MM', locale).format(end));
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final discount = this.discount;
     return CartaoDePlano(
       selecionado: selected,
       aoTocar: onTap,
@@ -297,27 +383,30 @@ class _PlanoDaOferta extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: theme.textTheme.titleMedium),
-                if (badge case final badge?) ...[
+                if (badge != null || discount != null) ...[
                   const SizedBox(height: AppSpacing.xs),
-                  Container(
-                    key: badgeKey,
-                    height: 22,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm,
-                    ),
-                    alignment: Alignment.center,
-                    decoration: ShapeDecoration(
-                      color: colors.primaryContainer,
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Text(
-                      badge,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colors.primary,
-                        fontSize: 12,
-                        height: 1,
-                      ),
-                    ),
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      if (badge case final badge?)
+                        _chip(
+                          context,
+                          key: badgeKey,
+                          text: badge,
+                          background: colors.primaryContainer,
+                          foreground: colors.primary,
+                        ),
+                      if (discount != null)
+                        _chip(
+                          context,
+                          key: PurchaseKeys.discountBadge,
+                          text: l10n.venDiscountPercent(discount.percent),
+                          background: AppColors.successSurface,
+                          foreground: AppColors.successOnSurface,
+                          weight: FontWeight.w600,
+                        ),
+                    ],
                   ),
                 ],
                 const SizedBox(height: AppSpacing.xs),
@@ -327,6 +416,29 @@ class _PlanoDaOferta extends StatelessWidget {
                     color: colors.onSurfaceVariant,
                   ),
                 ),
+                if (discount != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Row(
+                    key: PurchaseKeys.discountDeadline,
+                    children: [
+                      const Icon(
+                        Icons.sell,
+                        size: 18,
+                        color: AppColors.successOnSurface,
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Flexible(
+                        child: Text(
+                          _deadline(context, discount),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.successOnSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -334,11 +446,38 @@ class _PlanoDaOferta extends StatelessWidget {
           AnimatedOpacity(
             opacity: loading ? 0.3 : 1,
             duration: AppMotion.state,
-            child: Text(
-              price,
-              textAlign: TextAlign.end,
-              style: theme.textTheme.titleSmall,
-            ),
+            child: discount == null
+                ? Text(
+                    price,
+                    textAlign: TextAlign.end,
+                    style: theme.textTheme.titleSmall,
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        discount.fullPrice,
+                        key: PurchaseKeys.fullPrice,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                      Text(
+                        discount.price,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: AppColors.successOnSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        l10n.venDiscountOnce,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),

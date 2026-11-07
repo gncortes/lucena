@@ -48,6 +48,32 @@ void main() {
       expect(analytics.eventsNamed('pilares_oferta_vista'), hasLength(1));
     });
 
+    test('H-R5-66: o código do link vai ao repositório', () async {
+      final cubit = PilaresOfferCubit(
+        purchases: purchases,
+        accounts: FakeAccountRepository(account: FakeAccountRepository.google),
+        analytics: analytics,
+        origin: 'link',
+        offerCode: 'CXC20',
+      );
+      addTearDown(cubit.close);
+      expect(purchases.offerCodes, ['CXC20']);
+    });
+
+    test(
+      'H-R5-66: o aviso do link que não vale sai ao fechar, uma vez',
+      () async {
+        purchases.state = purchases.state.copyWith(linkGone: true);
+        final cubit = offer();
+        expect(cubit.state.linkGone, true);
+        await cubit.close();
+        expect(purchases.linkNoticesDismissed, 1);
+        final again = offer();
+        await again.close();
+        expect(purchases.linkNoticesDismissed, 1);
+      },
+    );
+
     test('sem conta, comprar pede a conta e não abre a loja', () async {
       final cubit = offer(accounts: FakeAccountRepository());
       addTearDown(cubit.close);

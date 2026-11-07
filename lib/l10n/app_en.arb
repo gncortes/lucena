@@ -13470,6 +13470,43 @@
   "@venPlanBest": {
     "description": "Selo do plano vitalício (H-VEN-03)."
   },
+  "venDiscountPercent": "−{percent}%",
+  "@venDiscountPercent": {
+    "description": "Selo do desconto no vitalício; percent vem da oferta da Google Play (H-R5-66).",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "venDiscountUntil": "{name} · until {date}",
+  "@venDiscountUntil": {
+    "description": "Prazo do desconto: name é a promoção ou venDiscountLink; date é dia/mês do fim (H-R5-66).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "venDiscountLink": "Your link discount",
+  "@venDiscountLink": {
+    "description": "Nome do desconto que veio pelo link (H-R5-66)."
+  },
+  "venDiscountPromo": "Sale",
+  "@venDiscountPromo": {
+    "description": "Nome da promoção para todos quando a loja não dá um (H-R5-66)."
+  },
+  "venDiscountOnce": "once",
+  "@venDiscountOnce": {
+    "description": "Abaixo do preço com desconto do vitalício: pagamento único (H-R5-66)."
+  },
+  "venLinkGone": "This discount link is no longer valid.",
+  "@venLinkGone": {
+    "description": "Aviso único na oferta quando o link de desconto não vale mais (H-R5-66)."
+  },
   "venPlanLifetimeText": "One-time payment, updates included.",
   "@venPlanLifetimeText": {
     "description": "Cartão do plano vitalício (H-VEN-03)."

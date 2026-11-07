@@ -51,6 +51,8 @@
                 <data android:pathPrefix="/p/"/>
                 <data android:pathPrefix="/aula/"/>
                 <data android:pathPrefix="/escola/"/>
+                <!-- O link com desconto (H-R5-66): /oferta/<código>. -->
+                <data android:pathPrefix="/oferta/"/>
                 <data android:path="/dia"/>
                 <data android:path="/dia/"/>
                 <data android:path="/daily"/>

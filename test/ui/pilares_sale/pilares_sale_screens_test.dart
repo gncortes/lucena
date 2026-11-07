@@ -10,6 +10,7 @@ import 'package:lucena/data/repositories/training/course_training_repository.dar
 import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/domain/models/offer_discount.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
@@ -209,6 +210,63 @@ void main() {
       await tester.tap(find.byKey(PurchaseKeys.pendingOk));
       await tester.pumpAndSettle();
       expect(find.text('inicio'), findsOneWidget);
+    });
+  });
+
+  group('Oferta com desconto (H-R5-66)', () {
+    testWidgets('promoção: −30%, preço cheio riscado, prazo e o botão', (
+      tester,
+    ) async {
+      purchases.state = purchases.state.copyWith(
+        discount: OfferDiscount(
+          kind: DiscountKind.everyone,
+          offerId: 'black-friday-2026',
+          percent: 30,
+          price: r'R$ 69,90',
+          fullPrice: r'R$ 99,90',
+          endsAt: DateTime(2026, 11, 30, 23, 59, 59),
+          name: 'Black Friday',
+        ),
+      );
+      await pump(tester, D2Paths.offer());
+      expect(await show(tester, PurchaseKeys.discountBadge), findsOneWidget);
+      expect(find.text('−30%'), findsOneWidget);
+      expect(find.byKey(PurchaseKeys.fullPrice), findsOneWidget);
+      expect(find.text('Black Friday · até 30/11'), findsOneWidget);
+      expect(find.text(r'Comprar por R$ 69,90'), findsOneWidget);
+    });
+
+    testWidgets('link sem fim: só "Desconto do seu link"', (tester) async {
+      purchases.state = purchases.state.copyWith(
+        discount: const OfferDiscount(
+          kind: DiscountKind.link,
+          offerId: 'link-30',
+          percent: 30,
+          price: r'R$ 69,90',
+          fullPrice: r'R$ 99,90',
+        ),
+      );
+      await pump(tester, D2Paths.offer());
+      expect(await show(tester, PurchaseKeys.discountDeadline), findsOneWidget);
+      expect(find.text('Desconto do seu link'), findsOneWidget);
+    });
+
+    testWidgets('o código do link vai ao repositório', (tester) async {
+      await pump(tester, D2Paths.offer(origin: 'link', code: 'CXC20'));
+      expect(purchases.offerCodes, ['CXC20']);
+    });
+
+    testWidgets('link que não vale: o aviso, sem o selo do desconto', (
+      tester,
+    ) async {
+      purchases.state = purchases.state.copyWith(linkGone: true);
+      await pump(tester, D2Paths.offer());
+      expect(await show(tester, PurchaseKeys.linkGone), findsOneWidget);
+      expect(find.text('Este link de desconto não vale mais.'), findsOneWidget);
+      expect(
+        find.byKey(PurchaseKeys.discountBadge, skipOffstage: false),
+        findsNothing,
+      );
     });
   });
 
