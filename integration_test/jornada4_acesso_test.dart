@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/course_access.dart';
+import 'package:lucena/domain/models/course_grant.dart';
 import 'package:lucena/ui/core/keys/course_unlocked_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -19,6 +20,11 @@ void main() {
     final marks = journey.marks;
     final student = await journey.signUp('jornada-acesso');
     final access = app.dependencies.courseAccessRepository;
+    // No flavor dev sem loja o acesso-base é sempre "owned": revogar e dar
+    // aparecem no curso dado pelo servidor, não no acesso.
+    final grants = app.dependencies.courseGrantsRepository;
+    bool given() =>
+        grants.current.active(pilaresCourseId, DateTime.now()) != null;
 
     Future<void> closeUnlocked() async {
       await marks.hold(1500);
@@ -29,18 +35,18 @@ void main() {
 
     await marks.panel('Painel: Dar curso, Pilares, como presente');
     await admin.giveCourse(student.uid);
-    await app.pumpUntil(() => access.access == CourseAccess.owned);
+    await app.pumpUntil(given);
     await journey.courseUnlockedOnce();
     await marks.step('O aluno tem o Pilares');
 
     await marks.panel('Painel: Revogar o Pilares');
     final revoked = await admin.revokeCourse(student.uid);
-    await app.pumpUntil(() => access.access == CourseAccess.demo);
+    await app.pumpUntil(() => !given());
     await marks.step('O app volta à demonstração');
 
     await marks.panel('Painel: Desfazer a revogação');
     await admin.undo(student.uid, revoked['registroId']! as String);
-    await app.pumpUntil(() => access.access == CourseAccess.owned);
+    await app.pumpUntil(given);
     await closeUnlocked();
     await marks.step('O acesso volta');
 
@@ -69,7 +75,7 @@ void main() {
     await marks.step('E entra de novo');
     await app.signIn(student.email, RecordedJourneyRobot.password);
     await closeUnlocked();
-    await app.pumpUntil(() => access.access == CourseAccess.owned);
+    await app.pumpUntil(given);
     final after = await admin.waitFor(
       'users/${student.uid}/push/device',
       (doc) => doc?['token'] != null && doc?['token'] != before?['token'],

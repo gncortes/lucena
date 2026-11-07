@@ -25,6 +25,10 @@ enum GiftOpeningPhase {
   /// O curso está aberto: Curso liberado pelo presente ([gift]) ou pela
   /// compra de fora.
   open,
+
+  /// O Curso liberado deste acesso já saiu (o acesso chegou ao vivo antes do
+  /// toque): não abre outro, só volta.
+  shown,
 }
 
 class GiftOpeningState {
@@ -95,6 +99,13 @@ class GiftOpeningCubit extends Cubit<GiftOpeningState> {
     try {
       await _grants.start();
       grant = _active(_grants.current);
+      // Já aberto e visto antes do toque: o Curso liberado saiu uma vez.
+      if (grant != null && !_grants.current.unseen(course, _now())) {
+        if (!isClosed && attempt == _attempt) {
+          _emit(GiftOpeningPhase.shown);
+        }
+        return;
+      }
       // A conta pode ter acabado de entrar: espera o acesso dela chegar.
       grant ??= _active(
         await _grants.changes

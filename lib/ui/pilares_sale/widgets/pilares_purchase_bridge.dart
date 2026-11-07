@@ -93,13 +93,20 @@ class _PilaresPurchaseBridgeState extends State<PilaresPurchaseBridge> {
       _pending = path;
       return;
     }
+    final top = _top;
     if (!const {
       D2Paths.pilaresGiftOpening,
       D2Paths.pilaresGiftDone,
       D2Paths.pilaresPurchaseDone,
-    }.contains(_top)) {
+    }.contains(top)) {
       unawaited(widget.router.push(path));
     }
-    unawaited(context.read<PilaresPurchaseWatchCubit>().unlockedShown());
+    // Com "Abrindo o seu presente…" na tela, o visto é dela: marcar aqui faria
+    // ela achar que o Curso liberado já saiu.
+    unawaited(
+      context.read<PilaresPurchaseWatchCubit>().unlockedShown(
+        markSeen: top != D2Paths.pilaresGiftOpening,
+      ),
+    );
   }
 }

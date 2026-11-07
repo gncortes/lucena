@@ -32,7 +32,8 @@ class ScriptLessonRobot {
   }
 
   LessonScriptCubit get cubit => $.tester
-      .element(find.byKey(LessonScriptKeys.screen))
+      // A de cima: na troca de parte, duas telas convivem durante a transição.
+      .element(find.byKey(LessonScriptKeys.screen).last)
       .read<LessonScriptCubit>();
 
   LessonScriptState get state => cubit.state;

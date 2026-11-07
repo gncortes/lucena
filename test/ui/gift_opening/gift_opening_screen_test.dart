@@ -97,6 +97,22 @@ void main() {
     expect(find.byKey(GiftOpeningKeys.opening), findsNothing);
   });
 
+  testWidgets('o Curso liberado já saiu: volta sem empilhar outro', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      accounts: FakeAccountRepository(account: FakeAccountRepository.google),
+      grants: FakeCourseGrantsRepository(
+        gift.markSeen('pilares', DateTime(2026, 11, 7)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('curso-liberado'), findsNothing);
+    expect(find.byKey(GiftOpeningKeys.opening), findsNothing);
+    expect(find.text('inicio'), findsOneWidget);
+  });
+
   testWidgets('o acesso não chega: a falha com Tentar novamente', (
     tester,
   ) async {

@@ -71,9 +71,10 @@ class PilaresPurchaseWatchCubit extends Cubit<PurchaseWatchState> {
     );
   }
 
-  /// O Curso liberado pedido está na tela: marca o acesso como visto.
-  Future<void> unlockedShown() async {
-    await _grants.markSeen(pilaresCourseId);
+  /// O Curso liberado pedido está na tela: marca o acesso como visto
+  /// ([markSeen] falso: quem marca é a tela do presente que já está aberta).
+  Future<void> unlockedShown({bool markSeen = true}) async {
+    if (markSeen) await _grants.markSeen(pilaresCourseId);
     _grantOffered = false;
   }
 

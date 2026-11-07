@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:patrol/patrol.dart';
 
 /// As marcas das jornadas gravadas do QA da R5 (`docs/tasks/E1.19-qa-r5.md`,
@@ -51,7 +51,15 @@ class JourneyMarksRobot {
   void openLink(String link) => _mark({'link': link});
 
   /// Deixa a tela parada [ms] para o vídeo (o app segue trabalhando).
+  /// Com o app em segundo plano não há frame: o pump esperaria para sempre,
+  /// então só o relógio anda.
   Future<void> hold([int ms = 1500]) async {
+    if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      await $.tester.runAsync(
+        () => Future<void>.delayed(Duration(milliseconds: ms)),
+      );
+      return;
+    }
     for (var i = 0; i < ms ~/ 100; i++) {
       await $.tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 60)),

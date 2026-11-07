@@ -41,6 +41,20 @@ void main() {
     await c.close();
   });
 
+  test('o Curso liberado já saiu (pelo ao vivo): não abre outro', () async {
+    final grants = FakeCourseGrantsRepository(
+      gift.markSeen('pilares', DateTime(2026, 11, 7)),
+    );
+    final c = cubit(
+      FakeAccountRepository(account: FakeAccountRepository.google),
+      grants,
+    );
+    await c.start();
+    expect(c.state.phase, GiftOpeningPhase.shown);
+    expect(grants.seen, isEmpty);
+    await c.close();
+  });
+
   test('espera o acesso chegar; compra de fora não é presente', () async {
     final grants = FakeCourseGrantsRepository();
     final c = cubit(

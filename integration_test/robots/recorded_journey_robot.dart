@@ -138,7 +138,8 @@ class RecordedJourneyRobot {
   /// servidor (`users/{uid}/progress/summary`, que o painel lê).
   Future<void> firstLessonAndProgress(String uid) async {
     await marks.step('O aluno abre a 1ª lição do Pilares');
-    await app.go(Routes.lessonScript(firstLesson));
+    // A lição do Pilares abre pela rota do guia (a lessonScript é da escola).
+    await app.go(Routes.trainingLesson(firstLesson));
     await PilaresLessonRobot($).playLesson(
       firstLesson,
       onPractice: () => marks.step('Prática: o aluno joga os lances'),

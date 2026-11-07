@@ -537,7 +537,7 @@ class _LucenaAppState extends State<LucenaApp> {
       unawaited(_analytics.pushOpened(opening));
       // O presente abre por cima da tela atual (H-R5-63).
       if (_giftRoute(opening) case final route?) {
-        unawaited(_router?.push(route));
+        if (!_giftOnStack) unawaited(_router?.push(route));
         return;
       }
       final uri = opening.link;
@@ -554,7 +554,7 @@ class _LucenaAppState extends State<LucenaApp> {
     if (pushOpening != null) unawaited(_analytics.pushOpened(pushOpening));
     final gift = opened == null ? _giftRoute(pushOpening) : null;
     if (gift != null) {
-      unawaited(_router?.push(gift));
+      if (!_giftOnStack) unawaited(_router?.push(gift));
     } else if (opened == null &&
         pushed != null &&
         deepLinks.parse(pushed) == null) {
@@ -570,6 +570,18 @@ class _LucenaAppState extends State<LucenaApp> {
       }),
     );
   }
+
+  // O acesso chegou ao vivo antes do toque: o Curso liberado (ou a abertura
+  // dele) já está na pilha e não sai outro.
+  bool get _giftOnStack =>
+      _router?.routerDelegate.currentConfiguration.matches.any(
+        (match) => const {
+          D2Paths.pilaresGiftOpening,
+          D2Paths.pilaresGiftDone,
+          D2Paths.pilaresPurchaseDone,
+        }.contains(match.matchedLocation),
+      ) ??
+      false;
 
   // O toque no push do presente: "Abrindo o seu presente…" (H-R5-63).
   static String? _giftRoute(PushOpening? opening) =>

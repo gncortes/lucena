@@ -22,7 +22,8 @@ import '../view_models/gift_opening_cubit.dart';
 /// `PropV2PresenteSemConta`): "Abrindo o seu presente…" até o acesso
 /// sincronizar, depois o Curso liberado no lugar desta tela. Sem conta,
 /// entrar para ver o presente ([account]: o e-mail mascarado da conta dele).
-/// Em outra conta, o catálogo do curso.
+/// Em outra conta, o catálogo do curso. Se o Curso liberado deste acesso já
+/// saiu, só volta: um por acesso.
 class GiftOpeningScreen extends StatelessWidget {
   const GiftOpeningScreen({required this.course, this.account, super.key});
 
@@ -40,6 +41,7 @@ class GiftOpeningScreen extends StatelessWidget {
           GiftOpeningPhase.open => context.pushReplacement(
             state.gift ? D2Paths.pilaresGiftDone : D2Paths.pilaresPurchaseDone,
           ),
+          GiftOpeningPhase.shown => _close(context),
           GiftOpeningPhase.otherAccount => context.pushReplacement(
             Routes.trainingCatalog(course),
           ),
