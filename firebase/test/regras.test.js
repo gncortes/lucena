@@ -358,3 +358,99 @@ describe('inscritos/* (P2-3): só o servidor conta', () => {
     await assertFails(db('ana').doc('inscritos/all').get());
   });
 });
+
+// ------------------------------------------------------------ R5 (H-R5-31)
+
+describe('push/device com a permissão (H-R5-31)', () => {
+  test('as duas escritas do app (token; permissão) com merge passam', async () => {
+    const ref = db('ana').doc('users/ana/push/device');
+    await assertSucceeds(ref.set({ token: 't', updatedAt: Timestamp.now() }, { merge: true }));
+    await assertSucceeds(
+      ref.set(
+        { permissao: 'permitida', conferidoEm: Timestamp.now(), ultimaAbertura: Timestamp.now() },
+        { merge: true },
+      ),
+    );
+    await assertSucceeds(db('admin').doc('users/ana/push/device').get());
+    await assertSucceeds(ref.delete());
+  });
+
+  test('permissão fora da lista, campo a mais ou data como texto são recusados', async () => {
+    const ref = db('ana').doc('users/ana/push/device');
+    await assertSucceeds(ref.set({ token: 't', updatedAt: Timestamp.now() }));
+    await assertFails(ref.set({ permissao: 'talvez' }, { merge: true }));
+    await assertFails(ref.set({ conferidoEm: '2026-11-06' }, { merge: true }));
+    await assertFails(ref.set({ marca: 'x' }, { merge: true }));
+    await assertFails(db('beto').doc('users/ana/push/device').get());
+  });
+});
+
+describe('acessos/{uid} (H-R5-31): cursos só pela Function', () => {
+  const curso = () => ({
+    origem: 'presente',
+    plano: 'vitalicio',
+    dadoPor: 'admin',
+    dadoEm: Timestamp.now(),
+    pais: 'BR',
+  });
+
+  beforeEach(() =>
+    semRegras((fs) => fs.doc('acessos/ana').set({ cursos: { pilares: curso() } })),
+  );
+
+  test('o dono lê e marca só vistos; o admin lê', async () => {
+    await assertSucceeds(db('ana').doc('acessos/ana').get());
+    await assertSucceeds(db('admin').doc('acessos/ana').get());
+    await assertSucceeds(
+      db('ana').doc('acessos/ana').set({ vistos: { pilares: Timestamp.now() } }, { merge: true }),
+    );
+    await assertSucceeds(
+      db('ana').doc('acessos/ana').update({ 'vistos.escola': Timestamp.now() }),
+    );
+  });
+
+  test('o dono não se dá curso, não cria, não apaga; outro não lê', async () => {
+    await assertFails(
+      db('ana').doc('acessos/ana').update({ 'cursos.torneio': curso() }),
+    );
+    await assertFails(
+      db('ana').doc('acessos/ana').update({ 'cursos.pilares.plano': 'mensal' }),
+    );
+    await assertFails(db('ana').doc('acessos/ana').delete());
+    await assertFails(db('beto').doc('acessos/beto').set({ vistos: {} }));
+    await assertFails(db('beto').doc('acessos/ana').get());
+    await assertFails(db('ana').collection('acessos').get());
+    await assertFails(db('admin').doc('acessos/ana').update({ 'cursos.torneio': curso() }));
+  });
+
+  test('registro: admin lê; ninguém grava pelo app', async () => {
+    await assertSucceeds(db('admin').doc('acessos/ana/registro/r1').get());
+    await assertFails(db('ana').doc('acessos/ana/registro/r1').get());
+    await assertFails(db('admin').doc('acessos/ana/registro/r1').set({ acao: 'dar' }));
+  });
+});
+
+describe('coleções só do servidor (H-R5-31)', () => {
+  const caminhos = [
+    'resumosDia/2026-11-25',
+    'resumosMes/2026-11',
+    'painel/hoje',
+    'relatorios/2026-11-25',
+    'pedidosCorrecao/p1',
+    'revisoes/v1',
+    'entregas/e1',
+    'decisoes/d1',
+    'pushes/p1',
+    'promocoes/promo1',
+  ];
+
+  for (const caminho of caminhos) {
+    test(`${caminho}: admin lê; aluno não lê; ninguém grava`, async () => {
+      await assertSucceeds(db('admin').doc(caminho).get());
+      await assertFails(db('ana').doc(caminho).get());
+      await assertFails(db(null).doc(caminho).get());
+      await assertFails(db('admin').doc(caminho).set({ x: 1 }));
+      await assertFails(db('ana').doc(caminho).set({ x: 1 }));
+    });
+  }
+});

@@ -106,15 +106,23 @@ service cloud.firestore {
       }
 
       // O token do push do último aparelho em que a conta entrou (um só).
-      // O admin lê para mandar o aviso de teste a uma conta.
+      // O admin lê para mandar o aviso de teste a uma conta e para saber se o
+      // presente chega por push (H-R5-31): `permissao` do sistema, quando o
+      // app conferiu e a última abertura. O app grava em duas escritas com
+      // merge (token; permissão), então vale o documento inteiro.
       match /push/{doc} {
         allow read: if isOwner(uid) || isAdmin();
         allow delete: if isOwner(uid);
         allow create, update: if canWrite(uid) && doc == 'device'
-          && onlyKeys(['token', 'updatedAt'])
+          && onlyKeys(['token', 'updatedAt', 'permissao', 'conferidoEm',
+                       'ultimaAbertura'])
           && data().token is string
           && optString(data(), 'token', 4096)
-          && data().updatedAt is timestamp;
+          && data().updatedAt is timestamp
+          && (!('permissao' in data())
+              || data().permissao in ['permitida', 'negada', 'nunca'])
+          && optTimestamp(data(), 'conferidoEm')
+          && optTimestamp(data(), 'ultimaAbertura');
       }
 
       // Uma partida terminada por documento: não muda depois de gravada. Id
@@ -291,6 +299,84 @@ service cloud.firestore {
         && (!('ate' in data()) || data().ate == null || data().ate is timestamp)
         && optString(data(), 'adminUid', 128);
       allow delete: if isAdmin();
+    }
+
+    // Os cursos da conta (H-R5-31): `cursos.{id}` só a Cloud Function grava
+    // (compra, presente, revogação); o dono só marca o que já viu
+    // (`vistos.{id}: timestamp`, o aviso de curso novo). Ninguém cria nem
+    // apaga pelo app.
+    match /acessos/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow update: if isOwner(uid)
+        && changed().hasOnly(['vistos'])
+        && data().vistos is map
+        && data().vistos.size() <= 200;
+
+      // O histórico da Ficha (dar, revogar, desfazer, bloqueio).
+      match /registro/{id} {
+        allow read: if isAdmin();
+        allow write: if false;
+      }
+    }
+
+    // Os números do painel: fechamento do dia e do mês, o lote de hoje, os
+    // pontos de atenção e os envios de push. Só a Function grava; só o admin
+    // lê.
+    match /resumosDia/{dia} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /resumosMes/{mes} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /painel/{doc} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /pushes/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // O relatório do dia para o agente (sem dado pessoal): o agente lê pelo
+    // Admin SDK, fora destas regras; pelo app, só o admin.
+    match /relatorios/{dia} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Correções de fala e versões do conteúdo: só pelas Functions.
+    match /pedidosCorrecao/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /revisoes/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // O que o agente sugere (pelo Admin SDK) e o que o Gabriel decide (pela
+    // Function decidirEntrega): pelo app, só leitura do admin.
+    match /entregas/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /decisoes/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // As promoções: o app do aluno só consulta pela Function validarCupom.
+    match /promocoes/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
     }
 
     // Contagem de aparelhos por tópico (TopicCountService): só uma Cloud
