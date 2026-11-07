@@ -184,6 +184,7 @@ class LearningLessonSource implements LessonSource {
       await _observe(id, completed: true);
       await analytics.log(
         AnalyticsEvents.aulaConcluida(
+          curso: analyticsLessonType ?? (endgame ? 'finais' : 'escola'),
           aulaId: id,
           tipoAula: analyticsLessonType ?? (endgame ? 'finais' : 'escola'),
           origem: analyticsOrigin,

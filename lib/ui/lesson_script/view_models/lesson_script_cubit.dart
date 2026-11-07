@@ -261,6 +261,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (!_source.endgame || origin != null) {
       _log(
         AnalyticsEvents.aulaAberta(
+          curso: _lessonKind,
           aulaId: lessonId,
           tipoAula: _lessonKind,
           origem: origin ?? 'trilha',
@@ -271,6 +272,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     }
     _log(
       AnalyticsEvents.aulaCapituloInicio(
+        curso: _lessonKind,
         aulaId: lessonId,
         capituloId: partId,
         capitulo: _chapter,
@@ -303,6 +305,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (right) _chapterExercises++;
     _log(
       AnalyticsEvents.exercicioResultado(
+        curso: _lessonKind,
         aulaId: lessonId,
         capituloId: partId,
         exercicioId: key,
@@ -1153,6 +1156,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (!_chapterDone && _chapterStart != null) {
       _log(
         AnalyticsEvents.aulaSaida(
+          curso: _lessonKind,
           aulaId: lessonId,
           capituloId: partId,
           exercicioId: state.ready && _example.isPractice
@@ -1699,6 +1703,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _chapterDone = true;
       _log(
         AnalyticsEvents.aulaCapituloFim(
+          curso: _lessonKind,
           aulaId: lessonId,
           capituloId: partId,
           capitulo: _chapter,

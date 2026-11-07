@@ -113,6 +113,7 @@ final _samples = <AnalyticsEvent>[
   ),
   AnalyticsEvents.analiseAberta(origem: 'fim_partida', posicaoId: 'kq_k'),
   AnalyticsEvents.aulaAberta(
+    curso: 'finais',
     aulaId: 'lucena',
     tipoAula: 'final',
     origem: 'trilha',
@@ -120,6 +121,7 @@ final _samples = <AnalyticsEvent>[
     primeiraVez: true,
   ),
   AnalyticsEvents.aulaCapituloInicio(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     capitulo: 2,
@@ -127,6 +129,7 @@ final _samples = <AnalyticsEvent>[
     tipoAula: 'final',
   ),
   AnalyticsEvents.aulaCapituloFim(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     capitulo: 2,
@@ -136,6 +139,7 @@ final _samples = <AnalyticsEvent>[
     dicas: 0,
   ),
   AnalyticsEvents.exercicioResultado(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     exercicioId: 'ponte_2',
@@ -145,8 +149,13 @@ final _samples = <AnalyticsEvent>[
     dicas: 0,
     tempo: const Duration(seconds: 20),
   ),
-  AnalyticsEvents.aulaTesteInicio(aulaId: 'lucena', exercicios: 5),
+  AnalyticsEvents.aulaTesteInicio(
+    curso: 'finais',
+    aulaId: 'lucena',
+    exercicios: 5,
+  ),
   AnalyticsEvents.aulaTesteFim(
+    curso: 'finais',
     aulaId: 'lucena',
     aprovado: true,
     acertosPrimeira: 4,
@@ -154,9 +163,14 @@ final _samples = <AnalyticsEvent>[
     tentativas: 6,
     tempo: const Duration(minutes: 5),
   ),
-  AnalyticsEvents.aulaConcluida(aulaId: 'lucena', tipoAula: 'final'),
+  AnalyticsEvents.aulaConcluida(
+    curso: 'finais',
+    aulaId: 'lucena',
+    tipoAula: 'final',
+  ),
   AnalyticsEvents.aulaIndisponivel(origem: 'escola'),
   AnalyticsEvents.aulaSaida(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     tempo: const Duration(minutes: 1),
@@ -360,6 +374,71 @@ void main() {
             isFalse,
             reason: '${event.name}.$key = $value',
           );
+        }
+      }
+    });
+  });
+
+  group('curso (H-R5-65)', () {
+    test('aulas e exercícios levam o curso', () {
+      expect(
+        AnalyticsEvents.cursoDaAula('pilares.peao-passado', finais: false),
+        'pilares',
+      );
+      expect(
+        AnalyticsEvents.cursoDaAula('pilares.peao-passado', finais: true),
+        'pilares',
+      );
+      expect(AnalyticsEvents.cursoDaAula('lucena', finais: true), 'finais');
+      expect(AnalyticsEvents.cursoDaAula('YPGC5', finais: false), 'escola');
+      final events = [
+        AnalyticsEvents.aulaAberta(
+          curso: 'pilares',
+          aulaId: 'pilares.a',
+          tipoAula: 'pilares',
+          origem: 'treino',
+          retomada: false,
+          primeiraVez: true,
+        ),
+        AnalyticsEvents.exercicioResultado(
+          curso: 'pilares',
+          aulaId: 'pilares.a',
+          capituloId: 'c1',
+          exercicioId: 'e1',
+          tipoPasso: 'lance',
+          acertou: true,
+          tentativas: 1,
+          dicas: 0,
+          tempo: const Duration(seconds: 5),
+        ),
+      ];
+      for (final event in events) {
+        expect(event.params['curso'], 'pilares', reason: event.name);
+        expect(AnalyticsCatalog.params(event.name), contains('curso'));
+      }
+    });
+
+    test('oferta e demo levam o curso', () {
+      final events = [
+        AnalyticsEvents.pilaresOfertaVista(origem: 'home', destaque: 'oferta'),
+        AnalyticsEvents.pilaresOfertaFechada(
+          origem: 'home',
+          destaque: 'oferta',
+        ),
+        AnalyticsEvents.demoInicio(capituloId: '1'),
+        AnalyticsEvents.demoFim(),
+      ];
+      for (final event in events) {
+        expect(event.params['curso'], 'pilares', reason: event.name);
+      }
+    });
+
+    test('todo aula_* e exercicio_* com aula aceita o curso', () {
+      for (final MapEntry(key: name, value: params)
+          in AnalyticsCatalog.app.entries) {
+        if ((name.startsWith('aula_') || name.startsWith('exercicio_')) &&
+            params.contains('aula_id')) {
+          expect(params, contains('curso'), reason: name);
         }
       }
     });

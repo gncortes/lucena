@@ -304,6 +304,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       unawaited(
         _analytics.log(
           AnalyticsEvents.aulaTesteInicio(
+            curso: AnalyticsEvents.cursoDaAula(lessonId, finais: true),
             aulaId: lessonId,
             exercicios: lesson.exercises.length,
           ),
@@ -644,6 +645,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       unawaited(
         _analytics.log(
           AnalyticsEvents.aulaSaida(
+            curso: AnalyticsEvents.cursoDaAula(lesson.id, finais: true),
             aulaId: lesson.id,
             exercicioId: exercise.id,
             tempo: elapsed,
@@ -686,6 +688,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     unawaited(
       _analytics.log(
         AnalyticsEvents.exercicioResultado(
+          curso: AnalyticsEvents.cursoDaAula(lesson.id, finais: true),
           aulaId: lesson.id,
           capituloId: 'teste',
           exercicioId: exercise.id,
@@ -738,6 +741,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         unawaited(
           _analytics.log(
             AnalyticsEvents.aulaTesteFim(
+              curso: AnalyticsEvents.cursoDaAula(lesson.id, finais: true),
               aulaId: lesson.id,
               aprovado: EndgameLessonRules.passed(lesson, saved),
               acertosPrimeira: lesson.exercises

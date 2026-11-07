@@ -10,6 +10,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_async_p
 class _FakeService implements AnalyticsService {
   final events = <(String, Map<String, Object>)>[];
   final properties = <(String, String?)>[];
+  final userIds = <String?>[];
   final collection = <bool>[];
   var resets = 0;
   (bool, bool)? consent;
@@ -27,6 +28,9 @@ class _FakeService implements AnalyticsService {
   @override
   Future<void> setUserProperty(String name, String? value) async =>
       properties.add((name, value));
+
+  @override
+  Future<void> setUserId(String? id) async => userIds.add(id);
 
   @override
   Future<void> setCollectionEnabled(bool enabled) async =>
@@ -58,6 +62,7 @@ void main() {
   }) => ServiceAnalyticsRepository(service, preferences, mode: mode);
 
   final event = AnalyticsEvents.aulaConcluida(
+    curso: 'finais',
     aulaId: 'lucena',
     tipoAula: 'final',
   );
@@ -71,6 +76,25 @@ void main() {
     expect(service.collection, [true]);
     expect(service.names, ['aula_concluida']);
     expect(service.events.single.$2.containsKey('traffic_type'), isFalse);
+  });
+
+  test('o uid da conta vira o id do usuário; desligado não sai, religado '
+      'volta (H-R5-65)', () async {
+    final analytics = repository();
+    await analytics.start();
+    await analytics.setUserId('u1');
+    await analytics.setUserId('u1');
+    expect(service.userIds, ['u1']);
+
+    await analytics.setEnabled(false);
+    await analytics.setUserId('u2');
+    expect(service.userIds, ['u1']);
+
+    await analytics.setEnabled(true);
+    expect(service.userIds, ['u1', 'u2']);
+
+    await analytics.setUserId(null);
+    expect(service.userIds, ['u1', 'u2', null]);
   });
 
   test('desligar manda o último aviso e depois nada sai', () async {

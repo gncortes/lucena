@@ -47,6 +47,10 @@ abstract class AnalyticsRepository {
   /// Grava a propriedade só quando o valor muda.
   Future<void> setTrait(AnalyticsTrait trait, String value);
 
+  /// O `uid` da conta como id do usuário (H-R5-65): os resumos do painel
+  /// juntam o uso ao aluno. Nulo ao sair da conta.
+  Future<void> setUserId(String? uid);
+
   /// A origem da 1ª abertura (`origem_*`), uma vez só. Verdadeiro: era a 1ª
   /// abertura e a origem foi gravada agora.
   Future<bool> recordOrigin({
@@ -101,6 +105,9 @@ class NoAnalyticsRepository implements AnalyticsRepository {
   Future<void> setTrait(AnalyticsTrait trait, String value) async {}
 
   @override
+  Future<void> setUserId(String? uid) async {}
+
+  @override
   Future<bool> recordOrigin({
     required String first,
     String? source,
@@ -145,6 +152,7 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
   bool _enabled = true;
   bool _team = false;
   Map<String, String> _traits = {};
+  String? _userId;
   late final Future<void> _loaded = _load();
 
   Future<void> _load() async {
@@ -173,6 +181,9 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
     final enabled = _collects;
     await _safely(() => setCrashReportsEnabled(enabled));
     await _safely(() => _service.setCollectionEnabled(enabled));
+    // Religada (ou na abertura), o id volta junto: o reset apagou.
+    final uid = _userId;
+    if (enabled && uid != null) await _safely(() => _service.setUserId(uid));
   }
 
   @override
@@ -240,6 +251,15 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
       return;
     }
     await _safely(() => _service.logEvent(event.name, params));
+  }
+
+  @override
+  Future<void> setUserId(String? uid) async {
+    await _loaded;
+    if (uid == _userId) return;
+    _userId = uid;
+    if (!_collects) return;
+    await _safely(() => _service.setUserId(uid));
   }
 
   @override

@@ -411,6 +411,11 @@ class Dependencies {
           )
         : const NoCourseGrantsRepository();
     unawaited(courseGrants.start());
+    // O uid da conta como id do usuário no Analytics (H-R5-65).
+    auth.changes
+        .map((account) => account?.uid)
+        .distinct()
+        .listen((uid) => unawaited(analytics.setUserId(uid)));
     final CourseAccessRepository courseAccess = ServerCourseAccessRepository(
       storeAccess,
       courseGrants,
