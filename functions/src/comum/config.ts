@@ -7,4 +7,5 @@ export const REGIAO = 'southamerica-east1';
 /** Fuso das rotinas agendadas (fechamento do dia às 03:00 de Brasília). */
 export const FUSO = 'America/Sao_Paulo';
 
-setGlobalOptions({ region: REGIAO, maxInstances: 10 });
+/** Teto baixo de instâncias: limita o custo no Blaze (dev e prod). */
+setGlobalOptions({ region: REGIAO, maxInstances: 3 });
