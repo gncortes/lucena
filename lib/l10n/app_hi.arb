@@ -1412,6 +1412,8 @@
   "profileSyncing": "Saving…",
   "profileSyncedNow": "Saved just now",
   "profileSyncOffline": "Without internet, what you do stays on the phone and goes up by itself when the connection is back.",
+  "profileBlockedTitle": "Account suspended",
+  "profileBlockedText": "With the account suspended, progress is not saved to the account and stays only on this phone.",
   "profileSignOut": "Sign out",
   "profileDeleteAccount": "Delete the account",
   "profileDeleteWeb": "Without the app, you can ask at playlucena.com/excluir-conta.",

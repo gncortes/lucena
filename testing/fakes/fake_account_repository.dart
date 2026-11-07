@@ -23,11 +23,23 @@ class FakeAccountRepository implements AccountRepository {
     name: 'Teste',
   );
 
-  /// A conta foi suspensa pelo admin (`bloqueios/{uid}`).
-  bool blocked = false;
+  /// A conta foi suspensa pelo admin (`bloqueios/{uid}`). Mudar com o app
+  /// aberto avisa quem acompanha ao vivo ([blockedChanges]).
+  bool get blocked => _blocked;
+  set blocked(bool value) {
+    _blocked = value;
+    _blockedChanges.add(value);
+  }
+
+  bool _blocked = false;
+  final _blockedChanges = StreamController<bool>.broadcast();
 
   @override
-  Future<bool> isBlocked() async => account != null && blocked;
+  Stream<bool> blockedChanges(String uid) async* {
+    bool of(bool value) => account?.uid == uid && value;
+    yield of(_blocked);
+    yield* _blockedChanges.stream.map(of);
+  }
 
   @override
   Account? get current => account;

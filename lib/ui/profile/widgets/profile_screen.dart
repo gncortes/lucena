@@ -151,6 +151,8 @@ class _ProfileView extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             if (account == null)
               const _LocalCard()
+            else if (state.blocked)
+              const _BlockedCard()
             else
               _SyncCard(syncedAt: state.syncedAt, phase: state.syncPhase),
             const SizedBox(height: AppSpacing.lg),
@@ -445,6 +447,49 @@ class _SyncCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(l10n.profileSyncOffline, style: muted),
         ],
+      ],
+    );
+  }
+}
+
+/// Conta suspensa pelo admin: o cartão da sincronização vira o aviso, porque
+/// a nuvem recusa as gravações e o progresso fica no celular (H-R5-43).
+class _BlockedCard extends StatelessWidget {
+  const _BlockedCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return _Card(
+      key: ProfileKeys.accountBlocked,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.cloud_off, color: colors.error),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.profileBlockedTitle,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    l10n.profileBlockedText,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

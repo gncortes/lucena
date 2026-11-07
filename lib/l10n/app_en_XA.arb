@@ -1401,6 +1401,8 @@
   "profileSyncing": "[Šåvîñĝ… one]",
   "profileSyncedNow": "[Šåvéd jûšt ñöw one two]",
   "profileSyncOffline": "[Wîthöût îñtéŕñét, whåt ýöû dö štåýš öñ thé phöñé åñd îš šåvéd tö thé åççöûñt whéñ thé çöññéçtîöñ îš båçk. one two three four five six seven eight nine]",
+  "profileBlockedTitle": "[Åççöûñt šûšpéñdéd one two]",
+  "profileBlockedText": "[Wîth thé åççöûñt šûšpéñdéd, pŕöĝŕéšš îš ñöt šåvéd tö thé åççöûñt åñd štåýš öñlý öñ thîš phöñé. one two three four five six seven eight]",
   "profileSignOut": "[Šîĝñ öût one]",
   "profileDeleteAccount": "[Délété thé åççöûñt one two]",
   "profileDeleteWeb": "[Wîthöût thé åpp, ýöû çåñ ŕéqûéšt délétîöñ åt plåýlûçéñå.çöm/éxçlûîŕ-çöñtå. one two three four five six seven]",

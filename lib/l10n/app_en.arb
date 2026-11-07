@@ -7479,6 +7479,14 @@
   "@profileSyncOffline": {
     "description": "Profile with account: offline note on the sync card."
   },
+  "profileBlockedTitle": "Account suspended",
+  "@profileBlockedTitle": {
+    "description": "Profile with account: title of the sync card when the admin suspended the account."
+  },
+  "profileBlockedText": "With the account suspended, progress is not saved to the account and stays only on this phone.",
+  "@profileBlockedText": {
+    "description": "Profile with account: note under the title when the account is suspended; progress stays on the phone."
+  },
   "profileSignOut": "Sign out",
   "@profileSignOut": {
     "description": "Profile with account: sign-out button."

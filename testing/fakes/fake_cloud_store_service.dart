@@ -126,9 +126,19 @@ class FakeCloudStoreService implements CloudStoreService {
     return Future.value();
   }
 
+  final _blockedChanges = StreamController<void>.broadcast();
+
+  /// O admin suspende ou libera [uid] (avisa quem acompanha ao vivo).
+  void setBlocked(String uid, bool value) {
+    value ? blocked.add(uid) : blocked.remove(uid);
+    _blockedChanges.add(null);
+  }
+
   @override
-  Future<bool> readBlocked(String uid, DateTime now) async =>
-      !offline && blocked.contains(uid);
+  Stream<bool> watchBlocked(String uid, DateTime Function() now) async* {
+    yield !offline && blocked.contains(uid);
+    yield* _blockedChanges.stream.map((_) => !offline && blocked.contains(uid));
+  }
 
   @override
   Future<CloudExport> exportUser(String uid) async {

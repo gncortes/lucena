@@ -72,8 +72,8 @@ class ProfileAccountState {
   final int noticeCount;
 
   /// A conta foi suspensa pelo admin: a nuvem recusa as gravações e o
-  /// progresso segue no aparelho. O aviso da tela vem do canvas
-  /// (`ProfileKeys.accountBlocked`).
+  /// progresso segue no aparelho. Acompanhado ao vivo; a tela mostra o aviso
+  /// `ProfileKeys.accountBlocked`.
   final bool blocked;
 
   ProfileAccountState copyWith({
@@ -118,6 +118,10 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   final Duration saveTimeout;
   StreamSubscription<Account?>? _accountSubscription;
   StreamSubscription<String>? _syncSubscription;
+  StreamSubscription<bool>? _blockedSubscription;
+
+  /// A conta cuja suspensão [_blockedSubscription] acompanha.
+  String? _blockedUid;
 
   Future<void> load() async {
     _accountSubscription ??= _accounts.changes.listen(_accountChanged);
@@ -139,9 +143,9 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
         blocked: same ? null : false,
       ),
     );
+    if (account?.uid != _blockedUid) _watchBlocked(account?.uid);
     if (account == null) return;
     await _readSyncedAt(account.uid);
-    await _readBlocked(account.uid);
     // Abrir o Perfil com conta sobe o que estiver pendente.
     if (!isClosed) emit(state.copyWith(syncPhase: ProfileSyncPhase.saving));
     final save = _sync.saveNow(account.uid);
@@ -175,18 +179,22 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     await _readSyncedAt(uid);
   }
 
-  Future<void> _readBlocked(String uid) async {
-    bool blocked;
-    try {
-      blocked = await _accounts.isBlocked();
-    } on Object catch (error, stack) {
+  /// Acompanha a suspensão da conta [uid] enquanto ela estiver no Perfil:
+  /// o admin pode suspender ou liberar com a tela aberta (H-R5-43).
+  void _watchBlocked(String? uid) {
+    unawaited(_blockedSubscription?.cancel());
+    _blockedSubscription = null;
+    _blockedUid = uid;
+    if (uid == null) return;
+    _blockedSubscription = _accounts.blockedChanges(uid).listen(
+      (blocked) {
+        if (!isClosed && state.account?.uid == uid) {
+          emit(state.copyWith(blocked: blocked));
+        }
+      },
       // Sem a leitura, o cartão segue como sempre; o servidor recusa igual.
-      reportHandledError(error, stack);
-      return;
-    }
-    if (!isClosed && state.account?.uid == uid) {
-      emit(state.copyWith(blocked: blocked));
-    }
+      onError: reportHandledError,
+    );
   }
 
   Future<void> _readSyncedAt(String uid) async {
@@ -257,6 +265,7 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   Future<void> close() async {
     await _accountSubscription?.cancel();
     await _syncSubscription?.cancel();
+    await _blockedSubscription?.cancel();
     return super.close();
   }
 }

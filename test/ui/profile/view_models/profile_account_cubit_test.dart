@@ -144,6 +144,23 @@ void main() {
     },
   );
 
+  test(
+    'H-R5-43: suspensão ao vivo marca e desmarca sem trocar de conta',
+    () async {
+      accounts.account = FakeAccountRepository.google;
+      final cubit = await build();
+      expect(cubit.state.blocked, isFalse);
+
+      accounts.blocked = true;
+      await pumpEventQueue();
+      expect(cubit.state.blocked, isTrue);
+
+      accounts.blocked = false;
+      await pumpEventQueue();
+      expect(cubit.state.blocked, isFalse);
+    },
+  );
+
   test('abuso: conta sem bloqueio não fica marcada', () async {
     accounts.account = FakeAccountRepository.google;
     final cubit = await build();

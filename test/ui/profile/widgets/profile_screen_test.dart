@@ -442,6 +442,32 @@ void main() {
       expect(find.text('Salvo agora'), findsNothing);
     });
 
+    testWidgets('H-R5-43: suspensa ao vivo mostra o aviso; liberada, some', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      expect(find.byKey(ProfileKeys.accountBlocked), findsNothing);
+
+      // O admin suspende com o Perfil aberto, sem trocar de conta.
+      accounts.blocked = true;
+      await tester.pumpAndSettle();
+      expect(find.byKey(ProfileKeys.accountBlocked), findsOneWidget);
+      expect(find.text('Conta suspensa'), findsOneWidget);
+      expect(
+        find.text(
+          'Com a conta suspensa, o progresso não é salvo na conta e fica só '
+          'neste celular.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(ProfileKeys.syncCard), findsNothing);
+
+      accounts.blocked = false;
+      await tester.pumpAndSettle();
+      expect(find.byKey(ProfileKeys.accountBlocked), findsNothing);
+      expect(find.byKey(ProfileKeys.syncCard), findsOneWidget);
+    });
+
     testWidgets('H-CON-13: sem rede e nunca salvo diz "ainda não"', (
       tester,
     ) async {

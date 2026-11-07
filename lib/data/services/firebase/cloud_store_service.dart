@@ -69,9 +69,11 @@ abstract class CloudStoreService {
   Future<void> addFeedback(Map<String, Object?> data);
 
   /// A conta [uid] está suspensa pelo admin (`bloqueios/{uid}` com `ate`
-  /// vazio ou no futuro, comparado com [now]). Sem rede e sem cópia, `false`:
-  /// o servidor recusa as gravações de qualquer forma.
-  Future<bool> readBlocked(String uid, DateTime now);
+  /// vazio ou no futuro, comparado com [now]), ao vivo: começa com o estado
+  /// de agora e muda quando o admin suspende ou libera. Sem rede, sem cópia
+  /// ou sem permissão, `false`: o servidor recusa as gravações de qualquer
+  /// forma.
+  Stream<bool> watchBlocked(String uid, DateTime Function() now);
 
   /// Tudo o que a conta [uid] tem na nuvem, do servidor ("Baixar meus
   /// dados", H-CON-21). Datas viram texto ISO 8601. Lança
@@ -146,7 +148,8 @@ class NoCloudStoreService implements CloudStoreService {
   Future<void> addFeedback(Map<String, Object?> data) async {}
 
   @override
-  Future<bool> readBlocked(String uid, DateTime now) async => false;
+  Stream<bool> watchBlocked(String uid, DateTime Function() now) =>
+      Stream.value(false);
 
   @override
   Future<CloudExport> exportUser(String uid) async => const CloudExport();
@@ -304,15 +307,21 @@ class FirestoreCloudStoreService implements CloudStoreService {
   }
 
   @override
-  Future<bool> readBlocked(String uid, DateTime now) async {
+  Stream<bool> watchBlocked(String uid, DateTime Function() now) async* {
     try {
-      final data = (await _db.collection('bloqueios').doc(uid).get()).data();
-      if (data == null) return false;
-      final until = data['ate'];
-      return until is! Timestamp || until.toDate().isAfter(now);
+      await for (final doc
+          in _db.collection('bloqueios').doc(uid).snapshots()) {
+        yield _blocked(doc.data(), now());
+      }
     } on FirebaseException {
-      return false;
+      yield false;
     }
+  }
+
+  static bool _blocked(Map<String, Object?>? data, DateTime now) {
+    if (data == null) return false;
+    final until = data['ate'];
+    return until is! Timestamp || until.toDate().isAfter(now);
   }
 
   @override
