@@ -1,5 +1,6 @@
 // Do export do Analytics e das compras ao documento do dia, do mês e ao
 // relatório do agente (R5 §2). Só contagens: nenhum dado pessoal.
+import type { Ponto, PontosAtencao } from './atencao';
 import { ATIVOS_APP, ATIVOS_CURSO, type LinhaEvento } from './consultas';
 
 export type Arvore = { [chave: string]: number | Arvore };
@@ -20,7 +21,8 @@ export interface Contadores {
   paises: Arvore;
 }
 
-export type EstadoAnalytics = 'ok' | 'incompleto';
+/** `atrasado`: o export chegou, mas a Data API falhou (sem pontos de atenção); só `incompleto` contamina o mês. */
+export type EstadoAnalytics = 'ok' | 'incompleto' | 'atrasado';
 
 export const VERSAO_ESQUEMA = 1;
 
@@ -155,7 +157,9 @@ export interface ResumoDia extends Contadores {
   versaoEsquema: number;
   fontes: { analytics: EstadoAnalytics; play: 'ok' };
   ativos: Record<string, number>;
-  pontosAtencao: unknown[];
+  pontosAtencao: Ponto[];
+  /** Os 7 dias dos pontos de atenção; null quando não há (Analytics incompleto ou atrasado). */
+  pontosAtencaoPeriodo: { inicio: string; fim: string } | null;
   acum: Arvore;
 }
 
@@ -170,6 +174,7 @@ export function montarResumoDia(args: {
   acumAnterior: Arvore | null;
   analytics: EstadoAnalytics;
   fechadoEm: Date;
+  pontosAtencao?: PontosAtencao | null;
 }): ResumoDia {
   return {
     dia: args.dia,
@@ -178,7 +183,8 @@ export function montarResumoDia(args: {
     fontes: { analytics: args.analytics, play: 'ok' },
     ...args.contadores,
     ativos: args.ativos,
-    pontosAtencao: [],
+    pontosAtencao: args.pontosAtencao?.itens ?? [],
+    pontosAtencaoPeriodo: args.pontosAtencao ? { inicio: args.pontosAtencao.inicio, fim: args.pontosAtencao.fim } : null,
     acum: somarArvores(args.acumAnterior ?? {}, somaveis(args.contadores, soDoDia)),
   };
 }

@@ -2,6 +2,7 @@
 // O dia fechado não muda: o documento é criado numa transação que desiste se ele já existe.
 import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { CURSOS } from '../comum/cursos';
+import { lerPontosAtencao, type FonteAtencao, type PontosAtencao } from './atencao';
 import type { LinhaEvento } from './consultas';
 import { diaLocal, horaLocal, inicioDoDia, somarDias, ultimoDoMes } from './datas';
 import {
@@ -12,6 +13,7 @@ import {
   VERSAO_ESQUEMA,
   type Arvore,
   type Compra,
+  type EstadoAnalytics,
   type ResumoMes,
 } from './resumo';
 
@@ -30,6 +32,8 @@ export interface DepsFechamento {
   db: Firestore;
   analytics: Analytics;
   agora: Date;
+  /** Funis e telas (H-R5-35); sem ela, o dia fecha com `pontosAtencao` vazio. */
+  atencao?: FonteAtencao;
 }
 
 /** Depois desta hora (Brasília) o dia fecha mesmo sem o Analytics. */
@@ -101,6 +105,16 @@ export async function fecharDia(d: DepsFechamento): Promise<ResultadoFechamento>
     else ativosMes[k] = v;
   }
   const estado = pronto ? 'ok' : 'incompleto';
+  let analytics: EstadoAnalytics = estado;
+  let pontosAtencao: PontosAtencao | null = null;
+  if (pronto && d.atencao) {
+    try {
+      pontosAtencao = await lerPontosAtencao(d.atencao, dia);
+    } catch (e) {
+      console.warn(`pontos de atenção de ${dia}: ${(e as Error).message}`);
+      analytics = 'atrasado';
+    }
+  }
 
   return d.db.runTransaction(async (tx) => {
     if ((await tx.get(refDia)).exists) return { dia, estado: 'jaFechado' as const };
@@ -119,8 +133,9 @@ export async function fecharDia(d: DepsFechamento): Promise<ResultadoFechamento>
       contadores: contar(linhas, compras),
       ativos: ativosDia,
       acumAnterior: anteriores.empty ? null : ((anteriores.docs[0].get('acum') as Arvore) ?? null),
-      analytics: estado,
+      analytics,
       fechadoEm: d.agora,
+      pontosAtencao,
     });
     const mes = somarNoMes(mesSnap.exists ? paraMes(mesSnap.data()!) : null, resumo, ativosMes);
     const { relatorio, cortado } = montarRelatorio(resumo);

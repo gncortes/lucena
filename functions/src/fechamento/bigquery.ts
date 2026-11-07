@@ -1,5 +1,17 @@
 // O export do Analytics no BigQuery (dataset `analytics_<propriedade>` do mesmo projeto).
+import { v1alpha } from '@google-analytics/data';
 import { BigQuery } from '@google-cloud/bigquery';
+import {
+  etapaDaPermissao,
+  etapasDasTelas,
+  etapasDoFunil,
+  FUNIS,
+  pedidoDoFunil,
+  sqlPermissao,
+  sqlTelas,
+  type FonteAtencao,
+  type RespostaFunil,
+} from './atencao';
 import { EVENTOS, sqlAtivos, sqlDoDia, type LinhaEvento } from './consultas';
 import { somarDias, sufixo } from './datas';
 import type { Analytics } from './fechar';
@@ -52,6 +64,37 @@ export function analyticsDoBigQuery(dataset: string, bq = new BigQuery()): Analy
       const [rows] = await bq.query({ query: sqlAtivos(dataset, janelas), params });
       const r = (rows as Record<string, unknown>[])[0] ?? {};
       return Object.fromEntries(Object.keys(janelas).map((k) => [k, Number(r[k] ?? 0)]));
+    },
+  };
+}
+
+/** O pedaço da Data API (v1alpha) que os pontos de atenção usam; nos testes, uma resposta gravada. */
+export interface ClienteFunil {
+  runFunnelReport(pedido: ReturnType<typeof pedidoDoFunil>): Promise<[RespostaFunil, ...unknown[]]>;
+}
+
+/** Funis pela GA4 Data API; permissão e telas pelo export no BigQuery. Datas em aaaa-mm-dd. */
+export function atencaoDoAnalytics(
+  dataset: string,
+  propriedade: string,
+  bq: Pick<BigQuery, 'query'> = new BigQuery(),
+  ga: ClienteFunil = new v1alpha.AlphaAnalyticsDataClient() as unknown as ClienteFunil,
+): FonteAtencao {
+  return {
+    async etapas(inicio, fim) {
+      const params = { inicio: sufixo(inicio), fim: sufixo(fim) };
+      const [funis, [telas], [permissao]] = await Promise.all([
+        Promise.all(
+          FUNIS.map(async (f) => etapasDoFunil(f, (await ga.runFunnelReport(pedidoDoFunil(propriedade, f, inicio, fim)))[0])),
+        ),
+        bq.query({ query: sqlTelas(dataset), params }),
+        bq.query({ query: sqlPermissao(dataset), params }),
+      ]);
+      return [
+        ...funis.flat(),
+        etapaDaPermissao((permissao as Record<string, unknown>[])[0]),
+        ...etapasDasTelas(telas as Record<string, unknown>[]),
+      ];
     },
   };
 }

@@ -11,7 +11,7 @@ import { defineString } from 'firebase-functions/params';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
 import { FUSO } from './comum/config';
-import { analyticsDoBigQuery } from './fechamento/bigquery';
+import { analyticsDoBigQuery, atencaoDoAnalytics } from './fechamento/bigquery';
 import { atualizarHoje, fecharDia, type DepsFechamento } from './fechamento/fechar';
 import { darCursoCore, desfazerCore, revogarCursoCore, type Deps, type Mensageiro } from './pessoas/acessos';
 import { buscarPessoaPor, montarFicha } from './pessoas/ficha';
@@ -78,11 +78,17 @@ function depsFechamento(): DepsFechamento {
   return { db: getFirestore(), analytics: analyticsDoBigQuery(DATASET_ANALYTICS.value()), agora: new Date() };
 }
 
+/** H-R5-35 · O id da propriedade GA4 é o do nome do dataset (`analytics_<id>`). */
+function depsDoDia(): DepsFechamento {
+  const dataset = DATASET_ANALYTICS.value();
+  return { ...depsFechamento(), atencao: atencaoDoAnalytics(dataset, dataset.replace(/^analytics_/, '')) };
+}
+
 /** H-R5-34 · Fecha ontem às 03:00 (Brasília); sem o export, tenta de hora em hora até 14:00 (R18). */
 export const fechamentoDia = onSchedule(
   { schedule: '0 3-14 * * *', timeZone: FUSO, timeoutSeconds: 540, retryCount: 0 },
   async () => {
-    await fecharDia(depsFechamento());
+    await fecharDia(depsDoDia());
   },
 );
 

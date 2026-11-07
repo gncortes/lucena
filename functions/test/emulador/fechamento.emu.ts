@@ -112,3 +112,31 @@ describe('painel/hoje', () => {
     assert.equal((await ler('painel/hoje'))!.fontes.analytics, 'atrasado');
   });
 });
+
+describe('pontos de atenção no fechamento (H-R5-35)', () => {
+  const etapa = { fluxo: 'Permissão de notificação', passo: 'Pedido de permissão', chegaram: 200, seguiram: 78 };
+
+  test('com a Data API: grava os pontos e o período no dia e no relatório', async () => {
+    const atencao = { etapas: async () => [etapa] };
+    await fecharDia({ ...em('2026-11-26T06:00:00Z'), atencao });
+    const dia = (await ler('resumosDia/2026-11-25'))!;
+    assert.equal(dia.fontes.analytics, 'ok');
+    assert.deepEqual(dia.pontosAtencaoPeriodo, { inicio: '2026-11-19', fim: '2026-11-25' });
+    assert.deepEqual(dia.pontosAtencao, [{ ...etapa, saida: 0.61, variacaoPp: 0 }]);
+    assert.equal((await ler('relatorios/2026-11-25'))!.pontosAtencao.length, 1);
+  });
+
+  test('Data API falha: pontos vazios, Analytics atrasado, o mês não fica incompleto', async () => {
+    const atencao = {
+      etapas: async () => {
+        throw new Error('quota');
+      },
+    };
+    assert.equal((await fecharDia({ ...em('2026-11-26T06:00:00Z'), atencao })).estado, 'ok');
+    const dia = (await ler('resumosDia/2026-11-25'))!;
+    assert.equal(dia.fontes.analytics, 'atrasado');
+    assert.deepEqual(dia.pontosAtencao, []);
+    assert.equal(dia.pontosAtencaoPeriodo, null);
+    assert.equal((await ler('resumosMes/2026-11'))!.fontes.analytics, 'ok');
+  });
+});
