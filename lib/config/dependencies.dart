@@ -338,11 +338,14 @@ class Dependencies {
   static Future<String> trainingInstallSeed() => _trainingInstallSeeds.load();
 
   /// [firebase] diz se o Firebase subiu (`startFirebase`). Sem ele, a conta e
-  /// o push ficam desligados e o resto do app funciona igual.
+  /// o push ficam desligados e o resto do app funciona igual. [push] troca só
+  /// o toque no aviso: os cenários do Patrol no emulador do Firebase
+  /// (`testing/emulator_dependencies.dart`) simulam o FCM, que não é emulado.
   factory Dependencies.normal({
     AppVersion version = const AppVersion(appVersion),
     bool firebase = false,
     String? trainingInstallSeed,
+    PushRepository? push,
   }) {
     final auth = firebase
         ? FirebaseAuthService(now: const SystemNow())
@@ -570,12 +573,14 @@ class Dependencies {
         now: now,
       ),
       chessComRepository: RemoteChessComRepository(ChessComService(), now: now),
-      pushRepository: FirebasePushRepository(
-        pushService,
-        preferences,
-        notifications: notifications,
-        texts: () => loadPushTexts(settings),
-      ),
+      pushRepository:
+          push ??
+          FirebasePushRepository(
+            pushService,
+            preferences,
+            notifications: notifications,
+            texts: () => loadPushTexts(settings),
+          ),
       alertsRepository: LocalAlertsRepository(preferences),
       regionPromptRepository: LocalRegionPromptRepository(preferences),
       placementRepository: LocalPlacementRepository(assets, preferences),
