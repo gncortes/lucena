@@ -25,7 +25,9 @@ import { analyticsDoBigQuery, atencaoDoAnalytics, ativosDoBigQuery } from './fec
 import { ativosPeriodoCore } from './fechamento/periodo';
 import { atualizarHoje, fecharDia, type DepsFechamento } from './fechamento/fechar';
 import { darCursoCore, desfazerCore, revogarCursoCore, type Deps, type Mensageiro } from './pessoas/acessos';
+import { bloquearContaCore, desbloquearContaCore } from './pessoas/bloqueio';
 import { buscarPessoaPor, montarFicha } from './pessoas/ficha';
+import { cancelarPushCore, contarPublicoCore, dispararAgendadosCore, enviarPushCore } from './pessoas/push';
 
 initializeApp();
 
@@ -162,6 +164,49 @@ export const ativosPeriodo = onCall(async (req) => {
   await exigeAdmin(getFirestore(), req.auth?.uid);
   return ativosPeriodoCore(ativosDoBigQuery(DATASET_ANALYTICS.value()), req.data, new Date());
 });
+
+/** H-R5-39 · Suspender a conta (`{uid, motivo, regra?, ate?}`). */
+export const bloquearConta = onCall(async (req) => {
+  const d = deps();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return bloquearContaCore(d, admin, req.data);
+});
+
+/** H-R5-39 · Desfazer a suspensão (`{uid, motivo}`). */
+export const desbloquearConta = onCall(async (req) => {
+  const d = deps();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return desbloquearContaCore(d, admin, req.data);
+});
+
+/** H-R5-39 · Quantos recebem (`{destino}`), antes de confirmar. */
+export const contarPublico = onCall(async (req) => {
+  const d = deps();
+  await exigeAdmin(d.db, req.auth?.uid);
+  return contarPublicoCore(d, req.data);
+});
+
+/** H-R5-39 · Enviar agora ou agendar (`{destino, titulo, texto, tipo?, link?, agendadoPara?}`). */
+export const enviarPush = onCall({ timeoutSeconds: 300 }, async (req) => {
+  const d = deps();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return enviarPushCore(d, admin, req.data);
+});
+
+/** H-R5-39 · Cancelar um push agendado (`{id}`). */
+export const cancelarPush = onCall(async (req) => {
+  const d = deps();
+  const admin = await exigeAdmin(d.db, req.auth?.uid);
+  return cancelarPushCore(d, admin, req.data);
+});
+
+/** H-R5-39 · Os agendados vencidos saem a cada 5 minutos. */
+export const pushesAgendados = onSchedule(
+  { schedule: 'every 5 minutes', timeZone: FUSO, timeoutSeconds: 540, retryCount: 0 },
+  async () => {
+    await dispararAgendadosCore(deps());
+  },
+);
 
 /** H-R5-34 · Lote de hora em hora: só `painel/hoje`. */
 export const painelHoje = onSchedule({ schedule: '5 * * * *', timeZone: FUSO, retryCount: 0 }, async () => {

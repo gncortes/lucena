@@ -23,7 +23,7 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 | `users/{uid}/push/device` | o dono e o admin | o dono, só `token`, `updatedAt`, `permissao` (`permitida`, `negada`, `nunca`), `conferidoEm` e `ultimaAbertura` (o último aparelho; sai no logout) |
 | `cotas/{uid}` | o dono e o admin | o dono só avança: `feedbackEm`/`feedbackId` (1 feedback por minuto) e `partidas` (+1, teto 20000); ninguém apaga |
 | `feedback/{id}` | admin e o autor | só com conta: `uid` do autor, chaves do `FeedbackEntry`, texto até 500, `createdAt` = hora do servidor, junto com `cotas` |
-| `bloqueios/{uid}` | o dono e o admin | admin (`motivo`, `regra`, `desde`, `ate`, `adminUid`); bloqueio vigente barra toda escrita da conta, menos apagar |
+| `bloqueios/{uid}` | o dono e o admin | admin (`motivo`, `regra`, `desde`, `ate`, `adminUid`), pelo painel via `bloquearConta`/`desbloquearConta`; bloqueio vigente barra toda escrita da conta, menos apagar |
 | `inscritos/{topico}` | admin | ninguém pelo app (só Cloud Function) |
 | `acessos/{uid}` | o dono e o admin | a Function (`cursos.{id}`); o dono só `vistos.{id}` (timestamp, até 200) |
 | `acessos/{uid}/registro/{id}` | admin | ninguém pelo app (só Cloud Function) |

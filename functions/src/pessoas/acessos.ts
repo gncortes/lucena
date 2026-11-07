@@ -10,7 +10,7 @@ import { CURSOS, cursoExiste } from '../comum/cursos';
 export interface Mensageiro {
   send(mensagem: {
     token: string;
-    notification: { title: string; body: string };
+    notification?: { title: string; body: string };
     data: Record<string, string>;
     android?: { priority: 'high' | 'normal' };
   }): Promise<string>;
@@ -102,7 +102,7 @@ export function lerPedidoDarCurso(data: unknown, agora: Date): PedidoDarCurso {
   };
 }
 
-async function pessoaDoAuth(auth: Auth, uid: string) {
+export async function pessoaDoAuth(auth: Auth, uid: string) {
   try {
     return await auth.getUser(uid);
   } catch (e) {
