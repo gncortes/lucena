@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../domain/models/account.dart';
+import '../../../domain/models/push_permission.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../services/firebase/auth_service.dart';
 import '../../services/firebase/cloud_store_service.dart';
@@ -43,7 +44,8 @@ abstract class AccountRepository {
   /// O push por conta: só o último aparelho em que a conta entrou recebe.
   /// Na abertura, grava o token se a conta ainda não tem nenhum ou se o
   /// token deste aparelho mudou; e acompanha as trocas do FCM. Não tira o
-  /// lugar de um aparelho em que a conta entrou depois.
+  /// lugar de um aparelho em que a conta entrou depois. Se este aparelho é
+  /// o do push da conta, grava também a permissão e a abertura (H-R5-60).
   Future<void> linkPushDevice();
 
   /// Apaga o perfil no Firestore e a conta no Auth. Com [photo] (o perfil
@@ -160,10 +162,28 @@ class CloudAccountRepository implements AccountRepository {
     if (uid == null) return;
     try {
       final token = await _push.token();
-      if (token != null) await _refreshPush(uid, token);
+      if (token == null) return;
+      await _refreshPush(uid, token);
+      await _recordPushStatus(uid, token);
     } on Object catch (error) {
       debugPrint('Push sem token: $error');
     }
+  }
+
+  // Só o aparelho do push da conta conta para o painel: outro aparelho
+  // logado na mesma conta não recebe e não sobrescreve a permissão dele.
+  // A leitura também garante que o documento já existe com o token: as
+  // regras recusam um `push/device` sem token (merge sem a gravação dele).
+  Future<void> _recordPushStatus(String uid, String token) async {
+    final saved = await _preferences?.getString(_pushKey);
+    if (saved != '$uid|$token') return;
+    if (await _store.readPushToken(uid) != token) return;
+    final now = _now();
+    final permission = await _push.permission();
+    await _store.writePushStatus(
+      uid,
+      PushDeviceStatus(permission: permission, checkedAt: now, openedAt: now),
+    );
   }
 
   StreamSubscription<String>? _tokenChanges;
@@ -226,8 +246,28 @@ class CloudAccountRepository implements AccountRepository {
     }
   }
 
-  // Saiu da conta: o token sai junto, se ainda for o deste aparelho.
+  // Saiu da conta: o token sai junto, se ainda for o deste aparelho. E o
+  // token do FCM é trocado: se a remoção não chegou ao servidor (sem rede),
+  // o token velho guardado na conta já não entrega nada neste aparelho, e
+  // outra conta que entrar aqui não recebe o presente da anterior (H-R5-64).
   Future<void> _releasePush(String uid) async {
+    try {
+      await _releaseAccountToken(uid);
+    } finally {
+      await _forgetDeviceToken();
+    }
+  }
+
+  Future<void> _forgetDeviceToken() async {
+    if (!_push.available) return;
+    try {
+      await _push.deleteToken().timeout(_pushTimeout);
+    } on Object catch (error) {
+      debugPrint('Push sem trocar o token: $error');
+    }
+  }
+
+  Future<void> _releaseAccountToken(String uid) async {
     final preferences = _preferences;
     if (preferences == null) return;
     final saved = await preferences.getString(_pushKey);

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../domain/models/learning_record.dart';
+import '../../../domain/models/push_permission.dart';
 
 /// Os documentos de cada conta no Firestore. O desenho e as regras estão em
 /// `firebase/firestore.rules` (resumo em `firebase/README.md`):
@@ -43,6 +44,10 @@ abstract class CloudStoreService {
 
   /// Troca o token do push da conta por [token]: só o último aparelho fica.
   Future<void> writePushToken(String uid, String token, DateTime at);
+
+  /// Junta ao `push/device` da conta a permissão e a abertura deste
+  /// aparelho (H-R5-60). O token fica como está.
+  Future<void> writePushStatus(String uid, PushDeviceStatus status);
 
   /// Apaga o token do push da conta.
   Future<void> deletePushToken(String uid);
@@ -129,6 +134,9 @@ class NoCloudStoreService implements CloudStoreService {
   Future<void> deletePushToken(String uid) async {}
 
   @override
+  Future<void> writePushStatus(String uid, PushDeviceStatus status) async {}
+
+  @override
   Future<Map<String, Object?>?> readPublic(
     String collection,
     String id,
@@ -192,8 +200,14 @@ class FirestoreCloudStoreService implements CloudStoreService {
   }
 
   @override
+  // Merge: a permissão e a abertura (H-R5-60) ficam no mesmo documento.
   Future<void> writePushToken(String uid, String token, DateTime at) =>
-      _device(uid).set({'token': token, 'updatedAt': at});
+      _device(uid)
+          .set({'token': token, 'updatedAt': at}, SetOptions(merge: true));
+
+  @override
+  Future<void> writePushStatus(String uid, PushDeviceStatus status) =>
+      _device(uid).set(status.toFirestore(), SetOptions(merge: true));
 
   @override
   Future<void> deletePushToken(String uid) => _device(uid).delete();
