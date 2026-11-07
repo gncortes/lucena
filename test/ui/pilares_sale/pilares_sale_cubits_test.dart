@@ -269,6 +269,9 @@ void main() {
           await pumpEventQueue();
           expect(cubit.state.screen, screen);
           expect(cubit.state.id, 1);
+          // O visto só vem com a tela aberta (r3).
+          expect(repo.seen, isEmpty);
+          await cubit.unlockedShown();
           expect(repo.seen, [pilaresCourseId]);
         });
       }

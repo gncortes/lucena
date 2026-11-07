@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/frentes/d2_routes.dart';
+import '../../../routing/routes.dart';
 import '../view_models/pilares_purchase_watch_cubit.dart';
 
 /// Abre as telas da compra por cima do app (Curso liberado, Assinatura
@@ -30,14 +31,19 @@ class _PilaresPurchaseBridgeState extends State<PilaresPurchaseBridge> {
         unawaited(context.read<PilaresPurchaseWatchCubit>().resumed()),
   );
 
+  /// O Curso liberado pedido durante a entrada na conta.
+  String? _pending;
+
   @override
   void initState() {
     super.initState();
     _lifecycle;
+    widget.router.routerDelegate.addListener(_routeChanged);
   }
 
   @override
   void dispose() {
+    widget.router.routerDelegate.removeListener(_routeChanged);
     _lifecycle.dispose();
     super.dispose();
   }
@@ -60,17 +66,40 @@ class _PilaresPurchaseBridgeState extends State<PilaresPurchaseBridge> {
         child: widget.child,
       );
 
+  // O `uri` da pilha fica na base quando a tela é empilhada (push).
+  String get _top =>
+      widget.router.routerDelegate.currentConfiguration.last.matchedLocation;
+
+  // A entrada na conta termina com `go`, que limpa a pilha: a tela empilhada
+  // durante ela sumiria (r3). Espera a entrada acabar.
+  bool get _signingIn =>
+      _top == Routes.accountEnter || _top.startsWith('${Routes.accountEnter}/');
+
+  void _routeChanged() {
+    final path = _pending;
+    if (path == null || _signingIn) return;
+    _pending = null;
+    // O router ainda está aplicando o `go`: um push agora se perde.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _unlocked(path);
+    });
+  }
+
   // O toque no push do presente já abre o Curso liberado (H-R5-63): não
-  // empilha outro sobre ele nem sobre "Abrindo o seu presente…".
+  // empilha outro sobre ele nem sobre "Abrindo o seu presente…". O visto só
+  // é marcado com a tela aberta.
   void _unlocked(String path) {
-    final top = widget.router.routerDelegate.currentConfiguration.uri.path;
-    if (const {
+    if (_signingIn) {
+      _pending = path;
+      return;
+    }
+    if (!const {
       D2Paths.pilaresGiftOpening,
       D2Paths.pilaresGiftDone,
       D2Paths.pilaresPurchaseDone,
-    }.contains(top)) {
-      return;
+    }.contains(_top)) {
+      unawaited(widget.router.push(path));
     }
-    unawaited(widget.router.push(path));
+    unawaited(context.read<PilaresPurchaseWatchCubit>().unlockedShown());
   }
 }

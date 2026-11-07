@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +10,7 @@ import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/profile/profile_repository.dart';
 import 'package:lucena/data/repositories/training/course_training_repository.dart';
 import 'package:lucena/domain/models/campaign.dart';
+import 'package:lucena/domain/models/course_grant.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/domain/models/offer_discount.dart';
@@ -21,7 +24,9 @@ import 'package:lucena/ui/pilares_sale/widgets/pilares_purchase_bridge.dart';
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_course_grants.dart';
 import '../../../testing/fakes/fake_course_training_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_purchase_service.dart';
 import '../../../testing/test_app.dart';
@@ -407,6 +412,89 @@ void main() {
       router.routerDelegate.currentConfiguration.uri.path,
       D2Paths.pilaresPurchaseDone,
     );
+  });
+
+  // Bug r3: o curso dado antes do login chegava durante a entrada; a ponte
+  // empilhava o Curso liberado e marcava visto, e o `go` do fim da conta
+  // (continueAfterSignIn) limpava a pilha: a tela nunca aparecia.
+  testWidgets('curso dado durante a entrada: Curso liberado depois do go', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(412, 915);
+    addTearDown(tester.view.reset);
+    final router = GoRouter(
+      initialLocation: Routes.home,
+      routes: [
+        GoRoute(
+          path: Routes.home,
+          builder: (_, _) => const Scaffold(body: Text('inicio')),
+        ),
+        GoRoute(
+          path: Routes.accountEnter,
+          builder: (_, _) => const Scaffold(body: Text('conta')),
+        ),
+        ...d2Routes,
+      ],
+    );
+    addTearDown(router.dispose);
+    final grants = FakeCourseGrantsRepository();
+    final watch = PilaresPurchaseWatchCubit(
+      purchases: purchases,
+      analytics: analytics,
+      grants: grants,
+      now: FakeNow(DateTime(2026, 11, 7)),
+    );
+    addTearDown(watch.close);
+    await tester.pumpWidget(
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
+          RepositoryProvider<ProfileRepository>.value(
+            value: FakeProfileRepository(),
+          ),
+          RepositoryProvider<TrainingRepository>.value(
+            value: FakeTrainingRepository(),
+          ),
+        ],
+        child: BlocProvider.value(
+          value: watch,
+          child: PilaresPurchaseBridge(
+            router: router,
+            child: TestApp(
+              locale: const Locale('pt'),
+              purchaseRepository: purchases,
+              router: router,
+              child: const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    // A entrada na conta vem por cima do Início.
+    unawaited(router.push(Routes.accountEnter));
+    await tester.pumpAndSettle();
+    grants.current = CourseGrants(
+      courses: {
+        pilaresCourseId: CourseGrant(
+          origin: GrantOrigin.gift,
+          givenAt: DateTime(2025, 12),
+        ),
+      },
+    );
+    await tester.pumpAndSettle();
+    // Ainda na entrada: nada é marcado como visto.
+    expect(grants.seen, isEmpty);
+    router.go(Routes.home);
+    await tester.pumpAndSettle();
+    expect(
+      router.routerDelegate.currentConfiguration.last.matchedLocation,
+      D2Paths.pilaresGiftDone,
+    );
+    expect(grants.seen, [pilaresCourseId]);
   });
 
   group('Fim da demonstração (H-VEN-04)', () {

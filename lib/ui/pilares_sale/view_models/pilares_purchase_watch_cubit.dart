@@ -58,15 +58,27 @@ class PilaresPurchaseWatchCubit extends Cubit<PurchaseWatchState> {
   }
 
   void _checkGrants(CourseGrants grants) {
-    if (isClosed || !grants.unseen(pilaresCourseId, _now())) return;
+    if (isClosed || _grantOffered || !grants.unseen(pilaresCourseId, _now())) {
+      return;
+    }
     final grant = grants.active(pilaresCourseId, _now())!;
-    unawaited(_grants.markSeen(pilaresCourseId));
+    // O visto fica para quando a tela abrir de fato ([unlockedShown]).
+    _grantOffered = true;
     _open(
       grant.origin == GrantOrigin.gift
           ? PurchaseScreen.gift
           : PurchaseScreen.granted,
     );
   }
+
+  /// O Curso liberado pedido está na tela: marca o acesso como visto.
+  Future<void> unlockedShown() async {
+    await _grants.markSeen(pilaresCourseId);
+    _grantOffered = false;
+  }
+
+  /// O Curso liberado foi pedido e ainda não abriu.
+  bool _grantOffered = false;
 
   /// O app voltou do segundo plano.
   Future<void> resumed() => _purchases.refresh();
