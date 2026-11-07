@@ -50,6 +50,25 @@ jobs:
       - name: Testes
         run: flutter test --exclude-tags private-content
 
+  functions:
+    name: Cloud Functions (build e testes)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Dependências
+        run: npm --prefix functions ci
+
+      - name: Testes
+        run: npm --prefix functions test
+
   apk:
     name: Build do APK
     needs: checks
