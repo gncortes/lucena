@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
+import 'package:lucena/ui/core/keys/course_unlocked_keys.dart';
+import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
+import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/e2e_dependencies.dart';
@@ -51,6 +54,21 @@ class EmulatorRobot {
     );
     await $(Scaffold).waitUntilVisible();
     await $.pumpAndSettle();
+    // Sem compra, a oferta do Pilares sai por cima do Início uma vez por
+    // abertura (H-INI-14): o roteiro do painel começa com ela fechada.
+    await pumpUntil(
+      () =>
+          find.byKey(PurchaseKeys.beforeHomeSheet).evaluate().isNotEmpty ||
+          find
+              .byKey(HomeKeys.settingsButton)
+              .hitTestable()
+              .evaluate()
+              .isNotEmpty,
+    );
+    if (find.byKey(PurchaseKeys.beforeHomeSheet).evaluate().isNotEmpty) {
+      await $(PurchaseKeys.beforeHomeClose).tap();
+    }
+    await $(HomeKeys.settingsButton).waitUntilVisible();
   }
 
   /// Da tela inicial ao Perfil.
@@ -87,13 +105,28 @@ class EmulatorRobot {
     await $.pumpAndSettle();
   }
 
-  /// O caminho da tela de cima agora.
+  /// O caminho da tela de cima agora. O `push` não muda a `uri` da
+  /// configuração (ela fica na base): vale o último casamento de rota.
   String get location =>
       GoRouter.of($.tester.element(find.byType(Scaffold).last))
-          .routeInformationProvider
-          .value
-          .uri
-          .path;
+          .routerDelegate
+          .currentConfiguration
+          .last
+          .matchedLocation;
+
+  /// As rotas na tela agora (diagnóstico de falha): o caminho do roteador e,
+  /// para cada Scaffold, o nome da rota, se é a de cima e se está ativa.
+  String get routes {
+    final scaffolds = find.byType(Scaffold, skipOffstage: false).evaluate();
+    final described = [
+      for (final e in scaffolds)
+        if (ModalRoute.of(e) case final route?)
+          '${route.settings.name}'
+              '${route.isCurrent ? ' (em cima)' : ''}'
+              '${route.isActive ? '' : ' (saindo)'}',
+    ];
+    return '$location; rotas: ${described.toSet().join(' | ')}';
+  }
 
   /// Deixa o app trabalhar (rede do emulador) até [done] ou [timeout].
   Future<void> pumpUntil(
@@ -103,7 +136,7 @@ class EmulatorRobot {
     final watch = Stopwatch()..start();
     while (!done()) {
       if (watch.elapsed > timeout) {
-        fail('O app não chegou ao esperado em $timeout');
+        fail('O app não chegou ao esperado em $timeout; tela $routes');
       }
       await $.tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 300)),
@@ -135,7 +168,8 @@ class EmulatorRobot {
       } else if (find.byKey(AccountKeys.dataScreen).evaluate().isNotEmpty) {
         await $(AccountKeys.dataSave).tap();
         await $.pumpAndSettle();
-      } else if (find.byKey(ProfileKeys.syncCard).evaluate().isNotEmpty) {
+      } else if (find.byKey(ProfileKeys.syncCard).evaluate().isNotEmpty ||
+          find.byKey(CourseUnlockedKeys.screen).evaluate().isNotEmpty) {
         break;
       } else {
         await $.tester.runAsync(
@@ -144,6 +178,12 @@ class EmulatorRobot {
         await $.pump(const Duration(milliseconds: 100));
       }
     }
-    await $(ProfileKeys.screen).waitUntilVisible();
+    // Com curso dado e não visto, o "Curso liberado" abre por cima do Perfil
+    // logo depois de entrar: quem chamou decide o que fazer com ele.
+    await pumpUntil(
+      () =>
+          find.byKey(CourseUnlockedKeys.screen).evaluate().isNotEmpty ||
+          find.byKey(ProfileKeys.screen).hitTestable().evaluate().isNotEmpty,
+    );
   }
 }

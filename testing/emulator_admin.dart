@@ -32,7 +32,14 @@ class EmulatorAdmin {
   final http.Client _http;
   EmulatorAccount? _admin;
 
+  /// O projeto do Firebase do flavor. O cenário pode chamar o admin antes de o
+  /// app abrir (e iniciar o Firebase): por isso cada chamada que usa o
+  /// projeto passa antes por [_firebase].
   String get project => Firebase.app().options.projectId;
+
+  Future<void> _firebase() async {
+    if (Firebase.apps.isEmpty) await Firebase.initializeApp();
+  }
 
   static const _key = 'chave-do-emulador';
   String get _auth =>
@@ -84,6 +91,7 @@ class EmulatorAdmin {
   /// Verifica o e-mail pelo caminho do link: pede o código, lê na lista do
   /// emulador e o aplica (como `tools/emulador_contas_qa.py`).
   Future<void> verifyEmail(EmulatorAccount account, String email) async {
+    await _firebase();
     await _post('$_accounts:sendOobCode?key=$_key', {
       'requestType': 'VERIFY_EMAIL',
       'idToken': account.idToken,
@@ -117,6 +125,7 @@ class EmulatorAdmin {
     String name,
     Map<String, Object?> data,
   ) async {
+    await _firebase();
     final account = await admin();
     final response = await _http.post(
       Uri.parse(
@@ -173,6 +182,7 @@ class EmulatorAdmin {
 
   /// O documento [path] em valores simples; nulo se não existe.
   Future<Map<String, Object?>?> read(String path) async {
+    await _firebase();
     final response = await _http.get(
       Uri.parse('$_documents/$path'),
       headers: _owner,
@@ -184,6 +194,7 @@ class EmulatorAdmin {
 
   /// Grava (substitui) o documento [path] com [data] em texto e booleanos.
   Future<void> write(String path, Map<String, Object?> data) async {
+    await _firebase();
     final response = await _http.patch(
       Uri.parse('$_documents/$path'),
       headers: _owner,
@@ -202,6 +213,7 @@ class EmulatorAdmin {
     String field,
     String value,
   ) async {
+    await _firebase();
     final response = await _http.post(
       Uri.parse('$_documents:runQuery'),
       headers: _owner,

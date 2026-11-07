@@ -342,12 +342,15 @@ class Dependencies {
   /// [firebase] diz se o Firebase subiu (`startFirebase`). Sem ele, a conta e
   /// o push ficam desligados e o resto do app funciona igual. [push] troca só
   /// o toque no aviso: os cenários do Patrol no emulador do Firebase
-  /// (`testing/emulator_dependencies.dart`) simulam o FCM, que não é emulado.
+  /// (`testing/emulator_dependencies.dart`) simulam o FCM, que não é emulado;
+  /// [pushService] dá a eles um token de mentira (o emulador não registra no
+  /// FCM).
   factory Dependencies.normal({
     AppVersion version = const AppVersion(appVersion),
     bool firebase = false,
     String? trainingInstallSeed,
     PushRepository? push,
+    PushService? pushService,
   }) {
     final auth = firebase
         ? FirebaseAuthService(now: const SystemNow())
@@ -555,9 +558,9 @@ class Dependencies {
           : const Duration(hours: 12),
     );
     const ads = NoAdsRepository();
-    final PushService pushService = firebase
-        ? FirebasePushService()
-        : const NoPushService();
+    final PushService pushes =
+        pushService ??
+        (firebase ? FirebasePushService() : const NoPushService());
     final avatars = CloudAvatarRepository(
       firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
     );
@@ -579,7 +582,7 @@ class Dependencies {
         avatars: avatars,
         now: now,
         language: () async => (await settings.load()).languageCode,
-        push: pushService,
+        push: pushes,
         preferences: preferences,
       ),
       lichessRepository: RemoteLichessRepository(
@@ -592,7 +595,7 @@ class Dependencies {
       pushRepository:
           push ??
           FirebasePushRepository(
-            pushService,
+            pushes,
             preferences,
             notifications: notifications,
             texts: () => loadPushTexts(settings),

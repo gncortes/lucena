@@ -45,6 +45,7 @@ class AppRobot {
     bool accountInvite = false,
     PushRepository? push,
     CourseGrantsRepository? courseGrants,
+    bool settle = true,
   }) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
@@ -81,6 +82,7 @@ class AppRobot {
       accountInvite: accountInvite,
       push: push,
       courseGrants: courseGrants,
+      settle: settle,
     );
   }
 
@@ -126,21 +128,29 @@ class AppRobot {
     bool accountInvite = false,
     PushRepository? push,
     CourseGrantsRepository? courseGrants,
+    bool settle = true,
   }) async {
-    await $.pumpWidgetAndSettle(
-      LucenaApp(
-        key: UniqueKey(),
-        dependencies: await e2eDependencies(
-          trainingScenario: trainingScenario,
-          demo: demo,
-          purchases: purchases,
-          signedIn: signedIn,
-          accountInvite: accountInvite,
-          push: push,
-          courseGrants: courseGrants,
-        ),
+    final app = LucenaApp(
+      key: UniqueKey(),
+      dependencies: await e2eDependencies(
+        trainingScenario: trainingScenario,
+        demo: demo,
+        purchases: purchases,
+        signedIn: signedIn,
+        accountInvite: accountInvite,
+        push: push,
+        courseGrants: courseGrants,
       ),
     );
+    if (!settle) {
+      // Tela com animação sem fim (a abertura do presente): o pumpAndSettle
+      // nunca termina, então o tempo anda em passos fixos.
+      await $.pumpWidget(app);
+      await $(Scaffold).waitUntilVisible();
+      await $.pump(const Duration(seconds: 1));
+      return;
+    }
+    await $.pumpWidgetAndSettle(app);
     // O app abre na tela inicial ou, com partida em andamento, no tabuleiro.
     await $(Scaffold).waitUntilVisible();
     await $.pumpAndSettle();

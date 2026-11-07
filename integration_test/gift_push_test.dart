@@ -33,8 +33,13 @@ void main() {
     await $(GiftOpeningKeys.opening).waitUntilVisible();
     grants.current = granted;
     await $(CourseUnlockedKeys.screen).waitUntilVisible();
+    // O pushReplacement tira a abertura só no fim da transição.
+    await $.pump(const Duration(seconds: 1));
     expect($(GiftOpeningKeys.opening), findsNothing);
-    expect(grants.seen, ['pilares']);
+    // O Curso liberado e o aviso do Pilares marcam o mesmo visto (gravação
+    // idempotente); o que importa é que só o pilares foi marcado.
+    expect(grants.seen, isNotEmpty);
+    expect(grants.seen, everyElement('pilares'));
   }
 
   patrolTest('H-R5-63 push do presente com o app fechado', ($) async {
@@ -44,6 +49,7 @@ void main() {
       signedIn: true,
       push: FakePushRepository(allowed: true, initial: gift),
       courseGrants: grants,
+      settle: false,
     );
     await opensWhenGranted($, grants);
   });
@@ -60,7 +66,8 @@ void main() {
     await $.platform.mobile.pressHome();
     push.tap(gift);
     await $.platform.mobile.openApp();
-    await $.pumpAndSettle();
+    // A abertura do presente anima sem parar: o tempo anda em passo fixo.
+    await $.pump(const Duration(seconds: 1));
     await opensWhenGranted($, grants);
     // O X do Curso liberado volta para onde a pessoa estava.
     await $(CourseUnlockedKeys.close).tap();
@@ -72,6 +79,7 @@ void main() {
       systemLocale: const Locale('pt', 'BR'),
       push: FakePushRepository(allowed: true, initial: gift),
       courseGrants: FakeCourseGrantsRepository(granted),
+      settle: false,
     );
     await $(GiftOpeningKeys.signIn).waitUntilVisible();
     expect(

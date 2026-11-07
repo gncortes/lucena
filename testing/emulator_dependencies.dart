@@ -4,6 +4,8 @@ import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
 import 'package:lucena/data/services/firebase/firebase_bootstrap.dart';
 
+import 'fakes/fake_push_service.dart';
+
 bool? _firebase;
 
 /// Liga o Firebase uma vez por processo, apontado para o Emulator Suite do
@@ -41,5 +43,6 @@ Future<Dependencies> emulatorDependencies({
     firebase: true,
     trainingInstallSeed: await Dependencies.trainingInstallSeed(),
     push: push,
+    pushService: FakePushService(),
   );
 }

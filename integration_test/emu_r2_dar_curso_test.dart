@@ -38,6 +38,17 @@ void main() {
     );
     // Fechar grava o "visto": a tela não volta para o mesmo acesso.
     await $(CourseUnlockedKeys.close).tap();
+    await $.pump(const Duration(seconds: 1));
+    if (find.byKey(CourseUnlockedKeys.screen).evaluate().isNotEmpty) {
+      final top = app.routes;
+      await $(CourseUnlockedKeys.close).tap();
+      await $.pump(const Duration(seconds: 1));
+      final twice = find.byKey(CourseUnlockedKeys.screen).evaluate().isEmpty;
+      fail(
+        'o X não fechou o Curso liberado ($top); o segundo X '
+        '${twice ? 'fechou: eram duas telas' : 'também não fechou'}',
+      );
+    }
     await admin.waitFor(
       'acessos/${student.uid}',
       (doc) => (doc?['vistos'] as Map?)?[pilaresCourseId] != null,
@@ -49,6 +60,12 @@ void main() {
     await app.pumpUntil(
       () => grants.current.active(pilaresCourseId, DateTime.now()) == null,
     );
+    expect(
+      $(CourseUnlockedKeys.screen),
+      findsNothing,
+      reason: 'revogar não abre o Curso liberado',
+    );
+    final seen = await admin.read('acessos/${student.uid}');
 
     // Desfazer a revogação: o acesso volta, sem o "Curso liberado" de novo
     // (o curso não foi dado outra vez).
@@ -56,7 +73,14 @@ void main() {
     await app.pumpUntil(
       () => grants.current.active(pilaresCourseId, DateTime.now()) != null,
     );
-    expect($(CourseUnlockedKeys.screen), findsNothing);
+    expect(
+      $(CourseUnlockedKeys.screen),
+      findsNothing,
+      reason:
+          'desfazer não abre o Curso liberado; antes: $seen, '
+          'depois: ${await admin.read('acessos/${student.uid}')}, '
+          'no app: ${grants.current.seen}',
+    );
 
     // Limpa para a próxima rodada.
     await admin.revokeCourse(student.uid);

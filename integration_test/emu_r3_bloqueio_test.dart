@@ -28,8 +28,17 @@ void main() {
     await app.open();
     await app.openProfile();
     await app.signIn(email, EmulatorAdmin.studentPassword);
-    await $(CourseUnlockedKeys.screen)
-        .waitUntilVisible(timeout: const Duration(seconds: 30));
+    try {
+      await $(CourseUnlockedKeys.screen)
+          .waitUntilVisible(timeout: const Duration(seconds: 30));
+    } on Object {
+      final doc = await admin.read('acessos/${student.uid}');
+      fail(
+        'Curso liberado não abriu depois de entrar; tela ${app.location}, '
+        'vistos no servidor ${doc?['vistos']}, no app '
+        '${app.dependencies.courseGrantsRepository.current.seen}',
+      );
+    }
     await $(CourseUnlockedKeys.close).tap();
     final grants = app.dependencies.courseGrantsRepository;
     final access = app.dependencies.courseAccessRepository;

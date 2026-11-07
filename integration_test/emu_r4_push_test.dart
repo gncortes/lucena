@@ -48,6 +48,8 @@ void main() {
     expect(given['push'], isNotNull, reason: 'o darCurso manda o push');
     await $(CourseUnlockedKeys.screen)
         .waitUntilVisible(timeout: const Duration(seconds: 30));
+    // O pushReplacement deixa a abertura na árvore até a transição acabar.
+    await $.pump(const Duration(seconds: 1));
     expect($(GiftOpeningKeys.opening), findsNothing);
     expect(
       grants.current.active(pilaresCourseId, DateTime.now())?.origin,
@@ -79,7 +81,8 @@ void main() {
         'link': link,
       }),
     );
-    await app.pumpUntil(() => app.location == Routes.daily);
+    // O `/daily` troca a si mesmo pela partida do final de hoje (`/board`).
+    await app.pumpUntil(() => app.location == Routes.freeBoard);
 
     await admin.revokeCourse(student.uid);
   });
