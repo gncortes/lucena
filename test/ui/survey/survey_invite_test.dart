@@ -23,17 +23,17 @@ void main() {
 
   setUp(() => surveys = FakeSurveyRepository());
 
-  Future<void> pumpCard(WidgetTester tester, SurveyKind kind) async {
+  Future<void> pumpCard(
+    WidgetTester tester,
+    SurveyKind kind, {
+    SurveyInviteSource source = SurveyInviteSource.pilaresLesson,
+  }) async {
     await tester.pumpWidget(
       TestApp(
         locale: const Locale('pt'),
         surveyRepository: surveys,
         child: Scaffold(
-          body: SurveyInviteCard(
-            key: UniqueKey(),
-            kind: kind,
-            source: SurveyInviteSource.trail,
-          ),
+          body: SurveyInviteCard(key: UniqueKey(), kind: kind, source: source),
         ),
       ),
     );
@@ -43,25 +43,32 @@ void main() {
   testWidgets('o convite aparece sem resposta e some com ela, por tipo', (
     tester,
   ) async {
-    await pumpCard(tester, SurveyKind.endgames);
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
-    expect(find.text('O que achou do curso?'), findsOneWidget);
+    await pumpCard(tester, SurveyKind.pilares);
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsOneWidget);
+    // H-OPI-01: os textos do canvas no fim de lição do Pilares.
+    expect(find.text('O que você achou das lições?'), findsOneWidget);
+    expect(
+      find.text(
+        'Leva 1 minuto e ajuda a melhorar as próximas lições do Pilares.',
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Responder'), findsOneWidget);
 
     await surveys.saveResponse(
       SurveyKind.school,
       const SurveyAnswers(rating: 4),
     );
-    await pumpCard(tester, SurveyKind.endgames);
-    // Responder a Escola não esconde o de finais.
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
+    await pumpCard(tester, SurveyKind.pilares);
+    // Responder a Escola não esconde o do Pilares.
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsOneWidget);
 
     await surveys.saveResponse(
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       const SurveyAnswers(rating: 4),
     );
-    await pumpCard(tester, SurveyKind.endgames);
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsNothing);
+    await pumpCard(tester, SurveyKind.pilares);
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsNothing);
   });
 
   testWidgets('fechar sem enviar mantém o convite; enviar o esconde', (
@@ -73,8 +80,8 @@ void main() {
           path: '/',
           builder: (context, _) => const Scaffold(
             body: SurveyInviteCard(
-              kind: SurveyKind.endgames,
-              source: SurveyInviteSource.trail,
+              kind: SurveyKind.pilares,
+              source: SurveyInviteSource.pilaresLesson,
             ),
           ),
         ),
@@ -98,27 +105,78 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(SurveyKeys.inviteAction(SurveyKind.endgames)));
+    await tester.tap(find.byKey(SurveyKeys.inviteAction(SurveyKind.pilares)));
     await tester.pumpAndSettle();
     expect(find.text('fechar'), findsOneWidget);
     await tester.tap(find.text('fechar'));
     await tester.pumpAndSettle();
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsOneWidget);
 
-    await tester.tap(find.byKey(SurveyKeys.inviteAction(SurveyKind.endgames)));
+    await tester.tap(find.byKey(SurveyKeys.inviteAction(SurveyKind.pilares)));
     await tester.pumpAndSettle();
     await surveys.saveResponse(
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       const SurveyAnswers(rating: 5),
     );
     await tester.tap(find.text('fechar'));
     await tester.pumpAndSettle();
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsNothing);
-    expect(Routes.survey(SurveyKind.endgames), '/survey/endgames');
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsNothing);
+    expect(Routes.survey(SurveyKind.pilares), '/survey/pilares');
+    expect(
+      Routes.survey(SurveyKind.pilares, origin: 'diploma_pilares'),
+      '/survey/pilares?origem=diploma_pilares',
+    );
+  });
+
+  testWidgets('fim de lição da Escola: o texto da Escola (H-OPI-06)', (
+    tester,
+  ) async {
+    await pumpCard(
+      tester,
+      SurveyKind.school,
+      source: SurveyInviteSource.schoolLesson,
+    );
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.school)), findsOneWidget);
+    expect(
+      find.text(
+        'Você terminou uma lição da Escola. Leva 1 minuto e ajuda a '
+        'melhorar esta e as próximas.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('no diploma, uma linha com seta que abre a pesquisa '
+      '(H-OPI-02)', (tester) async {
+    await pumpCard(
+      tester,
+      SurveyKind.pilares,
+      source: SurveyInviteSource.pilaresDiploma,
+    );
+    final row = find.byKey(SurveyKeys.inviteRow(SurveyKind.pilares));
+    expect(row, findsOneWidget);
+    expect(find.text('O que você achou do Pilares?'), findsOneWidget);
+    expect(
+      find.text('Leva 1 minuto e ajuda a melhorar as lições.'),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: row, matching: find.byIcon(Icons.chevron_right)),
+      findsOneWidget,
+    );
+    expect(find.text('Responder'), findsNothing);
+
+    await pumpCard(
+      tester,
+      SurveyKind.school,
+      source: SurveyInviteSource.schoolDiploma,
+    );
+    expect(find.text('O que você achou da Escola?'), findsOneWidget);
   });
 
   testWidgets('a trilha sintética: só as aulas visíveis, sem "em breve" nem '
-      '"avise", e o convite depois do último tile', (tester) async {
+      '"avise", e sem convite de pesquisa (fica no fim de lição e no '
+      'diploma)', (tester) async {
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = const Size(412, 915);
@@ -174,11 +232,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.byKey(SurveyKeys.invite(SurveyKind.endgames)),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -3000));
+    await tester.pumpAndSettle();
     final tiles = find.byWidgetPredicate(
       (widget) =>
           widget.key is ValueKey<String> &&
@@ -197,12 +252,6 @@ void main() {
     expect(VisibleLessons.endgameLessonIds.containsAll(ids), isTrue);
     expect(find.textContaining('em breve', findRichText: true), findsNothing);
     expect(find.textContaining('avise', findRichText: true), findsNothing);
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
-    // O convite fica abaixo do último tile.
-    final lastTile = tester.getBottomLeft(tiles.last).dy;
-    expect(
-      tester.getTopLeft(find.byKey(SurveyKeys.invite(SurveyKind.endgames))).dy,
-      greaterThan(lastTile),
-    );
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsNothing);
   });
 }

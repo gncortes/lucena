@@ -12,6 +12,15 @@ inputs:
     required: false
     default: ''
 
+  project-id:
+    description: Projeto Firebase do app. Vazio = FIREBASE_PROJECT_ID do config.env (prod).
+    required: false
+    default: ''
+  app-id:
+    description: ID do app Android no Firebase. Vazio = FIREBASE_ANDROID_APP_ID do config.env (prod).
+    required: false
+    default: ''
+
 outputs:
   tester:
     description: Link para instalar pelo app Firebase App Tester.
@@ -29,9 +38,12 @@ runs:
       env:
         APK: ${{ inputs.apk }}
         GROUP: ${{ inputs.group }}
+        PROJECT_ID: ${{ inputs.project-id }}
+        APP_ID: ${{ inputs.app-id }}
       run: |
         set -o pipefail
-        source "$QA_CONFIG"
+        # Sem QA_CONFIG (workflow da PR), projeto, app e grupo vêm das entradas.
+        if [ -n "${QA_CONFIG:-}" ]; then source "$QA_CONFIG"; fi
         npm install --global --no-fund --no-audit firebase-tools@15.32.1
 
         notes="$RUNNER_TEMP/release_notes.txt"
@@ -44,8 +56,8 @@ runs:
         } > "$notes"
 
         firebase appdistribution:distribute "$APK" \
-          --project "$FIREBASE_PROJECT_ID" \
-          --app "$FIREBASE_ANDROID_APP_ID" \
+          --project "${PROJECT_ID:-$FIREBASE_PROJECT_ID}" \
+          --app "${APP_ID:-$FIREBASE_ANDROID_APP_ID}" \
           --groups "${GROUP:-$TESTER_GROUP}" \
           --release-notes-file "$notes" \
           2>&1 | tee "$RUNNER_TEMP/distribution.log"

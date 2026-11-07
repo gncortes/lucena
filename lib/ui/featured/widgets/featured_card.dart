@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../domain/models/featured.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/featured_keys.dart';
@@ -9,20 +10,22 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/motion/tabuleiro_hero.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../../core/widgets/position_board.dart';
 import 'featured_labels.dart';
 
-/// O tabuleiro de um final em destaque voa da tela inicial até a tela dele.
-String featuredBoardTag(String id) => 'featured.board.$id';
-
-/// Um final em destaque numa lista: miniatura, quem jogou (o título), evento e
-/// ano, e a meta (sem selo de novo nem de origem). [compact], na tela
-/// inicial: miniatura pequena, quem jogou e o evento, com a seta.
+/// Um final em destaque numa lista (canvas `PropV1DesLista`): miniatura, os
+/// selos (Torneio, NOVO, Histórica, Jogado), o título, quem jogou e o evento,
+/// e o tema. [historic] põe o selo "Histórica" (a seção "Finais históricos").
+/// [compact], na tela inicial: miniatura pequena, quem jogou e o evento, com
+/// a seta.
 class FeaturedCard extends StatelessWidget {
   const FeaturedCard({
     required this.item,
     required this.onTap,
     this.compact = false,
+    this.historic = false,
     super.key,
   });
 
@@ -34,6 +37,7 @@ class FeaturedCard extends StatelessWidget {
   final FeaturedItem item;
   final VoidCallback onTap;
   final bool compact;
+  final bool historic;
 
   @override
   Widget build(BuildContext context) {
@@ -43,68 +47,101 @@ class FeaturedCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final language = Localizations.localeOf(context).languageCode;
     final endgame = item.endgame;
-    return Card(
+    final title = endgame.title.of(language);
+    final players = FeaturedLabels.shortPlayers(l10n, endgame);
+    final event = FeaturedLabels.eventYear(
+      l10n,
+      language,
+      endgame,
+      item.tournament,
+    );
+    final themeLabel = endgame.theme;
+    final badges = [
+      if (endgame.origin == FeaturedOrigin.tournament)
+        _Badge(
+          key: FeaturedKeys.cardTournament,
+          icon: FeaturedLabels.originIcon(FeaturedOrigin.tournament),
+          label: l10n.featuredOriginTournament,
+          color: colors.onSurfaceVariant,
+        ),
+      if (item.isNew)
+        _Badge(
+          key: FeaturedKeys.cardNew,
+          label: l10n.featuredNew,
+          color: colors.primary,
+        ),
+      if (historic)
+        _Badge(
+          key: FeaturedKeys.cardHistoric,
+          icon: FeaturedLabels.originIcon(FeaturedOrigin.historical),
+          label: l10n.featuredOriginHistorical,
+          color: colors.onSurfaceVariant,
+        ),
+      if (item.played)
+        _Badge(
+          key: FeaturedKeys.cardPlayed,
+          icon: Icons.check_circle,
+          label: l10n.featuredPlayed,
+          color: AppColors.successColor,
+        ),
+    ];
+    return KeyedSubtree(
       key: FeaturedKeys.card(item.id),
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
+      child: LucenaCard(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.md,
-            children: [
-              ExcludeSemantics(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.md,
+          children: [
+            ExcludeSemantics(
+              child: TabuleiroHero(
+                id: endgame.fen,
                 child: PositionBoard(
                   fen: endgame.fen,
                   size: thumbnail,
                   radius: AppShape.small,
                 ),
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.xs,
-                  children: [
-                    if (item.played)
-                      _Badge(
-                        key: FeaturedKeys.cardPlayed,
-                        icon: Icons.check_circle,
-                        label: l10n.featuredPlayed,
-                        color: AppColors.successColor,
-                      ),
-                    Text(
-                      FeaturedLabels.shortPlayers(l10n, endgame),
-                      style: context.cardTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.xs,
+                children: [
+                  if (badges.isNotEmpty)
+                    Wrap(
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.xs,
+                      children: badges,
                     ),
-                    Text(
-                      FeaturedLabels.eventYear(
-                        l10n,
-                        language,
-                        endgame,
-                        item.tournament,
-                      ),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                  Text(
+                    title.isEmpty ? players : title,
+                    style: context.cardTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    title.isEmpty ? event : '$players · $event',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
                     ),
-                    Text(
-                      goalLabel(l10n, endgame.goal),
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    themeLabel == null
+                        ? goalLabel(l10n, endgame.goal)
+                        : FeaturedLabels.theme(l10n, themeLabel),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -121,7 +158,11 @@ extension on FeaturedCard {
     return Material(
       key: FeaturedKeys.card(item.id),
       color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
+      // #FAFBF9 com contorno 1px #E1E5DF (H-INI-05).
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppShape.large),
+        side: const BorderSide(color: AppColors.cardOutline),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -131,11 +172,13 @@ extension on FeaturedCard {
             spacing: AppSpacing.md,
             children: [
               ExcludeSemantics(
-                child: PositionBoard(
-                  fen: endgame.fen,
-                  size: FeaturedCard.compactThumbnail,
-                  radius: AppShape.small,
-                  heroTag: featuredBoardTag(item.id),
+                child: TabuleiroHero(
+                  id: endgame.fen,
+                  child: PositionBoard(
+                    fen: endgame.fen,
+                    size: FeaturedCard.compactThumbnail,
+                    radius: AppShape.small,
+                  ),
                 ),
               ),
               Expanded(

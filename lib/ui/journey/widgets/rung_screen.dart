@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +10,8 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -19,9 +24,12 @@ import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'journey_ui.dart';
-import '../../core/widgets/animated_progress.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
+import '../../core/widgets/animated_progress.dart' show ProgressRole;
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/section_title.dart';
 
@@ -57,6 +65,16 @@ class RungScreen extends StatelessWidget {
             for (final challenge in rung.rung.challenges)
               if (!rung.completed.contains(challenge.id)) challenge,
           ].firstOrNull;
+    final failure =
+        context.watch<JourneyCubit>().state.failure ??
+        (progress != null && rung == null ? LoadFailure.notFound : null);
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        () => context.read<JourneyCubit>().load(rungId: rungId),
+      );
+    }
     return Scaffold(
       key: JourneyKeys.rungScreen,
       appBar: LucenaAppBar(
@@ -66,73 +84,78 @@ class RungScreen extends StatelessWidget {
               : opponentName(l10n, characters, rung.rung.opponent),
         ),
       ),
-      body: rung == null
-          ? const SkeletonList()
-          : LayoutBuilder(
-              builder: (context, constraints) => ListView(
-                padding: scrollPadding(context),
-                children: [
-                  _Header(rung: rung),
-                  if (teacher != null && reunion != null)
-                    Card(
-                      key: JourneyKeys.reunion,
-                      margin: const EdgeInsets.fromLTRB(
-                        AppSpacing.lg,
-                        AppSpacing.sm,
-                        AppSpacing.lg,
-                        AppSpacing.sm,
-                      ),
-                      color: colors.primaryContainer,
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.rungReunionTitle(teacher.name),
-                              style: context.cardTitle?.copyWith(
-                                color: colors.onPrimaryContainer,
+      body: ShimmerConteudo(
+        carregando: rung == null,
+        esqueleto: const SkeletonList(),
+        child: rung == null
+            ? const SizedBox.shrink()
+            : LayoutBuilder(
+                builder: (context, constraints) => ListView(
+                  padding: scrollPadding(context),
+                  children: [
+                    _Header(rung: rung),
+                    if (teacher != null && reunion != null)
+                      Card(
+                        key: JourneyKeys.reunion,
+                        margin: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                        ),
+                        color: colors.primaryContainer,
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.rungReunionTitle(teacher.name),
+                                style: context.cardTitle?.copyWith(
+                                  color: colors.onPrimaryContainer,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: AppSpacing.md),
-                            TeacherSpeech(
-                              speechContext: SpeechContext.teaching,
-                              teacher: teacher,
-                              text: reunion,
-                              avatarSize: CharacterAvatar.speech,
-                            ),
-                          ],
+                              const SizedBox(height: AppSpacing.md),
+                              TeacherSpeech(
+                                speechContext: SpeechContext.teaching,
+                                teacher: teacher,
+                                text: reunion,
+                                avatarSize: CharacterAvatar.speech,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  if (next != null) ...[
-                    SectionTitle(l10n.journeyNextChallenge),
-                    _NextChallenge(rungId: rungId, challenge: next),
-                  ],
-                  SectionTitle(l10n.journeyAllChallenges),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
-                    ),
-                    child: Builder(
-                      builder: (context) {
-                        // Duas colunas no celular, três em tela larga; cada
-                        // cartão com a altura do próprio conteúdo.
-                        final columns = constraints.maxWidth >= 600 ? 3 : 2;
-                        const gap = 12.0;
-                        final width =
-                            (constraints.maxWidth - 32 - gap * (columns - 1)) /
-                            columns;
-                        return Wrap(
-                          spacing: gap,
-                          runSpacing: gap,
-                          children: [
-                            for (final (index, challenge)
-                                in rung.rung.challenges.indexed)
-                              SizedBox(
-                                width: width,
-                                child: StaggeredEntrance(
-                                  index: index,
+                    if (next != null) ...[
+                      SectionTitle(l10n.journeyNextChallenge),
+                      _NextChallenge(rungId: rungId, challenge: next),
+                    ],
+                    SectionTitle(l10n.journeyAllChallenges),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          // Duas colunas no celular, três em tela larga; cada
+                          // cartão com a altura do próprio conteúdo.
+                          final columns = constraints.maxWidth >= 600 ? 3 : 2;
+                          const gap = 12.0;
+                          final width =
+                              (constraints.maxWidth -
+                                  32 -
+                                  gap * (columns - 1)) /
+                              columns;
+                          return ListaEmOrdem(
+                            montar: (itens) => Wrap(
+                              spacing: gap,
+                              runSpacing: gap,
+                              children: itens,
+                            ),
+                            itens: [
+                              for (final challenge in rung.rung.challenges)
+                                SizedBox(
+                                  width: width,
                                   child: _ChallengeCell(
                                     rungId: rungId,
                                     challenge: challenge,
@@ -141,25 +164,25 @@ class RungScreen extends StatelessWidget {
                                     flies: challenge.id != next?.id,
                                   ),
                                 ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  // O mesmo final de outro jeito: às cegas. Vale como extra.
-                  if (rung.rung.specials.isNotEmpty) ...[
-                    SectionTitle(l10n.journeySpecialSection),
-                    for (final special in rung.rung.specials)
-                      _SpecialChallenge(
-                        special: special,
-                        open: rung.specialOpen(special),
-                        done: rung.specialsDone.contains(special.id),
+                            ],
+                          );
+                        },
                       ),
+                    ),
+                    // O mesmo final de outro jeito: às cegas. Vale como extra.
+                    if (rung.rung.specials.isNotEmpty) ...[
+                      SectionTitle(l10n.journeySpecialSection),
+                      for (final special in rung.rung.specials)
+                        _SpecialChallenge(
+                          special: special,
+                          open: rung.specialOpen(special),
+                          done: rung.specialsDone.contains(special.id),
+                        ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }
@@ -333,17 +356,22 @@ class _Header extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
-          AnimatedProgress(
-            value: total == 0 ? 0 : done / total,
-            role: ProgressRole.success,
-            backgroundColor: colors.surfaceContainerHighest,
+          // H-ANI-13/18: a barra enche e os desafios feitos contam junto.
+          BarraQueEnche(
+            valor: total == 0 ? 0 : done / total,
+            papel: ProgressRole.success,
+            corDoTrilho: colors.surfaceContainerHighest,
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(
-            l10n.journeyRungProgress(done, total),
-            key: JourneyKeys.rungProgress,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
+          ValorQueAnima(
+            valor: done.toDouble(),
+            duracao: LucenaMotion.numeroConta,
+            builder: (context, agora) => Text(
+              l10n.journeyRungProgress(agora.round(), total),
+              key: JourneyKeys.rungProgress,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -376,10 +404,9 @@ class _NextChallenge extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
-              PositionBoard(
-                fen: position.fen,
-                size: 120,
-                heroTag: challengeBoardTag(challenge.id),
+              TabuleiroHero(
+                id: position.fen,
+                child: PositionBoard(fen: position.fen, size: 120),
               ),
               const SizedBox(width: AppSpacing.lg),
               Expanded(
@@ -440,7 +467,7 @@ class _ChallengeCell extends StatelessWidget {
     return PositionCard(
       key: JourneyKeys.challenge(position.id),
       fen: position.fen,
-      heroTag: flies ? challengeBoardTag(challenge.id) : null,
+      heroId: flies ? position.fen : null,
       doneKey: done ? JourneyKeys.challengeDone(position.id) : null,
       doneLabel: done ? l10n.journeyCompletedLabel : null,
       onTap: () => _openChallenge(context, rungId, challenge),

@@ -10,7 +10,8 @@ import '../../core/keys/update_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/update_cubit.dart';
 
-/// Abre a atualização recomendada quando a pessoa está na home (nunca no
+/// Abre a atualização recomendada quando a pessoa está na home ou no
+/// Objetivo da primeira abertura (nunca no
 /// meio de partida, aula ou exercício) e avisa quando a versão nova baixou
 /// com a tela já fechada.
 class UpdateBridge extends StatefulWidget {
@@ -66,7 +67,8 @@ class _UpdateBridgeState extends State<UpdateBridge> {
     final cubit = context.read<UpdateCubit>();
     final state = cubit.state;
     if (state.decision != UpdateDecision.recommended || state.shown) return;
-    if (_location != Routes.home) return;
+    // Na home ou no Objetivo (a 1ª abertura, antes do tour).
+    if (_location != Routes.home && _location != Routes.goal) return;
     unawaited(cubit.recommendedShown());
     // Fora da notificação do roteador, que não aceita navegar dentro dela.
     unawaited(

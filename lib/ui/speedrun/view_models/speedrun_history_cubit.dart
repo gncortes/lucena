@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -41,6 +44,8 @@ abstract class SpeedrunHistoryRun with _$SpeedrunHistoryRun {
 @freezed
 abstract class SpeedrunHistoryState with _$SpeedrunHistoryState {
   const factory SpeedrunHistoryState({
+    LoadFailure? failure,
+
     /// O speedrun, já no ritmo. Nulo enquanto é lido ou se o id não existe.
     Speedrun? speedrun,
 
@@ -90,57 +95,74 @@ class SpeedrunHistoryCubit extends Cubit<SpeedrunHistoryState> {
   );
 
   /// Lê o speedrun [speedrunId] (o id com o ritmo).
+  String _speedrunId = '';
+
+  Future<void> retry() => load(_speedrunId);
+
   Future<void> load(String speedrunId) async {
-    final speedrun = SpeedrunPaces.resolve(
-      await _journey.speedruns(),
-      speedrunId,
-    );
-    if (speedrun == null) {
-      if (!isClosed) emit(const SpeedrunHistoryState(loaded: true));
-      return;
-    }
-    // A conclusão que fechou à força antes do bônus recebe agora, em
-    // silêncio (P4).
-    await _bonus.payPending();
-    final bonuses = {
-      for (final bonus in await _rating.speedrunBonuses())
-        bonus.attemptId: bonus.points,
-    };
-    final runs = [
-      for (final attempt in await _speedruns.attempts(speedrun.id))
-        SpeedrunScore.run(speedrun, attempt),
-    ].where((run) => !run.inProgress).toList();
-    final records = SpeedrunScore.records(speedrun, [
-      for (final run in runs) run.attempt,
-    ]);
-    // O recorde é da primeira tentativa que fez o melhor tempo.
-    final record = records.completed.reversed
-        .where((run) => run.total == records.best)
-        .firstOrNull;
-    final rows = [
-      for (final run in runs)
-        SpeedrunHistoryRun(
-          run: run,
-          end: speedrun.kind == SpeedrunKind.marathon
-              ? MarathonEnd.of(speedrun, run)
-              : SpeedrunScore.endOf(run),
-          endedAt: run.finishedAt ?? run.attempt.abandonedAt!,
-          record: run.attempt.id == record?.attempt.id,
-          bonus: run.completed ? bonuses[run.attempt.id] : null,
+    _speedrunId = speedrunId;
+    try {
+      final speedrun = SpeedrunPaces.resolve(
+        await _journey.speedruns(),
+        speedrunId,
+      );
+      if (speedrun == null) {
+        if (!isClosed) {
+          emit(
+            const SpeedrunHistoryState(
+              loaded: true,
+              failure: LoadFailure.notFound,
+            ),
+          );
+        }
+        return;
+      }
+      // A conclusão que fechou à força antes do bônus recebe agora, em
+      // silêncio (P4).
+      await _bonus.payPending();
+      final bonuses = {
+        for (final bonus in await _rating.speedrunBonuses())
+          bonus.attemptId: bonus.points,
+      };
+      final runs = [
+        for (final attempt in await _speedruns.attempts(speedrun.id))
+          SpeedrunScore.run(speedrun, attempt),
+      ].where((run) => !run.inProgress).toList();
+      final records = SpeedrunScore.records(speedrun, [
+        for (final run in runs) run.attempt,
+      ]);
+      // O recorde é da primeira tentativa que fez o melhor tempo.
+      final record = records.completed.reversed
+          .where((run) => run.total == records.best)
+          .firstOrNull;
+      final rows = [
+        for (final run in runs)
+          SpeedrunHistoryRun(
+            run: run,
+            end: speedrun.kind == SpeedrunKind.marathon
+                ? MarathonEnd.of(speedrun, run)
+                : SpeedrunScore.endOf(run),
+            endedAt: run.finishedAt ?? run.attempt.abandonedAt!,
+            record: run.attempt.id == record?.attempt.id,
+            bonus: run.completed ? bonuses[run.attempt.id] : null,
+          ),
+      ]..sort((a, b) => b.endedAt.compareTo(a.endedAt));
+      final characters = await _characters?.characters() ?? const <Character>[];
+      if (isClosed) return;
+      emit(
+        SpeedrunHistoryState(
+          speedrun: speedrun,
+          best: records.best,
+          bestAt: record?.finishedAt,
+          runs: rows,
+          characters: characters,
+          loaded: true,
+          year: _now().toLocal().year,
         ),
-    ]..sort((a, b) => b.endedAt.compareTo(a.endedAt));
-    final characters = await _characters?.characters() ?? const <Character>[];
-    if (isClosed) return;
-    emit(
-      SpeedrunHistoryState(
-        speedrun: speedrun,
-        best: records.best,
-        bestAt: record?.finishedAt,
-        runs: rows,
-        characters: characters,
-        loaded: true,
-        year: _now().toLocal().year,
-      ),
-    );
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(SpeedrunHistoryState(failure: LoadFailure.of(error)));
+    }
   }
 }

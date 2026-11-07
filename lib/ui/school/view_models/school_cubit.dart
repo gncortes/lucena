@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -24,6 +27,7 @@ enum LessonStatus { locked, open, completed, skippedByTest }
 class SchoolState {
   const SchoolState({
     this.ready = false,
+    this.failure,
     this.course = const Course(modules: []),
     this.texts = LessonTexts.empty,
     this.completed = const {},
@@ -54,6 +58,7 @@ class SchoolState {
       completed.contains(lessonId) || skipped.containsKey(lessonId);
 
   final bool ready;
+  final LoadFailure? failure;
   final Course course;
   final LessonTexts texts;
   final Set<String> completed;
@@ -104,6 +109,7 @@ class SchoolState {
 
   SchoolState copyWith({bool? showSkipped}) => SchoolState(
     ready: ready,
+    failure: failure,
     course: course,
     texts: texts,
     completed: completed,
@@ -155,11 +161,16 @@ class SchoolCubit extends Cubit<SchoolState> {
   Future<void> load(String language) async {
     try {
       await _load(language);
-    } on LessonContentUnavailable {
-      unawaited(
-        _analytics.log(AnalyticsEvents.aulaIndisponivel(origem: 'escola')),
-      );
-      if (!isClosed) emit(const SchoolState(ready: true));
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (error is LessonContentUnavailable) {
+        unawaited(
+          _analytics.log(AnalyticsEvents.aulaIndisponivel(origem: 'escola')),
+        );
+      }
+      if (!isClosed) {
+        emit(SchoolState(ready: true, failure: LoadFailure.of(error)));
+      }
     }
   }
 

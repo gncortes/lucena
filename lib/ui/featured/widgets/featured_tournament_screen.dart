@@ -1,49 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../domain/models/featured.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/load_skeleton.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/featured_tournament_cubit.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'featured_card.dart';
 import 'featured_labels.dart';
 import 'featured_link_chip.dart';
 
-/// Um torneio: o resumo, os links de resultados e de transmissão, os finais
-/// dele e o aviso de final novo (quando há canal para ele).
+/// Um torneio (canvas `PropV1DesTorneio*`): o cabeçalho com os links, e a
+/// seção "Finais para praticar". Sem aviso por torneio.
 class FeaturedTournamentScreen extends StatelessWidget {
   const FeaturedTournamentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<FeaturedTournamentCubit>().state;
+    if (state.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<FeaturedTournamentCubit>().retryLoad,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final l10n = context.l10n;
-    return BlocBuilder<FeaturedTournamentCubit, FeaturedTournamentState>(
-      builder: (context, state) {
-        final tournament = state.tournament;
-        return Scaffold(
-          key: FeaturedKeys.tournamentScreen,
-          appBar: LucenaAppBar(title: Text(l10n.featuredOriginTournament)),
-          body: !state.ready
-              ? const SizedBox.shrink()
-              : tournament == null
-              ? Center(
-                  child: EmptyState(
-                    messageKey: FeaturedKeys.tournamentMissing,
-                    icon: Icons.flag_outlined,
-                    message: l10n.featuredTournamentMissing,
-                  ),
-                )
-              : _Body(state: state, tournament: tournament),
-        );
-      },
+    if (!state.ready) {
+      return KeyedSubtree(
+        key: FeaturedKeys.tournamentLoading,
+        child: LoadSkeletonScreen(
+          title: l10n.featuredOriginTournament,
+          blocks: const [
+            SkeletonShape.card(200),
+            SkeletonShape.card(64),
+            SkeletonShape.line(140),
+            SkeletonShape.card(120),
+            SkeletonShape.card(120),
+          ],
+        ),
+      );
+    }
+    final tournament = state.tournament;
+    if (tournament == null) {
+      return KeyedSubtree(
+        key: FeaturedKeys.tournamentMissing,
+        child: LoadErrorScreen(
+          kind: LoadErrorKind.notFound,
+          onAction: () => context.go(Routes.home),
+        ),
+      );
+    }
+    return Scaffold(
+      key: FeaturedKeys.tournamentScreen,
+      appBar: LucenaAppBar(title: Text(l10n.featuredOriginTournament)),
+      body: _Body(state: state, tournament: tournament),
     );
   }
 }
@@ -62,14 +86,28 @@ class _Body extends StatelessWidget {
     final summary = tournament.summary.of(language);
     final place = tournament.placeIn(language);
     final colors = theme.colorScheme;
-    final details = [?place, '${tournament.year}'].join(' · ');
-    return ListView(
-      padding: scrollPadding(context, left: 16, right: 16),
-      children: [
-        Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+    final monthDay = DateFormat.MMMMd(language);
+    final start = tournament.startsOn;
+    final end = tournament.endsOn;
+    final when = state.ongoing && start != null && end != null
+        ? l10n.desafiosTournamentDates(
+            // "17 a 25 de outubro" no mesmo mês; senão cada data com o mês.
+            (start.month == end.month ? DateFormat.d(language) : monthDay)
+                .format(start),
+            monthDay.format(end),
+          )
+        : '${tournament.year}';
+    final details = [?place, when].join(' · ');
+    return EntradaDaTela(
+      id: 'DesafiosTorneio.${tournament.id}',
+      child: ListaEmOrdem(
+        montar: (itens) => ListView(
+          padding: scrollPadding(context, left: 16, right: 16),
+          children: itens,
+        ),
+        itens: [
+          LucenaCard(
+            key: FeaturedKeys.tournamentHeader,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.sm,
@@ -114,44 +152,41 @@ class _Body extends StatelessWidget {
                     key: FeaturedKeys.tournamentSummary,
                     style: theme.textTheme.bodyMedium,
                   ),
-                FeaturedLinkChips(tournament: tournament),
+                FeaturedLinkChips(
+                  tournament: tournament,
+                  ongoing: state.ongoing,
+                ),
               ],
             ),
           ),
-        ),
-        if (state.alertAvailable)
-          SwitchListTile(
-            key: FeaturedKeys.tournamentAlert,
-            contentPadding: EdgeInsets.zero,
-            title: Text(l10n.featuredAlertTournament),
-            value: state.alertOn,
-            onChanged: (value) =>
-                context.read<FeaturedTournamentCubit>().setAlert(value: value),
-          ),
-        if (state.items.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-            child: Text(
-              l10n.featuredTournamentNoFinals,
-              key: FeaturedKeys.tournamentNoFinals,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          )
-        else ...[
-          SectionTitle(l10n.featuredTournamentFinals),
-          for (final item in state.items)
+          if (state.items.isEmpty)
             Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: FeaturedCard(
-                item: item,
-                onTap: () => _open(context, Routes.featuredEndgame(item.id)),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+              child: Text(
+                l10n.featuredTournamentNoFinals,
+                key: FeaturedKeys.tournamentNoFinals,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
+            )
+          else ...[
+            SectionTitle(
+              l10n.desafiosFeaturedPractice,
+              textKey: FeaturedKeys.tournamentPractice,
             ),
+            for (final item in state.items)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: FeaturedCard(
+                  item: item,
+                  onTap: () => _open(context, Routes.featuredEndgame(item.id)),
+                ),
+              ),
+          ],
         ],
-      ],
+      ),
     );
   }
 

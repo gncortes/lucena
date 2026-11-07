@@ -3,14 +3,32 @@ package com.gncortes.lucena
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
+    // H-ANI-43 → H-ANI-44: no Android 12+, a tela nativa sai de uma vez, sem
+    // o fade padrão do sistema. O primeiro quadro do Flutter já é o peão na
+    // mesma pose e no mesmo lugar, então a troca não aparece.
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            splashScreen.setOnExitAnimationListener { vista -> vista.remove() }
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "lucena/notification_timezone")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getTimeZoneId" -> result.success(java.time.ZoneId.systemDefault().id)
+                    else -> result.notImplemented()
+                }
+            }
         // Abre telas do sistema: a de texto para fala (as vozes do aparelho),
         // a de notificações do Lucena e a caixa de entrada do app de e-mail.
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "lucena/system_settings")
@@ -27,6 +45,12 @@ class MainActivity : FlutterActivity() {
                                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                     .setData(Uri.fromParts("package", packageName, null))
                             )
+                    )
+                    "openAppDetails" -> result.success(
+                        open(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                .setData(Uri.fromParts("package", packageName, null))
+                        )
                     )
                     "hasEmailApp" -> result.success(
                         emailApp().resolveActivity(packageManager) != null

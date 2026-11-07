@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/motion/botao_carregando.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -110,7 +113,17 @@ class _DataViewState extends State<_DataView> {
     final photo = await context.read<AccountPhotoCubit>().save();
     if (!mounted) return;
     if (photo == null) {
-      showLucenaSnackBar(context, l10n.accountPhotoFailed);
+      // Sem rede (gap 6): o apelido fica, com a foto que já estava; avisa e
+      // fica na tela para tentar a foto de novo.
+      final saved = context.read<AccountPhotoCubit>().saved;
+      await profile.saveData(
+        nickname: _nickname.text,
+        avatarColor: saved.color,
+        photo: saved.photo,
+        photoUrl: saved.photoUrl,
+      );
+      account.publishProfile(_nickname.text);
+      if (mounted) showLucenaSnackBar(context, l10n.accountPhotoFailed);
       return;
     }
     await profile.saveData(
@@ -134,8 +147,18 @@ class _DataViewState extends State<_DataView> {
     );
     void changePhoto() =>
         showAccountPhotoSheet(context, name: _nickname.text.trim());
-    return BlocListener<ProfileCubit, UserProfile?>(
-      listener: (context, profile) => setState(() => _fill(profile)),
+    final edit = !widget.welcome;
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ProfileCubit, UserProfile?>(
+          listener: (context, profile) => setState(() => _fill(profile)),
+        ),
+        BlocListener<AccountPhotoCubit, AccountPhotoState>(
+          listenWhen: (before, now) => now.pickFailed != before.pickFailed,
+          listener: (context, _) =>
+              showLucenaSnackBar(context, l10n.conPerfilFailed),
+        ),
+      ],
       child: Scaffold(
         key: AccountKeys.dataScreen,
         appBar: LucenaAppBar(title: Text(l10n.accountProfileTitle)),
@@ -149,12 +172,24 @@ class _DataViewState extends State<_DataView> {
                 onTap: saving ? null : changePhoto,
               ),
             ),
-            Center(
-              child: TextButton(
-                onPressed: saving ? null : changePhoto,
-                child: Text(l10n.accountPhotoChange),
+            if (edit)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.md),
+                child: Text(
+                  l10n.conPerfilPhotoHint,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              )
+            else
+              Center(
+                child: TextButton(
+                  onPressed: saving ? null : changePhoto,
+                  child: Text(l10n.accountPhotoChange),
+                ),
               ),
-            ),
             const SizedBox(height: AppSpacing.md),
             NicknameField(
               fieldKey: AccountKeys.nickname,
@@ -177,61 +212,50 @@ class _DataViewState extends State<_DataView> {
                   ),
                   onTap: () => context.push(Routes.country),
                 ),
-                ProfileRow(
-                  key: ProfileKeys.rowRegion,
-                  icon: Icons.location_on,
-                  title: l10n.profileRegion,
-                  value:
-                      regionLabel(
-                        l10n,
-                        country: profile?.country,
-                        state: profile?.state,
-                        city: profile?.city,
-                      ) ??
-                      l10n.profileRegionNone,
-                  onTap: () => showRegionSheet(context),
-                ),
+                if (edit)
+                  ProfileRow(
+                    key: ProfileKeys.rowLanguage,
+                    icon: Icons.language,
+                    title: l10n.settingsLanguage,
+                    value: profileLanguageName(context),
+                    onTap: () => context.push(Routes.settingsLanguage),
+                  )
+                else
+                  ProfileRow(
+                    key: ProfileKeys.rowRegion,
+                    icon: Icons.location_on,
+                    title: l10n.profileRegion,
+                    value:
+                        regionLabel(
+                          l10n,
+                          country: profile?.country,
+                          state: profile?.state,
+                          city: profile?.city,
+                        ) ??
+                        l10n.profileRegionNone,
+                    onTap: () => showRegionSheet(context),
+                  ),
               ],
             ),
-            if (widget.welcome) ...[
-              const SizedBox(height: AppSpacing.lg),
-              DecoratedBox(
+            if (widget.welcome)
+              _SavedNote(
                 key: AccountKeys.savedBanner,
-                decoration: BoxDecoration(
-                  color: AppColors.goalWinBg,
-                  borderRadius: BorderRadius.circular(AppShape.large),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.cloud_done,
-                        size: AppIconSize.standard,
-                        color: AppColors.record,
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Text(
-                          l10n.accountProfileSaved,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurface,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                text: l10n.conPerfilSaved,
+              )
+            else if (context.read<AccountRepository>().current != null)
+              _SavedNote(
+                key: AccountKeys.editSavedNote,
+                text: l10n.conPerfilEditSaved,
               ),
-            ],
           ],
         ),
         bottomNavigationBar: ActionsFooter(
           children: [
-            FilledButton(
-              key: AccountKeys.dataSave,
+            BotaoCarregando(
+              buttonKey: AccountKeys.dataSave,
+              busy: saving,
               onPressed: saving ? null : _save,
-              child: Text(l10n.accountSaveContinue),
+              label: edit ? l10n.profileSave : l10n.accountSaveContinue,
             ),
           ],
         ),
@@ -308,6 +332,48 @@ class _PhotoButton extends StatelessWidget {
                     Icons.photo_camera,
                     size: AppIconSize.button,
                     color: colors.onPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O aviso com `cloud_done`: o progresso deste celular está na conta.
+class _SavedNote extends StatelessWidget {
+  const _SavedNote({required this.text, super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.lg),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.goalWinBg,
+          borderRadius: BorderRadius.circular(AppShape.large),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.cloud_done,
+                size: AppIconSize.standard,
+                color: AppColors.record,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  text,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ),

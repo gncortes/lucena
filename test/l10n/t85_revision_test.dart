@@ -1,0 +1,33 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/l10n/app_localizations.dart';
+
+void main() {
+  test('T85 mantém rótulos de tentativa e textos aprovados em PT-BR', () async {
+    final t = await AppLocalizations.delegate.load(const Locale('pt'));
+    expect(t.loadErrorRetry, 'Tentar novamente');
+    expect(t.lessonRetry, 'Tentar novamente');
+    expect(t.featuredFindRetry, 'Tentar novamente');
+    expect(t.speedrunRetry, 'Tentar novamente');
+    expect(t.lessonMissing, 'Este capítulo não está disponível.');
+    expect(t.exerciseMissing, 'Este exercício não está disponível.');
+    expect(t.lessonSaveRetry, 'Ocorreu um erro inesperado');
+    expect(t.practiceSolutionUnavailable, 'Ocorreu um erro inesperado');
+    expect(
+      t.surveyThanks,
+      'Obrigado pela sua opinião. Ela ajuda a melhorar o Lucena.',
+    );
+    expect(t.trainingPlanSaveError, 'Ocorreu um erro inesperado');
+    expect(t.trainingExerciseSaveError, 'Ocorreu um erro inesperado');
+    expect(t.learningAnalysisSaveError, 'Ocorreu um erro inesperado');
+    expect(
+      t.trainingDownloadChapterError,
+      'Não foi possível baixar o capítulo. Tente novamente.',
+    );
+    expect(t.conApagarFailed, 'Ocorreu um erro inesperado');
+    expect(
+      t.accountPhotoFailed,
+      'Não foi possível enviar a foto. Tente novamente.',
+    );
+  });
+}

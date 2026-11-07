@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../domain/use_cases/now.dart';
+import 'android_weekly_notification_adapter.dart';
+
 /// Um canal do Android (8+): a pessoa liga e desliga cada um nos ajustes.
 class NotificationChannelSpec {
   const NotificationChannelSpec({required this.id, required this.name});
@@ -23,6 +26,7 @@ class ScheduledNotification {
     required this.at,
     required this.payload,
     this.action,
+    this.repeatWeekly = false,
   });
 
   final int id;
@@ -38,6 +42,9 @@ class ScheduledNotification {
 
   /// O botão da notificação, que abre o mesmo [payload].
   final String? action;
+
+  /// Repeat in Android's local calendar after the explicit first date.
+  final bool repeatWeekly;
 }
 
 /// Uma notificação mostrada agora (o push que o app monta, E1.19 3.8).
@@ -83,6 +90,9 @@ abstract class NotificationService {
   /// Se o Android deixa o Lucena mostrar avisos agora. Não pergunta nada.
   Future<bool> permitted();
 
+  /// Local notification consent, including builds without Firebase.
+  Future<bool> requestPermission();
+
   /// Troca tudo o que estava agendado por [notifications].
   Future<void> replace(List<ScheduledNotification> notifications);
 
@@ -105,6 +115,8 @@ class NoNotificationService implements NotificationService {
 
   @override
   Future<bool> permitted() async => false;
+  @override
+  Future<bool> requestPermission() async => false;
 
   @override
   Future<void> replace(List<ScheduledNotification> notifications) async {}
@@ -122,8 +134,10 @@ class NoNotificationService implements NotificationService {
 /// O `flutter_local_notifications` no Android. O agendamento não é exato
 /// (sem `SCHEDULE_EXACT_ALARM`): pode sair alguns minutos depois da hora.
 class DeviceNotificationService implements NotificationService {
-  DeviceNotificationService([FlutterLocalNotificationsPlugin? plugin])
-    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+  DeviceNotificationService([
+    FlutterLocalNotificationsPlugin? plugin,
+    this._now = const SystemNow(),
+  ]) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   /// O ícone pequeno (`res/drawable/ic_notification.xml`).
   static const _icon = 'ic_notification';
@@ -141,6 +155,8 @@ class DeviceNotificationService implements NotificationService {
   ];
 
   final FlutterLocalNotificationsPlugin _plugin;
+  final Now _now;
+  static const _weekly = AndroidWeeklyNotificationAdapter();
   final _taps = StreamController<NotificationTap>.broadcast();
   Future<bool>? _started;
 
@@ -202,13 +218,41 @@ class DeviceNotificationService implements NotificationService {
   @override
   Future<bool> permitted() async =>
       await _android?.areNotificationsEnabled() ?? false;
+  @override
+  Future<bool> requestPermission() async {
+    if (!await _ready()) return false;
+    return await _android?.requestNotificationsPermission() ?? false;
+  }
 
   @override
   Future<void> replace(List<ScheduledNotification> notifications) async {
     if (_started == null || !await _started!) return;
+    final recurring = notifications.where((n) => n.repeatWeekly).toList();
+    final prepared = <int, Map<String, Object?>>{};
+    if (recurring.isNotEmpty) {
+      // Resolve and validate before canceling any existing alarms. Failure
+      // must not silently schedule weekly notifications in UTC.
+      final zone = await _weekly.timeZoneId();
+      final now = _now();
+      for (final notification in recurring) {
+        prepared[notification.id] = _weekly.prepare(
+          id: notification.id,
+          title: notification.title,
+          body: notification.body,
+          payload: notification.payload,
+          at: notification.at,
+          now: now,
+          timeZoneId: zone,
+          details: _details(notification),
+        );
+      }
+    }
     await _plugin.cancelAllPendingNotifications();
     for (final notification in notifications) {
-      final action = notification.action;
+      if (notification.repeatWeekly) {
+        await _weekly.schedule(prepared[notification.id]!);
+        continue;
+      }
       await _plugin.zonedSchedule(
         id: notification.id,
         title: notification.title,
@@ -217,26 +261,31 @@ class DeviceNotificationService implements NotificationService {
         scheduledDate: tz.TZDateTime.from(notification.at.toUtc(), tz.UTC),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         notificationDetails: NotificationDetails(
-          android: AndroidNotificationDetails(
-            notification.channel.id,
-            notification.channel.name,
-            icon: _icon,
-            playSound: false,
-            enableVibration: false,
-            silent: true,
-            styleInformation: BigTextStyleInformation(notification.body),
-            actions: [
-              if (action != null)
-                AndroidNotificationAction(
-                  _actionId,
-                  action,
-                  showsUserInterface: true,
-                ),
-            ],
-          ),
+          android: _details(notification),
         ),
       );
     }
+  }
+
+  AndroidNotificationDetails _details(ScheduledNotification notification) {
+    final action = notification.action;
+    return AndroidNotificationDetails(
+      notification.channel.id,
+      notification.channel.name,
+      icon: _icon,
+      playSound: false,
+      enableVibration: false,
+      silent: true,
+      styleInformation: BigTextStyleInformation(notification.body),
+      actions: [
+        if (action != null)
+          AndroidNotificationAction(
+            _actionId,
+            action,
+            showsUserInterface: true,
+          ),
+      ],
+    );
   }
 
   @override

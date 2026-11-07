@@ -12,6 +12,7 @@ import 'package:lucena/domain/models/platform_rating.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
@@ -65,6 +66,7 @@ void main() {
           readAt: _readAt,
           blitz: const ModeRating(rating: 1405, games: 512),
         ),
+        'sem_partidas': PlatformRating(user: 'sem_partidas', readAt: _readAt),
       },
     );
   });
@@ -82,6 +84,7 @@ void main() {
     bool fromProfile = false,
     FakeAccountRepository? accounts,
     FakeAnalyticsRepository? analytics,
+    Locale locale = const Locale('en'),
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
@@ -169,6 +172,7 @@ void main() {
             speechCubit: speech,
             router: router,
             analytics: analytics,
+            locale: locale,
             child: const SizedBox(),
           ),
         ),
@@ -297,6 +301,56 @@ void main() {
     },
   );
 
+  testWidgets('rating fora de 400 a 3000: erro no campo e botão desabilitado '
+      '(H-ABE-16)', (tester) async {
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.manual);
+    const help = 'Just the number, from 400 to 3000.';
+    const error = 'Enter a number from 400 to 3000.';
+    final use = find.byKey(LevelKeys.ratingUse);
+    // Vazio: a ajuda fica e o botão está desabilitado.
+    expect(find.text(help), findsOneWidget);
+    expect(find.text(error), findsNothing);
+    expect(tester.widget<FilledButton>(use).onPressed, isNull);
+    for (final text in ['3001', '399']) {
+      await tester.enterText(find.byKey(LevelKeys.ratingField), text);
+      await tester.pumpAndSettle();
+      expect(find.text(error), findsOneWidget, reason: text);
+      expect(tester.widget<FilledButton>(use).onPressed, isNull);
+    }
+    // O campo aceita só dígitos, até 4: o quinto não entra e letra não entra.
+    String typed() => tester
+        .widget<TextField>(find.byKey(LevelKeys.ratingField))
+        .controller!
+        .text;
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '12345');
+    await tester.pumpAndSettle();
+    expect(typed(), '1234');
+    expect(find.text(error), findsNothing);
+    expect(tester.widget<FilledButton>(use).onPressed, isNotNull);
+    // Cheio, o campo não troca o número: apagar antes.
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '99999');
+    await tester.pumpAndSettle();
+    expect(typed(), '1234');
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '99999');
+    await tester.pumpAndSettle();
+    expect(typed(), '9999');
+    expect(find.text(error), findsOneWidget);
+    expect(tester.widget<FilledButton>(use).onPressed, isNull);
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '15a0');
+    await tester.pumpAndSettle();
+    expect(typed(), '150');
+    expect(find.text(error), findsOneWidget);
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '3000');
+    await tester.pumpAndSettle();
+    expect(find.text(error), findsNothing);
+    expect(tester.widget<FilledButton>(use).onPressed, isNotNull);
+  });
+
   testWidgets('Lichess: conecta, mostra os ratings e usa o blitz', (
     tester,
   ) async {
@@ -372,15 +426,61 @@ void main() {
     expect(profile.profile.rating, 1500);
   });
 
-  testWidgets('Lichess sem rede avisa e fica no Seu nível', (tester) async {
+  testWidgets('Lichess sem rede abre a tela "Sem internet"; Voltar fecha', (
+    tester,
+  ) async {
     lichess.failure = LichessFailure.network;
     await pumpLevel(tester);
     await choose(tester, LevelChoice.lichess);
     expect(find.byKey(LevelKeys.lichessScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsOneWidget);
     expect(
-      find.text("Couldn't reach Lichess. Check your connection."),
+      find.byWidgetPredicate(
+        (w) => w is EntradaDaTela && w.id == 'PropV1AbEstLichessSemRede',
+      ),
       findsOneWidget,
     );
+    expect(
+      find.text('You need an internet connection to reach Lichess.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(LevelKeys.lichessOfflineBack));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsNothing);
+    expect(find.byKey(LevelKeys.screen), findsOneWidget);
+  });
+
+  testWidgets('Lichess sem rede: Tentar de novo conecta e mostra o rating', (
+    tester,
+  ) async {
+    lichess.failure = LichessFailure.network;
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.lichess);
+    lichess.failure = null;
+    await tester.tap(find.byKey(LevelKeys.lichessRetry));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessScreen), findsOneWidget);
+    expect(find.text('1712'), findsOneWidget);
+  });
+
+  testWidgets('Lichess recusado: aviso com "Tentar de novo", sem tela nova', (
+    tester,
+  ) async {
+    lichess.failure = LichessFailure.cancelled;
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.lichess);
+    expect(find.byKey(LevelKeys.lichessScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessOfflineScreen), findsNothing);
+    expect(find.byKey(LevelKeys.lichessCancelledSnack), findsOneWidget);
+    expect(
+      find.text('Could not finish the Lichess authorization'),
+      findsOneWidget,
+    );
+    lichess.failure = null;
+    await tester.tap(find.byKey(LevelKeys.lichessSnackRetry));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.lichessScreen), findsOneWidget);
   });
 
   testWidgets('Chess.com: não achado mostra o erro; achado usa o convertido', (
@@ -391,15 +491,20 @@ void main() {
     expect(find.byKey(LevelKeys.chessScreen), findsOneWidget);
     final use = find.byKey(LevelKeys.chessUse);
     await tester.enterText(find.byKey(LevelKeys.chessField), 'ninguem');
-    await tester.testTextInput.receiveAction(TextInputAction.search);
+    // Sem busca automática: só o botão procura.
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.textContaining("couldn't find this user"), findsNothing);
+    await tester.tap(find.byKey(LevelKeys.chessSearch));
     await tester.pumpAndSettle();
     expect(
-      find.text("I couldn't find this user on Chess.com."),
+      find.text(
+        "I couldn't find this user on Chess.com. Check how it is spelled.",
+      ),
       findsOneWidget,
     );
     expect(tester.widget<FilledButton>(use).onPressed, isNull);
     await tester.enterText(find.byKey(LevelKeys.chessField), 'gabriel_finais');
-    await tester.pump(const Duration(milliseconds: 700));
+    await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
     expect(find.text('Found: gabriel_finais'), findsOneWidget);
     expect(find.textContaining('Lucena rating starts at 1650'), findsOneWidget);
@@ -407,6 +512,47 @@ void main() {
     await tester.pumpAndSettle();
     expect(profile.profile.rating, 1650);
     expect(profile.profile.chessComUser, 'gabriel_finais');
+  });
+
+  testWidgets('Chess.com sem rede: tela "Sem internet" no lugar', (
+    tester,
+  ) async {
+    chessCom.offline = true;
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.chess);
+    await tester.enterText(find.byKey(LevelKeys.chessField), 'gabriel_finais');
+    await tester.tap(find.byKey(LevelKeys.chessSearch));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.chessOfflineScreen), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is EntradaDaTela && w.id == 'PropV1AbEstChessSemRede',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text('You need an internet connection to reach Chess.com.'),
+      findsOneWidget,
+    );
+    chessCom.offline = false;
+    await tester.tap(find.byKey(LevelKeys.chessRetry));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.chessOfflineScreen), findsNothing);
+    expect(find.text('Found: gabriel_finais'), findsOneWidget);
+  });
+
+  testWidgets('Chess.com sem rating: teste e faixa no lugar de "Usar"', (
+    tester,
+  ) async {
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.chess);
+    await tester.enterText(find.byKey(LevelKeys.chessField), 'sem_partidas');
+    await tester.tap(find.byKey(LevelKeys.chessSearch));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.chessNoRating), findsOneWidget);
+    expect(find.byKey(LevelKeys.chessUse), findsNothing);
+    expect(find.byKey(LevelKeys.chessTest), findsOneWidget);
+    expect(find.byKey(LevelKeys.chessPickBand), findsOneWidget);
   });
 
   testWidgets('com o teclado aberto, "Usar esse rating" fica acima dele', (
@@ -453,5 +599,105 @@ void main() {
     await tester.tap(find.byKey(LevelKeys.back));
     await tester.pumpAndSettle();
     expect(find.text('rota-perfil'), findsOneWidget);
+  });
+
+  group('H-CON-16 (PT)', () {
+    const pt = Locale('pt');
+
+    Future<void> openProfile(WidgetTester tester) async {
+      onboarding = FakeOnboardingRepository(const Onboarding(done: true));
+      await pumpLevel(tester, fromProfile: true, locale: pt);
+    }
+
+    testWidgets(
+      '1. Seu nível pelo Perfil: textos do quadro e o teste marcado',
+      (tester) async {
+        await openProfile(tester);
+        expect(find.text('Seu nível'), findsOneWidget);
+        expect(
+          find.text(
+            'Para escolher os adversários certos: em que ponto você está no '
+            'xadrez?',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .element(find.byKey(LevelKeys.screen))
+              .read<LevelCubit>()
+              .state
+              .choice,
+          LevelChoice.test,
+        );
+        // Com a Escola escondida, o texto não promete a Escola.
+        expect(
+          find.text(
+            VisibleLessons.school
+                ? 'Comece pela Escola do Viktor.'
+                : 'Comece pelos adversários mais fáceis.',
+          ),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(LevelKeys.option(LevelChoice.known)));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(LevelKeys.continueButton));
+        await tester.pumpAndSettle();
+        for (final text in [
+          'Login no site do Lichess. O Lucena lê seus ratings.',
+          'Digite seu usuário para ler o rating público.',
+          'Informar meu rating',
+        ]) {
+          expect(find.text(text), findsOneWidget, reason: text);
+        }
+      },
+    );
+
+    testWidgets('2. FIDE 1450: "fica perto de 1650"; campo com ícone e dica', (
+      tester,
+    ) async {
+      await openProfile(tester);
+      await choose(tester, LevelChoice.manual);
+      expect(find.text('Informar o rating'), findsOneWidget);
+      final field = find.byKey(LevelKeys.ratingField);
+      expect(
+        find.descendant(of: field, matching: find.byIcon(Icons.trending_up)),
+        findsOneWidget,
+      );
+      expect(find.text('Ex.: 1500'), findsOneWidget);
+      await tester.enterText(field, '1450');
+      await tester.tap(find.byKey(LevelKeys.ratingSource(RatingOrigin.fide)));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('1450 da FIDE fica perto de 1650 no Lucena'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('3. limites: 399 e 3001 recusados, 400 e 3000 aceitos', (
+      tester,
+    ) async {
+      await openProfile(tester);
+      await choose(tester, LevelChoice.manual);
+      bool enabled() =>
+          tester
+              .widget<FilledButton>(find.byKey(LevelKeys.ratingUse))
+              .onPressed !=
+          null;
+      for (final (typed, ok) in [
+        ('399', false),
+        ('400', true),
+        ('3000', true),
+        ('3001', false),
+      ]) {
+        await tester.enterText(find.byKey(LevelKeys.ratingField), typed);
+        await tester.pumpAndSettle();
+        expect(enabled(), ok, reason: typed);
+        expect(
+          find.text('Digite um número de 400 a 3000.'),
+          ok ? findsNothing : findsOneWidget,
+          reason: typed,
+        );
+      }
+    });
   });
 }

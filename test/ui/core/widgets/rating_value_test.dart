@@ -33,6 +33,43 @@ void main() {
     expect(shown(tester), 1215);
   });
 
+  testWidgets('H-ANI-19: a variação conta junto, com a seta certa desde o '
+      'início', (tester) async {
+    const changeKey = ValueKey('rating change');
+    Widget com(int change) => MaterialApp(
+      home: RatingValue(
+        rating: 1267,
+        change: change,
+        valueKey: valueKey,
+        changeKey: changeKey,
+        animateOnce: true,
+      ),
+    );
+    String variacao() => tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.byKey(changeKey),
+            matching: find.byType(Text),
+          ),
+        )
+        .map((t) => t.data)
+        .join();
+
+    await tester.pumpWidget(com(267));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(variacao(), isNot('+267'));
+    expect(find.byIcon(Icons.arrow_drop_up), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(variacao(), '+267');
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(com(-30));
+    await tester.pump();
+    expect(find.byIcon(Icons.arrow_drop_down), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(variacao(), signedChange(-30));
+  });
+
   testWidgets(
     'reduced motion and callers without opt-in show final value immediately',
     (tester) async {

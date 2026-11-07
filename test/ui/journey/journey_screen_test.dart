@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/journey_screen.dart';
 
@@ -11,6 +12,7 @@ import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
 
 void main() {
   Future<void> pump(
@@ -89,6 +91,37 @@ void main() {
     final first = tester.getRect(find.byKey(JourneyKeys.rung('1000')));
     final stockfish = tester.getRect(find.byKey(JourneyKeys.rung('stockfish')));
     expect(first.top, lessThan(stockfish.top));
+  });
+
+  testWidgets('primeira entrada: a trilha entra em ordem, de cima para '
+      'baixo', (tester) async {
+    await pump(tester);
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final primeira = find.byKey(MotionKeys.itemDaLista(0));
+    final terceira = find.byKey(MotionKeys.itemDaLista(2));
+    expect(primeira, findsOneWidget);
+    expect(opacidade(tester, terceira), lessThan(opacidade(tester, primeira)));
+    await tester.pumpAndSettle();
+    expect(opacidade(tester, terceira), 1);
+  });
+
+  testWidgets('H-ANI-13/18: na entrada, a barra do degrau atual enche e os '
+      'desafios feitos contam junto', (tester) async {
+    await pump(tester, done: {sampleLadder.first.challenges.first.id});
+    final barra = find.descendant(
+      of: find.byKey(MotionKeys.barraQueEnche),
+      matching: find.byType(LinearProgressIndicator),
+    );
+    double valor() => tester.widget<LinearProgressIndicator>(barra).value!;
+    String texto() =>
+        tester.widget<Text>(find.byKey(JourneyKeys.summaryProgress)).data!;
+
+    expect(valor(), lessThan(.5));
+    expect(texto(), '0 of 2 challenges');
+    await tester.pumpAndSettle();
+    expect(valor(), .5);
+    expect(texto(), '1 of 2 challenges');
   });
 
   testWidgets('em português', (tester) async {

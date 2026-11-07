@@ -1,4 +1,11 @@
-import 'dart:math' as math;
+import 'dart:async';
+
+import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/keys/my_progress_keys.dart';
+
+import 'package:lucena/ui/core/widgets/skeleton.dart';
 
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
@@ -43,14 +50,12 @@ import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 
 import 'package:lucena/domain/models/push_alert.dart';
-import 'package:lucena/ui/core/keys/featured_keys.dart';
 
 import '../testing/fakes/fake_analytics_repository.dart';
 import '../testing/fakes/fake_deep_link_service.dart';
 import '../testing/fakes/fake_push_repository.dart';
 
 import 'package:lucena/ui/core/keys/goal_keys.dart';
-import 'package:lucena/ui/core/keys/board_controls_keys.dart';
 
 import '../testing/fakes/fake_onboarding_repository.dart';
 
@@ -66,6 +71,50 @@ import '../testing/test_dependencies.dart';
 class _UnavailableEndgames extends FakeEndgameLessonRepository {
   @override
   Future<EndgameTrail> trail() async => throw const LessonContentUnavailable();
+}
+
+class _FailingGames extends FakeOngoingGameRepository {
+  bool fails = true;
+
+  @override
+  Future<GameSnapshot?> load() async {
+    if (fails) throw StateError('banco indisponível');
+    return super.load();
+  }
+}
+
+class _FailingSettings extends FakeSettingsRepository {
+  bool fails = true;
+
+  @override
+  Future<AppSettings> load() async {
+    if (fails) throw StateError('preferências indisponíveis');
+    return super.load();
+  }
+}
+
+class _RetryPush extends FakePushRepository {
+  bool fails = true;
+  int starts = 0;
+  @override
+  Future<void> start() async {
+    starts++;
+  }
+
+  @override
+  Future<PushOpening?> initialOpening() async {
+    if (fails) throw StateError('push indisponível');
+    return null;
+  }
+}
+
+class _CountingLinks extends FakeDeepLinkService {
+  int subscriptions = 0;
+  @override
+  Stream<Uri> get uris {
+    subscriptions++;
+    return super.uris;
+  }
 }
 
 void main() {
@@ -112,6 +161,110 @@ void main() {
 
   String textOf(WidgetTester tester, Key key) =>
       tester.widget<Text>(find.byKey(key)).data!;
+
+  testWidgets('abertura inicial pendente usa skeleton com shimmer', (
+    tester,
+  ) async {
+    final ready = Completer<void>();
+    await tester.pumpWidget(
+      LucenaBootstrap(
+        initialize: () async {
+          await ready.future;
+          return testDependencies();
+        },
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(SkeletonBlock), findsWidgets);
+    ready.complete();
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+  });
+
+  testWidgets(
+    'semente inacessível mostra erro e retry só abre após recuperar instalação',
+    (tester) async {
+      useSystemLocale(tester, const Locale('pt'));
+      var fails = true;
+      var attempts = 0;
+      await tester.pumpWidget(
+        LucenaBootstrap(
+          initialize: () async {
+            attempts++;
+            if (fails) throw StateError('semente indisponível');
+            return testDependencies(
+              settingsRepository: FakeSettingsRepository(
+                const AppSettings(languageCode: 'pt'),
+              ),
+            );
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('O Lucena não abriu'), findsOneWidget);
+      expect(find.byKey(HomeKeys.screen), findsNothing);
+      fails = false;
+      await tester.tap(find.text('Tentar novamente'));
+      await tester.pumpAndSettle();
+      expect(attempts, 2);
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'repetir abertura não duplica push nem abre o mesmo link duas vezes',
+    (tester) async {
+      useSystemLocale(tester, const Locale('pt'));
+      final push = _RetryPush();
+      final links = _CountingLinks();
+      await pumpApp(tester, push: push, links: links);
+      expect(find.text('O Lucena não abriu'), findsOneWidget);
+      push.fails = false;
+      await tester.tap(find.text('Tentar novamente'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(push.starts, 1);
+      expect(links.subscriptions, 1);
+      links.open(Uri.parse('https://playlucena.com/p/abcde?fen=lixo'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
+      await tester.tap(find.byKey(ChallengeKeys.invalidBack));
+      await tester.pumpAndSettle();
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    },
+  );
+
+  testWidgets('abertura com falha permite repetir e abre o início', (
+    tester,
+  ) async {
+    useSystemLocale(tester, const Locale('pt'));
+    final games = _FailingGames();
+    await pumpApp(tester, games: games);
+    expect(find.text('O Lucena não abriu'), findsOneWidget);
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(find.text('O Lucena continua sem abrir'), findsOneWidget);
+    games.fails = false;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'preferências com falha permitem repetir sem prender a abertura',
+    (tester) async {
+      useSystemLocale(tester, const Locale('pt'));
+      final settings = _FailingSettings();
+      await pumpApp(tester, settings: settings);
+      expect(find.text('O Lucena não abriu'), findsOneWidget);
+      settings.fails = false;
+      await tester.tap(find.text('Tentar novamente'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('sem pacote de aula, abre o início e preserva a retomada salva', (
     tester,
@@ -382,11 +535,10 @@ void main() {
     // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
     // retrato fora dos dois cartões.
     final screen = tester.getSize(find.byType(MaterialApp)).width;
-    // O maior tabuleiro: as outras miniaturas continuam na home.
-    final flying = [
-      for (final board in find.byType(StaticChessboard).evaluate())
-        tester.getSize(find.byWidget(board.widget)).width,
-    ].reduce(math.max);
+    // H-ANI-02: o tabuleiro em voo é a caixa do TabuleiroHero (o de destino
+    // vai dentro dela no tamanho real, encolhido pelo FittedBox).
+    expect(find.byKey(MotionKeys.tabuleiroEmVoo), findsOneWidget);
+    final flying = tester.getSize(find.byKey(MotionKeys.tabuleiroEmVoo)).width;
     expect(flying, greaterThan(small));
     expect(flying, lessThan(screen));
     expect(
@@ -415,20 +567,30 @@ void main() {
     expect(find.byKey(HomeKeys.goalAction), findsOneWidget);
   });
 
-  testWidgets('tocar no cartão do jogador abre os detalhes do rating, e '
-      'voltar cai na tela inicial', (tester) async {
+  testWidgets('tocar no rating do Início abre "Seu progresso" (H-CON-03); '
+      'o Histórico abre os detalhes, e voltar cai na tela inicial', (
+    tester,
+  ) async {
     await pumpApp(tester);
 
     await tester.tap(find.byKey(HomeKeys.playerCard));
+    await tester.pumpAndSettle();
+    expect(find.byKey(MyProgressKeys.screen), findsOneWidget);
+
+    await tester.tap(find.byKey(MyProgressKeys.history));
     await tester.pumpAndSettle();
     expect(find.byKey(RatingKeys.screen), findsOneWidget);
     // Sem partida nenhuma, o Histórico mostra só o convite (sem cartão).
     expect(find.byKey(HistoryKeys.screen), findsOneWidget);
     expect(find.byKey(HistoryKeys.empty), findsOneWidget);
 
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.byType(BackButton).last);
     await tester.pumpAndSettle();
     expect(find.byKey(RatingKeys.screen), findsNothing);
+    expect(find.byKey(MyProgressKeys.screen), findsOneWidget);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(MyProgressKeys.screen), findsNothing);
     expect(find.byKey(HomeKeys.playerCard), findsOneWidget);
   });
 
@@ -637,7 +799,8 @@ void main() {
         links: FakeDeepLinkService(initial: challenge().uri),
       );
       expect(find.byKey(GameSetupKeys.screen), findsOneWidget);
-      expect(find.byKey(ChallengeKeys.linkSetupSubtitle), findsOneWidget);
+      // App bar só com o título (T85-D0).
+      expect(find.byKey(ChallengeKeys.linkSetupSubtitle), findsNothing);
     });
 
     testWidgets('um link que chega com o app aberto abre o desafio por cima', (
@@ -660,6 +823,7 @@ void main() {
       await tester.tap(find.byKey(HomeKeys.settingsButton));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.byKey(SettingsKeys.openLinkTile));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(SettingsKeys.openLinkTile));
       await tester.pumpAndSettle();
 
@@ -760,7 +924,7 @@ void main() {
   });
 
   testWidgets(
-    'primeira abertura pergunta intenção e oferece controles sem tour',
+    'primeira abertura pergunta o objetivo e segue para o tour (H-ABE)',
     (tester) async {
       final onboarding = FakeOnboardingRepository(
         const Onboarding(stage: OnboardingStage.goal),
@@ -772,11 +936,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(GoalKeys.continueButton));
       await tester.pumpAndSettle();
-      expect(find.byKey(BoardControlsKeys.screen), findsOneWidget);
-      await tester.tap(find.byKey(BoardControlsKeys.continueButton));
-      await tester.pumpAndSettle();
-      expect(onboarding.saved.boardControlsDone, isTrue);
-      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      expect(onboarding.saved.stage, OnboardingStage.tour);
+      expect(find.byKey(TourKeys.screen), findsOneWidget);
     },
   );
   group('push (E1.19 3.8)', () {
@@ -803,7 +964,13 @@ void main() {
         ),
       );
 
-      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(
+        GoRouterState.of(tester.element(find.byKey(LoadErrorKeys.screen)))
+            .uri
+            .path,
+        '/featured/tournament/live',
+      );
       final event = analytics.eventsNamed('push_aberto').single;
       expect(event.params, {'push_id': 'p1', 'pais': 'BR'});
     });
@@ -820,6 +987,48 @@ void main() {
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
     });
 
+    const savedGame = GameSnapshot(
+      startFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      moves: ['e2e4', 'e7e5'],
+    );
+
+    testWidgets('aviso sem destino com o app aberto: continua na partida', (
+      tester,
+    ) async {
+      phone(tester);
+      final push = FakePushRepository();
+      await pumpApp(
+        tester,
+        push: push,
+        games: FakeOngoingGameRepository(savedGame),
+      );
+      expect(find.byKey(FreeBoardKeys.board), findsOneWidget);
+
+      push.open(Uri.parse('/featured/ranking/2026'), pushId: 'p3');
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.board), findsOneWidget);
+      // O caminho continua: voltar cai no início.
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('aviso sem destino com o app fechado: não apaga a retomada', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(savedGame),
+        push: FakePushRepository(
+          initial: PushOpening(link: Uri.parse('/featured/ranking/2026')),
+        ),
+      );
+
+      expect(find.byKey(FreeBoardKeys.board), findsOneWidget);
+    });
+
     testWidgets('em segundo plano: o toque em Ver torneio abre o torneio', (
       tester,
     ) async {
@@ -830,7 +1039,13 @@ void main() {
       push.open(Uri.parse('/featured/tournament/live'), pushId: 'p2');
       await tester.pumpAndSettle();
 
-      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(
+        GoRouterState.of(tester.element(find.byKey(LoadErrorKeys.screen)))
+            .uri
+            .path,
+        '/featured/tournament/live',
+      );
     });
   });
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,19 +7,27 @@ import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
 import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/rating/rating_repository.dart';
+import '../../../data/repositories/store/store_listing_repository.dart';
 import '../../../domain/models/account.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../alerts/view_models/alerts_cubit.dart';
 import '../../analytics/widgets/version_footer.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_ui.dart';
+import '../../profile/view_models/current_rating_cubit.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/profile_rows.dart';
 import 'open_link_dialog.dart';
@@ -34,87 +44,141 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
-      key: SettingsKeys.screen,
-      appBar: LucenaAppBar(
-        title: Text(l10n.settingsTitle, key: SettingsKeys.title),
-      ),
-      body: ListView(
-        padding: scrollPadding(
-          context,
-          left: AppSpacing.screen,
-          top: AppSpacing.sm,
-          right: AppSpacing.screen,
+    return EntradaDaTela(
+      id: 'PropV1ConfigB',
+      child: Scaffold(
+        key: SettingsKeys.screen,
+        appBar: LucenaAppBar(
+          title: Text(l10n.settingsTitle, key: SettingsKeys.title),
         ),
-        children: [
-          const _PersonRow(),
-          SectionTitle(l10n.settingsSectionApp, inset: AppSpacing.xs),
-          ProfileRowGroup(
-            children: [
-              _Group(
-                tileKey: SettingsKeys.appearanceTile,
-                icon: Icons.palette_outlined,
-                title: l10n.settingsAppearance,
-                hint: l10n.settingsAppearanceHint,
-                route: Routes.settingsAppearance,
-              ),
-              _Group(
-                tileKey: SettingsKeys.gameTile,
-                icon: Icons.sports_esports_outlined,
-                title: l10n.settingsGame,
-                hint: l10n.settingsGameHint,
-                route: Routes.settingsGame,
-              ),
-              _Group(
-                tileKey: SettingsKeys.soundTile,
-                icon: Icons.volume_up_outlined,
-                title: l10n.settingsSoundGroup,
-                hint: l10n.settingsSoundGroupHint,
-                route: Routes.settingsSound,
-              ),
-              const _AlertsGroup(),
-            ],
+        body: ListView(
+          padding: scrollPadding(
+            context,
+            left: AppSpacing.screen,
+            top: AppSpacing.sm,
+            right: AppSpacing.screen,
           ),
-          SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
-          ProfileRowGroup(
-            children: [
-              _Group(
-                tileKey: SettingsKeys.aboutTile,
-                icon: Icons.info_outline,
-                title: l10n.settingsAbout,
-                hint: l10n.settingsAboutHint,
-                route: Routes.settingsAbout,
-              ),
-              // Só em build de desenvolvimento e de teste.
-              if (showsDevTools)
-                ProfileRow(
-                  key: SettingsKeys.maiaDebugTile,
-                  icon: Icons.bug_report_outlined,
-                  title: l10n.maiaDebugTitle,
-                  onTap: () => context.go(Routes.settingsMaia),
+          children: [
+            ListaEmOrdem(
+              itens: [
+                BlocProvider(
+                  create: (context) =>
+                      CurrentRatingCubit(context.read<RatingRepository>())
+                        ..load(),
+                  child: const _PersonRow(),
                 ),
-              if (showsDevTools)
-                ProfileRow(
-                  key: SettingsKeys.pilaresPreviewTile,
-                  icon: Icons.school_outlined,
-                  title: l10n.pilaresPreviewTile,
-                  onTap: () => context.go(Routes.pilaresSale),
+                SectionTitle(l10n.settingsSectionApp, inset: AppSpacing.xs),
+                ProfileRowGroup(
+                  children: [
+                    _Group(
+                      tileKey: SettingsKeys.appearanceTile,
+                      icon: Icons.palette_outlined,
+                      title: l10n.settingsAppearance,
+                      hint: l10n.settingsAppearanceHint,
+                      route: Routes.settingsAppearance,
+                    ),
+                    _Group(
+                      tileKey: SettingsKeys.gameTile,
+                      icon: Icons.sports_esports_outlined,
+                      title: l10n.settingsGame,
+                      hint: l10n.settingsGameHint,
+                      route: Routes.settingsGame,
+                    ),
+                    _Group(
+                      tileKey: SettingsKeys.soundTile,
+                      icon: Icons.volume_up_outlined,
+                      title: l10n.settingsSoundGroup,
+                      hint: l10n.settingsSoundGroupHint,
+                      route: Routes.settingsSound,
+                    ),
+                    const _AlertsGroup(),
+                  ],
                 ),
-              if (showsDevTools)
-                ProfileRow(
-                  key: SettingsKeys.openLinkTile,
-                  icon: Icons.link,
-                  title: l10n.devOpenLinkTitle,
-                  onTap: () => showOpenLinkDialog(context),
+                SectionTitle(l10n.ajuSectionPrivacy, inset: AppSpacing.xs),
+                ProfileRowGroup(
+                  children: [
+                    ProfileRow(
+                      key: SettingsKeys.privacyTile,
+                      icon: Icons.privacy_tip_outlined,
+                      title: l10n.ajuPrivacyTitle,
+                      value: l10n.ajuPrivacyHint,
+                      onTap: () => context.push(Routes.privacy),
+                    ),
+                  ],
                 ),
-            ],
-          ),
-          if (version.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: AppSpacing.lg),
-              child: VersionFooter(version: version),
+                SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
+                ProfileRowGroup(
+                  children: [
+                    ProfileRow(
+                      key: SettingsKeys.feedbackTile,
+                      icon: Icons.feedback_outlined,
+                      title: l10n.ajuFeedbackTitle,
+                      value: l10n.ajuFeedbackHint,
+                      onTap: () => context.push(Routes.feedback),
+                    ),
+                    ProfileRow(
+                      key: SettingsKeys.rateTile,
+                      icon: Icons.storefront_outlined,
+                      title: l10n.ajuRateTitle,
+                      value: l10n.ajuRateHint,
+                      onTap: () {
+                        unawaited(
+                          context.analytics.log(
+                            AnalyticsEvents.avaliacaoPerfilAberto(),
+                          ),
+                        );
+                        unawaited(
+                          context.read<StoreListingRepository>().open(),
+                        );
+                      },
+                    ),
+                    _Group(
+                      tileKey: SettingsKeys.aboutTile,
+                      icon: Icons.info_outline,
+                      title: l10n.settingsAbout,
+                      hint: l10n.settingsAboutHint,
+                      route: Routes.settingsAbout,
+                    ),
+                    // Só em build de desenvolvimento e de teste.
+                    if (showsDevTools)
+                      ProfileRow(
+                        key: SettingsKeys.maiaDebugTile,
+                        icon: Icons.bug_report_outlined,
+                        title: l10n.maiaDebugTitle,
+                        onTap: () => context.go(Routes.settingsMaia),
+                      ),
+                    if (showsDevTools)
+                      ProfileRow(
+                        key: SettingsKeys.pilaresTrainingTile,
+                        icon: Icons.task_alt,
+                        title: l10n.trainingPilaresTitle,
+                        onTap: () => context.push(Routes.training('pilares')),
+                      ),
+                    if (showsDevTools)
+                      ProfileRow(
+                        key: SettingsKeys.escolaTrainingTile,
+                        icon: Icons.task_alt,
+                        title: l10n.schoolTitle,
+                        onTap: () => context.push(Routes.training('escola')),
+                      ),
+                    if (showsDevTools)
+                      ProfileRow(
+                        key: SettingsKeys.openLinkTile,
+                        icon: Icons.link,
+                        title: l10n.devOpenLinkTitle,
+                        onTap: () => showOpenLinkDialog(context),
+                      ),
+                  ],
+                ),
+              ],
             ),
-        ],
+            if (version.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.lg),
+                child: VersionFooter(version: version),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -130,6 +194,7 @@ class _PersonRow extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final profile = context.select((ProfileCubit cubit) => cubit.state);
+    final rating = context.watch<CurrentRatingCubit>().state;
     final accounts = context.read<AccountRepository>();
     return StreamBuilder<Account?>(
       stream: accounts.changes,
@@ -140,55 +205,57 @@ class _PersonRow extends StatelessWidget {
         final name = nickname.isNotEmpty
             ? nickname
             : account?.name ?? l10n.profileNicknameDefault;
-        return Material(
-          color: theme.colorScheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(AppShape.large),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            key: SettingsKeys.profileTile,
-            onTap: () => context.go(Routes.settingsProfile),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.md,
-              ),
-              child: Row(
-                children: [
-                  AccountAvatar(
-                    name: name,
-                    color: profile?.avatarColor ?? 0,
-                    photoUrl: avatarPhotoUrl(profile, account),
-                    size: 48,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          key: SettingsKeys.profileName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Text(
-                          profile == null
-                              ? ''
-                              : _summary(l10n, profile, account),
-                          key: SettingsKeys.profileValue,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
+        return CartaoPressionavel(
+          child: Material(
+            color: theme.colorScheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(AppShape.large),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              key: SettingsKeys.profileTile,
+              onTap: () => context.go(Routes.settingsProfile),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.md,
+                ),
+                child: Row(
+                  children: [
+                    AccountAvatar(
+                      name: name,
+                      color: profile?.avatarColor ?? 0,
+                      photoUrl: avatarPhotoUrl(profile, account),
+                      size: 48,
                     ),
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ],
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            key: SettingsKeys.profileName,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(
+                            profile == null
+                                ? ''
+                                : _summary(l10n, profile, account, rating),
+                            key: SettingsKeys.profileValue,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -202,10 +269,11 @@ class _PersonRow extends StatelessWidget {
     AppLocalizations l10n,
     UserProfile profile,
     Account? account,
+    int? rating,
   ) => [
     account == null ? l10n.profileNoAccount : account.email ?? account.name,
     ?profile.goal?.title(l10n),
-    '${profile.rating}',
+    '${rating ?? profile.rating}',
   ].nonNulls.where((part) => part.isNotEmpty).join(' · ');
 }
 

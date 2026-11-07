@@ -1,4 +1,13 @@
+import '../../core/motion/entrada_de_resultado.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_colors.dart';
+
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
+import 'endgame_load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +16,7 @@ import 'package:intl/intl.dart';
 import '../../../domain/use_cases/now.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
@@ -24,6 +34,9 @@ import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/keys/test_canvas_keys.dart';
+import '../../core/theme/canvas_symbols.dart';
+import 'exercises_intro_screen.dart' show TestCanvasMedal;
 
 /// O resultado dos exercícios de uma aula de final, depois do último: a
 /// medalha da faixa, a nota e, com a aula aprovada, o diploma.
@@ -37,6 +50,35 @@ class ExercisesDoneScreen extends StatefulWidget {
 class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
   // O diploma que vira imagem ao compartilhar.
   final _card = GlobalKey();
+  bool _redoing = false;
+
+  Future<void> _redoTest(String lessonId) async {
+    if (_redoing) return;
+    _redoing = true;
+    final cubit = context.read<EndgameLessonCubit>();
+    final router = GoRouter.of(context);
+    try {
+      for (var attempt = 0; attempt < 2; attempt++) {
+        try {
+          await cubit.redoExercises();
+          if (mounted) {
+            router.pushReplacement(Routes.endgameExercisesIntro(lessonId));
+          }
+          return;
+        } on Object {
+          if (!mounted) return;
+          if (attempt == 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+            );
+            await Future<void>.delayed(AppMotion.persistenceRetry);
+          }
+        }
+      }
+    } finally {
+      _redoing = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +86,60 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final state = context.watch<EndgameLessonCubit>().state;
+    if (endgameLoadError(context, state) case final error?) return error;
     if (state.lesson == null) {
-      return const Scaffold(body: SizedBox.shrink());
+      return const Scaffold(body: SafeArea(child: SkeletonList()));
     }
     final grade = state.grade;
+    if (state.lesson!.id.startsWith('pilares.')) {
+      final lesson = state.lesson!;
+      final completed =
+          state.progress.completedTestOf(lesson) ?? const <String, bool>{};
+      final answered = lesson.exercises
+          .where((exercise) => completed.containsKey(exercise.id))
+          .toList();
+      final chapter =
+          int.tryParse(
+            RegExp(r'\.c(\d+)').firstMatch(lesson.id)?.group(1) ?? '',
+          ) ??
+          state.lessonNumber;
+      return TestCanvasResultPage(
+        chapter: chapter,
+        answers: [
+          for (final exercise in answered) completed[exercise.id] == true,
+        ],
+        themes: [
+          for (final exercise in answered)
+            exercise.theme == null
+                ? null
+                : state.texts.plain('part.${exercise.theme}.title'),
+        ],
+        teacher: state.viktor,
+        onContinue: () => context.pop(),
+        // Sem rota própria do catálogo do capítulo: abre o capítulo do guia.
+        onReviewLessons: () => context.pushReplacement(
+          Routes.trainingChapter('pilares', lesson.id),
+        ),
+        onReview: (index) {
+          final exercise = answered[index];
+          context.push(
+            Routes.learningAnalysisAt(
+              exercise.fen,
+              moves: [
+                for (final turn in exercise.line) ...[
+                  if (turn.accept.isNotEmpty) turn.accept.first,
+                  ?turn.reply,
+                ],
+              ],
+              orientation: exercise.step.side.name,
+            ),
+          );
+        },
+        onRetry: () => _redoTest(lesson.id),
+      );
+    }
     final below = grade == ExerciseGrade.below;
+    final practice = state.lesson!.practice;
     return Scaffold(
       key: ExercisesDoneKeys.screen,
       // Compartilhar o diploma: só o ícone, no canto da barra.
@@ -196,12 +287,11 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                     },
                     label: Text(l10n.endgameRedoExercises),
                   )
-                else
+                else if (practice != null)
                   FilledButton.icon(
                     key: ExercisesDoneKeys.practice,
                     icon: const Icon(Icons.sports_esports_outlined),
                     onPressed: () {
-                      final practice = state.lesson!.practice;
                       context.pushReplacement(
                         Routes.setup(
                           practice.fen,
@@ -238,6 +328,267 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The result uses observed first-answer correctness, never weighted points.
+class TestCanvasResultPage extends StatelessWidget {
+  const TestCanvasResultPage({
+    required this.chapter,
+    required this.answers,
+    required this.onContinue,
+    required this.onRetry,
+    required this.onReview,
+    this.onReviewLessons,
+    this.themes = const [],
+    this.teacher,
+    this.speech,
+    super.key,
+  });
+  final int chapter;
+  final List<bool> answers;
+
+  /// Theme title of each answer (same order as [answers]); null when unknown.
+  final List<String?> themes;
+  final Character? teacher;
+  final String? speech;
+  final VoidCallback onContinue, onRetry;
+
+  /// Failed results: opens the chapter catalog. Never locks the next chapter.
+  final VoidCallback? onReviewLessons;
+  final ValueChanged<int> onReview;
+
+  /// "A", "A e B", "A, B e C".
+  static String _themeList(AppLocalizations t, List<String> items) =>
+      items.length < 2
+      ? items.join()
+      : t.licaoTemasUltimo(items.take(items.length - 1).join(', '), items.last);
+
+  String _failedSpeech(AppLocalizations t, {required bool far}) {
+    final wrong = <String>[];
+    for (var i = 0; i < answers.length && i < themes.length; i++) {
+      final theme = themes[i];
+      if (!answers[i] && theme != null && !wrong.contains(theme)) {
+        wrong.add(theme);
+      }
+    }
+    if (wrong.isEmpty) {
+      return far ? t.licaoTesteFalaMuitoAbaixo : t.licaoTesteFalaAbaixo;
+    }
+    final list = _themeList(t, wrong);
+    return far
+        ? t.licaoTesteFalaMuitoAbaixoTemas(list)
+        : t.licaoTesteFalaAbaixoTemas(list);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    final correct = answers.where((answer) => answer).length;
+    final grade = ExerciseGrade
+        .values[ChapterTestScores.gradeIndex(correct, answers.length)];
+    final below = grade == ExerciseGrade.below;
+    final far = correct <= 3;
+    final title = below
+        ? (far ? t.licaoTesteRecomecar : t.licaoTesteQuaseLa)
+        : grade == ExerciseGrade.passed
+        ? t.testCanvasRegular
+        : gradeName(t, grade);
+    Widget button(
+      Key key,
+      String label,
+      VoidCallback? onPressed,
+      bool primary,
+    ) => primary
+        ? FilledButton(key: key, onPressed: onPressed, child: Text(label))
+        : OutlinedButton(key: key, onPressed: onPressed, child: Text(label));
+
+    return Scaffold(
+      key: ExercisesDoneKeys.screen,
+      appBar: LucenaAppBar(
+        leading: IconButton(
+          key: ExercisesDoneKeys.close,
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+          icon: const Icon(CanvasSymbols.close),
+          onPressed: onContinue,
+        ),
+      ),
+      body: SafeArea(
+        top: false,
+        // H-ANI-25: medalha, título, placar, bolinhas, Viktor e botões em
+        // ordem; reabrir o mesmo resultado mostra tudo pronto.
+        child: EntradaDeResultado(
+          id: 'teste-$chapter-${answers.map((a) => a ? 1 : 0).join()}',
+          estrela: Center(
+            child: TestCanvasMedal(key: TestCanvasKeys.medal, grade: grade),
+          ),
+          titulo: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              title,
+              key: ExercisesDoneKeys.current,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 22,
+                height: 28 / 22,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          subtitulo: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              '${t.testCanvasTitle(chapter)} · ${t.testCanvasScore(correct, answers.length)}',
+              key: ExercisesDoneKeys.score,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          bolinhas: [
+            for (var i = 0; i < answers.length; i++)
+              SizedBox.square(
+                dimension: 44,
+                child: Material(
+                  type: MaterialType.transparency,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    key: TestCanvasKeys.answer(i),
+                    customBorder: const CircleBorder(),
+                    onTap: () => onReview(i),
+                    child: Center(
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: answers[i]
+                              ? AppColors.trainingDayCorrect
+                              : AppColors.trainingDayWrong,
+                        ),
+                        child: Text(
+                          '${i + 1}',
+                          style: const TextStyle(
+                            color: AppColors.chessWhiteColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+          montarBolinhas: (bolinhas) => Padding(
+            padding: const EdgeInsets.only(top: 14),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: 294,
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    alignment: WrapAlignment.center,
+                    children: bolinhas,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  t.testCanvasReview,
+                  key: TestCanvasKeys.reviewHint,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 12, height: 16 / 12),
+                ),
+              ],
+            ),
+          ),
+          viktor: switch (teacher) {
+            final teacher? => Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  textTheme: Theme.of(context).textTheme.copyWith(
+                    bodyLarge: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      height: 20 / 14,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ),
+                child: TeacherSpeech(
+                  key: ExercisesDoneKeys.retrySpeech,
+                  canvasTrainingBalloon: true,
+                  teacher: teacher,
+                  speechContext: SpeechContext.teaching,
+                  text:
+                      speech ??
+                      (below
+                          ? _failedSpeech(t, far: far)
+                          : t.testCanvasResultSpeech(correct, answers.length)),
+                  avatarSize: 56,
+                  speaks: true,
+                  unifiedSound: true,
+                  canvasHeader: true,
+                  showSpeedBadge: false,
+                ),
+              ),
+            ),
+            null => null,
+          },
+          botoes: ActionsFooter(
+            stacked: true,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            children: [
+              if (below) ...[
+                button(
+                  TestCanvasKeys.reviewLessons,
+                  t.licaoTesteReverLicoes,
+                  onReviewLessons ?? onContinue,
+                  true,
+                ),
+                button(
+                  ExercisesDoneKeys.redo,
+                  t.testCanvasRetry,
+                  onRetry,
+                  false,
+                ),
+              ] else ...[
+                button(
+                  ExercisesDoneKeys.back,
+                  t.testCanvasContinue,
+                  onContinue,
+                  true,
+                ),
+                button(
+                  ExercisesDoneKeys.redo,
+                  t.testCanvasRetry,
+                  onRetry,
+                  false,
+                ),
+              ],
+            ],
+          ),
+          // A lista rola; os botões ficam presos embaixo.
+          montar: (partes) => Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  children: partes.sublist(0, partes.length - 1),
+                ),
+              ),
+              partes.last,
+            ],
+          ),
         ),
       ),
     );

@@ -62,6 +62,10 @@ class RatingEntry {
   /// O ponto é um bônus de speedrun, não uma partida.
   bool get isBonus => speedrunAttemptId != null;
 
+  /// O ponto é o nível que o jogador definiu (Lichess, teste, faixa): nem
+  /// partida nem bônus.
+  bool get isLevel => gameId == null && speedrunAttemptId == null;
+
   @override
   bool operator ==(Object other) =>
       other is RatingEntry &&
@@ -108,4 +112,17 @@ class SpeedrunBonus {
 
   @override
   int get hashCode => Object.hash(attemptId, speedrunId, before, after, at);
+}
+
+/// Contas sobre o histórico do rating.
+extension RatingHistory on List<RatingEntry> {
+  /// As partidas que contaram: sem bônus de speedrun e sem nível definido.
+  int get ratedGames =>
+      where((entry) => !entry.isBonus && !entry.isLevel).length;
+
+  /// Quanto o último ponto mudou o rating. Nulo com menos de dois pontos e
+  /// quando o último é um nível definido (um salto escolhido, não jogado).
+  int? get lastChange => length < 2 || last.isLevel
+      ? null
+      : last.rating.rounded - this[length - 2].rating.rounded;
 }

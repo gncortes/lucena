@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/routes.dart';
+import '../../core/widgets/load_error.dart';
 
 import '../../../domain/models/voice.dart';
 import '../../core/keys/voice_keys.dart';
@@ -22,6 +29,14 @@ class VoiceSettingsScreen extends StatelessWidget {
     final speech = context.read<SpeechCubit>();
     final language = voiceLanguage(context);
     final state = context.watch<SpeechCubit>().state;
+    if (state.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: speech.load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final available = state.availableFor(language);
     final settings = state.settings;
     Widget header(String text) => Padding(
@@ -43,7 +58,7 @@ class VoiceSettingsScreen extends StatelessWidget {
       key: VoiceKeys.settingsSection,
       appBar: LucenaAppBar(title: Text(l10n.voiceSection)),
       body: !state.loaded
-          ? const SizedBox.shrink()
+          ? const SkeletonList()
           : ListView(
               children: [
                 if (!available)

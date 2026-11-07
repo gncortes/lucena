@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:lucena/data/repositories/progress/progress_repository.dart';
 import 'package:lucena/domain/models/attempt.dart';
 
@@ -7,8 +9,15 @@ class FakeProgressRepository implements ProgressRepository {
 
   final List<Attempt> attempts;
 
+  /// Quantas gravações da tentativa ainda falham (falta de espaço, H-PAR-19).
+  int failAddAttempt = 0;
+
   @override
   Future<int> addAttempt(Attempt attempt) async {
+    if (failAddAttempt > 0) {
+      failAddAttempt--;
+      throw const FileSystemException('No space left on device');
+    }
     attempts.add(attempt);
     return attempts.length;
   }

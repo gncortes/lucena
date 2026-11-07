@@ -292,7 +292,7 @@ as bool,
 mixin _$CatalogState {
 
 /// Nulo enquanto o catálogo é lido.
- List<CatalogCategory>? get categories;/// As posições da categoria aberta, na ordem do catálogo. Nulo fora da
+ List<CatalogCategory>? get categories; LoadFailure? get failure;/// As posições da categoria aberta, na ordem do catálogo. Nulo fora da
 /// tela da categoria ou enquanto elas são lidas.
  List<EndgamePosition>? get positions; GoalFilter get filter;/// As posições em que o objetivo já foi cumprido.
  Set<String> get fulfilled;/// Os finais que o jogador abriu ou fechou na tela da categoria, ao
@@ -309,20 +309,20 @@ $CatalogStateCopyWith<CatalogState> get copyWith => _$CatalogStateCopyWithImpl<C
 @override
 bool operator ==(Object other) {
   final _this = this as CatalogState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogState&&const DeepCollectionEquality().equals(other.categories, _this.categories)&&const DeepCollectionEquality().equals(other.positions, _this.positions)&&(identical(other.filter, _this.filter) || other.filter == _this.filter)&&const DeepCollectionEquality().equals(other.fulfilled, _this.fulfilled)&&const DeepCollectionEquality().equals(other.toggled, _this.toggled));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogState&&const DeepCollectionEquality().equals(other.categories, _this.categories)&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&const DeepCollectionEquality().equals(other.positions, _this.positions)&&(identical(other.filter, _this.filter) || other.filter == _this.filter)&&const DeepCollectionEquality().equals(other.fulfilled, _this.fulfilled)&&const DeepCollectionEquality().equals(other.toggled, _this.toggled));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CatalogState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.categories),const DeepCollectionEquality().hash(_this.positions),_this.filter,const DeepCollectionEquality().hash(_this.fulfilled),const DeepCollectionEquality().hash(_this.toggled));
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.categories),_this.failure,const DeepCollectionEquality().hash(_this.positions),_this.filter,const DeepCollectionEquality().hash(_this.fulfilled),const DeepCollectionEquality().hash(_this.toggled));
 }
 
 @override
 String toString() {
   final _this = this as CatalogState;
-  return 'CatalogState(categories: ${_this.categories}, positions: ${_this.positions}, filter: ${_this.filter}, fulfilled: ${_this.fulfilled}, toggled: ${_this.toggled})';
+  return 'CatalogState(categories: ${_this.categories}, failure: ${_this.failure}, positions: ${_this.positions}, filter: ${_this.filter}, fulfilled: ${_this.fulfilled}, toggled: ${_this.toggled})';
 }
 
 
@@ -333,7 +333,7 @@ abstract mixin class $CatalogStateCopyWith<$Res>  {
   factory $CatalogStateCopyWith(CatalogState value, $Res Function(CatalogState) _then) = _$CatalogStateCopyWithImpl;
 @useResult
 $Res call({
- List<CatalogCategory>? categories, List<EndgamePosition>? positions, GoalFilter filter, Set<String> fulfilled, Set<String> toggled
+ List<CatalogCategory>? categories, LoadFailure? failure, List<EndgamePosition>? positions, GoalFilter filter, Set<String> fulfilled, Set<String> toggled
 });
 
 
@@ -350,10 +350,11 @@ class _$CatalogStateCopyWithImpl<$Res>
 
 /// Create a copy of CatalogState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? categories = freezed,Object? positions = freezed,Object? filter = null,Object? fulfilled = null,Object? toggled = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? categories = freezed,Object? failure = freezed,Object? positions = freezed,Object? filter = null,Object? fulfilled = null,Object? toggled = null,}) {
   return _then(CatalogState(
 categories: freezed == categories ? _self.categories : categories // ignore: cast_nullable_to_non_nullable
-as List<CatalogCategory>?,positions: freezed == positions ? _self.positions : positions // ignore: cast_nullable_to_non_nullable
+as List<CatalogCategory>?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,positions: freezed == positions ? _self.positions : positions // ignore: cast_nullable_to_non_nullable
 as List<EndgamePosition>?,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
 as GoalFilter,fulfilled: null == fulfilled ? _self.fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
 as Set<String>,toggled: null == toggled ? _self.toggled : toggled // ignore: cast_nullable_to_non_nullable
@@ -442,10 +443,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> toggled)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  LoadFailure? failure,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> toggled)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogState() when $default != null:
-return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_that.toggled);case _:
+return $default(_that.categories,_that.failure,_that.positions,_that.filter,_that.fulfilled,_that.toggled);case _:
   return orElse();
 
 }
@@ -463,10 +464,10 @@ return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> toggled)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  LoadFailure? failure,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> toggled)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogState():
-return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_that.toggled);case _:
+return $default(_that.categories,_that.failure,_that.positions,_that.filter,_that.fulfilled,_that.toggled);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -483,10 +484,10 @@ return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> toggled)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CatalogCategory>? categories,  LoadFailure? failure,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> toggled)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogState() when $default != null:
-return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_that.toggled);case _:
+return $default(_that.categories,_that.failure,_that.positions,_that.filter,_that.fulfilled,_that.toggled);case _:
   return null;
 
 }
@@ -498,7 +499,7 @@ return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_t
 
 
 class _CatalogState extends CatalogState {
-  const _CatalogState({ List<CatalogCategory>? categories,  List<EndgamePosition>? positions, this.filter = GoalFilter.all,  Set<String> fulfilled = const <String>{},  Set<String> toggled = const <String>{}}): _categories = categories,_positions = positions,_fulfilled = fulfilled,_toggled = toggled,super._();
+  const _CatalogState({ List<CatalogCategory>? categories, this.failure,  List<EndgamePosition>? positions, this.filter = GoalFilter.all,  Set<String> fulfilled = const <String>{},  Set<String> toggled = const <String>{}}): _categories = categories,_positions = positions,_fulfilled = fulfilled,_toggled = toggled,super._();
   
 
 /// Nulo enquanto o catálogo é lido.
@@ -512,6 +513,7 @@ class _CatalogState extends CatalogState {
   return EqualUnmodifiableListView(value);
 }
 
+@override final  LoadFailure? failure;
 /// As posições da categoria aberta, na ordem do catálogo. Nulo fora da
 /// tela da categoria ou enquanto elas são lidas.
  final  List<EndgamePosition>? _positions;
@@ -557,18 +559,18 @@ _$CatalogStateCopyWith<_CatalogState> get copyWith => __$CatalogStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogState&&const DeepCollectionEquality().equals(other.categories, _categories)&&const DeepCollectionEquality().equals(other.positions, _positions)&&(identical(other.filter, filter) || other.filter == filter)&&const DeepCollectionEquality().equals(other.fulfilled, _fulfilled)&&const DeepCollectionEquality().equals(other.toggled, _toggled));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogState&&const DeepCollectionEquality().equals(other.categories, _categories)&&(identical(other.failure, failure) || other.failure == failure)&&const DeepCollectionEquality().equals(other.positions, _positions)&&(identical(other.filter, filter) || other.filter == filter)&&const DeepCollectionEquality().equals(other.fulfilled, _fulfilled)&&const DeepCollectionEquality().equals(other.toggled, _toggled));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_categories),const DeepCollectionEquality().hash(_positions),filter,const DeepCollectionEquality().hash(_fulfilled),const DeepCollectionEquality().hash(_toggled));
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_categories),failure,const DeepCollectionEquality().hash(_positions),filter,const DeepCollectionEquality().hash(_fulfilled),const DeepCollectionEquality().hash(_toggled));
 }
 
 @override
 String toString() {
-    return 'CatalogState(categories: $categories, positions: $positions, filter: $filter, fulfilled: $fulfilled, toggled: $toggled)';
+    return 'CatalogState(categories: $categories, failure: $failure, positions: $positions, filter: $filter, fulfilled: $fulfilled, toggled: $toggled)';
 }
 
 
@@ -579,7 +581,7 @@ abstract mixin class _$CatalogStateCopyWith<$Res> implements $CatalogStateCopyWi
   factory _$CatalogStateCopyWith(_CatalogState value, $Res Function(_CatalogState) _then) = __$CatalogStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<CatalogCategory>? categories, List<EndgamePosition>? positions, GoalFilter filter, Set<String> fulfilled, Set<String> toggled
+ List<CatalogCategory>? categories, LoadFailure? failure, List<EndgamePosition>? positions, GoalFilter filter, Set<String> fulfilled, Set<String> toggled
 });
 
 
@@ -596,10 +598,11 @@ class __$CatalogStateCopyWithImpl<$Res>
 
 /// Create a copy of CatalogState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? categories = freezed,Object? positions = freezed,Object? filter = null,Object? fulfilled = null,Object? toggled = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? categories = freezed,Object? failure = freezed,Object? positions = freezed,Object? filter = null,Object? fulfilled = null,Object? toggled = null,}) {
   return _then(_CatalogState(
 categories: freezed == categories ? _self._categories : categories // ignore: cast_nullable_to_non_nullable
-as List<CatalogCategory>?,positions: freezed == positions ? _self._positions : positions // ignore: cast_nullable_to_non_nullable
+as List<CatalogCategory>?,failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,positions: freezed == positions ? _self._positions : positions // ignore: cast_nullable_to_non_nullable
 as List<EndgamePosition>?,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
 as GoalFilter,fulfilled: null == fulfilled ? _self._fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
 as Set<String>,toggled: null == toggled ? _self._toggled : toggled // ignore: cast_nullable_to_non_nullable

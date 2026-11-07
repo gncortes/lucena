@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_grants_repository.dart';
+import 'package:lucena/data/repositories/push/push_repository.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
 import 'package:patrol/patrol.dart';
 
+import 'package:lucena/data/repositories/conclusion/conclusion_repository_local.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 
 import '../../testing/e2e_dependencies.dart';
+import '../../testing/training/e2e_training.dart';
 
 import 'variant.dart';
 
@@ -33,6 +38,14 @@ class AppRobot {
     Locale? systemLocale,
     bool lightDevice = false,
     bool tour = false,
+    E2ETrainingScenario? trainingScenario,
+    bool demo = false,
+    PurchaseRepository? purchases,
+    bool signedIn = false,
+    bool accountInvite = false,
+    PushRepository? push,
+    CourseGrantsRepository? courseGrants,
+    bool settle = true,
   }) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
@@ -61,13 +74,33 @@ class AppRobot {
       dispatcher.platformBrightnessTestValue = Brightness.dark;
       addTearDown(dispatcher.clearPlatformBrightnessTestValue);
     }
-    await _pumpApp();
+    await _pumpApp(
+      trainingScenario: trainingScenario,
+      demo: demo,
+      purchases: purchases,
+      signedIn: signedIn,
+      accountInvite: accountInvite,
+      push: push,
+      courseGrants: courseGrants,
+      settle: settle,
+    );
   }
 
   /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho. Como
   /// ao fechar à força: nenhuma tela é avisada de que o app vai fechar.
   Future<void> restart() async {
+    final conclusions = LocalConclusionRepository(PreferencesService());
+    // Fechar à força não avisa a tela, mas tirar o app da árvore fecha o
+    // view model da conclusão e apaga a "conclusão aberta": ela é devolvida
+    // depois, como o aparelho a deixaria.
+    final open = await $.tester.runAsync(conclusions.pending);
     await $.pumpWidgetAndSettle(const SizedBox());
+    // As gravações do app que saiu (partida às cegas, conclusão aberta)
+    // terminam antes de o novo abrir, como no aparelho.
+    await $.tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (open != null) await conclusions.open(open);
+    });
     await _pumpApp();
   }
 
@@ -87,10 +120,37 @@ class AppRobot {
   // A key nova a cada abertura garante um app do zero, sem estado em memória.
   // A leitura das preferências vem do aparelho e não agenda quadros: só o
   // pumpAndSettle não basta, é preciso esperar a primeira tela aparecer.
-  Future<void> _pumpApp() async {
-    await $.pumpWidgetAndSettle(
-      LucenaApp(key: UniqueKey(), dependencies: await e2eDependencies()),
+  Future<void> _pumpApp({
+    E2ETrainingScenario? trainingScenario,
+    bool demo = false,
+    PurchaseRepository? purchases,
+    bool signedIn = false,
+    bool accountInvite = false,
+    PushRepository? push,
+    CourseGrantsRepository? courseGrants,
+    bool settle = true,
+  }) async {
+    final app = LucenaApp(
+      key: UniqueKey(),
+      dependencies: await e2eDependencies(
+        trainingScenario: trainingScenario,
+        demo: demo,
+        purchases: purchases,
+        signedIn: signedIn,
+        accountInvite: accountInvite,
+        push: push,
+        courseGrants: courseGrants,
+      ),
     );
+    if (!settle) {
+      // Tela com animação sem fim (a abertura do presente): o pumpAndSettle
+      // nunca termina, então o tempo anda em passos fixos.
+      await $.pumpWidget(app);
+      await $(Scaffold).waitUntilVisible();
+      await $.pump(const Duration(seconds: 1));
+      return;
+    }
+    await $.pumpWidgetAndSettle(app);
     // O app abre na tela inicial ou, com partida em andamento, no tabuleiro.
     await $(Scaffold).waitUntilVisible();
     await $.pumpAndSettle();

@@ -4,10 +4,22 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Firebase: o google-services.json não é versionado (ver .gitignore).
-// Sem ele (CI de PR, forks), o app compila sem a configuração do Firebase.
-if (file("google-services.json").exists()) {
+// Firebase: os google-services.json não são versionados (ver .gitignore). Um por flavor:
+// android/app/src/dev/google-services.json e android/app/src/prod/google-services.json (prod
+// também aceita o android/app/google-services.json). O plugin só entra se existir o json de
+// todos os flavors que a tarefa pedida compila; sem ele (CI de PR, forks) o app compila sem
+// a configuração do Firebase.
+fun temGoogleServices(flavor: String): Boolean =
+    file("src/$flavor/google-services.json").exists() ||
+        (flavor == "prod" && file("google-services.json").exists())
+
+val tarefasPedidas = gradle.startParameter.taskNames.joinToString(" ")
+val flavorsPedidos = listOf("dev", "prod").filter {
+    Regex("(?i)$it(debug|release|profile)").containsMatchIn(tarefasPedidas)
+}.ifEmpty { listOf("dev", "prod") }
+if (flavorsPedidos.all { temGoogleServices(it) }) {
     apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 // Assinatura de release: variáveis definidas só pelo CI (ambiente `release` do GitHub).
@@ -27,6 +39,7 @@ android {
     }
 
     defaultConfig {
+        // O namespace (código) fica fixo; o applicationId varia por flavor.
         applicationId = "com.gncortes.lucena"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
@@ -40,6 +53,24 @@ android {
         versionName = flutter.versionName
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
+    }
+
+    // dev e prod instalam lado a lado: dev = com.gncortes.lucena.dev, "Lucena Dev", Firebase lucena-dev-gnc.
+    buildFeatures {
+        resValues = true
+    }
+    flavorDimensions += "ambiente"
+    productFlavors {
+        create("dev") {
+            dimension = "ambiente"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            resValue("string", "app_name", "Lucena Dev")
+        }
+        create("prod") {
+            dimension = "ambiente"
+            resValue("string", "app_name", "Lucena")
+        }
     }
 
     testOptions {

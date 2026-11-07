@@ -3,6 +3,11 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../domain/models/wiki_links.dart';
+import '../../../domain/use_cases/wiki_markup.dart';
+import '../../wiki/view_models/wiki_links_cubit.dart';
 
 import '../keys/speech_keys.dart';
 import '../l10n/l10n.dart';
@@ -11,6 +16,7 @@ import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text.dart';
 import 'animated_speech_switcher.dart';
+import 'external_page_sheet.dart';
 import 'speech_sheet_fade.dart';
 
 /// Onde fica a ponta do balão (canvas `CompBalao`, parâmetro `ponta`): em
@@ -334,8 +340,11 @@ class SpeechFit {
     required InlineSpan more,
     List<InlineSpan> Function(String text)? spans,
   }) {
+    // Nunca no meio de um nome marcado (`{{nome|chave}}`).
+    final marks = SpeechText.wikiPattern.allMatches(text).toList();
     final ends = <int>[
-      for (final m in RegExp(r'\s+').allMatches(text)) m.start,
+      for (final m in RegExp(r'\s+').allMatches(text))
+        if (!marks.any((w) => m.start > w.start && m.start < w.end)) m.start,
     ];
     String piece(int end) => text.substring(0, end).replaceFirst(_trailing, '');
     bool fits(String piece) {
@@ -667,11 +676,19 @@ class SpeechText extends StatefulWidget {
     this.onShowAnswer,
     this.onSquareTap,
     this.onMore,
+    this.highlightLooseSquares = true,
+    this.appendMore = false,
+    this.textHeightBehavior,
     super.key,
   });
 
   final String text;
+  final bool highlightLooseSquares;
+
+  /// The source has already fitted and cut this text by whole words.
+  final bool appendMore;
   final TextStyle style;
+  final TextHeightBehavior? textHeightBehavior;
   final int? maxLines;
 
   /// Com [maxLines]: a fala que não cabe é cortada numa palavra inteira e
@@ -694,6 +711,12 @@ class SpeechText extends StatefulWidget {
   /// Uma casa entre colchetes, como `[c6]`: na tela vira negrito azul; fora
   /// dela (voz, medida) fica só a casa.
   static final squarePattern = RegExp(r'\[([a-h][1-8])\]');
+
+  /// Um nome marcado, `{{texto visível|chave}}` ([WikiMarkup]): na tela vira
+  /// o nome sublinhado, que abre a página dele; fora dela, só o nome.
+  static final wikiPattern = RegExp(
+    r'\{\{(?<wikiText>[^{}|]+)\|(?<wikiKey>[^{}|]+)\}\}',
+  );
 
   /// Uma casa solta no texto, como palavra inteira: "Rg7" e "1.Rg7" não
   /// contam, porque a letra da peça vem colada antes.
@@ -722,7 +745,8 @@ class SpeechText extends StatefulWidget {
           text.substring(0, m.start),
         ),
       )
-      .replaceAllMapped(squarePattern, (m) => m.group(1)!);
+      .replaceAllMapped(squarePattern, (m) => m.group(1)!)
+      .replaceAllMapped(wikiPattern, (m) => m.group(1)!);
 
   /// O rótulo do botão citado no meio da frase ("clique em ver resposta")
   /// começa em minúscula; no começo da fala ou de uma frase, fica como no
@@ -740,7 +764,9 @@ class SpeechText extends StatefulWidget {
 
   /// [plain] com os rótulos do idioma da tela.
   static String plainOf(BuildContext context, String text) =>
-      markPattern.hasMatch(text) || squarePattern.hasMatch(text)
+      markPattern.hasMatch(text) ||
+          squarePattern.hasMatch(text) ||
+          wikiPattern.hasMatch(text)
       ? plain(
           text,
           mainLine: context.l10n.lessonMainLine,
@@ -761,9 +787,13 @@ class _SpeechTextState extends State<SpeechText> {
     ..onTap = () => widget.onMore?.call();
 
   final _squares = <String, TapGestureRecognizer>{};
+  final _pages = <Uri, TapGestureRecognizer>{};
 
   @override
   void dispose() {
+    for (final recognizer in _pages.values) {
+      recognizer.dispose();
+    }
     _mainLine.dispose();
     _showAnswer.dispose();
     _more.dispose();
@@ -779,8 +809,24 @@ class _SpeechTextState extends State<SpeechText> {
         TapGestureRecognizer()..onTap = () => widget.onSquareTap?.call(square),
   );
 
+  TapGestureRecognizer _pageTap(Uri url) => _pages.putIfAbsent(
+    url,
+    () => TapGestureRecognizer()..onTap = () => showExternalPage(context, url),
+  );
+
+  /// As páginas dos nomes, se o app as tem (num teste de um widget só, não
+  /// há: o nome fica como texto normal).
+  WikiLinks _wiki(BuildContext context) {
+    try {
+      return context.watch<WikiLinksCubit>().state;
+    } on ProviderNotFoundException {
+      return WikiLinks.empty;
+    }
+  }
+
   /// Há algo a desenhar além do texto simples?
   bool _hasMarkup(String text) =>
+      SpeechText.wikiPattern.hasMatch(text) ||
       SpeechText.markPattern.hasMatch(text) ||
       SpeechText.squarePattern.hasMatch(text) ||
       (widget.onSquareTap != null &&
@@ -805,16 +851,35 @@ class _SpeechTextState extends State<SpeechText> {
     final tappable = widget.onSquareTap != null;
     final both = RegExp(
       '${SpeechText.markPattern.pattern}|${SpeechText.squarePattern.pattern}'
-      '${tappable ? '|(${SpeechText.looseSquarePattern.pattern})' : ''}',
+      '${tappable ? '|(${SpeechText.looseSquarePattern.pattern})' : ''}'
+      '|${SpeechText.wikiPattern.pattern}',
     );
+    final wiki = _wiki(context);
+    final language = Localizations.localeOf(context).languageCode;
     for (final m in both.allMatches(text)) {
       spans.add(TextSpan(text: text.substring(at, m.start)));
+      if (m.namedGroup('wikiText') case final visible?) {
+        // O hífen da chave virou U+2011 no [SpeechText.noBreak].
+        final key = m.namedGroup('wikiKey')!.replaceAll('\u2011', '-').trim();
+        final url = wiki.url(key, language);
+        spans.add(
+          TextSpan(
+            text: visible,
+            style: url == null ? null : link,
+            recognizer: url == null ? null : _pageTap(url),
+          ),
+        );
+        at = m.end;
+        continue;
+      }
       final name = m.group(2) ?? (tappable ? m.group(3) : null);
       if (name != null) {
         spans.add(
           TextSpan(
             text: name,
-            style: square,
+            style: m.group(2) == null && !widget.highlightLooseSquares
+                ? widget.style
+                : square,
             recognizer: tappable ? _squareTap(name) : null,
           ),
         );
@@ -855,6 +920,7 @@ class _SpeechTextState extends State<SpeechText> {
       return Text(
         text,
         style: widget.style,
+        textHeightBehavior: widget.textHeightBehavior,
         maxLines: maxLines,
         overflow: overflow,
       );
@@ -867,6 +933,7 @@ class _SpeechTextState extends State<SpeechText> {
       ),
       maxLines: maxLines,
       overflow: overflow,
+      textHeightBehavior: widget.textHeightBehavior,
     );
     final onSquare = widget.onSquareTap;
     if (onSquare == null) return rich;
@@ -885,6 +952,7 @@ class _SpeechTextState extends State<SpeechText> {
         ),
         textDirection: Directionality.of(context),
         textScaler: MediaQuery.textScalerOf(context),
+        textHeightBehavior: widget.textHeightBehavior,
       )..layout(maxWidth: width);
 
   /// Onde começa a frase do último link; nulo se ela é a fala inteira.
@@ -899,6 +967,15 @@ class _SpeechTextState extends State<SpeechText> {
   Widget build(BuildContext context) {
     final maxLines = widget.maxLines;
     final text = SpeechText.noBreak(widget.text);
+    if (widget.appendMore) {
+      return _rich(
+        context,
+        text,
+        null,
+        more: SpeechFit.more(context, style: widget.style, recognizer: _more),
+        key: SpeechKeys.cut,
+      );
+    }
     if (maxLines != null && widget.onMore != null) {
       return LayoutBuilder(
         builder: (context, box) {

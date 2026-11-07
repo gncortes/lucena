@@ -3,8 +3,8 @@ import '../models/home_shortcut.dart';
 
 /// Os atalhos da tela inicial (T83, prancha "Atalhos por usuário" v2): todos
 /// os caminhos marcados em Configurações > Tela inicial, na ordem do nível
-/// (o do objetivo primeiro), sem corte, com os finais para você dentro do
-/// Curso de finais; os Problemas e as Estrelas vêm no fim. A grade é 2×N.
+/// (o do objetivo primeiro), sem corte, com os finais para você dentro dos
+/// Pilares do Xadrez; os Problemas e as Estrelas vêm no fim. A grade é 2×N.
 abstract final class HomeShortcuts {
   /// [order] e [visible] vêm do [HomeLayout] (a ordem e os marcados).
   /// [learning]: o objetivo "Aprender a jogar", que vê só a Escola, a
@@ -47,10 +47,13 @@ abstract final class HomeShortcuts {
   static HomeShortcut? _shortcut(HomePath path) => switch (path) {
     HomePath.learn => HomeShortcut.school,
     HomePath.journey => HomeShortcut.journey,
-    HomePath.forYou || HomePath.endgames => HomeShortcut.endgames,
+    // Os finais para você viraram parte dos Pilares: um atalho só.
+    HomePath.forYou || HomePath.endgames => HomeShortcut.pillars,
     HomePath.train => HomeShortcut.train,
     HomePath.speedrun => HomeShortcut.speedrun,
     HomePath.race => HomeShortcut.race,
     HomePath.stars => HomeShortcut.stars,
+    HomePath.board => HomeShortcut.freeBoard,
+    HomePath.position => HomeShortcut.customPosition,
   };
 }

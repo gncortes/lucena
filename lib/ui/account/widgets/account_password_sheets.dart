@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/motion/botao_carregando.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/account/mail_app_repository.dart';
@@ -164,7 +167,7 @@ class _ResetSheetState extends State<_ResetSheet> {
                   _SheetHeader(
                     icon: Icons.lock_reset,
                     title: l10n.accountResetTitle,
-                    text: Text(l10n.accountResetText),
+                    text: Text(l10n.conSenhaText),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   TextField(
@@ -195,10 +198,11 @@ class _ResetSheetState extends State<_ResetSheet> {
               stacked: true,
               margin: AppSpacing.xl,
               children: [
-                FilledButton(
-                  key: AccountKeys.resetSend,
+                BotaoCarregando(
+                  buttonKey: AccountKeys.resetSend,
+                  busy: _busy,
                   onPressed: _busy ? null : _send,
-                  child: Text(l10n.accountResetSend),
+                  label: l10n.conSenhaSend,
                 ),
                 TextButton(
                   key: AccountKeys.resetCancel,
@@ -224,7 +228,7 @@ class _SentSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     // O e-mail em negrito no meio do texto traduzido.
-    final parts = l10n.accountResetSentText('\u0001').split('\u0001');
+    final parts = l10n.conSenhaSentText('\u0001').split('\u0001');
     return SafeArea(
       top: false,
       child: Column(

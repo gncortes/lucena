@@ -21,11 +21,14 @@ void main() {
       }
     });
 
-    test('${accent.name}: cartão branco, sem sombra e sem margem (D24)', () {
-      expect(theme.cardTheme.elevation, 0);
-      expect(theme.cardTheme.color, const Color(0xFFFFFFFF));
-      expect(theme.cardTheme.margin, EdgeInsets.zero);
-    });
+    test(
+      '${accent.name}: cartão #FAFBF9, sem sombra e sem margem (D24, T85-D0)',
+      () {
+        expect(theme.cardTheme.elevation, 0);
+        expect(theme.cardTheme.color, const Color(0xFFFAFBF9));
+        expect(theme.cardTheme.margin, EdgeInsets.zero);
+      },
+    );
 
     test('${accent.name}: terciário dourado do canvas (D26)', () {
       expect(theme.colorScheme.tertiary, const Color(0xFF7A5900));

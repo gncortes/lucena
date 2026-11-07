@@ -6,8 +6,10 @@ import 'package:lucena/data/repositories/update/app_update_repository.dart';
 import 'package:lucena/routing/router.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/routing/stream_refresh.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/keys/update_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/update/view_models/update_cubit.dart';
 import 'package:lucena/ui/update/widgets/update_bridge.dart';
@@ -18,6 +20,7 @@ import '../../../testing/fakes/fake_app_update_repository.dart';
 import '../../../testing/fakes/fake_remote_flags_repository.dart';
 
 const _game = '/game';
+const _goalKey = Key('test.goal');
 const _homeKey = Key('test.home');
 const _gameKey = Key('test.game');
 
@@ -54,6 +57,10 @@ void main() {
         GoRoute(
           path: Routes.home,
           builder: (context, state) => const Scaffold(key: _homeKey),
+        ),
+        GoRoute(
+          path: Routes.goal,
+          builder: (context, state) => const Scaffold(key: _goalKey),
         ),
         GoRoute(
           path: _game,
@@ -118,6 +125,62 @@ void main() {
       expect(updates.storeOpens, 1);
     });
 
+    testWidgets('textos e botão do canvas, sem o ícone de link externo', (
+      tester,
+    ) async {
+      flags.updateMinBuild = 101;
+      await pumpApp(tester, initial: _game);
+      await tester.runAsync(cubit.start);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Atualização necessária'), findsOneWidget);
+      expect(
+        find.text(
+          'A versão instalada tem um erro que precisa ser corrigido. '
+          'Suas lições e partidas continuam no aparelho.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Atualizar'), findsOneWidget);
+      expect(find.byIcon(Icons.open_in_new), findsNothing);
+    });
+
+    testWidgets('sem internet: tela própria só com "Tentar novamente"', (
+      tester,
+    ) async {
+      flags.updateMinBuild = 101;
+      updates.online = false;
+      await pumpApp(tester, initial: _game);
+      await tester.runAsync(cubit.start);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(UpdateKeys.requiredOfflineScreen), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is EntradaDaTela &&
+              w.id == 'PropV1AbEstAtualizarObrigatoriaSemRede',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Sem internet'), findsOneWidget);
+      expect(
+        find.text(
+          'Você precisa de conexão com a internet para atualizar o Lucena.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(UpdateKeys.requiredRetry), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.back), findsNothing);
+
+      updates.online = true;
+      await tester.tap(find.byKey(UpdateKeys.requiredRetry));
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pumpAndSettle();
+      expect(find.byKey(UpdateKeys.requiredOfflineScreen), findsNothing);
+      expect(find.byKey(UpdateKeys.requiredAction), findsOneWidget);
+    });
+
     testWidgets('a mínima volta a 0 e solta a home', (tester) async {
       flags.updateMinBuild = 101;
       await pumpApp(tester);
@@ -149,6 +212,59 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(UpdateKeys.recommendedScreen), findsOneWidget);
       expect(updates.seen, 110);
+    });
+
+    testWidgets('na 1ª abertura abre por cima do Objetivo', (tester) async {
+      flags.updateRecommendedBuild = 110;
+      await pumpApp(tester, initial: Routes.goal);
+      await tester.runAsync(cubit.start);
+      await tester.pumpAndSettle();
+      expect(find.byKey(UpdateKeys.recommendedScreen), findsOneWidget);
+      await tester.tap(find.byKey(UpdateKeys.recommendedLater));
+      await tester.pumpAndSettle();
+      expect(find.byKey(_goalKey), findsOneWidget);
+    });
+
+    testWidgets('textos do canvas', (tester) async {
+      flags.updateRecommendedBuild = 110;
+      await pumpApp(tester);
+      await tester.runAsync(cubit.start);
+      await tester.pumpAndSettle();
+      expect(find.text('Nova versão disponível'), findsOneWidget);
+      expect(
+        find.text('Traz correções e melhorias para o Lucena.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('sem internet: "Tentar novamente" e "Agora não"', (
+      tester,
+    ) async {
+      flags.updateRecommendedBuild = 110;
+      await pumpApp(tester);
+      await tester.runAsync(cubit.start);
+      await tester.pumpAndSettle();
+      updates.online = false;
+
+      await tester.tap(find.byKey(UpdateKeys.recommendedAction));
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pumpAndSettle();
+      expect(find.byKey(UpdateKeys.recommendedOfflineScreen), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is EntradaDaTela &&
+              w.id == 'PropV1AbEstAtualizarRecomendadaSemRede',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Sem internet'), findsOneWidget);
+      expect(find.byKey(UpdateKeys.recommendedRetry), findsOneWidget);
+      expect(updates.flexibles, 0);
+
+      await tester.tap(find.byKey(UpdateKeys.recommendedLater));
+      await tester.pumpAndSettle();
+      expect(find.byKey(_homeKey), findsOneWidget);
     });
 
     testWidgets('fecha com "Agora não" e não volta', (tester) async {

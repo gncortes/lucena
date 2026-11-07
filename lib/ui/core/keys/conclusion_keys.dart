@@ -35,10 +35,22 @@ abstract final class ConclusionKeys {
   static const share = Key('conclusion.share');
   static const review = Key('conclusion.review');
 
+  /// A lista "Para aprender com ela" da derrota por desistência e os dois
+  /// itens dela.
+  static const learn = Key('conclusion.learn');
+  static const learnGame = Key('conclusion.learn.game');
+  static const learnFinal = Key('conclusion.learn.final');
+
   /// O cartão da análise rápida como entra na imagem de compartilhar.
   static const analysisShared = Key('conclusion.review.shared');
 
   /// No resumo pronto da análise rápida: a revisão completa da partida.
+  /// "Nova partida" na barra do alto (vitória).
+  static const appBarNewGame = Key('conclusion.appBarNewGame');
+
+  /// "Ver a análise" no rodapé da vitória.
+  static const seeAnalysis = Key('conclusion.seeAnalysis');
+
   static const reviewDeeper = Key('conclusion.review.deeper');
   static const accuracy = Key('conclusion.review.accuracy');
   static const reviewBoard = Key('conclusion.quickReview.board');
@@ -66,4 +78,7 @@ abstract final class ConclusionKeys {
   /// O botão da ação [action].
   static Key action(ConclusionAction action) =>
       Key('conclusion.action.${action.name}');
+
+  /// A seta de voltar do fim do speedrun e da Maratona: leva à lista.
+  static const back = Key('conclusion.back');
 }

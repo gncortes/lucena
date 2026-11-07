@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/ads_state.dart';
+import 'package:lucena/domain/models/course_access.dart';
 import 'package:lucena/domain/use_cases/ad_policy.dart';
 
 void main() {
+  demoAdPolicyTests();
   final now = DateTime.utc(2026, 10, 22, 10);
   // 2ª sessão, 3ª lição aberta: passou da carência.
   const ready = AdsState(sessions: 2, lessonsOpened: 3);
@@ -113,5 +115,68 @@ void main() {
     expect(next.sessions, 3);
     expect(next.shownThisSession, isEmpty);
     expect(AdsState.fromJson(state.toJson()).shownThisSession, isEmpty);
+  });
+}
+
+void demoAdPolicyTests() {
+  group('DemoAdPolicy', () {
+    DemoAdStep step(
+      CourseAccess access, {
+      DemoAdEntry entry = DemoAdEntry.lesson,
+      bool seen = true,
+    }) => DemoAdPolicy.stepFor(access: access, entry: entry, noticeSeen: seen);
+
+    test('comprador nunca vê aviso nem anúncio', () {
+      for (final entry in DemoAdEntry.values) {
+        expect(
+          step(CourseAccess.owned, entry: entry, seen: false),
+          DemoAdStep.none,
+        );
+      }
+    });
+
+    test('demo: aviso na primeira entrada, depois só o anúncio', () {
+      expect(step(CourseAccess.demo, seen: false), DemoAdStep.notice);
+      expect(step(CourseAccess.demo), DemoAdStep.ad);
+      expect(step(CourseAccess.demo, entry: DemoAdEntry.list), DemoAdStep.ad);
+    });
+
+    test('assinatura vencida conta como demo', () {
+      expect(step(CourseAccess.subscriptionEnded), DemoAdStep.ad);
+    });
+
+    test('dentro da lição e no teste não há anúncio', () {
+      expect(
+        step(CourseAccess.demo, entry: DemoAdEntry.insideLesson, seen: false),
+        DemoAdStep.none,
+      );
+      expect(step(CourseAccess.demo, entry: DemoAdEntry.test), DemoAdStep.none);
+    });
+
+    test('a contagem vai de 3 a 0 em 3 segundos', () {
+      expect(DemoAdPolicy.secondsLeft(Duration.zero), 3);
+      expect(DemoAdPolicy.secondsLeft(const Duration(milliseconds: 999)), 3);
+      expect(DemoAdPolicy.secondsLeft(const Duration(seconds: 1)), 2);
+      expect(DemoAdPolicy.secondsLeft(const Duration(milliseconds: 2500)), 1);
+      expect(DemoAdPolicy.secondsLeft(const Duration(seconds: 3)), 0);
+      expect(DemoAdPolicy.secondsLeft(const Duration(seconds: 9)), 0);
+    });
+
+    test('só o Capítulo 1 abre sem o curso completo', () {
+      expect(DemoAdPolicy.isChapterLocked(CourseAccess.demo, 1), isFalse);
+      expect(DemoAdPolicy.isChapterLocked(CourseAccess.demo, 2), isTrue);
+      expect(
+        DemoAdPolicy.isChapterLocked(CourseAccess.subscriptionEnded, 2),
+        isTrue,
+      );
+      expect(DemoAdPolicy.isChapterLocked(CourseAccess.owned, 20), isFalse);
+    });
+
+    test('o capítulo sai do id ou do caminho', () {
+      expect(DemoAdPolicy.chapterOf('pilares.c2'), 2);
+      expect(DemoAdPolicy.chapterOf('pilares.c12.parte1'), 12);
+      expect(DemoAdPolicy.chapterOf('/training/pilares/chapter/pilares.c3'), 3);
+      expect(DemoAdPolicy.chapterOf('/endgames/opposition'), isNull);
+    });
   });
 }

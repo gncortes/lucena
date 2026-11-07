@@ -1,15 +1,20 @@
 ---
 import SiteFooter from './SiteFooter.astro';
-import { asset, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
+import { asset, deletionLocales, deletionUrl, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
 
-// A política de privacidade do app, com o cabeçalho enxuto do site.
+// Um texto legal do site (a política de privacidade ou a exclusão de conta),
+// com o cabeçalho enxuto do site.
 interface Props {
   locale: Locale;
+  doc?: 'privacy' | 'deletion';
 }
 
-const { locale } = Astro.props;
+const { locale, doc = 'privacy' } = Astro.props;
 const t = locales[locale].dict;
-const p = t.privacy;
+const deletion = doc === 'deletion';
+const p = deletion ? t.deletion! : t.privacy;
+const langs = deletion ? deletionLocales() : (Object.keys(locales) as Locale[]);
+const urlOf = (l: Locale) => (deletion ? deletionUrl(l)! : privacyUrl(l));
 ---
 
 <header class="top">
@@ -21,13 +26,13 @@ const p = t.privacy;
     <div class="top__tools">
       <nav class="langs" aria-label={t.nav.language}>
         {
-          Object.entries(locales).map(([key, l]) => (
+          langs.map((key) => (
             <a
-              href={privacyUrl(key as Locale)}
-              hreflang={l.hreflang}
-              lang={l.hreflang}
+              href={urlOf(key)}
+              hreflang={locales[key].hreflang}
+              lang={locales[key].hreflang}
               aria-current={key === locale ? 'page' : undefined}
-              title={l.label}
+              title={locales[key].label}
             >
               {key === 'pt-br' ? 'PT' : key.toUpperCase()}
             </a>
@@ -55,7 +60,7 @@ const p = t.privacy;
     {
       p.sections.map((section) => (
         <section>
-          <h2>{section.title}</h2>
+          {section.title && <h2>{section.title}</h2>}
           {section.body.map((paragraph) => <p set:html={paragraph} />)}
         </section>
       ))

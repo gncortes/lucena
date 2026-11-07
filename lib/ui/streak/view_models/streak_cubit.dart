@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -11,8 +15,10 @@ import '../../../domain/use_cases/streak_rules.dart';
 
 /// A Sequência: dias seguidos, recorde, a semana e o mês de hoje.
 class StreakState {
+  final LoadFailure? failure;
   const StreakState({
     this.ready = false,
+    this.failure,
     this.streak = Streak.none,
     this.today,
     this.active = const {},
@@ -47,6 +53,16 @@ class StreakCubit extends Cubit<StreakState> {
   final Now _now;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      debugPrint('streak load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(StreakState(failure: LoadFailure.generic));
+    }
+  }
+
+  Future<void> _load() async {
     final days = await _activity.days();
     if (isClosed) return;
     final now = _now();

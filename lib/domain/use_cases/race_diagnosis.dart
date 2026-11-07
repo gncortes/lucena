@@ -164,6 +164,15 @@ class RaceFinalLesson {
         if (lesson.subcategory == score.subcategory && lesson.visible) lesson,
   ];
 
+  /// A aula liberada do final [subcategory]; nula sem subcategoria ou sem
+  /// aula liberada para ela.
+  static RaceFinalLesson? forSubcategory(String? subcategory) {
+    for (final lesson in all) {
+      if (lesson.subcategory == subcategory && lesson.visible) return lesson;
+    }
+    return null;
+  }
+
   bool get visible => school
       ? VisibleLessons.schoolLessonIds.contains(lessonId)
       : VisibleLessons.endgameLessonIds.contains(lessonId);

@@ -1,5 +1,6 @@
 export interface LinkFallback {
   daily: boolean;
+  lesson: boolean;
   target: string;
   fen: string | null;
   intent: string;

@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -20,6 +22,9 @@ bool isLessonContentPath(String path) =>
 
 abstract class LessonContentReader {
   Object get cacheScope => this;
+
+  /// Stable storage namespace, independent of the signed-in account.
+  Object get storageScope => cacheScope;
   Future<String> read(String path);
 }
 
@@ -67,6 +72,8 @@ class LocalHttpLessonContentReader extends LessonContentReader {
 
   final Uri base;
   final http.Client _client;
+  @override
+  Object get cacheScope => base.toString();
 
   @override
   Future<String> read(String path) async {
@@ -82,6 +89,12 @@ class LocalHttpLessonContentReader extends LessonContentReader {
         throw const LessonContentUnavailable();
       }
       return utf8.decode(response.bodyBytes);
+    } on SocketException {
+      throw const LessonContentNetworkUnavailable();
+    } on TimeoutException {
+      throw const LessonContentNetworkUnavailable();
+    } on http.ClientException {
+      throw const LessonContentNetworkUnavailable();
     } on LessonContentUnavailable {
       rethrow;
     } on Object {
@@ -94,7 +107,7 @@ class LocalHttpLessonContentReader extends LessonContentReader {
 typedef LessonObjectDownload = Future<Uint8List?> Function(String object);
 
 /// Reads one immutable, reviewed release; backend rules must enforce purchases.
-/// No release is selected automatically while the course is being authored.
+/// A published server index may select another reader; draft releases are rejected.
 class PublishedLessonContentReader extends LessonContentReader {
   PublishedLessonContentReader({
     required this.release,
@@ -111,12 +124,50 @@ class PublishedLessonContentReader extends LessonContentReader {
   final LessonObjectDownload download;
   final SecureStorageService cache;
   final String? Function() currentUser;
+  PublishedLessonContentReader forRelease(String publishedRelease) =>
+      PublishedLessonContentReader(
+        release: publishedRelease,
+        download: download,
+        cache: cache,
+        currentUser: currentUser,
+      );
   @override
   Object get cacheScope => (release, currentUser());
+  @override
+  Object get storageScope => ('published', release);
   final _manifests = <String, Future<Map<String, dynamic>>>{};
   String get prefix => 'content/releases/$release/';
   String _cachePrefix(String user) =>
       'lesson-content:${sha256.convert(utf8.encode(user))}:$release';
+
+  /// Consults Storage even with a cached manifest. Published releases are
+  /// immutable: selecting a different release requires a new explicit reader.
+  Future<void> refreshManifest() async {
+    final user = currentUser();
+    if (user == null || user.isEmpty) throw const LessonContentUnavailable();
+    final bytes = await download('${prefix}manifest.json');
+    if (bytes == null || bytes.length > 1024 * 1024) {
+      throw const LessonContentUnavailable();
+    }
+    final fresh = _parseManifest(utf8.decode(bytes));
+    final previous = await (_manifests[user] ??= _loadManifest(user));
+    String fingerprint(Map<String, dynamic> manifest) {
+      final files = manifest['files'] as Map;
+      final paths = files.keys.cast<String>().toList()..sort();
+      return jsonEncode({
+        for (final path in paths)
+          path: {
+            'bytes': (files[path] as Map)['bytes'],
+            'sha256': (files[path] as Map)['sha256'],
+          },
+      });
+    }
+
+    if (fingerprint(previous) != fingerprint(fresh)) {
+      throw const LessonContentUnavailable();
+    }
+    if (currentUser() != user) throw const LessonContentUnavailable();
+  }
 
   Future<Map<String, dynamic>> _loadManifest(String user) async {
     final manifestKey = '${_cachePrefix(user)}:manifest';
@@ -196,6 +247,21 @@ class PublishedLessonContentReader extends LessonContentReader {
       if (currentUser() != user) throw const LessonContentUnavailable();
       await cache.write(key, text);
       return text;
+    } on SocketException {
+      _manifests.remove(user);
+      throw const LessonContentNetworkUnavailable();
+    } on TimeoutException {
+      _manifests.remove(user);
+      throw const LessonContentNetworkUnavailable();
+    } on FirebaseException catch (error) {
+      _manifests.remove(user);
+      if ([
+        'retry-limit-exceeded',
+        'network-request-failed',
+      ].contains(error.code)) {
+        throw const LessonContentNetworkUnavailable();
+      }
+      throw const LessonContentUnavailable();
     } on LessonContentUnavailable {
       _manifests.remove(user);
       rethrow;
@@ -228,8 +294,10 @@ LessonContentAssets createLessonContentAssets({
   if (firebase && publishedRelease.isNotEmpty) {
     final read =
         download ??
-        (String object) =>
-            FirebaseStorage.instance.ref(object).getData(8 * 1024 * 1024);
+        (String object) => FirebaseStorage.instance
+            .ref(object)
+            .getData(8 * 1024 * 1024)
+            .timeout(const Duration(seconds: 20));
     return LessonContentAssets(
       reader: PublishedLessonContentReader(
         release: publishedRelease,

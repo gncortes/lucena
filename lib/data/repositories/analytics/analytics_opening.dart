@@ -162,6 +162,7 @@ class AnalyticsOpening {
       'daily' => 'dia',
       'lesson' || 'endgame-lesson' || 'endgames' => 'aulas',
       'featured' => 'torneios',
+      'training' => 'treino',
       _ => 'novidades',
     };
   }

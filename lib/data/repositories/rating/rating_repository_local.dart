@@ -54,6 +54,22 @@ class LocalRatingRepository implements RatingRepository {
   });
 
   @override
+  Future<void> setLevel(int rating) => _database.transaction(() async {
+    if ((await _rows()).isEmpty || (await current()).rounded == rating) return;
+    final level = PlayerRating.start(rating);
+    await _database
+        .into(_database.ratingHistory)
+        .insert(
+          RatingHistoryCompanion.insert(
+            at: _now(),
+            rating: level.rating,
+            deviation: level.deviation,
+            volatility: level.volatility,
+          ),
+        );
+  });
+
+  @override
   Future<PlayerRating> start() async =>
       PlayerRating.start((await _profile.load()).rating);
 

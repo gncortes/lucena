@@ -7,6 +7,8 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../../routing/routes.dart';
@@ -164,17 +166,54 @@ extension AchievementCategoryUi on AchievementCategory {
 }
 
 extension AchievementProgressUi on AchievementProgress {
-  /// "3 de 9 níveis", "2 de 5 desafios".
-  String label(AppLocalizations l10n) => switch (unit) {
+  /// "3 de 9 níveis", "2 de 5 desafios"; [count] troca o feito pelo número
+  /// que está contando (H-ANI-18).
+  String label(AppLocalizations l10n, {int? count}) => switch (unit) {
     AchievementProgressUnit.levels => l10n.achievementProgressLevels(
-      done,
+      count ?? done,
       total,
     ),
     AchievementProgressUnit.challenges => l10n.achievementProgressChallenges(
-      done,
+      count ?? done,
       total,
     ),
   };
+}
+
+/// Uma frase com um número que conta até [value] (H-ANI-18): "14 de 50
+/// conquistadas", "1 de 9 desafios". Algarismos de largura fixa.
+class AchievementCount extends StatelessWidget {
+  const AchievementCount({
+    required this.value,
+    required this.text,
+    this.textKey,
+    this.style,
+    this.textAlign,
+    super.key,
+  });
+
+  final int value;
+  final String Function(int count) text;
+  final Key? textKey;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+
+  @override
+  Widget build(BuildContext context) {
+    final estilo = DefaultTextStyle.of(context).style
+        .merge(style)
+        .copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
+    return ValorQueAnima(
+      valor: value.toDouble(),
+      duracao: LucenaMotion.numeroConta,
+      builder: (context, agora) => Text(
+        text(agora.round()),
+        key: textKey,
+        style: estilo,
+        textAlign: textAlign,
+      ),
+    );
+  }
 }
 
 /// A data curta da linha: "hoje", "ontem", "há 3 dias" e, passado um mês,

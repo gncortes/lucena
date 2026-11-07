@@ -70,9 +70,6 @@ abstract final class StarChallengeKeys {
   /// O painel de pontos embaixo do tabuleiro.
   static const scoreboard = Key('starChallenge.scoreboard');
 
-  /// O nível e o modo no subtítulo da barra do app.
-  static const levelChip = Key('starChallenge.levelChip');
-
   /// Quantas estrelas de uma cor (`bronze`, `silver`, `gold`) foram pegas.
   static Key kindCount(String kind) => Key('starChallenge.count.$kind');
   static const result = Key('starChallenge.result');
@@ -81,6 +78,9 @@ abstract final class StarChallengeKeys {
 
   /// O "Jogar de novo" no mesmo rodapé, no fim, no lugar do "Vai!".
   static const retryButton = Key('starChallenge.retry');
+  static const saveProgress = Key('starChallenge.saveProgress');
+  static const saveError = Key('starChallenge.saveError');
+  static const retrySave = Key('starChallenge.retrySave');
   static const backButton = Key('starChallenge.back');
 
   /// Um desafio na lista (`<peça>.<nível>`).

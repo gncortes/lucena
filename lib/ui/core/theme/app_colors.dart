@@ -17,8 +17,57 @@ class AppColors extends ThemeExtension<AppColors> {
     this.chessBlack = chessBlackColor,
   });
 
+  /// Superfícies sem branco (T85-D0, canvas `--card-bg`/`--card-border`/
+  /// `--folha-bg`): cartão, chip e balão em [cardSurface] com contorno 1px
+  /// [cardOutline]; folha de baixo e diálogo em [sheetSurface], a cor do
+  /// fundo da tela.
+  static const cardSurface = Color(0xfffafbf9);
+  static const cardOutline = Color(0xffe1e5df);
+  static const sheetSurface = Color(0xfff5f7f4);
+
+  /// Comparativo de custo da venda (T85-D2, H-VEN-01): a barra da soma
+  /// (#8DA6CC) e o texto claro sobre o azul (#DCE6F5).
+  static const costBar = Color(0xff8da6cc);
+  static const onPrimarySoft = Color(0xffdce6f5);
+
+  /// Fim de um passo (T85-D2, venda): o círculo verde do concluído, o
+  /// amarelo da espera (pagamento pendente) e o fundo do aviso de erro.
+  static const successSurface = Color(0xffe2f0e4);
+  static const successOnSurface = Color(0xff2e6b45);
+  static const waitingSurface = Color(0xfffff1cc);
+  static const waitingOnSurface = Color(0xff7a5900);
+
+  /// O texto do aviso amarelo (pagamento pendente no Perfil).
+  static const waitingInk = Color(0xff3d2e00);
+  static const errorSurface = Color(0xfffce4e1);
+
   /// O verde do recorde novo (texto e ícone do troféu).
   static const record = Color(0xff2e6b3a);
+
+  /// Completed/missed cycle days (Canvas T85, the four cycle endings).
+  static const trainingDayCorrect = Color(0xff2e6b45);
+  static const trainingChartGrid = Color(0xffe2e4e9);
+  static const trainingCanvasSurface = Color(0xfff5f7f4);
+  static const trainingAnalysisPrimary = Color(0xff24508f);
+  static const trainingAnalysisSelected = Color(0xffdce4fc);
+  static const trainingAnalysisHistory = Color(0xffe7eaf0);
+  static const trainingAnalysisDivider = Color(0xffc5c6ce);
+  static const trainingAnalysisDark = Color(0xff272727);
+  static const trainingAnalysisSkeleton = Color(0xffe1e3e6);
+  static const trainingCanvasInk = Color(0xff1a1b21);
+  static const trainingCanvasSecondary = Color(0xff44464f);
+  static const trainingCanvasMuted = Color(0xff757680);
+  static const trainingAnalysisInactive = Color(0xffb4b5ba);
+  static const trainingSolutionArrow = Color(0xcc15781b);
+  static const trainingFabSurface = Color(0xfff9f9ff);
+  static const trainingFabShadowUmbra = Color(0x4d000000);
+  static const trainingFabShadowPenumbra = Color(0x26000000);
+  static const trainingFabShadow = Color(0x73000000);
+  static const trainingDisabledInk = Color(0x611a1b21);
+  static const trainingCanvasOutline = Color(0xff74777f);
+  static const trainingHintSurface = Color(0xfffbf8ff);
+  static const trainingDayWrong = Color(0xffb3261e);
+  static const trainingMasteryDeveloping = Color(0xff9a6b00);
 
   static const goldColor = Color(0xfff2b705);
 

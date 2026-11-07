@@ -4,6 +4,8 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/blind/blind_log_repository.dart';
 import '../../../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../../../domain/models/blind_checkpoint.dart';
@@ -21,6 +23,7 @@ import '../../../domain/models/voice.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/opponent_failures.dart';
 import '../../../domain/use_cases/spoken_move_parser.dart';
 import '../../../domain/use_cases/spoken_text.dart';
 import '../../../domain/use_cases/voice_resolver.dart';
@@ -89,6 +92,7 @@ class BlindPhrases {
     required this.illegal,
     required this.drawAgreed,
     required this.drawDeclined,
+    required this.opponentError,
   });
 
   final String yourTurn;
@@ -127,10 +131,14 @@ class BlindPhrases {
 
   /// A máquina recusou o empate.
   final String drawDeclined;
+
+  /// A folha de erro do adversário, falada (título e texto).
+  final String opponentError;
 }
 
 class BlindState {
   const BlindState({
+    this.failed = false,
     this.held = false,
     this.phase = BlindPhase.loading,
     this.view = BlindView.empty,
@@ -163,10 +171,20 @@ class BlindState {
     this.running,
     this.concluded = false,
     this.gameId,
+    this.opponentError = false,
+    this.recordFailed = false,
   });
+
+  /// O adversário falhou 3 vezes seguidas: a folha de erro está aberta e o
+  /// relógio parado (H-PAR-18).
+  final bool opponentError;
+
+  /// A tentativa não coube no aparelho ao gravar o fim (H-PAR-19).
+  final bool recordFailed;
 
   /// O resultado já foi dito: a tela troca para a conclusão (T51, B).
   final bool concluded;
+  final bool failed;
 
   /// A partida gravada (desafio da Jornada). Nula nas que não se gravam.
   final int? gameId;
@@ -267,6 +285,7 @@ class BlindState {
   }
 
   BlindState copyWith({
+    bool? failed,
     BlindPhase? phase,
     BlindView? view,
     Position? position,
@@ -299,8 +318,13 @@ class BlindState {
     bool? held,
     bool? concluded,
     int? gameId,
+    bool? opponentError,
+    bool? recordFailed,
   }) => BlindState(
+    failed: failed ?? this.failed,
     concluded: concluded ?? this.concluded,
+    opponentError: opponentError ?? this.opponentError,
+    recordFailed: recordFailed ?? this.recordFailed,
     gameId: gameId ?? this.gameId,
     held: held ?? this.held,
     phase: phase ?? this.phase,
@@ -354,6 +378,7 @@ class BlindGameCubit extends Cubit<BlindState> {
     this.releaseWait = const Duration(seconds: 3),
     this.restartDelay = const Duration(milliseconds: 250),
     this.tick = const Duration(milliseconds: 200),
+    this.retryInterval = OpponentFailures.interval,
   }) : super(const BlindState());
 
   final BlindCheckpointRepository? _checkpoints;
@@ -388,6 +413,9 @@ class BlindGameCubit extends Cubit<BlindState> {
   /// O máximo que se espera a voz terminar de falar.
   final Duration speechTimeout;
   final Duration thinkTime;
+
+  /// A pausa entre as tentativas quando o adversário falha (H-PAR-18).
+  final Duration retryInterval;
 
   /// Depois de soltar o botão, quanto se espera o resultado final. No
   /// reconhecedor do aparelho, ele chega depois do aviso de fim.
@@ -441,6 +469,61 @@ class BlindGameCubit extends Cubit<BlindState> {
   BlindPhase _beforeListening = BlindPhase.playerTurn;
 
   Future<void> load({
+    required String fen,
+    bool restore = true,
+    bool resumeAny = false,
+    required Side userSide,
+    required OpponentKind kind,
+    int? level,
+    required String language,
+    required BlindPhrases phrases,
+    ClockConfig? clock,
+    BlindView? view,
+    String? challengeId,
+    String? positionId,
+    PositionGoal goal = PositionGoal.win,
+  }) async {
+    _retryLoad = () => load(
+      fen: fen,
+      restore: restore,
+      resumeAny: resumeAny,
+      userSide: userSide,
+      kind: kind,
+      level: level,
+      language: language,
+      phrases: phrases,
+      clock: clock,
+      view: view,
+      challengeId: challengeId,
+      positionId: positionId,
+      goal: goal,
+    );
+    try {
+      await _load(
+        fen: fen,
+        restore: restore,
+        resumeAny: resumeAny,
+        userSide: userSide,
+        kind: kind,
+        level: level,
+        language: language,
+        phrases: phrases,
+        clock: clock,
+        view: view,
+        challengeId: challengeId,
+        positionId: positionId,
+        goal: goal,
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(failed: true));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> reload() => _retryLoad?.call() ?? Future.value();
+
+  Future<void> _load({
     required String fen,
     bool restore = true,
     bool resumeAny = false,
@@ -1267,18 +1350,43 @@ class BlindGameCubit extends Cubit<BlindState> {
     await _opponentTurn();
   }
 
+  // As falhas seguidas do adversário: 3 tentativas, 2 s entre elas (H-PAR-18).
+  final _opponentFailures = OpponentFailures();
+  bool _pausedByFailure = false;
+
   Future<void> _opponentTurn() async {
     emit(state.copyWith(phase: BlindPhase.opponentThinking));
     final position = state.position!;
-    final move = await _opponent.pickMove(
-      position,
-      thinkTime: thinkTime,
-      kind: state.kind,
-      level: state.level,
-      history: List.of(_history),
-      time: _clockConfig?.of(state.userSide.opposite),
-    );
-    if (isClosed || move == null) return;
+    Move? move;
+    while (true) {
+      try {
+        move = await _opponent.pickMove(
+          position,
+          thinkTime: thinkTime,
+          kind: state.kind,
+          level: state.level,
+          history: List.of(_history),
+          time: _clockConfig?.of(state.userSide.opposite),
+        );
+      } on Object catch (error, stack) {
+        reportHandledError(error, stack);
+        move = null;
+      }
+      if (isClosed) return;
+      if (move != null) break;
+      _opponentFailures.record(_now());
+      _pauseClockForFailure();
+      if (_opponentFailures.exhausted) {
+        // A folha pede uma escolha; ela também é falada.
+        emit(state.copyWith(opponentError: true));
+        unawaited(_say(_phrases.opponentError));
+        return;
+      }
+      await Future<void>.delayed(retryInterval);
+      if (isClosed) return;
+    }
+    _opponentFailures.reset();
+    _resumeClockAfterFailure();
     final played = GameRules.play(position, move);
     if (played == null) return;
     _history.add(played.position);
@@ -1313,6 +1421,42 @@ class BlindGameCubit extends Cubit<BlindState> {
     if (end == null) return false;
     await _finish(end);
     return true;
+  }
+
+  /// A 1ª falha do adversário para o relógio: ninguém perde tempo por ela.
+  void _pauseClockForFailure() {
+    final clock = _clock;
+    if (clock == null || _pausedByFailure) return;
+    _pausedByFailure = true;
+    _ticker?.cancel();
+    _clock = ClockEngine.stop(clock, _now());
+    emit(
+      state.copyWith(
+        white: _clock!.white,
+        black: _clock!.black,
+        running: () => null,
+      ),
+    );
+  }
+
+  void _resumeClockAfterFailure() {
+    if (!_pausedByFailure) return;
+    _pausedByFailure = false;
+    final clock = _clock;
+    if (clock == null || _background) return;
+    _clock = ClockEngine.resume(clock, turn: state.position!.turn, now: _now());
+    emit(state.copyWith(running: () => _clock!.running));
+    _ticker?.cancel();
+    _ticker = Timer.periodic(tick, (_) => _tickClock());
+  }
+
+  /// "Tentar novamente" na folha de erro: recomeça as 3 tentativas.
+  Future<void> retryOpponent() async {
+    if (!state.opponentError || isClosed) return;
+    await _stopSpeech();
+    _opponentFailures.reset();
+    emit(state.copyWith(opponentError: false));
+    await _opponentTurn();
   }
 
   /// Um lance foi jogado: o relógio passa para o outro lado.
@@ -1434,7 +1578,14 @@ class BlindGameCubit extends Cubit<BlindState> {
       ),
     );
     final won = state.userWon;
-    final gameId = await _recordChallenge(end, won);
+    int? gameId;
+    try {
+      gameId = await _recordChallenge(end, won);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(recordFailed: true));
+      return;
+    }
     await _say(
       end.reason == GameEndReason.resign
           ? _phrases.resigned
@@ -1447,6 +1598,28 @@ class BlindGameCubit extends Cubit<BlindState> {
           : _phrases.lost,
     ); // Dito o resultado, a conclusão.
     if (!isClosed) emit(state.copyWith(concluded: true, gameId: gameId));
+  }
+
+  /// "Tentar novamente" do erro de gravação (H-PAR-19).
+  Future<void> retryRecord() async {
+    final end = state.end;
+    if (!state.recordFailed || end == null || isClosed) return;
+    try {
+      final gameId = await _recordChallenge(end, state.userWon);
+      if (isClosed) return;
+      emit(
+        state.copyWith(recordFailed: false, concluded: true, gameId: gameId),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+    }
+  }
+
+  /// "Voltar" do erro de gravação: segue para a conclusão sem a partida
+  /// gravada.
+  void dismissRecordError() {
+    if (!state.recordFailed || isClosed) return;
+    emit(state.copyWith(recordFailed: false, concluded: true));
   }
 
   bool _background = false;
@@ -1503,7 +1676,10 @@ class BlindGameCubit extends Cubit<BlindState> {
     if (isClosed || !_background || generation != _lifecycleGeneration) return;
     _background = false;
     final clock = _clock;
-    if (clock != null && state.started && state.phase != BlindPhase.finished) {
+    if (clock != null &&
+        state.started &&
+        state.phase != BlindPhase.finished &&
+        !_pausedByFailure) {
       _clock = ClockEngine.resume(
         clock,
         turn: state.position!.turn,

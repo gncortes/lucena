@@ -22,6 +22,9 @@ class FakeAnalyticsRepository implements AnalyticsRepository {
   final List<AnalyticsEvent> events = [];
   final Map<AnalyticsTrait, String> traits = {};
   final List<String> screens = [];
+
+  /// Os ids de usuário, na ordem (H-R5-65).
+  final List<String?> userIds = [];
   ({bool analytics, bool ads})? consent;
   int resets = 0;
   bool started = false;
@@ -56,6 +59,9 @@ class FakeAnalyticsRepository implements AnalyticsRepository {
 
   @override
   Future<bool> teamMode() async => team;
+
+  @override
+  Future<void> setUserId(String? uid) async => userIds.add(uid);
 
   @override
   Future<void> setTeamMode(bool team) async {

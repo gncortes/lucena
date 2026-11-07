@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../domain/models/character.dart';
+import '../../core/motion/entrada_de_resultado.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_chip.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/teacher_speech.dart';
 
-/// As peças dos questionários: o "Sua opinião" (E1.05), o "Você pagaria?" e o
-/// "Enviar feedback" (E1.26).
+/// As peças dos questionários: o "Sua opinião" (E1.05) e o "Enviar feedback"
+/// (E1.26).
 
 /// O agradecimento do Viktor depois de enviar, com um botão de volta.
 class ViktorThanks extends StatelessWidget {
@@ -50,25 +53,30 @@ class ViktorThanks extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.xl,
-          children: [
-            if (viktor != null)
-              TeacherSpeech(
-                speechContext: SpeechContext.teaching,
-                teacher: viktor,
-                text: text,
-              )
-            else
-              Text(text),
-            FilledButton(
+        // H-ANI-25: o Viktor entra e o botão desliza por último.
+        child: EntradaDeResultado(
+          id: 'obrigado-$title-$text',
+          viktor: viktor != null
+              ? TeacherSpeech(
+                  speechContext: SpeechContext.teaching,
+                  teacher: viktor,
+                  text: text,
+                )
+              : Text(text),
+          botoes: SizedBox(
+            height: kButtonHeight,
+            child: FilledButton(
               key: backKey,
               onPressed: onBack,
               child: Text(backLabel),
             ),
-          ],
+          ),
+          montar: (partes) => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.xl,
+            children: partes,
+          ),
         ),
       ),
     );
@@ -91,10 +99,14 @@ class QuestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // `Material` e não `DecoratedBox`: as opções com toque pintam nele.
+    // `Material` e não `DecoratedBox`: as opções com toque pintam nele. O
+    // estilo é o do cartão do app (`LucenaCard`): #FAFBF9, contorno #E1E5DF.
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
+      color: AppColors.cardSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(AppShape.large)),
+        side: BorderSide(color: AppColors.cardOutline),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.insideCard),
         child: Column(
@@ -227,7 +239,7 @@ class SurveyChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ChipSurface(
-    color: Theme.of(context).colorScheme.surfaceContainerLow,
+    color: AppColors.cardSurface,
     child: Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,

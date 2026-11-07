@@ -1,13 +1,44 @@
+import '../data/repositories/training/training_endgame_content.dart';
 import '../data/services/lesson_content_service.dart';
+import '../data/services/lesson_package_service.dart';
+import '../data/services/lesson_package_index.dart';
+import '../data/repositories/training/course_download_repository.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 import 'dart:async';
+
+import '../data/repositories/training/training_install_seed_repository.dart';
+
+import '../data/repositories/training/course_training_repository.dart'
+    as course_training;
+import '../data/repositories/training/course_training_repository_local.dart'
+    as course_training;
+import '../data/repositories/training/course_access_training_repository.dart'
+    as course_training;
+import '../data/repositories/training/training_learning_bridge.dart';
+import '../data/repositories/training/observed_training_repository.dart';
+import '../data/repositories/training/school_training_observation_source.dart';
+import '../data/repositories/training/school_training_observer.dart';
+import '../data/repositories/training/training_school_content.dart';
+import '../domain/models/training/training_course_config.dart';
+import '../domain/models/training/school_training_resources.dart';
+import '../domain/use_cases/training/training_analytics.dart';
+import '../domain/use_cases/visible_lessons.dart';
 
 import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/analytics/analytics_repository.dart';
 import '../data/services/firebase/analytics_service.dart';
 import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/lesson_ad/course_access_repository.dart';
+import '../data/repositories/lesson_ad/course_grants_repository.dart';
+import '../data/repositories/lesson_ad/demo_ad_repository.dart';
+import '../data/repositories/training/demo_offer_repository.dart';
+import '../data/repositories/purchase/opening_offer_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
+import '../data/services/dev_store.dart';
+import 'ambiente.dart';
 import '../data/repositories/store/store_listing_repository.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
 import '../data/repositories/week/week_repository.dart';
@@ -18,7 +49,6 @@ import '../data/services/firebase/remote_config_service.dart';
 import '../data/services/notification_service.dart';
 import 'push_alerts.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
-import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/tablebase/engine_judge_repository.dart';
@@ -54,7 +84,6 @@ import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
 import '../data/repositories/home/home_layout_repository.dart';
-import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_repository_asset.dart';
@@ -75,6 +104,7 @@ import '../data/repositories/speedrun/speedrun_repository_local.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
 import '../data/repositories/analysis/analysis_repository.dart';
 import '../data/repositories/analysis/analysis_repository_stockfish.dart';
+import '../data/repositories/deep_analysis/deep_analysis_repository.dart';
 import '../data/repositories/review/game_review_repository.dart';
 import '../data/repositories/sound/sound_repository.dart';
 import '../data/repositories/sound/sound_repository_device.dart';
@@ -120,6 +150,7 @@ import '../data/services/asset_service.dart';
 import '../data/services/database/app_database.dart';
 import '../data/services/maia_service.dart';
 import '../data/services/preferences_service.dart';
+import '../data/repositories/analysis/learning_analysis_repository.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../data/repositories/account/account_invite_repository.dart';
@@ -142,9 +173,13 @@ import '../data/services/firebase/auth_service.dart';
 import '../data/repositories/learning/learning_repository.dart';
 import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/services/firebase/course_grants_service.dart';
+import '../data/repositories/data_export/data_export_repository.dart';
+import '../data/repositories/data_export/data_export_repository_cloud.dart';
+import '../data/repositories/legal/legal_consent_repository.dart';
+import '../data/repositories/feedback/feedback_draft_repository.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
-import '../data/repositories/would_pay/would_pay_repository.dart';
 import '../data/services/device_service.dart';
 import '../data/services/review_service.dart';
 import '../data/services/firebase/file_store_service.dart';
@@ -170,9 +205,21 @@ final analyticsMode = AnalyticsRules.mode(
 /// Vazia nos builds locais: aí vale a do aparelho ([Dependencies.installedVersion]).
 const appVersion = String.fromEnvironment('APP_VERSION');
 
+/// Os prints de validação (Patrol) comparam a tela com o quadro, que não tem
+/// as ferramentas de desenvolvimento: o cenário de prints liga isto.
+bool hideDevToolsForPrints = false;
+
 /// As telas de desenvolvimento aparecem nos builds de depuração, nos cenários
 /// Patrol e nas candidatas de QA (`-rc`); nunca na versão final.
-bool get showsDevTools => kDebugMode || isE2E || appVersion.contains('-rc');
+bool get showsDevTools =>
+    !hideDevToolsForPrints &&
+    (kDebugMode || isE2E || appVersion.contains('-rc'));
+
+List<TrainingCourseConfig> get activeTrainingCourses => [
+  if (showsDevTools) TrainingCourseConfig.pilares,
+  if (kDebugMode || isE2E || VisibleLessons.schoolLessonIds.isNotEmpty)
+    TrainingCourseConfig.escola,
+];
 
 /// As implementações que entram no app.
 ///
@@ -194,11 +241,17 @@ class Dependencies {
     required this.placementRepository,
     required this.soundRepository,
     required this.analysisRepository,
+    this.learningAnalysisRepository,
     required this.gameReviewRepository,
+    required this.deepAnalysisRepository,
     required this.ongoingGameRepository,
     required this.conclusionRepository,
     required this.positionsRepository,
     required this.trainingRepository,
+    this.courseTrainingRepository =
+        const course_training.NoTrainingRepository(),
+    this.courseDownloads = const CourseDownloadRepository.unconfigured(),
+    this.trainingAnalytics,
     required this.opponentRepository,
     required this.maiaRepository,
     required this.progressRepository,
@@ -212,12 +265,13 @@ class Dependencies {
     required this.talkRepository,
     required this.onboardingRepository,
     required this.homeLayoutRepository,
-    required this.unlockRepository,
     required this.paceRepository,
     required this.lessonRepository,
+    this.trainingSchoolContent,
     required this.schoolProgressRepository,
     required this.starChallengeRepository,
     required this.endgameLessonRepository,
+    this.trainingEndgameContent,
     required this.lessonScriptRepository,
     required this.kpkRepository,
     required this.scriptTableRepository,
@@ -236,22 +290,28 @@ class Dependencies {
     required this.featuredProgressRepository,
     required this.activityRepository,
     required this.dailyFinalRepository,
-    this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
+    required this.featuredAlertsRepository,
     this.regionPromptRepository = const NoRegionPromptRepository(),
     this.learningRepository,
     this.requireLessonAccount = false,
     this.syncRepository = const NoSyncRepository(),
-    this.crowdRepository = const NoCrowdRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
     this.avatarRepository = const NoAvatarRepository(),
     this.photoRepository = const NoPhotoRepository(),
     this.mailAppRepository = const NoMailAppRepository(),
     this.analyticsRepository = const NoAnalyticsRepository(),
     this.adsRepository = const NoAdsRepository(),
+    this.courseAccessRepository = const FullCourseAccessRepository(),
+    this.courseGrantsRepository = const NoCourseGrantsRepository(),
+    this.demoAdRepository = const NoDemoAdRepository(),
+    this.demoOfferRepository = const NoDemoOfferRepository(),
+    this.openingOfferRepository = const NoOpeningOfferRepository(),
     this.purchaseRepository = const NoPurchaseRepository(),
     this.storeListingRepository = const NoStoreListingRepository(),
     this.feedbackRepository = const NoFeedbackRepository(),
-    this.wouldPayRepository = const NoWouldPayRepository(),
+    this.dataExportRepository = const NoDataExportRepository(),
+    this.legalConsentRepository = const NoLegalConsentRepository(),
+    this.feedbackDraftRepository = const NoFeedbackDraftRepository(),
     this.reviewRepository = const NoReviewRepository(),
     this.installReferrerRepository = const NoInstallReferrerRepository(),
     this._campaignRepository,
@@ -272,13 +332,29 @@ class Dependencies {
     return AppVersion(info.version);
   }
 
+  static final _trainingInstallSeeds = TrainingInstallSeedRepository(
+    PreferencesService(),
+  );
+
+  /// Created once per installation, independently of account and Analytics.
+  static Future<String> trainingInstallSeed() => _trainingInstallSeeds.load();
+
   /// [firebase] diz se o Firebase subiu (`startFirebase`). Sem ele, a conta e
-  /// o push ficam desligados e o resto do app funciona igual.
+  /// o push ficam desligados e o resto do app funciona igual. [push] troca só
+  /// o toque no aviso: os cenários do Patrol no emulador do Firebase
+  /// (`testing/emulator_dependencies.dart`) simulam o FCM, que não é emulado;
+  /// [pushService] dá a eles um token de mentira (o emulador não registra no
+  /// FCM).
   factory Dependencies.normal({
     AppVersion version = const AppVersion(appVersion),
     bool firebase = false,
+    String? trainingInstallSeed,
+    PushRepository? push,
+    PushService? pushService,
   }) {
-    final auth = firebase ? FirebaseAuthService() : const NoAuthService();
+    final auth = firebase
+        ? FirebaseAuthService(now: const SystemNow())
+        : const NoAuthService();
     final preferences = PreferencesService();
     final settings = LocalSettingsRepository(preferences);
     // Um plugin só para os lembretes e o push (o toque tem um dono só).
@@ -286,20 +362,116 @@ class Dependencies {
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
-    final lessonContent = createLessonContentAssets(
+    final contentSource = createLessonContentAssets(
       releaseBuild: kReleaseMode,
       firebase: firebase,
       localUrl: const String.fromEnvironment('CONTENT_URL'),
       publishedRelease: const String.fromEnvironment('CONTENT_RELEASE'),
     );
+    const packageIndexPath = String.fromEnvironment('CONTENT_PACKAGE_INDEX');
+    final packages = contentSource.reader == null
+        ? null
+        : LessonPackageService(
+            source: contentSource.reader!,
+            directory: getApplicationSupportDirectory,
+            identity: () => auth.current?.uid,
+          );
+    final lessonContent = packages == null
+        ? contentSource
+        : LessonContentAssets(reader: packages);
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     final stockfish = StockfishService();
+    final analysisRepository = StockfishAnalysisRepository(stockfish);
+    final reviewRepository = LocalGameReviewRepository(preferences);
     final pace = AssetPaceRepository(assets);
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
     final evaluation = StockfishEvaluationRepository(stockfish);
     final lessons = AssetLessonRepository(lessonContent);
+    final trainingSchoolContent = TrainingSchoolContent(
+      lessons,
+      includeAll: kDebugMode || isE2E,
+    );
+    final analytics = ServiceAnalyticsRepository(
+      firebase && analyticsMode != AnalyticsMode.off
+          ? FirebaseAnalyticsService()
+          : const NoAnalyticsService(),
+      preferences,
+      mode: analyticsMode,
+    );
+    // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
+    // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
+    // No flavor dev a Play é simulada (H-R5-66): preço, ofertas com
+    // desconto, link e compra com o token de teste, sem trancar o curso.
+    final devStore = !Ambiente.atual().isProd;
+    final PurchaseRepository purchases = devStore
+        ? PlayPurchaseRepository(
+            DevPurchaseService(preferences, now: now),
+            preferences,
+            now: now,
+            analytics: analytics,
+            accountChanges: auth.changes,
+            coupons: DevCouponService(now: now),
+            uid: () => auth.current?.uid,
+          )
+        : const NoPurchaseRepository();
+    // Sem loja (V1 sem compra) o curso segue aberto; com a Play ligada
+    // (H-VEN-16), a lição tranca e mostra o anúncio pela compra.
+    final CourseAccessRepository storeAccess =
+        devStore || purchases is NoPurchaseRepository
+        ? const FullCourseAccessRepository()
+        : PurchaseCourseAccessRepository(purchases);
+    // O curso dado ou comprado pelo servidor (`acessos/{uid}`, H-R5-61).
+    final CourseGrantsRepository courseGrants = firebase
+        ? CloudCourseGrantsRepository(
+            FirestoreCourseGrantsService(),
+            preferences,
+            uids: auth.changes.map((account) => account?.uid),
+            currentUid: () => auth.current?.uid,
+            now: now,
+          )
+        : const NoCourseGrantsRepository();
+    unawaited(courseGrants.start());
+    // O uid da conta como id do usuário no Analytics (H-R5-65).
+    auth.changes
+        .map((account) => account?.uid)
+        .distinct()
+        .listen((uid) => unawaited(analytics.setUserId(uid)));
+    final CourseAccessRepository courseAccess = ServerCourseAccessRepository(
+      storeAccess,
+      courseGrants,
+      now: now,
+    );
+    late final course_training.TrainingRepository courseTrainingStorage;
+    final trainingAnalytics = TrainingAnalytics(
+      now: now,
+      log: analytics.log,
+      read: (course) => courseTrainingStorage.load(course),
+      write: (course, change) => courseTrainingStorage.update(course, change),
+    );
+    courseTrainingStorage = trainingInstallSeed == null
+        ? const course_training.NoTrainingRepository()
+        : course_training.TrainingRepositoryLocal(
+            preferences,
+            lessonContent,
+            installSeed: trainingInstallSeed,
+            onSaved: trainingAnalytics.onSaved,
+            configs: {
+              for (final config in TrainingCourseConfig.all)
+                config.course: config,
+            },
+            contentSources: {
+              TrainingCourseConfig.escola.indexSource: () async {
+                return schoolTrainingResources(
+                  await trainingSchoolContent.course(),
+                  await trainingSchoolContent.texts('pt'),
+                );
+              },
+            },
+          );
+    late final course_training.TrainingRepository courseTraining;
+    late final TrainingLearningBridge trainingLearning;
     final cloudStore = firebase
         ? FirestoreCloudStoreService()
         : const NoCloudStoreService();
@@ -316,6 +488,7 @@ class Dependencies {
       currentUid: () => auth.current?.uid,
       versionOf: LearningContentVersion(lessonContent).call,
       onChanged: () => changes.add(null),
+      onUnitCompleted: (completion) => trainingLearning.call(completion),
     );
     final activity = LocalActivityRepository(preferences, progress, now);
     // Capítulo terminado: também é dia com atividade (decisão 2b da E1.22).
@@ -339,6 +512,32 @@ class Dependencies {
       activity,
     );
     final stars = LocalStarChallengeRepository(preferences);
+    final schoolObservations = SchoolTrainingObservationSource(
+      now: now,
+      stars: stars,
+      progress: progress,
+      speedruns: speedruns,
+      journey: journey,
+    );
+    courseTraining = ObservedTrainingRepository(
+      // A meta do dia só oferece o que o acesso abre (demo: Capítulo 1).
+      course_training.CourseAccessTrainingRepository(
+        courseTrainingStorage,
+        courseAccess,
+      ),
+      observers: {
+        TrainingCourseConfig.escola.course: SchoolTrainingObserver(
+          now: now,
+          source: schoolObservations,
+          analytics: trainingAnalytics,
+        ).call,
+      },
+    );
+    trainingLearning = TrainingLearningBridge(
+      courseTraining,
+      courses: TrainingCourseConfig.all,
+      activity: activity,
+    );
     final endgames = NotifyingEndgameProgressRepository(
       LocalEndgameProgressRepository(preferences),
       changed,
@@ -358,20 +557,10 @@ class Dependencies {
           ? Duration.zero
           : const Duration(hours: 12),
     );
-    // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
-    // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
-    const purchases = NoPurchaseRepository();
-    final analytics = ServiceAnalyticsRepository(
-      firebase && analyticsMode != AnalyticsMode.off
-          ? FirebaseAnalyticsService()
-          : const NoAnalyticsService(),
-      preferences,
-      mode: analyticsMode,
-    );
     const ads = NoAdsRepository();
-    final PushService pushService = firebase
-        ? FirebasePushService()
-        : const NoPushService();
+    final PushService pushes =
+        pushService ??
+        (firebase ? FirebasePushService() : const NoPushService());
     final avatars = CloudAvatarRepository(
       firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
     );
@@ -393,7 +582,7 @@ class Dependencies {
         avatars: avatars,
         now: now,
         language: () async => (await settings.load()).languageCode,
-        push: pushService,
+        push: pushes,
         preferences: preferences,
       ),
       lichessRepository: RemoteLichessRepository(
@@ -403,22 +592,44 @@ class Dependencies {
         now: now,
       ),
       chessComRepository: RemoteChessComRepository(ChessComService(), now: now),
-      pushRepository: FirebasePushRepository(
-        pushService,
-        preferences,
-        notifications: notifications,
-        texts: () => loadPushTexts(settings),
-      ),
+      pushRepository:
+          push ??
+          FirebasePushRepository(
+            pushes,
+            preferences,
+            notifications: notifications,
+            texts: () => loadPushTexts(settings),
+          ),
       alertsRepository: LocalAlertsRepository(preferences),
       regionPromptRepository: LocalRegionPromptRepository(preferences),
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
-      analysisRepository: StockfishAnalysisRepository(stockfish),
-      gameReviewRepository: LocalGameReviewRepository(preferences),
+      analysisRepository: analysisRepository,
+      learningAnalysisRepository: LearningAnalysisRepository(preferences),
+      gameReviewRepository: reviewRepository,
+      deepAnalysisRepository: EngineDeepAnalysisRepository(
+        analysis: analysisRepository,
+        reviews: reviewRepository,
+        now: now,
+      ),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       conclusionRepository: LocalConclusionRepository(preferences),
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
+      courseTrainingRepository: courseTraining,
+      courseDownloads: CourseDownloadRepository(
+        packages,
+        openingProfile: () async =>
+            (await courseTraining.load(TrainingCourseConfig.pilares.course))
+                .openingProfile,
+        indexSource:
+            firebase &&
+                contentSource.reader is PublishedLessonContentReader &&
+                packageIndexPath.isNotEmpty
+            ? LessonPackageIndexSource.firestore(packageIndexPath)
+            : null,
+      ),
+      trainingAnalytics: trainingAnalytics,
       opponentRepository: DeviceOpponentRepository(
         maia: MaiaOpponentRepository(maia, now: now, pace: pace),
         stockfish: StockfishOpponentRepository(stockfish),
@@ -436,12 +647,19 @@ class Dependencies {
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: onboarding,
       homeLayoutRepository: LocalHomeLayoutRepository(preferences),
-      unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
       lessonRepository: VisibleLessonRepository(lessons),
+      trainingSchoolContent: trainingSchoolContent,
       schoolProgressRepository: school,
       starChallengeRepository: stars,
       endgameLessonRepository: endgameLessons,
+      trainingEndgameContent: showsDevTools
+          ? TrainingEndgameContent.fromConfigs(
+              lessonContent,
+              school: lessons,
+              configs: activeTrainingCourses,
+            )
+          : null,
       lessonScriptRepository: AssetLessonScriptRepository(lessonContent),
       kpkRepository: AssetKpkRepository(assets),
       scriptTableRepository: AssetScriptTableRepository(assets),
@@ -464,20 +682,28 @@ class Dependencies {
       featuredRepository: AssetFeaturedRepository(assets),
       coursePreviewRepository: AssetCoursePreviewRepository(lessonContent),
       featuredProgressRepository: featured,
+      featuredAlertsRepository: LocalFeaturedAlertsRepository(preferences),
       activityRepository: activity,
-      crowdRepository: CloudCrowdRepository(cloudStore),
       dailyFinalRepository: LocalDailyFinalRepository(
         assets,
         positions,
         preferences,
       ),
-      accountInviteRepository: LocalAccountInviteRepository(preferences),
+      accountInviteRepository: LocalAccountInviteRepository(
+        preferences,
+        now: now,
+      ),
       avatarRepository: avatars,
       photoRepository: DevicePhotoRepository(),
       mailAppRepository: const DeviceMailAppRepository(),
       analyticsRepository: analytics,
       adsRepository: ads,
+      demoAdRepository: LocalDemoAdRepository(preferences),
+      demoOfferRepository: LocalDemoOfferRepository(preferences, now),
+      openingOfferRepository: LocalOpeningOfferRepository(preferences, now),
       purchaseRepository: purchases,
+      courseAccessRepository: courseAccess,
+      courseGrantsRepository: courseGrants,
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
           : const NoStoreListingRepository(),
@@ -490,7 +716,17 @@ class Dependencies {
               origin: analytics.origin,
             )
           : const NoFeedbackRepository(),
-      wouldPayRepository: LocalWouldPayRepository(preferences),
+      dataExportRepository: firebase
+          ? CloudDataExportRepository(
+              cloudStore,
+              directory: getApplicationSupportDirectory,
+              now: now,
+            )
+          : const NoDataExportRepository(),
+      legalConsentRepository: firebase
+          ? LocalLegalConsentRepository(preferences, cloudStore, now: now)
+          : const NoLegalConsentRepository(),
+      feedbackDraftRepository: LocalFeedbackDraftRepository(preferences),
       reviewRepository: LocalReviewRepository(
         preferences,
         firebase ? PlayReviewService() : const NoReviewService(),
@@ -551,11 +787,16 @@ class Dependencies {
   final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;
+  final LearningAnalysisRepository? learningAnalysisRepository;
   final GameReviewRepository gameReviewRepository;
+  final DeepAnalysisRepository deepAnalysisRepository;
   final OngoingGameRepository ongoingGameRepository;
   final ConclusionRepository conclusionRepository;
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;
+  final course_training.TrainingRepository courseTrainingRepository;
+  final CourseDownloadRepository courseDownloads;
+  final TrainingAnalytics? trainingAnalytics;
   final OpponentRepository opponentRepository;
   final MaiaRepository maiaRepository;
   final ProgressRepository progressRepository;
@@ -569,12 +810,13 @@ class Dependencies {
   final TalkRepository talkRepository;
   final OnboardingRepository onboardingRepository;
   final HomeLayoutRepository homeLayoutRepository;
-  final UnlockRepository unlockRepository;
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
+  final TrainingSchoolContent? trainingSchoolContent;
   final SchoolProgressRepository schoolProgressRepository;
   final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;
+  final TrainingEndgameContent? trainingEndgameContent;
   final LessonScriptRepository lessonScriptRepository;
   final KpkRepository kpkRepository;
 
@@ -614,7 +856,6 @@ class Dependencies {
   final DailyFinalRepository dailyFinalRepository;
 
   /// O "x% acertaram" (E1.24), lido da nuvem.
-  final CrowdRepository crowdRepository;
 
   /// O progresso na conta (E1.13). Sem conta, ninguém chama.
   final SyncRepository syncRepository;
@@ -635,12 +876,33 @@ class Dependencies {
   /// Os anúncios antes das aulas, a compra que os tira e a página do app na
   /// Play (E1.25). Fora da Play, nenhum.
   final AdsRepository adsRepository;
+
+  /// O que a pessoa tem do Pilares e o anúncio da demonstração (T85-D1).
+  final CourseAccessRepository courseAccessRepository;
+
+  /// Os cursos dados pelo servidor e a tela "Curso liberado" já vista
+  /// (H-R5-61/62).
+  final CourseGrantsRepository courseGrantsRepository;
+  final DemoAdRepository demoAdRepository;
+  final DemoOfferRepository demoOfferRepository;
+
+  /// A oferta do Pilares ao abrir o app (H-INI-14).
+  final OpeningOfferRepository openingOfferRepository;
   final PurchaseRepository purchaseRepository;
   final StoreListingRepository storeListingRepository;
 
-  /// "Enviar feedback" e o "Você pagaria?" (E1.26), em `feedback/{id}`.
+  /// "Enviar feedback" (E1.26), em `feedback/{id}`.
   final FeedbackRepository feedbackRepository;
-  final WouldPayRepository wouldPayRepository;
+
+  /// "Baixar meus dados" (H-CON-21): a cópia da conta num JSON.
+  final DataExportRepository dataExportRepository;
+
+  /// O aceite dos Termos e da Política logo depois de criar a conta
+  /// (H-CON-08).
+  final LegalConsentRepository legalConsentRepository;
+
+  /// O rascunho do "Enviar feedback" (H-OPI-11), no aparelho.
+  final FeedbackDraftRepository feedbackDraftRepository;
 
   /// O pedido de avaliação da Play (E1.26).
   final ReviewRepository reviewRepository;

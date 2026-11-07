@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/voice/voice_repository.dart';
 import '../../../domain/models/character.dart';
@@ -13,6 +15,7 @@ import '../../../domain/use_cases/wiki_markup.dart';
 class SpeechState {
   const SpeechState({
     this.loaded = false,
+    this.failed = false,
     this.settings = const VoiceSettings(),
     this.voices = const [],
     this.profiles = const {},
@@ -24,6 +27,7 @@ class SpeechState {
   });
 
   final bool loaded;
+  final bool failed;
   final VoiceSettings settings;
 
   /// As vozes do aparelho, de todos os idiomas.
@@ -98,6 +102,7 @@ class SpeechState {
       characterId == SpeechCubit.teacherId ? settings.teacherTone : null;
 
   SpeechState copyWith({
+    bool? failed,
     bool? loaded,
     VoiceSettings? settings,
     List<TtsVoice>? voices,
@@ -109,6 +114,7 @@ class SpeechState {
     int? Function()? revealed,
   }) => SpeechState(
     loaded: loaded ?? this.loaded,
+    failed: failed ?? this.failed,
     settings: settings ?? this.settings,
     voices: voices ?? this.voices,
     profiles: profiles ?? this.profiles,
@@ -172,6 +178,15 @@ class SpeechCubit extends Cubit<SpeechState> {
   }
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(loaded: true, failed: true));
+    }
+  }
+
+  Future<void> _load() async {
     final settings = await _voice.load();
     final voices = await _voice.voices();
     final profiles = await _voice.profiles();
@@ -184,6 +199,7 @@ class SpeechCubit extends Cubit<SpeechState> {
     emit(
       state.copyWith(
         loaded: true,
+        failed: false,
         settings: settings,
         voices: voices,
         profiles: profiles,

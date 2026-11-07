@@ -1,54 +1,47 @@
+import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/repositories/review/review_repository.dart';
-import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
 import 'package:lucena/data/services/device_service.dart';
+import 'package:lucena/data/services/firebase/cloud_store_service.dart';
 import 'package:lucena/data/services/review_service.dart';
 import 'package:lucena/domain/models/feedback_entry.dart';
-import 'package:lucena/domain/models/would_pay.dart';
 
 /// Guarda o que foi mandado, sem nuvem.
 class FakeFeedbackRepository implements FeedbackRepository {
   final sent = <FeedbackEntry>[];
   final levels = <String?>[];
 
+  /// Com `true`, o envio falha (sem espaço, servidor recusou).
+  bool fail = false;
+
+  /// Com `true`, não há conta: o envio para com [FeedbackNeedsAccount].
+  bool needsAccount = false;
+
   @override
   Future<bool> send(FeedbackEntry entry, {String? level}) async {
-    final text = entry.text;
-    if (text != null && FeedbackEntry.clip(text).isEmpty) return false;
+    if (needsAccount) throw const FeedbackNeedsAccount();
+    if (fail) throw const CloudStoreException('permission-denied');
+    if (FeedbackEntry.clip(entry.text).isEmpty) return false;
     sent.add(entry);
     levels.add(level);
     return true;
   }
 }
 
-/// O rascunho e as marcas na memória.
-class FakeWouldPayRepository implements WouldPayRepository {
-  FakeWouldPayRepository({this.draft, this.isDismissed = false});
+/// O rascunho do feedback na memória.
+class FakeFeedbackDraftRepository implements FeedbackDraftRepository {
+  FakeFeedbackDraftRepository({this.draft});
 
-  WouldPayDraft? draft;
-  bool isDismissed;
-  bool isAnswered = false;
+  FeedbackDraft? draft;
 
   @override
-  Future<WouldPayDraft?> loadDraft() async => draft;
+  Future<FeedbackDraft?> load() async => draft;
 
   @override
-  Future<void> saveDraft(WouldPayDraft draft) async => this.draft = draft;
+  Future<void> save(FeedbackDraft draft) async => this.draft = draft;
 
   @override
-  Future<bool> dismissed() async => isDismissed;
-
-  @override
-  Future<bool> answered() async => isAnswered;
-
-  @override
-  Future<void> dismiss() async => isDismissed = true;
-
-  @override
-  Future<void> markAnswered() async {
-    isAnswered = true;
-    draft = null;
-  }
+  Future<void> clear() async => draft = null;
 }
 
 /// Conta as chamadas; [ask] decide se o pedido sai.

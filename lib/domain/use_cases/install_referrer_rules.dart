@@ -1,6 +1,7 @@
 import '../models/app_links.dart';
 import '../models/challenge_link.dart';
 import '../models/linked_lesson.dart';
+import '../models/offer_discount.dart';
 
 /// Lê o link de campanha do `referrer` da Play Store (deferred deep link,
 /// T84). O link de instalação leva o caminho do app, codificado uma vez:
@@ -31,6 +32,7 @@ abstract final class InstallReferrerRules {
   static Uri? _valid(Uri uri) {
     if (!AppLinks.isOwn(uri)) return null;
     if (LessonLink.tryParse(uri) != null) return uri;
+    if (OfferCodes.fromLink(uri) != null) return uri;
     return ChallengeLink.tryParse(uri) == null ? null : uri;
   }
 }

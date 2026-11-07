@@ -11,7 +11,9 @@ import 'package:lucena/domain/use_cases/home_suggestion.dart';
 void main() {
   const school = HomeShortcut.school;
   const journey = HomeShortcut.journey;
-  const endgames = HomeShortcut.endgames;
+  const pillars = HomeShortcut.pillars;
+  const board = HomeShortcut.freeBoard;
+  const position = HomeShortcut.customPosition;
   const train = HomeShortcut.train;
   const speedrun = HomeShortcut.speedrun;
   const race = HomeShortcut.race;
@@ -20,16 +22,10 @@ void main() {
   List<HomeShortcut> shortcuts(
     RatingLevel level, {
     GoalPreference? goal,
-    bool course = true,
     bool school = false,
     Set<HomePath> unchecked = const {},
   }) {
-    final layout = HomeSuggestion.of(
-      level,
-      school: school,
-      course: course,
-      goal: goal,
-    );
+    final layout = HomeSuggestion.of(level, school: school, goal: goal);
     return HomeShortcuts.of(
       order: layout.order,
       visible: layout.visible.difference(unchecked),
@@ -65,9 +61,9 @@ void main() {
     );
   });
 
-  test('aprender finais (1450): o Curso primeiro, mesmo sendo o cartão', () {
-    expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.endgames), [
-      endgames,
+  test('melhorar o jogo (1450): Pilares primeiro, mesmo sendo o cartão', () {
+    expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.improve), [
+      pillars,
       journey,
       train,
       speedrun,
@@ -77,11 +73,11 @@ void main() {
   });
 
   test('treinar finais (1450): o treino primeiro; os finais para você entram '
-      'no Curso', () {
+      'nos Pilares', () {
     expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.train), [
       train,
       journey,
-      endgames,
+      pillars,
       speedrun,
       race,
       stars,
@@ -91,7 +87,7 @@ void main() {
   test('sem objetivo (1450): a ordem do nível', () {
     expect(shortcuts(RatingLevel.intermediate), [
       journey,
-      endgames,
+      pillars,
       train,
       speedrun,
       race,
@@ -103,21 +99,34 @@ void main() {
     expect(
       shortcuts(
         RatingLevel.intermediate,
-        goal: GoalPreference.endgames,
+        goal: GoalPreference.improve,
         unchecked: {HomePath.speedrun, HomePath.stars},
       ),
-      [endgames, journey, train, race],
+      [pillars, journey, train, race],
     );
   });
 
-  test('sem aula liberada: o Curso some', () {
+  test('explorar posições: Tabuleiro livre, Montar posição, Treinar finais, '
+      'Jornada, Problemas e Estrelas', () {
+    expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.explore), [
+      board,
+      position,
+      train,
+      journey,
+      race,
+      stars,
+    ]);
+  });
+
+  test('o Tabuleiro livre e Montar posição só vêm para quem os marca', () {
+    for (final level in RatingLevel.values) {
+      final list = shortcuts(level, goal: GoalPreference.improve);
+      expect(list, isNot(contains(board)), reason: '$level');
+      expect(list, isNot(contains(position)), reason: '$level');
+    }
     expect(
-      shortcuts(
-        RatingLevel.intermediate,
-        goal: GoalPreference.endgames,
-        course: false,
-      ),
-      isNot(contains(endgames)),
+      shortcuts(RatingLevel.intermediate, goal: GoalPreference.improve).first,
+      pillars,
     );
   });
 

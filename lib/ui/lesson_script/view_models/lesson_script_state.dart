@@ -94,6 +94,7 @@ class ScriptMoveEntry {
   const ScriptMoveEntry({
     required this.id,
     required this.san,
+    this.displaySan,
     required this.number,
     required this.side,
     required this.variant,
@@ -106,6 +107,10 @@ class ScriptMoveEntry {
   /// A chave `LessonScriptKeys.move(id)`; é o que `goToMove` recebe.
   final String id;
   final String san;
+
+  /// An already localized notation label supplied by a presentation source.
+  /// The canonical SAN and move identity remain unchanged.
+  final String? displaySan;
 
   /// O número do lance completo.
   final int number;
@@ -263,5 +268,9 @@ abstract class LessonScriptState with _$LessonScriptState {
 
     /// Preenchido quando a parte foi concluída (`finishPart`).
     LessonOutcome? outcome,
+
+    /// A parte foi largada no meio e reabriu do início: a tela avisa uma vez
+    /// (T85-B5b). Segundo plano não passa por aqui: o estado é mantido.
+    @Default(false) bool restartNotice,
   }) = _LessonScriptState;
 }

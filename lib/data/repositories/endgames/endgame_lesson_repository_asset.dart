@@ -148,7 +148,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
   }) {
     final map = json as Map<String, dynamic>;
     final id = map['id'] as String;
-    final practice = map['practice'] as Map<String, dynamic>;
+    final practice = map['practice'] as Map<String, dynamic>?;
     return EndgameLesson(
       id: id,
       module: map['module'] as String,
@@ -166,6 +166,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
                 PositionGoal.fromCode(exercise['goal'] as String?) ??
                 PositionGoal.win,
             origin: exercise['origin'] as String? ?? 'own',
+            theme: exercise['capitulo'] as String?,
             line: AssetLessonRepository.parseLine(exercise['line'] as List),
           ),
       ],
@@ -180,13 +181,15 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
             ref: position['ref'] as String?,
           ),
       ],
-      practice: Practice(
-        fen: practice['fen'] as String,
-        goal:
-            PositionGoal.fromCode(practice['goal'] as String?) ??
-            PositionGoal.win,
-        positionId: practice['positionId'] as String?,
-      ),
+      practice: practice == null
+          ? null
+          : Practice(
+              fen: practice['fen'] as String,
+              goal:
+                  PositionGoal.fromCode(practice['goal'] as String?) ??
+                  PositionGoal.win,
+              positionId: practice['positionId'] as String?,
+            ),
       references: [
         for (final reference
             in (map['references'] as List? ?? const [])

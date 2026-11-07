@@ -1,3 +1,11 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
+import 'package:go_router/go_router.dart';
+
+import '../../../domain/models/load_failure.dart';
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:math';
 
 import 'package:chessground/chessground.dart';
@@ -5,7 +13,6 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/star_challenge.dart';
@@ -17,6 +24,7 @@ import '../../core/widgets/animated_progress.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
+import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/widgets/time_display.dart';
@@ -30,11 +38,19 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/botao_carregando.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.
 class StarChallengeScreen extends StatefulWidget {
-  const StarChallengeScreen({super.key});
+  const StarChallengeScreen({
+    this.trainingGoalDone,
+    this.onNextGoal,
+    super.key,
+  });
+  final Future<bool> Function()? trainingGoalDone;
+  final VoidCallback? onNextGoal;
 
   @override
   State<StarChallengeScreen> createState() => _StarChallengeScreenState();
@@ -43,6 +59,10 @@ class StarChallengeScreen extends StatefulWidget {
 class _StarChallengeScreenState extends State<StarChallengeScreen>
     with WidgetsBindingObserver {
   ChessboardController? _board;
+
+  // O aluno tocou em "Tentar de novo": o salvar carrega no próprio botão
+  // (H-ANI-08), não num círculo solto.
+  bool _salvandoDeNovo = false;
 
   @override
   void initState() {
@@ -104,6 +124,15 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (GoRouter.maybeOf(context) != null) {
+      final parameters = GoRouterState.of(context).pathParameters;
+      if ((parameters.containsKey('piece') &&
+              ChallengePiece.byName(parameters['piece']!) == null) ||
+          (parameters.containsKey('level') &&
+              ChallengeLevel.byName(parameters['level']!) == null)) {
+        return challengeLoadError(context, LoadFailure.notFound, () {});
+      }
+    }
     final boardSettings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
@@ -115,24 +144,39 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       child: BlocConsumer<StarChallengeCubit, StarChallengeState>(
         listener: _onState,
         builder: (context, state) {
+          final failure = state.failure;
+          if (failure != null) {
+            return challengeLoadError(
+              context,
+              failure,
+              () => cubit.load(state.piece!, state.level!),
+            );
+          }
           if (state.fen != null && _board == null) {
             _board = ChessboardController(game: _gameData(state));
           }
           final piece = state.piece;
-          final level = state.level;
           return Scaffold(
             key: StarChallengeKeys.screen,
             appBar: LucenaAppBar(
-              toolbarHeight: (MediaQuery.textScalerOf(context).scale(44) + 16)
-                  .clamp(72.0, double.infinity),
-              title: piece == null ? null : _title(context, piece, level),
+              // Regra da app bar (T85): 64 e só o título, sem o nível.
+              title: piece == null
+                  ? null
+                  : Text(
+                      context.l10n.starChallengeTitle(piece.name),
+                      textAlign: TextAlign.center,
+                    ),
             ),
             body: Stack(
               fit: StackFit.expand,
               children: [
                 SafeArea(
                   child: Builder(
-                    builder: (context) => _body(context, state, boardSettings),
+                    builder: (context) => ShimmerConteudo(
+                      carregando: !state.ready || _board == null,
+                      esqueleto: const SkeletonList(),
+                      child: _body(context, state, boardSettings),
+                    ),
                   ),
                 ),
                 if (_action(context, state) case final action?)
@@ -150,51 +194,56 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     );
   }
 
-  /// Pergunta 2 do contrato (T65), opção A: o nível e o modo no subtítulo
-  /// ("Fácil · Caça às estrelas"). Para a opção B (o nível no título, sem
-  /// subtítulo), troque para `false`.
-  static const _levelInSubtitle = true;
-
-  /// O título centralizado (`CompTopBar back centralizado subtitulo`).
-  Widget _title(
-    BuildContext context,
-    ChallengePiece piece,
-    ChallengeLevel? level,
-  ) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final title = l10n.starChallengeTitle(piece.name);
-    final levelText = level == null ? null : levelName(l10n, level);
-    if (!_levelInSubtitle || levelText == null) {
-      return Text(
-        levelText == null ? title : '$title · $levelText',
-        key: levelText == null ? null : StarChallengeKeys.levelChip,
-        textAlign: TextAlign.center,
-      );
+  Widget? _action(BuildContext context, StarChallengeState state) {
+    final original = _normalAction(context, state);
+    if (state.phase != ChallengePhase.finished ||
+        state.saving ||
+        state.saveError ||
+        widget.trainingGoalDone == null) {
+      return original;
     }
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(title, textAlign: TextAlign.center),
-        Text(
-          '$levelText · ${l10n.starChallengeIntroTitle}',
-          key: StarChallengeKeys.levelChip,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
+    return FutureBuilder<bool>(
+      future: Future<bool>.sync(widget.trainingGoalDone!)
+          .onError<Object>((error, stack) {
+            reportHandledError(error, stack);
+            return false;
+          }),
+      builder: (context, snapshot) => snapshot.data == true
+          ? FilledButton(
+              key: TrainingKeys.nextGoal,
+              onPressed: widget.onNextGoal,
+              child: Text(context.l10n.trainingNextGoal),
+            )
+          : original ?? const SizedBox.shrink(),
     );
   }
 
-  Widget? _action(BuildContext context, StarChallengeState state) {
+  Widget? _normalAction(BuildContext context, StarChallengeState state) {
     if (!state.ready) return null;
     final l10n = context.l10n;
     final cubit = context.read<StarChallengeCubit>();
     // Uma linha só: em fonte grande o rótulo diminui em vez de quebrar.
     Widget label(String text) =>
         FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
+    if (!state.saving && !state.saveError) _salvandoDeNovo = false;
+    if (state.saveError || (state.saving && _salvandoDeNovo)) {
+      return BotaoCarregando(
+        buttonKey: StarChallengeKeys.retrySave,
+        icon: Icons.refresh,
+        label: l10n.lessonRetry,
+        busy: state.saving,
+        onPressed: () {
+          setState(() => _salvandoDeNovo = true);
+          return cubit.retryFinish();
+        },
+      );
+    }
+    // O fim do tempo salva sozinho: sem botão tocado, o círculo no lugar.
+    if (state.saving) {
+      return const Center(
+        child: CircularProgressIndicator(key: StarChallengeKeys.saveProgress),
+      );
+    }
     return switch (state.phase) {
       ChallengePhase.ready => FilledButton.icon(
         key: StarChallengeKeys.goButton,
@@ -242,17 +291,20 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       builder: (context, box) {
         final wanted =
             timerHeight +
-            switch (state.phase) {
-              // O convite na altura do conteúdo dele (fonte, idioma, nota dos
-              // obstáculos), medida na largura de verdade.
-              ChallengePhase.ready => _IntroCard.heightFor(
-                context,
-                state.level!,
-                width: box.maxWidth - 2 * AppSpacing.screen,
-              ),
-              ChallengePhase.finished => scaler.scale(140),
-              _ => state.level!.announcesSquare ? scaler.scale(44) + 8 : 0,
-            };
+            (state.saveError
+                ? scaler.scale(88)
+                : switch (state.phase) {
+                    // O convite na altura do conteúdo dele (fonte, idioma, nota dos
+                    // obstáculos), medida na largura de verdade.
+                    ChallengePhase.ready => _IntroCard.heightFor(
+                      context,
+                      state.level!,
+                      width: box.maxWidth - 2 * AppSpacing.screen,
+                    ),
+                    ChallengePhase.finished => scaler.scale(140),
+                    _ =>
+                      state.level!.announcesSquare ? scaler.scale(44) + 8 : 0,
+                  });
         // Fonte grande em tela baixa: o tabuleiro não passa de metade da
         // largura para baixo; o que vem em cima ganha só a altura que sobra e
         // rola.
@@ -276,6 +328,8 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
   }
 
   static bool _hasAction(StarChallengeState state) =>
+      state.saving ||
+      state.saveError ||
       state.phase == ChallengePhase.ready ||
       state.phase == ChallengePhase.finished;
 
@@ -424,6 +478,17 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final level = state.level!;
+    if (state.saveError) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+        child: Text(
+          l10n.trainingExerciseSaveError,
+          key: StarChallengeKeys.saveError,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: colors.error),
+        ),
+      );
+    }
     switch (state.phase) {
       case ChallengePhase.ready:
         return Padding(

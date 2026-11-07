@@ -62,6 +62,25 @@ const _texts = PushTexts(
 );
 
 void main() {
+  test('sem Firebase, permissão local é pedida e relida pelo mesmo serviço de notificações', () async {
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+    final local = FakeNotificationService(
+      allowed: false,
+      permissionResult: true,
+    );
+    final none = FirebasePushRepository(
+      const NoPushService(),
+      PreferencesService(),
+      notifications: local,
+    );
+    expect(none.available, isFalse);
+    expect(await none.permitted(), isFalse);
+    expect(await none.requestPermission(), isTrue);
+    expect(local.permissionRequests, 1);
+    expect(await none.permitted(), isTrue);
+  });
+
   late _Push service;
   late FakeNotificationService notifications;
   late _Counts counts;

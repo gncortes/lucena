@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -7,6 +9,7 @@ import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
@@ -20,6 +23,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_wiki.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   Future<ExerciseCubit> pump(
@@ -29,6 +33,8 @@ void main() {
     FakeNow? now,
     FakeEndgameLessonRepository? lessons,
     EndgameProgress progress = const EndgameProgress(),
+    bool trainingTest = false,
+    Locale locale = const Locale('en'),
   }) async {
     final cubit = ExerciseCubit(
       now: now ?? FakeNow(DateTime.utc(2026, 10, 11)),
@@ -47,9 +53,13 @@ void main() {
     await settings.load();
     await tester.pumpWidget(
       TestApp(
+        locale: locale,
         settingsCubit: settings,
         webPages: webPages,
-        child: BlocProvider.value(value: cubit, child: const ExerciseScreen()),
+        child: BlocProvider.value(
+          value: cubit,
+          child: ExerciseScreen(trainingTest: trainingTest),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -63,6 +73,37 @@ void main() {
     await tester.tapAt(squareCenter(board, to));
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'T85 test arrow and Android back open the same cancelable dialog',
+    (tester) async {
+      await pump(tester, 'e02', trainingTest: true, locale: const Locale('pt'));
+      // H-ANI-06: a barra de cima enche (H-ANI-13) e a saída é a folha
+      // sobre o véu, não um diálogo.
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byKey(MotionKeys.barraQueEnche),
+        ),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(TrainingKeys.testBack));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.testLeaveDialog), findsOneWidget);
+      expect(find.byKey(MotionKeys.folha), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      await tester.tap(find.byKey(TrainingKeys.testContinue));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.testLeaveDialog), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.testLeaveDialog), findsOneWidget);
+      await tester.tap(find.byKey(TrainingKeys.testContinue));
+      await tester.pumpAndSettle();
+      expect(find.byKey(ExerciseKeys.board), findsOneWidget);
+      expectTabuleiroAnimado(tester, ExerciseKeys.board);
+    },
+  );
 
   testWidgets('T65: lifecycle congela o cronômetro do exercício', (
     tester,
@@ -188,6 +229,41 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('acerto e erro não põem marca na app bar (canvas: selo só na '
+      'peça)', (tester) async {
+    setSize(tester, sizes.first);
+    await pump(tester, 'e02');
+    final bar = find.byType(AppBar);
+    Finder mark(IconData icon) =>
+        find.descendant(of: bar, matching: find.byIcon(icon));
+    await move(tester, 'c1', 'c4');
+    expect(mark(Icons.check_circle), findsNothing);
+    await move(tester, 'c4', 'c3');
+    expect(mark(Icons.cancel), findsNothing);
+  });
+
+  testWidgets('H-ANI-11/12: acerto e erro põem o selo na peça, sobre o '
+      'tabuleiro', (tester) async {
+    setSize(tester, sizes.first);
+    await pump(tester, 'e02');
+    Finder selo(IconData icon) => find.descendant(
+      of: find.byKey(MotionKeys.seloNaPeca),
+      matching: find.byIcon(icon),
+    );
+    await move(tester, 'c1', 'c4');
+    expect(selo(Icons.check), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byKey(ExerciseKeys.board),
+        matching: find.byKey(MotionKeys.tabuleiroDoRetorno),
+      ),
+      findsOneWidget,
+    );
+    await move(tester, 'c4', 'c3');
+    expect(selo(Icons.close), findsOneWidget);
+    expect(selo(Icons.check), findsNothing);
+  });
+
   testWidgets('erro depois do primeiro lance tira um ponto e não zera', (
     tester,
   ) async {
@@ -304,7 +380,8 @@ void main() {
 
   testWidgets('exercício que não existe', (tester) async {
     await pump(tester, 'e99');
-    expect(find.byKey(ExerciseKeys.missing), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+    expect(find.text('Content not found'), findsOneWidget);
   });
 
   testWidgets('treino livre: "Analisar no Lichess" abre a posição dentro do '

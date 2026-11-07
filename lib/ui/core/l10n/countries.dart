@@ -21,11 +21,11 @@ abstract final class Countries {
     AppLocalizations l10n,
     String query,
   ) {
-    final wanted = _fold(query.trim());
+    final wanted = fold(query.trim());
     if (wanted.isEmpty) return all(l10n);
     return all(l10n).where(
       (country) =>
-          _fold(country.value).contains(wanted) ||
+          fold(country.value).contains(wanted) ||
           country.key.toLowerCase() == wanted,
     );
   }
@@ -39,7 +39,8 @@ abstract final class Countries {
     'ç': 'c', 'ñ': 'n', 'ý': 'y', 'ÿ': 'y', 'ś': 's', 'š': 's', 'ł': 'l',
   };
 
-  static String _fold(String text) =>
+  /// O texto sem acento nem maiúscula, para a busca.
+  static String fold(String text) =>
       text.toLowerCase().split('').map((char) => _plain[char] ?? char).join();
 
   /// A bandeira em emoji, montada das duas letras do código.

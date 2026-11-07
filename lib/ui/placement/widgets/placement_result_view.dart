@@ -10,6 +10,8 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/numero_que_conta.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -27,10 +29,16 @@ import '../../core/widgets/actions_footer.dart';
 /// jogador domina e do que falta, os três primeiros passos do roteiro e, fixo
 /// embaixo, "Usar este nível".
 class PlacementResultView extends StatefulWidget {
-  const PlacementResultView({required this.state, this.onDone, super.key});
+  const PlacementResultView({
+    required this.state,
+    this.onDone,
+    this.onPreferRating,
+    super.key,
+  });
 
   final PlacementViewState state;
   final VoidCallback? onDone;
+  final VoidCallback? onPreferRating;
 
   @override
   State<PlacementResultView> createState() => _PlacementResultViewState();
@@ -38,14 +46,36 @@ class PlacementResultView extends StatefulWidget {
 
 class _PlacementResultViewState extends State<PlacementResultView> {
   RatingLevel? _chosen;
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final result = widget.state.result;
     if (result == null) return const SizedBox.shrink();
     final chosen = _chosen ?? result.level;
     final levels = result.levels;
+    // Os dois quadros do canvas: uma faixa ou duas (H-ANI-25).
+    return EntradaDaTela(
+      id: levels.length > 1
+          ? 'TelaTesteResultadoDuasFaixas'
+          : 'TelaTesteResultado',
+      child: _content(context, result, chosen, levels),
+    );
+  }
+
+  Widget _content(
+    BuildContext context,
+    PlacementResult result,
+    RatingLevel chosen,
+    List<RatingLevel> levels,
+  ) {
+    final l10n = context.l10n;
     return Column(
       key: PlacementKeys.result,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -53,47 +83,56 @@ class _PlacementResultViewState extends State<PlacementResultView> {
         Expanded(
           // Cabeçalho grande que recolhe ao rolar: o título ganha destaque
           // sobre a faixa e some do caminho do mapa e do roteiro.
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar.large(
-                key: PlacementKeys.resultHeader,
-                pinned: true,
-                title: Text(l10n.placementTitle),
-              ),
-              SliverPadding(
-                padding: scrollPadding(
-                  context,
-                  left: AppSpacing.screen,
-                  top: AppSpacing.sm,
-                  right: AppSpacing.screen,
-                  bottom: AppSpacing.lg,
+          // Barra de rolagem sempre visível: a lista de temas passa por baixo
+          // do botão e a barra avisa que há mais.
+          child: Scrollbar(
+            controller: _scroll,
+            thumbVisibility: true,
+            child: CustomScrollView(
+              controller: _scroll,
+              slivers: [
+                SliverAppBar.large(
+                  key: PlacementKeys.resultHeader,
+                  pinned: true,
+                  title: Text(l10n.placementTitle),
                 ),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _LevelCard(result: result, shown: chosen),
-                      if (levels.length > 1) ...[
-                        const SizedBox(height: AppSpacing.betweenCards),
-                        _TwoLevels(
-                          levels: levels,
-                          chosen: chosen,
-                          onChoose: (level) => setState(() => _chosen = level),
-                        ),
-                      ],
-                      const SizedBox(height: AppSpacing.xl),
-                      _SkillMapSection(state: widget.state),
-                      if (widget.state.roadmap?.steps.isNotEmpty ?? false) ...[
+                SliverPadding(
+                  padding: scrollPadding(
+                    context,
+                    left: AppSpacing.screen,
+                    top: AppSpacing.sm,
+                    right: AppSpacing.screen,
+                    bottom: AppSpacing.lg,
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _LevelCard(result: result, shown: chosen),
+                        if (levels.length > 1) ...[
+                          const SizedBox(height: AppSpacing.betweenCards),
+                          _TwoLevels(
+                            levels: levels,
+                            chosen: chosen,
+                            onChoose: (level) =>
+                                setState(() => _chosen = level),
+                          ),
+                        ],
                         const SizedBox(height: AppSpacing.xl),
-                        _Roadmap(state: widget.state),
+                        _SkillMapSection(state: widget.state),
+                        if (widget.state.roadmap?.steps.isNotEmpty ??
+                            false) ...[
+                          const SizedBox(height: AppSpacing.xl),
+                          _Roadmap(state: widget.state),
+                        ],
+                        const SizedBox(height: AppSpacing.lg),
+                        _Sources(text: l10n.placementSources),
                       ],
-                      const SizedBox(height: AppSpacing.lg),
-                      _Sources(text: l10n.placementSources),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         _Actions(
@@ -101,6 +140,7 @@ class _PlacementResultViewState extends State<PlacementResultView> {
             await context.read<PlacementCubit>().apply(level: chosen);
             widget.onDone?.call();
           },
+          onPreferRating: widget.onPreferRating,
         ),
       ],
     );
@@ -108,7 +148,8 @@ class _PlacementResultViewState extends State<PlacementResultView> {
 }
 
 /// A faixa em destaque: a peça, o nome, o número e o intervalo numa régua de
-/// 400 a 2800, com as seis faixas.
+/// com as seis faixas (o início da régua desce até o nível, se ele ficar
+/// abaixo de 1000).
 class _LevelCard extends StatelessWidget {
   const _LevelCard({required this.result, required this.shown});
 
@@ -162,11 +203,13 @@ class _LevelCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: AppSpacing.sm),
-                            Text(
-                              shown == result.level
-                                  ? '${result.theta}'
-                                  : '${shown.rating}',
-                              style: theme.textTheme.titleLarge?.copyWith(
+                            // H-ANI-18: o rating conta até o valor.
+                            NumeroQueConta(
+                              valor: shown == result.level
+                                  ? result.theta
+                                  : shown.rating,
+                              agrupar: false,
+                              estilo: theme.textTheme.titleLarge?.copyWith(
                                 color: colors.onPrimaryContainer,
                               ),
                             ),
@@ -187,7 +230,7 @@ class _LevelCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.lg),
-            _Ruler(shown: shown),
+            _Ruler(shown: shown, start: _rulerStart(result)),
           ],
         ),
       ),
@@ -228,9 +271,12 @@ class _LevelPiece extends StatelessWidget {
 /// faixa (do peão ao rei) em cima; o degrau do jogador fica preenchido e os
 /// outros, apagados. Embaixo, o rating em que cada faixa começa, na divisa.
 class _Ruler extends StatelessWidget {
-  const _Ruler({required this.shown});
+  const _Ruler({required this.shown, this.start});
 
   final RatingLevel shown;
+
+  /// Onde a régua começa, quando o nível fica abaixo do primeiro limite.
+  final int? start;
 
   static const _gap = 4.0;
   static const _bar = 12.0;
@@ -296,6 +342,19 @@ class _Ruler extends StatelessWidget {
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
+                  if (start case final start?)
+                    Positioned(
+                      left: 0,
+                      child: Text(
+                        '$start',
+                        key: PlacementKeys.rulerStart,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colors.onPrimaryContainer.withValues(
+                            alpha: 0.7,
+                          ),
+                        ),
+                      ),
+                    ),
                   for (final level in RatingLevel.values)
                     if (level.min case final min?)
                       Positioned(
@@ -580,21 +639,38 @@ class _Sources extends StatelessWidget {
 
 /// Fixo embaixo: "Usar este nível".
 class _Actions extends StatelessWidget {
-  const _Actions({required this.onUse});
+  const _Actions({required this.onUse, this.onPreferRating});
 
   final VoidCallback onUse;
+  final VoidCallback? onPreferRating;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return ActionsFooter(
+      stacked: true,
       children: [
         FilledButton(
           key: PlacementKeys.useLevel,
           onPressed: onUse,
           child: Text(l10n.placementUseLevel),
         ),
+        if (onPreferRating != null)
+          TextButton(
+            key: PlacementKeys.preferRating,
+            onPressed: onPreferRating,
+            child: Text(l10n.placementPreferRating),
+          ),
       ],
     );
   }
+}
+
+/// O início da régua: o menor entre o nível e o fim de baixo do intervalo,
+/// só quando fica abaixo do primeiro limite (1000). Assim o número do
+/// resultado nunca cai fora da escala desenhada.
+int? _rulerStart(PlacementResult result) {
+  final first = RatingLevel.casual.min!;
+  final start = result.low < result.theta ? result.low : result.theta;
+  return start < first ? start : null;
 }

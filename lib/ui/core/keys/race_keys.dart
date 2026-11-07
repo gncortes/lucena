@@ -36,6 +36,13 @@ abstract final class RaceKeys {
   static const duration = Key('race.duration');
   static Key durationOption(RaceDuration duration) =>
       Key('race.duration.${duration.minutes}');
+
+  /// Abertura: os três fatos de uma linha, o (i) da barra e a folha "Como
+  /// funciona" com as regras e o "Entendi".
+  static const facts = Key('race.facts');
+  static const howButton = Key('race.how.button');
+  static const howSheet = Key('race.how.sheet');
+  static const howGotIt = Key('race.how.gotIt');
   static const recordCard = Key('race.record');
   static const start = Key('race.start');
   static const empty = Key('race.empty');
@@ -61,11 +68,15 @@ abstract final class RaceKeys {
   static const resultTitle = Key('race.result.title');
   static const resultCorrects = Key('race.result.corrects');
   static const newRecord = Key('race.result.newRecord');
-  static const statErrors = Key('race.result.stat.errors');
-  static const statHardest = Key('race.result.stat.hardest');
-  static const statPace = Key('race.result.stat.pace');
+
+  /// O cartão "O que contou" e suas três linhas.
+  static const counted = Key('race.result.counted');
+  static const countedCorrects = Key('race.result.counted.corrects');
+  static const countedLevel = Key('race.result.counted.level');
   static Key problemTile(int index) => Key('race.result.problem.$index');
   static const again = Key('race.result.again');
+  static const seeAllProblems = Key('race.result.seeAll');
+  static const problemsScreen = Key('race.problems.screen');
   static const reviewMistakes = Key('race.result.review');
   static const close = Key('race.result.close');
 

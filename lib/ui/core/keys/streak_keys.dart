@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 /// A Sequência (E1.22): a tela e a folha de sequência perdida.
 abstract final class StreakKeys {
   static const screen = Key('streak.screen');
+  static const loading = Key('streak.loading');
+  static const error = Key('streak.error');
   static const current = Key('streak.current');
   static const record = Key('streak.record');
   static const weekStrip = Key('streak.weekStrip');

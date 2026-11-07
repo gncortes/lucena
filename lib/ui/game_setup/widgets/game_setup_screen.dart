@@ -1,9 +1,13 @@
 import 'dart:math' as math;
 
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_chip.dart';
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +27,7 @@ import '../../challenge/widgets/challenge_sheet.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../view_models/game_setup_cubit.dart';
 import '../../core/keys/blind_keys.dart';
@@ -39,6 +44,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/section_title.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
@@ -65,6 +71,14 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<GameSetupCubit>().state;
+    if (state.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: context.read<GameSetupCubit>().load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final language = Localizations.localeOf(context).toLanguageTag();
     final voiceAvailable = context.select(
       (SpeechCubit cubit) => cubit.state.availableFor(language),
@@ -73,21 +87,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
     return Scaffold(
       key: GameSetupKeys.screen,
       appBar: LucenaAppBar(
-        title: state.fromLink
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l10n.setupTitle),
-                  Text(
-                    l10n.challengeLinkSetup,
-                    key: ChallengeKeys.linkSetupSubtitle,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              )
-            : Text(l10n.setupTitle),
+        title: Text(l10n.setupTitle),
         actions: [
           // Só contra a máquina: o desafio é uma partida contra ela.
           if (state.ready && state.setup.opponent != OpponentKind.twoPlayers)
@@ -130,15 +130,16 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                   footer: ActionsFooter(
                     margin: AppSpacing.xl,
                     children: [
-                      FilledButton(
-                        key: GameSetupKeys.startButton,
-                        onPressed:
-                            state.canStart &&
-                                (!state.blindGame || voiceAvailable)
-                            ? () => _start(context, state)
-                            : null,
-                        child: Text(l10n.clockStartGame),
-                      ),
+                      if (state.ready)
+                        FilledButton(
+                          key: GameSetupKeys.startButton,
+                          onPressed:
+                              state.canStart &&
+                                  (!state.blindGame || voiceAvailable)
+                              ? () => _start(context, state)
+                              : null,
+                          child: Text(l10n.clockStartGame),
+                        ),
                     ],
                   ),
                   child: ListView(
@@ -151,23 +152,36 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                       AppSpacing.lg,
                     ),
                     children: [
-                      if (state.ready) ...[
-                        SectionTitle(context.l10n.setupYourSide),
-                        _SidePicker(state: state),
-                        SectionTitle(context.l10n.setupOpponent),
-                        _OpponentPicker(state: state),
-                        // Às cegas: só contra a máquina e com voz no idioma.
-                        if (machine) _ModePicker(state: state),
-                        if (state.blindGame && !voiceAvailable)
-                          EmptyState(
-                            message: l10n.blindVoiceRequired,
-                            actionLabel: l10n.voiceOpenSystem,
-                            onAction: () => context.push(Routes.settingsVoice),
-                          ),
-                        const SizedBox(height: AppSpacing.xl),
-                        _ClockSection(state: state),
-                        if (state.attempts.isNotEmpty) _History(state: state),
-                      ],
+                      // Lendo a configuração: esqueleto, sem o botão de
+                      // começar (H-PAR-02); depois ele se dissolve (H-ANI-07).
+                      ShimmerConteudo(
+                        carregando: !state.ready,
+                        esqueleto: const SkeletonList(rows: 5),
+                        child: !state.ready
+                            ? const SizedBox.shrink()
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  SectionTitle(context.l10n.setupYourSide),
+                                  _SidePicker(state: state),
+                                  SectionTitle(context.l10n.setupOpponent),
+                                  _OpponentPicker(state: state),
+                                  // Às cegas: só contra a máquina e com voz no idioma.
+                                  if (machine) _ModePicker(state: state),
+                                  if (state.blindGame && !voiceAvailable)
+                                    EmptyState(
+                                      message: l10n.blindVoiceRequired,
+                                      actionLabel: l10n.voiceOpenSystem,
+                                      onAction: () =>
+                                          context.push(Routes.settingsVoice),
+                                    ),
+                                  const SizedBox(height: AppSpacing.xl),
+                                  _ClockSection(state: state),
+                                  if (state.attempts.isNotEmpty)
+                                    _History(state: state),
+                                ],
+                              ),
+                      ),
                     ],
                   ),
                 ),
@@ -250,7 +264,6 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final positionId = state.positionId;
     return CenteredBoardLayout(
       gutter: AppSpacing.lg,
       gap: AppSpacing.md,
@@ -259,16 +272,20 @@ class _Header extends StatelessWidget {
       // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula) e,
       // ao começar, segue voando até o centro da partida.
       board: LayoutBuilder(
-        builder: (context, box) => PositionBoard(
-          boardKey: GameSetupKeys.preview,
-          fen: state.position.fen,
-          size: box.maxWidth,
-          orientation: state.userSide,
-          coordinates: true,
-          heroTag: launching
-              ? gameBoardTag(state.userSide)
-              : setupBoardTag(positionId: positionId, fen: state.position.fen),
-        ),
+        builder: (context, box) {
+          final board = PositionBoard(
+            boardKey: GameSetupKeys.preview,
+            fen: state.position.fen,
+            size: box.maxWidth,
+            orientation: state.userSide,
+            coordinates: true,
+            heroTag: launching ? gameBoardTag(state.userSide) : null,
+          );
+          // H-ANI-02: chega do cartão do catálogo com o id = FEN.
+          return launching
+              ? board
+              : TabuleiroHero(id: state.position.fen, child: board);
+        },
       ),
       bottom: Wrap(
         spacing: AppSpacing.sm,

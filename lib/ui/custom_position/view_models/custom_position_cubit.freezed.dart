@@ -20,7 +20,7 @@ mixin _$CustomPositionState {
 /// enquanto o texto está incompleto.
  String get board; Side get turn; PositionGoal get goal;/// A posição pronta para jogar, quando não há problema.
  Position? get position; PositionProblem? get problem;/// Falso até o rascunho ser lido.
- bool get ready;
+ bool get ready; bool get failed;
 /// Create a copy of CustomPositionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -32,20 +32,20 @@ $CustomPositionStateCopyWith<CustomPositionState> get copyWith => _$CustomPositi
 @override
 bool operator ==(Object other) {
   final _this = this as CustomPositionState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomPositionState&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.board, _this.board) || other.board == _this.board)&&(identical(other.turn, _this.turn) || other.turn == _this.turn)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.problem, _this.problem) || other.problem == _this.problem)&&(identical(other.ready, _this.ready) || other.ready == _this.ready));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomPositionState&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.board, _this.board) || other.board == _this.board)&&(identical(other.turn, _this.turn) || other.turn == _this.turn)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.problem, _this.problem) || other.problem == _this.problem)&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&(identical(other.failed, _this.failed) || other.failed == _this.failed));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CustomPositionState;
-  return Object.hash(runtimeType,_this.fen,_this.board,_this.turn,_this.goal,_this.position,_this.problem,_this.ready);
+  return Object.hash(runtimeType,_this.fen,_this.board,_this.turn,_this.goal,_this.position,_this.problem,_this.ready,_this.failed);
 }
 
 @override
 String toString() {
   final _this = this as CustomPositionState;
-  return 'CustomPositionState(fen: ${_this.fen}, board: ${_this.board}, turn: ${_this.turn}, goal: ${_this.goal}, position: ${_this.position}, problem: ${_this.problem}, ready: ${_this.ready})';
+  return 'CustomPositionState(fen: ${_this.fen}, board: ${_this.board}, turn: ${_this.turn}, goal: ${_this.goal}, position: ${_this.position}, problem: ${_this.problem}, ready: ${_this.ready}, failed: ${_this.failed})';
 }
 
 
@@ -56,7 +56,7 @@ abstract mixin class $CustomPositionStateCopyWith<$Res>  {
   factory $CustomPositionStateCopyWith(CustomPositionState value, $Res Function(CustomPositionState) _then) = _$CustomPositionStateCopyWithImpl;
 @useResult
 $Res call({
- String fen, String board, Side turn, PositionGoal goal, Position? position, PositionProblem? problem, bool ready
+ String fen, String board, Side turn, PositionGoal goal, Position? position, PositionProblem? problem, bool ready, bool failed
 });
 
 
@@ -73,7 +73,7 @@ class _$CustomPositionStateCopyWithImpl<$Res>
 
 /// Create a copy of CustomPositionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fen = null,Object? board = null,Object? turn = null,Object? goal = null,Object? position = freezed,Object? problem = freezed,Object? ready = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fen = null,Object? board = null,Object? turn = null,Object? goal = null,Object? position = freezed,Object? problem = freezed,Object? ready = null,Object? failed = null,}) {
   return _then(CustomPositionState(
 fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nullable
 as String,board: null == board ? _self.board : board // ignore: cast_nullable_to_non_nullable
@@ -82,6 +82,7 @@ as Side,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_n
 as PositionGoal,position: freezed == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as Position?,problem: freezed == problem ? _self.problem : problem // ignore: cast_nullable_to_non_nullable
 as PositionProblem?,ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable
+as bool,failed: null == failed ? _self.failed : failed // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -167,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fen,  String board,  Side turn,  PositionGoal goal,  Position? position,  PositionProblem? problem,  bool ready)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fen,  String board,  Side turn,  PositionGoal goal,  Position? position,  PositionProblem? problem,  bool ready,  bool failed)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CustomPositionState() when $default != null:
-return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that.problem,_that.ready);case _:
+return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that.problem,_that.ready,_that.failed);case _:
   return orElse();
 
 }
@@ -188,10 +189,10 @@ return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fen,  String board,  Side turn,  PositionGoal goal,  Position? position,  PositionProblem? problem,  bool ready)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fen,  String board,  Side turn,  PositionGoal goal,  Position? position,  PositionProblem? problem,  bool ready,  bool failed)  $default,) {final _that = this;
 switch (_that) {
 case _CustomPositionState():
-return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that.problem,_that.ready);case _:
+return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that.problem,_that.ready,_that.failed);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +209,10 @@ return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fen,  String board,  Side turn,  PositionGoal goal,  Position? position,  PositionProblem? problem,  bool ready)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fen,  String board,  Side turn,  PositionGoal goal,  Position? position,  PositionProblem? problem,  bool ready,  bool failed)?  $default,) {final _that = this;
 switch (_that) {
 case _CustomPositionState() when $default != null:
-return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that.problem,_that.ready);case _:
+return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that.problem,_that.ready,_that.failed);case _:
   return null;
 
 }
@@ -223,7 +224,7 @@ return $default(_that.fen,_that.board,_that.turn,_that.goal,_that.position,_that
 
 
 class _CustomPositionState implements CustomPositionState {
-  const _CustomPositionState({this.fen = CustomPositionCubit.startFen, this.board = CustomPositionCubit.startBoard, this.turn = Side.white, this.goal = PositionGoal.win, this.position, this.problem, this.ready = false});
+  const _CustomPositionState({this.fen = CustomPositionCubit.startFen, this.board = CustomPositionCubit.startBoard, this.turn = Side.white, this.goal = PositionGoal.win, this.position, this.problem, this.ready = false, this.failed = false});
   
 
 /// O FEN como está no campo de texto.
@@ -238,6 +239,7 @@ class _CustomPositionState implements CustomPositionState {
 @override final  PositionProblem? problem;
 /// Falso até o rascunho ser lido.
 @override@JsonKey() final  bool ready;
+@override@JsonKey() final  bool failed;
 
 /// Create a copy of CustomPositionState
 /// with the given fields replaced by the non-null parameter values.
@@ -249,18 +251,18 @@ _$CustomPositionStateCopyWith<_CustomPositionState> get copyWith => __$CustomPos
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomPositionState&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.board, board) || other.board == board)&&(identical(other.turn, turn) || other.turn == turn)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.position, position) || other.position == position)&&(identical(other.problem, problem) || other.problem == problem)&&(identical(other.ready, ready) || other.ready == ready));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomPositionState&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.board, board) || other.board == board)&&(identical(other.turn, turn) || other.turn == turn)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.position, position) || other.position == position)&&(identical(other.problem, problem) || other.problem == problem)&&(identical(other.ready, ready) || other.ready == ready)&&(identical(other.failed, failed) || other.failed == failed));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,fen,board,turn,goal,position,problem,ready);
+    return Object.hash(runtimeType,fen,board,turn,goal,position,problem,ready,failed);
 }
 
 @override
 String toString() {
-    return 'CustomPositionState(fen: $fen, board: $board, turn: $turn, goal: $goal, position: $position, problem: $problem, ready: $ready)';
+    return 'CustomPositionState(fen: $fen, board: $board, turn: $turn, goal: $goal, position: $position, problem: $problem, ready: $ready, failed: $failed)';
 }
 
 
@@ -271,7 +273,7 @@ abstract mixin class _$CustomPositionStateCopyWith<$Res> implements $CustomPosit
   factory _$CustomPositionStateCopyWith(_CustomPositionState value, $Res Function(_CustomPositionState) _then) = __$CustomPositionStateCopyWithImpl;
 @override @useResult
 $Res call({
- String fen, String board, Side turn, PositionGoal goal, Position? position, PositionProblem? problem, bool ready
+ String fen, String board, Side turn, PositionGoal goal, Position? position, PositionProblem? problem, bool ready, bool failed
 });
 
 
@@ -288,7 +290,7 @@ class __$CustomPositionStateCopyWithImpl<$Res>
 
 /// Create a copy of CustomPositionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fen = null,Object? board = null,Object? turn = null,Object? goal = null,Object? position = freezed,Object? problem = freezed,Object? ready = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fen = null,Object? board = null,Object? turn = null,Object? goal = null,Object? position = freezed,Object? problem = freezed,Object? ready = null,Object? failed = null,}) {
   return _then(_CustomPositionState(
 fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nullable
 as String,board: null == board ? _self.board : board // ignore: cast_nullable_to_non_nullable
@@ -297,6 +299,7 @@ as Side,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_n
 as PositionGoal,position: freezed == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as Position?,problem: freezed == problem ? _self.problem : problem // ignore: cast_nullable_to_non_nullable
 as PositionProblem?,ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable
+as bool,failed: null == failed ? _self.failed : failed // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

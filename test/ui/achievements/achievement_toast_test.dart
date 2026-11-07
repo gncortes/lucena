@@ -197,6 +197,92 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('título longo numa faixa estreita: elipse, sem estourar', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: 150,
+              height: 64,
+              child: AchievementToasts(
+                achievements: const [beat],
+                characters: const [
+                  Character(
+                    id: 'magician',
+                    level: 1600,
+                    name: 'Valdini o Grande Ilusionista Misterioso',
+                    tagline: {},
+                    personality: {},
+                    traits: [],
+                    avatar: 'assets/characters/magician/avatar.png',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getRect(find.byKey(AchievementsKeys.toast)).width,
+      lessThanOrEqualTo(150),
+    );
+    expect(
+      tester.widget<Text>(find.byKey(AchievementsKeys.toastTitle)).overflow,
+      TextOverflow.ellipsis,
+    );
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('a entrada tem mola leve: passa uns 5 px e assenta em 480 ms', (
+    tester,
+  ) async {
+    await pumpToasts(tester, [first]);
+    await tester.pump();
+    final ys = <double>[];
+    for (var ms = 0; ms <= 480; ms += 8) {
+      ys.add(tester.getTopLeft(find.byKey(AchievementsKeys.toast)).dy);
+      await tester.pump(const Duration(milliseconds: 8));
+    }
+    await tester.pump(const Duration(milliseconds: 600));
+    final lugar = tester.getTopLeft(find.byKey(AchievementsKeys.toast)).dy;
+    final maisBaixo = ys.reduce((a, b) => a > b ? a : b);
+    final maisAlto = ys.reduce((a, b) => a < b ? a : b);
+    expect(lugar - maisAlto, closeTo(64, 2));
+    expect(maisBaixo - lugar, inInclusiveRange(3, 7));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('vários avisos: o anterior sai para cima e o próximo entra '
+      '120 ms depois, sem corte seco', (tester) async {
+    await pumpToasts(tester, [first, beat]);
+    await tester.pump();
+    final duracao = AchievementToasts.durationFor(2);
+    // Logo antes de o primeiro sair: só ele.
+    await tester.pump(duracao - const Duration(milliseconds: 400));
+    expect(find.byKey(AchievementsKeys.toast), findsOneWidget);
+    expect(title(tester), 'First endgame');
+    // Saindo: sobe e some; o segundo ainda não entrou.
+    await tester.pump(const Duration(milliseconds: 100));
+    final saindo = tester.getTopLeft(find.byKey(AchievementsKeys.toast)).dy;
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(
+      tester.getTopLeft(find.byKey(AchievementsKeys.toast)).dy,
+      lessThan(saindo),
+    );
+    // 120 ms depois do início da saída, o segundo já existe (acima, caindo).
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(AchievementsKeys.toast), findsNWidgets(2));
+    await tester.pumpAndSettle();
+    expect(find.byKey(AchievementsKeys.toast), findsNothing);
+  });
+
   testWidgets('sem os personagens, o nome do motor; com eles, o do '
       'personagem', (tester) async {
     late AppLocalizations l10n;

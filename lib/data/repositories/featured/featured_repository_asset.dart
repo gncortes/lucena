@@ -19,12 +19,15 @@ class AssetFeaturedRepository implements FeaturedRepository {
   @override
   Future<FeaturedCatalog> catalog() => _catalog ??= _load();
 
+  /// Arquivo ausente ou ilegível é erro (H-DES-07): a tela mostra o erro
+  /// padrão e quem tenta de novo lê o arquivo outra vez.
   Future<FeaturedCatalog> _load() async {
     try {
       final text = await _assets.loadString(path);
       return await compute(_parse, text);
     } catch (_) {
-      return FeaturedCatalog.empty;
+      _catalog = null;
+      rethrow;
     }
   }
 

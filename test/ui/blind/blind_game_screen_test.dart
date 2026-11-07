@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/theme/app_bar_height.dart';
+import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +15,6 @@ import 'package:dartchess/dartchess.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/blind/widgets/blind_game_screen.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
-import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/core/theme/app_icon_size.dart';
@@ -24,7 +26,10 @@ import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speech_input_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
+import '../../../testing/aparelho_principal.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
+import '../../../testing/motion_expectations.dart';
 
 void main() {
   late FakeSpeechInputRepository input;
@@ -41,6 +46,9 @@ void main() {
     double textScale = 1,
     String fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1',
     ClockConfig? clock,
+    FakeOpponentRepository? opponent,
+    bool startGame = true,
+    bool assentar = true,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
@@ -55,12 +63,13 @@ void main() {
     cubit = BlindGameCubit(
       restartDelay: Duration.zero,
       releaseWait: Duration.zero,
-      opponent: FakeOpponentRepository(),
+      opponent: opponent ?? FakeOpponentRepository(),
       voice: FakeVoiceRepository()..autoFinish = true,
       input: input,
       log: FakeBlindLogRepository(),
       now: FakeNow(DateTime.utc(2026, 10, 7)),
       thinkTime: Duration.zero,
+      retryInterval: Duration.zero,
     );
     addTearDown(cubit.close);
     final settings = SettingsCubit(
@@ -79,8 +88,10 @@ void main() {
       phrases: blindPhrases(l10n),
       clock: clock,
     );
-    await cubit.start();
-    await cubit.release();
+    if (startGame) {
+      await cubit.start();
+      await cubit.release();
+    }
     // No fim, a conclusão abre no lugar da partida.
     final router = GoRouter(
       routes: [
@@ -118,8 +129,208 @@ void main() {
         child: const SizedBox.shrink(),
       ),
     );
-    await tester.pumpAndSettle();
+    if (assentar) await tester.pumpAndSettle();
   }
+
+  group('H-PAR-08 introdução', () {
+    testWidgets('o painel entra em cascata e o Começar vem por último', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        startGame: false,
+        locale: const Locale('pt'),
+        assentar: false,
+      );
+      final ouvir = find.byKey(BlindKeys.introListen);
+      var voltas = 0;
+      while ((ouvir.evaluate().isEmpty ||
+              opacidadeAcima(tester, ouvir) < 0.3) &&
+          voltas++ < 200) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      expect(opacidadeAcima(tester, ouvir), greaterThanOrEqualTo(0.3));
+      expect(
+        opacidadeAcima(tester, find.byKey(BlindKeys.start)),
+        lessThan(opacidadeAcima(tester, ouvir)),
+      );
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(opacidadeAcima(tester, ouvir), 1);
+      expect(opacidadeAcima(tester, find.byKey(BlindKeys.start)), 1);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('textos, segmentado só com ícone e Começar abre a partida', (
+      tester,
+    ) async {
+      await pump(tester, startGame: false, locale: const Locale('pt'));
+
+      expect(find.text('Às cegas'), findsOneWidget);
+      expect(
+        find.text(
+          'Antes de começar, ouça onde estão as peças ou dê uma olhada no '
+          'tabuleiro.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Ouvir a posição'), findsOneWidget);
+      // Abre sem as peças: o botão oferece "Ver o tabuleiro"; depois de tocar
+      // a vista é "Tabuleiro" e o botão volta para "Só as casas" (os dois
+      // quadros de TelaCegasIntro).
+      expect(find.text('Ver o tabuleiro'), findsOneWidget);
+      expect(find.text('Só as casas'), findsNothing);
+      // O segmentado é só ícone: nenhum dos três rótulos aparece como texto.
+      expect(find.text('Tabuleiro'), findsNothing);
+      expect(find.text('Sem tabuleiro'), findsNothing);
+      for (final view in BlindView.values) {
+        expect(find.byKey(BlindKeys.view(view)), findsOneWidget);
+      }
+
+      await tester.tap(find.byKey(BlindKeys.introBoard));
+      await tester.pumpAndSettle();
+      expect(cubit.state.view, BlindView.board);
+      expect(find.text('Só as casas'), findsOneWidget);
+      expect(find.text('Ver o tabuleiro'), findsNothing);
+
+      await tester.tap(find.byKey(BlindKeys.start));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.introListen), findsNothing);
+      expect(find.text('Começar'), findsNothing);
+    });
+  });
+
+  group('H-PAR-10 em jogo', () {
+    testWidgets('"Ouvir de novo" depois do lance do adversário', (
+      tester,
+    ) async {
+      await pump(tester, locale: const Locale('pt'));
+      await tester.runAsync(() => cubit.playTyped('Ta7'));
+      await tester.pumpAndSettle();
+      expect(find.text('Ouvir de novo'), findsOneWidget);
+    });
+
+    testWidgets('folha de desistir: Desistir destrutivo com flag; X só fecha', (
+      tester,
+    ) async {
+      await pump(tester, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.resign));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Desistir da partida?'), findsOneWidget);
+      expect(
+        find.text('A partida termina agora e conta como derrota.'),
+        findsOneWidget,
+      );
+      final confirm = find.byKey(BlindKeys.resignConfirm);
+      expect(
+        find.descendant(of: confirm, matching: find.byIcon(Icons.flag)),
+        findsOneWidget,
+      );
+      final style = tester.widget<FilledButton>(confirm).style!;
+      expect(
+        style.backgroundColor!.resolve({}),
+        Theme.of(tester.element(confirm)).colorScheme.error,
+      );
+      // PropV1ParCegasDesistir não tem botão secundário: fecha-se pelo X.
+      expect(find.text('Cancelar'), findsNothing);
+      await tester.tap(find.byKey(SheetKeys.close));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.resignConfirm), findsNothing);
+      expect(cubit.state.phase, isNot(BlindPhase.finished));
+    });
+
+    testWidgets('folha "Qual peça?": linhas de 56 de altura', (tester) async {
+      await pump(
+        tester,
+        locale: const Locale('pt'),
+        fen: '4k3/8/8/8/8/5N2/8/1N2K3 w - - 0 1',
+      );
+      await tester.runAsync(() => cubit.playTyped('Nd2'));
+      await tester.pumpAndSettle();
+      expect(find.text('Qual peça?'), findsWidgets);
+      final rows = [
+        for (final san in ['Nbd2', 'Nfd2'])
+          tester.getSize(find.byKey(BlindKeys.option(san))).height,
+      ];
+      expect(rows, [56, 56]);
+    });
+  });
+
+  group('H-PAR-09 aviso do microfone', () {
+    testWidgets('texto exato do quadro, antes do pedido do sistema', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Usar o microfone?'), findsOneWidget);
+      expect(
+        find.text(
+          'O microfone é usado só para você falar suas jogadas, quando toca '
+          'para falar. O reconhecimento é feito pelo serviço de fala do seu '
+          'celular (Google). O Lucena não grava nem guarda sua voz.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.mic_none), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(BlindKeys.micAllow),
+          matching: find.byIcon(Icons.mic),
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('aviso do microfone aberto', () {
+    testWidgets('outra mudança de estado não empilha outro aviso', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, locale: const Locale('pt'));
+      await tester.tap(find.byKey(BlindKeys.mic));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.micAllow), findsOneWidget);
+
+      cubit.setView(BlindView.empty);
+      await tester.pumpAndSettle();
+      cubit.setView(BlindView.board);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(BlindKeys.micAllow), findsOneWidget);
+    });
+  });
+
+  group('H-PAR-18 adversário que falha', () {
+    Future<void> failThreeTimes(WidgetTester tester) async {
+      final opponent = FakeOpponentRepository()..failTimes = 3;
+      await pump(tester, opponent: opponent, locale: const Locale('pt'));
+      await tester.runAsync(() => cubit.playTyped('Ta7'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('na 3ª falha abre a folha, sem ✕', (tester) async {
+      await failThreeTimes(tester);
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsOneWidget);
+      expect(find.byKey(SheetKeys.close), findsNothing);
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+    });
+
+    testWidgets('Tentar novamente fecha a folha e o adversário joga', (
+      tester,
+    ) async {
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.retry));
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsNothing);
+      expect(cubit.state.sans, hasLength(2));
+    });
+  });
 
   for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
     testWidgets('seletor do canvas 111×36 tem três alvos em $direction', (
@@ -413,6 +624,15 @@ void main() {
     expect(find.byKey(BlindKeys.board), findsOneWidget);
   });
 
+  testWidgets('H-ANI-10: o tabuleiro do às cegas é o TabuleiroAnimado', (
+    tester,
+  ) async {
+    await pump(tester);
+    cubit.setView(BlindView.board);
+    await tester.pumpAndSettle();
+    expectTabuleiroAnimado(tester, BlindKeys.board);
+  });
+
   testWidgets('X externo permanece à direita em RTL', (tester) async {
     await pump(tester, direction: TextDirection.rtl);
     await tester.tap(find.byKey(BlindKeys.resign));
@@ -563,8 +783,8 @@ void main() {
       expect(before.width, greaterThan(size.width - 32));
       expect(before.width, lessThanOrEqualTo(size.width));
       if (size.height >= 800) expect(before.width, closeTo(size.width, 1));
-      // A barra de topo é a padrão de 56 (E1.08, D21).
-      expect(tester.getSize(find.byType(AppBar)).height, kToolbarHeight);
+      // A barra de topo é a padrão de 64 (canvas 23fd0701).
+      expect(tester.getSize(find.byType(AppBar)).height, AppBarHeight.standard);
       await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
       await tester.pumpAndSettle();
       expect(tester.getRect(find.byKey(BlindKeys.board)), before);
@@ -651,6 +871,50 @@ void main() {
     );
     expect(find.byKey(BlindKeys.board), findsOneWidget);
   });
+
+  for (final size in [const Size(360, 640), aparelhoPrincipal]) {
+    testWidgets('$size: o aviso de sem microfone fica no alto sem cobrir as '
+        'vistas e some em 3 s (canvas CompSnackbar, "Às cegas")', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, size: size, systemBars: true);
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(BlindKeys.mic)),
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      await gesture.up();
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(BlindKeys.micDeny));
+      await tester.pumpAndSettle();
+
+      // A superfície do aviso (o SnackBar ocupa a margem até o pé).
+      final toast = tester.getRect(
+        find
+            .descendant(
+              of: find.byKey(BlindKeys.toast),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+      // No alto: acima do tabuleiro, longe da barra da fala.
+      expect(toast.bottom, lessThan(size.height / 2));
+      for (final view in BlindView.values) {
+        final segment = tester.getRect(find.byKey(BlindKeys.view(view)));
+        expect(
+          toast.overlaps(segment),
+          isFalse,
+          reason: 'o aviso $toast cobre a vista ${view.name} $segment',
+        );
+      }
+      // Logo abaixo das vistas, sem vão grande.
+      final views = tester.getRect(find.byKey(BlindKeys.view(BlindView.board)));
+      expect(toast.top - views.bottom, inInclusiveRange(4, 20));
+
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.toast), findsNothing);
+    });
+  }
 
   testWidgets('um toque rápido abre a gravação sem segurar: descartar e '
       'enviar nos botões, e o lance aparece escrito para confirmar', (

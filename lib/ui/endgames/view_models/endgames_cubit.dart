@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -28,6 +31,7 @@ export '../../../domain/models/endgame_filter.dart';
 class EndgamesState {
   const EndgamesState({
     this.ready = false,
+    this.failure,
     this.trail = EndgameTrail.empty,
     this.texts = LessonTexts.empty,
     this.progress = const EndgameProgress(),
@@ -112,6 +116,7 @@ class EndgamesState {
     EndgameFilter? filter,
   }) => EndgamesState(
     ready: ready,
+    failure: failure,
     trail: trail,
     texts: texts,
     progress: progress,
@@ -148,6 +153,7 @@ class EndgamesState {
   EndgameBadge? badge(String lessonId) => roadmap?.endgameBadges[lessonId];
 
   final bool ready;
+  final LoadFailure? failure;
   final EndgameTrail trail;
   final LessonTexts texts;
   final EndgameProgress progress;
@@ -304,13 +310,18 @@ class EndgamesCubit extends Cubit<EndgamesState> {
   Future<void> load(String language, {bool? showAll}) async {
     try {
       await _load(language, showAll: showAll);
-    } on LessonContentUnavailable {
-      unawaited(
-        _analytics.log(
-          AnalyticsEvents.aulaIndisponivel(origem: 'trilha_finais'),
-        ),
-      );
-      if (!isClosed) emit(const EndgamesState(ready: true));
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (error is LessonContentUnavailable) {
+        unawaited(
+          _analytics.log(
+            AnalyticsEvents.aulaIndisponivel(origem: 'trilha_finais'),
+          ),
+        );
+      }
+      if (!isClosed) {
+        emit(EndgamesState(ready: true, failure: LoadFailure.of(error)));
+      }
     }
   }
 

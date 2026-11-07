@@ -7,8 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   // Exceções por regra: as duas paletas são dados de paleta, não cores de
   // tela. Os dois arquivos de lesson_script ficam até a frente do roteiro
-  // migrar para AppColors.
+  // migrar para AppColors. O G do Google usa as quatro cores oficiais da marca
+  // (regra do botão "Fazer login com o Google"), que não mudam com o tema.
   const allowed = <String>{
+    'lib/ui/account/widgets/google_logo.dart',
     'lib/ui/core/board/board_settings_ui.dart',
     'lib/ui/core/review/move_quality_ui.dart',
     'lib/ui/lesson_script/widgets/script_board.dart',

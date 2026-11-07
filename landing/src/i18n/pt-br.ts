@@ -324,7 +324,7 @@ const pt: Dictionary = {
       {
         title: 'O que fica no seu aparelho',
         body: [
-          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam guardados só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
+          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam salvos só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
           'Para apagar tudo, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
         ],
       },
@@ -338,7 +338,7 @@ const pt: Dictionary = {
       {
         title: 'Microfone',
         body: [
-          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem guarda o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
+          'No modo às cegas, você pode falar os lances. Só aí o app pede acesso ao microfone. O Lucena não grava nem salva o áudio. O reconhecimento é feito pelo serviço de voz do Android: sempre que possível, só no aparelho; se o pacote de voz offline do idioma não estiver instalado, o Android pode usar o serviço on-line do Google. Sem a permissão, você joga com o teclado ou com toques.',
         ],
       },
       {
@@ -363,6 +363,60 @@ const pt: Dictionary = {
         title: 'Contato',
         body: [
           'Dúvidas sobre privacidade? Escreva para <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
+  },
+  deletion: {
+    slug: 'excluir-conta',
+    title: 'Excluir a conta do Lucena',
+    description: 'Como excluir a conta do Lucena e apagar os dados dela, com ou sem o app instalado.',
+    updated: 'Versão de 4 de novembro de 2026',
+    back: 'Voltar para o início',
+    sections: [
+      {
+        title: '',
+        body: [
+          'O Lucena, app de treino de finais de xadrez de [NOME FANTASIA], permite excluir a conta e apagar os dados dela, com ou sem o app instalado.',
+        ],
+      },
+      {
+        title: 'Pelo app',
+        body: [
+          'No Lucena, abra <strong>Perfil</strong> e toque em <strong>Excluir a conta</strong>. Para confirmar, entre de novo na conta.',
+        ],
+      },
+      {
+        title: 'Sem o app',
+        body: [
+          '1. Escreva do <strong><span style="white-space:nowrap">e-mail</span> da conta</strong> para <a href="mailto:gncortes.apps@gmail.com?subject=Excluir%20minha%20conta%20do%20Lucena&amp;body=Quero%20excluir%20a%20conta%20do%20Lucena%20ligada%20a%20este%20e-mail.">gncortes.apps@gmail.com</a>. O assunto já vem pronto: "Excluir minha conta do Lucena".',
+          '2. Em até 15 dias, respondemos por <span style="white-space:nowrap">e-mail</span> para confirmar que o pedido é seu. Responda confirmando.',
+          '3. Quando a exclusão terminar, avisamos por <span style="white-space:nowrap">e-mail</span>. O atendimento é gratuito.',
+        ],
+      },
+      {
+        title: 'Antes de excluir, cancele a assinatura',
+        body: [
+          'Se você tem a assinatura mensal do Pilares, cancele-a antes na Google Play, em Pagamentos e assinaturas, para a cobrança parar. Excluir a conta não cancela a assinatura.',
+        ],
+      },
+      {
+        title: 'O que é apagado',
+        body: [
+          'Apagamos, em até 15 dias a contar do pedido, os dados da conta: nome, <span style="white-space:nowrap">e-mail</span> e foto; o perfil, a região, o usuário do Lichess e as preferências; o progresso nas lições, as partidas, o rating e as conquistas; e o código de notificação do aparelho.',
+        ],
+      },
+      {
+        title: 'O que não é apagado',
+        body: [
+          'Ficam só os dados que a lei manda manter, pelo prazo legal: o registro das compras e os registros técnicos de acesso a serviços (Marco Civil da Internet). Os dados de uso e de falhas, que não trazem seu nome nem seu <span style="white-space:nowrap">e-mail</span>, ficam pelo menor prazo que a ferramenta permite.',
+          'Os dados que estão só no celular saem quando você desinstala o app ou limpa os dados dele nas configurações do Android.',
+        ],
+      },
+      {
+        title: 'Quem decide sobre seus dados',
+        body: [
+          '[RAZÃO SOCIAL], nome fantasia [NOME FANTASIA], CNPJ [CNPJ], [ENDEREÇO DA EMPRESA]. O encarregado de dados atende pelo <span style="white-space:nowrap">e-mail</span> <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
         ],
       },
     ],

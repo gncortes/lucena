@@ -1,5 +1,6 @@
 import '../domain/models/app_links.dart';
 import '../domain/models/reminder.dart';
+import '../domain/models/training/training_course.dart';
 import 'routes.dart';
 
 /// Para onde leva o toque num aviso que não é desafio: o `link` dos dados,
@@ -10,15 +11,17 @@ import 'routes.dart';
 ///   parou"); terminada desde então, nada.
 /// - `/lesson/{id}`: a aula nova.
 /// - `/featured/{id}` e `/featured/tournament/{id}`: o final e o torneio.
+/// - `/curso/{curso}` e `/curso/{curso}/{capítulo}` (H-R5-63): o guia do
+///   curso e o capítulo.
 ///
 /// Outro endereço (de outro site, aula já terminada ou tela que esta versão
-/// do app não tem): o início ([Routes.home]).
-Future<String> pushRoute(
+/// do app não tem): `null`, sem destino; o usuário fica onde está.
+Future<String?> pushRoute(
   Uri uri, {
   required Future<PausedLesson?> Function() pausedLesson,
 }) async {
   if ((uri.hasScheme || uri.hasAuthority) && !AppLinks.isOwn(uri)) {
-    return Routes.home;
+    return null;
   }
   return switch (uri.pathSegments) {
     ['daily'] || ['dia'] => Routes.dailyFrom('aviso'),
@@ -29,11 +32,20 @@ Future<String> pushRoute(
         stage: paused.stage,
         origin: 'aviso',
       ),
-      null => Routes.home,
+      null => null,
     },
     ['lesson', final id] => Routes.endgameLesson(id, origin: 'aviso'),
     ['featured', 'tournament', final id] => Routes.featuredTournament(id),
     ['featured', final id] => Routes.featuredEndgame(id),
-    _ => Routes.home,
+    // O curso e o capítulo (H-R5-63): `/curso/pilares`, `/curso/pilares/3`.
+    ['course' || 'curso', final course] when _known(course) => Routes.training(
+      course,
+    ),
+    ['course' || 'curso', final course, final chapter] when _known(course) =>
+      Routes.trainingChapter(course, chapter),
+    _ => null,
   };
 }
+
+bool _known(String course) =>
+    TrainingCourse.values.any((known) => known.name == course);

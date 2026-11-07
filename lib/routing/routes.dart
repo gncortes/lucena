@@ -6,9 +6,30 @@ import '../domain/models/daily_final.dart';
 import '../domain/models/game_setup.dart';
 import '../domain/models/journey.dart';
 import '../domain/models/linked_lesson.dart';
+import '../domain/models/offer_discount.dart';
 import '../domain/models/survey.dart';
+import '../domain/models/load_failure.dart';
+import 'frentes/d2_routes.dart' show D2Paths;
 
 abstract final class Routes {
+  static const loadError = '/load-error';
+  static String loadFailed(Uri returnTo, LoadFailure failure) => Uri(
+    path: loadError,
+    queryParameters: {'return': returnTo.toString(), 'kind': failure.name},
+  ).toString();
+  static const learningAnalysis = '/learning-analysis';
+  static String learningAnalysisAt(
+    String fen, {
+    List<String> moves = const [],
+    String orientation = 'white',
+  }) => Uri(
+    path: learningAnalysis,
+    queryParameters: {
+      'fen': fen,
+      'moves': moves.join(','),
+      'view': orientation,
+    },
+  ).toString();
   static const boardControls = '/board-controls';
   static const home = '/';
   static const invalidLink = '/invalid-link';
@@ -30,6 +51,9 @@ abstract final class Routes {
         query: uri.hasQuery ? uri.query : null,
       ).toString();
     }
+    // O link com desconto (regra 6) abre a Oferta com o código.
+    final code = OfferCodes.fromLink(uri);
+    if (code != null) return D2Paths.offer(origin: 'link', code: code);
     try {
       if (RegExp(r'^/p/[^/]+/?$').hasMatch(uri.path) &&
           ChallengeLink.tryParse(uri) != null) {
@@ -251,14 +275,6 @@ abstract final class Routes {
   /// O final do dia aberto de [entry] (`aviso|lembrete|link`; sem ele, da
   /// home): vai para o `final_dia_aberto` do Analytics.
   static String dailyFrom(String entry) => '$daily?entrada=$entry';
-  static const dailyResult = '/daily/result';
-  static const dailyShare = '/daily/share';
-
-  /// O resultado do final do dia [date] (`aaaa-mm-dd`).
-  static String dailyResultOf(String date) =>
-      Uri(path: dailyResult, queryParameters: {'date': date}).toString();
-  static String dailyShareOf(String date) =>
-      Uri(path: dailyShare, queryParameters: {'date': date}).toString();
 
   /// A partida do final do dia: sem relógio, contra o Maia no nível
   /// [level], com o lado e o objetivo do próprio final.
@@ -296,7 +312,6 @@ abstract final class Routes {
     path: nextSteps,
     queryParameters: {'level': ?level?.toString()},
   ).toString();
-  static const nextStepsSchool = '/next/school';
 
   /// A Corrida só de um tipo de final ([subcategory]) ou só de uma família
   /// ([category]).
@@ -419,29 +434,28 @@ abstract final class Routes {
   /// O resultado dos exercícios da aula, depois do último.
   static String endgameExercisesDone(String id) => '/endgames/$id/done';
 
-  /// O questionário "Sua opinião" de [kind] (`endgames` ou `school`).
-  /// [fromLesson]: aberto pela aula concluída; o agradecimento então volta
-  /// às aulas, não à tela anterior.
-  static String survey(SurveyKind kind, {bool fromLesson = false}) => Uri(
+  /// O questionário "Sua opinião" de [kind] (`pilares` ou `school`).
+  /// [origin] (`licao_pilares`, `licao_escola`, `diploma_pilares`,
+  /// `diploma_escola`) só vai para o registro.
+  static String survey(SurveyKind kind, {String? origin}) => Uri(
     path: '/survey/${kind.code}',
-    queryParameters: fromLesson ? {'from': 'lesson'} : null,
-  ).toString();
-
-  /// O "Você pagaria?" (E1.26), no passo [step] (1 a 3) ou no do rascunho.
-  static const wouldPay = '/survey/pagaria';
-  static String wouldPayAt({int? step}) => Uri(
-    path: wouldPay,
-    queryParameters: step == null ? null : {'step': '$step'},
+    queryParameters: origin == null ? null : {'origem': origin},
   ).toString();
 
   /// A tela "Aula concluída" da aula [id]: de [kind] `school` (Escola) ou
   /// `endgames` (aula de finais, com os capítulos todos feitos).
   /// [next] é a aula seguinte, se houver.
-  static String lessonFinished(SurveyKind kind, String id, {String? next}) =>
-      Uri(
-        path: '/lesson-finished/${kind.code}/$id',
-        queryParameters: next == null ? null : {'next': next},
-      ).toString();
+  static String lessonFinished(
+    SurveyKind kind,
+    String id, {
+    String? next,
+    String? origin,
+  }) => Uri(
+    path: '/lesson-finished/${kind.code}/$id',
+    queryParameters: next == null && origin == null
+        ? null
+        : {'next': ?next, 'origem': ?origin},
+  ).toString();
 
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
@@ -495,6 +509,14 @@ abstract final class Routes {
   ).toString();
 
   /// "Bem-vindo de volta": recebe o `SyncResult` como `extra`.
+  /// "Termos e privacidade" (H-CON-08): o aceite logo depois de criar a
+  /// conta. [offline]: a conta não foi lida (segue direto no fim).
+  static const accountConsent = '/conta/aceite';
+  static String accountConsentFrom(String from, {bool offline = false}) => Uri(
+    path: accountConsent,
+    queryParameters: {'from': from, if (offline) 'offline': '1'},
+  ).toString();
+
   static const accountRestored = '/conta/de-volta';
   static String accountRestoredFrom(String from) =>
       _from(accountRestored, from);
@@ -509,7 +531,7 @@ abstract final class Routes {
 
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
-    'game' => home,
+    'game' || 'home' => home,
     'level' => nextSteps,
     final route? when isRouteFrom(route) => route,
     _ => goal,
@@ -575,7 +597,7 @@ abstract final class Routes {
   static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
 
-  /// Privacidade e anúncios (E1.25), aberta do Perfil.
+  /// Privacidade e dados (H-CON-20), aberta pelas Configurações.
   static const privacy = '/settings/privacy';
 
   static const settingsBoardAppearance = '/settings/appearance/board';
@@ -592,10 +614,37 @@ abstract final class Routes {
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';
 
-  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento): a venda, o
-  /// mapa e um capítulo.
-  static const pilaresSale = '/settings/pilares';
-  static const pilaresBand = '/settings/pilares/faixa';
-  static const pilaresMap = '/settings/pilares/mapa';
-  static const pilaresChapter = '/settings/pilares/mapa/capitulo';
+  /// A apresentação do Pilares do Xadrez (H-VEN-01, rota da D2): os atalhos
+  /// "Conhecer o Pilares" das outras telas abrem aqui.
+  static const pilaresSale = '/pilares';
+
+  static String training(String course) =>
+      '/training/${Uri.encodeComponent(course)}';
+
+  /// Guia do curso já na aba Metas (toque na notificação sem lição pendente).
+  static String trainingGoals(String course) => '${training(course)}?aba=goals';
+  static String trainingCatalog(String course) =>
+      '${training(course)}?aba=catalog';
+  static String trainingPlan(String course) => '${training(course)}/plan';
+  static String trainingChapter(String course, String chapter) =>
+      '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';
+  static String trainingExercise(String course, String theme) =>
+      '${training(course)}/exercise/${Uri.encodeComponent(theme)}';
+  static String trainingOpening(String course, String opening) =>
+      '${training(course)}/opening/${Uri.encodeComponent(opening)}';
+  static String trainingTheme(String course, String theme) =>
+      '${training(course)}/theme/${Uri.encodeComponent(theme)}';
+
+  /// Private indexes refer either to a full chapter or a scripted part.
+  static String trainingLesson(String id, {String origin = 'treino_guia'}) {
+    final parts = id.split('.');
+    if (parts.length > 2 && parts.first == 'pilares') {
+      return endgameLessonScript(
+        parts.take(2).join('.'),
+        part: parts.skip(2).join('.'),
+        origin: origin,
+      );
+    }
+    return endgameLesson(id, origin: origin);
+  }
 }

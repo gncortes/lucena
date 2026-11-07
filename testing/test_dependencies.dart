@@ -1,12 +1,17 @@
+import 'package:lucena/data/repositories/data_export/data_export_repository.dart';
+
+import 'fakes/fake_data_export_repository.dart';
+
+import 'package:lucena/data/repositories/legal/legal_consent_repository.dart';
+
 import 'fakes/fake_activity_repository.dart';
 
+import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/repositories/review/review_repository.dart';
-import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
 
 import 'fakes/fake_feedback_repositories.dart';
 import 'fakes/fake_daily_final_repository.dart';
-import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 import 'fakes/fake_survey_repository.dart';
@@ -15,7 +20,6 @@ import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
 import 'package:lucena/data/repositories/config/remote_flags_repository.dart';
 import 'package:lucena/data/repositories/update/app_update_repository.dart';
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
-import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
 import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
@@ -55,7 +59,6 @@ import 'package:lucena/data/repositories/photo/photo_repository.dart';
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
 import 'package:lucena/data/repositories/conclusion/conclusion_repository.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
-import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/data/repositories/race/race_repository.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository.dart';
@@ -108,10 +111,10 @@ import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_placement_repository.dart';
 import 'fakes/fake_conclusion_repository.dart';
 import 'fakes/fake_analysis_repository.dart';
+import 'fakes/fake_deep_analysis_repository.dart';
 import 'fakes/fake_game_review_repository.dart';
 import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_home_layout_repository.dart';
-import 'fakes/fake_unlock_repository.dart';
 import 'fakes/fake_journey_repository.dart';
 import 'fakes/fake_race_repository.dart';
 import 'fakes/fake_speedrun_repository.dart';
@@ -169,7 +172,6 @@ Dependencies testDependencies({
   TalkRepository? talkRepository,
   OnboardingRepository? onboardingRepository,
   HomeLayoutRepository? homeLayoutRepository,
-  UnlockRepository? unlockRepository,
   PaceRepository? paceRepository,
   LessonRepository? lessonRepository,
   SchoolProgressRepository? schoolProgressRepository,
@@ -183,7 +185,6 @@ Dependencies testDependencies({
   RegionPromptRepository? regionPromptRepository,
   ActivityRepository? activityRepository,
   DailyFinalRepository? dailyFinalRepository,
-  CrowdRepository? crowdRepository,
   SyncRepository? syncRepository,
   AvatarRepository? avatarRepository,
   PhotoRepository? photoRepository,
@@ -194,7 +195,9 @@ Dependencies testDependencies({
   RemoteFlagsRepository? remoteFlagsRepository,
   AppUpdateRepository? appUpdateRepository,
   FeedbackRepository? feedbackRepository,
-  WouldPayRepository? wouldPayRepository,
+  DataExportRepository? dataExportRepository,
+  LegalConsentRepository? legalConsentRepository,
+  FeedbackDraftRepository? feedbackDraftRepository,
   ReviewRepository? reviewRepository,
   List<AppLanguage>? languages,
 }) {
@@ -217,6 +220,7 @@ Dependencies testDependencies({
     soundRepository: FakeSoundRepository(),
     analysisRepository: FakeAnalysisRepository(),
     gameReviewRepository: FakeGameReviewRepository(),
+    deepAnalysisRepository: FakeDeepAnalysisRepository(),
     ongoingGameRepository: ongoingGameRepository ?? FakeOngoingGameRepository(),
     conclusionRepository: conclusionRepository ?? FakeConclusionRepository(),
     positionsRepository: positionsRepository ?? FakePositionsRepository(),
@@ -241,7 +245,6 @@ Dependencies testDependencies({
     talkRepository: talkRepository ?? FakeTalkRepository(),
     onboardingRepository: onboardingRepository ?? FakeOnboardingRepository(),
     homeLayoutRepository: homeLayoutRepository ?? FakeHomeLayoutRepository(),
-    unlockRepository: unlockRepository ?? FakeUnlockRepository(),
     paceRepository: paceRepository ?? FakePaceRepository(),
     lessonRepository: lessonRepository ?? FakeLessonRepository(),
     schoolProgressRepository:
@@ -271,13 +274,12 @@ Dependencies testDependencies({
     featuredProgressRepository:
         featuredProgressRepository ?? FakeFeaturedProgressRepository(),
     featuredAlertsRepository:
-        featuredAlertsRepository ?? const NoFeaturedAlertsRepository(),
+        featuredAlertsRepository ?? FakeFeaturedAlertsRepository(),
     regionPromptRepository:
         regionPromptRepository ?? const NoRegionPromptRepository(),
     activityRepository:
         activityRepository ?? FakeActivityRepository(now: clock),
     dailyFinalRepository: dailyFinalRepository ?? FakeDailyFinalRepository(),
-    crowdRepository: crowdRepository ?? FakeCrowdRepository(),
     syncRepository: syncRepository ?? FakeSyncRepository(),
     avatarRepository: avatarRepository ?? FakeAvatarRepository(),
     photoRepository: photoRepository ?? FakePhotoRepository(),
@@ -286,7 +288,11 @@ Dependencies testDependencies({
     remoteFlagsRepository: remoteFlagsRepository,
     appUpdateRepository: appUpdateRepository,
     feedbackRepository: feedbackRepository ?? FakeFeedbackRepository(),
-    wouldPayRepository: wouldPayRepository ?? const NoWouldPayRepository(),
+    dataExportRepository: dataExportRepository ?? FakeDataExportRepository(),
+    legalConsentRepository:
+        legalConsentRepository ?? const NoLegalConsentRepository(),
+    feedbackDraftRepository:
+        feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
     reviewRepository: reviewRepository ?? FakeReviewRepository(),
     languages: languages ?? AppLanguage.selectable,
   );

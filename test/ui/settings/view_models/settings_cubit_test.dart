@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_accent.dart';
@@ -20,6 +22,70 @@ void main() {
       SettingsCubit(repository, languages: AppLanguage.selectable);
 
   setUp(() => repository = FakeSettingsRepository());
+
+  group('H-AJU-02 · gravação', () {
+    test('Gap 1: gravação falha volta ao valor salvo e avisa', () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      await cubit.load();
+      final failures = <void>[];
+      final sub = cubit.saveFailures.listen(failures.add);
+      addTearDown(sub.cancel);
+
+      repository.saveError = Exception('disco cheio');
+      await cubit.setThemeMode(AppThemeMode.dark);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(cubit.state, const AppSettings());
+      expect(repository.settings, const AppSettings());
+      expect(failures, hasLength(1));
+    });
+
+    test('Gap 2: duas trocas seguidas gravam uma de cada vez e vale a '
+        'última inteira', () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      await cubit.load();
+      final first = Completer<void>();
+      final second = Completer<void>();
+      repository.holds.addAll([first, second]);
+
+      final a = cubit.setThemeMode(AppThemeMode.dark);
+      final b = cubit.setAccent(AppAccent.values.last);
+      await Future<void>.delayed(Duration.zero);
+      expect(repository.maxRunning, 1);
+      first.complete();
+      second.complete();
+      await Future.wait([a, b]);
+
+      expect(repository.maxRunning, 1);
+      expect(
+        repository.settings,
+        const AppSettings(themeMode: AppThemeMode.dark)
+            .copyWith(accent: AppAccent.values.last),
+      );
+      expect(cubit.state, repository.settings);
+    });
+
+    test('Gap 1 + 2: falha na primeira de duas não desfaz a segunda', () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      await cubit.load();
+      repository.saveError = Exception('falhou');
+      final first = Completer<void>();
+      repository.holds.add(first);
+
+      final a = cubit.setThemeMode(AppThemeMode.dark);
+      final b = cubit.setAccent(AppAccent.values.last);
+      first.complete();
+      await Future.wait([a, b]);
+
+      final last = const AppSettings(themeMode: AppThemeMode.dark)
+          .copyWith(accent: AppAccent.values.last);
+      expect(repository.settings, last);
+      expect(cubit.state, last);
+    });
+  });
 
   test('começa sem estado até ler as preferências', () {
     expect(build().state, isNull);

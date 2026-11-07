@@ -1,9 +1,21 @@
+import 'dart:async';
+
+import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_spacing.dart';
+import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/placement.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
+import 'package:lucena/ui/core/motion/lucena_motion.dart';
+import 'package:lucena/ui/core/motion/numero_que_conta.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_animado.dart';
+import 'package:lucena/ui/core/motion/transicao_eixo_x.dart';
 import 'package:lucena/ui/placement/view_models/placement_cubit.dart';
 import 'package:lucena/ui/placement/widgets/placement_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -11,6 +23,7 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+import '../../../testing/aparelho_principal.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
@@ -30,6 +43,7 @@ void main() {
   final geometryJson = syntheticItemsJson();
   for (final item in geometryJson['items'] as List<Map<String, dynamic>>) {
     item['prompt'] = 'placementCheckMateNone';
+    if (item['type'] == 'squares') item['squares'] = ['c3', 'd4', 'e5'];
     if (item['type'] == 'choice') {
       item['options'] = ['check', 'mate', 'stalemate', 'none'];
       item['answer'] = 'check';
@@ -40,6 +54,7 @@ void main() {
   Future<(PlacementCubit, FakeProfileRepository)> pump(
     WidgetTester tester, {
     VoidCallback? onDone,
+    VoidCallback? onPreferRating,
     Size size = const Size(400, 800),
     bool systemBars = false,
     bool geometry = false,
@@ -87,7 +102,10 @@ void main() {
             ),
             child: BlocProvider.value(
               value: cubit,
-              child: PlacementScreen(onDone: onDone),
+              child: PlacementScreen(
+                onDone: onDone,
+                onPreferRating: onPreferRating,
+              ),
             ),
           ),
         ),
@@ -184,12 +202,67 @@ void main() {
     }
   });
 
+  testWidgets('abertura: "Prefiro informar meu rating" sai do teste', (
+    tester,
+  ) async {
+    var left = false;
+    await pump(tester, onPreferRating: () => left = true);
+    expect(find.text('Prefiro informar meu rating'), findsOneWidget);
+    await tester.tap(find.byKey(PlacementKeys.preferRating));
+    expect(left, isTrue);
+  });
+
+  testWidgets('abertura (H-ABE-14): app bar "Teste de nível" colada no topo, '
+      'sem faixa acima e sem subtítulo', (tester) async {
+    await pump(tester);
+    final bar = find.byType(AppBar);
+    expect(bar, findsOneWidget);
+    expect(tester.getTopLeft(bar).dy, 0);
+    expect(
+      find.descendant(of: bar, matching: find.text('Teste de nível')),
+      findsOneWidget,
+    );
+    expect(tester.widget<AppBar>(bar).bottom, isNull);
+  });
+
+  testWidgets('pergunta (regra da app bar): com a barra de progresso, o total '
+      'fica em 64, como no teste do capítulo e na Opinião', (tester) async {
+    await pump(tester);
+    await tester.tap(find.byKey(PlacementKeys.start));
+    await tester.pumpAndSettle();
+    expect(find.byKey(PlacementKeys.progress), findsOneWidget);
+    final bar = find.byType(AppBar);
+    expect(tester.getTopLeft(bar).dy, 0);
+    expect(tester.getSize(bar).height, AppBarHeight.standard);
+  });
+
+  testWidgets('abertura sem a saída: o botão não aparece', (tester) async {
+    await pump(tester);
+    expect(find.byKey(PlacementKeys.preferRating), findsNothing);
+  });
+
+  testWidgets('abertura: Começar mostra carregando e leva à pergunta 1', (
+    tester,
+  ) async {
+    final (cubit, _) = await pump(tester);
+    final seen = <bool>[];
+    final sub = cubit.stream.listen((state) => seen.add(state.starting));
+    addTearDown(sub.cancel);
+    await tester.tap(find.byKey(PlacementKeys.start));
+    // O primeiro estado é o do botão carregando; o último, a pergunta.
+    await tester.pumpAndSettle();
+    expect(seen.first, isTrue);
+    expect(seen.last, isFalse);
+    expect(find.text('Pergunta 1 de 20'), findsOneWidget);
+  });
+
   testWidgets('abertura: o balão não repete o que os selos dizem', (
     tester,
   ) async {
     await pump(tester);
     expect(find.textContaining('20 perguntas, sem relógio'), findsNothing);
-    expect(find.textContaining('Não vale chutar'), findsOneWidget);
+    expect(find.textContaining('Se não souber, toque em'), findsOneWidget);
+    expect(find.text('uns 8 a 12 minutos'), findsOneWidget);
   });
 
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
@@ -249,7 +322,7 @@ void main() {
       expect(box.bottom - tester.getRect(saved).bottom, 16);
       expect(find.text('Você parou na pergunta 2 de 20'), findsOneWidget);
       expect(
-        find.text('As respostas que você já deu estão guardadas.'),
+        find.text('As respostas que você já deu estão salvas.'),
         findsOneWidget,
       );
     });
@@ -268,7 +341,9 @@ void main() {
       final initial = tester.getRect(find.byKey(PlacementKeys.board));
       await cubit.answer(PlacementOutcome.dontKnow);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 80));
+      // O fade cruzado do TrocaComFade: 300 ms, ou 100 ms com movimento
+      // reduzido; aos 50 ms as duas perguntas estão na tela.
+      await tester.pump(const Duration(milliseconds: 50));
       final boards = find.byKey(PlacementKeys.board);
       for (final element in boards.evaluate()) {
         expect(
@@ -283,12 +358,13 @@ void main() {
         ),
         findsNothing,
       );
+      expect(find.byKey(const ValueKey('q1')), findsOneWidget);
+      expect(boards, findsNWidgets(2));
       if (reducedMotion) {
+        // O relógio do fade começa no quadro dos 50 ms: 100 ms depois dele,
+        // a pergunta velha saiu.
+        await tester.pump(const Duration(milliseconds: 101));
         expect(find.byKey(const ValueKey('q1')), findsNothing);
-        expect(boards, findsOneWidget);
-      } else {
-        expect(find.byKey(const ValueKey('q1')), findsOneWidget);
-        expect(boards, findsNWidgets(2));
       }
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('q2')), findsOneWidget);
@@ -337,6 +413,29 @@ void main() {
         await tester.pumpAndSettle();
       }
     });
+  }
+
+  for (final size in [const Size(412, 915), aparelhoPrincipal]) {
+    testWidgets(
+      '$size, pergunta (canvas PropV1TesteNivelLance): o enunciado em texto '
+      'normal, à esquerda e colado ao tabuleiro',
+      (tester) async {
+        final (cubit, _) = await pump(tester, size: size);
+        await cubit.start();
+        await tester.pumpAndSettle();
+        final text = tester.widget<Text>(find.byKey(PlacementKeys.prompt));
+        expect(text.textAlign, TextAlign.start);
+        final style = DefaultTextStyle.of(
+          tester.element(find.byKey(PlacementKeys.prompt)),
+        ).style.merge(text.style);
+        expect(style.fontWeight, anyOf(isNull, FontWeight.w400));
+        expect(style.fontSize, 16);
+        final prompt = tester.getRect(find.byKey(PlacementKeys.prompt));
+        final board = tester.getRect(find.byKey(PlacementKeys.board));
+        expect(prompt.left, closeTo(AppSpacing.screen, 1));
+        expect(board.top - prompt.bottom, closeTo(AppSpacing.md, 1));
+      },
+    );
   }
 
   for (final scale in [1.0, 2.0]) {
@@ -408,5 +507,251 @@ void main() {
     await tester.tap(find.byKey(PlacementKeys.option(item.options.first)));
     await tester.pumpAndSettle();
     expect(cubit.state.number, number + 1);
+  });
+
+  group('animações da abertura (T85-D3)', () {
+    Finder quadro(String id) =>
+        find.byWidgetPredicate((w) => w is EntradaDaTela && w.id == id);
+
+    testWidgets('a abertura é o quadro PropV2TesteAbertura', (tester) async {
+      await pump(tester);
+      expect(quadro('PropV2TesteAbertura'), findsOneWidget);
+    });
+
+    testWidgets('na retomada é o quadro PropV2TesteAberturaRetomada', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester);
+      await tester.tap(find.byKey(PlacementKeys.start));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(PlacementKeys.dontKnow));
+      await tester.pumpAndSettle();
+      await cubit.load();
+      await tester.pumpAndSettle();
+      expect(cubit.state.resuming, isTrue);
+      expect(quadro('PropV2TesteAberturaRetomada'), findsOneWidget);
+    });
+
+    testWidgets('"Começar" troca o rótulo pelo círculo do BotaoCarregando', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester);
+      expect(find.byKey(CoreKeys.busySpinner), findsNothing);
+      unawaited(cubit.start());
+      await tester.pump();
+      if (cubit.state.starting) {
+        await tester.pump(LucenaMotion.trocaRotulo);
+        expect(find.byKey(CoreKeys.busySpinner), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+      }
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('a barra de progresso da pergunta enche (BarraQueEnche) e '
+        'guarda a key', (tester) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: find.byKey(PlacementKeys.progress),
+          matching: find.byKey(MotionKeys.barraQueEnche),
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('cada tipo de pergunta é um quadro do canvas', (tester) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      await tester.pumpAndSettle();
+      const ids = {
+        PlacementItemType.squares: 'PropV1TesteNivelCasas',
+        PlacementItemType.choice: 'PropV1TesteNivelEscolha',
+        PlacementItemType.move: 'PropV1TesteNivelLance',
+      };
+      final vistos = <PlacementItemType>{};
+      for (var i = 0; i < PlacementState.questionCount; i++) {
+        final tipo = cubit.state.item!.type;
+        vistos.add(tipo);
+        expect(quadro(ids[tipo]!), findsOneWidget, reason: '$tipo');
+        await cubit.answer(PlacementOutcome.dontKnow);
+        await tester.pumpAndSettle();
+      }
+      expect(vistos, containsAll(ids.keys));
+    });
+
+    testWidgets('na pergunta de lance o tabuleiro desliza em 300 ms '
+        '(TabuleiroAnimado)', (tester) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      for (var i = 0; i < 20; i++) {
+        if (cubit.state.item?.type == PlacementItemType.move) break;
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      expect(cubit.state.item!.type, PlacementItemType.move);
+      expect(find.byType(TabuleiroAnimado), findsOneWidget);
+      final board = tester.widget<Chessboard>(find.byKey(PlacementKeys.board));
+      expect(board.settings.animationDuration, LucenaMotion.lance);
+    });
+
+    testWidgets('movimento reduzido: o lance aparece no destino, sem deslize', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, disableAnimations: true);
+      await cubit.start();
+      for (var i = 0; i < 20; i++) {
+        if (cubit.state.item?.type == PlacementItemType.move) break;
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      final board = tester.widget<Chessboard>(find.byKey(PlacementKeys.board));
+      expect(board.settings.animationDuration, Duration.zero);
+    });
+
+    // Combinado com o ORQ: o eixo X só na entrada e na saída; entre as
+    // perguntas fica o fade da B7.
+    testWidgets('H-ANI-03: abertura → 1ª pergunta entra pelo eixo X', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, geometry: true);
+      await cubit.start();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final q1 = find.byKey(const ValueKey('q1'));
+      expect(q1, findsOneWidget);
+      expect(
+        find.ancestor(of: q1, matching: find.byType(TransicaoEixoX)),
+        findsOneWidget,
+      );
+      final meio = tester.getTopLeft(q1).dx;
+      await tester.pumpAndSettle();
+      final fim = tester.getTopLeft(q1).dx;
+      expect(meio, greaterThan(fim));
+      expect(meio - fim, lessThanOrEqualTo(LucenaMotion.deslocamentoDoEixo));
+    });
+
+    testWidgets('H-ANI-03: última pergunta → resultado entra pelo eixo X', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, geometry: true);
+      await cubit.start();
+      for (var i = 0; i < PlacementState.questionCount - 1; i++) {
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      await cubit.answer(PlacementOutcome.dontKnow);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      final resultado = find.byKey(const ValueKey('result'));
+      expect(resultado, findsOneWidget);
+      final meio = tester.getTopLeft(resultado).dx;
+      await tester.pumpAndSettle();
+      final fim = tester.getTopLeft(resultado).dx;
+      expect(meio, greaterThan(fim));
+      expect(meio - fim, lessThanOrEqualTo(LucenaMotion.deslocamentoDoEixo));
+    });
+
+    testWidgets('resultado: quadro do canvas e rating que conta até o valor', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester);
+      await cubit.start();
+      for (var i = 0; i < PlacementState.questionCount; i++) {
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pump();
+      final result = cubit.state.result!;
+      final id = result.levels.length > 1
+          ? 'TelaTesteResultadoDuasFaixas'
+          : 'TelaTesteResultado';
+      expect(quadro(id), findsOneWidget);
+      final numero = find.descendant(
+        of: find.byKey(PlacementKeys.level),
+        matching: find.byType(NumeroQueConta),
+      );
+      expect(numero, findsOneWidget);
+      String texto() => tester
+          .widget<Text>(
+            find.descendant(of: numero, matching: find.byType(Text)),
+          )
+          .data!;
+      final comeco = texto();
+      await tester.pumpAndSettle();
+      // O rating sai sem separador, como no resto do app ("1200").
+      final fim = '${result.theta}';
+      expect(texto(), fim);
+      expect(comeco, isNot(fim));
+    });
+
+    testWidgets(
+      'resultado: o número mostrado é o do perfil e cabe na '
+      'escala (o início dela desce até o valor); a lista tem barra de rolagem sempre visível',
+      (tester) async {
+        final (cubit, profile) = await pump(tester);
+        await cubit.start();
+        for (var i = 0; i < PlacementState.questionCount; i++) {
+          await cubit.answer(PlacementOutcome.dontKnow);
+        }
+        await tester.pumpAndSettle();
+        final numero = find.descendant(
+          of: find.byKey(PlacementKeys.level),
+          matching: find.byType(NumeroQueConta),
+        );
+        final shown = int.parse(
+          tester
+              .widget<Text>(
+                find.descendant(of: numero, matching: find.byType(Text)),
+              )
+              .data!,
+        );
+        expect(shown, lessThan(1000));
+        final start = int.parse(
+          tester.widget<Text>(find.byKey(PlacementKeys.rulerStart)).data!,
+        );
+        expect(start, lessThanOrEqualTo(shown));
+        final result = cubit.state.result!;
+        expect(start, result.low < shown ? result.low : shown);
+        await tester.tap(find.byKey(PlacementKeys.useLevel));
+        await tester.pumpAndSettle();
+        expect(profile.profile.rating, shown);
+
+        final bar = find.descendant(
+          of: find.byKey(PlacementKeys.result),
+          matching: find.byType(Scrollbar),
+        );
+        expect(bar, findsOneWidget);
+        expect(tester.widget<Scrollbar>(bar).thumbVisibility, isTrue);
+      },
+    );
+
+    testWidgets('pergunta de casas: diz quantas casas faltam marcar', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, geometry: true);
+      await cubit.start();
+      while (cubit.state.item?.type != PlacementItemType.squares) {
+        await cubit.answer(PlacementOutcome.dontKnow);
+      }
+      await tester.pumpAndSettle();
+      final item = cubit.state.item!;
+      final total = item.squares.toSet().length;
+      final hint = find.byKey(PlacementKeys.squaresLeft);
+      expect(hint, findsOneWidget);
+      String texto() => tester.widget<Text>(hint).data!;
+      expect(texto(), total == 1 ? 'Falta 1 casa' : 'Faltam $total casas');
+      cubit.toggleSquare(item.squares.first);
+      await tester.pumpAndSettle();
+      expect(
+        texto(),
+        total == 1
+            ? 'Pode confirmar'
+            : total == 2
+            ? 'Falta 1 casa'
+            : 'Faltam ${total - 1} casas',
+      );
+    });
   });
 }

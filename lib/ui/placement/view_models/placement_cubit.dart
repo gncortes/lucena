@@ -2,6 +2,11 @@ import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/rating/rating_repository.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
@@ -21,6 +26,7 @@ import '../../../domain/models/maia_level.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/placement_engine.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import 'roadmap_loader.dart';
 
@@ -29,13 +35,16 @@ enum PlacementView { loading, intro, question, result }
 
 /// O teste de nível na tela.
 class PlacementViewState {
+  final LoadFailure? failure;
   const PlacementViewState({
     this.view = PlacementView.loading,
+    this.failure,
     this.test,
     this.item,
     this.result,
     this.skills,
     this.resuming = false,
+    this.starting = false,
     this.applied = false,
     this.fen,
     this.lastMove,
@@ -72,6 +81,9 @@ class PlacementViewState {
   /// Havia um teste começado: a abertura oferece continuar.
   final bool resuming;
 
+  /// "Começar" ou "Continuar teste" tocado: monta a primeira pergunta.
+  final bool starting;
+
   /// O resultado já foi para o perfil (rating e degrau da Jornada).
   final bool applied;
 
@@ -96,6 +108,7 @@ class PlacementViewState {
     PlacementResult? result,
     SkillMap? skills,
     bool? resuming,
+    bool? starting,
     bool? applied,
     String? fen,
     Move? lastMove,
@@ -117,6 +130,7 @@ class PlacementViewState {
     result: result ?? this.result,
     skills: skills ?? this.skills,
     resuming: resuming ?? this.resuming,
+    starting: starting ?? this.starting,
     applied: applied ?? this.applied,
   );
 }
@@ -138,7 +152,11 @@ class PlacementCubit extends Cubit<PlacementViewState> {
     this._endgameProgress,
     this.language = 'en',
     this._analytics = const NoAnalyticsRepository(),
+    this._rating,
   }) : super(const PlacementViewState());
+
+  /// O rating do app: o nível do teste vira o atual, mesmo com partidas.
+  final RatingRepository? _rating;
 
   final AnalyticsRepository _analytics;
 
@@ -170,6 +188,16 @@ class PlacementCubit extends Cubit<PlacementViewState> {
 
   /// Abre a abertura do teste, oferecendo continuar o que ficou pela metade.
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      debugPrint('placement load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(PlacementViewState(failure: LoadFailure.of(error)));
+    }
+  }
+
+  Future<void> _load() async {
     final skills = await _placement.skills();
     final bank = await _placement.bank();
     _engine = PlacementEngine(skills: skills, bank: bank);
@@ -194,18 +222,24 @@ class PlacementCubit extends Cubit<PlacementViewState> {
   Future<void> start() async {
     final engine = _engine;
     if (engine == null) return;
-    var test = state.test;
-    if (test == null) {
-      // Quem já escolheu uma faixa começa do meio dela.
-      final profile = await _profile.load();
-      test = engine.start(
-        seed: seed ?? _now().millisecondsSinceEpoch,
-        prior: profile.level,
-      );
-      await _placement.saveOngoing(test);
+    if (state.starting) return;
+    emit(state.copyWith(starting: true));
+    try {
+      var test = state.test;
+      if (test == null) {
+        // Quem já escolheu uma faixa começa do meio dela.
+        final profile = await _profile.load();
+        test = engine.start(
+          seed: seed ?? _now().millisecondsSinceEpoch,
+          prior: profile.level,
+        );
+        await _placement.saveOngoing(test);
+      }
+      _startedAt ??= _now();
+      _show(test);
+    } finally {
+      if (!isClosed && state.starting) emit(state.copyWith(starting: false));
     }
-    _startedAt ??= _now();
-    _show(test);
   }
 
   /// Recomeça do zero (na abertura, em vez de continuar).
@@ -275,6 +309,7 @@ class PlacementCubit extends Cubit<PlacementViewState> {
         : level.rating;
     final profile = await _profile.load();
     await _profile.save(profile.copyWith(rating: rating));
+    await _rating?.setLevel(rating);
     final onboarding = _onboarding;
     if (onboarding != null) {
       final saved = await onboarding.load();
@@ -365,6 +400,28 @@ class PlacementCubit extends Cubit<PlacementViewState> {
         endgameProgress == null) {
       return (null, const <String, String>{});
     }
+    try {
+      return await _roadmapFrom(
+        result,
+        school: school,
+        endgames: endgames,
+        schoolProgress: schoolProgress,
+        endgameProgress: endgameProgress,
+      );
+    } on LessonContentUnavailable {
+      // O pacote das aulas ainda não baixou (no tour, antes da conta): o
+      // resultado aparece sem o roteiro, que a Escola monta depois.
+      return (null, const <String, String>{});
+    }
+  }
+
+  Future<(PlacementRoadmap, Map<String, String>)> _roadmapFrom(
+    PlacementResult result, {
+    required LessonRepository school,
+    required EndgameLessonRepository endgames,
+    required SchoolProgressRepository schoolProgress,
+    required EndgameProgressRepository endgameProgress,
+  }) async {
     final roadmap = await RoadmapLoader(
       placement: _placement,
       school: school,

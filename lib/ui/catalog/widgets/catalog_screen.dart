@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../course_guide/widgets/training_load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 
 import '../../../domain/models/speedrun.dart';
@@ -9,6 +12,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -31,6 +35,14 @@ class CatalogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<CatalogCubit>().state;
     final categories = state.categories;
+    final failure = context.watch<CatalogCubit>().state.failure;
+    if (failure != null) {
+      return trainingLoadError(
+        context,
+        failure,
+        () => context.read<CatalogCubit>().load(),
+      );
+    }
     return Scaffold(
       key: CatalogKeys.screen,
       appBar: LucenaAppBar(
@@ -42,25 +54,29 @@ class CatalogScreen extends StatelessWidget {
         children: [
           const GoalFilterBar(),
           Expanded(
-            child: categories == null
-                ? const SkeletonList()
-                : ListView(
-                    padding: scrollPadding(context, left: 16, right: 16),
-                    children: [
-                      for (final category in categories)
-                        if (category.count(state.filter) > 0)
-                          _CategoryCard(
-                            category: category,
-                            blind: blind,
-                            filter: state.filter,
-                            done: state.fulfilled
-                                .where(
-                                  (id) => id.startsWith('${category.key}.'),
-                                )
-                                .length,
-                          ),
-                    ],
-                  ),
+            child: ShimmerConteudo(
+              carregando: categories == null,
+              esqueleto: const SkeletonList(),
+              child: categories == null
+                  ? const SizedBox.shrink()
+                  : ListView(
+                      padding: scrollPadding(context, left: 16, right: 16),
+                      children: [
+                        for (final category in categories)
+                          if (category.count(state.filter) > 0)
+                            _CategoryCard(
+                              category: category,
+                              blind: blind,
+                              filter: state.filter,
+                              done: state.fulfilled
+                                  .where(
+                                    (id) => id.startsWith('${category.key}.'),
+                                  )
+                                  .length,
+                            ),
+                      ],
+                    ),
+            ),
           ),
         ],
       ),

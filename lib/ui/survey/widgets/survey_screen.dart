@@ -1,129 +1,162 @@
+import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter/material.dart';
+
+import '../../core/motion/barra_que_enche.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/survey.dart';
+import '../../../domain/use_cases/survey_rules.dart';
+import '../../../routing/route_names.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/survey_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_bar_height.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/app_bar_progress.dart';
+import '../../core/widgets/busy_button.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/survey_cubit.dart';
 import 'survey_face.dart';
 import 'survey_parts.dart';
 
-/// O questionário "Sua opinião" (E1.05): 2 passos nas aulas de finais, 3 na
-/// Escola. Depois de enviar, o agradecimento do Viktor na mesma tela.
+/// O questionário "Sua opinião" (E1.05, T85): 2 passos no Pilares, 3 na
+/// Escola. O X do passo 1 sai (o rascunho fica); nos outros passos, o X e o
+/// voltar do sistema voltam um passo, como no canvas. Depois de gravar, o
+/// agradecimento abre no lugar desta tela.
 class SurveyScreen extends StatelessWidget {
-  const SurveyScreen({required this.fromLesson, super.key});
-
-  /// Aberto pela aula concluída: o agradecimento volta às aulas.
-  final bool fromLesson;
-
-  /// Onde o agradecimento leva.
-  String _home(SurveyKind kind) =>
-      kind == SurveyKind.school ? Routes.school : Routes.endgames;
+  const SurveyScreen({super.key});
 
   void _leave(BuildContext context, SurveyKind kind) {
+    context.read<SurveyCubit>().dismissed();
     if (context.canPop()) {
       context.pop();
     } else {
-      context.go(_home(kind));
+      context.go(
+        Routes.training(kind == SurveyKind.school ? 'escola' : 'pilares'),
+      );
     }
   }
 
-  void _thanksBack(BuildContext context, SurveyKind kind) {
-    // Da trilha, volta a ela; da aula concluída, vai às aulas.
-    if (fromLesson || !context.canPop()) {
-      context.go(_home(kind));
+  /// Só chamado quando `sent` ou `sendErrors` mudam (ver `listenWhen`):
+  /// gravou, abre o agradecimento; senão, é uma falha nova de envio.
+  void _onChange(BuildContext context, SurveyState state) {
+    if (state.sent) {
+      context.pushReplacementNamed(
+        RouteNames.surveyThanks,
+        pathParameters: {'kind': state.kind.code},
+      );
     } else {
-      context.pop();
+      final l10n = context.l10n;
+      showLucenaSnackBar(
+        context,
+        l10n.loadErrorGenericTitle,
+        key: SurveyKeys.sendError,
+        action: SnackBarAction(
+          label: l10n.loadErrorRetry,
+          onPressed: context.read<SurveyCubit>().send,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loadState = context.watch<SurveyCubit>().state;
+    if (!loadState.ready && loadState.failure == null) {
+      // Regra da app bar (T85): o título e o X do passo 1 já no carregando,
+      // o X desabilitado até a pesquisa abrir.
+      return Scaffold(
+        appBar: LucenaAppBar(
+          leading: IconButton(
+            key: SurveyKeys.close,
+            icon: const Icon(Icons.close),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+            onPressed: null,
+          ),
+          title: Text(context.l10n.surveyTitle),
+        ),
+        body: const SafeArea(top: false, child: SkeletonList()),
+      );
+    }
+    if (loadState.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<SurveyCubit>().retryLoad,
+        onBack: () => _leave(context, loadState.kind),
+      );
+    }
+
     final cubit = context.read<SurveyCubit>();
-    return BlocBuilder<SurveyCubit, SurveyState>(
+    return BlocConsumer<SurveyCubit, SurveyState>(
+      listenWhen: (previous, state) =>
+          state.sent != previous.sent ||
+          state.sendErrors != previous.sendErrors,
+      listener: _onChange,
       builder: (context, state) {
-        if (state.sent) {
-          final l10n = context.l10n;
-          return ViktorThanks(
-            key: SurveyKeys.thanks,
-            title: l10n.surveyTitle,
-            text: l10n.surveyThanks,
-            backLabel: state.kind == SurveyKind.school
-                ? l10n.surveyBackToSchool
-                : l10n.surveyBackToLessons,
-            onBack: () => _thanksBack(context, state.kind),
-            viktor: state.viktor,
-            closeKey: SurveyKeys.close,
-            backKey: SurveyKeys.thanksBack,
-          );
-        }
         final l10n = context.l10n;
         return PopScope(
           // Passo 2 em diante: o voltar do sistema volta um passo.
           canPop: state.step == 0,
           onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) cubit.back();
+            if (didPop) {
+              cubit.dismissed();
+            } else {
+              cubit.back();
+            }
           },
           child: Scaffold(
             key: SurveyKeys.screen,
             appBar: LucenaAppBar(
-              leading: state.step == 0
-                  ? IconButton(
-                      key: SurveyKeys.close,
-                      icon: const Icon(Icons.close),
-                      tooltip: MaterialLocalizations.of(context)
-                          .closeButtonTooltip,
-                      onPressed: () => _leave(context, state.kind),
-                    )
-                  : IconButton(
-                      key: SurveyKeys.back,
-                      icon: const BackButtonIcon(),
-                      tooltip: MaterialLocalizations.of(context)
-                          .backButtonTooltip,
-                      onPressed: cubit.back,
-                    ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.surveyTitle),
-                  Text(
-                    l10n.surveyStep(state.step + 1, state.total),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+              // O X em todos os passos (canvas): no 1º sai, nos outros volta.
+              leading: IconButton(
+                key: SurveyKeys.close,
+                icon: const Icon(Icons.close),
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                onPressed: state.step == 0
+                    ? () => _leave(context, state.kind)
+                    : cubit.back,
               ),
-              bottom: AppBarProgress(
+              // Só o título: o passo já aparece na barra de progresso.
+              title: Text(l10n.surveyTitle),
+              // A barra de 4 px fica dentro da altura padrão.
+              toolbarHeight: AppBarHeight.standard - AppBarProgress.height,
+              // H-ANI-13: anda do passo anterior para o atual.
+              bottom: PreferredSize(
                 key: SurveyKeys.progress,
-                value: (state.step + 1) / state.total,
+                preferredSize: const Size.fromHeight(AppBarProgress.height),
+                child: BarraQueEnche(
+                  valor: (state.step + 1) / state.total,
+                  altura: AppBarProgress.height,
+                ),
               ),
             ),
-            body: state.ready ? _Body(state: state) : const SizedBox.shrink(),
+            body: _Body(state: state),
             bottomNavigationBar: ActionsFooter(
               children: [
-                if (state.isLast)
-                  FilledButton.icon(
-                    key: SurveyKeys.send,
-                    icon: const Icon(Icons.send_outlined),
-                    label: Text(l10n.surveySend),
-                    onPressed: state.ready && state.canAdvance && !state.sending
-                        ? cubit.send
-                        : null,
-                  )
-                else
-                  FilledButton(
-                    key: SurveyKeys.next,
-                    onPressed: state.ready && state.canAdvance
-                        ? cubit.next
-                        : null,
-                    child: Text(l10n.surveyContinue),
-                  ),
+                SizedBox(
+                  height: kButtonHeight,
+                  child: state.isLast
+                      ? BusyButton(
+                          buttonKey: SurveyKeys.send,
+                          icon: Icons.send,
+                          label: l10n.surveySend,
+                          busy: state.sending,
+                          onPressed: state.canAdvance ? cubit.send : null,
+                        )
+                      : FilledButton(
+                          key: SurveyKeys.next,
+                          onPressed: state.canAdvance ? cubit.next : null,
+                          child: Text(l10n.surveyContinue),
+                        ),
+                ),
               ],
             ),
           ),
@@ -143,11 +176,7 @@ class _Body extends StatelessWidget {
     final school = state.kind == SurveyKind.school;
     final cards = switch ((school, state.step)) {
       (_, 0) => [_RatingCard(state), _ImproveCard(state)],
-      (false, _) => [
-        _InterestCard(state),
-        _ReReviewCard(state),
-        _WishCard(state),
-      ],
+      (false, _) => [_ReReviewCard(state), _WishCard(state)],
       (true, 1) => [_InterestCard(state), _TopicsCard(state)],
       (true, _) => [_DifficultyCard(state), _ReReviewCard(state)],
     };
@@ -366,7 +395,6 @@ class _InterestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final school = state.kind == SurveyKind.school;
     final cubit = context.read<SurveyCubit>();
     final labels = {
       SurveyInterest.yes: l10n.surveyInterestYes,
@@ -374,12 +402,8 @@ class _InterestCard extends StatelessWidget {
       SurveyInterest.no: l10n.surveyInterestNo,
     };
     return QuestionCard(
-      title: school
-          ? l10n.surveyInterestSchoolTitle
-          : l10n.surveyInterestEndgamesTitle,
-      hint: school
-          ? l10n.surveyInterestSchoolHint
-          : l10n.surveyInterestEndgamesHint,
+      title: l10n.surveyInterestSchoolTitle,
+      hint: l10n.surveyInterestSchoolHint,
       children: [
         OptionList<SurveyInterest>(
           values: SurveyInterest.values,
@@ -402,13 +426,13 @@ class _ReReviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<SurveyCubit>();
-    final value = state.answers.reReview;
+    // Vem com "Sim" marcado (canvas): sem toque, vale "Sim".
+    final value = SurveyRules.reReviewOf(state.answers);
     return QuestionCard(
       title: l10n.surveyReReviewTitle,
       children: [
         SegmentedButton<bool>(
           showSelectedIcon: false,
-          emptySelectionAllowed: true,
           segments: [
             ButtonSegment(
               value: true,
@@ -419,10 +443,8 @@ class _ReReviewCard extends StatelessWidget {
               label: Text(l10n.surveyNo, key: SurveyKeys.reReview(yes: false)),
             ),
           ],
-          selected: {?value},
-          onSelectionChanged: (set) {
-            if (set.isNotEmpty) cubit.pickReReview(yes: set.first);
-          },
+          selected: {value},
+          onSelectionChanged: (set) => cubit.pickReReview(yes: set.first),
         ),
       ],
     );

@@ -91,15 +91,6 @@ void main() {
     expect(cubit.state.enabled, 2);
   });
 
-  test('a hora dos lembretes grava', () async {
-    final cubit = build();
-    await cubit.load();
-
-    await cubit.setReminder(21 * 60);
-
-    expect(alerts.settings.reminderMinutes, 21 * 60);
-  });
-
   test('sem país no Perfil, vale a região do celular', () async {
     profile = FakeProfileRepository();
     final cubit = build(region: 'pt');
@@ -164,10 +155,60 @@ void main() {
     await cubit.load();
     await cubit.change(cubit.state.settings.copyWith(news: true));
     await cubit.change(cubit.state.settings.copyWith(daily: false));
-    await cubit.setReminder(8 * 60);
     expect(analytics.eventsNamed('aviso_chave').map((e) => e.params), [
       {'tipo': 'novidades', 'ligado': 'sim'},
       {'tipo': 'dia', 'ligado': 'nao'},
     ]);
+  });
+
+  group('H-AJU-09', () {
+    test('Gap 1: gravação que falha volta ao salvo, avisa e não mexe nos '
+        'tópicos', () async {
+      final cubit = build();
+      await cubit.load();
+      final failures = <void>[];
+      final listening = cubit.saveFailures.listen(failures.add);
+      addTearDown(listening.cancel);
+      final before = push.followed;
+
+      alerts.saveError = Exception('disco cheio');
+      await cubit.change(cubit.state.settings.copyWith(news: true));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(cubit.state.settings.news, isFalse);
+      expect(failures, hasLength(1));
+      expect(push.followed, before);
+    });
+
+    test('Gap 7: pedir a permissão registra aviso_pedido e não pede de '
+        'novo', () async {
+      final analytics = FakeAnalyticsRepository();
+      push.allowed = false;
+      push.granted = false;
+      final cubit = build(analytics: analytics);
+      await cubit.load();
+      expect(cubit.state.canAsk, isTrue);
+
+      await cubit.requestPermission();
+
+      expect(push.permissionRequests, 1);
+      expect(cubit.state.permitted, isFalse);
+      expect(cubit.state.canAsk, isFalse);
+      expect(analytics.eventsNamed('aviso_pedido').single.params, {
+        'resposta': 'negou_sistema',
+        'gatilho': 'avisos',
+      });
+    });
+
+    test('Gap 7: permitido no pedido refaz os tópicos', () async {
+      push.allowed = false;
+      push.granted = true;
+      final cubit = build();
+      await cubit.load();
+
+      await cubit.requestPermission();
+
+      expect(cubit.state.permitted, isTrue);
+    });
   });
 }

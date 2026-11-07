@@ -70,6 +70,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(GameSoundKeys.dialog), findsNothing);
     expect(find.byType(SoundOffIcon), findsOneWidget);
+    // H-PAR-05: sem som, o rótulo do botão troca ("Sem som" em PT).
+    expect(find.text('No sound'), findsOneWidget);
+    expect(find.text('Sound'), findsNothing);
   });
 
   testWidgets('velocidade muda pelo diálogo e aparece no botão', (

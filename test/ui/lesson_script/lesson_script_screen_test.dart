@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/core_keys.dart';
+import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/widgets/actions_footer.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository.dart';
@@ -18,8 +21,8 @@ import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
-import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
@@ -39,6 +42,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/script_fixture.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/motion_expectations.dart';
 
 const _tall = Size(412, 915);
 const _short = Size(360, 640);
@@ -91,6 +95,15 @@ Map<Key, Rect> _geometry(WidgetTester tester) => {
   ])
     key: _rect(tester, key),
 };
+
+(int, double) _canvasReservation(double height, double width) {
+  for (final candidate in [(4, 40.0), (3, 40.0), (2, 40.0), (2, 0.0)]) {
+    if (height >= 42 + 22.5 * candidate.$1 + 58 + width + candidate.$2) {
+      return candidate;
+    }
+  }
+  return (2, 0);
+}
 
 void _expectGeometry(WidgetTester tester, Map<Key, Rect> expected) {
   for (final entry in expected.entries) {
@@ -151,9 +164,12 @@ class _Setup {
 class _UnavailableScripts extends FakeLessonScriptRepository {
   _UnavailableScripts() : super(scriptFixture());
 
+  bool fails = true;
   @override
-  Future<LessonScript> script(String path) async =>
-      throw const LessonContentUnavailable();
+  Future<LessonScript> script(String path) async {
+    if (fails) throw const LessonContentUnavailable();
+    return super.script(path);
+  }
 }
 
 class _ExitSource extends EndgameLessonSource {
@@ -188,6 +204,8 @@ Future<_Setup> _open(
   LessonSource? source,
   bool navigable = false,
   LessonScriptRepository? repository,
+  Future<String?>? title,
+  ValueChanged<String>? onAnalyze,
 }) async {
   tester.view
     ..physicalSize = size
@@ -229,7 +247,10 @@ Future<_Setup> _open(
     value: FakeCharacterRepository(),
     child: BlocProvider.value(
       value: cubit,
-      child: LessonScriptScreen(title: Future.value('Oposição distante')),
+      child: LessonScriptScreen(
+        title: title ?? Future.value('Oposição distante'),
+        onAnalyze: onAnalyze,
+      ),
     ),
   );
   final router = navigable
@@ -287,7 +308,161 @@ const _long =
     'Imagine que as brancas avançam o peão antes do rei e que as pretas '
     'respondem com o rei, para depois contarmos as casas.';
 
+Map<String, dynamic> _guidedPracticeJson({bool invalidReply = false}) {
+  final json = scriptJson();
+  json['etapas'][2]['exemplos'] = [
+    {
+      'id': 'guided',
+      'fen': '7k/8/6K1/8/8/8/8/R7 w - - 0 1',
+      'vira': false,
+      'objetivo': 'ganhar',
+      'pratica': {
+        'tipo': 'lance',
+        't': 'guided.t',
+        'maquina': 'b',
+        'linha': [
+          {
+            'certos': ['a1a7'],
+            'resposta': invalidReply ? 'h8h1' : 'h8g8',
+          },
+          {
+            'certos': ['a7a8'],
+          },
+        ],
+        'erros': {'a1a8': 'guided.error'},
+      },
+      'entrada': <dynamic>[],
+      'linha': <dynamic>[],
+      'fim': 'proximo',
+    },
+  ];
+  return json;
+}
+
 void main() {
+  for (final size in [const Size(360, 740), const Size(412, 917)]) {
+    testWidgets(
+      'erro da prática fica; retry e solução executam a linha autoral $size',
+      (tester) async {
+        final setup = await _open(
+          tester,
+          size,
+          stage: 2,
+          json: _guidedPracticeJson(),
+        );
+        final cubit = setup.cubit;
+        final initial = cubit.state.fen;
+        await cubit.onMove('a1a8');
+        await _settle(tester);
+        expect(find.text('Tentar novamente'), findsOneWidget);
+        expect(find.text('Ver a solução'), findsOneWidget);
+        final error = cubit.state;
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        await tester.pump(const Duration(seconds: 2));
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+        expect(cubit.state, error);
+        await _tap(tester, LessonScriptKeys.primary);
+        expect(cubit.state.fen, initial);
+        await cubit.onMove('a1a8');
+        await _settle(tester);
+        await _tap(tester, LessonScriptKeys.showAnswer);
+        expect(cubit.state.fen, initial);
+        expect(cubit.state.arrows.single.to, 'a7');
+        final settings = tester
+            .element(find.byKey(LessonScriptKeys.screen))
+            .read<SettingsCubit>();
+        await settings.setLessonMarks(shown: false);
+        await tester.pump();
+        expect(
+          tester.widget<ScriptBoard>(find.byType(ScriptBoard)).showMarks,
+          true,
+        );
+        expect(settings.state!.lessonMarks, false);
+        expect(cubit.canHint, false);
+        expect(cubit.state.canBack, false);
+        expect(find.text('Siga a seta.'), findsWidgets);
+        expect(find.byKey(LessonScriptKeys.showAnswer), findsNothing);
+        await cubit.onMove('a1a7');
+        await _settle(tester);
+        expect(cubit.state.lastMove, 'h8g8');
+        expect(cubit.state.arrows.single.to, 'a8');
+        await cubit.onMove('a7a8');
+        await _settle(tester);
+        expect(cubit.state.phase, ScriptPhase.praticaFim);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+  testWidgets(
+    'solução ausente mostra estado vazio com retry sem lance inventado',
+    (tester) async {
+      final setup = await _open(
+        tester,
+        _tall,
+        stage: 2,
+        json: _guidedPracticeJson(invalidReply: true),
+      );
+      await setup.cubit.onMove('a1a8');
+      await _settle(tester);
+      await _tap(tester, LessonScriptKeys.showAnswer);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(find.byKey(LessonScriptKeys.board), findsNothing);
+      await _tap(tester, LoadErrorKeys.action);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(setup.cubit.state.moves, isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('roteiro indisponível tem retry que carrega', (tester) async {
+    final scripts = _UnavailableScripts();
+    final setup = await _open(
+      tester,
+      _tall,
+      repository: scripts,
+      navigable: true,
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Conteúdo indisponível'), findsOneWidget);
+    scripts.fails = false;
+    await tester.tap(find.byKey(LoadErrorKeys.action));
+    await tester.pumpAndSettle();
+    expect(setup.cubit.state.ready, isTrue);
+    expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+  });
+
+  testWidgets(
+    'falha opcional do título não lança exceção solta nem bloqueia a aula',
+    (tester) async {
+      final previous = debugPrint;
+      final messages = <String>[];
+      debugPrint = (message, {wrapWidth}) {
+        if (message != null) messages.add(message);
+      };
+      try {
+        final title = Completer<String?>();
+        await _open(tester, _tall, title: title.future);
+        title.completeError(
+          StateError('title unavailable'),
+          StackTrace.current,
+        );
+        await tester.pumpAndSettle();
+        expect(find.byKey(LessonScriptKeys.board), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        expect(
+          messages.any((value) => value.contains('title unavailable')),
+          isTrue,
+        );
+      } finally {
+        debugPrint = previous;
+      }
+    },
+  );
+
   for (final size in _stabilitySizes) {
     testWidgets(
       'conteúdo indisponível $size: centro útil e sair sem alterar progresso',
@@ -304,19 +479,18 @@ void main() {
           navigable: true,
         );
         await tester.pumpAndSettle();
-        expect(
-          find.text('As aulas ainda não estão disponíveis.'),
-          findsOneWidget,
-        );
+        expect(find.text('Conteúdo indisponível'), findsOneWidget);
         expect(find.byKey(LessonScriptKeys.board), findsNothing);
-        final group = tester.getRect(find.byKey(CoreKeys.emptyState));
-        expect(group.center.dx, closeTo(size.width / 2, .5));
+        final icon = tester.getRect(find.byIcon(CanvasSymbols.error));
+        final title = tester.getRect(find.text('Conteúdo indisponível'));
+        final footer = tester.getTopLeft(find.byType(ActionsFooter)).dy;
+        expect(icon.center.dx, closeTo(size.width / 2, .5));
         expect(
-          group.center.dy,
-          closeTo((56 + kToolbarHeight + size.height - 24) / 2, .5),
+          ((icon.top - 56) - (footer - title.bottom)).abs(),
+          lessThanOrEqualTo((footer - 56) * .05),
         );
         expect(tester.takeException(), isNull);
-        await tester.tap(find.byType(BackButton));
+        await tester.tap(find.byKey(LoadErrorKeys.back));
         await tester.pumpAndSettle();
         expect(find.text('origem'), findsOneWidget);
         expect(source.leaves, 0);
@@ -348,12 +522,13 @@ void main() {
       final context = tester.element(find.byKey(LessonScriptKeys.page));
       expect(MediaQuery.textScalerOf(context).scale(15), 15);
       expect(Theme.of(context).brightness, Brightness.light);
-      final reserved = ScriptSpeechMetrics.of(context).areaHeight(context);
+      final (lines, notation) = _canvasReservation(page.height, size.width);
+      final reserved = 42 + 22.5 * lines;
       // Alvo vigente da LIÇÃO: sobras iguais ao redor do bloco reservado.
       // Não aplica ao tabuleiro o centro absoluto do FreeBoard/partida.
       expect(
         strip.top - reserved - page.top,
-        closeTo(page.bottom - board.bottom, 0.5),
+        closeTo(page.bottom - board.bottom - notation, 0.5),
       );
       for (var cycle = 0; cycle < 2; cycle++) {
         for (var i = 0; i < _neutralSpeeches.length; i++) {
@@ -414,24 +589,86 @@ void main() {
       );
       // Os controles mudam ao terminar; a área do tabuleiro deve permanecer.
       final geometry = _geometry(tester)..remove(LessonScriptKeys.primary);
-      final footer = tester.getRect(find.byType(ExerciseActions));
+      final footer = tester.getRect(find.byKey(LessonScriptKeys.footer));
       // Conteúdo de 64 dp (anel) + folgas de 8 dp acima e 16 dp abaixo.
-      expect(footer.height, closeTo(88, 0.5));
+      expect(footer.height, closeTo(96, 0.5));
       for (var cycle = 0; cycle < 2; cycle++) {
         expect(setup.cubit.state.speech, [_neutralSpeeches.first]);
         for (var i = 1; i < _neutralSpeeches.length; i++) {
           await tester.tap(find.byKey(LessonScriptKeys.primary));
           await _sampleGeometry(tester, geometry);
-          expect(tester.getRect(find.byType(ExerciseActions)), footer);
+          expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
           expect(setup.cubit.state.speech, [_neutralSpeeches[i]]);
         }
         expect(setup.cubit.state.phase, ScriptPhase.fimEtapa);
+        // H-ANI-25: ↻ e o botão principal entram por último (até 1,3 s).
+        await tester.pump(const Duration(milliseconds: 1300));
+        _expectGeometry(tester, geometry);
         await tester.tap(find.byKey(LessonScriptKeys.demoRepeat));
         await _sampleGeometry(tester, geometry);
-        expect(tester.getRect(find.byType(ExerciseActions)), footer);
+        expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
         expect(setup.cubit.state.phase, ScriptPhase.entrada);
       }
     });
+
+    for (final reduced in [false, true]) {
+      testWidgets('H-ANI-25 $size: no fim da demonstração ↻ e o botão '
+          'principal entram por último (reduzido: $reduced)', (tester) async {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        final json = _geometryScript();
+        final stages = json['etapas'] as List;
+        final idea = ((stages.first as Map)['exemplos'] as List).first as Map;
+        final demo = ((stages[1] as Map)['exemplos'] as List).first as Map;
+        demo['entrada'] = idea['entrada'];
+        demo['linha'] = <dynamic>[];
+        final setup = await _open(
+          tester,
+          size,
+          json: json,
+          stage: 1,
+          autoPlay: false,
+          texts: {
+            for (var i = 0; i < _neutralSpeeches.length; i++)
+              'layout.$i': _neutralSpeeches[i],
+          },
+        );
+        final footer = tester.getRect(find.byKey(LessonScriptKeys.footer));
+        final botoes = find.byKey(MotionKeys.parteDoResultado('botoes'));
+        for (var cycle = 0; cycle < 2; cycle++) {
+          // Durante a demonstração, o rodapé não é resultado.
+          expect(botoes, findsNothing);
+          for (var i = 1; i < _neutralSpeeches.length - 1; i++) {
+            await tester.tap(find.byKey(LessonScriptKeys.primary));
+            await tester.pumpAndSettle();
+          }
+          await tester.tap(find.byKey(LessonScriptKeys.primary));
+          await tester.pump();
+          await tester.pump();
+          expect(setup.cubit.state.phase, ScriptPhase.fimEtapa);
+          expect(opacidadeDaParte(tester, botoes), reduced ? 1 : 0);
+          await tester.pump(const Duration(milliseconds: 1300));
+          await tester.pump();
+          expect(opacidadeDaParte(tester, botoes), 1);
+          expect(
+            find.descendant(
+              of: botoes,
+              matching: find.byKey(LessonScriptKeys.demoRepeat),
+            ),
+            findsOneWidget,
+          );
+          expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
+          // Cada fim é um resultado novo: anima também depois do ↻.
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(LessonScriptKeys.demoRepeat));
+          await tester.pumpAndSettle();
+        }
+        expect(tester.takeException(), isNull);
+      });
+    }
 
     testWidgets('ScriptPage $size: revelação incremental sintética e '
         'pontinhos preservam a posição reservada', (tester) async {
@@ -511,7 +748,7 @@ void main() {
     final source = _ExitSource(FakeEndgameProgressRepository())..failures = 1;
     source.exitGate.complete();
     final setup = await _open(tester, _tall, source: source, navigable: true);
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.byKey(LessonScriptKeys.close));
     // Não espera a barra de leitura inteira: o aviso tem duração menor.
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -525,7 +762,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.byKey(LessonScriptKeys.close));
     await tester.pumpAndSettle();
     expect(find.text('origem'), findsOneWidget);
     expect(source.leaves, 2);
@@ -557,7 +794,7 @@ void main() {
         if (androidBack) {
           await tester.binding.handlePopRoute();
         } else {
-          await tester.tap(find.byType(BackButton));
+          await tester.tap(find.byKey(LessonScriptKeys.close));
         }
         await tester.pump();
         expect(source.leaves, 1);
@@ -634,17 +871,18 @@ void main() {
       await _tap(tester, LessonScriptKeys.back);
       expect(_rect(tester, LessonScriptKeys.board), board);
       expect(_rect(tester, LessonScriptKeys.speech).height, oneLine.height);
-      // A ponta fica a 2 dp do retrato (40 dp, no meio da faixa de 50).
-      expect(strip.top + 5 - threeLines.bottom, closeTo(2, 0.5));
+      // Canvas: balão termina na faixa; retrato começa 8 dp abaixo.
+      // The widget bounds include the 6 dp tail gap.
+      expect(strip.top - threeLines.bottom, closeTo(0, 0.5));
       // A faixa fica colada no tabuleiro: a sobra vai para cima da área da
       // fala e para baixo do tabuleiro, em partes iguais.
       expect(board.top - strip.bottom, closeTo(0, 0.01));
       final page = _rect(tester, LessonScriptKeys.page);
-      final context = tester.element(find.byKey(LessonScriptKeys.page));
-      final area = ScriptSpeechMetrics.of(context).areaHeight(context);
+      final (lines, notation) = _canvasReservation(page.height, size.width);
+      final area = 42 + 22.5 * lines;
       final top = strip.top - area - page.top;
       expect(top, greaterThan(0));
-      expect(top, closeTo(page.bottom - board.bottom, 0.5));
+      expect(top, closeTo(page.bottom - board.bottom - notation, 0.5));
       expect(tester.takeException(), isNull);
     });
   }
@@ -691,11 +929,7 @@ void main() {
         expect(find.byKey(LessonScriptKeys.back), findsNothing);
         expect(find.byKey(LessonScriptKeys.moveList), findsNothing);
         // Rodapé com o fundo da tela, só com a linha em cima (F2).
-        expect(
-          tester.widget<ExerciseActions>(find.byType(ExerciseActions)).color,
-          Theme.of(tester.element(find.byKey(LessonScriptKeys.screen)))
-              .scaffoldBackgroundColor,
-        );
+        expect(_rect(tester, LessonScriptKeys.footer).height, 96);
       });
 
       testWidgets('balão: área fixa de 3 linhas; fala curta ou longa, o '
@@ -725,23 +959,29 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('o tabuleiro deixa 8 dp até o rodapé e a letra do balão é 15 '
-          '(canvas PropV2ExA4P360)', (tester) async {
-        await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
-        final board = _rect(tester, LessonScriptKeys.board);
-        final page = _rect(tester, LessonScriptKeys.page);
-        expect(page.bottom - board.bottom, greaterThanOrEqualTo(8 - 0.5));
-        final text = tester.widget<Text>(
-          find
-              .descendant(
-                of: find.byKey(LessonScriptKeys.speech),
-                matching: find.byType(Text),
-              )
-              .first,
-        );
-        expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 15);
-        expect(tester.takeException(), isNull);
-      });
+      testWidgets(
+        'o tabuleiro encolhe só após reduzir linhas e notação; fala 15',
+        (tester) async {
+          await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
+          final board = _rect(tester, LessonScriptKeys.board);
+          final page = _rect(tester, LessonScriptKeys.page);
+          final (_, notation) = _canvasReservation(page.height, size.width);
+          expect(
+            page.bottom - board.bottom,
+            greaterThanOrEqualTo(notation - .5),
+          );
+          final text = tester.widget<Text>(
+            find
+                .descendant(
+                  of: find.byKey(LessonScriptKeys.speech),
+                  matching: find.byType(Text),
+                )
+                .first,
+          );
+          expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 15);
+          expect(tester.takeException(), isNull);
+        },
+      );
 
       testWidgets('tabuleiro: um tamanho só, na largura cheia; na tela baixa, '
           'o maior possível, centralizado', (tester) async {
@@ -809,9 +1049,17 @@ void main() {
         final board = _rect(tester, LessonScriptKeys.board);
         expect(board.width, lessThanOrEqualTo(size.width + 0.5));
         if (size == _tall) expect(board.width, closeTo(412, 1));
-        final list = _rect(tester, LessonScriptKeys.moveList);
-        expect(list.top, greaterThanOrEqualTo(board.bottom - 1));
-        expect(list.height, greaterThan(0));
+        final (_, notation) = _canvasReservation(
+          _rect(tester, LessonScriptKeys.page).height,
+          size.width,
+        );
+        if (notation > 0) {
+          final list = _rect(tester, LessonScriptKeys.moveList);
+          expect(list.top, greaterThanOrEqualTo(board.bottom - 1));
+          expect(list.height, greaterThan(0));
+        } else {
+          expect(find.byKey(LessonScriptKeys.moveList), findsNothing);
+        }
         expect(
           tester.getSize(find.byKey(LessonScriptKeys.primary)).height,
           greaterThanOrEqualTo(48),
@@ -825,12 +1073,22 @@ void main() {
     });
   }
 
+  testWidgets('H-ANI-02: o tabuleiro voa com o FEN de abertura da lição, '
+      'que não muda com os lances', (tester) async {
+    final s = await _open(tester, _tall);
+    final first = s.cubit.state.fen;
+    expectTabuleiroHero(tester, LessonScriptKeys.board, first);
+    await _until(tester, s, ScriptPhase.pergunta);
+    expectTabuleiroHero(tester, LessonScriptKeys.board, first);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('pergunta: só Ver resposta; resposta traz a lista de lances', (
     tester,
   ) async {
     final s = await _open(tester, _tall);
     await _until(tester, s, ScriptPhase.pergunta);
-    expect(find.text('Ver resposta'), findsOneWidget);
+    expect(find.text('Ver a solução'), findsOneWidget);
     expect(find.byKey(LessonScriptKeys.primary), findsNothing);
     expect(s.cubit.state.movable, isNotNull);
     expect(find.byKey(LessonScriptKeys.moveList), findsNothing);
@@ -853,7 +1111,8 @@ void main() {
     final s = await _open(tester, _tall, oracle: oracle);
     await _until(tester, s, ScriptPhase.pergunta);
     // O rodapé tem altura fixa: com ou sem o ◀, o tabuleiro não pula.
-    double footerTop() => tester.getTopLeft(find.byType(ExerciseActions)).dy;
+    double footerTop() =>
+        tester.getTopLeft(find.byKey(LessonScriptKeys.footer)).dy;
     final top = footerTop();
     await s.cubit.onMove('d3c3');
     await _settle(tester);
@@ -867,7 +1126,12 @@ void main() {
     expect(s.cubit.state.movable, isNotNull);
     expect(
       tester
-          .widget<FloatingActionButton>(find.byKey(LessonScriptKeys.back))
+          .widget<IconButton>(
+            find.descendant(
+              of: find.byKey(LessonScriptKeys.back),
+              matching: find.byType(IconButton),
+            ),
+          )
           .onPressed,
       isNotNull,
     );
@@ -957,41 +1221,34 @@ void main() {
     expect(find.text('cur.t'), findsOneWidget);
   });
 
-  testWidgets('360: a lista fica abaixo da dobra e aparece rolando a tela, '
-      'com o mesmo componente do 412 (Gabriel, 14/10/2026, opção A)', (
+  testWidgets(
+    '360x640: Canvas remove a notação antes de encolher o tabuleiro',
+    (tester) async {
+      final s = await _open(tester, _short);
+      await _until(tester, s, ScriptPhase.pergunta);
+      await _tap(tester, LessonScriptKeys.showAnswer);
+      expect(find.byKey(LessonScriptKeys.moveList), findsNothing);
+      final footer = tester.getTopLeft(find.byKey(LessonScriptKeys.footer)).dy;
+      final board = _rect(tester, LessonScriptKeys.board);
+      expect(board.width, greaterThanOrEqualTo(0.8 * _short.width));
+      expect(board.bottom, closeTo(footer, .5));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('livro só na posição com curiosidade; título central sem ações', (
     tester,
   ) async {
-    final s = await _open(tester, _short);
-    await _until(tester, s, ScriptPhase.pergunta);
-    await _tap(tester, LessonScriptKeys.showAnswer);
-    final list = find.byKey(LessonScriptKeys.moveList);
-    expect(
-      find.ancestor(of: list, matching: find.byType(ScriptMoveList)),
-      findsOneWidget,
-    );
-    final footer = tester.getTopLeft(find.byType(ExerciseActions)).dy;
-    final board = _rect(tester, LessonScriptKeys.board);
-    expect(board.width, greaterThanOrEqualTo(0.8 * _short.width));
-    // Rolando a página, a lista inteira aparece acima do rodapé.
-    await tester.drag(find.byKey(LessonScriptKeys.page), const Offset(0, -400));
-    await _settle(tester);
-    expect(
-      _rect(tester, LessonScriptKeys.moveList).bottom,
-      lessThanOrEqualTo(footer),
-    );
-    expect(_rect(tester, LessonScriptKeys.moveList).height, greaterThan(0));
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('livro só na posição com curiosidade; o título fica no mesmo '
-      'lugar com ou sem ele', (tester) async {
     await _open(tester, _tall);
     expect(find.byKey(LessonScriptKeys.bookButton), findsOneWidget);
     final title = tester.getTopLeft(find.text('Oposição distante'));
     expect(title.dx, lessThan(_tall.width / 4));
     await _open(tester, _tall, stage: 1);
     expect(find.byKey(LessonScriptKeys.bookButton), findsNothing);
-    expect(tester.getTopLeft(find.text('Oposição distante')), title);
+    expect(
+      tester.getCenter(find.text('Oposição distante')).dx,
+      closeTo(_tall.width / 2, .5),
+    );
   });
 
   testWidgets('o botão ao lado do som esconde e mostra as marcações', (
@@ -1025,7 +1282,7 @@ void main() {
     final s = await _open(tester, _tall, stage: 1);
     expect(find.byKey(LessonScriptKeys.showAnswer), findsNothing);
     await _until(tester, s, ScriptPhase.fimEtapa);
-    expect(find.text('Próxima etapa'), findsOneWidget);
+    expect(find.text('Praticar'), findsOneWidget);
     await _tap(tester, LessonScriptKeys.primary);
     expect(s.cubit.state.stageId, 'pratica');
     expect(s.cubit.state.phase, ScriptPhase.praticaVez);
@@ -1096,6 +1353,43 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('rodapé da demonstração em 411×914: com ↻ ⏮ ⏸ e o ⏭ na tela, '
+      'a lupa espera o fim e nada estoura', (tester) async {
+    // Duas demonstrações: a primeira acaba num fim de exemplo, com os
+    // controles ainda na tela.
+    final json = scriptJson();
+    final demos = (json['etapas'] as List).cast<Map<String, dynamic>>()[1];
+    final d1 = (demos['exemplos'] as List).single as Map<String, dynamic>;
+    demos['exemplos'] = [
+      {...d1, 'fim': 'exemplo'},
+      {...d1, 'id': 'd2'},
+    ];
+    final s = await _open(
+      tester,
+      const Size(411, 914),
+      json: json,
+      stage: 1,
+      onAnalyze: (_) {},
+    );
+    var fimDeExemploComControles = false;
+    for (var i = 0; i < 12 && s.cubit.state.demo?.ended != true; i++) {
+      final emAndamento = find.byKey(LessonScriptKeys.demoRing).evaluate();
+      if (emAndamento.isNotEmpty) {
+        expect(find.byKey(LessonScriptKeys.analyze), findsNothing);
+        if (s.cubit.state.phase == ScriptPhase.fimExemplo) {
+          fimDeExemploComControles = true;
+        }
+      }
+      expect(tester.takeException(), isNull);
+      await _tap(tester, LessonScriptKeys.primary);
+    }
+    expect(fimDeExemploComControles, isTrue);
+    // No fim da demonstração a lupa volta, ao lado do ↻ e do botão.
+    expect(s.cubit.state.demo?.ended, isTrue);
+    expect(find.byKey(LessonScriptKeys.analyze), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('rodapé da demonstração: ← sempre, ↻ ⏮ ⏸ e o ⏭ com anel; '
       'no fim, só ↻ e Próxima etapa', (tester) async {
     final s = await _open(tester, _tall, stage: 1);
@@ -1114,7 +1408,7 @@ void main() {
     // ⏸ pausa: o ícone vira ▶.
     await _tap(tester, LessonScriptKeys.demoToggle);
     expect(s.cubit.state.demo!.playing, isFalse);
-    expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+    expect(find.byIcon(CanvasSymbols.playArrow), findsOneWidget);
     // ⏭ avança mesmo pausada.
     final tick = s.cubit.state.demo!.tick;
     await _tap(tester, LessonScriptKeys.primary);
@@ -1124,7 +1418,7 @@ void main() {
     expect(find.byKey(LessonScriptKeys.demoRepeat), findsOneWidget);
     expect(find.byKey(LessonScriptKeys.demoToggle), findsNothing);
     expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
-    expect(find.text('Próxima etapa'), findsOneWidget);
+    expect(find.text('Praticar'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -1232,5 +1526,37 @@ void main() {
     await _tap(tester, LessonScriptKeys.primary);
     expect(s.cubit.state.stageId, 'pratica');
     expect(tester.takeException(), isNull);
+  });
+
+  group('T85-B5b aviso de recomeço na tela', () {
+    testWidgets('parte largada no meio: o aviso aparece uma vez', (
+      tester,
+    ) async {
+      final source = FakeLessonSource()
+        ..checkpoints.add(
+          const LessonCheckpoint(
+            lessonId: 'pawns.test',
+            part: 'distant',
+            step: 1,
+          ),
+        );
+      final s = await _open(tester, const Size(412, 917), source: source);
+      expect(find.byKey(LessonScriptKeys.restartNotice), findsOneWidget);
+      expect(find.text('Você recomeça esta parte do início.'), findsOneWidget);
+      expect(s.cubit.state.restartNotice, isFalse);
+    });
+
+    testWidgets('lição nova: sem aviso', (tester) async {
+      await _open(tester, const Size(412, 917));
+      expect(find.byKey(LessonScriptKeys.restartNotice), findsNothing);
+    });
+
+    testWidgets('volta do segundo plano: sem aviso', (tester) async {
+      await _open(tester, const Size(412, 917));
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.byKey(LessonScriptKeys.restartNotice), findsNothing);
+    });
   });
 }

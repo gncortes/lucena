@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -267,7 +268,8 @@ void main() {
 
   testWidgets('aula que não existe', (tester) async {
     await pump(tester, id: 'nothing');
-    expect(find.byKey(EndgameLessonKeys.missing), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+    expect(find.text('Content not found'), findsOneWidget);
   });
 
   testWidgets('aula em revisão: o aviso aparece só nela', (tester) async {

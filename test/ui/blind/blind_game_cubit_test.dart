@@ -45,6 +45,7 @@ void main() {
     illegal: (move) => '$move não é possível nesta posição.',
     drawAgreed: 'Empate combinado.',
     drawDeclined: 'Empate recusado.',
+    opponentError: 'Ocorreu um erro inesperado. Seu relógio está parado.',
   );
 
   setUp(() {
@@ -75,6 +76,7 @@ void main() {
       now: time ?? FakeNow(DateTime.utc(2026, 10, 7)),
       thinkTime: Duration.zero,
       restartDelay: Duration.zero,
+      retryInterval: Duration.zero,
     );
     addTearDown(cubit.close);
     await cubit.load(
@@ -854,6 +856,172 @@ void main() {
       );
     },
   );
+
+  group('H-PAR-19 sem espaço ao gravar o fim', () {
+    Future<BlindGameCubit> openChallenge(
+      FakeProgressRepository progress,
+    ) async {
+      final cubit = BlindGameCubit(
+        opponent: opponent,
+        voice: voice,
+        input: input,
+        log: log,
+        now: FakeNow(DateTime.utc(2026, 10, 7)),
+        progress: progress,
+        thinkTime: Duration.zero,
+        restartDelay: Duration.zero,
+      );
+      addTearDown(cubit.close);
+      await cubit.load(
+        fen: '7k/8/6K1/8/8/8/8/1Q6 w - - 0 1',
+        userSide: Side.white,
+        kind: OpponentKind.maia,
+        level: 1000,
+        language: 'pt-BR',
+        phrases: phrases,
+        view: BlindView.hidden,
+        challengeId: '1000/blind.basic.queen.0001',
+        positionId: 'basic.queen.0001',
+      );
+      await cubit.start();
+      await cubit.release();
+      return cubit;
+    }
+
+    test('falha ao gravar: erro no estado e a conclusão espera', () async {
+      final progress = FakeProgressRepository()..failAddAttempt = 1;
+      final cubit = await openChallenge(progress);
+      await play(cubit, ['dama b8']);
+
+      expect(cubit.state.phase, BlindPhase.finished);
+      expect(cubit.state.recordFailed, isTrue);
+      expect(cubit.state.concluded, isFalse);
+    });
+
+    test('tentar novamente grava e conclui com o id', () async {
+      final progress = FakeProgressRepository()..failAddAttempt = 1;
+      final cubit = await openChallenge(progress);
+      await play(cubit, ['dama b8']);
+
+      await cubit.retryRecord();
+
+      expect(cubit.state.recordFailed, isFalse);
+      expect(cubit.state.concluded, isTrue);
+      expect(cubit.state.gameId, isNotNull);
+      expect(progress.attempts, hasLength(1));
+    });
+
+    test('voltar conclui sem id e sem gravar', () async {
+      final progress = FakeProgressRepository()..failAddAttempt = 1;
+      final cubit = await openChallenge(progress);
+      await play(cubit, ['dama b8']);
+
+      cubit.dismissRecordError();
+
+      expect(cubit.state.recordFailed, isFalse);
+      expect(cubit.state.concluded, isTrue);
+      expect(cubit.state.gameId, isNull);
+    });
+  });
+
+  group('H-PAR-18 adversário que falha', () {
+    const fen = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+    final fiveMinutes = ClockConfig.same(
+      const TimeControl(initial: Duration(minutes: 5)),
+    );
+
+    test(
+      '1ª falha para o relógio e nada é dito; a 2ª tentativa joga',
+      () async {
+        final time = FakeNow(DateTime.utc(2026, 10, 7));
+        final cubit = await open(fen, time: time, clock: fiveMinutes);
+        opponent.failTimes = 1;
+
+        await cubit.playTyped('Ta7');
+
+        expect(cubit.state.opponentError, isFalse);
+        expect(cubit.state.sans, hasLength(2));
+        expect(cubit.state.phase, BlindPhase.playerTurn);
+        expect(cubit.state.running, Side.white);
+      },
+    );
+
+    test('3 falhas seguidas abrem a folha, falam o texto e o relógio '
+        'não anda', () async {
+      final time = FakeNow(DateTime.utc(2026, 10, 7));
+      final cubit = await open(fen, time: time, clock: fiveMinutes);
+      opponent.failTimes = 3;
+
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+
+      expect(opponent.requests, hasLength(3));
+      expect(cubit.state.opponentError, isTrue);
+      expect(cubit.state.running, isNull);
+      expect(spoken().last, contains('Ocorreu um erro inesperado'));
+      time.advance(const Duration(minutes: 10));
+      expect(cubit.state.end, isNull);
+      expect(cubit.state.phase, BlindPhase.opponentThinking);
+    });
+
+    test('tentar novamente com o motor bom joga e o relógio volta', () async {
+      final time = FakeNow(DateTime.utc(2026, 10, 7));
+      final cubit = await open(fen, time: time, clock: fiveMinutes);
+      opponent.failTimes = 3;
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+
+      await cubit.retryOpponent();
+      await pumpEventQueue();
+
+      expect(cubit.state.opponentError, isFalse);
+      expect(cubit.state.sans, hasLength(2));
+      expect(cubit.state.phase, BlindPhase.playerTurn);
+      expect(cubit.state.running, Side.white);
+    });
+
+    test('tentar novamente recomeça as 3 tentativas', () async {
+      final cubit = await open(fen, clock: fiveMinutes);
+      opponent.failTimes = 6;
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+      expect(cubit.state.opponentError, isTrue);
+
+      await cubit.retryOpponent();
+      await pumpEventQueue();
+
+      expect(opponent.requests, hasLength(6));
+      expect(cubit.state.opponentError, isTrue);
+    });
+
+    test('motor que lança erro conta como falha', () async {
+      final cubit = await open(fen, clock: fiveMinutes);
+      opponent.failNext = true;
+
+      await cubit.playTyped('Ta7');
+
+      expect(cubit.state.opponentError, isFalse);
+      expect(cubit.state.sans, hasLength(2));
+    });
+
+    test('sair mantém a partida gravada com o relógio parado', () async {
+      final repository = FakeBlindCheckpointRepository();
+      final cubit = await open(
+        fen,
+        checkpoints: repository,
+        clock: fiveMinutes,
+      );
+      opponent.failTimes = 3;
+      await cubit.playTyped('Ta7');
+      await pumpEventQueue();
+
+      await cubit.close();
+
+      expect(repository.checkpoint, isNotNull);
+      expect(repository.checkpoint!.moves, ['a1a7']);
+      expect(repository.checkpoint!.state['running'], isNull);
+    });
+  });
 }
 
 class _DelayedStopVoice extends FakeVoiceRepository {

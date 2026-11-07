@@ -613,6 +613,100 @@ void main() {
     });
   });
 
+  for (final account in <String?>[null, 'a']) {
+    test(
+      'treino de teste fechado notifica conclusão local sem mudar a nota: $account',
+      () async {
+        SharedPreferencesAsyncPlatform.instance =
+            InMemorySharedPreferencesAsync.empty();
+        final events = <String>[];
+        final learning = LearningRepository(
+          PreferencesService(),
+          now,
+          currentUid: () => account,
+          versionOf: (_, _) async => 'v1',
+          onUnitCompleted: (event) async {
+            events.add(event.unitId);
+          },
+        );
+        if (account != null) {
+          await learning.observe(
+            owner: account,
+            version: 'v1',
+            kind: 'endgame_chapter',
+            unitId: 'rook.lucena',
+            started: true,
+            exerciseStars: {'e01': 1, 'e02': 2, 'e03': 3},
+          );
+          await learning.observe(
+            owner: account,
+            version: 'v1',
+            kind: 'endgame_chapter',
+            unitId: 'rook.lucena',
+            passed: true,
+          );
+        }
+        progress.saved = const EndgameProgress(
+          lessons: {
+            'rook.lucena': EndgameLessonProgress(
+              stars: {'e01': 1, 'e02': 2, 'e03': 3},
+            ),
+          },
+        );
+        final exercise = cubit(learning: learning);
+        await exercise.load('rook.lucena', 'e03', 'en');
+        expect(exercise.state.locked, isTrue);
+        await exercise.play(move('c1c4'));
+        expect(events, ['rook.lucena']);
+        expect(progress.saved.of('rook.lucena').stars, {
+          'e01': 1,
+          'e02': 2,
+          'e03': 3,
+        });
+        if (account == null) expect(await learning.load('a'), isEmpty);
+      },
+    );
+  }
+
+  test('falha do observador após aprovação nominal permite concluir na tentativa seguinte', () async {
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+    var attempts = 0;
+    final learning = LearningRepository(
+      PreferencesService(),
+      now,
+      currentUid: () => 'a',
+      versionOf: (_, _) async => 'v1',
+      onUnitCompleted: (_) async {
+        if (++attempts == 1) throw StateError('training disk');
+      },
+    );
+    await learning.observe(
+      owner: 'a',
+      version: 'v1',
+      kind: 'endgame_chapter',
+      unitId: 'rook.lucena',
+      started: true,
+      exerciseStars: {'e02': 2, 'e03': 3},
+    );
+    progress.saved = const EndgameProgress(
+      lessons: {
+        'rook.lucena': EndgameLessonProgress(stars: {'e02': 2, 'e03': 3}),
+      },
+    );
+    final first = cubit(learning: learning);
+    await first.load('rook.lucena', 'e01', 'en');
+    await expectLater(first.play(move('c1c4')), throwsStateError);
+    final approvedAt = (await learning.load('a')).single.testPassedAt;
+    expect(approvedAt, isNotNull);
+    final retry = cubit(learning: learning);
+    await retry.load('rook.lucena', 'e01', 'en');
+    await retry.play(move('c1c4'));
+    expect(attempts, 2);
+    expect(retry.state.phase, ExercisePhase.done);
+    expect((await learning.load('a')).single.testPassedAt, approvedAt);
+  });
+
   test('outro lance bom que não o ensinado resolve o exercício ali', () async {
     final exercise = cubit();
     await exercise.load('rook.lucena', 'e02', 'en');

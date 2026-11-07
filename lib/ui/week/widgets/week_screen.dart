@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -7,10 +10,16 @@ import '../../../domain/models/week_summary.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/week_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/numero_que_conta.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/week_cubit.dart';
@@ -22,32 +31,82 @@ import 'week_texts.dart';
 class WeekScreen extends StatelessWidget {
   const WeekScreen({super.key});
 
+  /// Quadro do canvas, para a primeira entrada da sessão.
+  static const weekEntranceId = 'PropV1RetencaoSemana';
+
   @override
   Widget build(BuildContext context) {
+    final cubit = context.watch<WeekCubit>();
+    return ValueListenableBuilder(
+      valueListenable: cubit.failure,
+      builder: (context, failure, _) {
+        if (failure != null) {
+          return KeyedSubtree(
+            key: WeekKeys.error,
+            child: LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(failure),
+              onAction: cubit.load,
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            ),
+          );
+        }
+        return _build(context);
+      },
+    );
+  }
+
+  Widget _build(BuildContext context) {
     final l10n = context.l10n;
     final week = context.watch<WeekCubit>().state;
-    return Scaffold(
-      key: WeekKeys.screen,
-      appBar: LucenaAppBar(title: Text(l10n.weekTitle)),
-      body: week == null ? const SizedBox.shrink() : _Body(week: week),
-      bottomNavigationBar: ActionsFooter(
-        stacked: true,
-        children: [
-          FilledButton.icon(
-            key: WeekKeys.play,
-            onPressed: () => context.push(Routes.daily),
-            icon: const Icon(Icons.today),
-            label: Text(l10n.weekPlay),
+    return EntradaDaTela(
+      id: WeekScreen.weekEntranceId,
+      child: Scaffold(
+        key: WeekKeys.screen,
+        appBar: LucenaAppBar(title: Text(l10n.weekTitle)),
+        body: ShimmerConteudo(
+          carregando: week == null,
+          esqueleto: const KeyedSubtree(
+            key: WeekKeys.loading,
+            child: _Skeleton(),
           ),
-          TextButton(
-            key: WeekKeys.seeStreak,
-            onPressed: () => context.push(Routes.streak),
-            child: Text(l10n.weekSeeStreak),
-          ),
-        ],
+          child: week == null ? const SizedBox.shrink() : _Body(week: week),
+        ),
+        bottomNavigationBar: ActionsFooter(
+          stacked: true,
+          children: [
+            FilledButton.icon(
+              key: WeekKeys.play,
+              onPressed: () => context.push(Routes.daily),
+              icon: const Icon(Icons.today),
+              label: Text(l10n.weekPlay),
+            ),
+            TextButton(
+              key: WeekKeys.seeStreak,
+              onPressed: () => context.push(Routes.streak),
+              child: Text(l10n.weekSeeStreak),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+/// O miolo enquanto lê (canvas `PropV1InicioSemanaCarregando`): os botões do
+/// rodapé já aparecem.
+class _Skeleton extends StatelessWidget {
+  const _Skeleton();
+
+  @override
+  Widget build(BuildContext context) => const SkeletonBody([
+    SkeletonShape.block(height: 120),
+    SkeletonShape.block(height: 96),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+  ]);
 }
 
 class _Body extends StatelessWidget {
@@ -105,14 +164,15 @@ class _Body extends StatelessWidget {
             _Number(
               code: 'finals',
               icon: Icons.grid_view,
-              value: '${week.finals}',
+              value: week.finals,
               label: l10n.weekStatFinals,
             ),
             const SizedBox(width: AppSpacing.sm),
             _Number(
               code: 'points',
               icon: Icons.trending_up,
-              value: points > 0 ? '+$points' : '$points',
+              value: points,
+              signed: true,
               label: l10n.weekStatPoints,
             ),
           ],
@@ -123,22 +183,26 @@ class _Body extends StatelessWidget {
             _Number(
               code: 'days',
               icon: Icons.event_repeat,
-              value: '${week.streakDays}',
+              value: week.streakDays,
               label: l10n.weekStatDays,
             ),
             const SizedBox(width: AppSpacing.sm),
             _Number(
               code: 'firstTry',
               icon: Icons.check_circle_outline,
-              value: '${week.firstTry}',
+              value: week.firstTry,
               label: l10n.weekStatFirstTry,
             ),
           ],
         ),
         const SizedBox(height: AppSpacing.betweenCards),
         _Bars(week: week),
-        const SizedBox(height: AppSpacing.betweenCards),
-        _Rating(week: week),
+        // Sem finais na semana o rating não mudou: a linha "de X para X" não
+        // diz nada, e o canvas só a desenha na semana com partidas.
+        if (week.finals > 0) ...[
+          const SizedBox(height: AppSpacing.betweenCards),
+          _Rating(week: week),
+        ],
       ],
     );
   }
@@ -151,12 +215,41 @@ class _Number extends StatelessWidget {
     required this.icon,
     required this.value,
     required this.label,
+    this.signed = false,
   });
 
   final String code;
   final IconData icon;
-  final String value;
+  final int value;
   final String label;
+
+  /// Pontos: positivo leva "+".
+  final bool signed;
+
+  Widget _count(TextStyle? style) {
+    if (!signed) {
+      return NumeroQueConta(
+        valor: value,
+        estilo: style,
+        alinhamento: AlignmentDirectional.centerStart,
+      );
+    }
+    return ValorQueAnima(
+      valor: value.toDouble(),
+      duracao: LucenaMotion.numeroConta,
+      builder: (context, agora) {
+        final n = agora.round();
+        return Text(
+          n > 0 ? '+$n' : '$n',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,13 +285,9 @@ class _Number extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      value,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleLarge?.copyWith(
+                    _count(
+                      theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
-                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
                     Text(
@@ -261,22 +350,26 @@ class _Bars extends StatelessWidget {
                           height: _height,
                           child: Align(
                             alignment: Alignment.bottomCenter,
-                            child: Container(
-                              width: 24,
-                              // Dia sem final: um traço, para a semana aparecer.
-                              height: most == 0
-                                  ? 4
-                                  : (week.perDay[i] * _height / most).clamp(
-                                      4,
-                                      _height,
-                                    ),
-                              decoration: BoxDecoration(
-                                color: week.perDay[i] > 0
-                                    ? colors.primary
-                                    : colors.surfaceContainerHighest,
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(AppShape.tiny),
-                                  bottom: Radius.circular(AppShape.hairline),
+                            // H-ANI-18: a barra cresce de baixo até o valor,
+                            // no tempo da barra que enche; o desenho (topo
+                            // arredondado, base reta) é o do canvas.
+                            child: ValorQueAnima(
+                              valor: most == 0 ? 0 : week.perDay[i] / most,
+                              duracao: LucenaMotion.barraEnche,
+                              builder: (context, fracao) => Container(
+                                key: WeekKeys.bar(i),
+                                width: 24,
+                                // Dia sem final: um traço, para a semana
+                                // aparecer.
+                                height: (fracao * _height).clamp(4, _height),
+                                decoration: BoxDecoration(
+                                  color: week.perDay[i] > 0
+                                      ? colors.primary
+                                      : colors.surfaceContainerHighest,
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(AppShape.tiny),
+                                    bottom: Radius.circular(AppShape.hairline),
+                                  ),
                                 ),
                               ),
                             ),
