@@ -60,8 +60,17 @@ describe('darCurso', () => {
     assert.ok(a.pushEm instanceof Timestamp);
     assert.equal(enviadas.length, 1);
     assert.equal(enviadas[0].token, 'tok-rafael');
-    assert.deepEqual(enviadas[0].data, { tipo: 'presente', curso: 'pilares' });
     const [reg] = await registros('rafael');
+    assert.equal(enviadas[0].notification, undefined);
+    assert.deepEqual(enviadas[0].data, {
+      tipo: 'presente',
+      curso: 'pilares',
+      titulo: 'Você ganhou o Pilares do Xadrez',
+      texto: 'Os 20 capítulos já estão abertos.',
+      pushId: r.registroId,
+      uid: 'rafael',
+      conta: 'ra***@exemplo.com',
+    });
     assert.equal(reg.id, r.registroId);
     assert.equal((reg as Record<string, unknown>).acao, 'dar');
     assert.equal((reg as Record<string, unknown>).push, 'enviado');
