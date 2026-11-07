@@ -131,6 +131,8 @@ final class CloudCourseGrantsRepository implements CourseGrantsRepository {
               grants.seen[e.key]!.isBefore(e.value))
             e.key: e.value,
       },
+      blocked: grants.blocked,
+      blockedUntil: grants.blockedUntil,
     );
     _emit(merged);
     await _preferences.setString(cacheKey(uid), jsonEncode(merged.toJson()));

@@ -85,17 +85,32 @@ final class CourseGrant {
 }
 
 /// O documento `acessos/{uid}` lido pelo app: os cursos dados ou comprados e
-/// quando a tela "Curso liberado" já apareceu (`vistos`).
+/// quando a tela "Curso liberado" já apareceu (`vistos`). Com `bloqueio`
+/// vigente (`ate` nulo ou futuro), nenhum curso abre (H-R5-39, Dúvida 8).
 final class CourseGrants {
-  const CourseGrants({this.courses = const {}, this.seen = const {}});
+  const CourseGrants({
+    this.courses = const {},
+    this.seen = const {},
+    this.blocked = false,
+    this.blockedUntil,
+  });
 
   static const empty = CourseGrants();
 
   final Map<String, CourseGrant> courses;
   final Map<String, DateTime> seen;
 
-  /// O acesso que vale agora para [courseId]; nulo se não tem ou acabou.
+  /// Há `bloqueio` no documento; vale até [blockedUntil] (nulo: sem fim).
+  final bool blocked;
+  final DateTime? blockedUntil;
+
+  bool blockedAt(DateTime now) =>
+      blocked && (blockedUntil == null || now.isBefore(blockedUntil!));
+
+  /// O acesso que vale agora para [courseId]; nulo se não tem, acabou ou a
+  /// conta está bloqueada.
   CourseGrant? active(String courseId, DateTime now) {
+    if (blockedAt(now)) return null;
     final grant = courses[courseId];
     return grant != null && grant.activeAt(now) ? grant : null;
   }
@@ -111,8 +126,12 @@ final class CourseGrants {
     return givenAt != null && seenAt.isBefore(givenAt);
   }
 
-  CourseGrants markSeen(String courseId, DateTime at) =>
-      CourseGrants(courses: courses, seen: {...seen, courseId: at});
+  CourseGrants markSeen(String courseId, DateTime at) => CourseGrants(
+    courses: courses,
+    seen: {...seen, courseId: at},
+    blocked: blocked,
+    blockedUntil: blockedUntil,
+  );
 
   /// Aceita datas como `DateTime` (do serviço) ou texto ISO (da cópia).
   static CourseGrants fromJson(Map<String, Object?>? json) {
@@ -133,24 +152,38 @@ final class CourseGrants {
         if (at != null) seen['${entry.key}'] = at;
       }
     }
-    return CourseGrants(courses: courses, seen: seen);
+    final block = json['bloqueio'];
+    return CourseGrants(
+      courses: courses,
+      seen: seen,
+      blocked: block is Map,
+      blockedUntil: block is Map ? _date(block['ate']) : null,
+    );
   }
 
   Map<String, Object?> toJson() => {
     'cursos': {for (final e in courses.entries) e.key: e.value.toJson()},
     'vistos': {for (final e in seen.entries) e.key: e.value.toIso8601String()},
+    if (blocked)
+      'bloqueio': {
+        if (blockedUntil != null) 'ate': blockedUntil!.toIso8601String(),
+      },
   };
 
   @override
   bool operator ==(Object other) =>
       other is CourseGrants &&
       _mapEquals(other.courses, courses) &&
-      _mapEquals(other.seen, seen);
+      _mapEquals(other.seen, seen) &&
+      other.blocked == blocked &&
+      other.blockedUntil == blockedUntil;
 
   @override
   int get hashCode => Object.hash(
     Object.hashAllUnordered(courses.entries.map((e) => (e.key, e.value))),
     Object.hashAllUnordered(seen.entries.map((e) => (e.key, e.value))),
+    blocked,
+    blockedUntil,
   );
 }
 
