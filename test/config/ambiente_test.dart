@@ -17,4 +17,9 @@ void main() {
   test('sem flavor no teste, o ambiente atual é dev', () {
     expect(Ambiente.atual(), Ambiente.dev);
   });
+
+  test('cada ambiente tem o seu site', () {
+    expect(Ambiente.dev.siteHost, 'lucena-dev-gnc.web.app');
+    expect(Ambiente.prod.siteHost, 'lucena-2f4de.web.app');
+  });
 }

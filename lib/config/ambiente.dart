@@ -1,4 +1,6 @@
-import 'package:flutter/services.dart';
+// Dart puro (o domínio usa o [Ambiente.siteHost]): o flavor vem do mesmo
+// define que o `appFlavor` do Flutter lê (services/flavor.dart).
+const String _flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
 
 /// O ambiente do build, pelo flavor do Android (`--flavor dev|prod`).
 ///
@@ -12,10 +14,20 @@ enum Ambiente {
   prod;
 
   /// O ambiente deste build. [flavor] existe para o teste.
-  static Ambiente atual({String? flavor = appFlavor}) =>
+  static Ambiente atual({String? flavor = _flavor}) =>
       flavor == 'prod' ? prod : dev;
 
   bool get isProd => this == prod;
+
+  /// O site do ambiente (sem `https://`): os links que o app gera, os App
+  /// Links e as páginas do site (Sobre, privacidade, termos). O de prod é o
+  /// Firebase Hosting até o domínio próprio ([AppLinks.finalHost]) ser
+  /// comprado: a troca é aqui e no `appLinkHost` do
+  /// `android/app/build.gradle.kts`.
+  String get siteHost => switch (this) {
+    dev => 'lucena-dev-gnc.web.app',
+    prod => 'lucena-2f4de.web.app',
+  };
 }
 
 /// O Firebase Emulator Suite para o QA (`--dart-define=FIREBASE_EMULADOR=true`),

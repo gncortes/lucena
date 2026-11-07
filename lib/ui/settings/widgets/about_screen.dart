@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/ambiente.dart';
 import '../../../domain/models/legal_document.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
@@ -22,10 +23,10 @@ class AboutScreen extends StatelessWidget {
   /// A versão do app, para quem relata um problema. Vazia: não aparece.
   final String version;
 
-  /// O site do app, no idioma de quem usa (pt na raiz; en e es com prefixo;
-  /// os outros idiomas vão para o inglês).
+  /// O site do app ([Ambiente.siteHost]), no idioma de quem usa (pt na raiz;
+  /// en e es com prefixo; os outros idiomas vão para o inglês).
   static Uri websiteFor(String languageCode) {
-    const base = 'https://gncortes.github.io/lucena/';
+    final base = 'https://${Ambiente.atual().siteHost}/';
     return Uri.parse(switch (languageCode) {
       'pt' => base,
       'es' => '${base}es/',

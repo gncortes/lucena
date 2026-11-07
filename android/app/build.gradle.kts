@@ -66,10 +66,19 @@ android {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "Lucena Dev")
+            // App Links: só o site de dev (os "final" repetem o mesmo host).
+            manifestPlaceholders["appLinkHost"] = "lucena-dev-gnc.web.app"
+            manifestPlaceholders["appLinkFinalHost"] = "lucena-dev-gnc.web.app"
+            manifestPlaceholders["appLinkFinalHostWww"] = "lucena-dev-gnc.web.app"
         }
         create("prod") {
             dimension = "ambiente"
             resValue("string", "app_name", "Lucena")
+            // App Links: o site de prod (troca junto do Ambiente.siteHost em
+            // lib/config/ambiente.dart) e o domínio definitivo.
+            manifestPlaceholders["appLinkHost"] = "lucena-2f4de.web.app"
+            manifestPlaceholders["appLinkFinalHost"] = "playlucena.com"
+            manifestPlaceholders["appLinkFinalHostWww"] = "www.playlucena.com"
         }
     }
 

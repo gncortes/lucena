@@ -466,15 +466,15 @@ void main() {
   test('o site abre no idioma de quem usa', () {
     expect(
       AboutScreen.websiteFor('pt').toString(),
-      'https://gncortes.github.io/lucena/',
+      'https://lucena-dev-gnc.web.app/',
     );
     expect(
       AboutScreen.websiteFor('es').toString(),
-      'https://gncortes.github.io/lucena/es/',
+      'https://lucena-dev-gnc.web.app/es/',
     );
     expect(
       AboutScreen.websiteFor('de').toString(),
-      'https://gncortes.github.io/lucena/en/',
+      'https://lucena-dev-gnc.web.app/en/',
     );
   });
 
@@ -504,23 +504,23 @@ void main() {
   test('a política e os termos abrem no idioma de quem usa', () {
     expect(
       AboutScreen.privacyFor('pt').toString(),
-      'https://gncortes.github.io/lucena/privacidade/',
+      'https://lucena-dev-gnc.web.app/privacidade/',
     );
     expect(
       AboutScreen.termsFor('pt').toString(),
-      'https://gncortes.github.io/lucena/termos/',
+      'https://lucena-dev-gnc.web.app/termos/',
     );
     expect(
       AboutScreen.privacyFor('es').toString(),
-      'https://gncortes.github.io/lucena/es/privacidad/',
+      'https://lucena-dev-gnc.web.app/es/privacidad/',
     );
     expect(
       AboutScreen.termsFor('de').toString(),
-      'https://gncortes.github.io/lucena/en/terms/',
+      'https://lucena-dev-gnc.web.app/en/terms/',
     );
     expect(
       AboutScreen.shown(AboutScreen.privacyFor('pt')),
-      'gncortes.github.io/lucena/privacidade',
+      'lucena-dev-gnc.web.app/privacidade',
     );
   });
 }

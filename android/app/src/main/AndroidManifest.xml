@@ -38,16 +38,17 @@
             <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
             <!-- App Links dos desafios (E1.14): /p/<código>; e das aulas de
                  campanha (T84): /aula/<id> e /escola/<id>. Sem o app, o
-                 endereço abre a landing (firebase.json). O domínio definitivo
-                 entra junto do provisório até a troca. -->
+                 endereço abre a landing (firebase.json). Os domínios vêm do
+                 flavor (manifestPlaceholders no build.gradle.kts): dev só o
+                 site de dev; prod o provisório e o definitivo. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https"/>
-                <data android:host="lucena-2f4de.web.app"/>
-                <data android:host="playlucena.com"/>
-                <data android:host="www.playlucena.com"/>
+                <data android:host="${appLinkHost}"/>
+                <data android:host="${appLinkFinalHost}"/>
+                <data android:host="${appLinkFinalHostWww}"/>
                 <data android:pathPrefix="/p/"/>
                 <data android:pathPrefix="/aula/"/>
                 <data android:pathPrefix="/escola/"/>
