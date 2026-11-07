@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
 import 'package:lucena/domain/models/placement.dart';
-import 'package:lucena/ui/core/keys/course_guide_keys.dart';
-import 'package:lucena/ui/core/keys/placement_keys.dart';
-import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
+import 'package:lucena/ui/core/keys/course_guide_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:patrol/patrol.dart';
 
-import '../testing/e2e_dependencies.dart';
 import '../testing/training/e2e_training.dart';
+import '../testing/e2e_dependencies.dart';
 import 'robots/app_robot.dart';
 import 'robots/training_capture_robot.dart';
 

@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
-import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';

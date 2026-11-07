@@ -1,15 +1,15 @@
-import 'package:dartchess/dartchess.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/conclusion.dart';
-import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/keys/catalog_keys.dart';
-import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/custom_position_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_layout_keys.dart';
+import 'package:dartchess/dartchess.dart';
+import 'package:flutter/widgets.dart';
+import 'package:lucena/domain/models/conclusion.dart';
+import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';

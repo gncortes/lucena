@@ -1,12 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
-import 'package:lucena/ui/core/keys/catalog_keys.dart';
-import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:patrol/patrol.dart';
 
-import '../../testing/e2e_dependencies.dart';
+import 'package:lucena/ui/core/keys/catalog_keys.dart';
+import 'package:lucena/ui/core/keys/game_setup_keys.dart';
+
 import 'catalog_robot.dart';
 import 'game_setup_robot.dart';
+import '../../testing/e2e_dependencies.dart';
 import 'home_robot.dart';
 
 /// A partida às cegas: abrir pelo atalho de "Todos os modos", o aviso do

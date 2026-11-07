@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/voice_keys.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:patrol/patrol.dart';

@@ -5,8 +5,9 @@ import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/core/keys/custom_position_keys.dart';
 import 'package:patrol/patrol.dart';
 
-import '../../testing/board_gestures.dart';
 import 'home_robot.dart';
+import '../../testing/board_gestures.dart';
+
 import 'variant.dart';
 
 /// Tela de posição personalizada: editor, FEN, vez e objetivo.

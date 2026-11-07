@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/training/course_training_repository_local.dart';
@@ -13,11 +13,11 @@ import 'package:lucena/domain/models/training/theme_cycle.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
-import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/training/training_date.dart';
+import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
-import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/script_speech_sheet.dart';
 import 'package:lucena/ui/training_exercise/view_models/training_exercise_cubit.dart';
 import 'package:lucena/ui/training_exercise/widgets/training_exercise_screen.dart';
@@ -25,8 +25,8 @@ import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
 import '../testing/training/e2e_training.dart';
-import '../testing/training/training_fixture_preferences.dart';
 import '../testing/training/training_fixture_scope.dart';
+import '../testing/training/training_fixture_preferences.dart';
 import 'robots/app_robot.dart';
 import 'robots/training_capture_robot.dart';
 

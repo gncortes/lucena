@@ -1,8 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:lucena/domain/models/rating_level.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
+
+import 'package:lucena/domain/models/rating_level.dart';
+
 import 'robots/app_robot.dart';
 import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/home_layout.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/catalog/view_models/catalog_cubit.dart';
 import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:patrol/patrol.dart';
 
-import 'home_robot.dart';
 import 'variant.dart';
+import 'home_robot.dart';
 
 /// Telas do catálogo: as categorias e, na tela da categoria, os finais em
 /// seções já abertas com as posições em grade.

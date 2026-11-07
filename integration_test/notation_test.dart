@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/lesson.dart';
-import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:patrol/patrol.dart';
 

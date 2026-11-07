@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/training/e2e_training.dart';
