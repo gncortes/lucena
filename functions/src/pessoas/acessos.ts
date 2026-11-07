@@ -120,9 +120,16 @@ export function mascararEmail(email: string | undefined): string {
   return `${nome.slice(0, 2)}***@${dominio}`;
 }
 
-/** O texto do aviso de presente (R5 §7). */
-export function textoDoPresente(curso: string): { title: string; body: string } {
-  return { title: `Você ganhou o ${CURSOS[curso].nome}`, body: 'Os 20 capítulos já estão abertos.' };
+/**
+ * O texto do aviso do curso dado pelo painel (R5 §7): presente ou pagamento
+ * feito fora da loja (o pago por fora não é presente; E1.19-qa-r5, jornada 2).
+ */
+export function textoDoPush(curso: string, origem: PedidoDarCurso['origem']): { title: string; body: string } {
+  const nome = CURSOS[curso].nome;
+  if (origem === 'pagoPorFora') {
+    return { title: 'Pagamento confirmado', body: `O ${nome} é seu. Os 20 capítulos já estão abertos.` };
+  }
+  return { title: `Você ganhou o ${nome}`, body: 'Os 20 capítulos já estão abertos.' };
 }
 
 export async function darCursoCore(
@@ -200,7 +207,7 @@ async function enviarPresente(
   }
   try {
     // Data-only (Dúvida 8): o app monta a notificação e confere uid/conta antes de mostrar.
-    const { title, body } = textoDoPresente(pedido.curso);
+    const { title, body } = textoDoPush(pedido.curso, pedido.origem);
     await mensageiro.send({
       token,
       data: { tipo: 'presente', curso: pedido.curso, titulo: title, texto: body, pushId: registroId, uid: pedido.uid, conta },

@@ -82,15 +82,23 @@ class RecordedJourneyRobot {
     await $(CourseUnlockedKeys.close).tap();
   }
 
-  /// O título e o texto do push de presente (`textoDoPresente` em
+  /// O título e o texto do push de cada origem (`textoDoPush` em
   /// `functions/src/pessoas/acessos.ts`).
-  static const giftTitle = 'Você ganhou o Pilares do Xadrez';
-  static const giftText = 'Os 20 capítulos já estão abertos.';
+  static const pushTexts = {
+    'presente': (
+      title: 'Você ganhou o Pilares do Xadrez',
+      body: 'Os 20 capítulos já estão abertos.',
+    ),
+    'pagoPorFora': (
+      title: 'Pagamento confirmado',
+      body: 'O Pilares do Xadrez é seu. Os 20 capítulos já estão abertos.',
+    ),
+  };
 
   /// Jornadas 1 e 2: o aluno se cadastra, o painel dá o Pilares com [origin]
-  /// (presente ou pago por fora), o push chega com o app em segundo plano,
-  /// o "Curso liberado" abre e o aluno faz a 1ª lição. O push é o que a
-  /// Function manda hoje para as duas origens.
+  /// (presente ou pago por fora), o push chega com o app em segundo plano
+  /// no texto daquela origem, o "Curso liberado" abre e o aluno faz a 1ª
+  /// lição.
   Future<void> giftJourney({
     required String origin,
     required GrantOrigin expected,
@@ -105,13 +113,15 @@ class RecordedJourneyRobot {
       origin: origin,
       sendPush: true,
     );
-    await pushArrives(giftTitle, giftText, {
+    // O FCM não é emulado: a notificação vem pelo adb, com o texto da Function.
+    final text = pushTexts[origin]!;
+    await pushArrives(text.title, text.body, {
       'tipo': 'presente',
       'curso': pilaresCourseId,
       'uid': student.uid,
-      'titulo': giftTitle,
-      'texto': giftText,
-      'pushId': ?(given['push'] as Map?)?['pushId'] as String?,
+      'titulo': text.title,
+      'texto': text.body,
+      'pushId': given['registroId']! as String,
     });
     await courseUnlockedOnce();
     expect(

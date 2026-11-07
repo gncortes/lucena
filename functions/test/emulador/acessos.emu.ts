@@ -76,6 +76,20 @@ describe('darCurso', () => {
     assert.equal((reg as Record<string, unknown>).push, 'enviado');
   });
 
+  test('pago por fora: o push vai no texto de pagamento, não no de presente', async () => {
+    await criarPessoa('bruno', 'bruno@exemplo.com', 'Bruno Reis');
+    await aparelho('bruno', 'permitida');
+
+    const r = await chamar<Dado>(darCurso, 'admin', { uid: 'bruno', curso: 'pilares', origem: 'pagoPorFora' });
+
+    assert.equal(r.push, 'enviado');
+    assert.equal((await acessos('bruno'))!.cursos.pilares.origem, 'pagoPorFora');
+    assert.equal(enviadas.length, 1);
+    assert.equal(enviadas[0].data.titulo, 'Pagamento confirmado');
+    assert.equal(enviadas[0].data.texto, 'O Pilares do Xadrez é seu. Os 20 capítulos já estão abertos.');
+    assert.equal(enviadas[0].data.tipo, 'presente'); // o toque abre o curso liberado
+  });
+
   test('sem permissão ou sem token: acesso dado, "Sem push" no registro, nada enviado', async () => {
     await criarPessoa('marina', 'marina@exemplo.com');
     await aparelho('marina', 'negada');

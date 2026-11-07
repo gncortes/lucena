@@ -2,7 +2,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { HttpsError } from 'firebase-functions/https';
-import { lerPedidoDarCurso, textoDoPresente } from '../src/pessoas/acessos';
+import { lerPedidoDarCurso, textoDoPush } from '../src/pessoas/acessos';
 
 const agora = new Date('2026-11-26T18:20:00Z');
 
@@ -54,6 +54,16 @@ describe('lerPedidoDarCurso', () => {
   });
 
   test('texto do presente', () => {
-    assert.equal(textoDoPresente('pilares').title, 'Você ganhou o Pilares do Xadrez');
+    assert.deepEqual(textoDoPush('pilares', 'presente'), {
+      title: 'Você ganhou o Pilares do Xadrez',
+      body: 'Os 20 capítulos já estão abertos.',
+    });
+  });
+
+  test('pago por fora: o push fala de pagamento, não de presente', () => {
+    assert.deepEqual(textoDoPush('pilares', 'pagoPorFora'), {
+      title: 'Pagamento confirmado',
+      body: 'O Pilares do Xadrez é seu. Os 20 capítulos já estão abertos.',
+    });
   });
 });
