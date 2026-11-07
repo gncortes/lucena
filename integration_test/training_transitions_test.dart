@@ -8,8 +8,8 @@ import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/training_opening/view_models/training_opening_cubit.dart';
 import 'package:patrol/patrol.dart';
 
-import '../testing/training/e2e_training.dart';
 import '../testing/e2e_dependencies.dart';
+import '../testing/training/e2e_training.dart';
 import 'robots/app_robot.dart';
 import 'robots/script_lesson_robot.dart';
 import 'robots/training_capture_robot.dart';

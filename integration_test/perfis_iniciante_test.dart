@@ -1,40 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/training/course_training_repository.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
-
-import '../testing/e2e_dependencies.dart';
-import '../testing/training/e2e_training.dart';
-
+import 'package:lucena/domain/use_cases/training/complete_training_lesson.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
+import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/keys/account_keys.dart';
-import 'package:lucena/ui/core/keys/training_entry_keys.dart';
-import 'package:lucena/ui/core/keys/tour_keys.dart';
-import 'package:lucena/ui/core/keys/training_keys.dart';
-import 'package:lucena/data/repositories/training/course_training_repository.dart';
-import 'package:lucena/domain/use_cases/training/complete_training_lesson.dart';
-import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
-import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/core/keys/my_progress_keys.dart';
+import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
-import 'package:lucena/ui/core/keys/conclusion_keys.dart';
-import 'package:lucena/ui/core/keys/profile_keys.dart';
+import 'package:lucena/ui/core/keys/tour_keys.dart';
+import 'package:lucena/ui/core/keys/training_entry_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
+import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:patrol/patrol.dart';
 
+import '../testing/e2e_dependencies.dart';
+import '../testing/training/e2e_training.dart';
 import 'robots/app_robot.dart';
 import 'robots/conclusion_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/profile_robot.dart';
 import 'robots/race_robot.dart';
-import 'robots/speedrun_robot.dart';
 import 'robots/script_lesson_robot.dart';
+import 'robots/speedrun_robot.dart';
 import 'robots/tour_robot.dart';
 import 'robots/training_capture_robot.dart';
 

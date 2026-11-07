@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';

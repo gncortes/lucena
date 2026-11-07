@@ -24,11 +24,11 @@ import 'package:lucena/ui/training_opening/widgets/training_opening_screen.dart'
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
-import '../testing/training/e2e_training.dart';
 import '../testing/training/authored_opening_fixture.dart';
+import '../testing/training/e2e_training.dart';
 import '../testing/training/repertoire_part_fixture.dart';
-import '../testing/training/training_fixture_scope.dart';
 import '../testing/training/training_fixture_preferences.dart';
+import '../testing/training/training_fixture_scope.dart';
 import 'robots/app_robot.dart';
 import 'robots/training_capture_robot.dart';
 

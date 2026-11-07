@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/board_settings.dart';
@@ -11,14 +12,12 @@ import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:patrol/patrol.dart';
 
-import 'home_robot.dart';
 import '../../testing/board_gestures.dart';
-
+import 'home_robot.dart';
 import 'variant.dart';
 
 /// Tela do tabuleiro livre. As casas são tocadas pela posição no tabuleiro.

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/conclusion.dart';
+import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';

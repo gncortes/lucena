@@ -1,14 +1,14 @@
-import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/my_progress_keys.dart';
+import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:patrol/patrol.dart';
 
-import 'home_robot.dart';
 import 'conclusion_robot.dart';
+import 'home_robot.dart';
 import 'variant.dart';
 
 /// O que o jogador acumula: o rating, as mensagens da conclusão da partida e

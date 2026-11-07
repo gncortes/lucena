@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';

@@ -17,11 +17,7 @@ abstract final class PurchaseKeys {
   static const offlineBanner = Key('purchase.offline.banner');
   static const canceled = Key('purchase.snackbar.cancelled');
 
-  /// Concluída (H-VEN-05) e Pendente (H-VEN-06).
-  static const doneScreen = Key('purchase.done');
-  static const doneTitle = Key('purchase.done.title');
-  static const doneGoal = Key('purchase.done.goal');
-  static const doneSeeCourse = Key('purchase.done.seeCourse');
+  /// Pendente (H-VEN-06). A Concluída é o Curso liberado (H-R5-62).
   static const pendingScreen = Key('purchase.pending');
   static const pendingOk = Key('purchase.pending.ok');
 

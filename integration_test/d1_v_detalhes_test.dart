@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:patrol/patrol.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
+import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
 import 'game_review_test.dart' show reviewGame;

@@ -5,11 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/campaign/campaign_repository.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
+import 'package:lucena/data/repositories/profile/profile_repository.dart';
+import 'package:lucena/data/repositories/training/course_training_repository.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/keys/course_unlocked_keys.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/theme/app_colors.dart';
@@ -18,6 +21,8 @@ import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_course_training_repository.dart';
+import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_purchase_service.dart';
 import '../../../testing/test_app.dart';
 
@@ -84,6 +89,12 @@ void main() {
           RepositoryProvider<CampaignRepository>.value(value: campaigns),
           RepositoryProvider<CharacterRepository>.value(
             value: FakeCharacterRepository(),
+          ),
+          RepositoryProvider<ProfileRepository>.value(
+            value: FakeProfileRepository(),
+          ),
+          RepositoryProvider<TrainingRepository>.value(
+            value: FakeTrainingRepository(),
           ),
         ],
         child: TestApp(
@@ -177,20 +188,26 @@ void main() {
     'H-ANI-27: a compra concluída tem o círculo, o anel e os botões',
     (tester) async {
       await pump(tester, D2Paths.pilaresPurchaseDone, settle: false);
+      // O Viktor, o nome e o plano chegam antes da animação começar.
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pump();
       await tester.pump(const Duration(milliseconds: 50));
-      expect(find.byKey(PurchaseKeys.doneScreen), findsOneWidget);
+      expect(find.byKey(CourseUnlockedKeys.screen), findsOneWidget);
       expect(find.byKey(MotionKeys.circuloDaCompra), findsOneWidget);
       expect(find.byKey(MotionKeys.anelDaCompra), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 800));
+      // O relógio espera a rota chegar; o anel some até 800 ms depois.
+      for (var i = 0; i < 12; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
       expect(find.byKey(MotionKeys.anelDaCompra), findsNothing);
       await tester.pumpAndSettle();
-      expect(find.byKey(PurchaseKeys.doneGoal), findsOneWidget);
-      expect(find.byKey(PurchaseKeys.doneTitle), findsOneWidget);
+      expect(find.byKey(CourseUnlockedKeys.action), findsOneWidget);
+      expect(find.byKey(CourseUnlockedKeys.title), findsOneWidget);
     },
   );
 
-  // Bug 3 da D2 (PropV2CompraConcluida): círculo verde-claro com ✓ verde e
-  // "Escolher meu objetivo" preso embaixo.
+  // H-R5-62 (PropV2CursoLiberadoCompra): círculo verde-claro com ✓ verde e
+  // "Montar o meu plano" preso embaixo.
   testWidgets('a compra concluída segue o quadro', (tester) async {
     await pump(tester, D2Paths.pilaresPurchaseDone);
     final circulo = find.descendant(
@@ -202,20 +219,15 @@ void main() {
             .color;
     expect(fundo, AppColors.successSurface);
     expect(
-      tester.widget<Icon>(find.byIcon(Icons.check_rounded)).color,
+      tester.widget<Icon>(find.byIcon(CanvasSymbols.check)).color,
       AppColors.successOnSurface,
     );
-    expect(find.text('Escolher meu objetivo'), findsOneWidget);
-    final texto = tester.getRect(
-      find.text(
-        'Os 20 capítulos estão liberados. Com o seu objetivo, a gente planeja '
-        'junto a sua rotina de estudos.',
-      ),
-    );
-    final botao = tester.getRect(find.byKey(PurchaseKeys.doneGoal));
-    // Embaixo da tela, longe do texto (no quadro: 758 de 900).
+    expect(find.text('Montar o meu plano'), findsOneWidget);
+    final texto = tester.getRect(find.byKey(CourseUnlockedKeys.speech));
+    final botao = tester.getRect(find.byKey(CourseUnlockedKeys.action));
+    // Embaixo da tela, abaixo da fala.
     expect(botao.top, greaterThan(915 * .75));
-    expect(botao.top - texto.bottom, greaterThan(100));
+    expect(botao.top, greaterThan(texto.bottom));
   });
 
   // Bug 6 da D2 (PropV2CompraErro e PropV2CompraSemInternet): o aviso fica

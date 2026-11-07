@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/survey.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
 import 'package:patrol/patrol.dart';

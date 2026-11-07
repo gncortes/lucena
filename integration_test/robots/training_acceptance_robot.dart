@@ -1,9 +1,9 @@
+import 'package:chessground/chessground.dart' show Chessboard;
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/use_cases/lesson_rules.dart';
 import 'package:lucena/domain/use_cases/star_challenge_rules.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
-import 'package:chessground/chessground.dart' show Chessboard;
 import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';

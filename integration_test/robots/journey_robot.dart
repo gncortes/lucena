@@ -6,8 +6,8 @@ import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:patrol/patrol.dart';
 
-import 'variant.dart';
 import 'home_robot.dart';
+import 'variant.dart';
 
 /// Telas da Jornada: degraus, desafios e o histórico de cada desafio.
 class JourneyRobot {

@@ -6,22 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/ui/core/keys/ads_keys.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
-import 'package:lucena/ui/core/keys/goal_keys.dart';
-import 'package:lucena/domain/models/goal_preference.dart';
-import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
+import 'package:lucena/ui/core/keys/course_unlocked_keys.dart';
+import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
-import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
-import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
+import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/fakes/fake_purchase_service.dart';
@@ -198,11 +199,11 @@ void main() {
       GoRouter.of($.tester.element(find.byKey(PurchaseKeys.offerScreen)))
           .push<void>(D2Paths.pilaresPurchaseDone),
     );
-    await $(PurchaseKeys.doneScreen).waitUntilVisible();
+    await $(CourseUnlockedKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
     await hold($, 3500);
     await capture.mark('x1_Primeira_tela_de_aluno');
-    await tapIf($, PurchaseKeys.doneSeeCourse);
+    await tapIf($, CourseUnlockedKeys.action);
     await hold($, 4000);
     await capture.end('P7DemoPilares');
   });
@@ -387,11 +388,11 @@ void main() {
       GoRouter.of($.tester.element(find.byKey(PurchaseKeys.offerScreen)))
           .push<void>(D2Paths.pilaresPurchaseDone),
     );
-    await $(PurchaseKeys.doneScreen).waitUntilVisible();
+    await $(CourseUnlockedKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
     await hold($, 3000);
     await capture.mark('x1_Guia_e_plano');
-    await tapIf($, PurchaseKeys.doneSeeCourse);
+    await tapIf($, CourseUnlockedKeys.action);
     await hold($, 3500);
     await $.tester.tap(find.byType(BackButton).first);
     await $.pumpAndSettle();

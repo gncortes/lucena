@@ -3,14 +3,14 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/domain/use_cases/race_turn.dart';
+import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/race/view_models/race_cubit.dart';
 import 'package:patrol/patrol.dart';
 
-import 'home_robot.dart';
 import '../../testing/board_gestures.dart';
+import 'home_robot.dart';
 
 /// A Corrida de problemas: abertura, corrida e resultado.
 class RaceRobot {

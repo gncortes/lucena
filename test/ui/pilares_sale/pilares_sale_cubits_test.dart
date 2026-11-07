@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/domain/models/course_grant.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/ui/pilares_sale/view_models/pilares_offer_cubit.dart';
 import 'package:lucena/ui/pilares_sale/view_models/pilares_purchase_watch_cubit.dart';
@@ -7,6 +8,8 @@ import 'package:lucena/ui/pilares_sale/view_models/pilares_restore_cubit.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
+import '../../../testing/fakes/fake_course_grants.dart';
+import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_purchase_service.dart';
 
 void main() {
@@ -209,6 +212,75 @@ void main() {
       addTearDown(cubit.close);
       await cubit.resumed();
       expect(purchases.refreshes, 1);
+    });
+
+    // H-R5-62: o curso dado pelo servidor abre o Curso liberado uma vez.
+    group('curso dado pelo servidor (H-R5-62)', () {
+      final now = FakeNow(DateTime(2026, 11, 7));
+      CourseGrants grants(GrantOrigin origin) => CourseGrants(
+        courses: {
+          pilaresCourseId: CourseGrant(
+            origin: origin,
+            givenAt: DateTime(2025, 12),
+          ),
+        },
+      );
+
+      for (final (origin, screen) in [
+        (GrantOrigin.gift, PurchaseScreen.gift),
+        (GrantOrigin.purchase, PurchaseScreen.granted),
+        (GrantOrigin.paidOutside, PurchaseScreen.granted),
+      ]) {
+        test('${origin.wire} abre ${screen.name} e marca visto', () async {
+          final repo = FakeCourseGrantsRepository(grants(origin));
+          final cubit = PilaresPurchaseWatchCubit(
+            purchases: purchases,
+            analytics: analytics,
+            grants: repo,
+            now: now,
+          );
+          addTearDown(cubit.close);
+          await pumpEventQueue();
+          expect(cubit.state.screen, screen);
+          expect(cubit.state.id, 1);
+          expect(repo.seen, [pilaresCourseId]);
+        });
+      }
+
+      test('já visto não abre de novo', () async {
+        final repo = FakeCourseGrantsRepository(
+          grants(GrantOrigin.gift).markSeen(pilaresCourseId, now()),
+        );
+        final cubit = PilaresPurchaseWatchCubit(
+          purchases: purchases,
+          analytics: analytics,
+          grants: repo,
+          now: now,
+        );
+        addTearDown(cubit.close);
+        await pumpEventQueue();
+        expect(cubit.state.screen, isNull);
+        expect(repo.seen, isEmpty);
+      });
+
+      test('chega com o app aberto: abre uma vez só', () async {
+        final repo = FakeCourseGrantsRepository();
+        final cubit = PilaresPurchaseWatchCubit(
+          purchases: purchases,
+          analytics: analytics,
+          grants: repo,
+          now: now,
+        );
+        addTearDown(cubit.close);
+        await pumpEventQueue();
+        expect(cubit.state.screen, isNull);
+        repo.current = grants(GrantOrigin.gift);
+        await pumpEventQueue();
+        expect(cubit.state.screen, PurchaseScreen.gift);
+        repo.current = repo.current;
+        await pumpEventQueue();
+        expect(cubit.state.id, 1);
+      });
     });
   });
 }

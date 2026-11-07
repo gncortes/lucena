@@ -8,9 +8,9 @@ import 'package:lucena/config/dependencies.dart' show hideDevToolsForPrints;
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_repository.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
+import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/domain/models/progress_summary.dart';
 import 'package:lucena/domain/models/user_profile.dart';
-import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
@@ -18,6 +18,7 @@ import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/alerts_keys.dart';
 import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
+import 'package:lucena/ui/core/keys/course_unlocked_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/my_progress_keys.dart';
 import 'package:lucena/ui/core/keys/privacy_keys.dart';
@@ -128,7 +129,7 @@ void main() {
       (
         'PropV2CompraConcluida',
         D2Paths.pilaresPurchaseDone,
-        PurchaseKeys.doneScreen,
+        CourseUnlockedKeys.screen,
       ),
     ]);
   }, tags: ['d2-venda']);

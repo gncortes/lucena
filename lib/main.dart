@@ -934,6 +934,8 @@ class _LucenaAppState extends State<LucenaApp> {
             create: (context) => PilaresPurchaseWatchCubit(
               purchases: dependencies.purchaseRepository,
               analytics: dependencies.analyticsRepository,
+              grants: dependencies.courseGrantsRepository,
+              now: dependencies.now,
             ),
           ),
           BlocProvider(

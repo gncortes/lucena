@@ -10,7 +10,11 @@ import '../../ui/my_progress/view_models/my_progress_cubit.dart';
 import '../../ui/my_progress/widgets/my_progress_screen.dart';
 import '../../data/repositories/characters/character_repository.dart';
 import '../../data/repositories/course_preview/course_preview_repository.dart';
+import '../../data/repositories/profile/profile_repository.dart';
 import '../../data/repositories/purchase/purchase_repository.dart';
+import '../../data/repositories/training/course_training_repository.dart';
+import '../../ui/course_unlocked/view_models/course_unlocked_cubit.dart';
+import '../../ui/course_unlocked/widgets/course_unlocked_screen.dart';
 import '../../ui/core/analytics/analytics_context.dart';
 import '../../ui/core/motion/rota_que_abre.dart';
 import '../../ui/course_preview/view_models/course_preview_cubit.dart';
@@ -77,8 +81,11 @@ abstract final class D2Paths {
   /// Compra processando (H-VEN-07).
   static const pilaresPurchaseProcessing = '/pilares/purchase/processing';
 
-  /// Compra concluída (H-VEN-07).
+  /// Compra concluída (H-VEN-07): o Curso liberado pela compra (H-R5-62).
   static const pilaresPurchaseDone = '/pilares/purchase/done';
+
+  /// O Curso liberado pelo presente (H-R5-62).
+  static const pilaresGiftDone = '/pilares/gift/done';
 
   /// Compra pendente (H-VEN-08).
   static const pilaresPurchasePending = '/pilares/purchase/pending';
@@ -253,7 +260,12 @@ final List<RouteBase> d2Routes = [
   appRoute(
     name: RouteNames.pilaresPurchaseDone,
     path: D2Paths.pilaresPurchaseDone,
-    builder: (context, state) => const PilaresPurchaseDoneScreen(),
+    builder: (context, state) => _courseUnlocked(CourseUnlockedOrigin.purchase),
+  ),
+  appRoute(
+    name: RouteNames.pilaresGiftDone,
+    path: D2Paths.pilaresGiftDone,
+    builder: (context, state) => _courseUnlocked(CourseUnlockedOrigin.gift),
   ),
   appRoute(
     name: RouteNames.pilaresPurchasePending,
@@ -363,3 +375,12 @@ final List<RouteBase> d2Routes = [
     ),
   ),
 ];
+
+Widget _courseUnlocked(CourseUnlockedOrigin origin) => BlocProvider(
+  create: (context) => CourseUnlockedCubit(
+    characters: context.read<CharacterRepository>(),
+    profile: context.read<ProfileRepository>(),
+    training: context.read<TrainingRepository>(),
+  )..load(),
+  child: CourseUnlockedScreen(origin: origin),
+);

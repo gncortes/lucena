@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/campaign/campaign_repository.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
+import 'package:lucena/data/repositories/profile/profile_repository.dart';
+import 'package:lucena/data/repositories/training/course_training_repository.dart';
 import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
@@ -12,13 +14,14 @@ import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/purchase_keys.dart';
-import 'package:lucena/ui/core/widgets/busy_button.dart';
 import 'package:lucena/ui/pilares_sale/view_models/pilares_purchase_watch_cubit.dart';
 import 'package:lucena/ui/pilares_sale/widgets/pilares_purchase_bridge.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_course_training_repository.dart';
+import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_purchase_service.dart';
 import '../../../testing/test_app.dart';
 
@@ -81,6 +84,12 @@ void main() {
           RepositoryProvider<CampaignRepository>.value(value: campaigns),
           RepositoryProvider<CharacterRepository>.value(
             value: FakeCharacterRepository(),
+          ),
+          RepositoryProvider<ProfileRepository>.value(
+            value: FakeProfileRepository(),
+          ),
+          RepositoryProvider<TrainingRepository>.value(
+            value: FakeTrainingRepository(),
           ),
         ],
         child: TestApp(
@@ -247,27 +256,6 @@ void main() {
       expect(find.byKey(PurchaseKeys.restoredScreen), findsOneWidget);
     });
 
-    testWidgets('S1: "Ver o curso" é botão contornado e abre o Guia', (
-      tester,
-    ) async {
-      await pump(tester, D2Paths.pilaresPurchaseDone);
-      final button = tester.widget<BusyButton>(
-        find
-            .ancestor(
-              of: find.byKey(PurchaseKeys.doneSeeCourse),
-              matching: find.byType(BusyButton),
-            )
-            .first,
-      );
-      expect(button.style, BusyButtonStyle.outlined);
-      await tester.tap(find.byKey(PurchaseKeys.doneSeeCourse));
-      await tester.pumpAndSettle();
-      expect(
-        find.text('treino ${Routes.training(TrainingCourse.pilares.name)}'),
-        findsOneWidget,
-      );
-    });
-
     testWidgets('não achou: aviso e Entrar com outra conta', (tester) async {
       await pump(tester, D2Paths.pilaresRestore);
       await tester.tap(find.byKey(PurchaseKeys.restoreSearch));
@@ -328,15 +316,28 @@ void main() {
     );
     addTearDown(watch.close);
     await tester.pumpWidget(
-      BlocProvider.value(
-        value: watch,
-        child: PilaresPurchaseBridge(
-          router: router,
-          child: TestApp(
-            locale: const Locale('pt'),
-            purchaseRepository: purchases,
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
+          RepositoryProvider<ProfileRepository>.value(
+            value: FakeProfileRepository(),
+          ),
+          RepositoryProvider<TrainingRepository>.value(
+            value: FakeTrainingRepository(),
+          ),
+        ],
+        child: BlocProvider.value(
+          value: watch,
+          child: PilaresPurchaseBridge(
             router: router,
-            child: const SizedBox.shrink(),
+            child: TestApp(
+              locale: const Locale('pt'),
+              purchaseRepository: purchases,
+              router: router,
+              child: const SizedBox.shrink(),
+            ),
           ),
         ),
       ),
