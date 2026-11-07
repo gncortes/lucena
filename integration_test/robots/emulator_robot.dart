@@ -25,10 +25,13 @@ import 'profile_robot.dart';
 /// Functions 5001, projeto do `google-services.json` do flavor dev) e as
 /// contas de `tools/emulador_contas_qa.py`.
 class EmulatorRobot {
-  EmulatorRobot(this.$);
+  EmulatorRobot(this.$, {this.realPush = false});
 
   final PatrolIntegrationTester $;
   final admin = EmulatorAdmin();
+
+  /// O push de verdade (FCM real do flavor dev) em vez do [push] falso.
+  final bool realPush;
 
   /// O toque no push: o FCM não é emulado.
   final push = FakePushRepository(allowed: true);
@@ -48,7 +51,7 @@ class EmulatorRobot {
     final dispatcher = $.tester.platformDispatcher;
     dispatcher.localesTestValue = [const Locale('pt', 'BR')];
     addTearDown(dispatcher.clearLocalesTestValue);
-    dependencies = await emulatorDependencies(push: push);
+    dependencies = await emulatorDependencies(push: realPush ? null : push);
     await $.pumpWidgetAndSettle(
       LucenaApp(key: UniqueKey(), dependencies: dependencies),
     );

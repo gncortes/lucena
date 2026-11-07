@@ -32,10 +32,11 @@ Future<void> startEmulatorFirebase() async {
 /// o FCM não é emulado e o cenário entrega o mesmo `data` que a Function
 /// manda. Começa sem conta (a sessão do cenário anterior sai).
 ///
+/// Sem [push], o push é o de verdade: o FCM do projeto do flavor dev entrega
+/// o que as Functions do emulador mandam (jornada 7, push real).
+///
 /// O Analytics fica desligado pelo `E2E=true` (E1.03 §10).
-Future<Dependencies> emulatorDependencies({
-  required PushRepository push,
-}) async {
+Future<Dependencies> emulatorDependencies({PushRepository? push}) async {
   await startEmulatorFirebase();
   await FirebaseAuth.instance.signOut();
   return Dependencies.normal(
@@ -43,6 +44,6 @@ Future<Dependencies> emulatorDependencies({
     firebase: true,
     trainingInstallSeed: await Dependencies.trainingInstallSeed(),
     push: push,
-    pushService: FakePushService(),
+    pushService: push == null ? null : FakePushService(),
   );
 }

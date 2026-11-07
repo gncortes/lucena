@@ -16,8 +16,8 @@ import 'pilares_lesson_robot.dart';
 /// "Jornadas com vídeo"): cadastro, push que chega com o app em segundo plano,
 /// a primeira lição do Pilares e o progresso no servidor.
 class RecordedJourneyRobot {
-  RecordedJourneyRobot(this.$)
-    : app = EmulatorRobot($),
+  RecordedJourneyRobot(this.$, {bool realPush = false})
+    : app = EmulatorRobot($, realPush: realPush),
       marks = JourneyMarksRobot($);
 
   final PatrolIntegrationTester $;
