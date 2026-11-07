@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:lucena/data/services/firebase/cloud_store_service.dart';
+import 'package:lucena/domain/models/push_permission.dart';
 
 /// O Firestore na memória. Com [offline], a leitura falha e a gravação não
 /// termina (fica na fila, como no Firestore de verdade).
@@ -12,6 +13,9 @@ class FakeCloudStoreService implements CloudStoreService {
 
   /// O token do push de cada conta (`push/device`).
   final pushTokens = <String, String>{};
+
+  /// A permissão e a abertura gravadas em `push/device` (H-R5-60).
+  final pushStatus = <String, PushDeviceStatus>{};
 
   /// Os documentos abertos a todos, por `coleção/id`.
   final public = <String, Map<String, Object?>>{};
@@ -70,6 +74,7 @@ class FakeCloudStoreService implements CloudStoreService {
     progress.remove(uid);
     games.remove(uid);
     pushTokens.remove(uid);
+    pushStatus.remove(uid);
     feedback.removeWhere((doc) => doc['uid'] == uid);
   }
 
@@ -90,6 +95,14 @@ class FakeCloudStoreService implements CloudStoreService {
   Future<void> deletePushToken(String uid) {
     if (offline) return Completer<void>().future;
     pushTokens.remove(uid);
+    pushStatus.remove(uid);
+    return Future.value();
+  }
+
+  @override
+  Future<void> writePushStatus(String uid, PushDeviceStatus status) {
+    if (offline) return Completer<void>().future;
+    pushStatus[uid] = status;
     return Future.value();
   }
 
