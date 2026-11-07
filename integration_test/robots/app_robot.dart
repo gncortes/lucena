@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_grants_repository.dart';
+import 'package:lucena/data/repositories/push/push_repository.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
 import 'package:patrol/patrol.dart';
@@ -41,6 +43,8 @@ class AppRobot {
     PurchaseRepository? purchases,
     bool signedIn = false,
     bool accountInvite = false,
+    PushRepository? push,
+    CourseGrantsRepository? courseGrants,
   }) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
@@ -75,6 +79,8 @@ class AppRobot {
       purchases: purchases,
       signedIn: signedIn,
       accountInvite: accountInvite,
+      push: push,
+      courseGrants: courseGrants,
     );
   }
 
@@ -118,6 +124,8 @@ class AppRobot {
     PurchaseRepository? purchases,
     bool signedIn = false,
     bool accountInvite = false,
+    PushRepository? push,
+    CourseGrantsRepository? courseGrants,
   }) async {
     await $.pumpWidgetAndSettle(
       LucenaApp(
@@ -128,6 +136,8 @@ class AppRobot {
           purchases: purchases,
           signedIn: signedIn,
           accountInvite: accountInvite,
+          push: push,
+          courseGrants: courseGrants,
         ),
       ),
     );

@@ -43,6 +43,7 @@ import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_notification_service.dart';
 
 import 'package:lucena/data/services/notification_service.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_grants_repository.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
 
 import 'package:lucena/data/repositories/reminders/reminders_repository.dart';
@@ -335,6 +336,7 @@ Future<Dependencies> e2eDependencies({
   PurchaseRepository? purchases,
   bool signedIn = false,
   bool accountInvite = false,
+  CourseGrantsRepository? courseGrants,
 }) async {
   if (realCourseTraining && trainingScenario != null) {
     throw ArgumentError('Real course training cannot use a seeded scenario');
@@ -511,6 +513,8 @@ Future<Dependencies> e2eDependencies({
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
     pushRepository: push ?? e2ePush,
+    // O acesso aos cursos que o cenário do presente controla (H-R5-63).
+    courseGrantsRepository: courseGrants ?? const NoCourseGrantsRepository(),
     remindersRepository: LocalRemindersRepository(
       notifications ?? e2eNotifications,
       progress: LocalEndgameProgressRepository(PreferencesService()),
