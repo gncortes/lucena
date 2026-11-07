@@ -9,6 +9,7 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 | Auth | Google e e-mail/senha. A proteção contra enumeração de e-mail está ligada. |
 | Firestore | `(default)` em `nam5` (EUA multirregião), regras em `firestore.rules`. |
 | Storage | Só a foto de perfil enviada (`users/{uid}/avatar.jpg`), regras em `storage.rules`. O bucket padrão precisa ser criado no console (pede o plano Blaze). |
+| Cloud Functions | `functions/` (TypeScript, Node 22, v2, `southamerica-east1`). Testes: `npm --prefix functions test`. |
 | Cloud Messaging | Tópico `all` (todo aparelho entra ao abrir o app). Aviso com `link` nos dados abre o desafio. |
 | Hosting | https://lucena-2f4de.web.app: a landing, `/.well-known/assetlinks.json` e `/p/**` (link de desafio sem o app → landing). |
 
@@ -19,11 +20,14 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 | `users/{uid}` | o dono | o dono, só `name`, `language`, `legal`, `createdAt` (hora do servidor) e `updatedAt` |
 | `users/{uid}/progress/summary` | o dono | o dono; só o id `summary`, chaves e tetos do `ProgressSummary`, apelido até 20 |
 | `users/{uid}/games/{id}` | o dono | o dono cria (id `<micros>-<posição>`, chaves do `gameJson`, soma 1 em `cotas`) e apaga; não muda |
-| `users/{uid}/push/device` | o dono e o admin | o dono, só `token` e `updatedAt` (o último aparelho; sai no logout) |
+| `users/{uid}/push/device` | o dono e o admin | o dono, só `token`, `updatedAt`, `permissao` (`permitida`, `negada`, `nunca`), `conferidoEm` e `ultimaAbertura` (o último aparelho; sai no logout) |
 | `cotas/{uid}` | o dono e o admin | o dono só avança: `feedbackEm`/`feedbackId` (1 feedback por minuto) e `partidas` (+1, teto 20000); ninguém apaga |
 | `feedback/{id}` | admin e o autor | só com conta: `uid` do autor, chaves do `FeedbackEntry`, texto até 500, `createdAt` = hora do servidor, junto com `cotas` |
 | `bloqueios/{uid}` | o dono e o admin | admin (`motivo`, `regra`, `desde`, `ate`, `adminUid`); bloqueio vigente barra toda escrita da conta, menos apagar |
 | `inscritos/{topico}` | admin | ninguém pelo app (só Cloud Function) |
+| `acessos/{uid}` | o dono e o admin | a Function (`cursos.{id}`); o dono só `vistos.{id}` (timestamp, até 200) |
+| `acessos/{uid}/registro/{id}` | admin | ninguém pelo app (só Cloud Function) |
+| `resumosDia/{aaaa-mm-dd}`, `resumosMes/{aaaa-mm}`, `painel/{doc}`, `pushes/{id}`, `relatorios/{dia}`, `pedidosCorrecao/{id}`, `revisoes/{id}`, `entregas/{id}`, `decisoes/{id}`, `promocoes/{id}` | admin | ninguém pelo app (Cloud Function ou agente pelo Admin SDK) |
 | `challenges/{code}` | ninguém | ninguém (o app não usa; o desafio vai no link) |
 | `candidates/{id}` | admin | admin |
 | `featured/{id}` | todos | admin |
