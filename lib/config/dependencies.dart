@@ -32,6 +32,7 @@ import '../data/services/firebase/analytics_service.dart';
 import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/lesson_ad/course_access_repository.dart';
+import '../data/repositories/lesson_ad/course_grants_repository.dart';
 import '../data/repositories/lesson_ad/demo_ad_repository.dart';
 import '../data/repositories/training/demo_offer_repository.dart';
 import '../data/repositories/purchase/opening_offer_repository.dart';
@@ -170,6 +171,7 @@ import '../data/services/firebase/auth_service.dart';
 import '../data/repositories/learning/learning_repository.dart';
 import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/services/firebase/course_grants_service.dart';
 import '../data/repositories/data_export/data_export_repository.dart';
 import '../data/repositories/data_export/data_export_repository_cloud.dart';
 import '../data/repositories/legal/legal_consent_repository.dart';
@@ -298,6 +300,7 @@ class Dependencies {
     this.analyticsRepository = const NoAnalyticsRepository(),
     this.adsRepository = const NoAdsRepository(),
     this.courseAccessRepository = const FullCourseAccessRepository(),
+    this.courseGrantsRepository = const NoCourseGrantsRepository(),
     this.demoAdRepository = const NoDemoAdRepository(),
     this.demoOfferRepository = const NoDemoOfferRepository(),
     this.openingOfferRepository = const NoOpeningOfferRepository(),
@@ -394,10 +397,25 @@ class Dependencies {
     const PurchaseRepository purchases = NoPurchaseRepository();
     // Sem loja (V1 sem compra) o curso segue aberto; com a Play ligada
     // (H-VEN-16), a lição tranca e mostra o anúncio pela compra.
-    final CourseAccessRepository courseAccess =
-        purchases is NoPurchaseRepository
+    final CourseAccessRepository storeAccess = purchases is NoPurchaseRepository
         ? const FullCourseAccessRepository()
         : PurchaseCourseAccessRepository(purchases);
+    // O curso dado ou comprado pelo servidor (`acessos/{uid}`, H-R5-61).
+    final CourseGrantsRepository courseGrants = firebase
+        ? CloudCourseGrantsRepository(
+            FirestoreCourseGrantsService(),
+            preferences,
+            uids: auth.changes.map((account) => account?.uid),
+            currentUid: () => auth.current?.uid,
+            now: now,
+          )
+        : const NoCourseGrantsRepository();
+    unawaited(courseGrants.start());
+    final CourseAccessRepository courseAccess = ServerCourseAccessRepository(
+      storeAccess,
+      courseGrants,
+      now: now,
+    );
     late final course_training.TrainingRepository courseTrainingStorage;
     final trainingAnalytics = TrainingAnalytics(
       now: now,
@@ -656,6 +674,7 @@ class Dependencies {
       openingOfferRepository: LocalOpeningOfferRepository(preferences, now),
       purchaseRepository: purchases,
       courseAccessRepository: courseAccess,
+      courseGrantsRepository: courseGrants,
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
           : const NoStoreListingRepository(),
@@ -831,6 +850,10 @@ class Dependencies {
 
   /// O que a pessoa tem do Pilares e o anúncio da demonstração (T85-D1).
   final CourseAccessRepository courseAccessRepository;
+
+  /// Os cursos dados pelo servidor e a tela "Curso liberado" já vista
+  /// (H-R5-61/62).
+  final CourseGrantsRepository courseGrantsRepository;
   final DemoAdRepository demoAdRepository;
   final DemoOfferRepository demoOfferRepository;
 
