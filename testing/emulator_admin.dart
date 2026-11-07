@@ -301,6 +301,12 @@ class EmulatorAdmin {
     final bool b => {'booleanValue': b},
     final int i => {'integerValue': '$i'},
     final String s => {'stringValue': s},
+    final DateTime d => {'timestampValue': d.toUtc().toIso8601String()},
+    final Map<String, Object?> m => {
+      'mapValue': {
+        'fields': {for (final e in m.entries) e.key: _encode(e.value)},
+      },
+    },
     _ => {'nullValue': null},
   };
 }
