@@ -29,6 +29,8 @@ void main() {
     DateTime? revoked,
     DateTime? given,
     DateTime? seen,
+    bool block = false,
+    DateTime? blockUntil,
   }) => {
     'cursos': {
       pilaresCourseId: {
@@ -42,6 +44,8 @@ void main() {
       },
     },
     if (seen != null) 'vistos': {pilaresCourseId: seen},
+    if (block)
+      'bloqueio': {'motivo': 'abuso', 'desde': given, 'ate': ?blockUntil},
   };
 
   Future<void> settle() => Future<void>.delayed(Duration.zero);
@@ -154,6 +158,42 @@ void main() {
       service.put('u1', doc(given: DateTime.utc(2026, 11, 6, 12)));
       await settle();
       expect(access().access, CourseAccess.owned);
+    });
+
+    test('bloqueio sem fim fecha até a compra da loja', () async {
+      service.docs['u1'] = doc(block: true);
+      await grants.start();
+      await settle();
+      expect(access().access, CourseAccess.demo);
+      expect(
+        access(const _Fixed(CourseAccess.owned)).access,
+        CourseAccess.demo,
+      );
+      expect(grants.current.unseen(pilaresCourseId, now()), isFalse);
+    });
+
+    test('bloqueio com prazo volta a abrir quando vence', () async {
+      service.docs['u1'] = doc(
+        block: true,
+        blockUntil: DateTime.utc(2026, 11, 10),
+      );
+      await grants.start();
+      await settle();
+      final repo = access();
+      expect(repo.access, CourseAccess.demo);
+      now.value = DateTime.utc(2026, 11, 10);
+      expect(repo.access, CourseAccess.owned);
+    });
+
+    test('bloqueio chega com o app aberto e fecha o curso', () async {
+      service.docs['u1'] = doc();
+      await grants.start();
+      await settle();
+      final repo = access();
+      expect(repo.access, CourseAccess.owned);
+      service.put('u1', doc(block: true));
+      await settle();
+      expect(repo.access, CourseAccess.demo);
     });
 
     test('origem desconhecida é ignorada', () async {

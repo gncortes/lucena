@@ -61,7 +61,8 @@ final class PurchaseCourseAccessRepository implements CourseAccessRepository {
 /// O acesso que vale (H-R5-61): a compra da loja ou o curso dado pelo
 /// servidor em `acessos/{uid}` (presente, compra pelo site, pago por fora).
 /// O curso revogado fecha na próxima sincronização; o prazo ([CourseGrant]
-/// `ate`) fecha quando vence.
+/// `ate`) fecha quando vence. Com `bloqueio` vigente, fecha tudo, até a
+/// compra da loja (H-R5-39, Dúvida 8).
 final class ServerCourseAccessRepository implements CourseAccessRepository {
   ServerCourseAccessRepository(this._base, this._grants, {required this._now});
 
@@ -70,8 +71,10 @@ final class ServerCourseAccessRepository implements CourseAccessRepository {
   final Now _now;
 
   CourseAccess _of(CourseAccess base, CourseGrants grants) =>
-      base == CourseAccess.owned ||
-          grants.active(pilaresCourseId, _now()) != null
+      grants.blockedAt(_now())
+      ? CourseAccess.demo
+      : base == CourseAccess.owned ||
+            grants.active(pilaresCourseId, _now()) != null
       ? CourseAccess.owned
       : base;
 
