@@ -11,7 +11,8 @@ import { defineString } from 'firebase-functions/params';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
 import { FUSO } from './comum/config';
-import { analyticsDoBigQuery, atencaoDoAnalytics } from './fechamento/bigquery';
+import { analyticsDoBigQuery, atencaoDoAnalytics, ativosDoBigQuery } from './fechamento/bigquery';
+import { ativosPeriodoCore } from './fechamento/periodo';
 import { atualizarHoje, fecharDia, type DepsFechamento } from './fechamento/fechar';
 import { darCursoCore, desfazerCore, revogarCursoCore, type Deps, type Mensageiro } from './pessoas/acessos';
 import { buscarPessoaPor, montarFicha } from './pessoas/ficha';
@@ -91,6 +92,12 @@ export const fechamentoDia = onSchedule(
     await fecharDia(depsDoDia());
   },
 );
+
+/** H-R5-36 · Ativos de um período personalizado (`{inicio, fim}` em aaaa-mm-dd), 1 consulta ao BigQuery. */
+export const ativosPeriodo = onCall(async (req) => {
+  await exigeAdmin(getFirestore(), req.auth?.uid);
+  return ativosPeriodoCore(ativosDoBigQuery(DATASET_ANALYTICS.value()), req.data, new Date());
+});
 
 /** H-R5-34 · Lote de hora em hora: só `painel/hoje`. */
 export const painelHoje = onSchedule({ schedule: '5 * * * *', timeZone: FUSO, retryCount: 0 }, async () => {

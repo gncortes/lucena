@@ -15,6 +15,7 @@ import {
 import { EVENTOS, sqlAtivos, sqlDoDia, type LinhaEvento } from './consultas';
 import { somarDias, sufixo } from './datas';
 import type { Analytics } from './fechar';
+import type { FonteAtivos } from './periodo';
 
 function texto(v: unknown): string | null {
   return v === null || v === undefined ? null : String(v);
@@ -64,6 +65,17 @@ export function analyticsDoBigQuery(dataset: string, bq = new BigQuery()): Analy
       const [rows] = await bq.query({ query: sqlAtivos(dataset, janelas), params });
       const r = (rows as Record<string, unknown>[])[0] ?? {};
       return Object.fromEntries(Object.keys(janelas).map((k) => [k, Number(r[k] ?? 0)]));
+    },
+  };
+}
+
+/** H-R5-36 · Pessoas distintas ativas no período, numa consulta (a mesma SQL das janelas, com uma janela só). */
+export function ativosDoBigQuery(dataset: string, bq: Pick<BigQuery, 'query'> = new BigQuery()): FonteAtivos {
+  return {
+    async ativosEntre(inicio, fim) {
+      const params = { inicio: sufixo(inicio), fim: sufixo(fim), ativosPeriodo: sufixo(inicio) };
+      const [rows] = await bq.query({ query: sqlAtivos(dataset, { ativosPeriodo: 0 }), params });
+      return Number((rows as Record<string, unknown>[])[0]?.ativosPeriodo ?? 0);
     },
   };
 }
