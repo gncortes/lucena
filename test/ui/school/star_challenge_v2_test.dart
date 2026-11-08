@@ -174,7 +174,13 @@ void main() {
       expect(intro.width, size.width - 32);
       expect(intro.height, closeTo(114, 1));
       expect(intro.top, greaterThanOrEqualTo(timer.bottom + 6 - 1));
-      expect(intro.bottom, closeTo(board.top - 8, 1));
+      // A8: o tabuleiro fica no centro; o cartão vai até 8 dp acima dele e,
+      // se não cabe, rola ali.
+      expect(
+        rectOf(tester, StarChallengeKeys.blockTop).bottom,
+        closeTo(board.top - 8, 1),
+      );
+      expect(intro.bottom, greaterThanOrEqualTo(board.top - 8 - 1));
       expect(
         find.descendant(
           of: find.byKey(StarChallengeKeys.intro),
@@ -431,7 +437,13 @@ void main() {
       final intro = rectOf(tester, StarChallengeKeys.intro);
       final board = rectOf(tester, StarChallengeKeys.board);
       expect(note.bottom, lessThanOrEqualTo(intro.bottom - 16 + 1));
-      expect(intro.bottom, closeTo(board.top - 8, 1));
+      // A8: o tabuleiro fica no centro; o cartão vai até 8 dp acima dele e,
+      // se não cabe, rola ali.
+      expect(
+        rectOf(tester, StarChallengeKeys.blockTop).bottom,
+        closeTo(board.top - 8, 1),
+      );
+      expect(intro.bottom, greaterThanOrEqualTo(board.top - 8 - 1));
       expect(board.width, lessThanOrEqualTo(360));
       expectBalanced(tester, const Size(360, 740));
       expect(tester.takeException(), isNull);

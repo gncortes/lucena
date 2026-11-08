@@ -264,6 +264,10 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     };
   }
 
+  /// A menor altura do convite ou do resultado acima do tabuleiro no centro
+  /// (duas linhas e as margens); abaixo dela, o tabuleiro desce.
+  static const _minAbove = 72.0;
+
   /// A ação fixa e suas margens; a área segura fica fora da reserva.
   static const _actionRoom = kButtonHeight + 8 + 8;
 
@@ -318,11 +322,24 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             _reserveBottom(scaler) -
             2 * AppSpacing.sm -
             box.maxWidth / 2;
-        final reserveTop = max(timerHeight, min(wanted, room));
-        // A8: o centro do tabuleiro no centro útil da tela. Se o que vem em
-        // cima ou embaixo não cabe com ele lá, o tabuleiro desce ou sobe só
-        // o que falta; se nem assim cabe, volta o bloco centrado (T65).
+        // A8: o centro do tabuleiro no centro útil da tela, em todas as
+        // fases. O convite e o resultado ficam com a sobra acima dele e rolam
+        // se não cabem; só o relógio não encolhe. Se nem assim cabe, o
+        // tabuleiro desce ou sobe só o que falta; se nem assim, volta o bloco
+        // centrado (T65).
         final useful = BoardViewport.centerYOf(context);
+        final aboveCenter = useful == null
+            ? room
+            : useful - AppSpacing.sm - box.maxWidth / 2;
+        // Tela baixa, em que acima do centro nem cabem duas linhas do
+        // convite: o tabuleiro desce o que falta (o cartão rola ali).
+        final fitsAbove =
+            wanted <= timerHeight ||
+            aboveCenter - timerHeight >= scaler.scale(_minAbove);
+        final reserveTop = max(
+          timerHeight,
+          min(wanted, fitsAbove ? min(room, aboveCenter) : room),
+        );
         final highest = reserveTop + AppSpacing.sm + box.maxWidth / 2;
         final lowest =
             box.maxHeight -

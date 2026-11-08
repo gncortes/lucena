@@ -167,28 +167,33 @@ void main() {
     );
   }
 
-  // A8: no jogo, o tabuleiro fica no centro útil e de ponta a ponta. Antes
-  // e no fim, o cartão de cima (regras, resultado) não cabe acima do centro:
-  // o tabuleiro desce só o necessário, logo abaixo dele.
-  testWidgets('A8: tabuleiro no centro útil no jogo; antes e no fim, logo '
-      'abaixo do cartão', (tester) async {
+  // A8: antes, no jogo e no fim, o tabuleiro fica no centro útil e de ponta
+  // a ponta. O cartão de cima (regras, resultado) fica com a sobra acima dele
+  // e rola se não cabe.
+  testWidgets('A8: tabuleiro no centro útil antes, no jogo e no fim', (
+    tester,
+  ) async {
     final cubit = await pump(tester, locale: const Locale('pt'));
     setCentroAparelho(tester);
     await tester.pumpAndSettle();
-    void expectLogoAbaixoDoCartao() {
+    void expectCartaoAcima() {
       final card = tester.getRect(find.byKey(StarChallengeKeys.blockTop));
-      expect(card.bottom + 8, greaterThan(centroUtilY - 192));
-      expect(maiorTabuleiro(tester).top, closeTo(card.bottom + 8, 1));
+      expect(card.bottom, lessThanOrEqualTo(maiorTabuleiro(tester).top));
+      expect(card.top, greaterThanOrEqualTo(80 - 1));
     }
 
-    expectLogoAbaixoDoCartao();
+    debugPrint('A8 star antes fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    expectCartaoAcima();
     await tester.tap(find.byKey(StarChallengeKeys.goButton));
     await tester.pumpAndSettle();
     expectTabuleiroNoCentro(tester);
     now.advance(const Duration(seconds: 61));
     cubit.tick();
     await tester.pumpAndSettle();
-    expectLogoAbaixoDoCartao();
+    debugPrint('A8 star fim fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    expectCartaoAcima();
     expect(tester.takeException(), isNull);
   });
 
@@ -502,7 +507,7 @@ void main() {
   }
 
   testWidgets('o bloco fica no meio, entre a barra do app e o rodapé, no '
-      'convite, jogando e no fim; ao tocar em Vai! ele recentra', (
+      'convite, jogando e no fim; ao tocar em Vai! o tabuleiro fica', (
     tester,
   ) async {
     final cubit = await pump(tester);
@@ -514,7 +519,8 @@ void main() {
     final rect = tester.getRect(find.byKey(StarChallengeKeys.board));
     expectBalanced(tester, screen);
     expect(rect.width, greaterThanOrEqualTo(ready.width));
-    expect(rect.top, isNot(closeTo(ready.top, 1)));
+    // A8: o tabuleiro já está no centro útil antes do Vai! e não se mexe.
+    expect(rect.top, closeTo(ready.top, 1));
     now.advance(const Duration(seconds: 61));
     cubit.tick();
     await tester.pumpAndSettle();
