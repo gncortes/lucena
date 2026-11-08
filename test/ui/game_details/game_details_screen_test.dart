@@ -21,6 +21,7 @@ import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
@@ -143,6 +144,19 @@ void main() {
     expect(find.byKey(GameDetailsKeys.tabMoves), findsOne);
     expect(find.byKey(GameDetailsKeys.tabEngine), findsOne);
   });
+
+  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id);
+    setCentroAparelho(tester);
+    await tester.pumpAndSettle();
+    expectTabuleiroNoCentro(tester);
+    // A8: a revisão tem o tabuleiro no alto, as abas e a lista embaixo (como
+    // a análise do Lichess). No centro útil (135 dp abaixo), a lista ficaria
+    // com ~95 dp: fica de fora até o Gabriel decidir.
+  }, skip: true);
 
   testWidgets('H-ANI-10: o tabuleiro dos detalhes é o TabuleiroAnimado', (
     tester,

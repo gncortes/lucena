@@ -19,6 +19,7 @@ import '../../../domain/models/game_review.dart';
 import '../../../domain/models/learning_analysis.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/learning_analysis_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/canvas_symbols.dart';
@@ -76,82 +77,99 @@ class LearningAnalysisScreen extends StatelessWidget {
             bottom: BorderSide(color: AppColors.trainingAnalysisDivider),
           ),
         ),
-        body: SafeArea(
-          top: false,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final engineHeight = state.settings.showEngine
-                  ? 8 + 41.0 * state.settings.lines
-                  : 0.0;
-              final content = Column(
-                children: [
-                  if (state.settings.showEngine) ...[
-                    _evaluation(state, cubit.launch.orientation),
-                    _engine(context, state),
-                  ],
-                  _AnalysisBoard(size: constraints.maxWidth),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 80,
-                    child: _notation(context, session),
-                  ),
-                ],
-              );
-              final needed = engineHeight + constraints.maxWidth + 80;
-              return Column(
-                children: [
-                  Expanded(
-                    child: needed > constraints.maxHeight - 54
-                        ? SingleChildScrollView(child: content)
-                        : Align(alignment: Alignment.topCenter, child: content),
-                  ),
-                  SizedBox(
-                    height: 54,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _navigation(
-                          LearningAnalysisKeys.first,
-                          l10n.learningAnalysisFirst,
-                          CanvasSymbols.firstPage,
-                          state.ready && session.selected != 0
-                              ? cubit.first
-                              : null,
+        body: BoardViewport(
+          usefulHeight: BoardViewport.usefulHeightOf(context),
+          child: SafeArea(
+            top: false,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final engineHeight = state.settings.showEngine
+                    ? 8 + 41.0 * state.settings.lines
+                    : 0.0;
+                // A8: o centro do tabuleiro fica no centro útil da tela; o
+                // motor fica colado em cima, a notação embaixo. Se não couber,
+                // rola com o tabuleiro inteiro.
+                return Column(
+                  children: [
+                    Expanded(
+                      child: CenteredBoardLayout(
+                        centerY: BoardViewport.centerYOf(context),
+                        gap: 0,
+                        reserveTop: engineHeight,
+                        reserveBottom: 80,
+                        minBoardSide: constraints.maxWidth,
+                        top: state.settings.showEngine
+                            ? Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _evaluation(state, cubit.launch.orientation),
+                                  _engine(context, state),
+                                ],
+                              )
+                            : null,
+                        board: LayoutBuilder(
+                          builder: (context, box) =>
+                              _AnalysisBoard(size: box.maxWidth),
                         ),
-                        _navigation(
-                          LearningAnalysisKeys.previous,
-                          l10n.learningAnalysisPrevious,
-                          CanvasSymbols.chevronLeft,
-                          state.ready && session.current.parent != null
-                              ? cubit.previous
-                              : null,
-                          filled: true,
+                        bottom: SizedBox(
+                          width: double.infinity,
+                          height: 80,
+                          child: _notation(context, session),
                         ),
-                        _navigation(
-                          LearningAnalysisKeys.next,
-                          l10n.learningAnalysisNext,
-                          CanvasSymbols.chevronRight,
-                          state.ready &&
-                                  session.children(session.selected).isNotEmpty
-                              ? cubit.next
-                              : null,
-                          filled: true,
-                        ),
-                        _navigation(
-                          LearningAnalysisKeys.last,
-                          l10n.learningAnalysisLast,
-                          CanvasSymbols.lastPage,
-                          state.ready &&
-                                  session.children(session.selected).isNotEmpty
-                              ? cubit.last
-                              : null,
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            },
+                    SizedBox(
+                      height: 54,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _navigation(
+                            LearningAnalysisKeys.first,
+                            l10n.learningAnalysisFirst,
+                            CanvasSymbols.firstPage,
+                            state.ready && session.selected != 0
+                                ? cubit.first
+                                : null,
+                          ),
+                          _navigation(
+                            LearningAnalysisKeys.previous,
+                            l10n.learningAnalysisPrevious,
+                            CanvasSymbols.chevronLeft,
+                            state.ready && session.current.parent != null
+                                ? cubit.previous
+                                : null,
+                            filled: true,
+                          ),
+                          _navigation(
+                            LearningAnalysisKeys.next,
+                            l10n.learningAnalysisNext,
+                            CanvasSymbols.chevronRight,
+                            state.ready &&
+                                    session
+                                        .children(session.selected)
+                                        .isNotEmpty
+                                ? cubit.next
+                                : null,
+                            filled: true,
+                          ),
+                          _navigation(
+                            LearningAnalysisKeys.last,
+                            l10n.learningAnalysisLast,
+                            CanvasSymbols.lastPage,
+                            state.ready &&
+                                    session
+                                        .children(session.selected)
+                                        .isNotEmpty
+                                ? cubit.last
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       );

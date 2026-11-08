@@ -13,6 +13,7 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/featured.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/tabuleiro_animado.dart';
@@ -24,7 +25,6 @@ import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../region/widgets/region_sheet.dart';
@@ -36,6 +36,9 @@ import 'featured_next_sheet.dart';
 /// "Ache o lance": a posição de uma partida real, sem relógio, e o jogador
 /// acha o lance. O lance é conferido contra a solução (tablebase): errou,
 /// tenta de novo; pode pedir uma dica ou ver a resposta.
+/// O maior lado do tabuleiro (tablet).
+const _maxBoard = 420.0;
+
 class FindMoveScreen extends StatelessWidget {
   const FindMoveScreen({
     required this.endgame,
@@ -79,33 +82,54 @@ class FindMoveScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              body: Column(
-                children: [
-                  Expanded(
-                    child: ListView(
-                      padding: scrollPadding(
-                        context,
-                        left: AppSpacing.lg,
-                        right: AppSpacing.lg,
-                        bottom: AppSpacing.lg,
+              // A8: o centro do tabuleiro fica no centro útil da tela, de
+              // ponta a ponta; o cartão fica em cima e o retorno embaixo, com
+              // o que sobra. Se não couber, rola com o tabuleiro inteiro.
+              body: BoardViewport(
+                usefulHeight: BoardViewport.usefulHeightOf(context),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, box) => CenteredBoardLayout(
+                          centerY: BoardViewport.centerYOf(context),
+                          gap: AppSpacing.md,
+                          maxBoard: _maxBoard,
+                          minBoardSide: math.min(box.maxWidth, _maxBoard),
+                          top: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.lg,
+                            ),
+                            child: _Header(
+                              endgame: endgame,
+                              tournament: tournament,
+                            ),
+                          ),
+                          board: LayoutBuilder(
+                            builder: (context, board) => _FindBoard(
+                              endgame: endgame,
+                              state: state,
+                              size: board.maxWidth,
+                            ),
+                          ),
+                          bottom: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.lg,
+                            ),
+                            child: _Feedback(state: state, cubit: cubit),
+                          ),
+                        ),
                       ),
-                      children: [
-                        _Header(endgame: endgame, tournament: tournament),
-                        const SizedBox(height: AppSpacing.md),
-                        _FindBoard(endgame: endgame, state: state),
-                        const SizedBox(height: AppSpacing.md),
-                        _Feedback(state: state, cubit: cubit),
-                      ],
                     ),
-                  ),
-                  _Actions(
-                    state: state,
-                    cubit: cubit,
-                    endgame: endgame,
-                    tournament: tournament,
-                    tournamentFinals: tournamentFinals,
-                  ),
-                ],
+                    _Actions(
+                      state: state,
+                      cubit: cubit,
+                      endgame: endgame,
+                      tournament: tournament,
+                      tournamentFinals: tournamentFinals,
+                    ),
+                  ],
+                ),
               ),
             ),
     );
@@ -166,10 +190,15 @@ class _Header extends StatelessWidget {
 /// O tabuleiro de jogar. Cada tentativa começa de um tabuleiro novo (o
 /// lance errado não fica na posição).
 class _FindBoard extends StatefulWidget {
-  const _FindBoard({required this.endgame, required this.state});
+  const _FindBoard({
+    required this.endgame,
+    required this.state,
+    required this.size,
+  });
 
   final FeaturedEndgame endgame;
   final FindMoveState state;
+  final double size;
 
   @override
   State<_FindBoard> createState() => _FindBoardState();
@@ -225,10 +254,7 @@ class _FindBoardState extends State<_FindBoard> {
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
-    final size = math.min(
-      MediaQuery.sizeOf(context).width - 2 * AppSpacing.lg,
-      420.0,
-    );
+    final size = widget.size;
     // Um lance errado: tabuleiro novo para a próxima tentativa.
     if (_attempt != state.attempts ||
         _active != active ||

@@ -27,6 +27,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speech_input_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/aparelho_principal.dart';
+import '../../../testing/board_center.dart';
 import '../../../testing/test_app.dart';
 import '../core/motion/entrada_helpers.dart';
 import '../../../testing/motion_expectations.dart';
@@ -131,6 +132,14 @@ void main() {
     );
     if (assentar) await tester.pumpAndSettle();
   }
+
+  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    await pump(tester, size: centroAparelho, locale: const Locale('pt'));
+    expectTabuleiroNoCentro(tester);
+  });
 
   group('H-PAR-08 introdução', () {
     testWidgets('o painel entra em cascata e o Começar vem por último', (
@@ -1122,14 +1131,25 @@ void main() {
   });
 }
 
-/// T65: o seletor, o tabuleiro e "Sua vez" formam um bloco com o mesmo vão
-/// (1 dp) entre a barra do app e o seletor e entre "Sua vez" e o painel.
+/// A8 (substitui o vão igual da T65): o centro do tabuleiro fica no centro
+/// útil da tela, entre a barra de status e a de navegação (1 dp), quando
+/// cabe; o seletor fica em cima dele e "Sua vez" embaixo, dentro da área.
 void expectEqualGaps(WidgetTester tester) {
+  final view = tester.view;
+  final dpr = view.devicePixelRatio;
+  final top = view.viewPadding.top / dpr;
+  final bottom = view.viewPadding.bottom / dpr;
+  final height = view.physicalSize.height / dpr;
+  final usefulCenter = top + (height - top - bottom) / 2;
   final area = tester.getRect(find.byKey(BlindKeys.boardArea));
   final picker = tester.getRect(find.byType(SegmentedButton<BlindView>));
   final status = tester.getRect(find.byKey(BlindKeys.status));
-  final above = picker.top - area.top;
-  final below = area.bottom - status.bottom;
-  expect(above, greaterThanOrEqualTo(0));
-  expect(above, closeTo(below, 1));
+  final boardFinder = find.byKey(BlindKeys.board).evaluate().isNotEmpty
+      ? find.byKey(BlindKeys.board)
+      : find.byKey(BlindKeys.emptyBoard);
+  final board = tester.getRect(boardFinder);
+  expect(picker.top, greaterThanOrEqualTo(area.top - .5));
+  expect(picker.bottom, lessThanOrEqualTo(board.top + .5));
+  expect(status.top, greaterThanOrEqualTo(board.bottom - .5));
+  expect(board.center.dy, closeTo(usefulCenter, 1));
 }

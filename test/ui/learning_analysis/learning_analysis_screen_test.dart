@@ -9,6 +9,7 @@ import 'package:lucena/ui/core/keys/learning_analysis_keys.dart';
 import 'package:lucena/ui/learning_analysis/view_models/learning_analysis_cubit.dart';
 import 'package:lucena/ui/learning_analysis/widgets/learning_analysis_screen.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import 'analysis_test_support.dart';
@@ -18,6 +19,40 @@ const analysisMoves = ['b3d2', 'b1a2', 'd2c4'];
 
 void main() {
   setUp(initializeAnalysisPreferences);
+  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    final cubit = LearningAnalysisCubit(
+      launch: const LearningAnalysisLaunch(
+        fen: analysisRoot,
+        moves: analysisMoves,
+      ),
+      repository: LearningAnalysisRepository(AnalysisMemoryPreferences()),
+      engine: ControlledAnalysisEngine(),
+    );
+    await cubit.load();
+    await cubit.confirmSettings(const LearningAnalysisSettings(lines: 3));
+    addTearDown(cubit.close);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    await settings.load();
+    addTearDown(settings.close);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: cubit,
+          child: const LearningAnalysisScreen(),
+        ),
+      ),
+    );
+    await tester.pump();
+    expectTabuleiroNoCentro(tester);
+  });
   for (final size in [
     const Size(360, 740),
     const Size(360, 800),
