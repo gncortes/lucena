@@ -98,7 +98,7 @@ void main() {
       }
     }
 
-    testWidgets('Termos: folha com título, endereço, versão e 16 seções; '
+    testWidgets('Termos: folha com título, endereço, versão e 17 seções; '
         'o cabeçalho fica fixo e o ✕ volta ao Sobre', (tester) async {
       await pumpAbout(tester);
       await tester.tap(find.byKey(SettingsKeys.aboutTerms));
@@ -113,14 +113,14 @@ void main() {
         tester.widget<Text>(find.byKey(SheetKeys.hint)).data,
         'dev.playlucenachess.com/pt/termos',
       );
-      expect(find.text('Versão 1, em vigor desde [DATA].'), findsOneWidget);
+      expect(find.text('Versão 2, em vigor desde [PREENCHER: data]. A versão 1, de 7 de novembro de 2026, fica guardada.'), findsOneWidget);
       expect(find.text('1. Quem somos'), findsOneWidget);
       final headerTop = tester.getTopLeft(header).dy;
 
       await scrollToEnd(tester);
-      expect(find.byKey(LegalKeys.section(15)), findsOneWidget);
-      expect(find.text('16. Lei e foro'), findsOneWidget);
-      expect(find.byKey(LegalKeys.section(16)), findsNothing);
+      expect(find.byKey(LegalKeys.section(16)), findsOneWidget);
+      expect(find.text('17. Fale com a gente'), findsOneWidget);
+      expect(find.byKey(LegalKeys.section(17)), findsNothing);
       expect(tester.getTopLeft(header).dy, headerTop);
 
       await tester.tap(find.byKey(LegalKeys.close));
@@ -129,7 +129,7 @@ void main() {
       expect(find.byKey(SettingsKeys.aboutScreen), findsOneWidget);
     });
 
-    testWidgets('Política: 13 seções, da primeira à última', (tester) async {
+    testWidgets('Política: 14 seções, da primeira à última', (tester) async {
       await pumpAbout(tester);
       await tester.tap(find.byKey(SettingsKeys.aboutPrivacy));
       await tester.pumpAndSettle();
@@ -139,10 +139,10 @@ void main() {
         tester.widget<Text>(find.byKey(SheetKeys.title)).data,
         'Política de privacidade',
       );
-      expect(find.text('1. Quem decide sobre seus dados'), findsOneWidget);
+      expect(find.text('1. Resumo'), findsOneWidget);
       await scrollToEnd(tester);
-      expect(find.text('13. Mudanças nesta Política'), findsOneWidget);
-      expect(find.byKey(LegalKeys.section(13)), findsNothing);
+      expect(find.text('14. Mudanças nesta Política'), findsOneWidget);
+      expect(find.byKey(LegalKeys.section(14)), findsNothing);
     });
 
     testWidgets('voltar do sistema fecha a folha', (tester) async {

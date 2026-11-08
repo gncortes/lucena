@@ -37,7 +37,8 @@ import '../data/repositories/lesson_ad/demo_ad_repository.dart';
 import '../data/repositories/training/demo_offer_repository.dart';
 import '../data/repositories/purchase/opening_offer_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
-import '../data/services/dev_store.dart';
+import '../data/services/ads_service.dart';
+import 'loja.dart';
 import 'ambiente.dart';
 import '../data/repositories/store/store_listing_repository.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
@@ -400,28 +401,24 @@ class Dependencies {
       preferences,
       mode: analyticsMode,
     );
-    // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
-    // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
+    // Compras e anúncios na V1 da Play (decisão do Gabriel, 08/11, E1.22).
     // No flavor dev a Play é simulada (H-R5-66): preço, ofertas com
-    // desconto, link e compra com o token de teste, sem trancar o curso.
-    final devStore = !Ambiente.atual().isProd;
-    final PurchaseRepository purchases = devStore
-        ? PlayPurchaseRepository(
-            DevPurchaseService(preferences, now: now),
-            preferences,
-            now: now,
-            analytics: analytics,
-            accountChanges: auth.changes,
-            coupons: DevCouponService(now: now),
-            uid: () => auth.current?.uid,
-          )
-        : const NoPurchaseRepository();
-    // Sem loja (V1 sem compra) o curso segue aberto; com a Play ligada
-    // (H-VEN-16), a lição tranca e mostra o anúncio pela compra.
-    final CourseAccessRepository storeAccess =
-        devStore || purchases is NoPurchaseRepository
-        ? const FullCourseAccessRepository()
-        : PurchaseCourseAccessRepository(purchases);
+    // desconto, link e compra com o token de teste, sem trancar o curso. No
+    // prod, a Play Billing; a lição do Pilares tranca e mostra o anúncio
+    // pela compra (H-VEN-16).
+    final ambiente = Ambiente.atual();
+    final PurchaseRepository purchases = PlayPurchaseRepository(
+      Loja.compras(ambiente, preferences: preferences, now: now),
+      preferences,
+      now: now,
+      analytics: analytics,
+      accountChanges: auth.changes,
+      coupons: Loja.cupons(ambiente, firebase: firebase, now: now),
+      uid: () => auth.current?.uid,
+    );
+    final CourseAccessRepository storeAccess = ambiente.isProd
+        ? PurchaseCourseAccessRepository(purchases)
+        : const FullCourseAccessRepository();
     // O curso dado ou comprado pelo servidor (`acessos/{uid}`, H-R5-61).
     final CourseGrantsRepository courseGrants = firebase
         ? CloudCourseGrantsRepository(
@@ -557,7 +554,21 @@ class Dependencies {
           ? Duration.zero
           : const Duration(hours: 12),
     );
-    const ads = NoAdsRepository();
+    final adsService = Loja.anuncios(
+      interstitialId: AdMob.interstitialId(ambiente: ambiente),
+      e2e: isE2E,
+      testAds: analytics.teamMode,
+    );
+    final AdsRepository ads = adsService is NoAdsService
+        ? const NoAdsRepository()
+        : ServiceAdsRepository(
+            service: adsService,
+            preferences: preferences,
+            flags: flags,
+            purchases: purchases,
+            now: now,
+            analytics: analytics,
+          );
     final PushService pushes =
         pushService ??
         (firebase ? FirebasePushService() : const NoPushService());

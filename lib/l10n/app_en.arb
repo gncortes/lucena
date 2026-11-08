@@ -13701,7 +13701,7 @@
   "@venPendingOk": {
     "description": "Botão da compra pendente (H-VEN-06)."
   },
-  "venRestoreText": "Bought on another device or on the website? We look for the purchase in the account {email}.",
+  "venRestoreText": "Already bought it? Sign in to your account to unlock it. We look for the purchase in the account {email}.",
   "@venRestoreText": {
     "description": "Restaurar compra (H-VEN-08).",
     "placeholders": {
@@ -13726,7 +13726,7 @@
   "@venRestoredText": {
     "description": "Compra restaurada (H-VEN-08)."
   },
-  "venRestoredSite": "You bought on the website. The full course is unlocked on this account.",
+  "venRestoredSite": "Your access is unlocked on your account.",
   "@venRestoredSite": {
     "description": "Compra do site restaurada (H-VEN-08)."
   },
@@ -13750,11 +13750,11 @@
   "@venSiteBar": {
     "description": "App bar de Comprou pelo site (H-VEN-08)."
   },
-  "venSiteTitle": "Bought on the website?",
+  "venSiteTitle": "Already bought it?",
   "@venSiteTitle": {
     "description": "Comprou pelo site (H-VEN-08)."
   },
-  "venSiteText": "Sign in with the same email or Google account you used to buy and the course is unlocked.",
+  "venSiteText": "Sign in to your account with the same email or Google account you used to buy and the course is unlocked.",
   "@venSiteText": {
     "description": "Comprou pelo site (H-VEN-08)."
   },
@@ -13865,7 +13865,7 @@
       }
     }
   },
-  "venBoughtSite": "Bought on {date}, on the website",
+  "venBoughtSite": "Bought on {date}",
   "@venBoughtSite": {
     "description": "Cartão do curso no Perfil, compra do site (H-VEN-09).",
     "placeholders": {
@@ -13941,7 +13941,7 @@
   "@conCompraText": {
     "description": "Texto da conta pedida ao comprar o Pilares (H-CON-05)."
   },
-  "conCompraDevices": "Pillars shows up on any phone, even if bought on the website",
+  "conCompraDevices": "Pillars shows up on any phone where you sign in to your account",
   "@conCompraDevices": {
     "description": "Benefício da conta pedida ao comprar (H-CON-05)."
   },

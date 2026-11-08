@@ -26,6 +26,9 @@ if (flavorsPedidos.all { temGoogleServices(it) }) {
 // Sem elas (build local e CI de PR), o release é assinado com a chave de debug.
 val releaseKeystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
 
+// O App ID de teste oficial do Google (developers.google.com/admob).
+val admobTestAppId = "ca-app-pub-3940256099942544~3347511713"
+
 android {
     namespace = "com.gncortes.lucena"
     compileSdk = flutter.compileSdkVersion
@@ -69,6 +72,8 @@ android {
             // App Links: só o site de dev (o "www" repete o mesmo host).
             manifestPlaceholders["appLinkHost"] = "dev.playlucenachess.com"
             manifestPlaceholders["appLinkWwwHost"] = "dev.playlucenachess.com"
+            // AdMob: sempre o App ID de teste do Google (AdMob.testAppId).
+            manifestPlaceholders["admobAppId"] = admobTestAppId
         }
         create("prod") {
             dimension = "ambiente"
@@ -77,6 +82,13 @@ android {
             // lib/config/ambiente.dart), com e sem www.
             manifestPlaceholders["appLinkHost"] = "playlucenachess.com"
             manifestPlaceholders["appLinkWwwHost"] = "www.playlucenachess.com"
+            // AdMob (E1.22): o App ID do CI (`vars.ADMOB_APP_ID`) ou
+            // `-PadmobAppId=`. Sem ele, o de teste só para o SDK não fechar o
+            // app ao abrir; o Dart fica sem anúncio (sem ADMOB_INTERSTITIAL_ID).
+            manifestPlaceholders["admobAppId"] =
+                (project.findProperty("admobAppId") as String?)?.takeIf { it.isNotBlank() }
+                    ?: System.getenv("ADMOB_APP_ID")?.takeIf { it.isNotBlank() }
+                    ?: admobTestAppId
         }
     }
 

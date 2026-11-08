@@ -289,7 +289,7 @@ void main() {
       );
       expect(
         find.text(
-          'Comprou em outro aparelho ou pelo site? Procuramos a compra na '
+          'Já comprou? Entre na sua conta para liberar. Procuramos a compra na '
           'conta teste@example.com.',
         ),
         findsOneWidget,
