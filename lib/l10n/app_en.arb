@@ -3122,9 +3122,9 @@
   },
   "settingsAbout": "About Lucena",
   "@settingsAbout": {
-    "description": "Settings menu entry and screen title: about the app (website, open source, licenses)."
+    "description": "Settings menu entry and screen title: about the app (website, licenses)."
   },
-  "settingsAboutHint": "Website, open source, licenses and tour",
+  "settingsAboutHint": "Website, licenses and tour",
   "@settingsAboutHint": {
     "description": "Subtitle of the About entry in the settings menu."
   },
@@ -3136,17 +3136,9 @@
   "@aboutWebsite": {
     "description": "About screen: opens the app's website (landing page)."
   },
-  "aboutSource": "Source code",
-  "@aboutSource": {
-    "description": "About screen: opens the source code repository."
-  },
-  "aboutSourceHint": "Free software, AGPL-3.0",
-  "@aboutSourceHint": {
-    "description": "Subtitle under Source code on the About screen: the app is free software under the AGPL-3.0 license."
-  },
-  "aboutLicenses": "Open source licenses",
+  "aboutLicenses": "Licenses",
   "@aboutLicenses": {
-    "description": "About screen: opens the list of open source licenses of the libraries used."
+    "description": "About screen: opens the list of licenses of the components used."
   },
   "aboutPrivacy": "Privacy policy",
   "@aboutPrivacy": {

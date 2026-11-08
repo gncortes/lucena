@@ -312,10 +312,7 @@ void main() {
           'Avaliar o Lucena',
           'Abre a página do app na Play',
         ),
-        SettingsKeys.aboutTile: (
-          'Sobre o Lucena',
-          'Site, código aberto, licenças e tour',
-        ),
+        SettingsKeys.aboutTile: ('Sobre o Lucena', 'Site, licenças e tour'),
       };
       for (final MapEntry(:key, value: (title, hint)) in rows.entries) {
         expect(inTile(key, title), findsOneWidget, reason: title);

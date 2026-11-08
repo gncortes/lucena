@@ -32,14 +32,13 @@ void main() {
   setUp(() => links = FakeLinkRepository());
 
   group('H-AJU-13 · Sobre o Lucena', () {
-    testWidgets('as 6 linhas na ordem, com os subtítulos e a versão', (
+    testWidgets('as 5 linhas na ordem, com os subtítulos e a versão', (
       tester,
     ) async {
       await pumpAbout(tester);
 
       final rows = [
         SettingsKeys.aboutWebsite,
-        SettingsKeys.aboutSource,
         SettingsKeys.aboutLicenses,
         SettingsKeys.aboutPrivacy,
         SettingsKeys.aboutTerms,
@@ -50,7 +49,6 @@ void main() {
       ];
       expect(tops, [...tops]..sort());
       expect(find.text('Site do Lucena'), findsOneWidget);
-      expect(find.text('Software livre, AGPL-3.0'), findsOneWidget);
       expect(find.text('Rever o tour'), findsOneWidget);
       expect(find.text('Versão 1.2.3'), findsOneWidget);
     });
@@ -79,19 +77,6 @@ void main() {
 
       expect(find.byKey(CoreKeys.linkFailure), findsOneWidget);
       expect(find.text('Não foi possível abrir o link'), findsOneWidget);
-    });
-
-    testWidgets('Gap 6: o Código-fonte não abre, então aparece o aviso', (
-      tester,
-    ) async {
-      links.fails = true;
-      await pumpAbout(tester);
-
-      await tester.tap(find.byKey(SettingsKeys.aboutSource));
-      await tester.pumpAndSettle();
-
-      expect(links.opened, [AboutScreen.source]);
-      expect(find.byKey(CoreKeys.linkFailure), findsOneWidget);
     });
   });
 

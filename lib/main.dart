@@ -18,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'config/licencas_legais.dart';
 import 'data/repositories/learning/learning_repository.dart';
 import 'data/repositories/training/training_school_content.dart';
 import 'data/repositories/training/training_history_source.dart';
@@ -154,6 +155,7 @@ Future<void> main() async {
       'Material Symbols Rounded',
     ], await rootBundle.loadString('assets/fonts/MaterialSymbols-LICENSE.txt'));
   });
+  registrarLicencasLegais();
   final firebase = await startFirebase();
   if (firebase) {
     await startCrashReports(

@@ -16,7 +16,7 @@ import '../../core/widgets/open_link.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../legal/widgets/legal_sheet.dart';
 
-/// Sobre o Lucena: o site, o código aberto, as licenças, o tour e a versão.
+/// Sobre o Lucena: o site, as licenças, o tour e a versão.
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key, this.version = ''});
 
@@ -52,8 +52,6 @@ class AboutScreen extends StatelessWidget {
 
   /// O endereço como a linha mostra: sem `https://` e sem a barra do fim.
   static String shown(Uri uri) => shownAddress(uri);
-
-  static final source = Uri.parse('https://github.com/gncortes/lucena');
 
   @override
   Widget build(BuildContext context) {
@@ -130,14 +128,6 @@ class AboutScreen extends StatelessWidget {
               title: Text(l10n.aboutWebsite),
               trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
               onTap: () => openLink(context, websiteFor(language)),
-            ),
-            ListTile(
-              key: SettingsKeys.aboutSource,
-              leading: const Icon(Icons.code),
-              title: Text(l10n.aboutSource),
-              subtitle: Text(l10n.aboutSourceHint),
-              trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-              onTap: () => openLink(context, source),
             ),
             ListTile(
               key: SettingsKeys.aboutLicenses,

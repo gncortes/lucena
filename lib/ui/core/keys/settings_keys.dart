@@ -87,7 +87,6 @@ abstract final class SettingsKeys {
   static const saveFailure = Key('settings.saveFailure');
   static const aboutScreen = Key('settings.about.screen');
   static const aboutWebsite = Key('settings.about.website');
-  static const aboutSource = Key('settings.about.source');
   static const aboutLicenses = Key('settings.about.licenses');
   static const aboutPrivacy = Key('settings.about.privacy');
   static const aboutTerms = Key('settings.about.terms');

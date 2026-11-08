@@ -1,0 +1,5 @@
+Copyright (C) 2026 Gabriel Novais Cortes
+
+O Lucena é distribuído sob a licença GNU AGPL-3.0 e usa o Stockfish (GNU GPL-3.0) e o Maia-3 (GNU AGPL-3.0, CSSLab, University of Toronto). Ele vem sem garantia, e você pode copiá-lo e redistribuí-lo nos termos dessas licenças, cujo texto está nesta tela.
+
+Código-fonte de cada versão: github.com/gncortes/lucena
