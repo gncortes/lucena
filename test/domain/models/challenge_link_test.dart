@@ -35,7 +35,7 @@ void main() {
 
   test('o + do relógio sobrevive ao endereço escrito à mão', () {
     final uri = Uri.parse(
-      'https://playlucena.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}'
+      'https://playlucenachess.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}'
       '&side=black&clock=180+2',
     );
     final link = ChallengeLink.tryParse(uri)!;
@@ -66,26 +66,29 @@ void main() {
   });
 
   test('rejeita o que não é desafio', () {
-    expect(ChallengeLink.tryParse(Uri.parse('https://playlucena.com/')), null);
     expect(
-      ChallengeLink.tryParse(Uri.parse('https://playlucena.com/p/abcde')),
+      ChallengeLink.tryParse(Uri.parse('https://playlucenachess.com/')),
+      null,
+    );
+    expect(
+      ChallengeLink.tryParse(Uri.parse('https://playlucenachess.com/p/abcde')),
       null,
     );
     expect(
       ChallengeLink.tryParse(
-        Uri.parse('https://playlucena.com/p/abcde?fen=lixo'),
+        Uri.parse('https://playlucenachess.com/p/abcde?fen=lixo'),
       ),
       null,
     );
     expect(
-      ChallengeLink.tryParse(Uri.parse('https://playlucena.com/x/abcde')),
+      ChallengeLink.tryParse(Uri.parse('https://playlucenachess.com/x/abcde')),
       null,
     );
   });
 
   test('sem lado, joga quem tem a vez', () {
     final uri = Uri.parse(
-      'https://playlucena.com/p/abcde?fen=${Uri.encodeQueryComponent('8/8/8/4k3/8/8/4K3/4Q3 b - - 0 1')}',
+      'https://playlucenachess.com/p/abcde?fen=${Uri.encodeQueryComponent('8/8/8/4k3/8/8/4K3/4Q3 b - - 0 1')}',
     );
     expect(ChallengeLink.tryParse(uri)!.userSide, Side.black);
   });
@@ -129,7 +132,7 @@ void main() {
 
     test('link antigo (só fen): sem resultado e continua abrindo', () {
       final uri = Uri.parse(
-        'https://playlucena.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}',
+        'https://playlucenachess.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}',
       );
       final link = ChallengeLink.tryParse(uri)!;
       expect(link.senderMoves, isNull);
@@ -140,7 +143,7 @@ void main() {
     test('mv inválido (zero, negativo, texto) é ignorado', () {
       for (final bad in ['0', '-3', 'x', '']) {
         final uri = Uri.parse(
-          'https://playlucena.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}&mv=$bad',
+          'https://playlucenachess.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}&mv=$bad',
         );
         expect(ChallengeLink.tryParse(uri)!.senderMoves, isNull, reason: bad);
       }
@@ -152,12 +155,16 @@ void main() {
 
     test('só fen (e utm/mv) é "só a posição"', () {
       expect(
-        ChallengeLink.isBare(Uri.parse('https://playlucena.com/p/a?fen=$fen')),
+        ChallengeLink.isBare(
+          Uri.parse('https://playlucenachess.com/p/a?fen=$fen'),
+        ),
         isTrue,
       );
       expect(
         ChallengeLink.isBare(
-          Uri.parse('https://playlucena.com/p/a?fen=$fen&mv=5&utm_source=app'),
+          Uri.parse(
+            'https://playlucenachess.com/p/a?fen=$fen&mv=5&utm_source=app',
+          ),
         ),
         isTrue,
       );
@@ -173,7 +180,7 @@ void main() {
       ]) {
         expect(
           ChallengeLink.isBare(
-            Uri.parse('https://playlucena.com/p/a?fen=$fen&$extra'),
+            Uri.parse('https://playlucenachess.com/p/a?fen=$fen&$extra'),
           ),
           isFalse,
           reason: extra,
@@ -184,7 +191,9 @@ void main() {
 
     test('fen inválido não é link', () {
       expect(
-        ChallengeLink.isBare(Uri.parse('https://playlucena.com/p/a?fen=x')),
+        ChallengeLink.isBare(
+          Uri.parse('https://playlucenachess.com/p/a?fen=x'),
+        ),
         isFalse,
       );
     });

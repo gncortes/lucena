@@ -466,15 +466,15 @@ void main() {
   test('o site abre no idioma de quem usa', () {
     expect(
       AboutScreen.websiteFor('pt').toString(),
-      'https://lucena-dev-gnc.web.app/',
+      'https://dev.playlucenachess.com/pt/',
     );
     expect(
       AboutScreen.websiteFor('es').toString(),
-      'https://lucena-dev-gnc.web.app/es/',
+      'https://dev.playlucenachess.com/es/',
     );
     expect(
       AboutScreen.websiteFor('de').toString(),
-      'https://lucena-dev-gnc.web.app/en/',
+      'https://dev.playlucenachess.com/en/',
     );
   });
 
@@ -504,23 +504,23 @@ void main() {
   test('a política e os termos abrem no idioma de quem usa', () {
     expect(
       AboutScreen.privacyFor('pt').toString(),
-      'https://lucena-dev-gnc.web.app/privacidade/',
+      'https://dev.playlucenachess.com/pt/privacidade/',
     );
     expect(
       AboutScreen.termsFor('pt').toString(),
-      'https://lucena-dev-gnc.web.app/termos/',
+      'https://dev.playlucenachess.com/pt/termos/',
     );
     expect(
       AboutScreen.privacyFor('es').toString(),
-      'https://lucena-dev-gnc.web.app/es/privacidad/',
+      'https://dev.playlucenachess.com/es/privacidad/',
     );
     expect(
       AboutScreen.termsFor('de').toString(),
-      'https://lucena-dev-gnc.web.app/en/terms/',
+      'https://dev.playlucenachess.com/en/terms/',
     );
     expect(
       AboutScreen.shown(AboutScreen.privacyFor('pt')),
-      'lucena-dev-gnc.web.app/privacidade',
+      'dev.playlucenachess.com/pt/privacidade',
     );
   });
 }

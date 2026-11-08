@@ -37,7 +37,7 @@ void main() {
     expect(
       launchLocation(
         resumeBlind: true,
-        uri: Uri.https('playlucena.com', '/dia'),
+        uri: Uri.https('playlucenachess.com', '/dia'),
       ),
       Routes.daily,
     );
@@ -55,7 +55,7 @@ void main() {
     for (final path in ['/dia', '/daily', '/dia/', '/daily/']) {
       expect(
         launchLocation(
-          uri: Uri.https('playlucena.com', path),
+          uri: Uri.https('playlucenachess.com', path),
           resumeGame: true,
           conclusion: 3,
         ),

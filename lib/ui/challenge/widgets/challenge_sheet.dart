@@ -306,7 +306,7 @@ class ChallengeSummary extends StatelessWidget {
   }
 }
 
-/// O endereço curto do desafio (`playlucena.com/p/k7Qe2`); tocar copia.
+/// O endereço curto do desafio (`playlucenachess.com/p/k7Qe2`); tocar copia.
 class _LinkField extends StatelessWidget {
   const _LinkField({required this.link});
 

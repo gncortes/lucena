@@ -20,13 +20,11 @@ enum Ambiente {
   bool get isProd => this == prod;
 
   /// O site do ambiente (sem `https://`): os links que o app gera, os App
-  /// Links e as páginas do site (Sobre, privacidade, termos). O de prod é o
-  /// Firebase Hosting até o domínio próprio ([AppLinks.finalHost]) ser
-  /// comprado: a troca é aqui e no `appLinkHost` do
-  /// `android/app/build.gradle.kts`.
+  /// Links e as páginas do site (Sobre, privacidade, termos). A troca é aqui
+  /// e no `appLinkHost` do `android/app/build.gradle.kts`.
   String get siteHost => switch (this) {
-    dev => 'lucena-dev-gnc.web.app',
-    prod => 'lucena-2f4de.web.app',
+    dev => 'dev.playlucenachess.com',
+    prod => 'playlucenachess.com',
   };
 }
 

@@ -39,10 +39,10 @@ void main() {
   const lost = GameEnd(GameEndReason.resign, winner: Side.black);
   const sharePt =
       'Final do dia do Lucena: brancas jogam e ganham. '
-      'Você consegue? playlucena.com/dia';
+      'Você consegue? dev.playlucenachess.com/dia';
   const winPt =
       'Ganhei o final do dia do Lucena (brancas jogam e ganham). '
-      'Tente você também: playlucena.com/dia';
+      'Tente você também: dev.playlucenachess.com/dia';
 
   FreeBoardState ended(GameEnd end) => FreeBoardState(
     start: start,

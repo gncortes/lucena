@@ -33,15 +33,15 @@ void main() {
 
   test('o endereço do app vale como o caminho', () async {
     expect(
-      await route('https://playlucena.com/daily'),
+      await route('https://playlucenachess.com/daily'),
       Routes.dailyFrom('aviso'),
     );
     expect(
-      await route('https://playlucena.com/dia'),
+      await route('https://playlucenachess.com/dia'),
       Routes.dailyFrom('aviso'),
     );
     expect(
-      await route('https://playlucena.com/featured/tournament/wch'),
+      await route('https://playlucenachess.com/featured/tournament/wch'),
       Routes.featuredTournament('wch'),
     );
   });

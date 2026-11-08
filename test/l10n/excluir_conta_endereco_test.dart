@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 /// H-CON-14, critério 7: o endereço para pedir a exclusão sem o app é um só
-/// (playlucena.com/excluir-conta), em todos os idiomas.
+/// (`{address}`, montado com o site do ambiente), em todos os idiomas.
 void main() {
   final arbs = Directory('lib/l10n')
       .listSync()
@@ -22,10 +22,11 @@ void main() {
     expect(stale, isEmpty);
   });
 
-  test('todo idioma cita playlucena.com/excluir-conta', () {
+  test('todo idioma recebe o endereço de exclusão pelo placeholder', () {
     final missing = [
       for (final file in real)
-        if (!file.readAsStringSync().contains('playlucena.com/excluir-conta'))
+        if (!RegExp(r'"profileDeleteWeb": "[^"]*\{address\}')
+            .hasMatch(file.readAsStringSync()))
           file.path,
     ];
     expect(missing, isEmpty);

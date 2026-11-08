@@ -5980,9 +5980,14 @@
   "@devOpenLinkTitle": {
     "description": "Developer tile in Settings: pastes a challenge link to test without App Links"
   },
-  "devOpenLinkHint": "Paste a playlucena.com/p/... link",
+  "devOpenLinkHint": "Paste a {host}/p/... link",
   "@devOpenLinkHint": {
-    "description": "Hint of the field where the tester pastes a challenge link"
+    "description": "Hint of the field where the tester pastes a challenge link",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
   },
   "devOpenLinkInvalid": "This is not a challenge link",
   "@devOpenLinkInvalid": {
@@ -7495,9 +7500,14 @@
   "@profileDeleteAccount": {
     "description": "Profile with account: delete-account button."
   },
-  "profileDeleteWeb": "Without the app, you can request deletion at playlucena.com/excluir-conta.",
+  "profileDeleteWeb": "Without the app, you can request deletion at {address}.",
   "@profileDeleteWeb": {
-    "description": "Profile with account: note about deleting on the web."
+    "description": "Profile with account: note about deleting on the web.",
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
   },
   "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved and you can get everything back on another device.",
   "@accountInviteTextSheet": {

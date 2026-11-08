@@ -23,17 +23,20 @@ void main() {
   test(
     'suprime só a repetição inicial; o mesmo link pode abrir de novo',
     () async {
-      final initial = Uri.parse('https://playlucena.com/dia');
+      final initial = Uri.parse('https://playlucenachess.com/dia');
       final links = _Links(initial);
       final service = AppLinksDeepLinkService(links);
       expect(await service.initialUri(), initial);
       final received = <Uri>[];
       final sub = service.uris.listen(received.add);
       links.events.add(initial);
-      links.events.add(Uri.parse('https://playlucena.com/daily'));
+      links.events.add(Uri.parse('https://playlucenachess.com/daily'));
       links.events.add(initial);
       await Future<void>.delayed(Duration.zero);
-      expect(received, [Uri.parse('https://playlucena.com/daily'), initial]);
+      expect(received, [
+        Uri.parse('https://playlucenachess.com/daily'),
+        initial,
+      ]);
       await sub.cancel();
       await links.events.close();
     },
@@ -42,13 +45,13 @@ void main() {
   test(
     'primeiro evento diferente não consome uma abertura futura do link frio',
     () async {
-      final initial = Uri.parse('https://playlucena.com/dia');
+      final initial = Uri.parse('https://playlucenachess.com/dia');
       final links = _Links(initial);
       final service = AppLinksDeepLinkService(links);
       await service.initialUri();
       final received = <Uri>[];
       final sub = service.uris.listen(received.add);
-      final other = Uri.parse('https://playlucena.com/p/invalido');
+      final other = Uri.parse('https://playlucenachess.com/p/invalido');
       links.events.add(other);
       links.events.add(initial);
       await Future<void>.delayed(Duration.zero);

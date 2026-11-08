@@ -126,7 +126,7 @@ void main() {
       expect(tester.widget<Text>(header).data, 'Termos de uso');
       expect(
         tester.widget<Text>(find.byKey(SheetKeys.hint)).data,
-        'lucena-dev-gnc.web.app/termos',
+        'dev.playlucenachess.com/pt/termos',
       );
       expect(find.text('Versão 1, em vigor desde [DATA].'), findsOneWidget);
       expect(find.text('1. Quem somos'), findsOneWidget);

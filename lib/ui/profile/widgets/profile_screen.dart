@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../config/ambiente.dart';
+
 import 'package:intl/intl.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
@@ -630,7 +633,9 @@ class _AccountActions extends StatelessWidget {
           label: Text(l10n.profileDeleteAccount),
         ),
         Text(
-          l10n.profileDeleteWeb,
+          l10n.profileDeleteWeb(
+            '${Ambiente.atual().siteHost}/pt/excluir-conta',
+          ),
           textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,

@@ -24,14 +24,14 @@ void main() {
       expect(
         OfferCodes.fromLink(
           Uri.parse(
-            'https://playlucena.com/oferta/cxc20?utm_source=ig&utm_campaign=x',
+            'https://playlucenachess.com/oferta/cxc20?utm_source=ig&utm_campaign=x',
           ),
         ),
         'CXC20',
       );
       expect(
         OfferCodes.fromLink(
-          Uri.parse('https://lucena-2f4de.web.app/oferta/AB12/'),
+          Uri.parse('https://playlucenachess.com/oferta/AB12/'),
         ),
         'AB12',
       );
@@ -43,28 +43,32 @@ void main() {
         null,
       );
       expect(
-        OfferCodes.fromLink(Uri.parse('https://playlucena.com/oferta')),
-        null,
-      );
-      expect(
-        OfferCodes.fromLink(Uri.parse('https://playlucena.com/oferta/ABC')),
+        OfferCodes.fromLink(Uri.parse('https://playlucenachess.com/oferta')),
         null,
       );
       expect(
         OfferCodes.fromLink(
-          Uri.parse('https://playlucena.com/oferta/ABCDEFGHIJKLMNOPQRSTU'),
+          Uri.parse('https://playlucenachess.com/oferta/ABC'),
         ),
         null,
       );
       expect(
-        OfferCodes.fromLink(Uri.parse('https://playlucena.com/oferta/CX-20')),
+        OfferCodes.fromLink(
+          Uri.parse('https://playlucenachess.com/oferta/ABCDEFGHIJKLMNOPQRSTU'),
+        ),
+        null,
+      );
+      expect(
+        OfferCodes.fromLink(
+          Uri.parse('https://playlucenachess.com/oferta/CX-20'),
+        ),
         null,
       );
     });
 
     test('o link abre a Oferta com o código e vale no referrer da Play', () {
       final link = Uri.parse(
-        'https://playlucena.com/oferta/CXC20?utm_source=ig',
+        'https://playlucenachess.com/oferta/CXC20?utm_source=ig',
       );
       expect(Routes.appLink(link), '/pilares/offer?origem=link&codigo=CXC20');
       expect(

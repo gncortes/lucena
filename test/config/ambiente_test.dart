@@ -19,7 +19,7 @@ void main() {
   });
 
   test('cada ambiente tem o seu site', () {
-    expect(Ambiente.dev.siteHost, 'lucena-dev-gnc.web.app');
-    expect(Ambiente.prod.siteHost, 'lucena-2f4de.web.app');
+    expect(Ambiente.dev.siteHost, 'dev.playlucenachess.com');
+    expect(Ambiente.prod.siteHost, 'playlucenachess.com');
   });
 }

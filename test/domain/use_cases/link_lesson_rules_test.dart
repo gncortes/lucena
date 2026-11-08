@@ -74,13 +74,13 @@ void main() {
       expect(InstallReferrerRules.link(challenge)?.path, '/p/x');
       expect(
         InstallReferrerRules.link(
-          'https://playlucena.com/aula/rook.lucena?utm_source=instagram',
+          'https://playlucenachess.com/aula/rook.lucena?utm_source=instagram',
         )?.path,
         '/aula/rook.lucena',
       );
       final nested = InstallReferrerRules.link(
         'utm_source=google-play&link='
-        '${Uri.encodeQueryComponent('https://playlucena.com$challenge')}',
+        '${Uri.encodeQueryComponent('https://playlucenachess.com$challenge')}',
       );
       expect(ChallengeLink.tryParse(nested!)!.lesson?.id, 'rook.lucena');
     });

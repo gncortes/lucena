@@ -23,12 +23,12 @@ class AboutScreen extends StatelessWidget {
   /// A versão do app, para quem relata um problema. Vazia: não aparece.
   final String version;
 
-  /// O site do app ([Ambiente.siteHost]), no idioma de quem usa (pt na raiz;
-  /// en e es com prefixo; os outros idiomas vão para o inglês).
+  /// O site do app ([Ambiente.siteHost]), no idioma de quem usa (todos com
+  /// prefixo: pt, es e en; os outros idiomas vão para o inglês).
   static Uri websiteFor(String languageCode) {
     final base = 'https://${Ambiente.atual().siteHost}/';
     return Uri.parse(switch (languageCode) {
-      'pt' => base,
+      'pt' => '${base}pt/',
       'es' => '${base}es/',
       _ => '${base}en/',
     });

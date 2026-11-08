@@ -1,7 +1,7 @@
 import 'app_links.dart';
 
 /// O código do link com desconto (contrato de promoções, regra 6):
-/// `https://playlucena.com/oferta/<CODIGO>`, de 4 a 20 maiúsculas e números.
+/// `https://playlucenachess.com/oferta/<CODIGO>`, de 4 a 20 maiúsculas e números.
 abstract final class OfferCodes {
   /// O caminho do link: `<host>/oferta/<código>`.
   static const segment = 'oferta';

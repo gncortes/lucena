@@ -32,7 +32,7 @@ void main() {
         body: LegalSheet(
           kind: LegalKind.terms,
           title: 'Termos de uso',
-          hint: 'playlucena.com/termos',
+          hint: 'playlucenachess.com/termos',
           document: documento,
         ),
       ),

@@ -225,7 +225,7 @@ void main() {
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
       expect(push.starts, 1);
       expect(links.subscriptions, 1);
-      links.open(Uri.parse('https://playlucena.com/p/abcde?fen=lixo'));
+      links.open(Uri.parse('https://playlucenachess.com/p/abcde?fen=lixo'));
       await tester.pumpAndSettle();
       expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
       await tester.tap(find.byKey(ChallengeKeys.invalidBack));
@@ -874,7 +874,9 @@ void main() {
           ),
         ),
         push: FakePushRepository(
-          initial: PushOpening(link: Uri.parse('https://playlucena.com/daily')),
+          initial: PushOpening(
+            link: Uri.parse('https://playlucenachess.com/daily'),
+          ),
         ),
         links: FakeDeepLinkService(initial: challenge(locked: true).uri),
       );
@@ -896,7 +898,7 @@ void main() {
           ),
         ),
         links: FakeDeepLinkService(
-          initial: Uri.parse('https://playlucena.com/p/bad?fen=bad'),
+          initial: Uri.parse('https://playlucenachess.com/p/bad?fen=bad'),
         ),
       );
       expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
@@ -913,7 +915,7 @@ void main() {
       await pumpApp(
         tester,
         links: FakeDeepLinkService(
-          initial: Uri.parse('https://playlucena.com/p/abcde?fen=lixo'),
+          initial: Uri.parse('https://playlucenachess.com/p/abcde?fen=lixo'),
         ),
       );
       expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);

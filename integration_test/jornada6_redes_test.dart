@@ -47,7 +47,7 @@ void main() {
     final campaigns = app.dependencies.campaignRepository;
 
     for (final (name, utm) in _origins) {
-      final link = Uri.https(AppLinks.finalHost, '/aula/rook.lucena', {
+      final link = Uri.https(AppLinks.host, '/aula/rook.lucena', {
         ...utm,
         'utm_campaign': 'lucena-r5',
       }).toString();

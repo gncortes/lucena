@@ -8,7 +8,7 @@ void main() {
         '&lock=1&utm_source=teste&x=a%2Bb&x=c';
     for (final path in ['/p/original', '/p/original/']) {
       expect(
-        Routes.appLink(Uri.parse('https://playlucena.com$path?$query')),
+        Routes.appLink(Uri.parse('https://playlucenachess.com$path?$query')),
         '$path?$query',
       );
     }
@@ -22,13 +22,13 @@ void main() {
       '/dia/extra',
     ]) {
       expect(
-        Routes.appLink(Uri.parse('https://playlucena.com$path')),
+        Routes.appLink(Uri.parse('https://playlucenachess.com$path')),
         Routes.invalidLink,
       );
     }
     expect(Routes.appLink(Uri.parse('https://example.com/dia')), isNull);
     expect(
-      Routes.appLink(Uri.parse('javascript://playlucena.com/dia')),
+      Routes.appLink(Uri.parse('javascript://playlucenachess.com/dia')),
       isNull,
     );
   });

@@ -86,7 +86,7 @@ class _DailyShareSheetState extends State<_DailyShareSheet> {
 
   String _text(BuildContext context) {
     final l10n = context.l10n;
-    final link = '${AppLinks.finalHost}/${AppLinks.dailySegment}';
+    final link = '${AppLinks.host}/${AppLinks.dailySegment}';
     final side = _side.name;
     final goal = widget.daily.position.goal.code;
     return widget.won
