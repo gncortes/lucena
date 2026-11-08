@@ -167,26 +167,29 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                       textAlign: TextAlign.center,
                     ),
             ),
-            body: Stack(
-              fit: StackFit.expand,
-              children: [
-                SafeArea(
-                  child: Builder(
-                    builder: (context) => ShimmerConteudo(
-                      carregando: !state.ready || _board == null,
-                      esqueleto: const SkeletonList(),
-                      child: _body(context, state, boardSettings),
+            body: BoardViewport(
+              usefulHeight: BoardViewport.usefulHeightOf(context),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  SafeArea(
+                    child: Builder(
+                      builder: (context) => ShimmerConteudo(
+                        carregando: !state.ready || _board == null,
+                        esqueleto: const SkeletonList(),
+                        child: _body(context, state, boardSettings),
+                      ),
                     ),
                   ),
-                ),
-                if (_action(context, state) case final action?)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: ActionsFooter(children: [action]),
-                  ),
-              ],
+                  if (_action(context, state) case final action?)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: ActionsFooter(children: [action]),
+                    ),
+                ],
+              ),
             ),
           );
         },
@@ -315,13 +318,28 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             _reserveBottom(scaler) -
             2 * AppSpacing.sm -
             box.maxWidth / 2;
+        final reserveTop = max(timerHeight, min(wanted, room));
+        // A8: o centro do tabuleiro no centro útil da tela. Se o que vem em
+        // cima ou embaixo não cabe com ele lá, o tabuleiro desce ou sobe só
+        // o que falta; se nem assim cabe, volta o bloco centrado (T65).
+        final useful = BoardViewport.centerYOf(context);
+        final highest = reserveTop + AppSpacing.sm + box.maxWidth / 2;
+        final lowest =
+            box.maxHeight -
+            footer -
+            _reserveBottom(scaler) -
+            AppSpacing.sm -
+            box.maxWidth / 2;
         return _layout(
           context,
           state,
           boardSettings,
           board: board,
-          reserveTop: max(timerHeight, min(wanted, room)),
+          reserveTop: reserveTop,
           lowTime: lowTime,
+          centerY: useful == null || highest > lowest
+              ? null
+              : useful.clamp(highest, lowest).toDouble(),
         );
       },
     );
@@ -340,13 +358,15 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     required ChessboardController board,
     required double reserveTop,
     required bool lowTime,
+    double? centerY,
   }) {
     final colors = Theme.of(context).colorScheme;
     final star = state.star;
     final scaler = MediaQuery.textScalerOf(context);
     final withAction = _hasAction(state);
     return CenteredBoardLayout(
-      balanced: true,
+      balanced: centerY == null,
+      centerY: centerY,
       reserveTop: reserveTop,
       // O topo do bloco tem a altura da reserva, colado no tabuleiro.
       topAlignment: Alignment.bottomCenter,

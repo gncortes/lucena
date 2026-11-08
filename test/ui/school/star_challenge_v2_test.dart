@@ -96,13 +96,18 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  /// "Centralizar igual": o bloco (relógio, convite ou resultado, tabuleiro e
-  /// placar) com a sobra meio a meio entre a barra do app e o rodapé (o topo
-  /// da ação fixa, com a borda e a margem de 8; sem ação, o fim da tela).
+  /// A8 (substitui o "Centralizar igual" da T65): o centro do tabuleiro no
+  /// centro da tela (sem insets, o centro útil). Só sai dele se o bloco não
+  /// cabe: desce quando o de cima (relógio, convite ou resultado) não cabe
+  /// acima do centro, com o bloco colado na barra do app (8 dp); sobe quando
+  /// o placar não cabe embaixo, colado no rodapé (o topo da ação fixa, com a
+  /// borda e a margem de 8; sem ação, o fim da tela); se nem assim, a sobra
+  /// fica meio a meio.
   void expectBalanced(WidgetTester tester, Size size) {
     final appBar = tester.getRect(find.byType(AppBar)).bottom;
     final top = rectOf(tester, StarChallengeKeys.blockTop).top;
     final score = rectOf(tester, StarChallengeKeys.scoreboard).bottom;
+    final board = rectOf(tester, StarChallengeKeys.board);
     final action = [
       StarChallengeKeys.goButton,
       StarChallengeKeys.retryButton,
@@ -113,7 +118,16 @@ void main() {
     final above = top - appBar;
     final below = footer - score;
     expect(above, greaterThanOrEqualTo(-1));
-    expect(above, closeTo(below, 1), reason: 'vão de cima × vão de baixo');
+    final off = board.center.dy - size.height / 2;
+    if (off.abs() <= 1) return;
+    final balanced = (above - below).abs() <= 1;
+    expect(
+      balanced || (off > 0 ? above <= 9 : below <= 9),
+      isTrue,
+      reason:
+          'fora do centro $off sem necessidade (vão de cima $above, de '
+          'baixo $below)',
+    );
   }
 
   // As medidas do contrato, sem insets, fonte 1,0, pt, Fácil. O cartão do
@@ -190,8 +204,9 @@ void main() {
       final running = rectOf(tester, StarChallengeKeys.board);
       expect(running.width, size.width);
       expectBalanced(tester, size);
-      // Sem o convite e sem o botão, o bloco desce para o meio.
-      expect(running.top, lessThan(board.top));
+      // Sem o convite e sem o botão, o tabuleiro fica no centro ou sobe
+      // para ele (A8).
+      expect(running.top, lessThanOrEqualTo(board.top + 1));
       expect(find.byKey(StarChallengeKeys.goButton), findsNothing);
       expect(find.byKey(StarChallengeKeys.intro), findsNothing);
       expect(find.text('Sua vez'), findsNothing);
