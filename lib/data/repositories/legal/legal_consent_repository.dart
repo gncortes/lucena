@@ -10,7 +10,7 @@ import '../../services/preferences_service.dart';
 /// depois de criar a conta, uma vez por conta.
 abstract class LegalConsentRepository {
   /// A versão dos textos aceitos ("Versão 1" no começo dos dois).
-  static const version = 1;
+  static const version = 2;
 
   /// A conta [uid] já aceitou a versão atual neste aparelho.
   Future<bool> accepted(String uid);
