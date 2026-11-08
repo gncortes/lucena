@@ -22,4 +22,54 @@ void main() {
     expect(Ambiente.dev.siteHost, 'dev.playlucenachess.com');
     expect(Ambiente.prod.siteHost, 'playlucenachess.com');
   });
+
+  group('AdMob (E1.22)', () {
+    test('dev usa sempre o bloco de teste do Google, com ou sem id do CI', () {
+      expect(
+        AdMob.interstitialId(define: '', ambiente: Ambiente.dev),
+        AdMob.testInterstitialId,
+      );
+      expect(
+        AdMob.interstitialId(define: 'ca-app-pub-1/2', ambiente: Ambiente.dev),
+        AdMob.testInterstitialId,
+      );
+    });
+
+    test('prod usa o bloco do CI', () {
+      expect(
+        AdMob.interstitialId(
+          define: ' ca-app-pub-1/2 ',
+          ambiente: Ambiente.prod,
+        ),
+        'ca-app-pub-1/2',
+      );
+    });
+
+    test('prod sem id do CI fica sem anúncio, nunca com o de teste', () {
+      expect(AdMob.interstitialId(define: '', ambiente: Ambiente.prod), isNull);
+      expect(
+        AdMob.interstitialId(define: '  ', ambiente: Ambiente.prod),
+        isNull,
+      );
+      expect(
+        AdMob.interstitialId(
+          define: AdMob.testInterstitialId,
+          ambiente: Ambiente.prod,
+        ),
+        isNull,
+      );
+    });
+
+    test('sem define no teste, o build é dev com o bloco de teste', () {
+      expect(AdMob.interstitialId(), AdMob.testInterstitialId);
+    });
+
+    test('os ids de teste são os oficiais do Google', () {
+      expect(AdMob.testAppId, 'ca-app-pub-3940256099942544~3347511713');
+      expect(
+        AdMob.testInterstitialId,
+        'ca-app-pub-3940256099942544/1033173712',
+      );
+    });
+  });
 }

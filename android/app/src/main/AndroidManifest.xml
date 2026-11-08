@@ -8,8 +8,9 @@
          exato: sem SCHEDULE_EXACT_ALARM. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <!-- O app não usa anúncio nem ID de publicidade: a permissão que o
-         Firebase Analytics traz sai do build. -->
+    <!-- O anúncio é sem personalização para todos (npa=1, E1.22): o app não
+         usa o ID de publicidade, e a permissão que o Analytics e o AdMob
+         trazem sai do build. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove"/>
 
@@ -97,6 +98,10 @@
         <meta-data
             android:name="google_analytics_default_allow_ad_personalization_signals"
             android:value="false" />
+        <!-- O App ID do AdMob, por flavor (build.gradle.kts, E1.22). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

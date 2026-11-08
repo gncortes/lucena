@@ -28,6 +28,30 @@ enum Ambiente {
   };
 }
 
+/// O bloco intersticial do AdMob (E1.22). O id de verdade vem do CI
+/// (`--dart-define=ADMOB_INTERSTITIAL_ID`, `vars.ADMOB_INTERSTITIAL_ID` no
+/// release.yml); o App ID vai no manifest pelo `build.gradle.kts`.
+///
+/// - `dev`: sempre o bloco de teste do Google (QA e Patrol nunca pedem
+///   anúncio de verdade);
+/// - `prod`: o id do CI; sem ele, nulo, e o build fica sem anúncio (nunca o
+///   de teste em produção).
+abstract final class AdMob {
+  /// Os ids de teste oficiais do Google (developers.google.com/admob).
+  static const testAppId = 'ca-app-pub-3940256099942544~3347511713';
+  static const testInterstitialId = 'ca-app-pub-3940256099942544/1033173712';
+
+  static const _define = String.fromEnvironment('ADMOB_INTERSTITIAL_ID');
+
+  /// O bloco que o build usa, ou nulo (sem anúncio). [define] e [ambiente]
+  /// existem para o teste.
+  static String? interstitialId({String define = _define, Ambiente? ambiente}) {
+    if (!(ambiente ?? Ambiente.atual()).isProd) return testInterstitialId;
+    final id = define.trim();
+    return id.isEmpty || id == testInterstitialId ? null : id;
+  }
+}
+
 /// O Firebase Emulator Suite para o QA (`--dart-define=FIREBASE_EMULADOR=true`),
 /// desligado por padrão e nunca no `prod`. O emulador Android enxerga o
 /// computador em [host]. As portas são as do `firebase.json`. O app usa só o

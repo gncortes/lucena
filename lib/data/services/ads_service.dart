@@ -1,7 +1,7 @@
 /// O consentimento do Google (UMP) e o intersticial do AdMob (E1.25).
 ///
-/// A V1 sai sem anúncios: só há o [NoAdsService]. O `GoogleAdsService`, com o
-/// `google_mobile_ads`, está no commit b3fa571e (branch tarefa/E1.25-anuncios).
+/// O de verdade é o `GoogleAdsService` (google_ads_service.dart, E1.22); o
+/// [NoAdsService] fica para o build sem bloco de anúncio.
 abstract class AdsService {
   /// Pede ao Google as informações de consentimento. Sem rede, termina sem
   /// erro.
@@ -29,7 +29,8 @@ abstract class AdsService {
   bool get drawsInApp => false;
 }
 
-/// Sem anúncio (V1, F-Droid, testes): nada é pedido nem mostrado.
+/// Sem anúncio (prod sem bloco do CI, F-Droid, testes): nada é pedido nem
+/// mostrado.
 class NoAdsService extends AdsService {
   NoAdsService();
 

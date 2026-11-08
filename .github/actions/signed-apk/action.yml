@@ -22,6 +22,18 @@ inputs:
   flavor:
     description: Flavor do build, `dev` (QA, Firebase lucena-dev-gnc) ou `prod` (Play, Firebase lucena-2f4de).
     required: true
+  admob-app-id:
+    description: >
+      App ID do AdMob (`vars.ADMOB_APP_ID`, não é segredo). Vai para o manifest do flavor prod;
+      sem ele, o prod leva o App ID de teste e não pede anúncio (E1.22).
+    required: false
+    default: ''
+  admob-interstitial-id:
+    description: >
+      Bloco intersticial do AdMob (`vars.ADMOB_INTERSTITIAL_ID`), passado como
+      `--dart-define=ADMOB_INTERSTITIAL_ID`. Sem ele, o prod sai sem anúncio.
+    required: false
+    default: ''
   google-services-json:
     description: >
       google-services.json do Firebase do flavor (segredo GOOGLE_SERVICES_JSON no prod,
@@ -105,9 +117,13 @@ runs:
         ANDROID_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
         ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
         ANDROID_KEY_PASSWORD: ${{ inputs.key-password }}
+        ADMOB_APP_ID: ${{ inputs.admob-app-id }}
+        ADMOB_INTERSTITIAL_ID: ${{ inputs.admob-interstitial-id }}
       run: |
         version_name="${TAG#v}"
         version_code="$(git rev-list --count HEAD)"
+        # O bloco do AdMob vai em todo `flutter build` deste passo (o App ID, o Gradle lê do ambiente).
+        flutter() { command flutter "$@" ${ADMOB_INTERSTITIAL_ID:+--dart-define=ADMOB_INTERSTITIAL_ID=$ADMOB_INTERSTITIAL_ID}; }
         flutter build apk --release --flavor "$FLAVOR" --build-name="$version_name" --build-number="$version_code" --dart-define=APP_VERSION="$version_name"
         echo "version-name=$version_name" >> "$GITHUB_OUTPUT"
         echo "version-code=$version_code" >> "$GITHUB_OUTPUT"

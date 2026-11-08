@@ -189,7 +189,7 @@ class PilaresRestoredView extends StatelessWidget {
   }
 }
 
-/// "Comprou pelo site?" (H-VEN-08): entra com a conta da compra e procura
+/// "Já comprou?" (H-VEN-08; sem citar o site, regra de pagamentos da Play): entra com a conta da compra e procura
 /// de novo. Usa o mesmo view model da tela Restaurar.
 class PilaresRestoreSiteScreen extends StatelessWidget {
   const PilaresRestoreSiteScreen({super.key});
