@@ -34,6 +34,7 @@ class TrainingCanvasPage extends StatelessWidget {
   Widget build(BuildContext context) => ScriptPage(
     pageKey: pageKey,
     canvasLayout: true,
+    centerBoard: true,
     speechBuilder: (metrics) =>
         ScriptSpeech(texts: [text], metrics: metrics, onOpen: onOpen),
     strip: SizedBox(
@@ -70,9 +71,12 @@ class TrainingCanvasFooter extends StatelessWidget {
   final Widget? leading, primary, secondary;
   final List<Widget> navigation;
 
+  /// A altura do rodapé, sem a área segura.
+  static const height = 96.0;
+
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: 96,
+    height: height,
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(

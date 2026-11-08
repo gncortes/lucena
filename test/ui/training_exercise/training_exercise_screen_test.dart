@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -204,7 +206,7 @@ void main() {
     debugPrint('A8 training_exercise fora do centro: ${foraDoCentro(tester)}');
     expectTabuleiroNoCentro(tester);
     await tester.pumpWidget(const SizedBox());
-  }, skip: true);
+  });
 
   testWidgets(
     'completed failed exercise is read-only and shows solution action',
@@ -587,24 +589,16 @@ void expectTrainingSpeechFont(WidgetTester tester) {
   }
 }
 
+/// A8: o tabuleiro de ponta a ponta com o centro no centro útil da tela
+/// (entre a barra de status, 52, e a de navegação, 24), sem passar da app bar
+/// (64) nem do rodapé (96): o lado é o dobro da menor folga até essas bordas.
 void expectCanvasBlock(WidgetTester tester, Size size, Key boardKey) {
-  final pageHeight = size.height - 52 - 24 - 64 - 96;
-  var side = size.width;
-  var lines = 2;
-  var spare = 0.0;
-  var fits = false;
-  for (final candidate in [(4, 40.0), (3, 40.0), (2, 40.0), (2, 0.0)]) {
-    final room =
-        pageHeight - (42 + 22.5 * candidate.$1 + 58 + side + candidate.$2);
-    if (room >= 0) {
-      lines = candidate.$1;
-      spare = room;
-      fits = true;
-      break;
-    }
-  }
-  if (!fits) side = (pageHeight - 87 - 58).clamp(0, double.infinity);
+  final center = 52 + (size.height - 52 - 24) / 2;
+  final above = center - 52 - 64;
+  final below = size.height - 24 - 96 - center;
+  final side = math.min(size.width, 2 * math.min(above, below));
   final board = tester.getRect(find.byKey(boardKey));
   expect(board.width, closeTo(side, .01));
-  expect(board.top, closeTo(52 + 64 + spare / 2 + 42 + 22.5 * lines + 58, .01));
+  expect(board.center.dy, closeTo(center, 1));
+  expect(board.center.dx, closeTo(size.width / 2, .01));
 }
