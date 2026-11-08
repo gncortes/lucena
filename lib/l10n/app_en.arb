@@ -8389,7 +8389,7 @@
   "@boardControlsHint": {
     "description": "UX audit: boardControlsHint"
   },
-  "boardControlsDone": "Move made. You can keep trying the controls or continue to the home screen.",
+  "boardControlsDone": "Move made. If you like, move other pieces to practice more.",
   "@boardControlsDone": {
     "description": "UX audit: boardControlsDone"
   },

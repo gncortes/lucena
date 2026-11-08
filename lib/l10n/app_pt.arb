@@ -1606,7 +1606,7 @@
   "alertsBlockedSummary": "Bloqueados nas Configurações do Android",
   "journeyChangePace": "Alterar ritmo",
   "boardControlsHint": "Toque em uma peça para ver os destinos disponíveis. Depois toque em um destino ou arraste a peça até ele.",
-  "boardControlsDone": "Movimento realizado. Você pode continuar praticando ou seguir para a tela inicial.",
+  "boardControlsDone": "Movimento feito. Se quiser, mova outras peças para praticar mais.",
   "boardControlsSkip": "Já sei mover, continuar",
   "boardControlsFirstStep": "Conheça os controles do tabuleiro",
   "challengeInvalidLinkTitle": "Não foi possível abrir este desafio",

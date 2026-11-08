@@ -58,6 +58,43 @@ void main() {
     expect((await saved.load()).boardControlsDone, isTrue);
   });
 
+  testWidgets('A4: depois do lance, o texto não fala de outra tela: o botão '
+      'só diz "Continuar"', (tester) async {
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    final cubit = BoardControlsCubit(FakeOnboardingRepository());
+    addTearDown(settings.close);
+    addTearDown(cubit.close);
+    await settings.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: cubit,
+          child: const BoardControlsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    cubit.play(Move.parse('e2e4')!);
+    await tester.pumpAndSettle();
+    final text = tester
+        .widget<Text>(find.byKey(BoardControlsKeys.instruction))
+        .data!;
+    expect(text, isNot(contains('tela inicial')));
+    expect(text, isNot(contains('seguir')));
+    expect(
+      find.descendant(
+        of: find.byKey(BoardControlsKeys.continueButton),
+        matching: find.text('Continuar'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   for (final size in const [
     Size(360, 740),
     Size(360, 800),
