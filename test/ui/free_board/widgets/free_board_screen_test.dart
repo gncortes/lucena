@@ -3729,6 +3729,38 @@ void main() {
       expect(games.saved, isNotEmpty);
       expect(tester.takeException(), isNull);
     });
+
+    // Gabriel (08/11): a confirmação vale para toda partida, não só a Jornada.
+    const others = {
+      'comum': GameMode(
+        opponent: OpponentKind.maia,
+        level: 1450,
+        userSide: Side.white,
+        positionId: 'basic.queen.0001',
+      ),
+      'diário': GameMode(
+        opponent: OpponentKind.stockfish,
+        userSide: Side.white,
+        positionId: 'basic.queen.0001',
+        dailyDate: '2026-10-26',
+      ),
+      'dois jogadores': GameMode(),
+    };
+    for (final entry in others.entries) {
+      testWidgets('partida ${entry.key}: pergunta antes de sair', (
+        tester,
+      ) async {
+        await pumpScreen(
+          tester,
+          locale: const Locale('pt'),
+          mode: entry.value,
+          fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        );
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(find.byKey(FreeBoardKeys.leaveSheet), findsOneWidget);
+      });
+    }
   });
   group('Resultado persistente por modo e motivo', () {
     const machine = GameMode(

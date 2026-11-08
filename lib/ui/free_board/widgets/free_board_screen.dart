@@ -271,8 +271,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     });
   }
 
-  // Sair no meio do desafio da Jornada: a partida fica salva (o "Retomar" do
-  // Início) e a tela fecha para quem estava embaixo.
+  // Sair no meio de uma partida: ela fica salva (o "Retomar" do Início) e a
+  // tela fecha para quem estava embaixo.
   Future<void> _confirmLeave(FreeBoardCubit cubit) async {
     if (_confirmingQuit || _quitting) return;
     _confirmingQuit = true;
@@ -440,15 +440,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           state.mode.isSpeedrun &&
                           state.end == null &&
                           !_quitting;
-                      // No meio do desafio da Jornada, pergunta antes de sair
-                      // (a partida fica salva para retomar; achado A2).
-                      final journeyOpen =
-                          state.mode.challengeId != null &&
+                      // No meio de qualquer outra partida, pergunta antes de
+                      // sair (a partida fica salva para retomar; achado A2,
+                      // estendido a todas as partidas pelo Gabriel em 08/11).
+                      final gameOpen =
+                          !state.mode.isSpeedrun &&
                           state.ready &&
                           state.end == null &&
                           !_quitting;
                       return PopScope(
-                        canPop: !speedrunOpen && !journeyOpen,
+                        canPop: !speedrunOpen && !gameOpen,
                         onPopInvokedWithResult: (didPop, _) {
                           if (didPop) {
                             if (!state.mode.isSpeedrun) {
