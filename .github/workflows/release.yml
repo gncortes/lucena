@@ -1,8 +1,8 @@
 name: Release
 
 # A tag final (`git tag vX.Y.Z && git push --tags`, feita pelo Gabriel na `main` depois do merge da `develop`)
-# roda o CI e o Patrol no Test Lab, publica o APK assinado como Release e o envia ao grupo `release` do
-# App Distribution (todo mundo). Tags de candidata (-rc.N) vão para o qa.yml.
+# roda o CI e o Patrol no Test Lab, publica o APK e o AAB assinados como Release e envia o APK ao grupo
+# `release` do App Distribution (todo mundo). O AAB é o que sobe na Google Play (Play Console, à mão por ora). Tags de candidata (-rc.N) vão para o qa.yml.
 on:
   push:
     tags: ['v[0-9]+.[0-9]+.[0-9]+']
@@ -89,15 +89,19 @@ jobs:
           key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
           google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          bundle: 'true'
 
-      - name: Criar Release com o APK
+      - name: Criar Release com o APK e o AAB
         env:
           GH_TOKEN: ${{ github.token }}
           APK: ${{ steps.apk.outputs.apk }}
+          AAB: ${{ steps.apk.outputs.aab }}
         run: |
           destino="lucena-$GITHUB_REF_NAME.apk"
+          bundle="lucena-$GITHUB_REF_NAME.aab"
           cp "$APK" "$destino"
-          gh release create "$GITHUB_REF_NAME" "$destino" \
+          cp "$AAB" "$bundle"
+          gh release create "$GITHUB_REF_NAME" "$destino" "$bundle" \
             --title "$GITHUB_REF_NAME" \
             --generate-notes \
             --verify-tag
@@ -121,4 +125,5 @@ jobs:
           {
             echo "### Release $GITHUB_REF_NAME"
             echo "- [Instalar pelo App Distribution]($TESTER_LINK)"
+            echo "- AAB para a Play: lucena-$GITHUB_REF_NAME.aab nos arquivos do Release"
           } >> "$GITHUB_STEP_SUMMARY"

@@ -29,11 +29,20 @@ inputs:
       perfil na nuvem (E1.02).
     required: false
     default: ''
+  bundle:
+    description: >
+      `true` gera também o AAB (app bundle) assinado com a chave de upload, o formato que a Google Play
+      exige no envio. Mesmo versionName/versionCode do APK.
+    required: false
+    default: 'false'
 
 outputs:
   apk:
     description: Caminho do APK gerado.
     value: build/app/outputs/flutter-apk/app-${{ inputs.flavor }}-release.apk
+  aab:
+    description: Caminho do AAB gerado (só com bundle `true`).
+    value: build/app/outputs/bundle/${{ inputs.flavor }}Release/app-${{ inputs.flavor }}-release.aab
   version-name:
     description: versionName usado no build.
     value: ${{ steps.build.outputs.version-name }}
@@ -101,6 +110,7 @@ runs:
       env:
         TAG: ${{ inputs.tag }}
         FLAVOR: ${{ inputs.flavor }}
+        BUNDLE: ${{ inputs.bundle }}
         ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/assinatura/upload.jks
         ANDROID_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
         ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
@@ -109,12 +119,20 @@ runs:
         version_name="${TAG#v}"
         version_code="$(git rev-list --count HEAD)"
         flutter build apk --release --flavor "$FLAVOR" --build-name="$version_name" --build-number="$version_code" --dart-define=APP_VERSION="$version_name"
+        if [ "$BUNDLE" = true ]; then
+          flutter build appbundle --release --flavor "$FLAVOR" --build-name="$version_name" --build-number="$version_code" --dart-define=APP_VERSION="$version_name"
+        fi
         echo "version-name=$version_name" >> "$GITHUB_OUTPUT"
         echo "version-code=$version_code" >> "$GITHUB_OUTPUT"
 
     - name: Conteúdo privado fora do APK
       shell: bash
       run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/flutter-apk/app-${{ inputs.flavor }}-release.apk
+
+    - name: Conteúdo privado fora do AAB
+      if: inputs.bundle == 'true'
+      shell: bash
+      run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/bundle/${{ inputs.flavor }}Release/app-${{ inputs.flavor }}-release.aab
 
     - name: Apagar keystore
       if: always()
@@ -129,4 +147,12 @@ runs:
         if echo "$certs" | grep -q 'CN=Android Debug'; then
           echo "::error::O APK saiu assinado com a chave de debug"
           exit 1
+        fi
+        aab=build/app/outputs/bundle/${{ inputs.flavor }}Release/app-${{ inputs.flavor }}-release.aab
+        if [ "${{ inputs.bundle }}" = true ]; then
+          # O AAB é assinado com jarsigner (chave de upload); a Play reassina com a chave do app.
+          if keytool -printcert -jarfile "$aab" | grep -q 'CN=Android Debug'; then
+            echo "::error::O AAB saiu assinado com a chave de debug"
+            exit 1
+          fi
         fi
