@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../theme/app_button.dart';
 import '../theme/app_chip.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
@@ -682,6 +683,30 @@ class BoardOptionsPanel extends StatelessWidget {
     required double boardRoom,
     double minPanel = 0.4,
   }) => max(0.0, min(boardRoom, available * (1 - minPanel)));
+
+  /// O painel mais baixo que ainda serve (A8): o botão de confirmar no pé,
+  /// com a área segura, e uma linha de opções à vista; o resto rola.
+  static double minHeightOf(BuildContext context) =>
+      kButtonHeight +
+      2 * AppSpacing.sm +
+      MediaQuery.paddingOf(context).bottom +
+      kMinInteractiveDimension;
+
+  /// A altura da área do tabuleiro com o centro dele no centro útil (A8):
+  /// [centerY] é esse centro, nas coordenadas da área, e [below] o que vai
+  /// do centro do tabuleiro até o painel. Se o painel ficasse mais baixo que
+  /// [minPanel], devolve null: o tabuleiro não cabe no centro e a tela volta
+  /// a [boardAreaFor].
+  static double? centeredAreaFor(
+    double available, {
+    required double? centerY,
+    required double below,
+    required double minPanel,
+  }) {
+    if (centerY == null) return null;
+    final area = centerY + below;
+    return available - area >= minPanel ? area : null;
+  }
 
   @override
   Widget build(BuildContext context) {

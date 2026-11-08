@@ -17,6 +17,7 @@ import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/challenge_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
@@ -99,10 +100,13 @@ void main() {
     );
   }
 
-  for (final (screen, scale) in [
-    (const Size(360, 640), 1.0),
-    (const Size(412, 915), 1.0),
-    (const Size(360, 640), 1.6),
+  // A8: onde cabe, o centro do tabuleiro fica no centro útil da tela; em
+  // tela baixa (o painel ficaria sem espaço), no centro do espaço entre a
+  // barra do app e o painel (T64).
+  for (final (screen, scale, centered) in [
+    (const Size(360, 640), 1.0, false),
+    (const Size(412, 915), 1.0, true),
+    (const Size(360, 640), 1.6, false),
   ]) {
     testWidgets('$screen × $scale: tabuleiro no centro, o painel rola e o '
         'botão de jogar fica à vista', (tester) async {
@@ -110,7 +114,13 @@ void main() {
       final appBar = tester.getRect(find.byType(AppBar));
       final panel = tester.getRect(find.byKey(JourneyKeys.challengePanel));
       final board = tester.getRect(find.byKey(JourneyKeys.challengeBoard));
-      expect(board.center.dy, closeTo((appBar.bottom + panel.top) / 2, 1));
+      expect(
+        board.center.dy,
+        closeTo(
+          centered ? screen.height / 2 : (appBar.bottom + panel.top) / 2,
+          1,
+        ),
+      );
       expect(board.bottom, lessThanOrEqualTo(panel.top));
       expect(find.byKey(JourneyKeys.play).hitTestable(), findsOne);
       await tester.scrollUntilVisible(
@@ -124,6 +134,21 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta; o painel '
+      'fica com o espaço de baixo e o botão de jogar à vista', (tester) async {
+    await pump(tester, centroAparelho, 1);
+    setCentroAparelho(tester);
+    await tester.pumpAndSettle();
+    expectTabuleiroNoCentro(tester);
+    final panel = tester.getRect(find.byKey(JourneyKeys.challengePanel));
+    expect(
+      tester.getRect(find.byKey(JourneyKeys.challengeBoard)).bottom,
+      lessThanOrEqualTo(panel.top),
+    );
+    expect(find.byKey(JourneyKeys.play).hitTestable(), findsOne);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('"Jogar": o tabuleiro grande voa até o centro da partida e, na '
       'volta, retoma a marca dele sem voar de volta', (tester) async {
