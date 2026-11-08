@@ -14,14 +14,14 @@
       "category": "gameStart",
       "intensity": 2,
       "emotion": "confident",
-      "text": "Bronze no Aberto do Bairro. Só pra você saber com quem fala."
+      "text": "Bronze no Aberto do Bairro. Só para você saber com quem fala."
     },
     {
       "id": "snob.gameStart.3",
       "category": "gameStart",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Vou jogar devagar, pra você acompanhar."
+      "text": "Vou jogar devagar, para você acompanhar."
     },
     {
       "id": "snob.gameStart.4",
@@ -182,7 +182,7 @@
       "category": "bigDisadvantage",
       "intensity": 2,
       "emotion": "frustrated",
-      "text": "Tô perdido, mas com certeza eu tava ganho."
+      "text": "Estou perdido, mas com certeza eu estava ganho."
     },
     {
       "id": "snob.bigDisadvantage.2",
@@ -231,7 +231,7 @@
       "category": "bigDisadvantage",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Vamos ser civilizados: empate, e eu conto pra todo mundo que você jogou bem."
+      "text": "Vamos ser civilizados: empate, e eu conto para todo mundo que você jogou bem."
     },
     {
       "id": "snob.opponentBlunder.1",
@@ -273,7 +273,7 @@
       "category": "ownBlunder",
       "intensity": 1,
       "emotion": "frustrated",
-      "text": "Foi de propósito. Pra deixar mais emocionante."
+      "text": "Foi de propósito. Para deixar mais emocionante."
     },
     {
       "id": "snob.ownBlunder.2",
@@ -287,7 +287,7 @@
       "category": "ownBlunder",
       "intensity": 3,
       "emotion": "frustrated",
-      "text": "Lance profundo. Calculado. Profundo demais pra você."
+      "text": "Lance profundo. Calculado. Profundo demais para você."
     },
     {
       "id": "snob.ownBlunder.4",
@@ -336,7 +336,7 @@
       "category": "strongMove",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Bom lance. Pro seu nível, ótimo lance."
+      "text": "Bom lance. Para o seu nível, ótimo lance."
     },
     {
       "id": "snob.comeback.1",
@@ -420,7 +420,7 @@
       "category": "pieceCaptured",
       "intensity": 2,
       "emotion": "happy",
-      "text": "Mais uma pra coleção. Ao lado da medalha."
+      "text": "Mais uma para a coleção. Ao lado da medalha."
     },
     {
       "id": "snob.pieceCaptured.3",
@@ -441,7 +441,7 @@
       "category": "pieceCaptured",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Essa peça estava pedindo pra sair."
+      "text": "Essa peça estava pedindo para sair."
     },
     {
       "id": "snob.pieceLost.1",
@@ -511,7 +511,7 @@
       "category": "ownPromotion",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Técnica de final básica. Pra mim, claro."
+      "text": "Técnica de final básica. Para mim, claro."
     },
     {
       "id": "snob.opponentPromotion.1",
@@ -700,14 +700,14 @@
       "category": "win",
       "intensity": 3,
       "emotion": "confident",
-      "text": "Mais uma vitória pro currículo do medalhista."
+      "text": "Mais uma vitória para o currículo do medalhista."
     },
     {
       "id": "snob.win.3",
       "category": "win",
       "intensity": 1,
       "emotion": "calm",
-      "text": "Boa partida. Pra você foi uma aula."
+      "text": "Boa partida. Para você foi uma aula."
     },
     {
       "id": "snob.win.4",
@@ -721,7 +721,7 @@
       "category": "win",
       "intensity": 1,
       "emotion": "confident",
-      "text": "Nada mal. Quer dizer, pra mim, nada mal."
+      "text": "Nada mal. Quer dizer, para mim, nada mal."
     },
     {
       "id": "snob.loss.1",
@@ -742,7 +742,7 @@
       "category": "loss",
       "intensity": 1,
       "emotion": "frustrated",
-      "text": "Deixei você ganhar. Faz bem pra autoestima. A sua."
+      "text": "Deixei você ganhar. Faz bem para a autoestima. A sua."
     },
     {
       "id": "snob.loss.4",
@@ -819,7 +819,7 @@
       "category": "drawAccepted",
       "intensity": 2,
       "emotion": "nervous",
-      "text": "Hm, sim, aceito. Essa luz está péssima pra jogar."
+      "text": "Hm, sim, aceito. Essa luz está péssima para jogar."
     },
     {
       "id": "snob.drawAccepted.4",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -512,6 +513,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(profile.profile.rating, 1650);
     expect(profile.profile.chessComUser, 'gabriel_finais');
+  });
+
+  testWidgets('A5: a ajuda do campo do Chess.com aparece inteira, sem '
+      'reticências', (tester) async {
+    await pumpLevel(tester, locale: const Locale('pt'));
+    await choose(tester, LevelChoice.chess);
+    final help = find.text(
+      'Lemos o rating público do Chess.com. Sem login e sem senha.',
+    );
+    expect(help, findsOneWidget);
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.descendant(of: help, matching: find.byType(RichText)),
+    );
+    expect(paragraph.didExceedMaxLines, isFalse);
   });
 
   testWidgets('Chess.com sem rede: tela "Sem internet" no lugar', (

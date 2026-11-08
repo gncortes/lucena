@@ -160,9 +160,7 @@ class PlacementScreen extends StatelessWidget {
                   },
                   child: _Question(
                     state: state,
-                    usefulHeight:
-                        MediaQuery.sizeOf(context).height -
-                        MediaQuery.viewPaddingOf(context).vertical,
+                    usefulHeight: BoardViewport.usefulHeightOf(context),
                   ),
                 ),
                 PlacementView.result => PlacementResultView(

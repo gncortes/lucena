@@ -35,7 +35,7 @@ class RaceGameView extends StatelessWidget {
       MediaQuery.textScalerOf(context)
           .scale(RaceChances.height)
           .ceilToDouble() +
-      AppSpacing.sm;
+      AppSpacing.xs;
 
   final RaceState state;
 
@@ -56,7 +56,7 @@ class RaceGameView extends StatelessWidget {
       children: [
         SafeArea(
           child: CenteredBoardLayout(
-            balanced: true,
+            centerY: BoardViewport.centerYOf(context),
             reserveTop: RaceScoreboard.height,
             reserveBottom: bottomRoom,
             footer: const SizedBox(height: GameActionsBar.height),

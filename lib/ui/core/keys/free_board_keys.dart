@@ -38,6 +38,11 @@ abstract final class FreeBoardKeys {
   static const speedrunQuitCancel = Key('freeBoard.speedrun.quit.cancel');
   static const speedrunQuitSheet = Key('freeBoard.speedrun.quit.sheet');
 
+  /// A confirmação de sair no meio de um desafio da Jornada (a partida fica
+  /// salva); o "continuar jogando" é o [confirmationCancel].
+  static const leaveSheet = Key('freeBoard.leave.sheet');
+  static const leaveConfirm = Key('freeBoard.leave.confirm');
+
   static const flipButton = Key('freeBoard.flip');
 
   /// Desistir (só no treino) e o painel que confirma.

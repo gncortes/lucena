@@ -407,6 +407,8 @@ class _BlindGameScreenState extends State<BlindGameScreen>
             context.canPop() ? context.pop() : context.go(Routes.home),
       );
     }
+    // Com o teclado aberto, a área encolhe: o tabuleiro fica no centro dela.
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
     final clocks = context.select(
       (SettingsCubit cubit) =>
           cubit.state?.clock.position ?? ClockPosition.fallback,
@@ -473,15 +475,23 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                   hasClock: rows > 0,
                                 );
                               }
-                              // O seletor (e o relógio do adversário), o
-                              // tabuleiro e "Sua vez" (e o relógio do jogador)
-                              // formam um bloco centrado entre a barra do app e
-                              // o painel de baixo, com o mesmo vão em cima e
-                              // embaixo (T65), como na partida.
+                              // O tabuleiro fica com o centro no centro útil
+                              // da tela (A8); o seletor (e o relógio do
+                              // adversário) em cima e "Sua vez" (e o relógio
+                              // do jogador) embaixo ficam com o que sobra. Se
+                              // não couber, rola com o tabuleiro inteiro.
                               return CenteredBoardLayout(
                                 key: BlindKeys.boardArea,
-                                balanced: true,
-                                measureBlock: true,
+                                // Com o teclado, o bloco todo fica no centro
+                                // do que sobra e o tabuleiro diminui (T65).
+                                balanced: keyboard,
+                                measureBlock: keyboard,
+                                centerY: keyboard
+                                    ? null
+                                    : BoardViewport.centerYOf(context),
+                                minBoardSide: keyboard
+                                    ? null
+                                    : constraints.maxWidth,
                                 top: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [

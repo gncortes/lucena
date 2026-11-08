@@ -24,6 +24,7 @@ import 'package:lucena/ui/training_opening/view_models/training_opening_cubit.da
 import 'package:lucena/ui/training_opening/widgets/training_opening_screen.dart';
 import 'package:lucena/ui/training_opening/widgets/opening_goal_cards.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -327,6 +328,32 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+  // A8: hoje 59 dp abaixo do centro útil (o mesmo bloco do canvas da lição
+  // que o exercício do treino). Aguarda decisão.
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    await prepare();
+    setCentroAparelho(tester);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: TrainingOpeningScreen(
+          repository: repository,
+          config: TrainingCourseConfig.pilares,
+          now: now,
+          lessonId: 'one',
+          teacher: teacher,
+          onNextGoal: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    debugPrint('A8 training_opening fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+  });
+
   for (final reduced in [false, true]) {
     testWidgets(
       'H-ANI-11/12: erro e acerto na casa e na peça (reduzido: $reduced)',

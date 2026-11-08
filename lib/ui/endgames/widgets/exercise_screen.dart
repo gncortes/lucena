@@ -25,6 +25,7 @@ import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -418,7 +419,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   ),
               ],
             ),
-            body: SafeArea(top: false, child: _body(context, state)),
+            body: BoardViewport(
+              usefulHeight: BoardViewport.usefulHeightOf(context),
+              child: SafeArea(top: false, child: _body(context, state)),
+            ),
           );
         },
       ),
@@ -578,6 +582,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         Expanded(
           child: ScriptPage(
             pageKey: ExerciseKeys.page,
+            centerBoard: true,
             speechBuilder: speechOf,
             strip: strip,
             boardBuilder: (size) => KeyedSubtree(
@@ -724,6 +729,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     if (widget.previewFen == null) return const SkeletonList();
     return ScriptPage(
       pageKey: ExerciseKeys.page,
+      centerBoard: true,
       speechBuilder: (_) => const SizedBox.shrink(),
       strip: const SizedBox(height: ScriptPage.stripHeight),
       boardBuilder: (size) => KeyedSubtree(

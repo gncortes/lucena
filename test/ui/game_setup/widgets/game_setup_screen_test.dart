@@ -21,6 +21,7 @@ import 'package:lucena/ui/game_setup/widgets/custom_pace_sheet.dart';
 import 'package:lucena/ui/game_setup/widgets/game_setup_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../../testing/board_center.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
@@ -69,18 +70,29 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  for (final (screen, scale) in [
-    (const Size(1080, 2400), 1.0),
-    (const Size(945, 1680), 1.0),
-    (const Size(945, 1680), 1.6),
+  // A8: onde cabe, o centro do tabuleiro fica no centro útil da tela; em
+  // tela baixa (o painel ficaria sem espaço), no centro do espaço entre a
+  // barra do app e o painel (T64).
+  for (final (screen, scale, centered) in [
+    (const Size(1080, 2400), 1.0, true),
+    (const Size(945, 1680), 1.0, false),
+    (const Size(945, 1680), 1.6, false),
   ]) {
-    testWidgets('T64, $screen × $scale: o tabuleiro no centro do espaço '
-        'entre a barra do app e o painel das opções, que rola', (tester) async {
+    testWidgets('T64/A8, $screen × $scale: o tabuleiro no centro e o painel '
+        'das opções rola', (tester) async {
       await pump(tester, screen: screen, textScale: scale);
       final appBar = tester.getRect(find.byType(AppBar));
       final panel = tester.getRect(find.byKey(GameSetupKeys.panel));
       final board = tester.getRect(find.byKey(GameSetupKeys.preview));
-      expect(board.center.dy, closeTo((appBar.bottom + panel.top) / 2, 1));
+      expect(
+        board.center.dy,
+        closeTo(
+          centered
+              ? screen.height / tester.view.devicePixelRatio / 2
+              : (appBar.bottom + panel.top) / 2,
+          1,
+        ),
+      );
       expect(
         tester.getRect(find.byKey(GameSetupKeys.goal)).bottom,
         lessThanOrEqualTo(panel.top),
@@ -98,6 +110,32 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta; o painel '
+      'fica com o espaço de baixo e o botão de começar ao alcance', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('pt'));
+    setCentroAparelho(tester);
+    await tester.pumpAndSettle();
+    expectTabuleiroNoCentro(tester);
+    final panel = tester.getRect(find.byKey(GameSetupKeys.panel));
+    expect(
+      tester.getRect(find.byKey(GameSetupKeys.goal)).bottom,
+      lessThanOrEqualTo(panel.top),
+    );
+    expect(find.byKey(GameSetupKeys.startButton).hitTestable(), findsOne);
+    expect(tester.takeException(), isNull);
+  }, pendente360x740: true);
+
+  testWidgets('A3: o tabuleiro vai de ponta a ponta, sem margem, como o da '
+      'Jornada e o do canvas (PropV1FinaisNovaPartida)', (tester) async {
+    await pump(tester);
+    final screen = tester.getRect(find.byType(Scaffold).first);
+    final board = tester.getRect(find.byKey(GameSetupKeys.preview));
+    expect(board.left, closeTo(screen.left, 0.5));
+    expect(board.width, closeTo(screen.width, 0.5));
+  });
 
   Future<void> tap(WidgetTester tester, Key key, {int times = 1}) async {
     // A lista só monta o que está perto da tela: rola até o botão.

@@ -32,7 +32,6 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/motion/entrada_de_resultado.dart';
-import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/game_entrance.dart';
@@ -271,6 +270,37 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     });
   }
 
+  // Sair no meio de uma partida: ela fica salva (o "Retomar" do Início) e a
+  // tela fecha para quem estava embaixo.
+  Future<void> _confirmLeave(FreeBoardCubit cubit) async {
+    if (_confirmingQuit || _quitting) return;
+    _confirmingQuit = true;
+    final l10n = context.l10n;
+    final confirmed = await _showGameConfirmation(
+      context,
+      sheetKey: FreeBoardKeys.leaveSheet,
+      confirmKey: FreeBoardKeys.leaveConfirm,
+      cancelKey: FreeBoardKeys.confirmationCancel,
+      title: l10n.gameLeaveTitle,
+      hint: l10n.gameLeaveHint,
+      action: l10n.gameLeave,
+      cancel: l10n.gameKeepPlaying,
+    );
+    _confirmingQuit = false;
+    if (confirmed != true || !mounted) return;
+    setState(() => _quitting = true);
+    // Só depois de a tela aceitar fechar (o PopScope guarda a partida).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        unawaited(cubit.leave());
+        context.go(Routes.home);
+      }
+    });
+  }
+
   GameData _gameData(FreeBoardState state) {
     // Revendo um lance anterior, o tabuleiro mostra a posição daquele
     // momento.
@@ -409,15 +439,25 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           state.mode.isSpeedrun &&
                           state.end == null &&
                           !_quitting;
+                      // No meio de qualquer outra partida, pergunta antes de
+                      // sair (a partida fica salva para retomar; achado A2,
+                      // estendido a todas as partidas pelo Gabriel em 08/11).
+                      final gameOpen =
+                          !state.mode.isSpeedrun &&
+                          state.ready &&
+                          state.end == null &&
+                          !_quitting;
                       return PopScope(
-                        canPop: !speedrunOpen,
+                        canPop: !speedrunOpen && !gameOpen,
                         onPopInvokedWithResult: (didPop, _) {
                           if (didPop) {
                             if (!state.mode.isSpeedrun) {
                               unawaited(cubit.leave());
                             }
-                          } else {
+                          } else if (speedrunOpen) {
                             unawaited(_confirmQuitSpeedrun(cubit));
+                          } else {
+                            unawaited(_confirmLeave(cubit));
                           }
                         },
                         child: _scaffold(
@@ -538,10 +578,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   final nickname = context.select(
                     (ProfileCubit cubit) => cubit.state?.nickname ?? '',
                   );
-                  // Centro da tela inteira como referência. Se a fala não cabe,
-                  // Gabriel autorizou descer o tabuleiro em vez de mudar o balão
-                  // para a faixa do nome. Ao terminar o fade da fala, libera
-                  // essa reserva para devolver o tabuleiro ao centro da tela.
+                  // A8: o centro da tela útil (entre a barra de status e a de
+                  // navegação) como referência.
                   final clocksAbove =
                       clocks == ClockPosition.top ||
                           clocks == ClockPosition.sides
@@ -552,14 +590,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           clocks == ClockPosition.sides
                       ? ClockRow.height
                       : 0.0;
-                  var reserveTop = clocksAbove;
-                  final view = View.of(context);
-                  final insetsOffset =
-                      (view.viewPadding.top - view.viewPadding.bottom) /
-                      view.devicePixelRatio /
-                      2;
-                  final screenCenter =
-                      BoardViewport.centerYOf(context)! - insetsOffset;
+                  final reserveTop = clocksAbove;
+                  final screenCenter = BoardViewport.centerYOf(context)!;
                   final footerHeight = machineEnded && state.mode.fromLink
                       ? _LinkEndBar.height
                       : GameActionsBar.height +
@@ -592,41 +624,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       unawaited(_openLead(this.context, linkLesson!, offer));
                     });
                   }
-                  var boardSide = constraints.maxWidth;
-                  final comments = context.select(
-                    (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
-                  );
-                  // T84: o espaço da fala é fixo (2 linhas) desde o começo,
-                  // falando ou não; o tabuleiro diminui para caber com o
-                  // centro no meio da tela e não se move durante a partida. A
-                  // fala maior se abre por cima, sem empurrar nada.
-                  if (state.mode.opponent == OpponentKind.maia &&
-                      comments &&
-                      character != null) {
-                    final speechRoom =
-                        SpeechBalloon.fixedHeight(context) +
-                        SpeechBalloon.tailExtent +
-                        4;
-                    reserveTop =
-                        clocksAbove +
-                        (clocks == ClockPosition.bottom
-                            ? speechRoom + 4
-                            : math.max(0, speechRoom - 12));
-                    // O tabuleiro ocupa a largura toda (de ponta a ponta) e
-                    // desce do meio o necessário; só diminui quando a altura
-                    // livre não cabe a largura (a partida não rola; o tamanho
-                    // segue fixo na partida).
-                    final fitHeight =
-                        constraints.maxHeight -
-                        reserveTop -
-                        _boardGap -
-                        (clocksBelow > 0 ? clocksBelow + _boardGap : 0) -
-                        footerHeight;
-                    boardSide = math.min(
-                      constraints.maxWidth,
-                      math.max(0, fitHeight),
-                    );
-                  }
+                  // A8 (Gabriel, 08/11): de ponta a ponta e no centro da tela
+                  // em toda partida; a fala do adversário flutua por cima
+                  // (overlay da CharacterBar) e não reserva espaço.
+                  final boardSide = constraints.maxWidth;
                   final topExtent = reserveTop > 0
                       ? reserveTop + _boardGap
                       : 0.0;

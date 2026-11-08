@@ -19,6 +19,7 @@ import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -106,222 +107,231 @@ class _OpeningViewState extends State<_OpeningView> {
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) => BlocConsumer<TrainingOpeningCubit, TrainingOpeningState>(
-    listener: (context, state) {
-      if (state.error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
-        );
-      }
-    },
-    builder: (context, state) {
-      final loading = state.phase == TrainingOpeningPhase.loading;
-      if (loading && widget.screen.preview != null) {
-        state = widget.screen.preview!;
-      }
-      final l = context.l10n;
-      final cubit = context.read<TrainingOpeningCubit>();
-      final ready =
-          state.line != null && state.phase != TrainingOpeningPhase.expired;
-      final bank = state.resources?.openings[state.lessonId] ?? [];
-      final multipart = state.trecho?.lines.isNotEmpty == true;
-      final number = bank.indexWhere((t) => t.id == state.trecho?.id) + 1;
-      final notation = multipart
-          ? state.line!.notationIndices(
-              state.reviewing ? state.shown : state.cursor,
-            )
-          : [for (var i = 0; i < state.cursor; i++) i];
-      final speechText = state.phase == TrainingOpeningPhase.complete
-          ? state.allPartsDone
-                ? l.trainingOpeningFinished(state.trecho!.title, bank.length)
-                : l.trainingOpeningPartComplete(number)
-          : state.wrong
-          ? l.trainingOpeningWrong
-          : state.firstTry.isNotEmpty
-          ? l.trainingFixedCorrect
-          : l.trainingOpeningPrompt;
-      final lesson = state.resources?.lessons
-          .where((l) => l.id == state.lessonId)
-          .firstOrNull;
-      if (state.phase == TrainingOpeningPhase.unavailable) {
-        return trainingLoadError(
-          context,
-          state.failure,
-          () => cubit.load(
-            lessonId: widget.screen.lessonId,
-            partId: widget.screen.partId,
-          ),
-        );
-      }
-      if (state.phase == TrainingOpeningPhase.expired ||
-          (state.phase != TrainingOpeningPhase.loading && !ready)) {
-        // Trecho que saiu do dia ou nunca carregou: erro padrão, com ação.
-        return trainingLoadError(
-          context,
-          LoadFailure.unavailable,
-          () => cubit.load(
-            lessonId: widget.screen.lessonId,
-            partId: widget.screen.partId,
-          ),
-        );
-      }
-      final footer = SafeArea(
-        child: IgnorePointer(
-          ignoring: loading,
-          child: TrainingCanvasFooter(
-            leading: state.phase == TrainingOpeningPhase.complete
-                ? null
-                : TrainingCanvasFooter.hint(
-                    key: TrainingKeys.exerciseHint,
-                    label: l.exerciseHintFree,
-                    onPressed:
-                        state.phase == TrainingOpeningPhase.playing &&
-                            !state.reviewing
-                        ? cubit.hint
-                        : null,
-                  ),
-            navigation: state.phase == TrainingOpeningPhase.complete
-                ? []
-                : [
-                    TrainingCanvasFooter.round(
-                      key: TrainingKeys.prevMove,
-                      icon: CanvasSymbols.chevronLeft,
-                      label: l.trainingPrevMove,
-                      navigation: true,
-                      onPressed: state.shown == 0
-                          ? null
-                          : () => cubit.review(state.shown - 1),
-                    ),
-                    TrainingCanvasFooter.round(
-                      key: TrainingKeys.nextMove,
-                      icon: CanvasSymbols.chevronRight,
-                      label: l.trainingNextMove,
-                      navigation: true,
-                      onPressed: state.reviewing
-                          ? () => cubit.review(state.shown + 1)
-                          : null,
-                    ),
-                  ],
-            secondary: state.phase != TrainingOpeningPhase.complete
-                ? null
-                : TrainingCanvasFooter.button(
-                    key: state.allPartsDone
-                        ? TrainingKeys.openingProgress
-                        : TrainingKeys.openingNextPart,
-                    label: state.allPartsDone
-                        ? l.trainingViewProgress
-                        : l.trainingNextPart,
-                    onPressed: state.allPartsDone
-                        ? widget.screen.onProgress
-                        : cubit.nextPart,
-                  ),
-            primary: state.error
-                ? TrainingCanvasFooter.button(
-                    key: TrainingKeys.openingSaveRetry,
-                    label: l.lessonRetry,
-                    primary: true,
-                    onPressed: cubit.retry,
-                  )
-                : state.phase != TrainingOpeningPhase.complete
-                ? null
-                : TrainingCanvasFooter.button(
-                    key: TrainingKeys.nextGoal,
-                    label: l.trainingNextGoal,
-                    primary: true,
-                    onPressed: widget.screen.onNextGoal,
-                  ),
-          ),
-        ),
-      );
-      return Scaffold(
-        key: TrainingKeys.openingScreen,
-        appBar: LucenaAppBar(
-          centerTitle: true,
-          leading: IconButton(
-            key: TrainingKeys.openingBack,
-            icon: const Icon(CanvasSymbols.arrowBack),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => Navigator.of(context).maybePop(),
-          ),
-          title: Text(
-            key: TrainingKeys.openingTitle(state.lessonId ?? ''),
-            ready
-                ? l.trainingOpeningTitle(
-                    state.trecho!.lines.isNotEmpty
-                        ? state.trecho!.title
-                        : lesson?.title ?? state.trecho!.title,
-                    number,
-                    bank.length,
-                  )
-                : l.trainingOpeningsTitle,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        body: Stack(
-          children: [
-            SafeArea(
-              child: !ready
-                  ? const SkeletonList()
-                  : IgnorePointer(
-                      ignoring: loading || _replayFen != null,
-                      child: TrainingCanvasPage(
-                        pageKey: TrainingKeys.openingPage,
-                        teacher: widget.screen.teacher,
-                        text: speechText,
-                        onOpen: () => _fullSpeech(context, speechText),
-                        boardBuilder: (size) => Builder(
-                          builder: (context) => _board(context, state, size),
+  Widget build(BuildContext context) =>
+      BlocConsumer<TrainingOpeningCubit, TrainingOpeningState>(
+        listener: (context, state) {
+          if (state.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+            );
+          }
+        },
+        builder: (context, state) {
+          final loading = state.phase == TrainingOpeningPhase.loading;
+          if (loading && widget.screen.preview != null) {
+            state = widget.screen.preview!;
+          }
+          final l = context.l10n;
+          final cubit = context.read<TrainingOpeningCubit>();
+          final ready =
+              state.line != null && state.phase != TrainingOpeningPhase.expired;
+          final bank = state.resources?.openings[state.lessonId] ?? [];
+          final multipart = state.trecho?.lines.isNotEmpty == true;
+          final number = bank.indexWhere((t) => t.id == state.trecho?.id) + 1;
+          final notation = multipart
+              ? state.line!.notationIndices(
+                  state.reviewing ? state.shown : state.cursor,
+                )
+              : [for (var i = 0; i < state.cursor; i++) i];
+          final speechText = state.phase == TrainingOpeningPhase.complete
+              ? state.allPartsDone
+                    ? l.trainingOpeningFinished(
+                        state.trecho!.title,
+                        bank.length,
+                      )
+                    : l.trainingOpeningPartComplete(number)
+              : state.wrong
+              ? l.trainingOpeningWrong
+              : state.firstTry.isNotEmpty
+              ? l.trainingFixedCorrect
+              : l.trainingOpeningPrompt;
+          final lesson = state.resources?.lessons
+              .where((l) => l.id == state.lessonId)
+              .firstOrNull;
+          if (state.phase == TrainingOpeningPhase.unavailable) {
+            return trainingLoadError(
+              context,
+              state.failure,
+              () => cubit.load(
+                lessonId: widget.screen.lessonId,
+                partId: widget.screen.partId,
+              ),
+            );
+          }
+          if (state.phase == TrainingOpeningPhase.expired ||
+              (state.phase != TrainingOpeningPhase.loading && !ready)) {
+            // Trecho que saiu do dia ou nunca carregou: erro padrão, com ação.
+            return trainingLoadError(
+              context,
+              LoadFailure.unavailable,
+              () => cubit.load(
+                lessonId: widget.screen.lessonId,
+                partId: widget.screen.partId,
+              ),
+            );
+          }
+          final footer = SafeArea(
+            child: IgnorePointer(
+              ignoring: loading,
+              child: TrainingCanvasFooter(
+                leading: state.phase == TrainingOpeningPhase.complete
+                    ? null
+                    : TrainingCanvasFooter.hint(
+                        key: TrainingKeys.exerciseHint,
+                        label: l.exerciseHintFree,
+                        onPressed:
+                            state.phase == TrainingOpeningPhase.playing &&
+                                !state.reviewing
+                            ? cubit.hint
+                            : null,
+                      ),
+                navigation: state.phase == TrainingOpeningPhase.complete
+                    ? []
+                    : [
+                        TrainingCanvasFooter.round(
+                          key: TrainingKeys.prevMove,
+                          icon: CanvasSymbols.chevronLeft,
+                          label: l.trainingPrevMove,
+                          navigation: true,
+                          onPressed: state.shown == 0
+                              ? null
+                              : () => cubit.review(state.shown - 1),
                         ),
-                        notation: ScriptMoveList(
-                          moves: [
-                            for (final i in notation)
-                              if (state.line!.moveAt(i) != null)
-                                ScriptMoveEntry(
-                                  id: '${i + 1}',
-                                  san: state.line!.san[i],
-                                  number: state.line!.moveNumberAt(i),
-                                  side: state.line!.sideAt(i),
-                                  variant: false,
-                                ),
-                          ],
-                          currentId: state.shown == 0 ? null : '${state.shown}',
-                          onTap: (id) => cubit.notationTap(int.parse(id)),
+                        TrainingCanvasFooter.round(
+                          key: TrainingKeys.nextMove,
+                          icon: CanvasSymbols.chevronRight,
+                          label: l.trainingNextMove,
+                          navigation: true,
+                          onPressed: state.reviewing
+                              ? () => cubit.review(state.shown + 1)
+                              : null,
+                        ),
+                      ],
+                secondary: state.phase != TrainingOpeningPhase.complete
+                    ? null
+                    : TrainingCanvasFooter.button(
+                        key: state.allPartsDone
+                            ? TrainingKeys.openingProgress
+                            : TrainingKeys.openingNextPart,
+                        label: state.allPartsDone
+                            ? l.trainingViewProgress
+                            : l.trainingNextPart,
+                        onPressed: state.allPartsDone
+                            ? widget.screen.onProgress
+                            : cubit.nextPart,
+                      ),
+                primary: state.error
+                    ? TrainingCanvasFooter.button(
+                        key: TrainingKeys.openingSaveRetry,
+                        label: l.lessonRetry,
+                        primary: true,
+                        onPressed: cubit.retry,
+                      )
+                    : state.phase != TrainingOpeningPhase.complete
+                    ? null
+                    : TrainingCanvasFooter.button(
+                        key: TrainingKeys.nextGoal,
+                        label: l.trainingNextGoal,
+                        primary: true,
+                        onPressed: widget.screen.onNextGoal,
+                      ),
+              ),
+            ),
+          );
+          return Scaffold(
+            key: TrainingKeys.openingScreen,
+            appBar: LucenaAppBar(
+              centerTitle: true,
+              leading: IconButton(
+                key: TrainingKeys.openingBack,
+                icon: const Icon(CanvasSymbols.arrowBack),
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+              title: Text(
+                key: TrainingKeys.openingTitle(state.lessonId ?? ''),
+                ready
+                    ? l.trainingOpeningTitle(
+                        state.trecho!.lines.isNotEmpty
+                            ? state.trecho!.title
+                            : lesson?.title ?? state.trecho!.title,
+                        number,
+                        bank.length,
+                      )
+                    : l.trainingOpeningsTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            body: BoardViewport(
+              usefulHeight: BoardViewport.usefulHeightOf(context),
+              bottomBar: ready ? TrainingCanvasFooter.height : 0,
+              child: Stack(
+                children: [
+                  SafeArea(
+                    child: !ready
+                        ? const SkeletonList()
+                        : IgnorePointer(
+                            ignoring: loading || _replayFen != null,
+                            child: TrainingCanvasPage(
+                              pageKey: TrainingKeys.openingPage,
+                              teacher: widget.screen.teacher,
+                              text: speechText,
+                              onOpen: () => _fullSpeech(context, speechText),
+                              boardBuilder: (size) => Builder(
+                                builder: (context) =>
+                                    _board(context, state, size),
+                              ),
+                              notation: ScriptMoveList(
+                                moves: [
+                                  for (final i in notation)
+                                    if (state.line!.moveAt(i) != null)
+                                      ScriptMoveEntry(
+                                        id: '${i + 1}',
+                                        san: state.line!.san[i],
+                                        number: state.line!.moveNumberAt(i),
+                                        side: state.line!.sideAt(i),
+                                        variant: false,
+                                      ),
+                                ],
+                                currentId: state.shown == 0
+                                    ? null
+                                    : '${state.shown}',
+                                onTap: (id) => cubit.notationTap(int.parse(id)),
+                              ),
+                            ),
+                          ),
+                  ),
+                  // H-15: a abertura inteira concluída comemora com a
+                  // Celebração pequena, por cima da tela parada.
+                  if (ready &&
+                      state.phase == TrainingOpeningPhase.complete &&
+                      state.allPartsDone)
+                    const Positioned.fill(
+                      child: IgnorePointer(
+                        child: Celebracao(
+                          tamanho: TamanhoDaCelebracao.pequena,
+                          escalar: false,
+                          child: SizedBox.expand(),
                         ),
                       ),
                     ),
-            ),
-            // H-15: a abertura inteira concluída comemora com a
-            // Celebração pequena, por cima da tela parada.
-            if (ready &&
-                state.phase == TrainingOpeningPhase.complete &&
-                state.allPartsDone)
-              const Positioned.fill(
-                child: IgnorePointer(
-                  child: Celebracao(
-                    tamanho: TamanhoDaCelebracao.pequena,
-                    escalar: false,
-                    child: SizedBox.expand(),
-                  ),
-                ),
+                ],
               ),
-          ],
-        ),
-        // H-ANI-25: no fim, o tabuleiro e a fala ficam e os botões do fim
-        // entram por último.
-        bottomNavigationBar: !ready
-            ? null
-            : state.phase == TrainingOpeningPhase.complete
-            ? EntradaDeResultado(
-                id: 'abertura-${state.lessonId}-${state.trecho!.id}',
-                botoes: footer,
-              )
-            : footer,
+            ),
+            // H-ANI-25: no fim, o tabuleiro e a fala ficam e os botões do fim
+            // entram por último.
+            bottomNavigationBar: !ready
+                ? null
+                : state.phase == TrainingOpeningPhase.complete
+                ? EntradaDeResultado(
+                    id: 'abertura-${state.lessonId}-${state.trecho!.id}',
+                    botoes: footer,
+                  )
+                : footer,
+          );
+        },
       );
-    },
-  );
 
   void _fullSpeech(BuildContext context, String text) {
     showScriptSpeechSheet(

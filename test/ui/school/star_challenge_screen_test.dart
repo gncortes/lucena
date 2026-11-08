@@ -18,6 +18,7 @@ import 'package:lucena/ui/school/widgets/star_challenges_screen.dart';
 import 'package:lucena/ui/school/widgets/star_scoreboard.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -94,7 +95,6 @@ void main() {
     return cubit;
   }
 
-  /// "Centralizar igual" (T65): a sobra meio a meio entre a barra do app e o
   for (final done in [false, true]) {
     testWidgets(
       'training stars exposes next only after saved qualifying round $done',
@@ -128,9 +128,12 @@ void main() {
     );
   }
 
-  /// "Centralizar igual" (T65): a sobra meio a meio entre a barra do app e o
-  /// rodapé (o topo da ação fixa, com a borda e a margem de 8; sem ação, o
-  /// fim da área segura, [bottomInset] acima do fim da tela).
+  /// A8 (substitui o "Centralizar igual" da T65): o centro do tabuleiro no
+  /// centro útil (entre as barras do sistema). Só sai
+  /// dele se o bloco não cabe: desce com o bloco colado na barra do app
+  /// (8 dp), sobe com o placar colado no rodapé (o topo da ação fixa, com a
+  /// borda e a margem de 8; sem ação, o fim da área segura); se nem assim, a
+  /// sobra fica meio a meio.
   void expectBalanced(
     WidgetTester tester,
     Size size, {
@@ -139,6 +142,7 @@ void main() {
     final appBar = tester.getRect(find.byType(AppBar)).bottom;
     final top = tester.getRect(find.byKey(StarChallengeKeys.blockTop)).top;
     final score = tester.getRect(find.byKey(StarChallengeKeys.scoreboard));
+    final board = tester.getRect(find.byKey(StarChallengeKeys.board));
     final action = [
       StarChallengeKeys.goButton,
       StarChallengeKeys.retryButton,
@@ -146,12 +150,51 @@ void main() {
     final footer = action.isEmpty
         ? size.height - bottomInset
         : tester.getRect(find.byKey(action.single)).top - 8 - 1;
+    final above = top - appBar;
+    final below = footer - score.bottom;
+    // A8 (08/11): centro da tela inteira, contando as barras do sistema.
+    final useful = size.height / 2;
+    final off = board.center.dy - useful;
+    if (off.abs() <= 1) return;
+    final balanced = (above - below).abs() <= 1;
     expect(
-      top - appBar,
-      closeTo(footer - score.bottom, 1),
-      reason: 'vão de cima × vão de baixo',
+      balanced || (off > 0 ? above <= 9 : below <= 9),
+      isTrue,
+      reason:
+          'fora do centro $off sem necessidade (vão de cima $above, de '
+          'baixo $below)',
     );
   }
+
+  // A8: antes, no jogo e no fim, o tabuleiro fica no centro útil e de ponta
+  // a ponta. O cartão de cima (regras, resultado) fica com a sobra acima dele
+  // e rola se não cabe.
+  testWidgetsA8('A8: tabuleiro no centro útil antes, no jogo e no fim', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, locale: const Locale('pt'));
+    setCentroAparelho(tester);
+    await tester.pumpAndSettle();
+    void expectCartaoAcima() {
+      final card = tester.getRect(find.byKey(StarChallengeKeys.blockTop));
+      expect(card.bottom, lessThanOrEqualTo(maiorTabuleiro(tester).top));
+      expect(card.top, greaterThanOrEqualTo(80 - 1));
+    }
+
+    debugPrint('A8 star antes fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    expectCartaoAcima();
+    await tester.tap(find.byKey(StarChallengeKeys.goButton));
+    await tester.pumpAndSettle();
+    expectTabuleiroNoCentro(tester);
+    now.advance(const Duration(seconds: 61));
+    cubit.tick();
+    await tester.pumpAndSettle();
+    debugPrint('A8 star fim fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    expectCartaoAcima();
+    expect(tester.takeException(), isNull);
+  }, pendente360x740: true);
 
   testWidgets('às cegas: a estrela vem pelo nome da casa, sem desenho', (
     tester,
@@ -463,7 +506,7 @@ void main() {
   }
 
   testWidgets('o bloco fica no meio, entre a barra do app e o rodapé, no '
-      'convite, jogando e no fim; ao tocar em Vai! ele recentra', (
+      'convite, jogando e no fim; ao tocar em Vai! o tabuleiro fica', (
     tester,
   ) async {
     final cubit = await pump(tester);
@@ -475,7 +518,8 @@ void main() {
     final rect = tester.getRect(find.byKey(StarChallengeKeys.board));
     expectBalanced(tester, screen);
     expect(rect.width, greaterThanOrEqualTo(ready.width));
-    expect(rect.top, isNot(closeTo(ready.top, 1)));
+    // A8: o tabuleiro já está no centro útil antes do Vai! e não se mexe.
+    expect(rect.top, closeTo(ready.top, 1));
     now.advance(const Duration(seconds: 61));
     cubit.tick();
     await tester.pumpAndSettle();

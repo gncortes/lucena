@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/training/training_content.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
@@ -8,11 +9,14 @@ import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/training_goal_keys.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/training_goal/view_models/training_goal_cubit.dart';
 import 'package:lucena/ui/training_goal/widgets/training_test_screen.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/motion_expectations.dart';
 import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
@@ -84,6 +88,44 @@ void main() {
     );
     await tester.pump();
   }
+
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    final repository = FakeTrainingRepository(
+      content: {TrainingCourse.pilares: comBanco()},
+    );
+    final cubit = TrainingGoalCubit(
+      repository: repository,
+      config: TrainingCourseConfig.pilares,
+      now: FakeNow(DateTime(2026, 11, 4, 10)),
+      afterSave: (_) async {},
+    );
+    addTearDown(cubit.close);
+    addTearDown(repository.dispose);
+    await cubit.load();
+    expect(await cubit.chooseTest(), isTrue);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    await settings.load();
+    addTearDown(settings.close);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: cubit,
+          child: TrainingTestScreen(onBack: () {}, onSeePlan: () {}),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    debugPrint('A8 training_test fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+  });
 
   for (final reduzido in [false, true]) {
     testWidgets('H-ANI-25: o resultado se monta em ordem (reduzido: '

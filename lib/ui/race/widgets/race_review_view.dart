@@ -72,7 +72,7 @@ class RaceReviewView extends StatelessWidget {
       children: [
         SafeArea(
           child: CenteredBoardLayout(
-            balanced: true,
+            centerY: BoardViewport.centerYOf(context),
             reserveTop: topRoom,
             reserveBottom: bottomRoom,
             footer: const SizedBox(height: GameActionsBar.height),

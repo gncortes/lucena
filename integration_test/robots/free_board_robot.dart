@@ -101,10 +101,15 @@ class FreeBoardRobot {
     expect(find.byKey(FreeBoardKeys.screen), findsNothing);
   }
 
-  /// Sai da partida pela seta da barra superior.
+  /// Sai da partida pela seta da barra superior. Com partida em andamento,
+  /// confirma a saída na folha que pergunta antes.
   Future<void> leave() async {
     await $(BackButton).tap();
     await $.pumpAndSettle();
+    if (find.byKey(FreeBoardKeys.leaveSheet).evaluate().isNotEmpty) {
+      await $(FreeBoardKeys.leaveConfirm).tap();
+      await $.pumpAndSettle();
+    }
   }
 
   /// Toca na casa de origem e depois na de destino (`e2`, `e4`).

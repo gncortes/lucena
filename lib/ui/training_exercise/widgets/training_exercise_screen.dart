@@ -25,6 +25,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -203,49 +204,58 @@ class _ExerciseViewState extends State<_ExerciseView> {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        body: SafeArea(
-          child: !ready
-              ? const SkeletonList()
-              : IgnorePointer(
-                  ignoring: loading,
-                  child: TrainingCanvasPage(
-                    pageKey: TrainingKeys.exercisePage,
-                    teacher: widget.screen.teacher,
-                    text: speech,
-                    onOpen: () => _feedback(context, speech),
-                    boardBuilder: (size) => Builder(
-                      builder: (context) => _board(context, state, size),
-                    ),
-                    notation: Column(
-                      children: [
-                        ScriptMoveList(
-                          moves: [
-                            for (var i = 0; i < sans.length; i++)
-                              ScriptMoveEntry(
-                                id: '$i',
-                                san: sans[i],
-                                number:
-                                    start!.fullmoves +
-                                    (i + (start.turn == Side.black ? 1 : 0)) ~/
-                                        2,
-                                side: i.isEven
-                                    ? start.turn
-                                    : start.turn.opposite,
-                                variant: false,
-                              ),
-                          ],
-                          currentId: sans.isEmpty ? null : '${sans.length - 1}',
-                          onTap: (_) {},
-                        ),
-                        if (state.error)
-                          Text(
-                            l.trainingExerciseSaveError,
-                            key: TrainingKeys.exerciseSaveError,
+        body: BoardViewport(
+          usefulHeight: BoardViewport.usefulHeightOf(context),
+          bottomBar: ready ? TrainingCanvasFooter.height : 0,
+          child: SafeArea(
+            child: !ready
+                ? const SkeletonList()
+                : IgnorePointer(
+                    ignoring: loading,
+                    child: TrainingCanvasPage(
+                      pageKey: TrainingKeys.exercisePage,
+                      teacher: widget.screen.teacher,
+                      text: speech,
+                      onOpen: () => _feedback(context, speech),
+                      boardBuilder: (size) => Builder(
+                        builder: (context) => _board(context, state, size),
+                      ),
+                      notation: Column(
+                        children: [
+                          ScriptMoveList(
+                            moves: [
+                              for (var i = 0; i < sans.length; i++)
+                                ScriptMoveEntry(
+                                  id: '$i',
+                                  san: sans[i],
+                                  number:
+                                      start!.fullmoves +
+                                      (i +
+                                              (start.turn == Side.black
+                                                  ? 1
+                                                  : 0)) ~/
+                                          2,
+                                  side: i.isEven
+                                      ? start.turn
+                                      : start.turn.opposite,
+                                  variant: false,
+                                ),
+                            ],
+                            currentId: sans.isEmpty
+                                ? null
+                                : '${sans.length - 1}',
+                            onTap: (_) {},
                           ),
-                      ],
+                          if (state.error)
+                            Text(
+                              l.trainingExerciseSaveError,
+                              key: TrainingKeys.exerciseSaveError,
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+          ),
         ),
         bottomNavigationBar: !ready
             ? null

@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_chip.dart';
 
@@ -108,87 +106,110 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
       // O tabuleiro fica no centro do espaço entre a barra do app e o painel
       // das opções (T64); as opções rolam dentro do painel, embaixo, com o
       // botão de começar no pé dele.
-      body: LayoutBuilder(
-        builder: (context, box) {
-          final side = math.min(box.maxWidth - 32, _Header.maxBoard);
-          final boardArea = BoardOptionsPanel.boardAreaFor(
-            box.maxHeight,
-            boardRoom:
-                side +
-                2 * (_Header.chipsHeight + AppSpacing.md) +
-                AppSpacing.lg,
-          );
-          return Column(
-            children: [
-              SizedBox(
-                height: boardArea,
-                child: _Header(state: state, launching: _launching),
-              ),
-              Expanded(
-                child: BoardOptionsPanel(
-                  key: GameSetupKeys.panel,
-                  footer: ActionsFooter(
-                    margin: AppSpacing.xl,
-                    children: [
-                      if (state.ready)
-                        FilledButton(
-                          key: GameSetupKeys.startButton,
-                          onPressed:
-                              state.canStart &&
-                                  (!state.blindGame || voiceAvailable)
-                              ? () => _start(context, state)
-                              : null,
-                          child: Text(l10n.clockStartGame),
-                        ),
-                    ],
-                  ),
-                  child: ListView(
-                    // Margem de 24 como a das folhas (E1.08, P11): 8 aqui e
-                    // 16 em cada bloco.
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.sm,
-                      0,
-                      AppSpacing.sm,
-                      AppSpacing.lg,
-                    ),
-                    children: [
-                      // Lendo a configuração: esqueleto, sem o botão de
-                      // começar (H-PAR-02); depois ele se dissolve (H-ANI-07).
-                      ShimmerConteudo(
-                        carregando: !state.ready,
-                        esqueleto: const SkeletonList(rows: 5),
-                        child: !state.ready
-                            ? const SizedBox.shrink()
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SectionTitle(context.l10n.setupYourSide),
-                                  _SidePicker(state: state),
-                                  SectionTitle(context.l10n.setupOpponent),
-                                  _OpponentPicker(state: state),
-                                  // Às cegas: só contra a máquina e com voz no idioma.
-                                  if (machine) _ModePicker(state: state),
-                                  if (state.blindGame && !voiceAvailable)
-                                    EmptyState(
-                                      message: l10n.blindVoiceRequired,
-                                      actionLabel: l10n.voiceOpenSystem,
-                                      onAction: () =>
-                                          context.push(Routes.settingsVoice),
-                                    ),
-                                  const SizedBox(height: AppSpacing.xl),
-                                  _ClockSection(state: state),
-                                  if (state.attempts.isNotEmpty)
-                                    _History(state: state),
-                                ],
-                              ),
-                      ),
-                    ],
+      body: BoardViewport(
+        usefulHeight: BoardViewport.usefulHeightOf(context),
+        child: LayoutBuilder(
+          builder: (context, box) {
+            // A8: o centro do tabuleiro no centro útil da tela, o painel com o
+            // espaço de baixo (rola se faltar). Se nem assim o painel cabe, o
+            // tabuleiro fica no centro do espaço acima dele e, em tela baixa,
+            // encolhe. De ponta a ponta, como o da Jornada (challenge_screen)
+            // e o do canvas (PropV1FinaisNovaPartida).
+            final centerY = BoardViewport.centerYOf(context);
+            final centered = BoardOptionsPanel.centeredAreaFor(
+              box.maxHeight,
+              centerY: centerY,
+              below: box.maxWidth / 2 + 2 * AppSpacing.md + _Header.chipsHeight,
+              minPanel: BoardOptionsPanel.minHeightOf(context),
+              minTop: box.maxWidth / 2 + AppSpacing.md + _Header.chipsHeight,
+            );
+            final boardArea =
+                centered?.area ??
+                BoardOptionsPanel.boardAreaFor(
+                  box.maxHeight,
+                  boardRoom:
+                      box.maxWidth +
+                      2 * (_Header.chipsHeight + AppSpacing.md) +
+                      AppSpacing.md,
+                  minPanel: 0.3,
+                );
+            return Column(
+              children: [
+                SizedBox(
+                  height: boardArea,
+                  child: _Header(
+                    state: state,
+                    launching: _launching,
+                    centerY: centered?.centerY,
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+                Expanded(
+                  child: BoardOptionsPanel(
+                    key: GameSetupKeys.panel,
+                    footer: ActionsFooter(
+                      margin: AppSpacing.xl,
+                      children: [
+                        if (state.ready)
+                          FilledButton(
+                            key: GameSetupKeys.startButton,
+                            onPressed:
+                                state.canStart &&
+                                    (!state.blindGame || voiceAvailable)
+                                ? () => _start(context, state)
+                                : null,
+                            child: Text(l10n.clockStartGame),
+                          ),
+                      ],
+                    ),
+                    child: ListView(
+                      // Margem de 24 como a das folhas (E1.08, P11): 8 aqui e
+                      // 16 em cada bloco.
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.sm,
+                        0,
+                        AppSpacing.sm,
+                        AppSpacing.lg,
+                      ),
+                      children: [
+                        // Lendo a configuração: esqueleto, sem o botão de
+                        // começar (H-PAR-02); depois ele se dissolve (H-ANI-07).
+                        ShimmerConteudo(
+                          carregando: !state.ready,
+                          esqueleto: const SkeletonList(rows: 5),
+                          child: !state.ready
+                              ? const SizedBox.shrink()
+                              : Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    SectionTitle(context.l10n.setupYourSide),
+                                    _SidePicker(state: state),
+                                    SectionTitle(context.l10n.setupOpponent),
+                                    _OpponentPicker(state: state),
+                                    // Às cegas: só contra a máquina e com voz no idioma.
+                                    if (machine) _ModePicker(state: state),
+                                    if (state.blindGame && !voiceAvailable)
+                                      EmptyState(
+                                        message: l10n.blindVoiceRequired,
+                                        actionLabel: l10n.voiceOpenSystem,
+                                        onAction: () =>
+                                            context.push(Routes.settingsVoice),
+                                      ),
+                                    const SizedBox(height: AppSpacing.xl),
+                                    _ClockSection(state: state),
+                                    if (state.attempts.isNotEmpty)
+                                      _History(state: state),
+                                  ],
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -248,15 +269,15 @@ class _ModePicker extends StatelessWidget {
 /// A posição vista pelo lado do jogador, com o objetivo embaixo: o
 /// tabuleiro no centro do espaço dele (T64).
 class _Header extends StatelessWidget {
-  const _Header({required this.state, required this.launching});
+  const _Header({required this.state, required this.launching, this.centerY});
 
   final GameSetupState state;
 
+  /// O centro do tabuleiro (A8), quando ele cabe no centro útil.
+  final double? centerY;
+
   /// A partida está abrindo: o tabuleiro voa até o centro dela.
   final bool launching;
-
-  /// O maior tabuleiro da prévia.
-  static const maxBoard = 340.0;
 
   /// O espaço da linha do objetivo e da vez.
   static const chipsHeight = 48.0;
@@ -265,10 +286,9 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return CenteredBoardLayout(
-      gutter: AppSpacing.lg,
       gap: AppSpacing.md,
-      maxBoard: maxBoard,
       reserveBottom: chipsHeight,
+      centerY: centerY,
       // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula) e,
       // ao começar, segue voando até o centro da partida.
       board: LayoutBuilder(

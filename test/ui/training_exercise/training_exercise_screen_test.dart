@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +23,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/training_exercise/view_models/training_exercise_cubit.dart';
 import 'package:lucena/ui/training_exercise/widgets/training_exercise_screen.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -148,6 +151,62 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
   }
+
+  // A8: hoje 59 dp abaixo do centro útil. O bloco do canvas (balão + faixa +
+  // tabuleiro + notação, a ScriptPage da lição) é centrado inteiro; com o
+  // balão mínimo de 2 linhas, o tabuleiro cheio ainda fica 10 dp abaixo.
+  // Aguarda decisão.
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    await settings.load();
+    addTearDown(settings.close);
+    final repo = FakeTrainingRepository(
+      states: {
+        TrainingCourse.pilares: TrainingState(
+          course: TrainingCourse.pilares,
+          installSeed: 'test',
+          day: DayGoals(date: '2026-10-29', studyDay: true, goals: [goal]),
+          cycles: {
+            'theme': ThemeCycle(lessonId: 'theme', startedOn: '2026-10-28'),
+          },
+        ),
+      },
+      content: {
+        TrainingCourse.pilares: TrainingResources(
+          banks: {
+            'theme': [exercise],
+          },
+        ),
+      },
+    );
+    addTearDown(repo.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: TrainingExerciseScreen(
+          repository: repo,
+          config: TrainingCourseConfig.pilares,
+          now: FakeNow(DateTime(2026, 10, 29, 12)),
+          goalKey: goal.key,
+          title: 'Tema',
+          teacher: teacher,
+          onNextGoal: () {},
+          onRedoLesson: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    debugPrint('A8 training_exercise fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    await tester.pumpWidget(const SizedBox());
+  });
 
   testWidgets(
     'completed failed exercise is read-only and shows solution action',
@@ -530,24 +589,16 @@ void expectTrainingSpeechFont(WidgetTester tester) {
   }
 }
 
+/// A8: o tabuleiro de ponta a ponta com o centro no centro da tela inteira
+/// (contando a barra de status, 52, e a de navegação, 24), sem passar da app bar
+/// (64) nem do rodapé (96): o lado é o dobro da menor folga até essas bordas.
 void expectCanvasBlock(WidgetTester tester, Size size, Key boardKey) {
-  final pageHeight = size.height - 52 - 24 - 64 - 96;
-  var side = size.width;
-  var lines = 2;
-  var spare = 0.0;
-  var fits = false;
-  for (final candidate in [(4, 40.0), (3, 40.0), (2, 40.0), (2, 0.0)]) {
-    final room =
-        pageHeight - (42 + 22.5 * candidate.$1 + 58 + side + candidate.$2);
-    if (room >= 0) {
-      lines = candidate.$1;
-      spare = room;
-      fits = true;
-      break;
-    }
-  }
-  if (!fits) side = (pageHeight - 87 - 58).clamp(0, double.infinity);
+  final center = size.height / 2;
+  final above = center - 52 - 64;
+  final below = size.height - 24 - 96 - center;
+  final side = math.min(size.width, 2 * math.min(above, below));
   final board = tester.getRect(find.byKey(boardKey));
   expect(board.width, closeTo(side, .01));
-  expect(board.top, closeTo(52 + 64 + spare / 2 + 42 + 22.5 * lines + 58, .01));
+  expect(board.center.dy, closeTo(center, 1));
+  expect(board.center.dx, closeTo(size.width / 2, .01));
 }

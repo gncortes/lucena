@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../theme/app_button.dart';
 import '../theme/app_chip.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
@@ -14,15 +15,25 @@ class BoardViewport extends StatelessWidget {
   const BoardViewport({
     required this.usefulHeight,
     required this.child,
+    this.bottomBar = 0,
     super.key,
   });
 
   final double usefulHeight;
   final Widget child;
 
+  /// A altura do `bottomNavigationBar` do Scaffold, sem a área segura (o
+  /// rodapé fica fora do body, e o body não recebe a barra de navegação).
+  final double bottomBar;
+
+  /// A8 (Gabriel, 08/11): o centro é o da TELA INTEIRA, contando as barras do
+  /// sistema, e não o do espaço entre elas. A altura devolvida é a de uma faixa
+  /// que termina no topo da barra de navegação e cujo meio é o meio da tela
+  /// (altura da tela menos duas vezes a barra de baixo), e as fórmulas de
+  /// centro (`fundo útil - altura / 2`) dão o meio da tela.
   static double usefulHeightOf(BuildContext context) =>
       MediaQuery.sizeOf(context).height -
-      MediaQuery.viewPaddingOf(context).vertical;
+      2 * MediaQuery.viewPaddingOf(context).bottom;
 
   static double? centerYOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<_BoardViewportData>()?.centerY;
@@ -31,7 +42,8 @@ class BoardViewport extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) => _BoardViewportData(
       centerY:
-          box.maxHeight -
+          box.maxHeight +
+          bottomBar -
           MediaQuery.paddingOf(context).bottom -
           usefulHeight / 2,
       child: child,
@@ -682,6 +694,34 @@ class BoardOptionsPanel extends StatelessWidget {
     required double boardRoom,
     double minPanel = 0.4,
   }) => max(0.0, min(boardRoom, available * (1 - minPanel)));
+
+  /// O painel mais baixo que ainda serve (A8): o botão de confirmar no pé,
+  /// com a área segura, e uma linha de opções à vista; o resto rola.
+  static double minHeightOf(BuildContext context) =>
+      kButtonHeight +
+      2 * AppSpacing.sm +
+      MediaQuery.paddingOf(context).bottom +
+      kMinInteractiveDimension;
+
+  /// A área do tabuleiro com o centro dele no centro da tela (A8): [centerY]
+  /// é esse centro, nas coordenadas da área, e [below] o que vai do centro do
+  /// tabuleiro até o painel. Se o painel ficasse mais baixo que [minPanel], o
+  /// tabuleiro sobe só o que falta (barra de navegação alta, de três botões),
+  /// em vez de pular para o centro do espaço acima do painel. Null quando
+  /// nem subindo ele cabe ([minTop] acima do centro): a tela volta a
+  /// [boardAreaFor].
+  static ({double area, double centerY})? centeredAreaFor(
+    double available, {
+    required double? centerY,
+    required double below,
+    required double minPanel,
+    required double minTop,
+  }) {
+    if (centerY == null) return null;
+    final center = min(centerY, available - minPanel - below);
+    if (center < minTop) return null;
+    return (area: center + below, centerY: center);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -167,26 +167,29 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                       textAlign: TextAlign.center,
                     ),
             ),
-            body: Stack(
-              fit: StackFit.expand,
-              children: [
-                SafeArea(
-                  child: Builder(
-                    builder: (context) => ShimmerConteudo(
-                      carregando: !state.ready || _board == null,
-                      esqueleto: const SkeletonList(),
-                      child: _body(context, state, boardSettings),
+            body: BoardViewport(
+              usefulHeight: BoardViewport.usefulHeightOf(context),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  SafeArea(
+                    child: Builder(
+                      builder: (context) => ShimmerConteudo(
+                        carregando: !state.ready || _board == null,
+                        esqueleto: const SkeletonList(),
+                        child: _body(context, state, boardSettings),
+                      ),
                     ),
                   ),
-                ),
-                if (_action(context, state) case final action?)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: ActionsFooter(children: [action]),
-                  ),
-              ],
+                  if (_action(context, state) case final action?)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: ActionsFooter(children: [action]),
+                    ),
+                ],
+              ),
             ),
           );
         },
@@ -261,6 +264,10 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     };
   }
 
+  /// A menor altura do convite ou do resultado acima do tabuleiro no centro
+  /// (duas linhas e as margens); abaixo dela, o tabuleiro desce.
+  static const _minAbove = 72.0;
+
   /// A ação fixa e suas margens; a área segura fica fora da reserva.
   static const _actionRoom = kButtonHeight + 8 + 8;
 
@@ -315,13 +322,41 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             _reserveBottom(scaler) -
             2 * AppSpacing.sm -
             box.maxWidth / 2;
+        // A8: o centro do tabuleiro no centro útil da tela, em todas as
+        // fases. O convite e o resultado ficam com a sobra acima dele e rolam
+        // se não cabem; só o relógio não encolhe. Se nem assim cabe, o
+        // tabuleiro desce ou sobe só o que falta; se nem assim, volta o bloco
+        // centrado (T65).
+        final useful = BoardViewport.centerYOf(context);
+        final aboveCenter = useful == null
+            ? room
+            : useful - AppSpacing.sm - box.maxWidth / 2;
+        // Tela baixa, em que acima do centro nem cabem duas linhas do
+        // convite: o tabuleiro desce o que falta (o cartão rola ali).
+        final fitsAbove =
+            wanted <= timerHeight ||
+            aboveCenter - timerHeight >= scaler.scale(_minAbove);
+        final reserveTop = max(
+          timerHeight,
+          min(wanted, fitsAbove ? min(room, aboveCenter) : room),
+        );
+        final highest = reserveTop + AppSpacing.sm + box.maxWidth / 2;
+        final lowest =
+            box.maxHeight -
+            footer -
+            _reserveBottom(scaler) -
+            AppSpacing.sm -
+            box.maxWidth / 2;
         return _layout(
           context,
           state,
           boardSettings,
           board: board,
-          reserveTop: max(timerHeight, min(wanted, room)),
+          reserveTop: reserveTop,
           lowTime: lowTime,
+          centerY: useful == null || highest > lowest
+              ? null
+              : useful.clamp(highest, lowest).toDouble(),
         );
       },
     );
@@ -340,13 +375,15 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     required ChessboardController board,
     required double reserveTop,
     required bool lowTime,
+    double? centerY,
   }) {
     final colors = Theme.of(context).colorScheme;
     final star = state.star;
     final scaler = MediaQuery.textScalerOf(context);
     final withAction = _hasAction(state);
     return CenteredBoardLayout(
-      balanced: true,
+      balanced: centerY == null,
+      centerY: centerY,
       reserveTop: reserveTop,
       // O topo do bloco tem a altura da reserva, colado no tabuleiro.
       topAlignment: Alignment.bottomCenter,
@@ -532,28 +569,36 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                 style: context.cardTitle,
               ),
               const SizedBox(height: AppSpacing.xs),
-              Semantics(
-                label: l10n.endgameEarnedStars(state.earned, level.stars),
-                excludeSemantics: true,
-                child: StarsRow(
-                  key: StarChallengeKeys.earned,
-                  total: level.stars,
-                  earned: state.earned,
-                  size: 36,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                state.newBest
-                    ? l10n.starChallengeNewBest
-                    : l10n.starChallengeBest(state.best ?? 0),
-                key: StarChallengeKeys.best,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: state.newBest
-                      ? colors.primary
-                      : colors.onSurfaceVariant,
-                ),
+              // A8: estrelas e recorde numa linha só, para o resultado caber
+              // acima do tabuleiro no centro sem rolar.
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: AppSpacing.sm,
+                children: [
+                  Semantics(
+                    label: l10n.endgameEarnedStars(state.earned, level.stars),
+                    excludeSemantics: true,
+                    child: StarsRow(
+                      key: StarChallengeKeys.earned,
+                      total: level.stars,
+                      earned: state.earned,
+                      size: 28,
+                    ),
+                  ),
+                  Text(
+                    state.newBest
+                        ? l10n.starChallengeNewBest
+                        : l10n.starChallengeBest(state.best ?? 0),
+                    key: StarChallengeKeys.best,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: state.newBest
+                          ? colors.primary
+                          : colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
               TextButton(
                 key: StarChallengeKeys.backButton,

@@ -20,6 +20,7 @@ import 'package:lucena/ui/race/widgets/race_screen.dart';
 import 'package:lucena/ui/race/widgets/race_warm_up_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_race_repository.dart';
@@ -651,5 +652,41 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(RaceKeys.warmUpSkip));
     expect(played, 1);
+  });
+
+  group('A8: tabuleiro no centro útil e de ponta a ponta', () {
+    Future<void> pumpCentro(WidgetTester tester) async {
+      setCentroAparelho(tester);
+      final cubit = RaceCubit(repository, now);
+      addTearDown(cubit.close);
+      await cubit.load();
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          settingsCubit: await settings(),
+          child: BlocProvider.value(value: cubit, child: const RaceScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await start(tester);
+    }
+
+    testWidgetsA8('na Corrida', (tester) async {
+      await pumpCentro(tester);
+      expect(find.byKey(RaceKeys.gameView), findsOneWidget);
+      expectTabuleiroNoCentro(tester);
+    }, pendente360x740: true);
+
+    testWidgetsA8('na revisão dos erros', (tester) async {
+      await pumpCentro(tester);
+      for (final (from, to) in [('a1', 'a2'), ('a1', 'b1'), ('h1', 'g1')]) {
+        await move(tester, from, to);
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.byKey(RaceKeys.reviewMistakes));
+      await tester.pumpAndSettle();
+      expect(find.byKey(RaceKeys.reviewView), findsOneWidget);
+      expectTabuleiroNoCentro(tester);
+    }, pendente360x740: true);
   });
 }

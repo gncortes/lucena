@@ -18,6 +18,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -79,23 +80,26 @@ class GameDetailsScreen extends StatelessWidget {
               : l10n.gameDetailsTitle,
         ),
       ),
-      body: ShimmerConteudo(
-        carregando: !state.ready,
-        esqueleto: const _DetailsLoading(),
-        child: !state.ready
-            ? const SizedBox.shrink()
-            : attempt == null
-            ? Center(
-                child: ErrorState(
-                  message: l10n.gameDetailsNotFound,
-                  messageKey: GameDetailsKeys.notFound,
+      body: BoardViewport(
+        usefulHeight: BoardViewport.usefulHeightOf(context),
+        child: ShimmerConteudo(
+          carregando: !state.ready,
+          esqueleto: const _DetailsLoading(),
+          child: !state.ready
+              ? const SizedBox.shrink()
+              : attempt == null
+              ? Center(
+                  child: ErrorState(
+                    message: l10n.gameDetailsNotFound,
+                    messageKey: GameDetailsKeys.notFound,
+                  ),
+                )
+              : _ReviewBody(
+                  state: state,
+                  attempt: attempt,
+                  opponent: _opponentName(context, state, attempt),
                 ),
-              )
-            : _ReviewBody(
-                state: state,
-                attempt: attempt,
-                opponent: _opponentName(context, state, attempt),
-              ),
+        ),
       ),
     );
   }
@@ -132,10 +136,11 @@ class _ReviewBody extends StatelessWidget {
   final Attempt attempt;
   final String opponent;
 
-  /// O maior tabuleiro da revisão, e a fração da altura que ele pode ocupar
-  /// (o resto é das abas e da navegação).
+  /// O maior tabuleiro da revisão, e a altura mínima das abas com a lista
+  /// embaixo dele (o tabuleiro encolhe antes de tirá-la).
   static const _maxBoard = 480.0;
   static const _maxBoardFraction = 0.5;
+  static const _minBelow = kTextTabBarHeight + 2 * kMinInteractiveDimension;
 
   @override
   Widget build(BuildContext context) {
@@ -187,59 +192,99 @@ class _ReviewBody extends StatelessWidget {
     }
     return DefaultTabController(
       length: 3,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final board = math.min(
-            math.min(constraints.maxWidth, _maxBoard),
-            _maxBoardFraction * constraints.maxHeight,
-          );
-          final controller = DefaultTabController.of(context);
-          return Column(
-            children: [
-              Center(
-                child: ReviewBoard(
-                  state: state,
-                  size: board,
-                  orientation: user ?? Side.white,
-                ),
-              ),
-              TabBar(
-                onTap: (index) {
-                  // A aba Motor liga a engine; as outras mantêm a escolha.
-                  if (index == 2 && !state.engine) {
-                    context.read<GameDetailsCubit>().setEngine(on: true);
-                  }
-                },
-                tabs: [
-                  Tab(
-                    key: GameDetailsKeys.tabSummary,
-                    text: l10n.partidaAbaResumo,
-                  ),
-                  Tab(
-                    key: GameDetailsKeys.tabMoves,
-                    text: l10n.partidaAbaLances,
-                  ),
-                  Tab(key: GameDetailsKeys.tabEngine, text: l10n.reviewEngine),
-                ],
-              ),
-              Expanded(
-                child: AnimatedBuilder(
-                  animation: controller,
-                  builder: (context, _) => ListView(
-                    key: GameDetailsKeys.panel,
-                    padding: scrollPadding(context),
-                    children: switch (controller.index) {
-                      0 => summary,
-                      1 => moves,
-                      _ => engine,
-                    },
-                  ),
-                ),
-              ),
-              ReviewNavigation(state: state, attempt: attempt),
-            ],
-          );
-        },
+      child: Column(
+        children: [
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // A8: o tabuleiro no centro útil da tela; as abas e a lista
+                // ficam com a sobra de baixo e a lista rola.
+                final height = constraints.maxHeight;
+                final centerY = (BoardViewport.centerYOf(context) ?? height / 2)
+                    .clamp(0.0, height)
+                    .toDouble();
+                final below = height - _minBelow - centerY;
+                final full = math.min(constraints.maxWidth, _maxBoard);
+                final centered = math.min(full, 2 * math.min(centerY, below));
+                // Tela deitada ou baixa, em que o tabuleiro inteiro não cabe
+                // no centro: ele sobe ao alto com metade da altura, e a lista
+                // fica com o resto.
+                final fits = centered >= full - 0.5;
+                final double board = fits
+                    ? full
+                    : math.max(0.0, math.min(full, _maxBoardFraction * height));
+                final boardTop = fits ? centerY - board / 2 : 0.0;
+                final controller = DefaultTabController.of(context);
+                return Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: boardTop,
+                      height: board,
+                      child: Center(
+                        child: ReviewBoard(
+                          state: state,
+                          size: board,
+                          orientation: user ?? Side.white,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: boardTop + board,
+                      bottom: 0,
+                      child: Column(
+                        children: [
+                          TabBar(
+                            onTap: (index) {
+                              // A aba Motor liga a engine; as outras mantêm a escolha.
+                              if (index == 2 && !state.engine) {
+                                context.read<GameDetailsCubit>().setEngine(
+                                  on: true,
+                                );
+                              }
+                            },
+                            tabs: [
+                              Tab(
+                                key: GameDetailsKeys.tabSummary,
+                                text: l10n.partidaAbaResumo,
+                              ),
+                              Tab(
+                                key: GameDetailsKeys.tabMoves,
+                                text: l10n.partidaAbaLances,
+                              ),
+                              Tab(
+                                key: GameDetailsKeys.tabEngine,
+                                text: l10n.reviewEngine,
+                              ),
+                            ],
+                          ),
+                          Expanded(
+                            child: AnimatedBuilder(
+                              animation: controller,
+                              builder: (context, _) => ListView(
+                                key: GameDetailsKeys.panel,
+                                padding: scrollPadding(context),
+                                children: switch (controller.index) {
+                                  0 => summary,
+                                  1 => moves,
+                                  _ => engine,
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          ReviewNavigation(state: state, attempt: attempt),
+        ],
       ),
     );
   }

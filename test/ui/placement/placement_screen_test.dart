@@ -31,6 +31,7 @@ import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
+import '../../../testing/board_center.dart';
 import '../../../testing/placement_synthetic.dart';
 
 import 'package:lucena/ui/core/widgets/info_chip.dart';
@@ -114,6 +115,16 @@ void main() {
     await tester.pumpAndSettle();
     return (cubit, profile);
   }
+
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    await pump(tester, size: aparelhoA8.size, geometry: true);
+    await tester.tap(find.byKey(PlacementKeys.start));
+    await tester.pumpAndSettle();
+    expectTabuleiroNoCentro(tester);
+  });
 
   testWidgets('abertura → 20 perguntas com "Não sei" → resultado; usar o '
       'nível leva o rating ao perfil e fecha', (tester) async {

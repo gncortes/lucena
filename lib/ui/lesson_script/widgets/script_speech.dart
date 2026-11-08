@@ -66,6 +66,18 @@ class ScriptSpeechMetrics {
           maxLines: maxLines + extra,
         );
 
+  /// As mesmas medidas com [lines] linhas (A8: o balão em cima do tabuleiro
+  /// centrado fica com as linhas que cabem na sobra, nunca menos que
+  /// [minLines]).
+  ScriptSpeechMetrics withLines(int lines) => ScriptSpeechMetrics._(
+    compact: compact,
+    fontSize: fontSize,
+    verticalPadding: verticalPadding,
+    horizontalPadding: horizontalPadding,
+    maxLines: lines,
+    canvasLayout: canvasLayout,
+  );
+
   /// A área da fala tem 3 linhas fixas (Gabriel, 14/10/2026): o balão cresce
   /// e diminui dentro dela, presa embaixo, e o tabuleiro não sobe nem desce.
   static const areaLines = 3;

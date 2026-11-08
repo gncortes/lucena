@@ -21,6 +21,7 @@ import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:lucena/ui/game_details/widgets/game_details_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
@@ -144,6 +145,26 @@ void main() {
     expect(find.byKey(GameDetailsKeys.tabEngine), findsOne);
   });
 
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id);
+    setCentroAparelho(tester);
+    await tester.pumpAndSettle();
+    debugPrint('A8 game_details fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    // As abas e a lista ficam com a sobra de baixo, acima da navegação.
+    final board = tester.getRect(find.byKey(GameDetailsKeys.board));
+    final tabs = tester.getRect(find.byKey(GameDetailsKeys.tabSummary));
+    final panel = tester.getRect(find.byKey(GameDetailsKeys.panel));
+    final next = tester.getRect(find.byKey(GameDetailsKeys.next));
+    expect(board.bottom, lessThanOrEqualTo(tabs.top));
+    expect(panel.bottom, lessThanOrEqualTo(next.top));
+    expect(panel.height, greaterThan(0));
+    expect(tester.takeException(), isNull);
+  }, pendente360x740: true);
+
   testWidgets('H-ANI-10: o tabuleiro dos detalhes é o TabuleiroAnimado', (
     tester,
   ) async {
@@ -156,6 +177,15 @@ void main() {
       'tabela e Motor liga a engine', (tester) async {
     final id = await progress.addAttempt(game);
     await pump(tester, id, screen: const Size(1080, 2400));
+    // A8: com o tabuleiro no centro, o cartão fica mais abaixo na lista.
+    await tester.scrollUntilVisible(
+      find.byKey(GameDetailsKeys.opponent),
+      200,
+      scrollable: find.descendant(
+        of: find.byKey(GameDetailsKeys.panel),
+        matching: find.byType(Scrollable),
+      ),
+    );
     expect(find.byKey(GameDetailsKeys.opponent), findsOne);
     expect(find.byKey(GameDetailsKeys.move(0)), findsNothing);
 
