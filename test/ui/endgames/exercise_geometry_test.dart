@@ -49,7 +49,7 @@ void main() {
   // A8: hoje 68,75 dp abaixo do centro útil. O exercício usa a ScriptPage da
   // lição (área do balão do Viktor + faixa colados em cima do tabuleiro,
   // Gabriel 14/10/2026): centrar muda o componente da lição. Aguarda decisão.
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     setCentroAparelho(tester);

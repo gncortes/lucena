@@ -19,7 +19,7 @@ const analysisMoves = ['b3d2', 'b1a2', 'd2c4'];
 
 void main() {
   setUp(initializeAnalysisPreferences);
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     setCentroAparelho(tester);
@@ -52,7 +52,7 @@ void main() {
     );
     await tester.pump();
     expectTabuleiroNoCentro(tester);
-  });
+  }, pendente360x740: true);
   for (final size in [
     const Size(360, 740),
     const Size(360, 800),

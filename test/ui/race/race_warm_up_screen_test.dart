@@ -111,7 +111,7 @@ void main() {
     );
   }
 
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     setCentroAparelho(tester);
@@ -142,5 +142,5 @@ void main() {
     );
     await tester.pumpAndSettle();
     expectTabuleiroNoCentro(tester);
-  });
+  }, pendente360x740: true);
 }

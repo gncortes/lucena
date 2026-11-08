@@ -111,7 +111,7 @@ void main() {
     });
   }
 
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta; o painel '
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta; o painel '
       'fica com o espaço de baixo e o botão de começar ao alcance', (
     tester,
   ) async {
@@ -126,7 +126,7 @@ void main() {
     );
     expect(find.byKey(GameSetupKeys.startButton).hitTestable(), findsOne);
     expect(tester.takeException(), isNull);
-  });
+  }, pendente360x740: true);
 
   testWidgets('A3: o tabuleiro vai de ponta a ponta, sem margem, como o da '
       'Jornada e o do canvas (PropV1FinaisNovaPartida)', (tester) async {

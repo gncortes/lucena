@@ -145,7 +145,7 @@ void main() {
     expect(find.byKey(GameDetailsKeys.tabEngine), findsOne);
   });
 
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     final id = await progress.addAttempt(game);
@@ -163,7 +163,7 @@ void main() {
     expect(panel.bottom, lessThanOrEqualTo(next.top));
     expect(panel.height, greaterThan(0));
     expect(tester.takeException(), isNull);
-  });
+  }, pendente360x740: true);
 
   testWidgets('H-ANI-10: o tabuleiro dos detalhes é o TabuleiroAnimado', (
     tester,

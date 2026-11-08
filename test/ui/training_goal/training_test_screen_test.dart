@@ -89,7 +89,7 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     setCentroAparelho(tester);

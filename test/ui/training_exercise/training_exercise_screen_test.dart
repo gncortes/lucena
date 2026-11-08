@@ -156,7 +156,7 @@ void main() {
   // tabuleiro + notação, a ScriptPage da lição) é centrado inteiro; com o
   // balão mínimo de 2 linhas, o tabuleiro cheio ainda fica 10 dp abaixo.
   // Aguarda decisão.
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     setCentroAparelho(tester);

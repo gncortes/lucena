@@ -330,7 +330,7 @@ void main() {
   }
   // A8: hoje 59 dp abaixo do centro útil (o mesmo bloco do canvas da lição
   // que o exercício do treino). Aguarda decisão.
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     await prepare();

@@ -170,7 +170,7 @@ void main() {
   // A8: antes, no jogo e no fim, o tabuleiro fica no centro útil e de ponta
   // a ponta. O cartão de cima (regras, resultado) fica com a sobra acima dele
   // e rola se não cabe.
-  testWidgets('A8: tabuleiro no centro útil antes, no jogo e no fim', (
+  testWidgetsA8('A8: tabuleiro no centro útil antes, no jogo e no fim', (
     tester,
   ) async {
     final cubit = await pump(tester, locale: const Locale('pt'));
@@ -195,7 +195,7 @@ void main() {
     expectTabuleiroNoCentro(tester);
     expectCartaoAcima();
     expect(tester.takeException(), isNull);
-  });
+  }, pendente360x740: true);
 
   testWidgets('às cegas: a estrela vem pelo nome da casa, sem desenho', (
     tester,

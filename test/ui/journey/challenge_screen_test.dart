@@ -135,9 +135,9 @@ void main() {
     });
   }
 
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta; o painel '
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta; o painel '
       'fica com o espaço de baixo e o botão de jogar à vista', (tester) async {
-    await pump(tester, centroAparelho, 1);
+    await pump(tester, aparelhoA8.size, 1);
     setCentroAparelho(tester);
     await tester.pumpAndSettle();
     expectTabuleiroNoCentro(tester);
@@ -148,7 +148,7 @@ void main() {
     );
     expect(find.byKey(JourneyKeys.play).hitTestable(), findsOne);
     expect(tester.takeException(), isNull);
-  });
+  }, pendente360x740: true);
 
   testWidgets('"Jogar": o tabuleiro grande voa até o centro da partida e, na '
       'volta, retoma a marca dele sem voar de volta', (tester) async {

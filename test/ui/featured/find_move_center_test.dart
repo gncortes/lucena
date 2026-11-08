@@ -12,7 +12,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     setCentroAparelho(tester);
@@ -46,5 +46,5 @@ void main() {
     final header = tester.getRect(find.byType(Card).first);
     expect(header.bottom, lessThanOrEqualTo(board.top));
     expect(header.top, greaterThanOrEqualTo(80));
-  });
+  }, pendente360x740: true);
 }

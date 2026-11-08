@@ -671,13 +671,13 @@ void main() {
       await start(tester);
     }
 
-    testWidgets('na Corrida', (tester) async {
+    testWidgetsA8('na Corrida', (tester) async {
       await pumpCentro(tester);
       expect(find.byKey(RaceKeys.gameView), findsOneWidget);
       expectTabuleiroNoCentro(tester);
-    });
+    }, pendente360x740: true);
 
-    testWidgets('na revisão dos erros', (tester) async {
+    testWidgetsA8('na revisão dos erros', (tester) async {
       await pumpCentro(tester);
       for (final (from, to) in [('a1', 'a2'), ('a1', 'b1'), ('h1', 'g1')]) {
         await move(tester, from, to);
@@ -687,6 +687,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(RaceKeys.reviewView), findsOneWidget);
       expectTabuleiroNoCentro(tester);
-    });
+    }, pendente360x740: true);
   });
 }

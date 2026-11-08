@@ -116,11 +116,11 @@ void main() {
     return (cubit, profile);
   }
 
-  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+  testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
     tester,
   ) async {
     setCentroAparelho(tester);
-    await pump(tester, size: centroAparelho, geometry: true);
+    await pump(tester, size: aparelhoA8.size, geometry: true);
     await tester.tap(find.byKey(PlacementKeys.start));
     await tester.pumpAndSettle();
     expectTabuleiroNoCentro(tester);
