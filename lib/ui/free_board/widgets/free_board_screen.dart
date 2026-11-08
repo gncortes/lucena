@@ -578,7 +578,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   final nickname = context.select(
                     (ProfileCubit cubit) => cubit.state?.nickname ?? '',
                   );
-                  // Centro da tela inteira como referência.
+                  // A8: o centro da tela útil (entre a barra de status e a de
+                  // navegação) como referência.
                   final clocksAbove =
                       clocks == ClockPosition.top ||
                           clocks == ClockPosition.sides
@@ -590,13 +591,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       ? ClockRow.height
                       : 0.0;
                   final reserveTop = clocksAbove;
-                  final view = View.of(context);
-                  final insetsOffset =
-                      (view.viewPadding.top - view.viewPadding.bottom) /
-                      view.devicePixelRatio /
-                      2;
-                  final screenCenter =
-                      BoardViewport.centerYOf(context)! - insetsOffset;
+                  final screenCenter = BoardViewport.centerYOf(context)!;
                   final footerHeight = machineEnded && state.mode.fromLink
                       ? _LinkEndBar.height
                       : GameActionsBar.height +

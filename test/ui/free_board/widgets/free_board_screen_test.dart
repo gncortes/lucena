@@ -19,6 +19,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/character.dart';
 
+import '../../../../testing/board_center.dart';
 import '../../../../testing/goldens/golden_harness.dart';
 
 import 'package:lucena/domain/models/app_settings.dart';
@@ -1702,6 +1703,27 @@ void main() {
         },
       );
     }
+    testWidgetsA8('A8: tabuleiro no centro útil e de ponta a ponta', (
+      tester,
+    ) async {
+      final aparelho = aparelhoA8;
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        screen: aparelho.size * 2.625,
+        systemInsets: EdgeInsets.only(
+          top: aparelho.status,
+          bottom: aparelho.nav,
+        ),
+        mode: machine,
+        characters: _BubbleCharacters(shortSpeech),
+      );
+      await talk.settled();
+      await tester.pumpAndSettle();
+      debugPrint('A8 free_board fora do centro: ${foraDoCentro(tester)}');
+      expectTabuleiroNoCentro(tester);
+      expect(tester.takeException(), isNull);
+    }, pendente360x740: true);
     testWidgets('T85 print: partida contra personagem (411×914)', (
       tester,
     ) async {
@@ -2059,7 +2081,8 @@ void main() {
       await tester.pumpAndSettle();
       final board = boardRect(tester);
       expectScreenBoardCenter(tester, board, requireScreenCenter: true);
-      expect(board.center.dy, closeTo(550, .5));
+      // A8: o centro útil, 52 + (1100 - 52 - 24) / 2.
+      expect(board.center.dy, closeTo(564, .5));
       expectSpeechAboveOpponent(tester);
       final balloon = find.byKey(FreeBoardKeys.speechBubble);
       expect(tester.widget<SpeechBalloon>(balloon).tail, BalloonTail.down);
@@ -3974,7 +3997,9 @@ void main() {
   final ratio = view.devicePixelRatio;
   final width = view.physicalSize.width / ratio;
   final height = view.physicalSize.height / ratio;
-  final center = height / 2;
+  // A8: o centro da tela útil, entre a barra de status e a de navegação.
+  final top = view.viewPadding.top / ratio;
+  final center = top + (height - top - view.viewPadding.bottom / ratio) / 2;
   final context = tester.element(find.byType(FreeBoardScreen));
   final game = context.read<FreeBoardCubit>().state;
   final settings = context.read<SettingsCubit>().state!;
@@ -3986,7 +4011,8 @@ void main() {
       ? ClockPosition.sides
       : settings.clock.position;
   final above = clocks == ClockPosition.bottom ? 0.0 : 68.0;
-  final topExtent = above > 0 ? above + 8 : 0.0;
+  // O que vem em cima do tabuleiro sempre deixa o vão de 8.
+  final topExtent = above + 8;
   final side = width;
   return (side: side, center: max(center, contentTop + topExtent + side / 2));
 }
@@ -4000,8 +4026,12 @@ void expectScreenBoardCenter(
   bool requireScreenCenter = false,
 }) {
   final view = tester.view;
-  final width = view.physicalSize.width / view.devicePixelRatio;
-  final center = view.physicalSize.height / view.devicePixelRatio / 2;
+  final ratio = view.devicePixelRatio;
+  final width = view.physicalSize.width / ratio;
+  // A8: o centro da tela útil, entre a barra de status e a de navegação.
+  final top = view.viewPadding.top / ratio;
+  final bottom = view.viewPadding.bottom / ratio;
+  final center = top + (view.physicalSize.height / ratio - top - bottom) / 2;
   final contentTop = tester.getRect(find.byType(MoveList)).bottom;
   final footer = find.byKey(FreeBoardKeys.actionsBar);
   expect(board.top, greaterThanOrEqualTo(contentTop));
