@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/course_preview.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
@@ -12,6 +13,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../course_preview/widgets/course_sale_parts.dart';
 import '../../lesson_end/widgets/lesson_end_parts.dart';
 import '../view_models/course_unlocked_cubit.dart';
 
@@ -63,7 +65,7 @@ class CourseUnlockedScreen extends StatelessWidget {
                 ].join(' ');
                 final teacher = state.teacher;
                 return SucessoDaCompra(
-                  tamanho: 96,
+                  tamanho: 72,
                   icone: gift ? Icons.card_giftcard : CanvasSymbols.check,
                   fundo: gift
                       ? theme.colorScheme.primaryContainer
@@ -98,6 +100,19 @@ class CourseUnlockedScreen extends StatelessWidget {
                             speechContext: SpeechContext.teaching,
                           ),
                   ),
+                  itens: [
+                    for (final (i, (icon, title)) in [
+                      ('bolt', l.unlockedIncludesTactics),
+                      ('route', l.unlockedIncludesPlans),
+                      ('menu_book', l.unlockedIncludesOpenings),
+                      ('record_voice_over', l.unlockedIncludesViktor),
+                    ].indexed)
+                      SaleIconLine(
+                        key: CourseUnlockedKeys.include(i),
+                        item: CourseSaleItem(icon: icon, title: title),
+                        green: i.isOdd,
+                      ),
+                  ],
                   botoes: [
                     state.hasPlan
                         ? BusyButton(

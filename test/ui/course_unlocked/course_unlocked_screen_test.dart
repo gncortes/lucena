@@ -24,9 +24,14 @@ import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/test_app.dart';
 
+import '../../../testing/goldens/golden_harness.dart';
+
 /// Curso liberado (H-R5-62): presente e compra, com e sem nome, com e sem
 /// plano; o X volta para onde estava.
 void main() {
+  // Fonte real (Roboto): o "cabe em" mede como no aparelho.
+  setUpAll(Goldens.loadFonts);
+
   Future<GoRouter> pump(
     WidgetTester tester, {
     required CourseUnlockedOrigin origin,
@@ -127,6 +132,23 @@ void main() {
     expect(find.text('Montar o meu plano'), findsOneWidget);
   });
 
+  testWidgets('lista o que o curso traz, abaixo da fala', (tester) async {
+    await pump(tester, origin: CourseUnlockedOrigin.purchase);
+    for (final linha in const [
+      'Tática e cálculo, do primeiro golpe às combinações',
+      'Planos no meio-jogo e técnica nos finais',
+      'As aberturas mais jogadas no seu nível',
+      'Cada lance das lições explicado pelo Viktor',
+    ]) {
+      expect(find.text(linha), findsOneWidget);
+    }
+    final fala = tester.getRect(find.byKey(CourseUnlockedKeys.speech));
+    expect(
+      tester.getRect(find.byKey(CourseUnlockedKeys.include(0))).top,
+      greaterThan(fala.bottom),
+    );
+  });
+
   testWidgets('compra sem nome: fala sem nome e ✓ verde', (tester) async {
     await pump(tester, origin: CourseUnlockedOrigin.purchase, nickname: '  ');
     expect(find.text('O curso completo é seu'), findsOneWidget);
@@ -140,10 +162,7 @@ void main() {
 
   testWidgets('presente sem nome', (tester) async {
     await pump(tester, origin: CourseUnlockedOrigin.gift, nickname: '');
-    expect(
-      speech(tester),
-      contains('Mestre Viktor Parabéns pelo presente!'),
-    );
+    expect(speech(tester), contains('Mestre Viktor Parabéns pelo presente!'));
   });
 
   testWidgets('com plano: "Ir para o curso" abre o curso', (tester) async {
@@ -186,9 +205,9 @@ void main() {
       await pump(tester, origin: CourseUnlockedOrigin.gift, size: size);
       expect(tester.takeException(), isNull);
       final botao = tester.getRect(find.byKey(CourseUnlockedKeys.action));
-      final fala = tester.getRect(find.byKey(CourseUnlockedKeys.speech));
+      final lista = tester.getRect(find.byKey(CourseUnlockedKeys.include(3)));
       expect(botao.bottom, lessThanOrEqualTo(size.height));
-      expect(botao.top, greaterThan(fala.bottom));
+      expect(botao.top, greaterThan(lista.bottom));
     });
   }
 }

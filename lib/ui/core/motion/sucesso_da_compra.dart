@@ -8,8 +8,9 @@ import 'relogio_de_entrada.dart';
 
 /// A compra concluída (H-ANI-27, clipe 09): o círculo com ✓ escala de 0,6 a
 /// 1 em 380 ms (DEC) e o ✓ salta (0 → 1,18 → 1); um anel vai a 1,7 e some em
-/// 700 ms, uma vez; o [titulo] e o [texto] sobem 14 px em 300 ms e os
-/// [botoes] entram por último, 100 ms entre eles.
+/// 700 ms, uma vez; o [titulo] e o [texto] sobem 14 px em 300 ms; os [itens]
+/// entram como a lista da venda (H-ANI-16: sobem 10 px em 320 ms, 70 ms entre
+/// eles) e os [botoes] entram por último, 100 ms entre eles.
 ///
 /// Ocupa a tela: o círculo verde-claro com ✓ verde, o título e o texto no
 /// centro, e os [botoes] presos embaixo (canvas `PropV2CompraConcluida`).
@@ -20,6 +21,7 @@ class SucessoDaCompra extends StatelessWidget {
     required this.titulo,
     required this.texto,
     required this.botoes,
+    this.itens = const [],
     this.tamanho = 88,
     this.icone = Icons.check_rounded,
     this.fundo = AppColors.successSurface,
@@ -31,6 +33,9 @@ class SucessoDaCompra extends StatelessWidget {
   final Widget texto;
   final List<Widget> botoes;
 
+  /// Linhas abaixo do [texto] (o que o curso traz), em cascata.
+  final List<Widget> itens;
+
   /// O diâmetro do círculo.
   final double tamanho;
 
@@ -40,8 +45,18 @@ class SucessoDaCompra extends StatelessWidget {
   final Color fundo;
   final Color cor;
 
-  static Duration _inicioDoBotao(int i) =>
-      LucenaMotion.botoesDaCompra + LucenaMotion.intervaloDosBotoes * i;
+  static Duration _inicioDoItem(int i) =>
+      LucenaMotion.textoDaCompra + LucenaMotion.intervaloDaCascata * (i + 2);
+
+  Duration _inicioDoBotao(int i) {
+    final depoisDosItens = itens.isEmpty
+        ? Duration.zero
+        : _inicioDoItem(itens.length - 1) + LucenaMotion.intervaloDosBotoes;
+    final primeiro = depoisDosItens > LucenaMotion.botoesDaCompra
+        ? depoisDosItens
+        : LucenaMotion.botoesDaCompra;
+    return primeiro + LucenaMotion.intervaloDosBotoes * i;
+  }
 
   static final _check = TweenSequence<double>([
     TweenSequenceItem(
@@ -63,7 +78,10 @@ class SucessoDaCompra extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ultimo = botoes.isEmpty
-        ? LucenaMotion.textoDaCompra + LucenaMotion.sobeDaCompra
+        ? (itens.isEmpty
+                  ? LucenaMotion.textoDaCompra
+                  : _inicioDoItem(itens.length - 1)) +
+              LucenaMotion.textoEntra
         : _inicioDoBotao(botoes.length - 1) + LucenaMotion.sobeDaCompra;
     final total = ultimo > LucenaMotion.anelDaCompra
         ? ultimo
@@ -78,8 +96,8 @@ class SucessoDaCompra extends StatelessWidget {
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xxl,
-                  vertical: AppSpacing.xl,
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.lg,
                 ),
                 child: _corpo(),
               ),
@@ -116,10 +134,13 @@ class SucessoDaCompra extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      // O anel cresce para fora do círculo sem reservar espaço: a lista do
+      // Curso liberado cabe em 360×740.
       SizedBox.square(
-        dimension: tamanho * LucenaMotion.escalaDoAnel,
+        dimension: tamanho,
         child: Stack(
           alignment: Alignment.center,
+          clipBehavior: Clip.none,
           children: [
             NoTempo(
               inicio: Duration.zero,
@@ -191,6 +212,16 @@ class SucessoDaCompra extends StatelessWidget {
         subida: LucenaMotion.subidaDoTitulo,
         child: texto,
       ),
+      for (final (i, item) in itens.indexed) ...[
+        SizedBox(height: i == 0 ? AppSpacing.lg : AppSpacing.sm),
+        EntradaNoTempo(
+          inicio: _inicioDoItem(i),
+          duracao: LucenaMotion.textoEntra,
+          subida: LucenaMotion.subidaDoTexto,
+          alinhamento: AlignmentDirectional.centerStart,
+          child: item,
+        ),
+      ],
     ],
   );
 }

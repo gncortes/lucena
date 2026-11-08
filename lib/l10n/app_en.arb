@@ -13645,6 +13645,22 @@
   "@unlockedPlanFirst": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },
+  "unlockedIncludesTactics": "Tactics and calculation, from the first trick to combinations",
+  "@unlockedIncludesTactics": {
+    "description": "Curso liberado: o que o curso traz (lista abaixo da fala do Viktor)."
+  },
+  "unlockedIncludesPlans": "Middlegame plans and endgame technique",
+  "@unlockedIncludesPlans": {
+    "description": "Curso liberado: o que o curso traz (lista abaixo da fala do Viktor)."
+  },
+  "unlockedIncludesOpenings": "The most played openings at your level",
+  "@unlockedIncludesOpenings": {
+    "description": "Curso liberado: o que o curso traz (lista abaixo da fala do Viktor)."
+  },
+  "unlockedIncludesViktor": "Every move in the lessons explained by Viktor",
+  "@unlockedIncludesViktor": {
+    "description": "Curso liberado: o que o curso traz (lista abaixo da fala do Viktor)."
+  },
   "unlockedMakePlan": "Build my plan",
   "@unlockedMakePlan": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
