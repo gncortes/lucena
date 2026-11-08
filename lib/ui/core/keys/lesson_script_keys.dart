@@ -1,8 +1,13 @@
 import 'package:flutter/widgets.dart';
 
+import 'speech_keys.dart';
+import 'voice_keys.dart';
+
 /// A tela da lição roteirizada (T70).
 abstract final class LessonScriptKeys {
+  static Key answerChoice(int index) => Key('lessonScript.answerChoice.$index');
   static const screen = Key('lessonScript.screen');
+  static const close = Key('lessonScript.close');
   static const board = Key('lessonScript.board');
 
   /// O tabuleiro de antes, enquanto se dissolve no novo (crossfade).
@@ -18,6 +23,12 @@ abstract final class LessonScriptKeys {
   static const bookButton = Key('lessonScript.bookButton');
   static const moveList = Key('lessonScript.moveList');
   static const page = Key('lessonScript.page');
+  static const progress = Key('lessonScript.progress');
+  static const footer = Key('lessonScript.footer');
+  static const hint = Key('lessonScript.hint');
+  static const analyze = Key('lessonScript.analyze');
+  static const wrongLine = Key('lessonScript.wrongLine');
+  static Key star(String square) => Key('lessonScript.star.$square');
 
   /// A fala inteira do Viktor (o clique no balão) e o ✕ dela.
   static const speechSheet = Key('lessonScript.speechSheet');
@@ -49,4 +60,32 @@ abstract final class LessonScriptKeys {
   /// O resultado depois do lance que acabou a partida.
   static Key moveResult(String nodeId) =>
       Key('lessonScript.moveResult.$nodeId');
+
+  // Nomes das histórias H-LIC (T85-D1): os mesmos botões, com o nome do canvas.
+  /// "Continuar" da lição (e "Praticar", "Próxima etapa").
+  static const lessonContinue = primary;
+  static const lessonPractice = primary;
+
+  /// Pausar e tocar a fala ou a demonstração.
+  static const lessonPauseToggle = demoToggle;
+  static const demoPlayPause = demoToggle;
+
+  /// Lance anterior e próximo da demonstração (o próximo é o botão com anel).
+  static const demoPrev = demoStepBack;
+  static const demoNext = primary;
+
+  /// O `search` do rodapé: analisar a posição.
+  static const lessonAnalyze = analyze;
+
+  /// A lâmpada da armadilha.
+  static const trapHint = hint;
+
+  /// O "… Ver mais" do balão da lição.
+  static const balloonSeeMore = SpeechKeys.balloonSeeMore;
+
+  /// O som e a voz do Viktor no cabeçalho da fala.
+  static const lessonVoiceToggle = VoiceKeys.speakButton;
+
+  /// Aviso de que a parte largada no meio recomeçou do início (T85-B5b).
+  static const restartNotice = ValueKey('lesson-script-restart-notice');
 }

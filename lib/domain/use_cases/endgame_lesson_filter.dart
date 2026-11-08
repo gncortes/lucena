@@ -8,8 +8,10 @@ import '../models/rating_level.dart';
 /// habilidades (`skills.json`) que liga o nó à aula.
 abstract final class EndgameLessonFilter {
   /// Os tipos de final de uma aula, pelas peças da posição do treino final.
-  static Set<EndgameKind> kinds(EndgameLesson lesson) =>
-      kindsOfFen(lesson.practice.fen);
+  static Set<EndgameKind> kinds(EndgameLesson lesson) {
+    final practice = lesson.practice;
+    return practice == null ? const {} : kindsOfFen(practice.fen);
+  }
 
   /// Os tipos de final pelas peças de uma posição (FEN).
   static Set<EndgameKind> kindsOfFen(String fen) {

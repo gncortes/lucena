@@ -1,14 +1,36 @@
+import 'package:lucena/data/repositories/activity/activity_repository.dart';
+import 'package:lucena/data/repositories/data_export/data_export_repository.dart';
+
+import 'fakes/fake_data_export_repository.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/training/course_download_repository.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/placement/placement_repository.dart';
+
+import 'fakes/fake_placement_repository.dart';
+import 'fakes/fake_rating_repository.dart';
+
+import 'package:lucena/data/repositories/rating/rating_repository.dart';
+
+import 'fakes/fake_course_download_repository.dart';
+import 'fakes/fake_account_repository.dart';
+
 import 'package:lucena/data/repositories/ads/ads_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_access_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/demo_ad_repository.dart';
+import 'package:lucena/data/repositories/purchase/opening_offer_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
-import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/store/store_listing_repository.dart';
+import 'package:lucena/data/repositories/links/link_repository.dart';
+import 'package:lucena/data/repositories/legal/legal_consent_repository.dart';
+import 'package:lucena/data/repositories/legal/legal_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -23,21 +45,23 @@ import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
 import 'package:lucena/ui/core/widgets/web_pages.dart';
 
 import 'fakes/fake_alerts_repository.dart';
-import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_store_listing_repository.dart';
+import 'fakes/fake_legal_repository.dart';
+import 'fakes/fake_link_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 import 'fakes/fake_endgame_repositories.dart';
 import 'fakes/fake_feedback_repositories.dart';
+import 'fakes/fake_activity_repository.dart';
 import 'fakes/fake_school_repositories.dart';
 
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/feedback/feedback_draft_repository.dart';
 import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
 import 'package:lucena/data/repositories/review/review_repository.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
-import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
 
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
@@ -56,19 +80,30 @@ class TestApp extends StatelessWidget {
     this.wikiLinksCubit,
     this.webPages,
     this.router,
+    this.trainingAccess = false,
+    this.mediaBuilder,
     this.surveyRepository,
     this.regionPromptRepository,
-    this.crowdRepository,
     this.analytics,
     this.adsRepository,
+    this.courseAccessRepository,
+    this.demoAdRepository,
+    this.openingOfferRepository,
     this.purchaseRepository,
     this.storeListingRepository,
+    this.linkRepository,
+    this.legalRepository,
     this.updateCubit,
-    this.wouldPayRepository,
     this.feedbackRepository,
+    this.dataExportRepository,
+    this.legalConsentRepository,
+    this.feedbackDraftRepository,
     this.reviewRepository,
     this.schoolProgressRepository,
+    this.activityRepository,
     this.endgameProgressRepository,
+    this.placementRepository,
+    this.ratingRepository,
     super.key,
   });
 
@@ -107,7 +142,6 @@ class TestApp extends StatelessWidget {
 
   /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
   final RegionPromptRepository? regionPromptRepository;
-  final CrowdRepository? crowdRepository;
 
   /// As estatísticas, quando o teste confere os eventos. Sem elas, nenhuma.
   final AnalyticsRepository? analytics;
@@ -115,27 +149,58 @@ class TestApp extends StatelessWidget {
   /// Os anúncios. Sem ele, nenhum.
   final AdsRepository? adsRepository;
 
+  /// O acesso ao Pilares e o anúncio da demonstração. Sem eles, curso aberto.
+  final CourseAccessRepository? courseAccessRepository;
+  final DemoAdRepository? demoAdRepository;
+  final OpeningOfferRepository? openingOfferRepository;
+
   /// O "Remover anúncios". Sem ele, a compra não existe (nem a linha).
   final PurchaseRepository? purchaseRepository;
 
   /// A página do app na Play. Sem ela, um falso que só conta.
   final StoreListingRepository? storeListingRepository;
 
+  /// Os links externos. Sem ele, um falso que abre tudo.
+  final LinkRepository? linkRepository;
+
+  /// Os Termos e a Política. Sem ele, os textos embarcados lidos do disco.
+  final LegalRepository? legalRepository;
+
   /// A atualização (E1.32), quando a tela testada é uma das duas.
   final UpdateCubit? updateCubit;
 
-  /// O "Você pagaria?" e o "Enviar feedback" (E1.26). Sem eles, o cartão
-  /// nunca aparece e o envio vai para um falso.
-  final WouldPayRepository? wouldPayRepository;
   final FeedbackRepository? feedbackRepository;
+
+  /// "Baixar meus dados". Sem ele, um falso que baixa na hora.
+  final DataExportRepository? dataExportRepository;
+
+  /// Nulo: toda conta já aceitou os Termos (os testes antigos seguem).
+  final LegalConsentRepository? legalConsentRepository;
+  final FeedbackDraftRepository? feedbackDraftRepository;
   final ReviewRepository? reviewRepository;
 
   /// O progresso que conta as aulas concluídas do convite.
   final SchoolProgressRepository? schoolProgressRepository;
+  final ActivityRepository? activityRepository;
   final EndgameProgressRepository? endgameProgressRepository;
+  final PlacementRepository? placementRepository;
+
+  /// O rating do jogador. Sem ele, um falso que parte do rating do perfil.
+  final RatingRepository? ratingRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
+  final bool trainingAccess;
+  final TransitionBuilder? mediaBuilder;
+
+  /// O rating que o teste já pôs acima do [TestApp], se pôs.
+  static RatingRepository? _outerRating(BuildContext context) {
+    try {
+      return context.read<RatingRepository>();
+    } on Object {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +208,7 @@ class TestApp extends StatelessWidget {
     final router = this.router;
     Widget build(AppAccent? accent) => router != null
         ? MaterialApp.router(
+            debugShowCheckedModeBanner: false,
             theme: AppTheme.of(Brightness.light, accent: accent),
             darkTheme: AppTheme.of(Brightness.dark, accent: accent),
             themeMode: themeMode,
@@ -150,8 +216,10 @@ class TestApp extends StatelessWidget {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: appSupportedLocales,
             routerConfig: router,
+            builder: mediaBuilder,
           )
         : MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: AppTheme.of(Brightness.light, accent: accent),
             darkTheme: AppTheme.of(Brightness.dark, accent: accent),
             themeMode: themeMode,
@@ -159,6 +227,7 @@ class TestApp extends StatelessWidget {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: appSupportedLocales,
             home: child,
+            builder: mediaBuilder,
           );
     // Com as preferências, a cor do app escolhida vale na hora, como no app.
     final app = settingsCubit == null
@@ -201,21 +270,48 @@ class TestApp extends StatelessWidget {
     ];
     return MultiRepositoryProvider(
       providers: [
+        if (trainingAccess) ...[
+          RepositoryProvider<AccountRepository>(
+            create: (_) =>
+                FakeAccountRepository(account: FakeAccountRepository.google),
+          ),
+          RepositoryProvider<CourseDownloadRepository>.value(
+            value: const FakeCourseDownloadRepository(),
+          ),
+        ],
         RepositoryProvider<ShareRepository>.value(
           value: shareRepository ?? FakeShareRepository(),
+        ),
+        RepositoryProvider<PlacementRepository>.value(
+          value: placementRepository ?? FakePlacementRepository(),
+        ),
+        RepositoryProvider<RatingRepository>.value(
+          value:
+              ratingRepository ??
+              _outerRating(context) ??
+              FakeRatingRepository(start: profileCubit?.state?.rating ?? 1150),
         ),
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
         RepositoryProvider<SurveyRepository>.value(
           value: surveyRepository ?? FakeSurveyRepository(),
         ),
-        RepositoryProvider<WouldPayRepository>.value(
-          value: wouldPayRepository ?? const NoWouldPayRepository(),
-        ),
         RepositoryProvider<FeedbackRepository>.value(
           value: feedbackRepository ?? FakeFeedbackRepository(),
         ),
+        RepositoryProvider<DataExportRepository>.value(
+          value: dataExportRepository ?? FakeDataExportRepository(),
+        ),
+        RepositoryProvider<LegalConsentRepository>.value(
+          value: legalConsentRepository ?? const NoLegalConsentRepository(),
+        ),
+        RepositoryProvider<FeedbackDraftRepository>.value(
+          value: feedbackDraftRepository ?? FakeFeedbackDraftRepository(),
+        ),
         RepositoryProvider<ReviewRepository>.value(
           value: reviewRepository ?? FakeReviewRepository(),
+        ),
+        RepositoryProvider<ActivityRepository>.value(
+          value: activityRepository ?? FakeActivityRepository(),
         ),
         RepositoryProvider<SchoolProgressRepository>.value(
           value: schoolProgressRepository ?? FakeSchoolProgressRepository(),
@@ -226,20 +322,32 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<RegionPromptRepository>.value(
           value: regionPromptRepository ?? const NoRegionPromptRepository(),
         ),
-        RepositoryProvider<CrowdRepository>.value(
-          value: crowdRepository ?? FakeCrowdRepository(),
-        ),
         RepositoryProvider<AnalyticsRepository>.value(
           value: analytics ?? const NoAnalyticsRepository(),
         ),
         RepositoryProvider<AdsRepository>.value(
           value: adsRepository ?? const NoAdsRepository(),
         ),
+        RepositoryProvider<CourseAccessRepository>.value(
+          value: courseAccessRepository ?? const FullCourseAccessRepository(),
+        ),
+        RepositoryProvider<DemoAdRepository>.value(
+          value: demoAdRepository ?? const NoDemoAdRepository(),
+        ),
+        RepositoryProvider<OpeningOfferRepository>.value(
+          value: openingOfferRepository ?? const NoOpeningOfferRepository(),
+        ),
         RepositoryProvider<PurchaseRepository>.value(
           value: purchaseRepository ?? const NoPurchaseRepository(),
         ),
         RepositoryProvider<StoreListingRepository>.value(
           value: storeListingRepository ?? FakeStoreListingRepository(),
+        ),
+        RepositoryProvider<LinkRepository>.value(
+          value: linkRepository ?? FakeLinkRepository(),
+        ),
+        RepositoryProvider<LegalRepository>.value(
+          value: legalRepository ?? FakeLegalRepository(),
         ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),

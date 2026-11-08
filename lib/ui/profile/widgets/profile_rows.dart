@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/app_language.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_shape.dart';
 import '../../settings/view_models/settings_cubit.dart';
 
@@ -17,20 +18,25 @@ class ProfileRowGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
     color: Theme.of(context).colorScheme.surfaceContainerLowest,
-    borderRadius: BorderRadius.circular(AppShape.large),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppShape.large),
+      side: const BorderSide(color: AppColors.cardOutline),
+    ),
     clipBehavior: Clip.antiAlias,
     child: Column(children: children),
   );
 }
 
 /// Uma linha do grupo: ícone, título e valor (opcional). Sem [onTap], só
-/// mostra.
+/// mostra. [external]: o toque sai do app (ajustes do sistema, e-mail): a
+/// seta vira `open_in_new`.
 class ProfileRow extends StatelessWidget {
   const ProfileRow({
     required this.icon,
     required this.title,
     this.value,
     this.onTap,
+    this.external = false,
     super.key,
   });
 
@@ -38,14 +44,18 @@ class ProfileRow extends StatelessWidget {
   final String title;
   final String? value;
   final VoidCallback? onTap;
+  final bool external;
 
   @override
   Widget build(BuildContext context) => ListTile(
-    minTileHeight: 64,
+    // CompOpcaoLista: 72 px com subtítulo, 56 sem.
+    minTileHeight: value == null ? 56 : 72,
     leading: Icon(icon),
     title: Text(title),
     subtitle: value == null ? null : Text(value!),
-    trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+    trailing: onTap == null
+        ? null
+        : Icon(external ? Icons.open_in_new : Icons.chevron_right),
     onTap: onTap,
   );
 }
@@ -72,7 +82,7 @@ String profileCountryValue(
 /// O idioma escolhido nas Configurações, no próprio idioma.
 String profileLanguageName(BuildContext context) {
   final code = context.select(
-    (SettingsCubit cubit) => cubit.state?.languageCode,
+    (SettingsCubit? cubit) => cubit?.state?.languageCode,
   );
   return AppLanguage.fromCode(code)?.nativeName ??
       context.l10n.settingsLanguageSystem;

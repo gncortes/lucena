@@ -7,7 +7,7 @@ import 'package:lucena/routing/routes.dart';
 
 const _fen = '8/8/8/4k3/8/8/4K3/4Q3 w - - 0 1';
 
-Uri _uri(String path) => Uri.parse('https://playlucena.com$path');
+Uri _uri(String path) => Uri.parse('https://playlucenachess.com$path');
 
 void main() {
   group('link de desafio (T84)', () {

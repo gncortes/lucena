@@ -92,7 +92,7 @@ void main() {
     await board.expectClock(Side.white, '3:00');
     board.expectClockAbove(Side.black);
     board.expectClockBelow(Side.white);
-    await settings.back();
+    await settings.backToHome();
 
     await home.openSettings();
     await clock.open();

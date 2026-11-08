@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- O modo às cegas escuta o lance falado. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!-- As páginas da Wikipedia dos nomes citados nas aulas (T64). -->
@@ -7,9 +8,13 @@
          exato: sem SCHEDULE_EXACT_ALARM. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- O app não usa anúncio nem ID de publicidade: a permissão que o
+         Firebase Analytics traz sai do build. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove"/>
 
     <application
-        android:label="Lucena"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -38,19 +43,21 @@
             <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
             <!-- App Links dos desafios (E1.14): /p/<código>; e das aulas de
                  campanha (T84): /aula/<id> e /escola/<id>. Sem o app, o
-                 endereço abre a landing (firebase.json). O domínio definitivo
-                 entra junto do provisório até a troca. -->
+                 endereço abre a landing (firebase.json). Os domínios vêm do
+                 flavor (manifestPlaceholders no build.gradle.kts): dev só o
+                 site de dev; prod o domínio com e sem www. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https"/>
-                <data android:host="lucena-2f4de.web.app"/>
-                <data android:host="playlucena.com"/>
-                <data android:host="www.playlucena.com"/>
+                <data android:host="${appLinkHost}"/>
+                <data android:host="${appLinkWwwHost}"/>
                 <data android:pathPrefix="/p/"/>
                 <data android:pathPrefix="/aula/"/>
                 <data android:pathPrefix="/escola/"/>
+                <!-- O link com desconto (H-R5-66): /oferta/<código>. -->
+                <data android:pathPrefix="/oferta/"/>
                 <data android:path="/dia"/>
                 <data android:path="/dia/"/>
                 <data android:path="/daily"/>
@@ -80,6 +87,9 @@
              publicidade nunca entra nas estatísticas. -->
         <meta-data
             android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
             android:value="false" />
         <meta-data
             android:name="google_analytics_adid_collection_enabled"

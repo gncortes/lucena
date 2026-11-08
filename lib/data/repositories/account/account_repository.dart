@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../domain/models/account.dart';
+import '../../../domain/models/push_permission.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../services/firebase/auth_service.dart';
 import '../../services/firebase/cloud_store_service.dart';
@@ -43,12 +44,20 @@ abstract class AccountRepository {
   /// O push por conta: só o último aparelho em que a conta entrou recebe.
   /// Na abertura, grava o token se a conta ainda não tem nenhum ou se o
   /// token deste aparelho mudou; e acompanha as trocas do FCM. Não tira o
-  /// lugar de um aparelho em que a conta entrou depois.
+  /// lugar de um aparelho em que a conta entrou depois. Se este aparelho é
+  /// o do push da conta, grava também a permissão e a abertura (H-R5-60).
   Future<void> linkPushDevice();
 
   /// Apaga o perfil no Firestore e a conta no Auth. Com [photo] (o perfil
   /// tem foto enviada), apaga antes a foto no Storage.
-  Future<void> deleteAccount({bool photo = false});
+  /// [expectedUid] é a conta confirmada no diálogo. False: Google cancelado.
+  Future<bool> deleteAccount({required String expectedUid, bool photo = false});
+
+  /// A conta [uid] foi suspensa pelo admin (`bloqueios/{uid}`): a nuvem
+  /// recusa as gravações, e o progresso segue no aparelho. Ao vivo: começa
+  /// com o estado de agora e muda quando o admin suspende ou libera, sem
+  /// precisar trocar de conta. Sem rede, `false`.
+  Stream<bool> blockedChanges(String uid);
 }
 
 /// A conta no Firebase Auth, com o perfil em `users/{uid}` no Firestore.
@@ -91,6 +100,10 @@ class CloudAccountRepository implements AccountRepository {
   Stream<Account?> get changes => _auth.changes;
 
   @override
+  Stream<bool> blockedChanges(String uid) =>
+      _store.watchBlocked(uid, _now.call);
+
+  @override
   Future<Account?> signInWithGoogle() async {
     final account = await _auth.signInWithGoogle();
     if (account != null) _signedIn(account);
@@ -129,8 +142,11 @@ class CloudAccountRepository implements AccountRepository {
   @override
   Future<void> signOut() async {
     final uid = _auth.current?.uid;
-    if (uid != null) await _releasePush(uid);
-    await _auth.signOut();
+    try {
+      if (uid != null) await _releasePush(uid);
+    } finally {
+      await _auth.signOut();
+    }
   }
 
   @override
@@ -144,17 +160,57 @@ class CloudAccountRepository implements AccountRepository {
     if (uid == null) return;
     try {
       final token = await _push.token();
-      if (token != null) await _refreshPush(uid, token);
+      if (token == null) return;
+      await _refreshPush(uid, token);
+      await _recordPushStatus(uid, token);
     } on Object catch (error) {
       debugPrint('Push sem token: $error');
     }
+  }
+
+  // Só o aparelho do push da conta conta para o painel: outro aparelho
+  // logado na mesma conta não recebe e não sobrescreve a permissão dele.
+  // A leitura também garante que o documento já existe com o token: as
+  // regras recusam um `push/device` sem token (merge sem a gravação dele).
+  Future<void> _recordPushStatus(String uid, String token) async {
+    final saved = await _preferences?.getString(_pushKey);
+    if (saved != '$uid|$token') return;
+    if (await _store.readPushToken(uid) != token) return;
+    final now = _now();
+    final permission = await _push.permission();
+    await _store.writePushStatus(
+      uid,
+      PushDeviceStatus(permission: permission, checkedAt: now, openedAt: now),
+    );
   }
 
   StreamSubscription<String>? _tokenChanges;
 
   void _signedIn(Account account, {bool created = false}) {
     _touchProfile(account, created: created);
-    unawaited(_claimPush(account.uid));
+    _track(_claimPush(account.uid));
+  }
+
+  /// As gravações disparadas sem esperar (perfil e push do login).
+  final _writes = <Future<void>>{};
+
+  // Quanto apagar a conta espera essas gravações; sem rede elas ficam na
+  // fila do Firestore e a remoção falharia de qualquer jeito.
+  static const _settleTimeout = Duration(seconds: 10);
+
+  void _track(Future<void> write) {
+    final tracked = write.catchError((Object _) {});
+    _writes.add(tracked);
+    unawaited(tracked.whenComplete(() => _writes.remove(tracked)));
+  }
+
+  Future<void> _settleWrites() async {
+    if (_writes.isEmpty) return;
+    try {
+      await Future.wait(_writes.toList()).timeout(_settleTimeout);
+    } on TimeoutException {
+      debugPrint('Apagar a conta: gravação do login ainda na fila.');
+    }
   }
 
   // Entrou na conta: este aparelho passa a ser o do push, no lugar do outro.
@@ -188,8 +244,28 @@ class CloudAccountRepository implements AccountRepository {
     }
   }
 
-  // Saiu da conta: o token sai junto, se ainda for o deste aparelho.
+  // Saiu da conta: o token sai junto, se ainda for o deste aparelho. E o
+  // token do FCM é trocado: se a remoção não chegou ao servidor (sem rede),
+  // o token velho guardado na conta já não entrega nada neste aparelho, e
+  // outra conta que entrar aqui não recebe o presente da anterior (H-R5-64).
   Future<void> _releasePush(String uid) async {
+    try {
+      await _releaseAccountToken(uid);
+    } finally {
+      await _forgetDeviceToken();
+    }
+  }
+
+  Future<void> _forgetDeviceToken() async {
+    if (!_push.available) return;
+    try {
+      await _push.deleteToken().timeout(_pushTimeout);
+    } on Object catch (error) {
+      debugPrint('Push sem trocar o token: $error');
+    }
+  }
+
+  Future<void> _releaseAccountToken(String uid) async {
     final preferences = _preferences;
     if (preferences == null) return;
     final saved = await preferences.getString(_pushKey);
@@ -206,29 +282,57 @@ class CloudAccountRepository implements AccountRepository {
   }
 
   @override
-  Future<void> deleteAccount({bool photo = false}) async {
-    final account = _auth.current;
-    if (account == null) return;
-    try {
-      // Sem foto enviada o Storage nem é tocado (pode nem estar ativo).
-      if (photo) await _avatars.delete(account.uid);
-      await _store.deleteUser(account.uid);
-    } on FileStoreException {
-      throw const AccountException(AccountFailure.network);
-    } on CloudStoreException {
-      // Sem rede não dá para apagar o que está na nuvem: nada é apagado.
-      throw const AccountException(AccountFailure.network);
-    }
-    await _preferences?.remove(_pushKey);
-    await _auth.delete();
-  }
+  Future<bool> deleteAccount({
+    required String expectedUid,
+    bool photo = false,
+  }) => _auth.delete(
+    expectedUid: expectedUid,
+    beforeSignOut: _releasePush,
+    deleteData: () async {
+      void requireAccount() {
+        if (_auth.current?.uid != expectedUid) {
+          throw const AccountException(AccountFailure.userMismatch);
+        }
+      }
+
+      requireAccount();
+      // O novo login deixa o perfil e o push gravando; se chegassem depois
+      // da remoção, sobraria documento de uma conta apagada (gap 8).
+      await _settleWrites();
+      requireAccount();
+      // Sem internet antes do primeiro dado apagado: nada mudou. Depois
+      // disso a falha é parcial e o aviso não pode dizer que nada saiu
+      // (gap 9); repetir termina, porque cada remoção é idempotente.
+      var started = false;
+      try {
+        // UID imutável em cada remoção; uma falha tardia pode ser parcial.
+        if (photo) {
+          await _avatars.delete(expectedUid);
+          started = true;
+          requireAccount();
+        }
+        await _store.deleteUser(expectedUid);
+        requireAccount();
+      } on FileStoreException {
+        throw const AccountException(AccountFailure.network);
+      } on CloudStoreException catch (error) {
+        throw AccountException(
+          started || error.partial
+              ? AccountFailure.unknown
+              : AccountFailure.network,
+        );
+      }
+      await _preferences?.remove(_pushKey);
+      requireAccount();
+    },
+  );
 
   // A gravação do Firestore só termina quando o servidor confirma; sem rede
   // ela fica na fila do aparelho. O login não espera por ela.
   void _touchProfile(Account account, {bool created = false, String? name}) {
     final now = _now();
     final trimmed = (name ?? account.name)?.trim();
-    unawaited(() async {
+    _track(() async {
       try {
         final language = await _language();
         await _store.mergeUser(account.uid, {
@@ -238,6 +342,7 @@ class CloudAccountRepository implements AccountRepository {
                 : trimmed,
           'language': ?language,
           'updatedAt': now,
+          // O serviço troca pela hora do servidor (as regras exigem).
           if (created) 'createdAt': now,
         });
       } on Object catch (error) {

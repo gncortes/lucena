@@ -1,0 +1,351 @@
+import 'day_goals.dart';
+import 'training_analytics_state.dart';
+import 'school_training_progress.dart';
+import 'opening_track.dart';
+import 'goal/study_plan.dart';
+import 'goal/tournament_record.dart';
+import 'goal/training_diagnostic.dart';
+import 'goal/training_objective.dart';
+import 'theme_cycle.dart';
+import 'training_course.dart';
+import 'training_plan.dart';
+
+const _keepAnalyticsReminder = Object();
+const _keep = Object();
+
+/// Provenance for reversible, pre-onboarding history only. No account identity.
+/// Snapshot strings are immutable and cover only tracks created by bootstrap.
+final class TrainingBootstrapImport {
+  const TrainingBootstrapImport({
+    required this.version,
+    required this.completedOn,
+    this.cycleJson,
+    this.openingJson,
+  });
+  final String version, completedOn;
+  final String? cycleJson, openingJson;
+  Map<String, Object?> toJson() => {
+    'version': version,
+    'completedOn': completedOn,
+    'cycleJson': cycleJson,
+    'openingJson': openingJson,
+  };
+  factory TrainingBootstrapImport.fromJson(Map<String, dynamic> json) =>
+      TrainingBootstrapImport(
+        version: json['version'] as String,
+        completedOn: json['completedOn'] as String,
+        cycleJson: json['cycleJson'] as String?,
+        openingJson: json['openingJson'] as String?,
+      );
+}
+
+final class TrainingState {
+  TrainingState({
+    required this.course,
+    required this.installSeed,
+    this.plan = const TrainingPlan(),
+    this.onboardingDone = false,
+    this.tourSeen = false,
+    this.tab = CourseGuideTab.lesson,
+    this.openingProfile = 'solido',
+    this.openingProfileStartPart = '',
+    this.day,
+    this.lastLessonDate,
+    this.lastActivityAt,
+    this.analyticsReminderAt,
+    this.analyticsReminderShownAt,
+    Map<String, String> completedLessons = const {},
+    Map<String, ThemeCycle> cycles = const {},
+    Map<String, OpeningTrack> openings = const {},
+    Iterable<String> offDayCredits = const [],
+    Iterable<TrainingGoal> deferredGoals = const [],
+    SchoolTrainingProgress? school,
+    TrainingAnalyticsState? analytics,
+    Map<String, TrainingBootstrapImport> bootstrapImports = const {},
+    this.objective,
+    Iterable<TrainingObjective> objectiveHistory = const [],
+    this.studyPlan,
+    this.previousStudyPlan,
+    this.catalogOnlyPlan,
+    this.diagnostic,
+    Iterable<TournamentRecord> tournaments = const [],
+    this.tournamentDraft,
+    Iterable<String> studiedDates = const [],
+    this.missedDayNoticeOn,
+    this.missedDayMinutes,
+    this.tournamentPushFor,
+  }) : completedLessons = Map.unmodifiable(completedLessons),
+       cycles = Map.unmodifiable(cycles),
+       openings = Map.unmodifiable(openings),
+       offDayCredits = List.unmodifiable(offDayCredits),
+       deferredGoals = List.unmodifiable(deferredGoals),
+       school = school ?? SchoolTrainingProgress(),
+       analytics = analytics ?? TrainingAnalyticsState(),
+       bootstrapImports = Map.unmodifiable(bootstrapImports),
+       objectiveHistory = List.unmodifiable(objectiveHistory),
+       tournaments = List.unmodifiable(tournaments),
+       studiedDates = List.unmodifiable(studiedDates);
+  final TrainingCourse course;
+  final String installSeed;
+  final TrainingPlan plan;
+  final bool onboardingDone, tourSeen;
+  final CourseGuideTab tab;
+  final String openingProfile;
+  final String openingProfileStartPart;
+  final DayGoals? day;
+  final String? lastLessonDate;
+  final DateTime? lastActivityAt;
+  final DateTime? analyticsReminderAt, analyticsReminderShownAt;
+  final Map<String, String> completedLessons;
+  final Map<String, ThemeCycle> cycles;
+  final Map<String, OpeningTrack> openings;
+  final List<String> offDayCredits;
+
+  /// Pending work retained through days off; never shown as today's goals.
+  final List<TrainingGoal> deferredGoals;
+  final SchoolTrainingProgress school;
+  final TrainingAnalyticsState analytics;
+  final Map<String, TrainingBootstrapImport> bootstrapImports;
+
+  /// Treino por meta (T85). Todos opcionais: dado antigo continua lendo.
+  final TrainingObjective? objective;
+  final List<TrainingObjective> objectiveHistory;
+  final StudyPlan? studyPlan;
+
+  /// Plano de antes do último ajuste (H-TRE-09); só um nível de desfazer.
+  final StudyPlan? previousStudyPlan;
+
+  /// Filtro do Catálogo (H-TRE-13): `null` ainda não escolhido (abre em Meu
+  /// plano quando há plano), `false` mostra tudo.
+  final bool? catalogOnlyPlan;
+  final TrainingDiagnostic? diagnostic;
+
+  /// Torneios registrados, do mais recente ao mais antigo.
+  final List<TournamentRecord> tournaments;
+  final TournamentDraft? tournamentDraft;
+
+  /// Dias de estudo cumpridos (`yyyy-MM-dd`), para a sequência e o dia perdido.
+  final List<String> studiedDates;
+
+  /// Dia em que o aviso de dia perdido foi aberto e os minutos novos por dia
+  /// que o plano pede (H-TRE-11). Some ao fazer a meta ou confirmar.
+  final String? missedDayNoticeOn;
+  final int? missedDayMinutes;
+
+  /// Data do torneio para o qual o aviso de "Como foi?" já foi agendado.
+  final String? tournamentPushFor;
+  bool get mock => day?.goals.any((g) => g.mock) ?? false;
+  TrainingState copyWith({
+    String? openingProfile,
+    String? openingProfileStartPart,
+    TrainingPlan? plan,
+    bool? onboardingDone,
+    bool? tourSeen,
+    CourseGuideTab? tab,
+    DayGoals? day,
+    String? lastLessonDate,
+    DateTime? lastActivityAt,
+    Object? analyticsReminderAt = _keepAnalyticsReminder,
+    Object? analyticsReminderShownAt = _keepAnalyticsReminder,
+    Map<String, String>? completedLessons,
+    Map<String, ThemeCycle>? cycles,
+    Map<String, OpeningTrack>? openings,
+    Iterable<String>? offDayCredits,
+    Iterable<TrainingGoal>? deferredGoals,
+    SchoolTrainingProgress? school,
+    TrainingAnalyticsState? analytics,
+    Map<String, TrainingBootstrapImport>? bootstrapImports,
+    Object? objective = _keep,
+    Iterable<TrainingObjective>? objectiveHistory,
+    Object? studyPlan = _keep,
+    Object? previousStudyPlan = _keep,
+    Object? catalogOnlyPlan = _keep,
+    Object? diagnostic = _keep,
+    Iterable<TournamentRecord>? tournaments,
+    Object? tournamentDraft = _keep,
+    Iterable<String>? studiedDates,
+    Object? missedDayNoticeOn = _keep,
+    Object? missedDayMinutes = _keep,
+    Object? tournamentPushFor = _keep,
+  }) => TrainingState(
+    course: course,
+    installSeed: installSeed,
+    plan: plan ?? this.plan,
+    onboardingDone: onboardingDone ?? this.onboardingDone,
+    tourSeen: tourSeen ?? this.tourSeen,
+    tab: tab ?? this.tab,
+    openingProfile: openingProfile ?? this.openingProfile,
+    openingProfileStartPart:
+        openingProfileStartPart ?? this.openingProfileStartPart,
+    day: day ?? this.day,
+    lastLessonDate: lastLessonDate ?? this.lastLessonDate,
+    lastActivityAt: lastActivityAt ?? this.lastActivityAt,
+    analyticsReminderAt: identical(analyticsReminderAt, _keepAnalyticsReminder)
+        ? this.analyticsReminderAt
+        : analyticsReminderAt as DateTime?,
+    analyticsReminderShownAt:
+        identical(analyticsReminderShownAt, _keepAnalyticsReminder)
+        ? this.analyticsReminderShownAt
+        : analyticsReminderShownAt as DateTime?,
+    completedLessons: completedLessons ?? this.completedLessons,
+    cycles: cycles ?? this.cycles,
+    openings: openings ?? this.openings,
+    offDayCredits: offDayCredits ?? this.offDayCredits,
+    deferredGoals: deferredGoals ?? this.deferredGoals,
+    school: school ?? this.school,
+    analytics: analytics ?? this.analytics,
+    bootstrapImports: bootstrapImports ?? this.bootstrapImports,
+    objective: identical(objective, _keep)
+        ? this.objective
+        : objective as TrainingObjective?,
+    objectiveHistory: objectiveHistory ?? this.objectiveHistory,
+    studyPlan: identical(studyPlan, _keep)
+        ? this.studyPlan
+        : studyPlan as StudyPlan?,
+    previousStudyPlan: identical(previousStudyPlan, _keep)
+        ? this.previousStudyPlan
+        : previousStudyPlan as StudyPlan?,
+    catalogOnlyPlan: identical(catalogOnlyPlan, _keep)
+        ? this.catalogOnlyPlan
+        : catalogOnlyPlan as bool?,
+    diagnostic: identical(diagnostic, _keep)
+        ? this.diagnostic
+        : diagnostic as TrainingDiagnostic?,
+    tournaments: tournaments ?? this.tournaments,
+    tournamentDraft: identical(tournamentDraft, _keep)
+        ? this.tournamentDraft
+        : tournamentDraft as TournamentDraft?,
+    studiedDates: studiedDates ?? this.studiedDates,
+    missedDayNoticeOn: identical(missedDayNoticeOn, _keep)
+        ? this.missedDayNoticeOn
+        : missedDayNoticeOn as String?,
+    missedDayMinutes: identical(missedDayMinutes, _keep)
+        ? this.missedDayMinutes
+        : missedDayMinutes as int?,
+    tournamentPushFor: identical(tournamentPushFor, _keep)
+        ? this.tournamentPushFor
+        : tournamentPushFor as String?,
+  );
+  Map<String, Object?> toJson() => {
+    'openingProfile': openingProfile,
+    'openingProfileStartPart': openingProfileStartPart,
+    'version': 1,
+    'course': course.name,
+    'installSeed': installSeed,
+    'plan': plan.toJson(),
+    'onboardingDone': onboardingDone,
+    'tourSeen': tourSeen,
+    'tab': tab.name,
+    'day': day?.toJson(),
+    'lastLessonDate': lastLessonDate,
+    'lastActivityAt': lastActivityAt?.toIso8601String(),
+    'analyticsReminderAt': analyticsReminderAt?.toIso8601String(),
+    'analyticsReminderShownAt': analyticsReminderShownAt?.toIso8601String(),
+    'completedLessons': completedLessons,
+    'cycles': cycles.map((k, v) => MapEntry(k, v.toJson())),
+    'openings': openings.map((k, v) => MapEntry(k, v.toJson())),
+    'offDayCredits': offDayCredits,
+    'deferredGoals': deferredGoals.map((g) => g.toJson()).toList(),
+    'school': school.toJson(),
+    'analytics': analytics.toJson(),
+    'bootstrapImports': bootstrapImports.map((k, v) => MapEntry(k, v.toJson())),
+    if (objective != null) 'objective': objective!.toJson(),
+    if (objectiveHistory.isNotEmpty)
+      'objectiveHistory': objectiveHistory.map((o) => o.toJson()).toList(),
+    if (studyPlan != null) 'studyPlan': studyPlan!.toJson(),
+    if (catalogOnlyPlan != null) 'catalogOnlyPlan': catalogOnlyPlan,
+    if (previousStudyPlan != null)
+      'previousStudyPlan': previousStudyPlan!.toJson(),
+    if (diagnostic != null) 'diagnostic': diagnostic!.toJson(),
+    if (tournaments.isNotEmpty)
+      'tournaments': tournaments.map((t) => t.toJson()).toList(),
+    if (tournamentDraft != null) 'tournamentDraft': tournamentDraft!.toJson(),
+    if (studiedDates.isNotEmpty) 'studiedDates': studiedDates,
+    if (missedDayNoticeOn != null) 'missedDayNoticeOn': missedDayNoticeOn,
+    if (missedDayMinutes != null) 'missedDayMinutes': missedDayMinutes,
+    if (tournamentPushFor != null) 'tournamentPushFor': tournamentPushFor,
+  };
+  factory TrainingState.fromJson(Map<String, dynamic> j) {
+    if (j['version'] != 1) {
+      throw const FormatException('Unsupported training version');
+    }
+    return TrainingState(
+      course: TrainingCourse.values.byName(j['course'] as String),
+      installSeed: j['installSeed'] as String,
+      plan: TrainingPlan.fromJson(Map<String, dynamic>.from(j['plan'] as Map)),
+      onboardingDone: j['onboardingDone'] as bool,
+      tourSeen: j['tourSeen'] as bool,
+      tab:
+          CourseGuideTab.values.asNameMap()[switch (j['tab'] as String) {
+            // Saves from before the Guide tab called the statistics tab "progress".
+            'progress' => 'stats',
+            final name => name,
+          }] ??
+          CourseGuideTab.lesson,
+      openingProfile: j['openingProfile'] as String? ?? 'solido',
+      openingProfileStartPart: j['openingProfileStartPart'] as String? ?? '',
+      day: j['day'] == null
+          ? null
+          : DayGoals.fromJson(Map<String, dynamic>.from(j['day'] as Map)),
+      lastLessonDate: j['lastLessonDate'] as String?,
+      analyticsReminderAt: DateTime.tryParse(
+        j['analyticsReminderAt'] as String? ?? '',
+      ),
+      analyticsReminderShownAt: DateTime.tryParse(
+        j['analyticsReminderShownAt'] as String? ?? '',
+      ),
+      lastActivityAt: j['lastActivityAt'] == null
+          ? null
+          : DateTime.parse(j['lastActivityAt'] as String),
+      completedLessons: (j['completedLessons'] as Map).cast<String, String>(),
+      cycles: (j['cycles'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          ThemeCycle.fromJson(Map<String, dynamic>.from(v as Map)),
+        ),
+      ),
+      openings: (j['openings'] as Map).map(
+        (k, v) => MapEntry(
+          k as String,
+          OpeningTrack.fromJson(Map<String, dynamic>.from(v as Map)),
+        ),
+      ),
+      offDayCredits: (j['offDayCredits'] as List).cast<String>(),
+      deferredGoals: (j['deferredGoals'] as List? ?? const []).map(
+        (g) => TrainingGoal.fromJson(Map<String, dynamic>.from(g as Map)),
+      ),
+      analytics: TrainingAnalyticsState.fromJson(
+        Map<String, dynamic>.from(j['analytics'] as Map? ?? const {}),
+      ),
+      school: SchoolTrainingProgress.fromJson(
+        Map<String, dynamic>.from(j['school'] as Map? ?? const {}),
+      ),
+      bootstrapImports: (j['bootstrapImports'] as Map? ?? const {}).map(
+        (k, v) => MapEntry(
+          k as String,
+          TrainingBootstrapImport.fromJson(Map<String, dynamic>.from(v as Map)),
+        ),
+      ),
+      objective: TrainingObjective.tryFromJson(j['objective']),
+      objectiveHistory: [
+        for (final o in j['objectiveHistory'] as List? ?? const [])
+          ?TrainingObjective.tryFromJson(o),
+      ],
+      studyPlan: StudyPlan.tryFromJson(j['studyPlan']),
+      previousStudyPlan: StudyPlan.tryFromJson(j['previousStudyPlan']),
+      catalogOnlyPlan: j['catalogOnlyPlan'] is bool
+          ? j['catalogOnlyPlan'] as bool
+          : null,
+      diagnostic: TrainingDiagnostic.tryFromJson(j['diagnostic']),
+      tournaments: [
+        for (final t in j['tournaments'] as List? ?? const [])
+          ?TournamentRecord.tryFromJson(t),
+      ],
+      tournamentDraft: TournamentDraft.tryFromJson(j['tournamentDraft']),
+      studiedDates: (j['studiedDates'] as List? ?? const []).cast<String>(),
+      missedDayNoticeOn: j['missedDayNoticeOn'] as String?,
+      missedDayMinutes: j['missedDayMinutes'] as int?,
+      tournamentPushFor: j['tournamentPushFor'] as String?,
+    );
+  }
+}

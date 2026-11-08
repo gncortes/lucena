@@ -38,6 +38,12 @@ class FakeOpponentRepository implements OpponentRepository {
   /// O próximo pedido falha, como um motor que travou.
   bool failNext = false;
 
+  /// Quantos pedidos seguidos ainda falham (um motor que não volta).
+  int failTimes = 0;
+
+  /// O próximo pedido volta sem lance (`null`), como um motor sem resposta.
+  bool answerNullNext = false;
+
   void hold() => _gate ??= Completer<void>();
 
   void release() {
@@ -65,6 +71,14 @@ class FakeOpponentRepository implements OpponentRepository {
     if (failNext) {
       failNext = false;
       throw StateError('o motor não respondeu');
+    }
+    if (failTimes > 0) {
+      failTimes--;
+      throw StateError('o motor não respondeu');
+    }
+    if (answerNullNext) {
+      answerNullNext = false;
+      return null;
     }
     now?.advance(thinkTime);
     return bestOf(position);

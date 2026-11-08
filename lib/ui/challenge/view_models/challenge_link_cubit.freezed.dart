@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChallengeLinkState {
 
- ChallengeLink get link;/// O nível do Maia que vale: o do link ou, sem ele, o do rating de quem
+ LoadFailure? get failure; ChallengeLink get link;/// O nível do Maia que vale: o do link ou, sem ele, o do rating de quem
 /// abriu.
  int get level; List<Character> get characters; bool get ready;
 /// Create a copy of ChallengeLinkState
@@ -29,20 +29,20 @@ $ChallengeLinkStateCopyWith<ChallengeLinkState> get copyWith => _$ChallengeLinkS
 @override
 bool operator ==(Object other) {
   final _this = this as ChallengeLinkState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChallengeLinkState&&(identical(other.link, _this.link) || other.link == _this.link)&&(identical(other.level, _this.level) || other.level == _this.level)&&const DeepCollectionEquality().equals(other.characters, _this.characters)&&(identical(other.ready, _this.ready) || other.ready == _this.ready));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChallengeLinkState&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.link, _this.link) || other.link == _this.link)&&(identical(other.level, _this.level) || other.level == _this.level)&&const DeepCollectionEquality().equals(other.characters, _this.characters)&&(identical(other.ready, _this.ready) || other.ready == _this.ready));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ChallengeLinkState;
-  return Object.hash(runtimeType,_this.link,_this.level,const DeepCollectionEquality().hash(_this.characters),_this.ready);
+  return Object.hash(runtimeType,_this.failure,_this.link,_this.level,const DeepCollectionEquality().hash(_this.characters),_this.ready);
 }
 
 @override
 String toString() {
   final _this = this as ChallengeLinkState;
-  return 'ChallengeLinkState(link: ${_this.link}, level: ${_this.level}, characters: ${_this.characters}, ready: ${_this.ready})';
+  return 'ChallengeLinkState(failure: ${_this.failure}, link: ${_this.link}, level: ${_this.level}, characters: ${_this.characters}, ready: ${_this.ready})';
 }
 
 
@@ -53,7 +53,7 @@ abstract mixin class $ChallengeLinkStateCopyWith<$Res>  {
   factory $ChallengeLinkStateCopyWith(ChallengeLinkState value, $Res Function(ChallengeLinkState) _then) = _$ChallengeLinkStateCopyWithImpl;
 @useResult
 $Res call({
- ChallengeLink link, int level, List<Character> characters, bool ready
+ LoadFailure? failure, ChallengeLink link, int level, List<Character> characters, bool ready
 });
 
 
@@ -70,9 +70,10 @@ class _$ChallengeLinkStateCopyWithImpl<$Res>
 
 /// Create a copy of ChallengeLinkState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? link = null,Object? level = null,Object? characters = null,Object? ready = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? failure = freezed,Object? link = null,Object? level = null,Object? characters = null,Object? ready = null,}) {
   return _then(ChallengeLinkState(
-link: null == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
+failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,link: null == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
 as ChallengeLink,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as int,characters: null == characters ? _self.characters : characters // ignore: cast_nullable_to_non_nullable
 as List<Character>,ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable
@@ -170,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ChallengeLink link,  int level,  List<Character> characters,  bool ready)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LoadFailure? failure,  ChallengeLink link,  int level,  List<Character> characters,  bool ready)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChallengeLinkState() when $default != null:
-return $default(_that.link,_that.level,_that.characters,_that.ready);case _:
+return $default(_that.failure,_that.link,_that.level,_that.characters,_that.ready);case _:
   return orElse();
 
 }
@@ -191,10 +192,10 @@ return $default(_that.link,_that.level,_that.characters,_that.ready);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ChallengeLink link,  int level,  List<Character> characters,  bool ready)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LoadFailure? failure,  ChallengeLink link,  int level,  List<Character> characters,  bool ready)  $default,) {final _that = this;
 switch (_that) {
 case _ChallengeLinkState():
-return $default(_that.link,_that.level,_that.characters,_that.ready);case _:
+return $default(_that.failure,_that.link,_that.level,_that.characters,_that.ready);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +212,10 @@ return $default(_that.link,_that.level,_that.characters,_that.ready);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ChallengeLink link,  int level,  List<Character> characters,  bool ready)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LoadFailure? failure,  ChallengeLink link,  int level,  List<Character> characters,  bool ready)?  $default,) {final _that = this;
 switch (_that) {
 case _ChallengeLinkState() when $default != null:
-return $default(_that.link,_that.level,_that.characters,_that.ready);case _:
+return $default(_that.failure,_that.link,_that.level,_that.characters,_that.ready);case _:
   return null;
 
 }
@@ -226,9 +227,10 @@ return $default(_that.link,_that.level,_that.characters,_that.ready);case _:
 
 
 class _ChallengeLinkState extends ChallengeLinkState {
-  const _ChallengeLinkState({required this.link, required this.level,  List<Character> characters = const <Character>[], this.ready = false}): _characters = characters,super._();
+  const _ChallengeLinkState({this.failure, required this.link, required this.level,  List<Character> characters = const <Character>[], this.ready = false}): _characters = characters,super._();
   
 
+@override final  LoadFailure? failure;
 @override final  ChallengeLink link;
 /// O nível do Maia que vale: o do link ou, sem ele, o do rating de quem
 /// abriu.
@@ -252,18 +254,18 @@ _$ChallengeLinkStateCopyWith<_ChallengeLinkState> get copyWith => __$ChallengeLi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChallengeLinkState&&(identical(other.link, link) || other.link == link)&&(identical(other.level, level) || other.level == level)&&const DeepCollectionEquality().equals(other.characters, _characters)&&(identical(other.ready, ready) || other.ready == ready));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChallengeLinkState&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.link, link) || other.link == link)&&(identical(other.level, level) || other.level == level)&&const DeepCollectionEquality().equals(other.characters, _characters)&&(identical(other.ready, ready) || other.ready == ready));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,link,level,const DeepCollectionEquality().hash(_characters),ready);
+    return Object.hash(runtimeType,failure,link,level,const DeepCollectionEquality().hash(_characters),ready);
 }
 
 @override
 String toString() {
-    return 'ChallengeLinkState(link: $link, level: $level, characters: $characters, ready: $ready)';
+    return 'ChallengeLinkState(failure: $failure, link: $link, level: $level, characters: $characters, ready: $ready)';
 }
 
 
@@ -274,7 +276,7 @@ abstract mixin class _$ChallengeLinkStateCopyWith<$Res> implements $ChallengeLin
   factory _$ChallengeLinkStateCopyWith(_ChallengeLinkState value, $Res Function(_ChallengeLinkState) _then) = __$ChallengeLinkStateCopyWithImpl;
 @override @useResult
 $Res call({
- ChallengeLink link, int level, List<Character> characters, bool ready
+ LoadFailure? failure, ChallengeLink link, int level, List<Character> characters, bool ready
 });
 
 
@@ -291,9 +293,10 @@ class __$ChallengeLinkStateCopyWithImpl<$Res>
 
 /// Create a copy of ChallengeLinkState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? link = null,Object? level = null,Object? characters = null,Object? ready = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? failure = freezed,Object? link = null,Object? level = null,Object? characters = null,Object? ready = null,}) {
   return _then(_ChallengeLinkState(
-link: null == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
+failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,link: null == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
 as ChallengeLink,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as int,characters: null == characters ? _self._characters : characters // ignore: cast_nullable_to_non_nullable
 as List<Character>,ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable

@@ -4,11 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/core/keys/profile_keys.dart';
-import 'package:lucena/ui/core/keys/settings_keys.dart';
+import 'package:lucena/ui/core/keys/my_progress_keys.dart';
 import 'package:patrol/patrol.dart';
 
-import 'home_robot.dart';
 import 'conclusion_robot.dart';
 import 'variant.dart';
 
@@ -42,9 +40,14 @@ class ProgressRobot {
   }
 
   Future<void> _openRating() async {
-    await $(HomeKeys.settingsButton).tap();
-    await $(SettingsKeys.profileTile).tap();
-    await $(ProfileKeys.ratingCard).scrollTo().tap();
+    // O histórico do rating abre pelo cartão do jogador na Home (o Perfil
+    // não tem mais o botão, quadro PropV1PerfilSemConta).
+    if (find.byKey(HomeKeys.playerCard).hitTestable().evaluate().isEmpty) {
+      await $(HomeKeys.playerCard).scrollTo(scrollDirection: AxisDirection.up);
+    }
+    await $(HomeKeys.playerCard).tap();
+    // H-CON-03: a pílula abre "Seu progresso"; o Histórico leva ao rating.
+    await $(MyProgressKeys.history).tap();
     await $(RatingKeys.value).waitUntilVisible();
   }
 
@@ -121,6 +124,7 @@ class ProgressRobot {
   /// Os detalhes do rating, a partir do cartão do jogador na tela inicial.
   Future<void> openRatingDetails() async {
     await $(HomeKeys.playerCard).scrollTo().tap();
+    await $(MyProgressKeys.history).tap();
     await $(RatingKeys.screen).waitUntilVisible();
     await $.pumpAndSettle();
   }
@@ -146,13 +150,23 @@ class ProgressRobot {
     expect(find.byKey(RatingKeys.chart), findsNothing);
   }
 
+  /// Volta dos detalhes do rating até a tela inicial (eles abrem por Seu
+  /// progresso, uma tela no meio).
   Future<void> closeRatingDetails() async {
-    await $(BackButton).tap();
-    await $.pumpAndSettle();
+    for (var i = 0; i < 4; i++) {
+      if (find.byKey(HomeKeys.screen).hitTestable().evaluate().isNotEmpty) {
+        return;
+      }
+      await $(BackButton).tap();
+      await $.pumpAndSettle();
+    }
   }
 
   Future<void> openAchievements() async {
-    await openFromAllModes($, 'achievements');
+    // T85: as conquistas saíram de "Todos os modos"; ficam em "Seu progresso"
+    // (cartão do jogador na tela inicial), no "Ver todas" das medalhas.
+    await $(HomeKeys.playerCard).scrollTo().tap();
+    await $(MyProgressKeys.achievementsAll).scrollTo().tap();
     await $(AchievementsKeys.screen).waitUntilVisible();
   }
 

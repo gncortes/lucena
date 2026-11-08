@@ -4,18 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/use_cases/featured_rules.dart';
+import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/staggered_entrance.dart';
+import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/load_error.dart';
 import '../../featured/widgets/featured_card.dart';
 import '../../streak/widgets/streak_lost_sheet.dart';
 import '../view_models/home_cubit.dart';
@@ -37,9 +46,9 @@ class _HomeScreenState extends State<HomeScreen>
     duration: AppMotion.entrance,
   );
 
-  // Entrada em sequência: o nome do app primeiro, depois o painel.
+  // O nome do app entra primeiro; o painel entra em ordem, de cima para
+  // baixo (`ListaEmOrdem`, H-ANI-17).
   late final _title = _stage(0, 0.6);
-  late final _actions = _stage(0.3, 1);
 
   CurvedAnimation _stage(double begin, double end) {
     return CurvedAnimation(
@@ -62,7 +71,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _title.dispose();
-    _actions.dispose();
     _entrance.dispose();
     super.dispose();
   }
@@ -74,45 +82,77 @@ class _HomeScreenState extends State<HomeScreen>
       // Primeira abertura: o tour antes de tudo (ou a tela em que a pessoa
       // parou). Com outra tela por cima (o desafio de um link), o tour
       // espera: "Conhecer o app" volta aqui.
-      listenWhen: (previous, current) =>
-          current.ready && current.tourPending && !previous.tourPending,
+      // A cada carga pronta: se o tour ficou esperando (outra tela por cima),
+      // ele abre quando o Início volta a ser a tela de cima.
+      listenWhen: (previous, current) => current.ready && current.tourPending,
       listener: (context, state) {
         if (ModalRoute.of(context)?.isCurrent ?? true) {
           context.go(switch (state.stage) {
             OnboardingStage.tour => Routes.tour,
             OnboardingStage.goal => Routes.goal,
-            OnboardingStage.level => Routes.level,
           });
         }
       },
       child: BlocListener<HomeCubit, HomeState>(
-        // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
+        // A oferta do Pilares por cima do Início (H-INI-14), uma vez por
+        // abertura, quando o Início é a tela de cima.
         listenWhen: (previous, current) =>
-            current.streak.lost > 0 && previous.streak.lost == 0,
+            current.ready && current.offerOpen && !current.tourPending,
         listener: (context, state) {
-          final cubit = context.read<HomeCubit>();
-          var played = false;
-          unawaited(
-            showStreakLostSheet(
-              context,
-              streak: state.streak,
-              onPlay: () {
-                played = true;
-                unawaited(context.push(Routes.daily));
-              },
-            ).then((_) => cubit.lostAnswered(state.streak, played: played)),
-          );
-          unawaited(cubit.lostShown());
+          if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
+          unawaited(context.read<HomeCubit>().offerOpened());
+          unawaited(context.push(D2Paths.pilaresBeforeHome));
         },
-        child: _scaffold(context, theme),
+        child: BlocListener<HomeCubit, HomeState>(
+          // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
+          // Tour e oferta primeiro: a folha só sai quando é a vez dela (uma por
+          // abertura).
+          listenWhen: (previous, current) =>
+              current.lostSheetTurn &&
+              (previous.streak.lost == 0 ||
+                  previous.tourPending ||
+                  previous.offerPending),
+          listener: (context, state) {
+            final cubit = context.read<HomeCubit>();
+            var played = false;
+            unawaited(
+              showStreakLostSheet(
+                context,
+                streak: state.streak,
+                onPlay: () {
+                  played = true;
+                  unawaited(context.push(Routes.daily));
+                },
+              ).then((_) => cubit.lostAnswered(state.streak, played: played)),
+            );
+            unawaited(cubit.lostShown());
+          },
+          child: BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, state) => state.failed && !state.ready
+                // O Início é a raiz: o erro não tem "Voltar".
+                ? KeyedSubtree(
+                    key: HomeKeys.error,
+                    child: LoadErrorScreen(
+                      kind: LoadErrorKind.generic,
+                      onAction: () => context.read<HomeCubit>().load(
+                        Localizations.localeOf(context).languageCode,
+                      ),
+                    ),
+                  )
+                : _scaffold(context, theme),
+          ),
+        ),
       ),
     );
   }
 
   Widget _scaffold(BuildContext context, ThemeData theme) {
-    return Scaffold(
-      key: HomeKeys.screen,
-      body: SafeArea(child: _content(context, theme)),
+    return EntradaDaTela(
+      id: homeEntranceId,
+      child: Scaffold(
+        key: HomeKeys.screen,
+        body: SafeArea(child: _content(context, theme)),
+      ),
     );
   }
 
@@ -142,6 +182,8 @@ class _HomeScreenState extends State<HomeScreen>
                           key: HomeKeys.title,
                           maxLines: 1,
                           style: theme.textTheme.titleLarge?.copyWith(
+                            fontSize: 26,
+                            height: 32 / 26,
                             fontWeight: AppWeight.heavy,
                           ),
                         ),
@@ -149,12 +191,16 @@ class _HomeScreenState extends State<HomeScreen>
                       BlocBuilder<HomeCubit, HomeState>(
                         builder: (context, state) => state.ready
                             ? PlayerCard(state: state)
-                            : const SizedBox.shrink(),
+                            : const SkeletonBlock(
+                                width: 96,
+                                height: 32,
+                                radius: AppShape.large,
+                              ),
                       ),
                       IconButton(
                         key: HomeKeys.settingsButton,
                         icon: const Icon(
-                          Icons.settings_outlined,
+                          CanvasSymbols.settings,
                           size: AppIconSize.standard,
                         ),
                         tooltip: l10n.settingsTitle,
@@ -167,41 +213,21 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             Expanded(
               child: BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  if (!state.ready) return const SizedBox.shrink();
-                  return ListView(
+                // Primeira carga: o esqueleto brilha e se dissolve no
+                // conteúdo (H-ANI-07).
+                builder: (context, state) => ShimmerConteudo(
+                  carregando: !state.ready,
+                  esqueleto: const _HomeSkeleton(),
+                  child: ListView(
                     padding: scrollPadding(
                       context,
                       left: AppSpacing.lg,
                       top: AppSpacing.sm,
                       right: AppSpacing.lg,
                     ),
-                    children: [
-                      _Entrance(
-                        animation: _actions,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (state.unlockedBlind) ...[
-                              const _UnlockedCard(),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
-                            if (state.hero != null) ...[
-                              HeroCard(state: state),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
-                            if (state.showsFeatured &&
-                                state.featured != null) ...[
-                              _featured(context, state.featured!),
-                              const SizedBox(height: AppSpacing.xl),
-                            ],
-                            _shortcuts(context, state),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                    children: [ListaEmOrdem(itens: _sections(context, state))],
+                  ),
+                ),
               ),
             ),
           ],
@@ -209,6 +235,30 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
   }
+
+  // As partes da rolagem, na ordem em que entram: o cartão, o destaque, o
+  // título dos atalhos e uma linha da grade por vez.
+  List<Widget> _sections(BuildContext context, HomeState state) {
+    Widget gap(Widget child, double bottom) => Padding(
+      padding: EdgeInsets.only(bottom: bottom),
+      child: child,
+    );
+    return [
+      if (state.hero != null)
+        gap(
+          // Aprender a jogar: o cartão do objetivo (a aula da Escola, ou a Jornada
+          // enquanto a Escola não está no app) entra com pop (S6 do T85).
+          HeroCard(state: state, pop: state.goal == GoalPreference.learn),
+          AppSpacing.xl,
+        ),
+      if (state.showsFeatured && state.featured != null)
+        gap(_featured(context, state.featured!), AppSpacing.xl),
+      ..._shortcuts(context, state),
+    ];
+  }
+
+  /// O quadro do canvas da entrada do Início (H-ANI-01: uma vez por sessão).
+  static const homeEntranceId = 'PropV2Home';
 
   /// A altura da barra de cima (canvas `PropV2UxHome`).
   static const _topBar = 64.0;
@@ -227,127 +277,97 @@ class _HomeScreenState extends State<HomeScreen>
           seeMoreKey: FeaturedKeys.homeSeeAll,
           onSeeMore: () => context.go(Routes.featured),
         ),
-        FeaturedCard(
-          key: FeaturedKeys.homeCard,
-          item: item,
-          compact: true,
-          // Por cima da tela inicial: voltar cai nela, não na lista.
-          onTap: () => context.push(Routes.featuredEndgame(item.id)),
+        // H-ANI-20: o destaque afunda no toque.
+        CartaoPressionavel(
+          child: FeaturedCard(
+            key: FeaturedKeys.homeCard,
+            item: item,
+            compact: true,
+            // Por cima da tela inicial: voltar cai nela, não na lista.
+            onTap: () => context.push(Routes.featuredEndgame(item.id)),
+          ),
         ),
       ],
     );
   }
 
   // "Atalhos": todos os caminhos marcados numa grade 2×N, todos da mesma
-  // altura; "Ver mais" abre Todos os modos.
-  Widget _shortcuts(BuildContext context, HomeState state) {
+  // altura; "Ver mais" abre Todos os modos. Cada linha é uma parte da lista.
+  List<Widget> _shortcuts(BuildContext context, HomeState state) {
     final shortcuts = state.shortcuts;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.md,
-      children: [
-        HomeSectionHeader(
+    return [
+      Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.md),
+        child: HomeSectionHeader(
           title: context.l10n.homeShortcutsTitle,
           titleKey: HomeKeys.shortcutsTitle,
           seeMoreKey: HomeKeys.shortcutsSeeMore,
           onSeeMore: () => context.go(Routes.allModes),
         ),
-        for (var row = 0; row < shortcuts.length; row += 2)
-          Row(
+      ),
+      for (var row = 0; row < shortcuts.length; row += 2)
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+          child: Row(
             spacing: AppSpacing.md,
             children: [
               for (var column = row; column < row + 2; column++)
                 Expanded(
                   child: column < shortcuts.length
-                      ? StaggeredEntrance(
-                          index: column,
-                          child: ModeTile(shortcut: shortcuts[column]),
+                      ? ModeTile(
+                          shortcut: shortcuts[column],
+                          hasPlan: state.training != null,
                         )
                       : const SizedBox.shrink(),
                 ),
             ],
           ),
-      ],
-    );
+        ),
+    ];
   }
 }
 
-/// O modo novo destravado na Jornada (às cegas): entra crescendo, uma vez.
-class _UnlockedCard extends StatelessWidget {
-  const _UnlockedCard();
+/// O esqueleto do primeiro carregamento (canvas `PropV1InicioCarregando`): o
+/// cartão de cima, os títulos das duas seções, o destaque e os quatro
+/// atalhos. A rolagem fica parada.
+class _HomeSkeleton extends StatelessWidget {
+  const _HomeSkeleton();
+
+  static Widget _section() => const Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      SkeletonBlock(width: 140, height: 20, radius: 6),
+      SkeletonBlock(width: 64, height: 20, radius: 6),
+    ],
+  );
+
+  static Widget _tile() =>
+      const Expanded(child: SkeletonBlock(height: 144, radius: AppShape.large));
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final cubit = context.read<HomeCubit>();
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.85, end: 1),
-      duration: AppMotion.of(context).celebrate,
-      curve: AppMotion.bounce,
-      builder: (context, value, child) =>
-          Transform.scale(scale: value, child: child),
-      child: Card(
-        key: HomeKeys.unlockedCard,
-        color: colors.primaryContainer,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.md,
-            AppSpacing.sm,
-            AppSpacing.md,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.record_voice_over,
-                    color: colors.onPrimaryContainer,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Text(
-                      l10n.homeUnlockedBlindTitle,
-                      style: context.cardTitle?.copyWith(
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    key: HomeKeys.unlockedClose,
-                    icon: const Icon(Icons.close),
-                    tooltip: MaterialLocalizations.of(context)
-                        .closeButtonTooltip,
-                    onPressed: cubit.dismissUnlocked,
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-                child: Text(
-                  l10n.homeUnlockedBlindBody,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onPrimaryContainer,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              FilledButton.icon(
-                key: HomeKeys.unlockedAction,
-                icon: const Icon(Icons.grid_view_rounded),
-                label: Text(l10n.homeUnlockedBlindAction),
-                onPressed: () {
-                  unawaited(cubit.dismissUnlocked());
-                  context.go(Routes.catalog);
-                },
-              ),
-            ],
-          ),
-        ),
+    return ListView(
+      key: HomeKeys.loading,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
       ),
+      children: [
+        const SkeletonBlock(height: 148, radius: 24),
+        const SizedBox(height: AppSpacing.xl),
+        _section(),
+        const SizedBox(height: AppSpacing.md),
+        const SkeletonBlock(height: 72, radius: AppShape.large),
+        const SizedBox(height: AppSpacing.xl),
+        _section(),
+        const SizedBox(height: AppSpacing.md),
+        Row(spacing: AppSpacing.md, children: [_tile(), _tile()]),
+        const SizedBox(height: AppSpacing.md),
+        Row(spacing: AppSpacing.md, children: [_tile(), _tile()]),
+      ],
     );
   }
 }

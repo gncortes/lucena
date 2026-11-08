@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/update_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/busy_button.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/widgets/load_error.dart';
 import '../view_models/update_cubit.dart';
 import 'update_body.dart';
 
@@ -19,35 +22,58 @@ class UpdateRecommendedScreen extends StatelessWidget {
     final l10n = context.l10n;
     final cubit = context.read<UpdateCubit>();
     return BlocBuilder<UpdateCubit, UpdateState>(
-      builder: (context, state) => Scaffold(
-        key: UpdateKeys.recommendedScreen,
-        body: UpdateBody(
-          title: l10n.updateRecommendedTitle,
-          body: l10n.updateRecommendedBody,
-          actions: [
-            if (state.ready)
-              FilledButton(
-                key: UpdateKeys.restart,
-                onPressed: cubit.restart,
-                child: Text(l10n.updateReadyRestart),
-              )
-            else
-              FilledButton(
-                key: UpdateKeys.recommendedAction,
-                onPressed: state.downloading ? null : cubit.updateRecommended,
-                child: Text(l10n.updateRecommendedAction),
+      builder: (context, state) {
+        if (state.offline) {
+          return KeyedSubtree(
+            key: UpdateKeys.recommendedOfflineScreen,
+            child: EntradaDaTela(
+              id: 'PropV1AbEstAtualizarRecomendadaSemRede',
+              child: LoadErrorScreen(
+                kind: LoadErrorKind.offline,
+                message: l10n.updateOfflineMessage,
+                actionKey: UpdateKeys.recommendedRetry,
+                backKey: UpdateKeys.recommendedLater,
+                backLabel: l10n.updateRecommendedLater,
+                onAction: cubit.retry,
+                onBack: () {
+                  cubit.recommendedLater();
+                  _close(context);
+                },
               ),
-            TextButton(
-              key: UpdateKeys.recommendedLater,
-              onPressed: () {
-                cubit.recommendedLater();
-                _close(context);
-              },
-              child: Text(l10n.updateRecommendedLater),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+        return Scaffold(
+          key: UpdateKeys.recommendedScreen,
+          body: UpdateBody(
+            title: l10n.updateRecommendedTitle,
+            body: l10n.updateRecommendedBody,
+            actions: [
+              if (state.ready)
+                FilledButton(
+                  key: UpdateKeys.restart,
+                  onPressed: cubit.restart,
+                  child: Text(l10n.updateReadyRestart),
+                )
+              else
+                BusyButton(
+                  buttonKey: UpdateKeys.recommendedAction,
+                  busy: state.downloading,
+                  onPressed: cubit.updateRecommended,
+                  label: l10n.updateRecommendedAction,
+                ),
+              TextButton(
+                key: UpdateKeys.recommendedLater,
+                onPressed: () {
+                  cubit.recommendedLater();
+                  _close(context);
+                },
+                child: Text(l10n.updateRecommendedLater),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

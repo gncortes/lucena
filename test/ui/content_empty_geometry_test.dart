@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/core_keys.dart';
@@ -65,7 +66,7 @@ void main() {
           );
           await tester.pumpAndSettle();
           final group = tester.getRect(find.byKey(CoreKeys.emptyState));
-          final top = 56 + kToolbarHeight;
+          final top = 56 + AppBarHeight.standard;
           final bottom = size.height - 24;
           expect(group.center.dx, closeTo(size.width / 2, .5));
           expect(group.center.dy, closeTo((top + bottom) / 2, .5));

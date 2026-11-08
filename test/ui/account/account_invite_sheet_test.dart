@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_invite_sheet.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
@@ -58,12 +60,20 @@ void main() {
         matching: find.byType(ActionsFooter),
       );
       expect(tester.widget<ActionsFooter>(footer).margin, AppSpacing.xl);
-      // Só o benefício: nada de vender o "sem conta".
+      // H-CON-02 (PropV1PerfilConvite): o título com "salvar", o texto do
+      // quadro e as quatro ações.
+      expect(find.text('Quer salvar seu progresso?'), findsOneWidget);
       expect(
         find.text(
-          'Com uma conta, a partida, o rating e os cursos ficam salvos e você '
-          'recupera tudo em outro aparelho.',
+          'Seu progresso fica salvo e aparece em qualquer celular. O app '
+          'funciona sem conta, só neste celular.',
         ),
+        findsOneWidget,
+      );
+      expect(find.text('Criar conta com Google'), findsOneWidget);
+      expect(find.text('Criar conta com e-mail'), findsOneWidget);
+      expect(
+        find.descendant(of: sheet, matching: find.byKey(AccountKeys.toSignIn)),
         findsOneWidget,
       );
       final surface = tester.getRect(sheet);
@@ -83,6 +93,53 @@ void main() {
       'resposta': 'agora_nao',
       'momento': 'pos_vitoria',
     });
+  });
+
+  testWidgets('"Já tem conta? Entrar" fecha a folha e abre o Entrar', (
+    tester,
+  ) async {
+    final account = FakeAccountRepository();
+    final sync = SyncScheduler(account, FakeSyncRepository());
+    addTearDown(sync.dispose);
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<AccountRepository>.value(value: account),
+              RepositoryProvider<SyncScheduler>.value(value: sync),
+            ],
+            child: Builder(
+              builder: (context) => Scaffold(
+                body: TextButton(
+                  key: AccountKeys.later,
+                  onPressed: () => showAccountInviteSheet(context),
+                  child: const Icon(Icons.account_circle_outlined),
+                ),
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: Routes.accountEmail,
+          builder: (_, state) => Scaffold(body: Text('rota ${state.uri}')),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      TestApp(
+        router: router,
+        locale: const Locale('pt'),
+        child: const SizedBox(),
+      ),
+    );
+    await tester.tap(find.byKey(AccountKeys.later));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(AccountKeys.toSignIn));
+    await tester.pumpAndSettle();
+    expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+    expect(find.text('rota /conta/email?from=game&entrar=1'), findsOneWidget);
   });
 
   testWidgets('depois do Lichess: o mesmo convite, com o texto do vínculo', (

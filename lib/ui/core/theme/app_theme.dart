@@ -4,6 +4,7 @@ import '../../../domain/models/app_accent.dart';
 import 'app_button.dart';
 import 'app_colors.dart';
 import 'app_shape.dart';
+import 'app_bar_height.dart';
 import 'app_sheet.dart';
 import 'app_spacing.dart';
 import 'app_tokens.dart';
@@ -120,7 +121,11 @@ abstract final class AppTheme {
     Brightness.light,
     seed: palette.seed,
     background: palette.background,
-    sheet: _white,
+    // Folha e diálogo na cor do fundo da tela; cartão #FAFBF9 com contorno
+    // (T85-D0, superfícies sem branco).
+    sheet: palette.background,
+    card: AppColors.cardSurface,
+    cardOutline: AppColors.cardOutline,
     adjust: (scheme) => scheme.copyWith(
       primary: palette.primary,
       primaryContainer: palette.primaryContainer,
@@ -128,10 +133,10 @@ abstract final class AppTheme {
       // O gerado no rosa e no laranja sai saturado demais atrás do texto.
       secondaryContainer: palette.secondaryContainer,
       onSecondaryContainer: palette.onSecondaryContainer,
-      // Fundos do canvas: `surface` na cor do fundo e painéis/cartões brancos,
-      // sem o lilás que a semente gera.
+      // Fundos do canvas: `surface` na cor do fundo e painéis/cartões em
+      // #FAFBF9, nunca brancos, sem o lilás que a semente gera.
       surface: palette.background,
-      surfaceContainerLow: _white,
+      surfaceContainerLow: AppColors.cardSurface,
       // O terciário é o dourado do canvas (D26), igual em toda cor do app.
       tertiary: _tertiary,
       tertiaryContainer: _tertiaryContainer,
@@ -190,6 +195,8 @@ abstract final class AppTheme {
     required Color seed,
     required Color background,
     required Color sheet,
+    Color? card,
+    Color? cardOutline,
     ColorScheme Function(ColorScheme scheme)? adjust,
   }) {
     final scheme = ColorScheme.fromSeed(
@@ -205,7 +212,9 @@ abstract final class AppTheme {
       colorScheme: colors,
       scaffoldBackgroundColor: background,
       // A barra superior tem o mesmo fundo da tela, sem mudar de cor ao rolar.
+      // A altura do Material 3 (canvas 23fd0701): 64 em todas as telas.
       appBarTheme: AppBarTheme(
+        toolbarHeight: AppBarHeight.standard,
         backgroundColor: background,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
@@ -219,15 +228,23 @@ abstract final class AppTheme {
         modalBarrierColor: AppSheet.scrim,
         dragHandleSize: AppSheet.handleSize,
       ),
-      // Cartão sem sombra, com o raio grande dos tokens (D24): branco no
-      // claro, um degrau acima do fundo no escuro.
+      // Cartão sem sombra, com o raio grande dos tokens (D24): #FAFBF9 com
+      // contorno no claro, um degrau acima do fundo no escuro.
       cardTheme: CardThemeData(
         elevation: 0,
-        color: colors.surfaceContainerLow,
+        color: card ?? colors.surfaceContainerLow,
         margin: EdgeInsets.zero,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(AppShape.large)),
+        shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(AppShape.large)),
+          side: cardOutline == null
+              ? BorderSide.none
+              : BorderSide(color: cardOutline),
         ),
+      ),
+      // O diálogo segue a folha: o fundo da tela.
+      dialogTheme: DialogThemeData(
+        backgroundColor: sheet,
+        surfaceTintColor: Colors.transparent,
       ),
       filledButtonTheme: const FilledButtonThemeData(
         style: ButtonStyle(minimumSize: WidgetStatePropertyAll(buttonSize)),

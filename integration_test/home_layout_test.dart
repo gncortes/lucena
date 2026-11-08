@@ -7,7 +7,6 @@ import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/home_layout_keys.dart';
-import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -32,7 +31,7 @@ void main() {
     await tourAs($, RatingLevel.master);
     await $(HomeKeys.shortcutsTitle).waitUntilExists();
     final speedrun = $.tester.getTopLeft(find.byKey(HomeKeys.speedrunButton));
-    final endgames = $.tester.getTopLeft(find.byKey(HomeKeys.endgamesButton));
+    final endgames = $.tester.getTopLeft(find.byKey(HomeKeys.pillarsButton));
     expect(speedrun.dy, lessThan(endgames.dy));
     expect(find.byKey(HomeKeys.schoolButton), findsNothing);
     await openAllModes($);
@@ -49,15 +48,14 @@ void main() {
     expect(find.byKey(HomeKeys.speedrunButton), findsNothing);
   }, skip: !VisibleLessons.school);
 
-  // A tela inicial não tem mais "Personalizar" (T83): a escolha fica em
-  // Configurações.
+  // A escolha dos modos da tela inicial fica em "Todos os modos" (H-INI).
   patrolTest('personalizar, fechar o app e reabrir mantém a escolha', (
     $,
   ) async {
     final app = AppRobot($);
     Future<CheckboxListTile> speedrun() async {
-      await HomeRobot($).openSettings();
-      await $(SettingsKeys.homeLayoutTile).scrollTo().tap();
+      await openAllModes($);
+      await $(AllModesKeys.chooseHome).tap();
       await $(HomeLayoutKeys.check(HomePath.speedrun)).scrollTo();
       return $.tester.widget<CheckboxListTile>(
         find.byKey(HomeLayoutKeys.check(HomePath.speedrun)),

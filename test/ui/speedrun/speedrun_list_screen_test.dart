@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/clock_settings.dart';
 import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/pace/pace_ui.dart';
@@ -21,6 +22,8 @@ import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_list_screen.dart';
+import 'package:lucena/ui/speedrun/widgets/speedrun_screen.dart';
+import 'package:lucena/ui/core/widgets/load_error.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
@@ -31,6 +34,7 @@ import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../testing/test_app.dart';
+import '../core/motion/entrada_helpers.dart';
 
 /// A lista dos speedruns, com o ritmo escolhido no alto.
 void main() {
@@ -58,13 +62,14 @@ void main() {
     WidgetTester tester, {
     Locale locale = const Locale('en'),
     bool small = false,
+    bool carregar = true,
   }) async {
     tester.view.physicalSize = small
         ? const Size(360, 640)
         : const Size(1080, 4000);
     tester.view.devicePixelRatio = small ? 1 : 2.625;
     addTearDown(tester.view.reset);
-    await cubit.load();
+    if (carregar) await cubit.load();
     final settingsCubit = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -81,8 +86,39 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    // O esqueleto brilha em laço: sem a lista, um quadro só.
+    carregar ? await tester.pumpAndSettle() : await tester.pump();
   }
+
+  // H-ANI-07: o esqueleto se dissolve e a lista sobe no lugar.
+  testWidgets('primeira carga: o esqueleto se dissolve e a lista fica', (
+    tester,
+  ) async {
+    await pump(tester, carregar: false);
+    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsOneWidget);
+    await tester.runAsync(cubit.load);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 125));
+    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsOneWidget);
+    expect(find.byKey(MotionKeys.shimmerConteudo), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(MotionKeys.shimmerEsqueleto), findsNothing);
+    expect(find.byKey(SpeedrunKeys.pace), findsOneWidget);
+  });
+
+  testWidgets('primeira carga: as linhas entram em ordem, de cima para baixo', (
+    tester,
+  ) async {
+    await pump(tester, carregar: false);
+    await tester.runAsync(cubit.load);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final primeira = opacidade(tester, find.byKey(MotionKeys.itemDaLista(0)));
+    final terceira = opacidade(tester, find.byKey(MotionKeys.itemDaLista(2)));
+    expect(terceira, lessThan(primeira));
+    await tester.pump(const Duration(milliseconds: 1500));
+    expect(opacidade(tester, find.byKey(MotionKeys.itemDaLista(2))), 1);
+  });
 
   bool chipSelected(WidgetTester tester, String code) => tester
       .widget<ChoiceChip>(find.byKey(SpeedrunKeys.paceOption(code)))
@@ -245,6 +281,87 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(SpeedrunKeys.item('ending.queen@60+0')), findsOneWidget);
     expect(find.byKey(SpeedrunKeys.item('rung.1000@60+0')), findsOneWidget);
+  });
+
+  testWidgets('nível sem speedrun: mostra o aviso em vez de uma lista vazia', (
+    tester,
+  ) async {
+    await cubit.close();
+    cubit = SpeedrunCubit(
+      journey: FakeJourneyRepository(
+        speedruns: [
+          for (final speedrun in sampleSpeedruns)
+            if (speedrun.id.startsWith('ending.queen')) speedrun,
+        ],
+      ),
+      speedruns: FakeSpeedrunRepository(FakeProgressRepository()),
+      games: FakeOngoingGameRepository(),
+      now: FakeNow(DateTime.utc(2026, 10, 4, 12)),
+      settings: settings,
+      characters: FakeCharacterRepository(),
+      profile: FakeProfileRepository(
+        UserProfile(rating: RatingLevel.master.rating),
+      ),
+    );
+    await pump(tester, locale: const Locale('pt'));
+    expect(find.byKey(SpeedrunKeys.empty), findsOneWidget);
+    expect(find.text('Nenhum speedrun neste nível.'), findsOneWidget);
+    await tester.tap(find.byKey(SpeedrunKeys.categoryOption('beginner')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.empty), findsNothing);
+  });
+
+  testWidgets('Como funciona abre em tela cheia e o fechar volta à lista', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('pt'));
+    await tester.tap(find.byKey(SpeedrunKeys.help));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.helpScreen), findsOneWidget);
+    expect(find.text('Como funciona'), findsOneWidget);
+    await tester.tap(find.byKey(SpeedrunKeys.helpClose));
+    await tester.pumpAndSettle();
+    expect(find.byKey(SpeedrunKeys.helpScreen), findsNothing);
+    expect(find.byKey(SpeedrunKeys.listScreen), findsOneWidget);
+  });
+
+  testWidgets(
+    'Como funciona: as seções entram em cascata, de cima para baixo',
+    (tester) async {
+      await pump(tester, locale: const Locale('pt'));
+      await tester.tap(find.byKey(SpeedrunKeys.help));
+      await tester.pump();
+      await tester.pump();
+      expect(find.byKey(SpeedrunKeys.intro), findsOneWidget);
+      // Espera a primeira seção começar a aparecer (depois da transição).
+      var voltas = 0;
+      while (opacidadeAcima(tester, find.byKey(SpeedrunKeys.intro)) < 0.3 &&
+          voltas++ < 100) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      final primeira = opacidadeAcima(tester, find.byKey(SpeedrunKeys.intro));
+      final ritmo = opacidadeAcima(tester, find.byKey(SpeedrunKeys.paceHelp));
+      expect(primeira, greaterThanOrEqualTo(0.3));
+      expect(ritmo, lessThan(primeira));
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(opacidadeAcima(tester, find.byKey(SpeedrunKeys.intro)), 1);
+      expect(opacidadeAcima(tester, find.byKey(SpeedrunKeys.paceHelp)), 1);
+      await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets('detalhe sem speedrun escolhido: erro explícito, não corpo em '
+      'branco', (tester) async {
+    await cubit.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: BlocProvider.value(value: cubit, child: const SpeedrunScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(LoadErrorScreen), findsOneWidget);
+    expect(find.text('Conteúdo não encontrado'), findsOneWidget);
   });
 
   testWidgets('quem está começando vê o ritmo numa linha, que abre o '

@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
@@ -15,20 +19,15 @@ import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 
-/// Para onde a pergunta sai depois do "Continuar".
-enum GoalExit {
-  /// "Seu nível".
-  level,
-
-  /// "Aprender a jogar" pula o nível: a tela inicial (decisão 1a da E1.11).
-  home,
-  controls,
-}
+/// Para onde a pergunta sai depois do "Continuar": o primeiro passo do tour.
+enum GoalExit { tour }
 
 class GoalState {
+  final LoadFailure? failure;
   const GoalState({
     this.ready = false,
-    this.goal = GoalPreference.endgames,
+    this.failure,
+    this.goal = GoalPreference.train,
     this.exit,
     this.viktor,
   });
@@ -50,8 +49,8 @@ class GoalState {
   );
 }
 
-/// "O que você quer fazer?", entre o tour e "Seu nível": o objetivo vai para
-/// o perfil e decide o primeiro cartão da tela inicial.
+/// "O que você quer fazer?", a primeira tela (antes do tour): o objetivo vai
+/// para o perfil e decide o primeiro cartão da tela inicial.
 class GoalCubit extends Cubit<GoalState> {
   GoalCubit({
     required this._onboarding,
@@ -74,6 +73,16 @@ class GoalCubit extends Cubit<GoalState> {
   bool _finishing = false;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      debugPrint('goal load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(GoalState(failure: LoadFailure.generic));
+    }
+  }
+
+  Future<void> _load() async {
     final onboarding = await _onboarding.load();
     final profile = await _profile.load();
     final characters = await _characters.characters();
@@ -88,8 +97,8 @@ class GoalCubit extends Cubit<GoalState> {
         goal:
             fromLink &&
                 (profile.goal ?? GoalPreference.learn) == GoalPreference.learn
-            ? GoalPreference.endgames
-            : profile.goal ?? GoalPreference.endgames,
+            ? GoalPreference.train
+            : profile.goal ?? GoalPreference.train,
         viktor: viktor,
       ),
     );
@@ -106,44 +115,44 @@ class GoalCubit extends Cubit<GoalState> {
     emit(state.copyWith(goal: goal));
   }
 
-  /// Grava o objetivo. "Aprender a jogar" fecha a primeira abertura como
-  /// iniciante; os outros seguem para "Seu nível".
+  /// Grava o objetivo e abre o tour. "Aprender a jogar" também grava a faixa
+  /// de iniciante (o tour não pergunta o nível), mas só o fim do tour
+  /// conclui a primeira abertura. Erro ao gravar vira a tela de erro.
   Future<void> finish() async {
     if (!state.ready || state.exit != null || _finishing) return;
     _finishing = true;
     try {
       final goal = state.goal;
       final profile = await _profile.load();
-      unawaited(_counted(goal, before: profile.goal));
-      if (goal != GoalPreference.learn) {
-        await _profile.save(profile.copyWith(goal: goal));
-        if (!isClosed) emit(state.copyWith(exit: GoalExit.level));
-        return;
-      }
-      const rating = RatingLevel.beginner;
-      await _profile.save(profile.copyWith(goal: goal, rating: rating.rating));
-      await _home?.save(HomeSuggestion.of(rating, goal: goal));
-      await _home?.markNoticeSeen();
-      final onboarding = await _onboarding.load();
-      await _onboarding.save(
-        onboarding.copyWith(
-          done: true,
-          step: 0,
+      var onboarding = await _onboarding.load();
+      if (goal == GoalPreference.learn) {
+        const rating = RatingLevel.beginner;
+        await _profile.save(
+          profile.copyWith(goal: goal, rating: rating.rating),
+        );
+        await _home?.save(HomeSuggestion.of(rating, goal: goal));
+        await _home?.markNoticeSeen();
+        onboarding = onboarding.copyWith(
           startRung: '${MaiaLevels.atOrBelow(rating.rating)}',
           selectedRating: () => rating.rating,
           byHand: true,
-          inProgress: false,
+        );
+      } else {
+        await _profile.save(profile.copyWith(goal: goal));
+      }
+      await _onboarding.save(
+        onboarding.copyWith(
+          stage: OnboardingStage.tour,
+          step: 0,
+          inProgress: true,
         ),
       );
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            exit: onboarding.boardControlsDone
-                ? GoalExit.home
-                : GoalExit.controls,
-          ),
-        );
-      }
+      unawaited(_counted(goal, before: profile.goal));
+      if (!isClosed) emit(state.copyWith(exit: GoalExit.tour));
+    } on Object catch (error, stack) {
+      debugPrint('goal finish failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(GoalState(failure: LoadFailure.generic));
     } finally {
       _finishing = false;
     }
@@ -163,7 +172,9 @@ class GoalCubit extends Cubit<GoalState> {
   /// O `objetivo` do E1.03.
   static String goalCode(GoalPreference goal) => switch (goal) {
     GoalPreference.learn => 'aprender_jogar',
-    GoalPreference.endgames => 'aprender_finais',
+    GoalPreference.improve => 'melhorar_jogo',
     GoalPreference.train => 'treinar_finais',
+    GoalPreference.explore => 'explorar_posicoes',
+    GoalPreference.challenge => 'enfrentar_desafios',
   };
 }

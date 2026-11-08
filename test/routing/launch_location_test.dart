@@ -20,6 +20,28 @@ import '../../testing/fakes/fake_endgame_repositories.dart';
 /// (capítulo sem roteiro) cai no início da primeira parte, nunca numa tela
 /// antiga.
 void main() {
+  test('às cegas retoma sem substituir prioridades existentes da abertura', () {
+    expect(launchLocation(resumeBlind: true), Routes.blind);
+    expect(
+      launchLocation(resumeBlind: true, boardControlsOpen: true),
+      Routes.blind,
+    );
+    expect(
+      launchLocation(resumeBlind: true, resumeGame: true),
+      Routes.freeBoard,
+    );
+    expect(
+      launchLocation(resumeBlind: true, conclusion: 3),
+      Routes.conclusion(3),
+    );
+    expect(
+      launchLocation(
+        resumeBlind: true,
+        uri: Uri.https('playlucenachess.com', '/dia'),
+      ),
+      Routes.daily,
+    );
+  });
   test('familiarização aberta retoma seus controles', () {
     expect(launchLocation(boardControlsOpen: true), Routes.boardControls);
     expect(
@@ -33,7 +55,7 @@ void main() {
     for (final path in ['/dia', '/daily', '/dia/', '/daily/']) {
       expect(
         launchLocation(
-          uri: Uri.https('playlucena.com', path),
+          uri: Uri.https('playlucenachess.com', path),
           resumeGame: true,
           conclusion: 3,
         ),

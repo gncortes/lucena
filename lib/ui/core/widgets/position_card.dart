@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../motion/tabuleiro_hero.dart';
 import 'goal_style.dart';
 import 'position_board.dart';
 import '../theme/app_icon_size.dart';
@@ -13,7 +14,7 @@ class PositionCard extends StatelessWidget {
     required this.fen,
     required this.onTap,
     required this.children,
-    this.heroTag,
+    this.heroId,
     this.doneKey,
     this.doneLabel,
     super.key,
@@ -25,8 +26,9 @@ class PositionCard extends StatelessWidget {
   /// O que vai embaixo do tabuleiro, esticado na largura do cartão.
   final List<Widget> children;
 
-  /// Com a marca, o tabuleiro voa até o de mesma marca na tela seguinte.
-  final Object? heroTag;
+  /// Com o id (a FEN que a tela seguinte abre), o tabuleiro voa até o
+  /// [TabuleiroHero] de mesmo id (H-ANI-02).
+  final String? heroId;
 
   /// Com a chave e o texto, o cartão ganha o selo de feito (a chave é a do
   /// ícone, para os testes; o texto é o que o leitor de tela fala).
@@ -48,10 +50,9 @@ class PositionCard extends StatelessWidget {
               LayoutBuilder(
                 builder: (context, constraints) => Stack(
                   children: [
-                    PositionBoard(
-                      fen: fen,
-                      size: constraints.maxWidth,
-                      heroTag: heroTag,
+                    _comHero(
+                      heroId,
+                      PositionBoard(fen: fen, size: constraints.maxWidth),
                     ),
                     if (doneLabel case final label?)
                       PositionedDirectional(
@@ -83,3 +84,6 @@ class PositionCard extends StatelessWidget {
     );
   }
 }
+
+Widget _comHero(String? id, Widget board) =>
+    id == null ? board : TabuleiroHero(id: id, child: board);

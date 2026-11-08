@@ -19,17 +19,21 @@ inputs:
   key-password:
     description: Senha da chave (segredo ANDROID_KEY_PASSWORD).
     required: true
+  flavor:
+    description: Flavor do build, `dev` (QA, Firebase lucena-dev-gnc) ou `prod` (Play, Firebase lucena-2f4de).
+    required: true
   google-services-json:
     description: >
-      google-services.json do Firebase (segredo GOOGLE_SERVICES_JSON). Sem ele o APK sai
-      sem Firebase: sem conta, push nem perfil na nuvem (E1.02).
+      google-services.json do Firebase do flavor (segredo GOOGLE_SERVICES_JSON no prod,
+      GOOGLE_SERVICES_JSON_DEV no dev). Sem ele o APK sai sem Firebase: sem conta, push nem
+      perfil na nuvem (E1.02).
     required: false
     default: ''
 
 outputs:
   apk:
     description: Caminho do APK gerado.
-    value: build/app/outputs/flutter-apk/app-release.apk
+    value: build/app/outputs/flutter-apk/app-${{ inputs.flavor }}-release.apk
   version-name:
     description: versionName usado no build.
     value: ${{ steps.build.outputs.version-name }}
@@ -64,25 +68,30 @@ runs:
       shell: bash
       env:
         GOOGLE_SERVICES_JSON: ${{ inputs.google-services-json }}
+        FLAVOR: ${{ inputs.flavor }}
       run: |
         if [ -z "$GOOGLE_SERVICES_JSON" ]; then
           echo "::warning::Sem GOOGLE_SERVICES_JSON: o APK sai sem Firebase"
           exit 0
         fi
-        printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+        mkdir -p "android/app/src/$FLAVOR"
+        printf '%s' "$GOOGLE_SERVICES_JSON" > "android/app/src/$FLAVOR/google-services.json"
         # Confere o conteúdo sem imprimir chave: projeto, pacote e cliente OAuth do login com Google.
         python3 - <<'PY'
-        import json, sys
-        config = json.load(open('android/app/google-services.json'))
+        import json, os, sys
+        flavor = os.environ['FLAVOR']
+        config = json.load(open(f'android/app/src/{flavor}/google-services.json'))
         project = config['project_info']['project_id']
+        esperado, package = {'dev': ('lucena-dev-gnc', 'com.gncortes.lucena.dev'),
+                             'prod': ('lucena-2f4de', 'com.gncortes.lucena')}[flavor]
         clients = [c for c in config['client']
-                   if c['client_info']['android_client_info']['package_name'] == 'com.gncortes.lucena']
+                   if c['client_info']['android_client_info']['package_name'] == package]
         oauth = [o for c in clients for o in c.get('oauth_client', [])]
         android = sum(1 for o in oauth if o.get('client_type') == 1)
         web = sum(1 for o in oauth if o.get('client_type') == 3)
         print(f'Firebase: projeto {project}, app encontrado: {bool(clients)}, OAuth android {android}, web {web}')
-        if project != 'lucena-2f4de' or not clients or not android or not web:
-            sys.exit('::error::GOOGLE_SERVICES_JSON não é do lucena-2f4de ou está sem o OAuth do login com Google')
+        if project != esperado or not clients or not android or not web:
+            sys.exit('::error::google-services.json não é do projeto '+esperado+' ou está sem o OAuth do login com Google')
         PY
 
     # As senhas só existem no ambiente deste passo; o build.gradle.kts lê as variáveis.
@@ -91,6 +100,7 @@ runs:
       shell: bash
       env:
         TAG: ${{ inputs.tag }}
+        FLAVOR: ${{ inputs.flavor }}
         ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/assinatura/upload.jks
         ANDROID_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
         ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
@@ -98,24 +108,24 @@ runs:
       run: |
         version_name="${TAG#v}"
         version_code="$(git rev-list --count HEAD)"
-        flutter build apk --release --build-name="$version_name" --build-number="$version_code" --dart-define=APP_VERSION="$version_name"
+        flutter build apk --release --flavor "$FLAVOR" --build-name="$version_name" --build-number="$version_code" --dart-define=APP_VERSION="$version_name"
         echo "version-name=$version_name" >> "$GITHUB_OUTPUT"
         echo "version-code=$version_code" >> "$GITHUB_OUTPUT"
 
     - name: Conteúdo privado fora do APK
       shell: bash
-      run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/flutter-apk/app-release.apk
+      run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/flutter-apk/app-${{ inputs.flavor }}-release.apk
 
     - name: Apagar keystore
       if: always()
       shell: bash
-      run: rm -rf "$RUNNER_TEMP/assinatura" android/app/google-services.json
+      run: rm -rf "$RUNNER_TEMP/assinatura" android/app/src/dev/google-services.json android/app/src/prod/google-services.json
 
     - name: Conferir assinatura
       shell: bash
       run: |
         apksigner="$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)"
-        certs="$("$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-release.apk)"
+        certs="$("$apksigner" verify --print-certs build/app/outputs/flutter-apk/app-${{ inputs.flavor }}-release.apk)"
         if echo "$certs" | grep -q 'CN=Android Debug'; then
           echo "::error::O APK saiu assinado com a chave de debug"
           exit 1

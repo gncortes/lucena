@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -15,6 +18,7 @@ part 'challenge_link_cubit.freezed.dart';
 @freezed
 abstract class ChallengeLinkState with _$ChallengeLinkState {
   const factory ChallengeLinkState({
+    LoadFailure? failure,
     required ChallengeLink link,
 
     /// O nível do Maia que vale: o do link ou, sem ele, o do rating de quem
@@ -52,17 +56,26 @@ class ChallengeLinkCubit extends Cubit<ChallengeLinkState> {
   final RatingRepository _rating;
 
   Future<void> load() async {
-    final characters = await _characters.characters();
-    final profile = await _profile.load();
-    final history = await _rating.history();
-    final rating = history.isEmpty ? null : history.last.rating.rounded;
-    if (isClosed) return;
-    emit(
-      state.copyWith(
-        level: state.link.level ?? MaiaLevels.nearest(rating ?? profile.rating),
-        characters: characters,
-        ready: true,
-      ),
-    );
+    try {
+      final characters = await _characters.characters();
+      final profile = await _profile.load();
+      final history = await _rating.history();
+      final rating = history.isEmpty ? null : history.last.rating.rounded;
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          level:
+              state.link.level ?? MaiaLevels.nearest(rating ?? profile.rating),
+          characters: characters,
+          ready: true,
+          failure: null,
+        ),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(state.copyWith(failure: LoadFailure.of(error), ready: false));
+      }
+    }
   }
 }

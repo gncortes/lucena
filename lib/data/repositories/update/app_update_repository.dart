@@ -14,6 +14,9 @@ abstract class AppUpdateRepository {
 
   Future<bool> flexible();
 
+  /// Há internet para atualizar.
+  Future<bool> hasConnection();
+
   Future<void> completeFlexible();
 
   Future<void> openStore();
@@ -50,6 +53,9 @@ class PlayAppUpdateRepository implements AppUpdateRepository {
   Future<bool> flexible() => _service.flexible();
 
   @override
+  Future<bool> hasConnection() => _service.hasConnection();
+
+  @override
   Future<void> completeFlexible() => _service.completeFlexible();
 
   @override
@@ -80,6 +86,9 @@ class NoAppUpdateRepository implements AppUpdateRepository {
 
   @override
   Future<bool> flexible() async => false;
+
+  @override
+  Future<bool> hasConnection() async => true;
 
   @override
   Future<void> completeFlexible() async {}

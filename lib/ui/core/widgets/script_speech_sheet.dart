@@ -20,6 +20,7 @@ Future<void> showScriptSpeechSheet(
   required Character viktor,
   required String title,
   required List<String> texts,
+  Key? sheetKey,
   VoidCallback? onMainLine,
   VoidCallback? onShowAnswer,
   ValueChanged<String>? onSquareTap,
@@ -28,6 +29,7 @@ Future<void> showScriptSpeechSheet(
   Color? background,
   double horizontalPadding = 24,
   double headerHeight = 56,
+  bool canvasLayout = false,
 }) {
   SpeechSheetFade.open.value = true;
   return showScriptSheet(
@@ -35,6 +37,8 @@ Future<void> showScriptSpeechSheet(
     maxHeightFactor: 0.7,
     closeKey: LessonScriptKeys.speechSheetClose,
     color: background,
+    closeGap: canvasLayout ? 10 : null,
+    closeMargin: canvasLayout ? 14 : null,
     builder: (sheetContext) {
       VoidCallback? closeThen(VoidCallback? action) => action == null
           ? null
@@ -44,23 +48,27 @@ Future<void> showScriptSpeechSheet(
             };
       // A casa tocada fecha a folha (ela cobre o tabuleiro) e a tela a realça.
       final onSquare = onSquareTap;
-      return SpeechSheetFade.exempt(
-        child: ScriptSpeechSheet(
-          viktor: viktor,
-          title: title,
-          texts: texts,
-          onMainLine: closeThen(onMainLine),
-          onShowAnswer: closeThen(onShowAnswer),
-          onSquareTap: onSquare == null
-              ? null
-              : (square) {
-                  Navigator.of(sheetContext).pop();
-                  onSquare(square);
-                },
-          headerBuilder: headerBuilder,
-          action: action,
-          horizontalPadding: horizontalPadding,
-          headerHeight: headerHeight,
+      return KeyedSubtree(
+        key: sheetKey,
+        child: SpeechSheetFade.exempt(
+          child: ScriptSpeechSheet(
+            viktor: viktor,
+            title: title,
+            texts: texts,
+            onMainLine: closeThen(onMainLine),
+            onShowAnswer: closeThen(onShowAnswer),
+            onSquareTap: onSquare == null
+                ? null
+                : (square) {
+                    Navigator.of(sheetContext).pop();
+                    onSquare(square);
+                  },
+            headerBuilder: headerBuilder,
+            action: action,
+            horizontalPadding: horizontalPadding,
+            headerHeight: headerHeight,
+            canvasLayout: canvasLayout,
+          ),
         ),
       );
     },
@@ -80,6 +88,7 @@ class ScriptSpeechSheet extends StatelessWidget {
     this.action,
     this.horizontalPadding = 24,
     this.headerHeight = 56,
+    this.canvasLayout = false,
     super.key,
   });
 
@@ -100,6 +109,7 @@ class ScriptSpeechSheet extends StatelessWidget {
   /// A margem dos lados do cabeçalho e do texto (canvas `PropV2ExA7`: 16).
   final double horizontalPadding;
   final double headerHeight;
+  final bool canvasLayout;
 
   /// A folga embaixo do texto, acima da barra do sistema.
   static const bottomGap = 48.0;
@@ -125,29 +135,36 @@ class ScriptSpeechSheet extends StatelessWidget {
             height: headerHeight,
             child: headerBuilder != null
                 ? headerBuilder!(context)
-                : Row(
-                    children: [
-                      Hero(
-                        tag: scriptViktorHeroTag,
-                        child: CharacterAvatar(
-                          character: viktor,
-                          size: CharacterAvatar.lesson,
-                          radius: 6,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: colors.primary,
+                : Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      height: canvasLayout ? 44 : headerHeight,
+                      child: Row(
+                        children: [
+                          Hero(
+                            tag: scriptViktorHeroTag,
+                            child: CharacterAvatar(
+                              character: viktor,
+                              size: CharacterAvatar.lesson,
+                              radius: 6,
+                            ),
                           ),
-                        ),
+                          SizedBox(width: canvasLayout ? 12 : AppSpacing.md),
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: canvasLayout ? 0 : null,
+                                color: colors.primary,
+                              ),
+                            ),
+                          ),
+                          ?action,
+                        ],
                       ),
-                      ?action,
-                    ],
+                    ),
                   ),
           ),
         ),
@@ -157,13 +174,18 @@ class ScriptSpeechSheet extends StatelessWidget {
               horizontalPadding,
               AppSpacing.sm,
               horizontalPadding,
-              bottomGap + MediaQuery.viewPaddingOf(context).bottom,
+              bottomGap +
+                  (canvasLayout ? 0 : MediaQuery.viewPaddingOf(context).bottom),
             ),
             child: SpeechText(
               text: texts.join('\n\n'),
+              textHeightBehavior: canvasLayout
+                  ? const TextHeightBehavior(applyHeightToLastDescent: false)
+                  : null,
               style: theme.textTheme.bodyLarge!.copyWith(
                 fontSize: 15,
                 height: 1.5,
+                letterSpacing: canvasLayout ? 0 : null,
                 color: colors.onSurface,
               ),
               onMainLine: onMainLine,

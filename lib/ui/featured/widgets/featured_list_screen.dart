@@ -1,109 +1,142 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/featured.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_chip.dart';
-import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
+import '../../core/widgets/skeleton.dart';
 import '../view_models/featured_catalog_cubit.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'featured_card.dart';
-import 'featured_labels.dart';
 import 'featured_tournament_card.dart';
 
-/// Todos os finais em destaque, com filtro de país e de origem. O torneio em
-/// andamento fica no topo.
+/// Os finais em destaque (canvas `PropV1DesLista`): o sino de finais novos na
+/// app bar, o carrossel de torneios em andamento, "Finais recentes" (últimos
+/// 30 dias) e "Finais históricos". Sem filtros.
 class FeaturedListScreen extends StatelessWidget {
   const FeaturedListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
-      key: FeaturedKeys.listScreen,
-      appBar: LucenaAppBar(title: Text(l10n.featuredTitle)),
-      body: BlocBuilder<FeaturedCatalogCubit, FeaturedCatalogState>(
-        builder: (context, state) {
-          if (!state.ready) return const SizedBox.shrink();
-          if (state.isEmpty) {
-            return Center(
-              child: EmptyState(
-                messageKey: FeaturedKeys.listEmpty,
-                icon: Icons.flag_outlined,
-                message: l10n.featuredEmpty,
-              ),
-            );
-          }
-          return ListView(
-            padding: scrollPadding(context, left: 16, right: 16),
-            children: [
-              _Filters(state: state),
-              if (state.filteredOut)
-                EmptyState(
-                  style: EmptyStateStyle.filters,
-                  messageKey: FeaturedKeys.listFilteredOut,
-                  message: l10n.featuredEmptyFilters,
-                  actionLabel: l10n.featuredClearFilters,
-                  actionKey: FeaturedKeys.clearFilters,
-                  onAction: context.read<FeaturedCatalogCubit>().clearFilters,
-                ),
-              if (state.ongoing.isNotEmpty) ...[
-                SectionTitle(
-                  l10n.featuredOngoing,
-                  textKey: FeaturedKeys.ongoingTitle,
-                ),
-                for (final tournament in state.ongoing)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: FeaturedTournamentCard(
-                      tournament: tournament,
-                      onTap: () => _open(
-                        context,
-                        Routes.featuredTournament(tournament.id),
-                      ),
-                    ),
-                  ),
-              ],
-              if (state.items.isNotEmpty) ...[
-                SectionTitle(l10n.featuredRecent),
-                for (final item in state.items)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: FeaturedCard(
-                      item: item,
-                      onTap: () =>
-                          _open(context, Routes.featuredEndgame(item.id)),
-                    ),
-                  ),
-              ],
-            ],
+    return BlocConsumer<FeaturedCatalogCubit, FeaturedCatalogState>(
+      listenWhen: (before, now) => before.noticeCount != now.noticeCount,
+      listener: _showNotice,
+      builder: (context, state) {
+        if (state.failure case final failure?) {
+          return KeyedSubtree(
+            key: FeaturedKeys.listError,
+            child: LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(failure),
+              onAction: context.read<FeaturedCatalogCubit>().retryLoad,
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            ),
           );
-        },
+        }
+        // H-ANI-07: uma tela só; o esqueleto dissolve e a lista sobe.
+        return Scaffold(
+          appBar: LucenaAppBar(
+            title: Text(l10n.featuredTitle),
+            actions: [_Bell(state: state, enabled: state.ready)],
+          ),
+          body: ShimmerConteudo(
+            carregando: !state.ready,
+            esqueleto: const SafeArea(
+              child: SkeletonList(key: FeaturedKeys.listLoading),
+            ),
+            child: !state.ready
+                ? const SizedBox.shrink()
+                : KeyedSubtree(
+                    key: FeaturedKeys.listScreen,
+                    child: state.isEmpty
+                        ? Center(
+                            child: EmptyState(
+                              messageKey: FeaturedKeys.listEmpty,
+                              icon: Icons.emoji_events_outlined,
+                              message: l10n.featuredEmpty,
+                            ),
+                          )
+                        : _Sections(state: state),
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showNotice(BuildContext context, FeaturedCatalogState state) {
+    final l10n = context.l10n;
+    final notice = state.notice;
+    if (notice == null) return;
+    final cubit = context.read<FeaturedCatalogCubit>();
+    switch (notice) {
+      case FeaturedBellNotice.turnedOn:
+      case FeaturedBellNotice.turnedOff:
+        final on = notice == FeaturedBellNotice.turnedOn;
+        context.analytics.log(AnalyticsEvents.finalDestaqueAviso(ligado: on));
+        showLucenaSnackBar(
+          context,
+          on ? l10n.desafiosFeaturedBellOn : l10n.desafiosFeaturedBellOff,
+          icon: on
+              ? Icons.notifications_active_rounded
+              : Icons.notifications_off_outlined,
+          key: FeaturedKeys.bellNotice,
+        );
+      case FeaturedBellNotice.permissionDenied:
+        showLucenaSnackBar(
+          context,
+          l10n.desafiosFeaturedBellDenied,
+          icon: Icons.notifications_off_outlined,
+          key: FeaturedKeys.bellNotice,
+          action: SnackBarAction(
+            key: FeaturedKeys.bellSettings,
+            label: l10n.desafiosFeaturedBellSettings,
+            onPressed: cubit.openSystemSettings,
+          ),
+        );
+    }
+  }
+}
+
+/// O sino geral de finais novos.
+class _Bell extends StatelessWidget {
+  const _Bell({required this.state, this.enabled = true});
+
+  final FeaturedCatalogState state;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      key: FeaturedKeys.bell,
+      tooltip: context.l10n.desafiosFeaturedBellTooltip,
+      onPressed: enabled
+          ? context.read<FeaturedCatalogCubit>().toggleBell
+          : null,
+      icon: Icon(
+        state.bellOn
+            ? Icons.notifications_active_rounded
+            : Icons.notifications_outlined,
       ),
     );
   }
 }
 
-/// Abre a rota e, ao voltar, recarrega a lista: o final jogado vira "Jogado" e
-/// vai para o fim.
-Future<void> _open(BuildContext context, String route) async {
-  final cubit = context.read<FeaturedCatalogCubit>();
-  await context.push(route);
-  if (!cubit.isClosed) await cubit.load();
-}
-
-/// O país e a origem.
-class _Filters extends StatelessWidget {
-  const _Filters({required this.state});
+class _Sections extends StatelessWidget {
+  const _Sections({required this.state});
 
   final FeaturedCatalogState state;
 
@@ -111,88 +144,85 @@ class _Filters extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<FeaturedCatalogCubit>();
-    final filter = state.filter;
-    final origins = [
-      for (final origin in FeaturedOrigin.values)
-        if (state.catalog.finals.any((each) => each.origin == origin)) origin,
-    ];
-    final countries = [...state.countries]
-      ..sort(
-        (a, b) => FeaturedLabels.country(l10n, a).toLowerCase().compareTo(
-          FeaturedLabels.country(l10n, b).toLowerCase(),
+    return EntradaDaTela(
+      id: 'DesafiosLista',
+      child: ListaEmOrdem(
+        montar: (itens) => ListView(
+          padding: scrollPadding(context, left: 16, right: 16),
+          children: itens,
         ),
-      );
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          if (countries.isNotEmpty) ...[
-            // "Todos os países" usa um valor vazio: com `null` o menu fecha
-            // como cancelado e não chama `onSelected`.
-            PopupMenuButton<String>(
-              key: FeaturedKeys.countryFilter,
-              tooltip: l10n.featuredFilterCountry,
-              onSelected: (code) =>
-                  cubit.setCountry(code.isEmpty ? null : code),
-              itemBuilder: (context) => [
-                PopupMenuItem<String>(
-                  key: FeaturedKeys.countryAll,
-                  value: '',
-                  child: Text(l10n.featuredCountryAll),
-                ),
-                for (final code in countries)
-                  PopupMenuItem<String>(
-                    key: FeaturedKeys.countryOption(code),
-                    value: code,
-                    child: Text(FeaturedLabels.country(l10n, code)),
-                  ),
-              ],
-              child: IgnorePointer(
-                child: ChoiceChip(
-                  materialTapTargetSize: AppChip.tapTarget,
-                  visualDensity: AppChip.density,
-                  selected: filter.country != null,
-                  onSelected: (_) {},
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        filter.country == null
-                            ? l10n.featuredCountryAll
-                            : FeaturedLabels.country(l10n, filter.country!),
-                      ),
-                      const Icon(
-                        Icons.arrow_drop_down,
-                        size: AppIconSize.button,
-                      ),
-                    ],
-                  ),
-                ),
+        itens: [
+          if (state.ongoing.isNotEmpty) ...[
+            SectionTitle(
+              l10n.featuredOngoing,
+              textKey: FeaturedKeys.ongoingTitle,
+            ),
+            SizedBox(
+              key: FeaturedKeys.tournamentCarousel,
+              height: FeaturedTournamentCard.height,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.ongoing.length,
+                separatorBuilder: (_, _) =>
+                    const SizedBox(width: AppSpacing.sm),
+                itemBuilder: (context, index) {
+                  final tournament = state.ongoing[index];
+                  return FeaturedTournamentCard(
+                    tournament: tournament,
+                    finals: state.finalsOf(tournament.id),
+                    onTap: () => _open(
+                      context,
+                      cubit,
+                      Routes.featuredTournament(tournament.id),
+                    ),
+                  );
+                },
               ),
             ),
-            const SizedBox(width: AppSpacing.sm),
           ],
-          ChoiceChip(
-            key: FeaturedKeys.originAll,
-            materialTapTargetSize: AppChip.tapTarget,
-            visualDensity: AppChip.density,
-            label: Text(l10n.featuredOriginAll),
-            selected: filter.origin == null,
-            onSelected: (_) => cubit.setOrigin(null),
-          ),
-          for (final origin in origins) ...[
-            const SizedBox(width: AppSpacing.sm),
-            ChoiceChip(
-              key: FeaturedKeys.originFilter(origin.name),
-              materialTapTargetSize: AppChip.tapTarget,
-              visualDensity: AppChip.density,
-              label: Text(l10n.featuredOriginFilter(origin.name)),
-              selected: filter.origin == origin,
-              onSelected: (_) => cubit.setOrigin(origin),
+          if (state.recent.isNotEmpty) ...[
+            SectionTitle(
+              l10n.featuredRecent,
+              textKey: FeaturedKeys.recentTitle,
             ),
+            for (final item in state.recent)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: FeaturedCard(
+                  item: item,
+                  onTap: () =>
+                      _open(context, cubit, Routes.featuredEndgame(item.id)),
+                ),
+              ),
+          ],
+          if (state.historic.isNotEmpty) ...[
+            SectionTitle(
+              l10n.desafiosFeaturedHistoric,
+              textKey: FeaturedKeys.historicTitle,
+            ),
+            for (final item in state.historic)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: FeaturedCard(
+                  item: item,
+                  historic: true,
+                  onTap: () =>
+                      _open(context, cubit, Routes.featuredEndgame(item.id)),
+                ),
+              ),
           ],
         ],
       ),
     );
   }
+}
+
+/// Abre a rota e, ao voltar, recarrega a lista: o final jogado vira "Jogado".
+Future<void> _open(
+  BuildContext context,
+  FeaturedCatalogCubit cubit,
+  String route,
+) async {
+  await context.push(route);
+  if (!cubit.isClosed) await cubit.load();
 }

@@ -64,6 +64,14 @@ class SyncScheduler {
     return result;
   }
 
+  /// Como [syncNow], mas só volta quando a conta recebeu o progresso.
+  /// Lança [SyncException] se a leitura ou o envio falhou.
+  Future<SyncResult> saveNow(String uid) async {
+    final result = await syncNow(uid);
+    await _sync.flush(uid);
+    return result;
+  }
+
   Future<void> _quiet(String uid) async {
     try {
       await syncNow(uid);

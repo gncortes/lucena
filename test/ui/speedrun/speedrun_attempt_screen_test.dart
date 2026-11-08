@@ -369,6 +369,7 @@ void main() {
 
       expect(find.byKey(SpeedrunKeys.recordCard), findsOneWidget);
       expect(find.byKey(SpeedrunKeys.notFinishedNotice), findsNothing);
+      expect(find.text('Your record for this speedrun'), findsOneWidget);
     });
 
     testWidgets('Tentar novamente começa uma tentativa nova do mesmo '

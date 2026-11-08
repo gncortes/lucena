@@ -5,7 +5,14 @@ import 'package:lucena/data/services/notification_service.dart';
 /// As notificações do aparelho em memória: guarda o que foi mostrado e
 /// entrega os toques que o teste mandar.
 class FakeNotificationService implements NotificationService {
-  FakeNotificationService({this.launch});
+  FakeNotificationService({
+    this.launch,
+    this.allowed = true,
+    this.permissionResult,
+  });
+  bool allowed;
+  bool? permissionResult;
+  int permissionRequests = 0;
 
   /// O toque que abriu o app.
   NotificationTap? launch;
@@ -21,7 +28,12 @@ class FakeNotificationService implements NotificationService {
   Future<void> start(List<NotificationChannelSpec> channels) async {}
 
   @override
-  Future<bool> permitted() async => true;
+  Future<bool> permitted() async => allowed;
+  @override
+  Future<bool> requestPermission() async {
+    permissionRequests++;
+    return allowed = permissionResult ?? allowed;
+  }
 
   @override
   Future<void> replace(List<ScheduledNotification> notifications) async =>

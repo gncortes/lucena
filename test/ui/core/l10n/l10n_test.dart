@@ -4,6 +4,17 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 
 void main() {
+  test('test exit copy agrees with one or multiple saved exercises', () async {
+    final l = await AppLocalizations.delegate.load(const Locale('pt'));
+    expect(
+      l.trainingTestLeaveBody(1, 2),
+      'O exercício feito fica salvo. Quando voltar, você continua no exercício 2.',
+    );
+    expect(
+      l.trainingTestLeaveBody(2, 3),
+      'Os 2 exercícios feitos ficam salvos. Quando voltar, você continua no exercício 3.',
+    );
+  });
   test('converte o código salvo em Locale', () {
     expect(localeFromCode(null), isNull);
     expect(localeFromCode('es'), const Locale('es'));

@@ -19,7 +19,7 @@ runs:
       run: |
         dart pub global activate patrol_cli 4.8.0
         export PATH="$PATH:${PUB_CACHE:-$HOME/.pub-cache}/bin"
-        patrol build android --dart-define=E2E=true
+        patrol build android --flavor dev --package-name com.gncortes.lucena.dev --dart-define=E2E=true
 
     - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
 
@@ -43,8 +43,8 @@ runs:
           --project "$FIREBASE_PROJECT_ID" \
           --type instrumentation \
           --use-orchestrator \
-          --app build/app/outputs/apk/debug/app-debug.apk \
-          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+          --app build/app/outputs/apk/dev/debug/app-dev-debug.apk \
+          --test build/app/outputs/apk/androidTest/dev/debug/app-dev-debug-androidTest.apk \
           "${device_args[@]}" \
           "${bucket_args[@]}" \
           --timeout "$TEST_LAB_TIMEOUT" \

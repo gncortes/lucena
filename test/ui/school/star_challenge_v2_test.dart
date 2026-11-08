@@ -4,6 +4,7 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_bar_height.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/star_challenge.dart';
@@ -129,15 +130,17 @@ void main() {
       tester,
     ) async {
       final cubit = await pump(tester, size: size);
-      expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 72);
-      expect(find.text('Desafio da torre'), findsOneWidget);
-      expect(find.text('Fácil · Caça às estrelas'), findsOneWidget);
+      // Regra da app bar (T85): 64, só o título, sem nível nem subtítulo.
+      final bar = find.byType(AppBar);
+      expect(tester.getSize(bar).height, AppBarHeight.standard);
       expect(
-        find.descendant(
-          of: find.byType(AppBar),
-          matching: find.byKey(StarChallengeKeys.levelChip),
-        ),
+        find.descendant(of: bar, matching: find.text('Desafio da torre')),
         findsOneWidget,
+      );
+      expect(find.textContaining('Desafio da torre ·'), findsNothing);
+      expect(
+        find.descendant(of: bar, matching: find.textContaining('Caça')),
+        findsNothing,
       );
       // A contagem no topo do bloco: 40 dp.
       final timer = rectOf(tester, StarChallengeKeys.timer);
@@ -274,10 +277,10 @@ void main() {
                   ? theme.colorScheme.surfaceContainerLowest
                   : theme.colorScheme.surfaceContainerHigh,
             );
-            // A barra do app cresce com a fonte (piso 72).
+            // Regra da app bar (T85): 64 fixo, só o título.
             expect(
               tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight,
-              max(72.0, 44 * scale + 16),
+              AppBarHeight.standard,
             );
             // O placar espelha: em árabe o ouro fica à direita.
             final gold = tester.getCenter(

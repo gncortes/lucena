@@ -13,7 +13,11 @@ enum PushKind {
   news('novidade'),
 
   /// Livre: o painel escolhe o texto e o destino.
-  free('livre');
+  free('livre'),
+
+  /// O curso dado de presente pelo painel (H-R5-63): o toque abre o
+  /// presente.
+  gift('presente');
 
   const PushKind(this.code);
 
@@ -35,6 +39,14 @@ abstract final class PushData {
   static const country = 'pais';
   static const title = 'titulo';
   static const body = 'texto';
+
+  /// O curso do presente (`pilares`).
+  static const course = 'curso';
+
+  /// A conta que ganhou o presente e o e-mail dela mascarado
+  /// (`ra***@gmail.com`), para quem abre o toque sem estar nela.
+  static const uid = 'uid';
+  static const account = 'conta';
 }
 
 /// Um push para o app mostrar como notificação própria.
@@ -46,6 +58,9 @@ class PushAlert {
     this.kind = PushKind.free,
     this.link,
     this.country,
+    this.course,
+    this.uid,
+    this.account,
   });
 
   /// O push dos dados [data], com [title] e [body] da parte
@@ -65,6 +80,9 @@ class PushAlert {
       kind: PushKind.of(data[PushData.kind]),
       link: _filled(data[PushData.link]),
       country: _filled(data[PushData.country]),
+      course: _filled(data[PushData.course]),
+      uid: _filled(data[PushData.uid]),
+      account: _filled(data[PushData.account]),
     );
   }
 
@@ -77,6 +95,11 @@ class PushAlert {
   final PushKind kind;
   final String? link;
   final String? country;
+
+  /// Do presente ([PushKind.gift]): o curso, a conta e o e-mail mascarado.
+  final String? course;
+  final String? uid;
+  final String? account;
 
   /// O número da notificação no Android: o mesmo push substitui a anterior.
   /// Fica acima de [firstNotificationId], longe dos lembretes locais.
@@ -100,13 +123,25 @@ class PushAlert {
       PushData.link: ?link,
       PushData.id: ?id,
       PushData.country: ?country,
+      if (kind == PushKind.gift) PushData.kind: kind.code,
+      PushData.course: ?course,
+      PushData.uid: ?uid,
+      PushData.account: ?account,
     },
   ).toString();
 }
 
 /// Um push tocado: o destino e de qual envio e país ele veio.
 class PushOpening {
-  const PushOpening({this.link, this.pushId, this.country});
+  const PushOpening({
+    this.link,
+    this.pushId,
+    this.country,
+    this.kind = PushKind.free,
+    this.course,
+    this.uid,
+    this.account,
+  });
 
   /// O esquema do payload das notificações de push que o app mostra (as dos
   /// lembretes são rotas, sem esquema).
@@ -117,6 +152,10 @@ class PushOpening {
     link: _uri(data[PushData.link]),
     pushId: PushAlert._filled(data[PushData.id]),
     country: PushAlert._filled(data[PushData.country]),
+    kind: PushKind.of(data[PushData.kind]),
+    course: PushAlert._filled(data[PushData.course]),
+    uid: PushAlert._filled(data[PushData.uid]),
+    account: PushAlert._filled(data[PushData.account]),
   );
 
   /// Se [payload] é de uma notificação de push (e não de um lembrete).
@@ -132,11 +171,7 @@ class PushOpening {
     } on FormatException {
       return null;
     }
-    return PushOpening(
-      link: _uri(query[PushData.link]),
-      pushId: PushAlert._filled(query[PushData.id]),
-      country: PushAlert._filled(query[PushData.country]),
-    );
+    return PushOpening.fromData(query);
   }
 
   static Uri? _uri(String? link) =>
@@ -147,18 +182,34 @@ class PushOpening {
   final String? pushId;
   final String? country;
 
+  /// O presente ([PushKind.gift]): o toque abre o curso [course] dado à conta
+  /// [uid] ([account] é o e-mail dela mascarado).
+  final PushKind kind;
+  final String? course;
+  final String? uid;
+  final String? account;
+
+  /// O toque é o do presente de um curso.
+  bool get isGift => kind == PushKind.gift && course != null;
+
   @override
   bool operator ==(Object other) =>
       other is PushOpening &&
       other.link == link &&
       other.pushId == pushId &&
-      other.country == country;
+      other.country == country &&
+      other.kind == kind &&
+      other.course == course &&
+      other.uid == uid &&
+      other.account == account;
 
   @override
-  int get hashCode => Object.hash(link, pushId, country);
+  int get hashCode =>
+      Object.hash(link, pushId, country, kind, course, uid, account);
 
   @override
-  String toString() => 'PushOpening($link, $pushId, $country)';
+  String toString() =>
+      'PushOpening($link, $pushId, $country, ${kind.code}, $course, $uid)';
 }
 
 /// Os textos do app na notificação: o nome de cada canal (também o texto ao
@@ -181,6 +232,8 @@ class PushTexts {
     PushKind.featured => (id: 'push_torneios_quieto', name: tournaments),
     PushKind.daily => (id: 'push_dia_quieto', name: daily),
     PushKind.lesson => (id: 'push_aulas_quieto', name: lessons),
-    PushKind.news || PushKind.free => (id: 'push_novidades_quieto', name: news),
+    PushKind.news ||
+    PushKind.free ||
+    PushKind.gift => (id: 'push_novidades_quieto', name: news),
   };
 }

@@ -12,7 +12,6 @@ import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../view_models/game_reporter.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -26,16 +25,21 @@ class ReportPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final achievements = {for (final a in report.achievements) a.id: a};
     if (report.feedback.isEmpty) return const SizedBox.shrink();
-    final messages = [
-      for (final (index, item) in report.feedback.indexed)
-        if (item.kind != FeedbackKind.achievement) (index, item),
-    ];
     final unlocked = [
       for (final (index, item) in report.feedback.indexed)
         if (item.kind == FeedbackKind.achievement) (index, item),
+    ];
+    // "Primeira vitória contra o Tito" já vem no cartão da conquista (S3b):
+    // com ele, a linha de confete só repetiria o mesmo texto.
+    final messages = [
+      for (final (index, item) in report.feedback.indexed)
+        if (item.kind != FeedbackKind.achievement &&
+            !(unlocked.isNotEmpty &&
+                (item.kind == FeedbackKind.firstWinAgainstLevel ||
+                    item.kind == FeedbackKind.firstWinAgainstStockfish)))
+          (index, item),
     ];
     return Padding(
       key: FreeBoardKeys.report,
@@ -55,38 +59,16 @@ class ReportPanel extends StatelessWidget {
               key: FreeBoardKeys.feedback(index),
               text: feedbackText(l10n, item, achievements, report.characters),
             ),
-          // As conquistas em cartões, com a medalha, entrando uma depois da
-          // outra.
-          if (unlocked.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.xs,
-                AppSpacing.md,
-                AppSpacing.xs,
-                AppSpacing.sm,
-              ),
-              child: Text(
-                l10n.achievementUnlocked,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
+          // As conquistas em cartões, com a medalha dourada (a entrada é da
+          // faixa da tela, não do cartão).
+          for (final (index, item) in unlocked)
+            _AchievementCard(
+              key: FreeBoardKeys.feedback(index),
+              achievement: achievements[item.achievementId],
+              // O texto completo fica para o leitor de tela e os testes.
+              spoken: feedbackText(l10n, item, achievements, report.characters),
+              characters: report.characters,
             ),
-            for (final (order, (index, item)) in unlocked.indexed)
-              _AchievementCard(
-                key: FreeBoardKeys.feedback(index),
-                order: order,
-                achievement: achievements[item.achievementId],
-                // O texto completo fica para o leitor de tela e os testes.
-                spoken: feedbackText(
-                  l10n,
-                  item,
-                  achievements,
-                  report.characters,
-                ),
-                characters: report.characters,
-              ),
-          ],
         ],
       ),
     );
@@ -165,15 +147,12 @@ class _Message extends StatelessWidget {
 /// Uma conquista nova: a medalha dourada, o nome e o que ela pede.
 class _AchievementCard extends StatelessWidget {
   const _AchievementCard({
-    required this.order,
     required this.achievement,
     required this.spoken,
     required this.characters,
     super.key,
   });
 
-  /// A posição entre as conquistas novas: cada uma entra um pouco depois.
-  final int order;
   final Achievement? achievement;
   final String spoken;
   final List<Character> characters;
@@ -184,69 +163,53 @@ class _AchievementCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final achievement = this.achievement;
-    final motion = AppMotion.of(context);
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      // Um bloco depois do outro, em cascata.
-      duration: motion.component + motion.stagger * (3 + 3 * order),
-      curve: AppMotion.enter,
-      builder: (context, t, child) => Opacity(
-        opacity: t,
-        child: Transform.translate(
-          offset: Offset(0, 16 * (1 - t)),
-          child: child,
+    return Semantics(
+      container: true,
+      label: spoken,
+      excludeSemantics: true,
+      child: Card(
+        color: colors.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.large),
+          side: BorderSide(color: AppColors.goldColor.withValues(alpha: 0.35)),
         ),
-      ),
-      child: Semantics(
-        container: true,
-        label: spoken,
-        excludeSemantics: true,
-        child: Card(
-          color: colors.surfaceContainerHigh,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppShape.large),
-            side: BorderSide(
-              color: AppColors.goldColor.withValues(alpha: 0.35),
-            ),
-          ),
-          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.goldColor,
-                  ),
-                  child: Icon(
-                    achievement?.iconData ?? Icons.military_tech,
-                    color: AppColors.goldInk,
-                  ),
+        margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.goldColor,
                 ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                child: Icon(
+                  achievement?.iconData ?? Icons.military_tech,
+                  color: AppColors.goldInk,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      achievement?.title(l10n, characters) ?? spoken,
+                      style: theme.textTheme.titleSmall,
+                    ),
+                    if (achievement != null)
                       Text(
-                        achievement?.title(l10n, characters) ?? spoken,
-                        style: theme.textTheme.titleSmall,
-                      ),
-                      if (achievement != null)
-                        Text(
-                          achievement.description(l10n, characters),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
+                        achievement.description(l10n, characters),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

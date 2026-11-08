@@ -1,13 +1,28 @@
+import 'data/repositories/data_export/data_export_repository.dart';
+import 'data/repositories/training/training_endgame_content.dart';
+import 'data/repositories/training/course_download_repository.dart';
+
 import 'dart:async';
 
 import 'domain/models/lesson_content.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry, kReleaseMode;
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'data/repositories/analysis/learning_analysis_repository.dart';
+import 'data/services/preferences_service.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'config/licencas_legais.dart';
 import 'data/repositories/learning/learning_repository.dart';
+import 'data/repositories/training/training_school_content.dart';
+import 'data/repositories/training/training_history_source.dart';
+import 'domain/use_cases/training/training_analytics.dart';
 import 'config/push_alerts.dart';
 import 'domain/models/push_alert.dart';
 import 'domain/models/campaign.dart';
@@ -17,10 +32,19 @@ import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/ads/ads_repository.dart';
+import 'data/repositories/alerts/alerts_repository.dart';
+import 'data/repositories/lesson_ad/course_access_repository.dart';
+import 'data/repositories/lesson_ad/demo_ad_repository.dart';
+import 'data/repositories/training/demo_offer_repository.dart';
+import 'data/repositories/purchase/opening_offer_repository.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
 import 'data/repositories/purchase/purchase_repository.dart';
+import 'data/repositories/legal/legal_consent_repository.dart';
+import 'data/repositories/legal/legal_repository.dart';
+import 'data/repositories/device/device_settings_repository.dart';
+import 'data/repositories/links/link_repository.dart';
 import 'data/repositories/store/store_listing_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
@@ -37,14 +61,13 @@ import 'data/repositories/featured/featured_alerts_repository.dart';
 import 'data/repositories/featured/featured_progress_repository.dart';
 import 'data/repositories/course_preview/course_preview_repository.dart';
 import 'data/repositories/featured/featured_repository.dart';
-import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/photo/photo_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
+import 'data/repositories/feedback/feedback_draft_repository.dart';
 import 'data/repositories/feedback/feedback_repository.dart';
 import 'data/repositories/review/review_repository.dart';
-import 'data/repositories/would_pay/would_pay_repository.dart';
 import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
@@ -61,17 +84,18 @@ import 'data/repositories/account/avatar_repository.dart';
 import 'data/repositories/account/mail_app_repository.dart';
 import 'data/repositories/activity/activity_repository.dart';
 import 'data/repositories/daily/daily_final_repository.dart';
-import 'data/repositories/crowd/crowd_repository.dart';
 import 'data/repositories/account/account_repository.dart';
 import 'data/repositories/chesscom/chesscom_repository.dart';
 import 'data/repositories/lichess/lichess_repository.dart';
 import 'data/repositories/deep_link/deep_link_repository.dart';
 import 'data/repositories/push/push_repository.dart';
+import 'data/services/firebase/crash_report_service.dart';
 import 'data/services/firebase/firebase_bootstrap.dart';
 import 'data/repositories/share/share_repository.dart';
 import 'data/repositories/placement/placement_repository.dart';
 import 'data/repositories/conclusion/conclusion_repository.dart';
 import 'data/repositories/analysis/analysis_repository.dart';
+import 'data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'data/repositories/review/game_review_repository.dart';
 import 'data/repositories/sound/sound_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
@@ -88,14 +112,20 @@ import 'data/repositories/sync/sync_scheduler.dart';
 import 'data/repositories/training/training_repository.dart';
 import 'data/repositories/voice/voice_repository.dart';
 import 'data/repositories/blind/blind_log_repository.dart';
+import 'data/repositories/training/course_training_repository.dart'
+    as course_training;
 import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/push_route.dart';
+import 'routing/frentes/d2_routes.dart';
+import 'data/repositories/lesson_ad/course_grants_repository.dart';
 import 'routing/router.dart';
 import 'routing/screen_tracker.dart';
 import 'routing/stream_refresh.dart';
+import 'ui/pilares_sale/view_models/pilares_purchase_watch_cubit.dart';
+import 'ui/pilares_sale/widgets/pilares_purchase_bridge.dart';
 import 'ui/update/view_models/update_cubit.dart';
 import 'ui/update/widgets/update_bridge.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
@@ -104,30 +134,146 @@ import 'ui/reminders/widgets/reminders_bridge.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
+import 'ui/core/motion/abertura_animada.dart';
+import 'ui/core/motion/entradas_vistas.dart';
+import 'ui/core/widgets/load_error.dart';
+import 'ui/core/widgets/load_skeleton.dart';
+import 'ui/core/widgets/load_error_fallback.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/profile/view_models/profile_cubit.dart';
+import 'ui/settings/widgets/settings_save_failure_listener.dart';
 import 'ui/settings/view_models/settings_cubit.dart';
 import 'ui/voice/view_models/speech_cubit.dart';
 import 'ui/wiki/view_models/wiki_links_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final version = await Dependencies.installedVersion();
+  if (kReleaseMode) ErrorWidget.builder = buildLoadErrorFallback;
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Material Symbols Rounded',
+    ], await rootBundle.loadString('assets/fonts/MaterialSymbols-LICENSE.txt'));
+  });
+  registrarLicencasLegais();
   final firebase = await startFirebase();
+  if (firebase) {
+    await startCrashReports(
+      FirebaseCrashReportService(),
+      // The analytics repository applies opt-in/team policy once loaded.
+      enabled: false,
+    );
+  }
+  final version = await _launchValue(
+    Dependencies.installedVersion,
+    const AppVersion('0.0.0'),
+  );
   // O push que chega com o app fechado: o app monta a notificação.
   if (firebase) listenPushInBackground();
+  // H-ANI-44: a abertura animada cobre o app até a primeira tela (ou o erro
+  // de carga) estar desenhada.
+  final abriu = Completer<void>();
   runApp(
-    LucenaApp(
-      dependencies: Dependencies.normal(version: version, firebase: firebase),
+    AberturaAnimada(
+      carga: abriu.future,
+      child: LucenaBootstrap(
+        aoAbrir: () {
+          if (!abriu.isCompleted) abriu.complete();
+        },
+        initialize: () async => Dependencies.normal(
+          version: version,
+          firebase: firebase,
+          trainingInstallSeed: await Dependencies.trainingInstallSeed(),
+        ),
+      ),
     ),
   );
 }
 
+/// Avisa a abertura (H-ANI-44) depois do quadro em que a primeira tela de
+/// verdade foi desenhada.
+void _avisaQueAbriu(VoidCallback? aoAbrir) {
+  if (aoAbrir == null) return;
+  WidgetsBinding.instance.addPostFrameCallback((_) => aoAbrir());
+}
+
+Future<T> _launchValue<T>(Future<T> Function() read, T fallback) async {
+  try {
+    return await read();
+  } on Object catch (error, stack) {
+    reportHandledError(error, stack);
+    return fallback;
+  }
+}
+
+/// Required installation data must be readable before creating production
+/// repositories. A recoverable seed failure cannot silently disable training.
+class LucenaBootstrap extends StatefulWidget {
+  const LucenaBootstrap({required this.initialize, this.aoAbrir, super.key});
+  final Future<Dependencies> Function() initialize;
+
+  /// A primeira tela (ou o erro de carga) está na tela: a abertura pode sair.
+  final VoidCallback? aoAbrir;
+  @override
+  State<LucenaBootstrap> createState() => _LucenaBootstrapState();
+}
+
+class _LucenaBootstrapState extends State<LucenaBootstrap> {
+  Dependencies? _dependencies;
+  int _failures = 0;
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_initialize());
+  }
+
+  Future<void> _initialize() async {
+    if (_loading) return;
+    _loading = true;
+    try {
+      final dependencies = await widget.initialize();
+      if (mounted) setState(() => _dependencies = dependencies);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (mounted) setState(() => _failures++);
+    } finally {
+      _loading = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dependencies = _dependencies;
+    if (dependencies != null) {
+      return LucenaApp(dependencies: dependencies, aoAbrir: widget.aoAbrir);
+    }
+    if (_failures > 0) _avisaQueAbriu(widget.aoAbrir);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: appSupportedLocales,
+      home: _failures == 0
+          ? const LoadSkeletonScreen()
+          : LoadErrorScreen(
+              kind: _failures == 1
+                  ? LoadErrorKind.launch
+                  : LoadErrorKind.launchAgain,
+              onAction: _initialize,
+            ),
+    );
+  }
+}
+
 class LucenaApp extends StatefulWidget {
-  const LucenaApp({required this.dependencies, super.key});
+  const LucenaApp({required this.dependencies, this.aoAbrir, super.key});
 
   final Dependencies dependencies;
+
+  /// Ver [LucenaBootstrap.aoAbrir].
+  final VoidCallback? aoAbrir;
 
   @override
   State<LucenaApp> createState() => _LucenaAppState();
@@ -136,6 +282,18 @@ class LucenaApp extends StatefulWidget {
 class _LucenaAppState extends State<LucenaApp> {
   // Nulo até saber em que tela o app abre.
   GoRouter? _router;
+  int _launchFailures = 0;
+  bool _opening = false;
+  final _started = <String>{};
+  // As telas que já fizeram a entrada animada nesta sessão (H-ANI-01).
+  final _entradasVistas = EntradasVistas();
+  Future<PushOpening?>? _initialPush;
+  Future<Uri?>? _initialLink;
+  late final SettingsCubit _settings = SettingsCubit(
+    widget.dependencies.settingsRepository,
+    languages: widget.dependencies.languages,
+    sound: widget.dependencies.soundRepository,
+  );
 
   // O screen_view de cada tela (E1.03).
   ScreenTracker? _screens;
@@ -196,22 +354,61 @@ class _LucenaAppState extends State<LucenaApp> {
   // Partida ou aula que estava na tela quando o app foi fechado: o app
   // reabre nela.
   Future<void> _openRouter() async {
+    if (_opening) return;
+    _opening = true;
+    try {
+      await _settings.load();
+      await _loadRouter();
+    } on Object catch (error, stack) {
+      // Report the original failure, without exposing its message in the UI.
+      debugPrint('App launch failed: $error\n$stack');
+      reportHandledError(error, stack);
+      if (mounted) {
+        _screens?.dispose();
+        _screens = null;
+        _router?.dispose();
+        setState(() {
+          _router = null;
+          _launchFailures++;
+        });
+      }
+    } finally {
+      _opening = false;
+    }
+  }
+
+  Future<void> _loadRouter() async {
     final game = await widget.dependencies.ongoingGameRepository.load();
+    final blind = await widget.dependencies.blindCheckpointRepository.load();
     final conclusion = await widget.dependencies.conclusionRepository.pending();
     final school = await widget.dependencies.schoolProgressRepository.load();
     final endgames = await widget.dependencies.endgameProgressRepository.load();
     final stars = await widget.dependencies.starChallengeRepository.open();
     final deepLinks = widget.dependencies.deepLinkRepository;
     final push = widget.dependencies.pushRepository;
-    unawaited(push.start());
+    _startOnce('push', push.start);
     // Só o último aparelho em que a conta entrou recebe o push dela.
-    unawaited(widget.dependencies.accountRepository.linkPushDevice());
+    _startOnce(
+      'pushDevice',
+      widget.dependencies.accountRepository.linkPushDevice,
+    );
     // O dia da primeira abertura conta para o pedido de avaliação (E1.26).
-    unawaited(widget.dependencies.reviewRepository.markFirstOpen());
-    final pushOpening = await push.initialOpening();
+    _startOnce('review', widget.dependencies.reviewRepository.markFirstOpen);
+    final pushOpening = await (_initialPush ??= push
+        .initialOpening()
+        .catchError((Object error, StackTrace stack) {
+          _initialPush = null;
+          Error.throwWithStackTrace(error, stack);
+        }));
     final pushed = pushOpening?.link;
     final onboarding = await widget.dependencies.onboardingRepository.load();
-    var opened = await deepLinks.initialUri();
+    var opened = await (_initialLink ??= deepLinks.initialUri().catchError((
+      Object error,
+      StackTrace stack,
+    ) {
+      _initialLink = null;
+      Error.throwWithStackTrace(error, stack);
+    }));
     // Deferred deep link (T84): na 1ª abertura sem link nem aviso, o link do
     // post que levou à Play abre como se tivesse sido tocado com o app já
     // instalado.
@@ -226,8 +423,9 @@ class _LucenaAppState extends State<LucenaApp> {
               ? null
               : deepLinks.parse(opened))
         : (pushed == null ? null : deepLinks.parse(pushed));
-    unawaited(
-      _analytics.launched(
+    _startOnce(
+      'launchAnalytics',
+      () => _analytics.launched(
         link: link,
         lessonLink: opened == null ? null : LessonLink.tryParse(opened),
         pushed: opened == null && pushOpening != null,
@@ -238,8 +436,14 @@ class _LucenaAppState extends State<LucenaApp> {
     // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
     // formulário agora.
     final profile = await widget.dependencies.profileRepository.load();
-    unawaited(
-      widget.dependencies.adsRepository.start(
+    final consentUid = await widget.dependencies.legalConsentRepository
+        .pending();
+    final consentPending =
+        consentUid != null &&
+        widget.dependencies.accountRepository.current?.uid == consentUid;
+    _startOnce(
+      'ads',
+      () => widget.dependencies.adsRepository.start(
         fromLink: opened != null || link != null,
         goalAnswered: onboarding.done || profile.goal != null,
       ),
@@ -281,10 +485,12 @@ class _LucenaAppState extends State<LucenaApp> {
         initialLocation: launchLocation(
           conclusion: conclusion,
           resumeGame: game != null && game.reopensOnLaunch,
+          resumeBlind: blind != null,
           school: school,
           endgames: endgames,
           stars: stars,
           boardControlsOpen: onboarding.boardControlsOpen,
+          consentPending: consentPending,
           link: link,
           // Erro frio é empilhado sobre a retomada, para Voltar recuperá-la.
           uri: opened != null && Routes.appLink(opened) != Routes.invalidLink
@@ -315,7 +521,7 @@ class _LucenaAppState extends State<LucenaApp> {
       router.routerDelegate.addListener(openInvalid);
       openInvalid();
     }
-    _links = deepLinks.openedUris.listen((uri) {
+    _links ??= deepLinks.openedUris.listen((uri) {
       final link = deepLinks.parse(uri);
       if (link != null) unawaited(_analytics.opened(link));
       final lessonLink = LessonLink.tryParse(uri);
@@ -329,8 +535,13 @@ class _LucenaAppState extends State<LucenaApp> {
     });
     // Um aviso pode trazer o link de um desafio ou o de uma tela (final do
     // dia, aula, final ou torneio).
-    _pushLinks = push.opened.listen((opening) {
+    _pushLinks ??= push.opened.listen((opening) {
       unawaited(_analytics.pushOpened(opening));
+      // O presente abre por cima da tela atual (H-R5-63).
+      if (_giftRoute(opening) case final route?) {
+        if (!_giftOnStack) unawaited(_router?.push(route));
+        return;
+      }
       final uri = opening.link;
       // Sem link: o toque só traz o app para a frente.
       if (uri == null) return;
@@ -343,12 +554,49 @@ class _LucenaAppState extends State<LucenaApp> {
       }
     });
     if (pushOpening != null) unawaited(_analytics.pushOpened(pushOpening));
-    if (opened == null && pushed != null && deepLinks.parse(pushed) == null) {
+    final gift = opened == null ? _giftRoute(pushOpening) : null;
+    if (gift != null) {
+      if (!_giftOnStack) unawaited(_router?.push(gift));
+    } else if (opened == null &&
+        pushed != null &&
+        deepLinks.parse(pushed) == null) {
       await _openPushed(pushed);
     }
   }
 
-  // A tela do link do aviso; link que esta versão não conhece: o início.
+  void _startOnce(String name, Future<void> Function() start) {
+    if (!_started.add(name)) return;
+    unawaited(
+      Future<void>.sync(start).catchError((Object error, StackTrace stack) {
+        reportHandledError(error, stack);
+      }),
+    );
+  }
+
+  // O acesso chegou ao vivo antes do toque: o Curso liberado (ou a abertura
+  // dele) já está na pilha e não sai outro.
+  bool get _giftOnStack =>
+      _router?.routerDelegate.currentConfiguration.matches.any(
+        (match) => const {
+          D2Paths.pilaresGiftOpening,
+          D2Paths.pilaresGiftDone,
+          D2Paths.pilaresPurchaseDone,
+        }.contains(match.matchedLocation),
+      ) ??
+      false;
+
+  // O toque no push do presente: "Abrindo o seu presente…" (H-R5-63).
+  static String? _giftRoute(PushOpening? opening) =>
+      opening != null && opening.isGift
+      ? D2Paths.giftOpening(
+          course: opening.course!,
+          uid: opening.uid,
+          account: opening.account,
+        )
+      : null;
+
+  // A tela do link do aviso; sem destino, o usuário fica onde está: trocar a
+  // pilha tiraria da partida e apagaria a retomada.
   Future<void> _openPushed(Uri uri) async {
     final route = await pushRoute(
       uri,
@@ -357,11 +605,7 @@ class _LucenaAppState extends State<LucenaApp> {
           widget.dependencies.remindersRepository.pausedLesson('pt'),
     );
     if (!mounted) return;
-    if (route == Routes.home) {
-      _router?.go(route);
-    } else {
-      _router?.push(route);
-    }
+    if (route != null) _router?.push(route);
   }
 
   @override
@@ -374,6 +618,7 @@ class _LucenaAppState extends State<LucenaApp> {
     _updateRefresh.dispose();
     _accountRefresh?.dispose();
     unawaited(_update.close());
+    unawaited(_settings.close());
     super.dispose();
   }
 
@@ -389,6 +634,14 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<Now>.value(value: dependencies.now),
         RepositoryProvider<AnalyticsRepository>.value(
           value: dependencies.analyticsRepository,
+        ),
+        RepositoryProvider<TrainingAnalytics>(
+          create: (_) =>
+              dependencies.trainingAnalytics ??
+              TrainingAnalytics(
+                now: dependencies.now,
+                log: dependencies.analyticsRepository.log,
+              ),
         ),
         RepositoryProvider<SettingsRepository>.value(
           value: dependencies.settingsRepository,
@@ -417,9 +670,6 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<DailyFinalRepository>.value(
           value: dependencies.dailyFinalRepository,
         ),
-        RepositoryProvider<CrowdRepository>.value(
-          value: dependencies.crowdRepository,
-        ),
         RepositoryProvider<SyncScheduler>.value(value: _sync),
         RepositoryProvider<LichessRepository>.value(
           value: dependencies.lichessRepository,
@@ -429,6 +679,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<PushRepository>.value(
           value: dependencies.pushRepository,
+        ),
+        RepositoryProvider<CourseGrantsRepository>.value(
+          value: dependencies.courseGrantsRepository,
+        ),
+        RepositoryProvider<AlertsRepository>.value(
+          value: dependencies.alertsRepository,
         ),
         RepositoryProvider<AvatarRepository>.value(
           value: dependencies.avatarRepository,
@@ -447,6 +703,14 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<AnalysisRepository>.value(
           value: dependencies.analysisRepository,
+        ),
+        RepositoryProvider<LearningAnalysisRepository>(
+          create: (_) =>
+              dependencies.learningAnalysisRepository ??
+              LearningAnalysisRepository(PreferencesService()),
+        ),
+        RepositoryProvider<DeepAnalysisRepository>.value(
+          value: dependencies.deepAnalysisRepository,
         ),
         RepositoryProvider<GameReviewRepository>.value(
           value: dependencies.gameReviewRepository,
@@ -477,6 +741,24 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<TrainingRepository>.value(
           value: dependencies.trainingRepository,
+        ),
+        RepositoryProvider<course_training.TrainingRepository>.value(
+          value: dependencies.courseTrainingRepository,
+        ),
+        RepositoryProvider<CourseDownloadRepository>.value(
+          value: dependencies.courseDownloads,
+        ),
+        RepositoryProvider<TrainingSchoolContent>.value(
+          value:
+              dependencies.trainingSchoolContent ??
+              TrainingSchoolContent(dependencies.lessonRepository),
+        ),
+        RepositoryProvider<TrainingHistorySource>.value(
+          value: TrainingHistorySource(
+            dependencies.courseTrainingRepository,
+            learning: dependencies.learningRepository,
+            now: dependencies.now,
+          ),
         ),
         RepositoryProvider<OpponentRepository>.value(
           value: dependencies.opponentRepository,
@@ -535,9 +817,6 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<RegionPromptRepository>.value(
           value: dependencies.regionPromptRepository,
         ),
-        RepositoryProvider<UnlockRepository>.value(
-          value: dependencies.unlockRepository,
-        ),
         RepositoryProvider<PaceRepository>.value(
           value: dependencies.paceRepository,
         ),
@@ -549,6 +828,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<StarChallengeRepository>.value(
           value: dependencies.starChallengeRepository,
+        ),
+        RepositoryProvider<TrainingEndgameContent?>.value(
+          value: dependencies.trainingEndgameContent,
         ),
         RepositoryProvider<EndgameLessonRepository>.value(
           value: dependencies.endgameLessonRepository,
@@ -592,8 +874,14 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<FeedbackRepository>.value(
           value: dependencies.feedbackRepository,
         ),
-        RepositoryProvider<WouldPayRepository>.value(
-          value: dependencies.wouldPayRepository,
+        RepositoryProvider<DataExportRepository>.value(
+          value: dependencies.dataExportRepository,
+        ),
+        RepositoryProvider<LegalConsentRepository>.value(
+          value: dependencies.legalConsentRepository,
+        ),
+        RepositoryProvider<FeedbackDraftRepository>.value(
+          value: dependencies.feedbackDraftRepository,
         ),
         RepositoryProvider<ReviewRepository>.value(
           value: dependencies.reviewRepository,
@@ -607,11 +895,32 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<AdsRepository>.value(
           value: dependencies.adsRepository,
         ),
+        RepositoryProvider<CourseAccessRepository>.value(
+          value: dependencies.courseAccessRepository,
+        ),
+        RepositoryProvider<DemoAdRepository>.value(
+          value: dependencies.demoAdRepository,
+        ),
+        RepositoryProvider<DemoOfferRepository>.value(
+          value: dependencies.demoOfferRepository,
+        ),
+        RepositoryProvider<OpeningOfferRepository>.value(
+          value: dependencies.openingOfferRepository,
+        ),
         RepositoryProvider<PurchaseRepository>.value(
           value: dependencies.purchaseRepository,
         ),
         RepositoryProvider<StoreListingRepository>.value(
           value: dependencies.storeListingRepository,
+        ),
+        RepositoryProvider<DeviceSettingsRepository>.value(
+          value: const SystemDeviceSettingsRepository(),
+        ),
+        RepositoryProvider<LinkRepository>.value(
+          value: const UrlLauncherLinkRepository(),
+        ),
+        RepositoryProvider<LegalRepository>(
+          create: (_) => AssetLegalRepository(),
         ),
         RepositoryProvider<AppUpdateRepository>.value(
           value: dependencies.appUpdateRepository,
@@ -620,13 +929,7 @@ class _LucenaAppState extends State<LucenaApp> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<UpdateCubit>.value(value: _update),
-          BlocProvider(
-            create: (context) => SettingsCubit(
-              dependencies.settingsRepository,
-              languages: dependencies.languages,
-              sound: dependencies.soundRepository,
-            )..load(),
-          ),
+          BlocProvider<SettingsCubit>.value(value: _settings),
           BlocProvider(
             create: (context) => ProfileCubit(
               dependencies.profileRepository,
@@ -659,6 +962,19 @@ class _LucenaAppState extends State<LucenaApp> {
               week: dependencies.weekRepository,
               now: dependencies.now,
               changes: dependencies.localChanges,
+              training: dependencies.courseTrainingRepository,
+              courses: activeTrainingCourses,
+              analytics: dependencies.analyticsRepository,
+            ),
+          ),
+          BlocProvider(
+            // A compra vigiada no app todo (H-VEN-05/06/10).
+            lazy: false,
+            create: (context) => PilaresPurchaseWatchCubit(
+              purchases: dependencies.purchaseRepository,
+              analytics: dependencies.analyticsRepository,
+              grants: dependencies.courseGrantsRepository,
+              now: dependencies.now,
             ),
           ),
           BlocProvider(
@@ -674,11 +990,28 @@ class _LucenaAppState extends State<LucenaApp> {
         ],
         child: BlocBuilder<SettingsCubit, AppSettings?>(
           builder: (context, settings) {
-            // Até as preferências chegarem, só o fundo: o app nunca aparece
-            // no idioma errado nem na tela errada.
+            // Before preferences and routing are ready, use the localized
+            // loading/error shell, without guessing an application route.
             if (settings == null || router == null) {
-              return const _LaunchBackground();
+              if (_launchFailures > 0) _avisaQueAbriu(widget.aoAbrir);
+              final defaults = settings ?? const AppSettings();
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.of(Brightness.light, accent: defaults.accent),
+                locale: localeFromCode(defaults.languageCode),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: appSupportedLocales,
+                home: _launchFailures == 0
+                    ? const LoadSkeletonScreen()
+                    : LoadErrorScreen(
+                        kind: _launchFailures == 1
+                            ? LoadErrorKind.launch
+                            : LoadErrorKind.launchAgain,
+                        onAction: _openRouter,
+                      ),
+              );
             }
+            _avisaQueAbriu(widget.aoAbrir);
             return _QuietInBackground(
               child: MaterialApp.router(
                 onGenerateTitle: (context) => context.l10n.appTitle,
@@ -696,14 +1029,22 @@ class _LucenaAppState extends State<LucenaApp> {
                 // Abaixo das traduções: os textos dos lembretes vêm delas.
                 builder: (context, child) => UpdateBridge(
                   router: router,
-                  child: RemindersBridge(
-                    onOpen: (route) {
-                      unawaited(
-                        _analytics.alertOpened(route, channel: 'local'),
-                      );
-                      _router?.push(route);
-                    },
-                    child: child ?? const SizedBox.shrink(),
+                  child: PilaresPurchaseBridge(
+                    router: router,
+                    child: RemindersBridge(
+                      onOpen: (route) {
+                        unawaited(
+                          _analytics.alertOpened(route, channel: 'local'),
+                        );
+                        _router?.push(route);
+                      },
+                      child: SettingsSaveFailureListener(
+                        child: EntradasVistasEscopo(
+                          vistas: _entradasVistas,
+                          child: child ?? const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -752,16 +1093,4 @@ class _QuietInBackgroundState extends State<_QuietInBackground> {
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-/// O mesmo fundo da abertura nativa e da tela inicial.
-class _LaunchBackground extends StatelessWidget {
-  const _LaunchBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
-    final theme = isDark ? AppTheme.dark : AppTheme.light;
-    return ColoredBox(color: theme.scaffoldBackgroundColor);
-  }
 }

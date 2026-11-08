@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../keys/sheet_keys.dart';
+import '../motion/folha_lucena.dart';
 import '../theme/app_chip.dart';
 import '../theme/app_sheet.dart';
 import 'sheet_close_button.dart';
@@ -10,7 +11,9 @@ import 'sheet_header.dart';
 /// raio 28, alça 32×4 e o ✕ redondo por fora, acima do canto final
 /// ([SheetCloseButton]). O fundo escurecido vem de [AppSheet.scrim]. O ✕ fecha
 /// sem resultado (`null`); quem precisa de outro valor ao fechar passa
-/// [onClose].
+/// [onClose]. Com [filtro], a folha do filtro da app bar (350 ms; conteúdo em
+/// `OpcoesDoFiltro`). Com [dismissible] falso (folha de erro que exige escolha) não há
+/// ✕, nem arrastar, nem toque fora, nem o voltar do sistema.
 Future<T?> showLucenaSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
@@ -19,21 +22,23 @@ Future<T?> showLucenaSheet<T>(
   Color? color,
   VoidCallback? onClose,
   bool enableDrag = true,
+  bool dismissible = true,
+  bool filtro = false,
 }) {
-  return showModalBottomSheet<T>(
-    context: context,
-    isScrollControlled: true,
-    enableDrag: enableDrag,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    barrierColor: AppSheet.scrim,
+  return FolhaLucena.mostrar<T>(
+    context,
+    filtro: filtro,
+    enableDrag: dismissible && enableDrag,
+    isDismissible: dismissible,
     builder: (context) => LucenaSheetFrame(
       sheetKey: sheetKey,
       closeKey: closeKey,
       color: color,
       onClose: onClose ?? () => Navigator.of(context).pop(),
-      child: builder(context),
+      showClose: dismissible,
+      child: dismissible
+          ? builder(context)
+          : PopScope(canPop: false, child: builder(context)),
     ),
   );
 }
@@ -46,9 +51,11 @@ class LucenaSheetFrame extends StatelessWidget {
     this.sheetKey,
     this.closeKey,
     this.color,
+    this.showClose = true,
     super.key,
   });
 
+  final bool showClose;
   final Widget child;
   final VoidCallback onClose;
   final Key? sheetKey;
@@ -67,19 +74,20 @@ class LucenaSheetFrame extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsetsDirectional.only(
-            end: SheetCloseButton.margin,
-            bottom: SheetCloseButton.gap,
-          ),
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: SheetCloseButton(
-              key: closeKey ?? SheetKeys.close,
-              onPressed: onClose,
+        if (showClose)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              end: SheetCloseButton.margin,
+              bottom: SheetCloseButton.gap,
+            ),
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: SheetCloseButton(
+                key: closeKey ?? SheetKeys.close,
+                onPressed: onClose,
+              ),
             ),
           ),
-        ),
         Flexible(
           child: Material(
             key: sheetKey ?? SheetKeys.surface,

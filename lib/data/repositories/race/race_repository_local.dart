@@ -161,7 +161,14 @@ class LocalRaceRepository implements RaceRepository {
   @override
   Future<RaceFilter> filter() async {
     final json = await _readMap(_filterKey);
-    return json == null ? const RaceFilter() : RaceFilter.fromJson(json);
+    if (json == null) return const RaceFilter();
+    try {
+      return RaceFilter.fromJson(json);
+    } on Object {
+      // Filtro com formato errado: volta ao padrão.
+      await _preferences.remove(_filterKey);
+      return const RaceFilter();
+    }
   }
 
   @override

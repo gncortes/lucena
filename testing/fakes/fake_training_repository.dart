@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:lucena/data/repositories/training/training_repository.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -15,6 +17,10 @@ class FakeTrainingRepository implements TrainingRepository {
   CustomPositionDraft? draft;
   final savedSetups = <GameSetup>[];
 
+  /// Faz a leitura da configuração falhar, ou esperar o [gate].
+  bool failLoad = false;
+  Completer<void>? gate;
+
   @override
   Future<GoalFilter> loadCatalogFilter() async => filter;
 
@@ -23,7 +29,11 @@ class FakeTrainingRepository implements TrainingRepository {
       this.filter = filter;
 
   @override
-  Future<GameSetup> loadSetup() async => setup;
+  Future<GameSetup> loadSetup() async {
+    await gate?.future;
+    if (failLoad) throw StateError('falha de leitura');
+    return setup;
+  }
 
   @override
   Future<void> saveSetup(GameSetup setup) async {
@@ -32,7 +42,11 @@ class FakeTrainingRepository implements TrainingRepository {
   }
 
   @override
-  Future<CustomPositionDraft?> loadCustomDraft() async => draft;
+  Future<CustomPositionDraft?> loadCustomDraft() async {
+    await gate?.future;
+    if (failLoad) throw StateError('falha de leitura');
+    return draft;
+  }
 
   @override
   Future<void> saveCustomDraft(CustomPositionDraft draft) async =>

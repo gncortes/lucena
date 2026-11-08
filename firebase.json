@@ -8,26 +8,24 @@
   "storage": {
     "rules": "firebase/storage.rules"
   },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "runtime": "nodejs22",
+      "ignore": ["node_modules", ".git", "*.log", "test", "lib/test"],
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+    }
+  ],
+  "emulators": {
+    "singleProjectMode": true,
+    "auth": { "port": 9099 },
+    "functions": { "port": 5001 },
+    "firestore": { "port": 8085 },
+    "storage": { "port": 9198 },
+    "ui": { "enabled": false }
+  },
   "remoteconfig": {
     "template": "firebase/remoteconfig.template.json"
-  },
-  "hosting": {
-    "public": "landing/dist",
-    "cleanUrls": true,
-    "trailingSlash": true,
-    "ignore": ["firebase.json", "**/node_modules/**"],
-    "rewrites": [
-      { "source": "/p/**", "destination": "/index.html" },
-      { "source": "/dia{,/**}", "destination": "/index.html" },
-      { "source": "/daily{,/**}", "destination": "/index.html" },
-      { "source": "/aula/**", "destination": "/index.html" },
-      { "source": "/escola/**", "destination": "/index.html" }
-    ],
-    "headers": [
-      {
-        "source": "/.well-known/assetlinks.json",
-        "headers": [{ "key": "Content-Type", "value": "application/json" }]
-      }
-    ]
   }
 }

@@ -1,3 +1,4 @@
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,7 +8,10 @@ import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
 import 'package:lucena/ui/core/keys/next_steps_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
+import 'package:lucena/ui/core/motion/celebracao.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import 'package:lucena/ui/lesson_finished/widgets/lesson_finished_screen.dart';
 
@@ -16,6 +20,7 @@ import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_race_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_survey_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -32,7 +37,11 @@ void main() {
     SurveyKind kind,
     String id, {
     String? next,
+    String? origin,
     List<RaceProblem> problems = raceTestProblems,
+    EndgameTrail? trail,
+    bool settle = true,
+    EntradasVistas? vistas,
   }) async {
     tester.view
       ..physicalSize = const Size(412, 917)
@@ -43,7 +52,7 @@ void main() {
       lessonId: id,
       nextId: next,
       school: FakeLessonRepository(),
-      endgames: FakeEndgameLessonRepository(),
+      endgames: FakeEndgameLessonRepository(trail: trail),
       race: FakeRaceRepository(
         now: FakeNow(DateTime.utc(2026, 1, 1)),
         problems: problems,
@@ -59,18 +68,27 @@ void main() {
       },
     );
     final router = GoRouter(
-      initialLocation: '/finished',
+      initialLocation: Uri(
+        path: '/finished',
+        queryParameters: origin == null ? null : {'origem': origin},
+      ).toString(),
       routes: [
         GoRoute(
           path: '/finished',
-          builder: (context, _) => BlocProvider.value(
-            value: cubit,
-            child: LessonFinishedScreen(kind: kind),
-          ),
+          builder: (context, _) {
+            final screen = BlocProvider.value(
+              value: cubit,
+              child: LessonFinishedScreen(kind: kind),
+            );
+            return vistas == null
+                ? screen
+                : EntradasVistasEscopo(vistas: vistas, child: screen);
+          },
         ),
         stub('/survey/:kind'),
         stub(Routes.school),
         stub(Routes.endgames),
+        stub('/training/:course'),
         stub('/endgames/:id/roteiro'),
         stub(Routes.race),
         stub('/setup'),
@@ -83,25 +101,83 @@ void main() {
         child: const SizedBox.shrink(),
       ),
     );
-    await tester.pumpAndSettle();
+    if (settle) await tester.pumpAndSettle();
   }
+
+  group('H-ANI-25: a aula concluída se monta em ordem', () {
+    const partes = ['estrela', 'titulo', 'viktor', 'botoes'];
+
+    for (final reduced in [false, true]) {
+      testWidgets('selo, título, próximos passos e botões '
+          '(reduzido: $reduced)', (tester) async {
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            FakeAccessibilityFeatures(disableAnimations: reduced);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        await pump(
+          tester,
+          SurveyKind.pilares,
+          'rook.lucena',
+          next: 'rook.philidor',
+          settle: false,
+        );
+        expectEntradaDeResultado(tester, partes: partes, animando: !reduced);
+        // Os botões aceitam toque desde o começo.
+        expect(
+          find.descendant(
+            of: find.byKey(MotionKeys.parteDoResultado('botoes')),
+            matching: find.byKey(LessonFinishedKeys.next),
+          ),
+          findsOneWidget,
+        );
+        await tester.pump(const Duration(milliseconds: 1300));
+        await tester.pump();
+        expect(
+          opacidadeDaParte(
+            tester,
+            find.byKey(MotionKeys.parteDoResultado('botoes')),
+          ),
+          1,
+        );
+        await tester.pumpAndSettle();
+      });
+    }
+
+    testWidgets('a mesma aula concluída de novo na sessão abre pronta', (
+      tester,
+    ) async {
+      final vistas = EntradasVistas();
+      await pump(tester, SurveyKind.pilares, 'rook.lucena', vistas: vistas);
+      await tester.pumpWidget(const SizedBox());
+      await pump(
+        tester,
+        SurveyKind.pilares,
+        'rook.lucena',
+        vistas: vistas,
+        settle: false,
+      );
+      expectEntradaDeResultado(tester, partes: partes, animando: false);
+      await tester.pumpAndSettle();
+    });
+  });
 
   testWidgets('finais: título, convite acima dos botões e a próxima aula', (
     tester,
   ) async {
     await pump(
       tester,
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       'rook.lucena',
       next: 'rook.philidor',
     );
     expect(find.text('Lucena: done!'), findsNothing);
     expect(find.textContaining(': done!'), findsOneWidget);
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsOneWidget);
     expect(find.textContaining('Next: '), findsOneWidget);
     expect(find.text('Back to lessons'), findsOneWidget);
     final invite = tester.getBottomLeft(
-      find.byKey(SurveyKeys.invite(SurveyKind.endgames)),
+      find.byKey(SurveyKeys.invite(SurveyKind.pilares)),
     );
     final next = tester.getTopLeft(find.byKey(LessonFinishedKeys.next));
     expect(invite.dy, lessThan(next.dy));
@@ -111,8 +187,18 @@ void main() {
     expect(opened.last, Routes.endgames);
   });
 
+  testWidgets('H-15: Celebração pequena, só confete, sem escalar a tela', (
+    tester,
+  ) async {
+    await pump(tester, SurveyKind.pilares, 'rook.philidor');
+    final festa = tester.widget<Celebracao>(find.byType(Celebracao));
+    expect(festa.tamanho, TamanhoDaCelebracao.pequena);
+    expect(festa.escalar, isFalse);
+    expect(find.byKey(MotionKeys.diplomaDaCelebracao), findsNothing);
+  });
+
   testWidgets('sem próxima aula só há o botão de voltar', (tester) async {
-    await pump(tester, SurveyKind.endgames, 'rook.philidor');
+    await pump(tester, SurveyKind.pilares, 'rook.philidor');
     expect(find.byKey(LessonFinishedKeys.next), findsNothing);
     expect(find.byKey(LessonFinishedKeys.back), findsOneWidget);
   });
@@ -122,20 +208,20 @@ void main() {
   ) async {
     await pump(tester, SurveyKind.school, 'pieces.rook');
     expect(find.byKey(SurveyKeys.invite(SurveyKind.school)), findsOneWidget);
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsNothing);
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsNothing);
     expect(find.text('Back to school'), findsOneWidget);
     await tester.tap(find.byKey(SurveyKeys.inviteAction(SurveyKind.school)));
     await tester.pumpAndSettle();
-    expect(opened.last, '/survey/school?from=lesson');
+    expect(opened.last, '/survey/school?origem=licao_escola');
   });
 
   testWidgets('com a resposta enviada o convite não aparece', (tester) async {
     await surveys.saveResponse(
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       const SurveyAnswers(rating: 4),
     );
-    await pump(tester, SurveyKind.endgames, 'rook.lucena');
-    expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsNothing);
+    await pump(tester, SurveyKind.pilares, 'rook.lucena');
+    expect(find.byKey(SurveyKeys.invite(SurveyKind.pilares)), findsNothing);
   });
 
   testWidgets('finais: "Próximos passos" com a Corrida e o treino do final', (
@@ -151,7 +237,7 @@ void main() {
     );
     await pump(
       tester,
-      SurveyKind.endgames,
+      SurveyKind.pilares,
       'rook.lucena',
       problems: [...raceTestProblems, lucena],
     );
@@ -166,9 +252,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byKey(NextStepsKeys.block)).dy,
       lessThan(
-        tester
-            .getTopLeft(find.byKey(SurveyKeys.invite(SurveyKind.endgames)))
-            .dy,
+        tester.getTopLeft(find.byKey(SurveyKeys.invite(SurveyKind.pilares))).dy,
       ),
     );
     await tester.tap(find.byKey(NextStepsKeys.option('raceOnly')));
@@ -179,14 +263,89 @@ void main() {
   testWidgets('finais sem o tipo na Corrida: só o treino e o teste', (
     tester,
   ) async {
-    await pump(tester, SurveyKind.endgames, 'rook.lucena');
+    await pump(tester, SurveyKind.pilares, 'rook.lucena');
     expect(find.byKey(NextStepsKeys.option('raceOnly')), findsNothing);
     expect(find.byKey(NextStepsKeys.option('train')), findsOneWidget);
     expect(find.text('Practice this endgame'), findsOneWidget);
   });
 
+  for (final hasPractice in [false, true]) {
+    for (final hasExercises in [false, true]) {
+      testWidgets('next steps practice=$hasPractice exercises=$hasExercises', (
+        tester,
+      ) async {
+        final original = FakeEndgameLessonRepository.sample.lessons.first;
+        expect(original.practice, isNotNull);
+        final lesson = EndgameLesson(
+          id: original.id,
+          module: original.module,
+          lesson: original.lesson,
+          exercises: hasExercises ? original.exercises : const [],
+          passScore: hasExercises ? original.passScore : 0,
+          keyPositions: original.keyPositions,
+          practice: hasPractice ? original.practice : null,
+        );
+        await pump(
+          tester,
+          SurveyKind.pilares,
+          lesson.id,
+          trail: EndgameTrail(
+            modules: [
+              EndgameModule(id: lesson.module, lessons: [lesson]),
+            ],
+          ),
+        );
+        expect(
+          find.byKey(NextStepsKeys.option('train')),
+          hasPractice ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(NextStepsKeys.option('exercises')),
+          hasExercises ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(NextStepsKeys.block),
+          hasPractice || hasExercises ? findsOneWidget : findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('Escola: sem os "Próximos passos"', (tester) async {
     await pump(tester, SurveyKind.school, 'pieces.rook');
     expect(find.byKey(NextStepsKeys.block), findsNothing);
+    final finished = tester
+        .element(find.byType(LessonFinishedScreen))
+        .read<LessonFinishedCubit>()
+        .state;
+    expect(finished.hasExercises, isFalse);
+    expect(finished.practice, isNull);
   });
+  for (final kind in [SurveyKind.school, SurveyKind.pilares]) {
+    for (final close in [false, true]) {
+      testWidgets(
+        'training ${kind.code} completion exit close=$close returns to its course',
+        (tester) async {
+          await pump(
+            tester,
+            kind,
+            kind == SurveyKind.school ? 'pieces.rook' : 'rook.lucena',
+            origin: 'treino_guia',
+          );
+          final action = find.byKey(
+            close ? LessonFinishedKeys.close : LessonFinishedKeys.back,
+          );
+          await tester.ensureVisible(action);
+          await tester.pumpAndSettle();
+          await tester.tap(action);
+          await tester.pumpAndSettle();
+          expect(
+            opened.last,
+            Routes.training(kind == SurveyKind.school ? 'escola' : 'pilares'),
+          );
+        },
+      );
+    }
+  }
 }

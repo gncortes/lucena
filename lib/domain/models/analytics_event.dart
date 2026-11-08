@@ -3,6 +3,7 @@ import 'campaign.dart';
 import 'challenge_link.dart';
 import 'endgame_position.dart';
 import 'game_setup.dart';
+import 'pilares_access.dart';
 
 /// Um evento do Analytics: o nome e os parâmetros da tabela da E1.03.
 ///
@@ -71,7 +72,7 @@ abstract final class AnalyticsCatalog {
     'tipo_aula',
   ];
 
-  /// Os 79 eventos do app.
+  /// Os eventos do app (incluindo o treino T85).
   static const app = <String, List<String>>{
     // Entrada, perfil e conta.
     'tutorial_begin': ['entrada'],
@@ -123,33 +124,130 @@ abstract final class AnalyticsCatalog {
       'motivo', 'lances', 'tempo_s', 'estrelas', 'codigo',
     ],
     'analise_aberta': ['origem', 'posicao_id'],
+    'curso_cartao_home': ['curso', 'estado', 'destino'],
+    'curso_guia_aba': ['curso', 'aba', 'origem'],
+    'treino_meta_inicio': [
+      'curso',
+      'tipo',
+      'aula_id',
+      'estrela',
+      'dia_ciclo',
+      'origem',
+      'mock',
+    ],
+    'treino_meta_fim': [
+      'curso',
+      'tipo',
+      'aula_id',
+      'estrela',
+      'dia_ciclo',
+      'origem',
+      'mock',
+      'acertou',
+      'dicas',
+      'tempo_s',
+      'metas_restantes',
+      'pontos',
+      'fala_erro',
+    ],
+    'treino_trecho_inicio': [
+      'curso',
+      'aula_id',
+      'trecho',
+      'trechos_total',
+      'revisao',
+      'origem',
+      'mock',
+    ],
+    'treino_trecho_fim': [
+      'curso',
+      'aula_id',
+      'trecho',
+      'erros',
+      'toques_voltar',
+      'toques_avancar',
+      'toques_notacao',
+      'tempo_s',
+      'mock',
+    ],
+    'treino_ciclo_fim': [
+      'curso',
+      'aula_id',
+      'fase',
+      'nota',
+      'resultado',
+      'exercicios_mock',
+    ],
+    'treino_ciclo_acao': ['curso', 'aula_id', 'acao'],
+    'treino_aula_extra': ['curso', 'aula_id', 'dia_folga'],
+    'treino_meta_dobrada': ['curso', 'metas_novas'],
+    'treino_dia_completo': ['curso', 'metas', 'aulas_extra', 'dobrou'],
+    'treino_plano_alterado': [
+      'curso',
+      'minutos',
+      'dias',
+      'dias_mascara',
+      'lembrete',
+      'hora',
+      'primeira_vez',
+    ],
+    'treino_lembrete_agendado': ['curso', 'hora', 'metas', 'aula_pendente'],
+    'treino_lembrete_mostrado': ['curso', 'atraso_min'],
+    // Objetivo e torneio (T85, Treino B).
+    'treino_objetivo_definido': ['curso', 'tipo', 'dias_ate_torneio'],
+    'treino_dia_perdido': ['curso', 'opcao'],
+    'torneio_push_agendado': ['curso'],
+    'torneio_push_mostrado': ['curso'],
     // Aulas e exercícios.
     'aula_aberta': [
-      'aula_id', 'tipo_aula', 'origem', 'retomada', 'primeira_vez', //
+      'curso', 'aula_id', 'tipo_aula', 'origem', 'retomada', 'primeira_vez', //
     ],
     'aula_capitulo_inicio': [
-      'aula_id', 'capitulo_id', 'capitulo', 'capitulos_total', 'tipo_aula', //
+      'curso',
+      'aula_id',
+      'capitulo_id',
+      'capitulo',
+      'capitulos_total',
+      'tipo_aula', //
     ],
     'aula_capitulo_fim': [
-      'aula_id', 'capitulo_id', 'capitulo', 'tempo_s', 'exercicios', 'erros', //
+      'curso',
+      'aula_id',
+      'capitulo_id',
+      'capitulo',
+      'tempo_s',
+      'exercicios',
+      'erros', //
       'dicas',
     ],
     'exercicio_resultado': [
-      'aula_id', 'capitulo_id', 'exercicio_id', 'tipo_passo', 'acertou', //
+      'curso',
+      'aula_id',
+      'capitulo_id',
+      'exercicio_id',
+      'tipo_passo',
+      'acertou', //
       'tentativas', 'dicas', 'tempo_s',
     ],
-    'aula_teste_inicio': ['aula_id', 'exercicios'],
+    'aula_teste_inicio': ['curso', 'aula_id', 'exercicios'],
     'aula_teste_fim': [
-      'aula_id', 'aprovado', 'acertos_1a_tentativa', 'exercicios', //
+      'curso', 'aula_id', 'aprovado', 'acertos_1a_tentativa', 'exercicios', //
       'tentativas', 'tempo_s',
     ],
     'aula_concluida': [
-      'aula_id', 'tipo_aula', 'tempo_s', 'erros', 'dicas', 'estrelas', //
-      'sessoes',
+      'curso',
+      'aula_id',
+      'tipo_aula',
+      'tempo_s',
+      'erros',
+      'dicas',
+      'estrelas', //
+      'sessoes', 'origem',
     ],
     // `origem`: `trilha_finais|escola|aula`.
     'aula_indisponivel': ['origem'],
     'aula_saida': [
+      'curso',
       'aula_id',
       'capitulo_id',
       'exercicio_id',
@@ -162,9 +260,8 @@ abstract final class AnalyticsCatalog {
     'final_filtro': ['tipo', 'valor', 'resultados'],
     // Finais em destaque e torneios.
     'final_destaque_aberto': ['final_id', 'torneio_id', 'entrada'],
-    'final_destaque_filtro': ['tipo', 'valor', 'resultados'],
     'final_destaque_torneio': ['torneio_id', 'em_andamento', 'entrada'],
-    'final_destaque_aviso': ['torneio_id', 'ligado'],
+    'final_destaque_aviso': ['ligado'],
     'final_destaque_ache_lance': [
       'final_id', 'acertou', 'tentativas', 'dica', 'ver_resposta', //
     ],
@@ -199,8 +296,16 @@ abstract final class AnalyticsCatalog {
     'anuncio_consentimento': ['resultado', 'origem'],
     'anuncio_pedido': ['resultado', 'aula_id', 'licoes_abertas'],
     'anuncio_visto': ['aula_id', 'ate_o_fim', 'tempo_s', 'licoes_abertas'],
-    'anuncio_remocao': ['etapa', 'origem'],
     'purchase': ['value', 'currency', 'item_id'],
+    // Venda do Pilares (H-VEN-17).
+    'pilares_oferta_vista': ['curso', 'origem', 'destaque'],
+    'pilares_oferta_fechada': ['curso', 'origem', 'destaque'],
+    'pilares_plano_escolhido': ['plano'],
+    'demo_inicio': ['curso', 'capitulo_id'],
+    'demo_fim': ['curso'],
+    'pilares_compra_resultado': ['resultado', 'plano'],
+    'pilares_restaurar': ['resultado'],
+    'pilares_assinatura_encerrada': [],
     // Corrida de problemas.
     'corrida_aquecimento': ['acao'],
     'corrida_iniciada': ['tema', 'recorde'],
@@ -215,6 +320,9 @@ abstract final class AnalyticsCatalog {
     'atualizacao_acao': ['tipo', 'acao', 'via'],
     // Privacidade.
     'privacidade_analytics': ['ligado'],
+    // Baixar meus dados (H-CON-21): ok, erro ou cancelado.
+    'dados_baixados': ['resultado'],
+    'aceite_termos': ['versao'],
   };
 
   /// Os 3 da página de reserva (stream web, E1.01): o app não os registra.
@@ -245,6 +353,220 @@ abstract final class AnalyticsCatalog {
 /// Os eventos do app, um por linha da tabela da E1.03. Os valores de texto
 /// já vêm como código (`vitoria`, `ganhar`...); os `bool` saem `sim|nao`.
 abstract final class AnalyticsEvents {
+  static AnalyticsEvent cursoCartaoHome({
+    required String curso,
+    required String estado,
+    required String destino,
+  }) => _e('curso_cartao_home', {
+    'curso': curso,
+    'estado': estado,
+    'destino': destino,
+  });
+
+  static AnalyticsEvent cursoGuiaAba({
+    required String curso,
+    required String aba,
+    required String origem,
+  }) => _e('curso_guia_aba', {'curso': curso, 'aba': aba, 'origem': origem});
+
+  static AnalyticsEvent treinoMetaInicio({
+    required String curso,
+    required String tipo,
+    required String aulaId,
+    required int estrela,
+    required int diaCiclo,
+    required String origem,
+    required bool mock,
+  }) => _e('treino_meta_inicio', {
+    'curso': curso,
+    'tipo': tipo,
+    'aula_id': aulaId,
+    'estrela': estrela,
+    'dia_ciclo': diaCiclo,
+    'origem': origem,
+    'mock': _yn(mock),
+  });
+
+  static AnalyticsEvent treinoMetaFim({
+    required String curso,
+    required String tipo,
+    required String aulaId,
+    required int estrela,
+    required int diaCiclo,
+    required String origem,
+    required bool mock,
+    required bool acertou,
+    required int dicas,
+    required int tempoS,
+    required int metasRestantes,
+    int? pontos,
+    bool falaErro = false,
+  }) => _e('treino_meta_fim', {
+    'curso': curso,
+    'tipo': tipo,
+    'aula_id': aulaId,
+    'estrela': estrela,
+    'dia_ciclo': diaCiclo,
+    'origem': origem,
+    'mock': _yn(mock),
+    'acertou': _yn(acertou),
+    'dicas': dicas,
+    'tempo_s': tempoS,
+    'metas_restantes': metasRestantes,
+    'pontos': pontos,
+    'fala_erro': _yn(falaErro),
+  });
+
+  static AnalyticsEvent treinoTrechoInicio({
+    required String curso,
+    required String aulaId,
+    required String trecho,
+    required int trechosTotal,
+    required bool revisao,
+    required String origem,
+    required bool mock,
+  }) => _e('treino_trecho_inicio', {
+    'curso': curso,
+    'aula_id': aulaId,
+    'trecho': trecho,
+    'trechos_total': trechosTotal,
+    'revisao': _yn(revisao),
+    'origem': origem,
+    'mock': _yn(mock),
+  });
+
+  static AnalyticsEvent treinoTrechoFim({
+    required String curso,
+    required String aulaId,
+    required String trecho,
+    required int erros,
+    required int toquesVoltar,
+    required int toquesAvancar,
+    required int toquesNotacao,
+    required int tempoS,
+    required bool mock,
+  }) => _e('treino_trecho_fim', {
+    'curso': curso,
+    'aula_id': aulaId,
+    'trecho': trecho,
+    'erros': erros,
+    'toques_voltar': toquesVoltar,
+    'toques_avancar': toquesAvancar,
+    'toques_notacao': toquesNotacao,
+    'tempo_s': tempoS,
+    'mock': _yn(mock),
+  });
+
+  static AnalyticsEvent treinoCicloFim({
+    required String curso,
+    required String aulaId,
+    required String fase,
+    required int nota,
+    required String resultado,
+    required bool exerciciosMock,
+  }) => _e('treino_ciclo_fim', {
+    'curso': curso,
+    'aula_id': aulaId,
+    'fase': fase,
+    'nota': nota,
+    'resultado': resultado,
+    'exercicios_mock': _yn(exerciciosMock),
+  });
+
+  static AnalyticsEvent treinoCicloAcao({
+    required String curso,
+    required String aulaId,
+    required String acao,
+  }) => _e('treino_ciclo_acao', {
+    'curso': curso,
+    'aula_id': aulaId,
+    'acao': acao,
+  });
+
+  static AnalyticsEvent treinoAulaExtra({
+    required String curso,
+    required String aulaId,
+    required bool diaFolga,
+  }) => _e('treino_aula_extra', {
+    'curso': curso,
+    'aula_id': aulaId,
+    'dia_folga': _yn(diaFolga),
+  });
+
+  static AnalyticsEvent treinoMetaDobrada({
+    required String curso,
+    required int metasNovas,
+  }) => _e('treino_meta_dobrada', {'curso': curso, 'metas_novas': metasNovas});
+
+  static AnalyticsEvent treinoDiaCompleto({
+    required String curso,
+    required int metas,
+    required int aulasExtra,
+    required bool dobrou,
+  }) => _e('treino_dia_completo', {
+    'curso': curso,
+    'metas': metas,
+    'aulas_extra': aulasExtra,
+    'dobrou': _yn(dobrou),
+  });
+
+  static AnalyticsEvent treinoPlanoAlterado({
+    required String curso,
+    required int minutos,
+    required int dias,
+    required String diasMascara,
+    required bool lembrete,
+    required int hora,
+    required bool primeiraVez,
+  }) => _e('treino_plano_alterado', {
+    'curso': curso,
+    'minutos': minutos,
+    'dias': dias,
+    'dias_mascara': diasMascara,
+    'lembrete': _yn(lembrete),
+    'hora': hora,
+    'primeira_vez': _yn(primeiraVez),
+  });
+
+  static AnalyticsEvent treinoLembreteAgendado({
+    required String curso,
+    required int hora,
+    required int metas,
+    required bool aulaPendente,
+  }) => _e('treino_lembrete_agendado', {
+    'curso': curso,
+    'hora': hora,
+    'metas': metas,
+    'aula_pendente': _yn(aulaPendente),
+  });
+
+  static AnalyticsEvent treinoLembreteMostrado({
+    required String curso,
+    required int atrasoMin,
+  }) =>
+      _e('treino_lembrete_mostrado', {'curso': curso, 'atraso_min': atrasoMin});
+
+  static AnalyticsEvent treinoObjetivoDefinido({
+    required String curso,
+    required String tipo,
+    int? diasAteTorneio,
+  }) => _e('treino_objetivo_definido', {
+    'curso': curso,
+    'tipo': tipo,
+    'dias_ate_torneio': diasAteTorneio,
+  });
+
+  static AnalyticsEvent treinoDiaPerdido({
+    required String curso,
+    required String opcao,
+  }) => _e('treino_dia_perdido', {'curso': curso, 'opcao': opcao});
+
+  static AnalyticsEvent torneioPushAgendado({required String curso}) =>
+      _e('torneio_push_agendado', {'curso': curso});
+
+  static AnalyticsEvent torneioPushMostrado({required String curso}) =>
+      _e('torneio_push_mostrado', {'curso': curso});
+
   static AnalyticsEvent _e(String name, [Map<String, Object?> p = const {}]) =>
       AnalyticsEvent._(name, p);
 
@@ -641,15 +963,17 @@ abstract final class AnalyticsEvents {
 
   // Aulas e exercícios (E1.05).
 
-  /// `tipo_aula`: `finais|escola`; `origem`:
-  /// `trilha|home|continuar|catalogo|link|aviso`.
+  /// `tipo_aula`: `finais|escola|pilares`; `origem`:
+  /// `trilha|home|continuar|catalogo|link|aviso|treino_home|treino_guia|treino_metas`.
   static AnalyticsEvent aulaAberta({
+    required String curso,
     required String aulaId,
     required String tipoAula,
     required String origem,
     required bool retomada,
     required bool primeiraVez,
   }) => _e('aula_aberta', {
+    'curso': curso,
     'aula_id': aulaId,
     'tipo_aula': tipoAula,
     'origem': origem,
@@ -658,12 +982,14 @@ abstract final class AnalyticsEvents {
   });
 
   static AnalyticsEvent aulaCapituloInicio({
+    required String curso,
     required String aulaId,
     required String capituloId,
     required int capitulo,
     required int capitulosTotal,
     required String tipoAula,
   }) => _e('aula_capitulo_inicio', {
+    'curso': curso,
     'aula_id': aulaId,
     'capitulo_id': capituloId,
     'capitulo': capitulo,
@@ -672,6 +998,7 @@ abstract final class AnalyticsEvents {
   });
 
   static AnalyticsEvent aulaCapituloFim({
+    required String curso,
     required String aulaId,
     required String capituloId,
     required int capitulo,
@@ -680,6 +1007,7 @@ abstract final class AnalyticsEvents {
     required int erros,
     required int dicas,
   }) => _e('aula_capitulo_fim', {
+    'curso': curso,
     'aula_id': aulaId,
     'capitulo_id': capituloId,
     'capitulo': capitulo,
@@ -691,6 +1019,7 @@ abstract final class AnalyticsEvents {
 
   /// `tipo_passo`: `mover|tocar|estrelas`.
   static AnalyticsEvent exercicioResultado({
+    required String curso,
     required String aulaId,
     required String capituloId,
     required String exercicioId,
@@ -700,6 +1029,7 @@ abstract final class AnalyticsEvents {
     required int dicas,
     required Duration tempo,
   }) => _e('exercicio_resultado', {
+    'curso': curso,
     'aula_id': aulaId,
     'capitulo_id': capituloId,
     'exercicio_id': exercicioId,
@@ -711,11 +1041,26 @@ abstract final class AnalyticsEvents {
   });
 
   static AnalyticsEvent aulaTesteInicio({
+    required String curso,
     required String aulaId,
     required int exercicios,
-  }) => _e('aula_teste_inicio', {'aula_id': aulaId, 'exercicios': exercicios});
+  }) => _e('aula_teste_inicio', {
+    'curso': curso,
+    'aula_id': aulaId,
+    'exercicios': exercicios,
+  });
+
+  /// O `curso` dos eventos de aula (H-R5-65): `pilares`, `escola` ou
+  /// `finais` (a trilha de finais, que não é curso à venda).
+  static String cursoDaAula(String aulaId, {required bool finais}) =>
+      aulaId.startsWith('pilares.')
+      ? 'pilares'
+      : finais
+      ? 'finais'
+      : 'escola';
 
   static AnalyticsEvent aulaTesteFim({
+    required String curso,
     required String aulaId,
     required bool aprovado,
     required int acertosPrimeira,
@@ -723,6 +1068,7 @@ abstract final class AnalyticsEvents {
     int? tentativas,
     Duration? tempo,
   }) => _e('aula_teste_fim', {
+    'curso': curso,
     'aula_id': aulaId,
     'aprovado': _yn(aprovado),
     'acertos_1a_tentativa': acertosPrimeira,
@@ -732,6 +1078,7 @@ abstract final class AnalyticsEvents {
   });
 
   static AnalyticsEvent aulaConcluida({
+    required String curso,
     required String aulaId,
     required String tipoAula,
     Duration? tempo,
@@ -739,7 +1086,9 @@ abstract final class AnalyticsEvents {
     int? dicas,
     int? estrelas,
     int? sessoes,
+    String? origem,
   }) => _e('aula_concluida', {
+    'curso': curso,
     'aula_id': aulaId,
     'tipo_aula': tipoAula,
     'tempo_s': _s(tempo),
@@ -747,6 +1096,7 @@ abstract final class AnalyticsEvents {
     'dicas': dicas,
     'estrelas': estrelas,
     'sessoes': sessoes,
+    'origem': origem,
   });
 
   /// "As aulas ainda não estão disponíveis" (o conteúdo não baixou).
@@ -755,12 +1105,14 @@ abstract final class AnalyticsEvents {
       _e('aula_indisponivel', {'origem': origem});
 
   static AnalyticsEvent aulaSaida({
+    required String curso,
     required String aulaId,
     String? capituloId,
     String? exercicioId,
     required Duration tempo,
     int? segAposAnuncio,
   }) => _e('aula_saida', {
+    'curso': curso,
     'aula_id': aulaId,
     'capitulo_id': capituloId,
     'exercicio_id': exercicioId,
@@ -816,17 +1168,6 @@ abstract final class AnalyticsEvents {
     'entrada': entrada,
   });
 
-  /// `tipo`: `pais|origem`.
-  static AnalyticsEvent finalDestaqueFiltro({
-    required String tipo,
-    required String valor,
-    required int resultados,
-  }) => _e('final_destaque_filtro', {
-    'tipo': tipo,
-    'valor': valor,
-    'resultados': resultados,
-  });
-
   static AnalyticsEvent finalDestaqueTorneio({
     required String torneioId,
     required bool emAndamento,
@@ -837,13 +1178,9 @@ abstract final class AnalyticsEvents {
     'entrada': entrada,
   });
 
-  static AnalyticsEvent finalDestaqueAviso({
-    required String torneioId,
-    required bool ligado,
-  }) => _e('final_destaque_aviso', {
-    'torneio_id': torneioId,
-    'ligado': _yn(ligado),
-  });
+  /// O sino geral de finais novos (um só, sem aviso por torneio).
+  static AnalyticsEvent finalDestaqueAviso({required bool ligado}) =>
+      _e('final_destaque_aviso', {'ligado': _yn(ligado)});
 
   static AnalyticsEvent finalDestaqueAcheLance({
     required String finalId,
@@ -934,13 +1271,13 @@ abstract final class AnalyticsEvents {
   });
 
   /// `resposta`: `permitiu|agora_nao|negou_sistema`; `gatilho`:
-  /// `final_dia|final_destaque`.
+  /// `final_dia|final_destaque|treino|avisos`.
   static AnalyticsEvent avisoPedido({
     required String resposta,
     required String gatilho,
   }) => _e('aviso_pedido', {'resposta': resposta, 'gatilho': gatilho});
 
-  /// `tipo`: `torneios|dia|novidades|aulas`.
+  /// `tipo`: `torneios|dia|novidades|aulas|treino`.
   static AnalyticsEvent avisoChave({
     required String tipo,
     required bool ligado,
@@ -1074,17 +1411,66 @@ abstract final class AnalyticsEvents {
     'licoes_abertas': licoesAbertas,
   });
 
-  /// `etapa`: `aberto|comprado|pendente|cancelado|restaurado`; `origem`:
-  /// `perfil|anuncio|privacidade`.
-  static AnalyticsEvent anuncioRemocao({
-    required String etapa,
+  /// Uma tela de venda do Pilares abriu. `origem`:
+  /// `abertura_app|home|destino|metas|catalogo|estatisticas|anuncio|perfil|fim_demo`;
+  /// `destaque`: a tela (`apresentacao|oferta|demo_oferta|antes_inicio|...`).
+  /// `curso`: o curso da oferta (H-R5-65); hoje só o Pilares está à venda.
+  static AnalyticsEvent pilaresOfertaVista({
     required String origem,
-  }) => _e('anuncio_remocao', {'etapa': etapa, 'origem': origem});
+    required String destaque,
+    String curso = 'pilares',
+  }) => _e('pilares_oferta_vista', {
+    'curso': curso,
+    'origem': origem,
+    'destaque': destaque,
+  });
 
-  static AnalyticsEvent purchase({required double value}) => _e('purchase', {
-    'value': value,
-    'currency': 'BRL',
-    'item_id': 'remover_anuncios',
+  static AnalyticsEvent pilaresOfertaFechada({
+    required String origem,
+    required String destaque,
+    String curso = 'pilares',
+  }) => _e('pilares_oferta_fechada', {
+    'curso': curso,
+    'origem': origem,
+    'destaque': destaque,
+  });
+
+  static AnalyticsEvent pilaresPlanoEscolhido({required PilaresPlan plan}) =>
+      _e('pilares_plano_escolhido', {'plano': plan.analytics});
+
+  static AnalyticsEvent demoInicio({
+    required String capituloId,
+    String curso = 'pilares',
+  }) => _e('demo_inicio', {'curso': curso, 'capitulo_id': capituloId});
+
+  static AnalyticsEvent demoFim({String curso = 'pilares'}) =>
+      _e('demo_fim', {'curso': curso});
+
+  /// `resultado`: `ok|cancelada|erro|pendente|sem_internet`.
+  static AnalyticsEvent pilaresCompraResultado({
+    required String resultado,
+    required PilaresPlan plan,
+  }) => _e('pilares_compra_resultado', {
+    'resultado': resultado,
+    'plano': plan.analytics,
+  });
+
+  /// `resultado`: `achou|nao_achou|erro|sem_internet`.
+  static AnalyticsEvent pilaresRestaurar({required String resultado}) =>
+      _e('pilares_restaurar', {'resultado': resultado});
+
+  static AnalyticsEvent pilaresAssinaturaEncerrada() =>
+      _e('pilares_assinatura_encerrada');
+
+  /// A compra do Pilares (H-VEN-17): o valor e a moeda vêm da loja.
+  static AnalyticsEvent purchase({
+    required PilaresPlan plan,
+    double? value,
+    String? currency,
+  }) => _e('purchase', {
+    'value': ?value,
+    'currency': ?currency,
+    'item_id': plan.itemId,
   });
 
   // Corrida de problemas (E1.31).
@@ -1156,6 +1542,14 @@ abstract final class AnalyticsEvents {
 
   static AnalyticsEvent privacidadeAnalytics({required bool ligado}) =>
       _e('privacidade_analytics', {'ligado': _yn(ligado)});
+
+  /// "Baixar meus dados" terminou: `ok`, `erro` ou `cancelado`.
+  static AnalyticsEvent dadosBaixados({required String resultado}) =>
+      _e('dados_baixados', {'resultado': resultado});
+
+  /// Aceitou os Termos e a Política logo depois de criar a conta (H-CON-08).
+  static AnalyticsEvent aceiteTermos({required int versao}) =>
+      _e('aceite_termos', {'versao': versao});
 
   /// O `screen_view` manual: só o nome da rota (`/featured/:id`), nunca o
   /// caminho com id.

@@ -12,25 +12,12 @@ import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/home/widgets/hero_card.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
-import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
 
 /// O cartão azul (T83): só o rótulo do lugar, o título, a barra (com
 /// progresso), a miniatura e o botão.
 void main() {
-  EndgameSummary lucena({bool recommended = false, double progress = 0}) =>
-      EndgameSummary(
-        lessonId: 'rook.lucena',
-        title: 'Posição de Lucena',
-        score: 0,
-        maxScore: 6,
-        teacher: FakeCharacterRepository.viktor,
-        recommended: recommended,
-        progress: progress,
-        fen: '8/8/8/8/8/8/8/K6k w - - 0 1',
-      );
-
   Future<GoRouter> pump(WidgetTester tester, HomeState state) async {
     tester.view
       ..physicalSize = const Size(360, 800)
@@ -51,16 +38,8 @@ void main() {
           ),
         ),
         GoRoute(
-          path: Routes.endgameLesson('rook.lucena'),
-          builder: (_, _) => const Scaffold(body: Text('aula aberta')),
-        ),
-        GoRoute(
-          path: Routes.boardControls,
-          builder: (_, _) => const Scaffold(body: Text('como mover')),
-        ),
-        GoRoute(
-          path: Routes.speedruns,
-          builder: (_, _) => const Scaffold(body: Text('speedrun')),
+          path: Routes.freeBoard,
+          builder: (_, _) => const Scaffold(body: Text('tabuleiro livre')),
         ),
       ],
     );
@@ -96,88 +75,29 @@ void main() {
       )
       .data!;
 
-  testWidgets('aprender a jogar, antes da 1ª partida: os primeiros passos', (
-    tester,
-  ) async {
-    await pump(
-      tester,
-      const HomeState(ready: true, goal: GoalPreference.learn),
-    );
+  testWidgets('sem nada a retomar: nenhum cartão (aprender a jogar, melhorar '
+      'o jogo sem treino e sem Jornada)', (tester) async {
+    for (final goal in [GoalPreference.learn, GoalPreference.improve, null]) {
+      await pump(tester, HomeState(ready: true, goal: goal));
 
-    expect(text(tester, HomeKeys.heroLabel), 'Primeiros passos');
-    expect(text(tester, HomeKeys.goalTitle), 'Como mover as peças');
-    expect(action(tester), 'Começar');
-    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
-    expect(find.byKey(HomeKeys.heroProgress), findsNothing);
-    await tester.tap(find.byKey(HomeKeys.goalAction));
-    await tester.pumpAndSettle();
-    expect(find.text('como mover'), findsOneWidget);
+      expect(find.byKey(HomeKeys.goalCard), findsNothing, reason: '$goal');
+    }
   });
 
-  testWidgets('aprender finais, 1º capítulo: Começar, sem barra', (
-    tester,
-  ) async {
-    await pump(
+  testWidgets('explorar posições: Tabuleiro livre, Sua última posição, '
+      'Continuar', (tester) async {
+    final router = await pump(
       tester,
-      HomeState(
-        ready: true,
-        goal: GoalPreference.endgames,
-        endgame: lucena(recommended: true),
-      ),
+      const HomeState(ready: true, goal: GoalPreference.explore),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Curso de finais');
-    expect(text(tester, HomeKeys.goalTitle), 'Posição de Lucena');
-    expect(action(tester), 'Começar');
-    expect(find.byKey(HomeKeys.heroProgress), findsNothing);
-    await tester.tap(find.byKey(HomeKeys.goalAction));
-    await tester.pumpAndSettle();
-    expect(find.text('aula aberta'), findsOneWidget);
-  });
-
-  testWidgets('capítulo no meio: a barra e Continuar', (tester) async {
-    await pump(
-      tester,
-      HomeState(
-        ready: true,
-        goal: GoalPreference.endgames,
-        endgame: lucena(progress: 0.4),
-      ),
-    );
-
+    expect(text(tester, HomeKeys.heroLabel), 'Tabuleiro livre');
+    expect(text(tester, HomeKeys.goalTitle), 'Sua última posição');
     expect(action(tester), 'Continuar');
-    expect(find.byKey(HomeKeys.heroProgress), findsOneWidget);
-    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
-  });
-
-  testWidgets('curso concluído: Treinar, sem tabuleiro', (tester) async {
-    await pump(
-      tester,
-      const HomeState(
-        ready: true,
-        goal: GoalPreference.endgames,
-        courseDone: true,
-      ),
-    );
-
-    expect(text(tester, HomeKeys.heroLabel), 'Curso de finais');
-    expect(text(tester, HomeKeys.goalTitle), 'Curso concluído');
-    expect(action(tester), 'Treinar');
-    expect(find.byKey(HomeKeys.heroBoard), findsNothing);
-  });
-
-  testWidgets('nada por fazer: o speedrun do Coco ao Stockfish', (
-    tester,
-  ) async {
-    await pump(tester, const HomeState(ready: true));
-
-    expect(text(tester, HomeKeys.heroLabel), 'Speedrun');
-    expect(text(tester, HomeKeys.goalTitle), 'Do Coco ao Stockfish');
-    expect(action(tester), 'Jogar');
-    expect(find.byKey(HomeKeys.heroBoard), findsNothing);
+    expect(find.byKey(HomeKeys.heroProgress), findsNothing);
     await tester.tap(find.byKey(HomeKeys.goalCard));
     await tester.pumpAndSettle();
-    expect(find.text('speedrun'), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, Routes.freeBoard);
   });
 
   testWidgets('escola: a lição da vez e a barra', (tester) async {
@@ -200,10 +120,9 @@ void main() {
   ) async {
     await pump(
       tester,
-      HomeState(
+      const HomeState(
         ready: true,
-        goal: GoalPreference.endgames,
-        endgame: lucena(progress: 0.4),
+        school: SchoolSummary(done: 2, total: 6, teacher: null),
       ),
     );
 
@@ -216,7 +135,10 @@ void main() {
   });
 
   testWidgets('o botão desenha 36 e toca em 48 (D6)', (tester) async {
-    await pump(tester, const HomeState(ready: true));
+    await pump(
+      tester,
+      const HomeState(ready: true, goal: GoalPreference.explore),
+    );
 
     final button = find.byKey(HomeKeys.goalAction);
     final pill = find.descendant(of: button, matching: find.byType(Material));
@@ -225,7 +147,10 @@ void main() {
   });
 
   testWidgets('sem barra, o botão fica encostado à direita', (tester) async {
-    await pump(tester, const HomeState(ready: true));
+    await pump(
+      tester,
+      const HomeState(ready: true, goal: GoalPreference.explore),
+    );
 
     final card = tester.getRect(find.byKey(HomeKeys.goalCard));
     final button = tester.getRect(find.byKey(HomeKeys.goalAction));

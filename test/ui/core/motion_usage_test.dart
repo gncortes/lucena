@@ -19,6 +19,7 @@ void main() {
   // Arquivo → trechos permitidos, cada um com o motivo.
   const exceptions = <String, Map<String, String>>{
     'lib/ui/core/theme/app_motion.dart': {'': 'os próprios tokens'},
+    'lib/ui/core/motion/lucena_motion.dart': {'': 'os tokens do kit (T85)'},
     'lib/ui/level/widgets/level_chess_screen.dart': {
       '_pause = Duration(': 'pausa da digitação antes de buscar o usuário',
     },

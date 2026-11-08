@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../data/repositories/analysis/analysis_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
+import '../data/repositories/deep_analysis/deep_analysis_repository.dart';
 import '../data/repositories/journey/journey_repository.dart';
 import '../data/repositories/progress/progress_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
@@ -47,6 +48,7 @@ Widget gameDetailsDestination(BuildContext context, int id) {
       characters: context.read<CharacterRepository>(),
       analysis: context.read<AnalysisRepository>(),
       reviews: context.read<GameReviewRepository>(),
+      deepAnalysis: context.read<DeepAnalysisRepository>(),
       lessons: context.read<LessonRepository>(),
       settings: context.read<SettingsRepository>(),
     )..load(language: language),

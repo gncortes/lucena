@@ -4,47 +4,65 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/course_preview.dart';
+import '../../../domain/models/pilares_access.dart';
+import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/course_preview_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../pilares_sale/view_models/pilares_prices_cubit.dart';
 import '../view_models/course_preview_cubit.dart';
+import 'course_sale_parts.dart';
 
-/// A página de venda do Pilares do Xadrez (canvas `PropV2CursoApresentacao`,
-/// `PropV2CursoVendaRecolhida`, `…Conteudo` e `…Duvidas`): a barra que
-/// recolhe (o nome aparece no centro quando o topo some), o topo com os
-/// números, o preço e o Viktor, as abas fixas que filtram o miolo e o botão
-/// "Comprar" fixo embaixo. Prévia: comprar não faz nada.
+/// A apresentação do Pilares do Xadrez (H-VEN-01, canvas
+/// `PropV2CursoApresentacao`, `…VendaRecolhida`, `…VendaConteudo` e
+/// `…VendaDuvidas`): o nome sempre na barra, o topo com os números, o que vem
+/// além do curso, o preço da loja, o comparativo de custo e o Viktor; as abas
+/// fixas filtram o miolo e "Ver opções de compra" abre a oferta.
 class CourseSaleScreen extends StatelessWidget {
-  const CourseSaleScreen({super.key});
+  const CourseSaleScreen({this.origin, super.key});
+
+  /// De onde a apresentação foi aberta (vai à oferta, para o analytics).
+  final String? origin;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CoursePreviewCubit, CoursePreviewState>(
-      builder: (context, state) {
-        final sale = state.preview?.sale;
-        if (sale == null) {
-          return const Scaffold(key: CoursePreviewKeys.sale);
-        }
-        return _SalePage(sale: sale, viktor: state.viktor);
-      },
-    );
+    final loadState = context.watch<CoursePreviewCubit>().state;
+    if (!loadState.ready && loadState.failure == null) {
+      return const LoadSkeletonScreen();
+    }
+    if (loadState.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<CoursePreviewCubit>().retryLoad,
+        onBack: () => _back(context),
+      );
+    }
+    final sale = loadState.preview?.sale;
+    if (sale == null) return const Scaffold(key: CoursePreviewKeys.sale);
+    return _SalePage(sale: sale, viktor: loadState.viktor, origin: origin);
   }
 }
 
+void _back(BuildContext context) =>
+    context.canPop() ? context.pop() : context.go(Routes.home);
+
 class _SalePage extends StatefulWidget {
-  const _SalePage({required this.sale, required this.viktor});
+  const _SalePage({required this.sale, required this.viktor, this.origin});
 
   final CourseSale sale;
   final Character? viktor;
+  final String? origin;
 
   @override
   State<_SalePage> createState() => _SalePageState();
@@ -52,14 +70,14 @@ class _SalePage extends StatefulWidget {
 
 class _SalePageState extends State<_SalePage>
     with SingleTickerProviderStateMixin {
-  late final _tabs = TabController(length: 3, vsync: this)
-    ..addListener(_tabChanged);
+  // O índice muda na hora: quem cruza as abas é o AbasFadeThrough (450 ms).
+  late final _tabs = TabController(
+    length: 3,
+    vsync: this,
+    animationDuration: Duration.zero,
+  )..addListener(_tabChanged);
   final _scroll = ScrollController();
   final _hero = GlobalKey();
-  var _collapsed = false;
-
-  /// apresentacao_corpo: 8 de respiro + sobretítulo (20) + 4 + nome (32).
-  static const _titleBottom = 64.0;
 
   @override
   void dispose() {
@@ -78,63 +96,53 @@ class _SalePageState extends State<_SalePage>
     }
   }
 
-  bool _onScroll(ScrollNotification notification) {
-    if (notification.depth != 0) return false;
-    final collapsed = notification.metrics.pixels > _titleBottom;
-    if (collapsed != _collapsed) setState(() => _collapsed = collapsed);
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final sale = widget.sale;
     final page = theme.scaffoldBackgroundColor;
-    return Scaffold(
-      key: CoursePreviewKeys.sale,
-      // rodape_fixo: 16 16 24 no fundo da página.
-      bottomNavigationBar: ColoredBox(
-        color: page,
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.xl,
-            ),
-            child: SizedBox(
-              height: kButtonHeight,
-              child: FilledButton(
-                key: CoursePreviewKeys.buy,
-                // Prévia: a compra (Play Billing) fica fora da T82.
-                onPressed: () {},
-                child: Text(l10n.courseBuy(sale.price)),
+    return EntradaDaTela(
+      id: 'PropV2CursoApresentacao',
+      child: Scaffold(
+        key: CoursePreviewKeys.sale,
+        // rodape_fixo: 16 16 24 no fundo da página.
+        bottomNavigationBar: ColoredBox(
+          color: page,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.xl,
+              ),
+              child: SizedBox(
+                height: kButtonHeight,
+                child: FilledButton(
+                  key: CoursePreviewKeys.buy,
+                  onPressed: () =>
+                      context.push(D2Paths.offer(origin: widget.origin)),
+                  child: Text(l10n.venSaleBuy),
+                ),
               ),
             ),
           ),
         ),
-      ),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: _onScroll,
-        child: CustomScrollView(
+        body: CustomScrollView(
           key: CoursePreviewKeys.saleScroll,
           controller: _scroll,
           slivers: [
+            // O nome sempre na barra, sem subtítulo e com os mesmos ícones.
             SliverAppBar(
               pinned: true,
               centerTitle: true,
               backgroundColor: page,
               surfaceTintColor: AppColors.clear,
               scrolledUnderElevation: 0,
-              // Expandida sem título; recolhida, o nome no centro.
-              title: AnimatedOpacity(
-                opacity: _collapsed ? 1 : 0,
-                duration: AppMotion.state,
-                child: Text(sale.title),
-              ),
+              leading: BackButton(onPressed: () => _back(context)),
+              title: Text(sale.title),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -150,40 +158,10 @@ class _SalePageState extends State<_SalePage>
             ),
             SliverPersistentHeader(
               pinned: true,
-              delegate: _TabsHeader(
+              delegate: SaleTabsHeader(
+                controller: _tabs,
                 color: page,
-                tabs: TabBar(
-                  controller: _tabs,
-                  dividerHeight: 0,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  // abas_venda: indicador de 3 com 12 de recuo (cantos no token de 4).
-                  indicator: UnderlineTabIndicator(
-                    borderSide: BorderSide(
-                      width: 3,
-                      color: theme.colorScheme.primary,
-                    ),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(AppShape.tiny),
-                    ),
-                    insets: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                    ),
-                  ),
-                  labelColor: theme.colorScheme.primary,
-                  unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                  labelStyle: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  tabs: [
-                    for (final (i, label) in [
-                      l10n.courseSaleOverview,
-                      l10n.courseSaleContent,
-                      l10n.courseSaleFaq,
-                    ].indexed)
-                      Tab(key: CoursePreviewKeys.tab(i), text: label),
-                  ],
-                ),
-                line: theme.colorScheme.outlineVariant,
+                keyOf: CoursePreviewKeys.tab,
               ),
             ),
             SliverPadding(
@@ -194,11 +172,14 @@ class _SalePageState extends State<_SalePage>
                 AppSpacing.xxl,
               ),
               sliver: SliverToBoxAdapter(
-                child: switch (_tabs.index) {
-                  0 => _Overview(sale: sale),
-                  1 => _Content(sale: sale),
-                  _ => _Faq(items: sale.faq),
-                },
+                child: SaleTabBody(
+                  index: _tabs.index,
+                  child: switch (_tabs.index) {
+                    0 => _Overview(sale: sale),
+                    1 => _Content(sale: sale),
+                    _ => SaleFaq(items: sale.faq, keyOf: CoursePreviewKeys.faq),
+                  },
+                ),
               ),
             ),
           ],
@@ -208,139 +189,8 @@ class _SalePageState extends State<_SalePage>
   }
 }
 
-/// As abas grudadas embaixo da barra: 48 e a linha fina (abas_venda).
-class _TabsHeader extends SliverPersistentHeaderDelegate {
-  const _TabsHeader({
-    required this.tabs,
-    required this.color,
-    required this.line,
-  });
-
-  final TabBar tabs;
-  final Color color;
-  final Color line;
-
-  static const _height = 48.0 + 1;
-
-  @override
-  double get minExtent => _height;
-
-  @override
-  double get maxExtent => _height;
-
-  @override
-  Widget build(BuildContext context, double shrink, bool overlaps) =>
-      DecoratedBox(
-        decoration: BoxDecoration(
-          color: color,
-          border: Border(bottom: BorderSide(color: line)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 1),
-          child: SizedBox(height: 48, child: tabs),
-        ),
-      );
-
-  @override
-  bool shouldRebuild(_TabsHeader old) =>
-      old.tabs != tabs || old.color != color || old.line != line;
-}
-
-/// O ícone do item pelo nome do Material Icons que vem do canvas.
-IconData _icon(String? name) => switch (name) {
-  'warning' => Icons.warning_amber_rounded,
-  'trending_flat' => Icons.trending_flat_rounded,
-  'help' => Icons.help_outline_rounded,
-  'auto_stories' => Icons.auto_stories_outlined,
-  'school' => Icons.school_outlined,
-  'menu_book' => Icons.menu_book_outlined,
-  'emoji_events' => Icons.emoji_events_outlined,
-  'record_voice_over' => Icons.record_voice_over_outlined,
-  'smart_toy' => Icons.smart_toy_outlined,
-  'rule' => Icons.rule_rounded,
-  'tune' => Icons.tune_rounded,
-  'event_repeat' => Icons.event_repeat_rounded,
-  'cloud_off' => Icons.cloud_off_outlined,
-  'how_to_reg' => Icons.how_to_reg_outlined,
-  'avg_pace' => Icons.timer_outlined,
-  'stacked_line_chart' => Icons.stacked_line_chart_rounded,
-  'vpn_key' => Icons.vpn_key_outlined,
-  'currency_exchange' => Icons.currency_exchange_rounded,
-  _ => Icons.circle_outlined,
-};
-
-/// O verde de "feito" (#2E6B3A) e o fundo claro dele no canvas (#E2F0E4).
-const _green = AppColors.record;
-final _greenSoft = AppColors.record.withValues(alpha: 0.12);
-
-TextStyle? _strong(
-  BuildContext context, {
-  double size = 16,
-  double line = 22,
-}) => Theme.of(context).textTheme.titleMedium?.copyWith(
-  fontSize: size,
-  height: line / size,
-  fontWeight: AppWeight.strong,
-);
-
-TextStyle? _body(BuildContext context, {Color? color}) =>
-    Theme.of(context).textTheme.bodyMedium?.copyWith(
-      fontSize: 14,
-      height: 20 / 14,
-      color: color ?? Theme.of(context).colorScheme.onSurfaceVariant,
-    );
-
-/// Um cartão branco da página (cartao: 16 de respiro, cantos de 16).
-class _Card extends StatelessWidget {
-  const _Card({
-    required this.children,
-    this.spacing = AppSpacing.md,
-    this.padding = const EdgeInsets.all(AppSpacing.lg),
-    this.color,
-  });
-
-  final List<Widget> children;
-  final double spacing;
-  final EdgeInsetsGeometry padding;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: color ?? Theme.of(context).colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
-    ),
-    child: Padding(
-      padding: padding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: spacing,
-        children: children,
-      ),
-    ),
-  );
-}
-
-/// O título de seção da venda (CompSecao tamanho="titulo": 20, 16 acima e 4
-/// abaixo).
-class _Section extends StatelessWidget {
-  const _Section(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.xs),
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 40),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Text(text, style: _strong(context, size: 20, line: 26)),
-      ),
-    ),
-  );
-}
-
+/// O topo (quadro PropV2CursoApresentacao): a linha, os números, o que vem
+/// além do curso, o preço, o comparativo e a fala do Viktor.
 class _Hero extends StatelessWidget {
   const _Hero({required this.sale, required this.viktor});
 
@@ -352,52 +202,76 @@ class _Hero extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final viktor = this.viktor;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          sale.overline,
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(sale.title, style: _strong(context, size: 24, line: 32)),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          sale.line,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontSize: 15,
-            height: 22 / 15,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        Row(
-          spacing: AppSpacing.sm,
+    final benefits = sale.benefits;
+    // H-ANI-16 (01b): subtítulo, números, a lista item a item, o preço, o
+    // comparativo e o Viktor. O título fica na app bar e não entra.
+    return EntradaEmCascata(
+      montar: (itens) {
+        final tail = itens.sublist(3 + benefits.length);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _Number(value: '${sale.lessons}', label: l10n.courseLessonsLabel),
-            _Number(value: sale.exercises, label: l10n.courseExercisesLabel),
+            itens[0],
+            const SizedBox(height: AppSpacing.lg),
+            itens[1],
+            const SizedBox(height: AppSpacing.md),
+            SaleCard(
+              spacing: 14,
+              children: itens.sublist(2, 3 + benefits.length),
+            ),
+            for (final item in tail) ...[
+              const SizedBox(height: AppSpacing.md),
+              item,
+            ],
           ],
-        ),
-        const SizedBox(height: AppSpacing.md),
-        _PriceCard(sale: sale),
-        if (viktor != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          TeacherSpeech(
-            teacher: viktor,
-            text: sale.speech,
-            speechContext: SpeechContext.teaching,
-            avatarSize: CharacterAvatar.speech,
+        );
+      },
+      itens: [
+        ItemDaCascata.texto(
+          Text(
+            sale.line,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontSize: 15,
+              height: 22 / 15,
+            ),
           ),
-        ],
-        _Section(l10n.courseSaleHow),
-        _Steps(steps: sale.how),
+        ),
+        ItemDaCascata.numero(
+          Row(
+            spacing: AppSpacing.sm,
+            children: [
+              _Number(value: '${sale.lessons}', label: l10n.courseLessonsLabel),
+              _Number(value: sale.exercises, label: l10n.courseExercisesLabel),
+            ],
+          ),
+        ),
+        ItemDaCascata.texto(_BenefitsHeader(sale: sale)),
+        for (final (i, item) in benefits.indexed)
+          ItemDaCascata.texto(
+            SaleIconLine(
+              key: CoursePreviewKeys.benefit(i),
+              item: item,
+              green: i.isOdd,
+            ),
+          ),
+        ItemDaCascata.texto(_PriceCard(sale: sale)),
+        ItemDaCascata.texto(SaleCostCompare(sale: sale)),
+        if (viktor != null)
+          ItemDaCascata.texto(
+            TeacherSpeech(
+              teacher: viktor,
+              text: sale.speech,
+              speechContext: SpeechContext.teaching,
+              avatarSize: CharacterAvatar.speech,
+            ),
+          ),
       ],
     );
   }
 }
 
-/// Um número do topo (numeros): o valor grande em azul e o rótulo embaixo.
+/// Um número do topo: o valor grande em azul e o rótulo embaixo (#FAFBF9,
+/// borda #E1E5DF, cantos de 16, 12 8 de respiro).
 class _Number extends StatelessWidget {
   const _Number({required this.value, required this.label});
 
@@ -408,17 +282,17 @@ class _Number extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Expanded(
-      child: _Card(
+      child: SaleCard(
+        color: AppColors.cardSurface,
         padding: const EdgeInsets.symmetric(
           vertical: AppSpacing.md,
           horizontal: AppSpacing.sm,
         ),
         spacing: 2,
         children: [
-          Text(
+          saleCount(
             value,
-            textAlign: TextAlign.center,
-            style: _strong(
+            style: saleStrong(
               context,
               size: AppIconSize.standard,
               line: 30,
@@ -439,8 +313,26 @@ class _Number extends StatelessWidget {
   }
 }
 
-/// O preço no topo (preco_topo, variante A): cartão azul cheio, o valor em
-/// branco e o reembolso embaixo da linha.
+/// "Mais que um curso de xadrez": o título e a linha do cartão; os 8 itens
+/// (azul e verde alternados) entram um a um na cascata do topo.
+class _BenefitsHeader extends StatelessWidget {
+  const _BenefitsHeader({required this.sale});
+
+  final CourseSale sale;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: AppSpacing.xs,
+    children: [
+      Text(sale.benefitsTitle, style: saleStrong(context, size: 20, line: 26)),
+      Text(sale.benefitsLine, style: saleBody(context)),
+    ],
+  );
+}
+
+/// O preço (preco_topo): o vitalício da loja, a nota, o mensal num quadro
+/// claro e os capítulos liberados embaixo da linha.
 class _PriceCard extends StatelessWidget {
   const _PriceCard({required this.sale});
 
@@ -451,6 +343,7 @@ class _PriceCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final on = theme.colorScheme.onPrimary;
+    final prices = context.watch<PilaresPricesCubit>().state;
     return DecoratedBox(
       key: CoursePreviewKeys.priceCard,
       decoration: BoxDecoration(
@@ -465,7 +358,7 @@ class _PriceCard extends StatelessWidget {
           spacing: 2,
           children: [
             Text(
-              l10n.courseSalePrice,
+              sale.lifetimeTitle,
               style: theme.textTheme.labelMedium?.copyWith(
                 fontSize: 13,
                 height: 18 / 13,
@@ -474,12 +367,51 @@ class _PriceCard extends StatelessWidget {
               ),
             ),
             Text(
-              sale.price,
-              style: _strong(context, size: 32, line: 38)?.copyWith(color: on),
+              prices[PilaresPlan.lifetime] ?? l10n.venRefLifetime,
+              style: saleStrong(
+                context,
+                size: 32,
+                line: 38,
+              )?.copyWith(color: on),
             ),
             Text(
-              sale.priceNote,
-              style: _body(context, color: on.withValues(alpha: 0.87)),
+              sale.lifetimeNote,
+              style: saleBody(context, color: on.withValues(alpha: 0.87)),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            DecoratedBox(
+              key: CoursePreviewKeys.planMonthly,
+              decoration: BoxDecoration(
+                color: on.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(AppShape.medium),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: AppSpacing.md,
+                ),
+                child: Row(
+                  spacing: AppSpacing.sm,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        sale.monthlyQuestion,
+                        style: saleBody(context, color: on),
+                      ),
+                    ),
+                    Text(
+                      l10n.venPerMonth(
+                        prices[PilaresPlan.monthly] ?? l10n.venRefMonthly,
+                      ),
+                      style: saleStrong(
+                        context,
+                        size: 15,
+                        line: 20,
+                      )?.copyWith(color: on),
+                    ),
+                  ],
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.md),
@@ -495,15 +427,15 @@ class _PriceCard extends StatelessWidget {
                     spacing: AppSpacing.sm,
                     children: [
                       // #BFE3C6 no canvas: o verde claro das metas.
-                      Icon(
-                        Icons.verified_user_outlined,
+                      const Icon(
+                        Icons.lock_open_rounded,
                         size: AppIconSize.button,
                         color: AppColors.goalWinBg,
                       ),
                       Expanded(
                         child: Text(
-                          l10n.courseSaleRefund,
-                          style: _body(context, color: on),
+                          sale.unlock,
+                          style: saleBody(context, color: on),
                         ),
                       ),
                     ],
@@ -514,131 +446,6 @@ class _PriceCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// "Como você aprende" (ciclo): os passos ligados por uma linha vertical.
-class _Steps extends StatelessWidget {
-  const _Steps({required this.steps});
-
-  final List<CourseSaleItem> steps;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return _Card(
-      spacing: 0,
-      children: [
-        for (final (i, step) in steps.indexed)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: 14,
-              children: [
-                SizedBox(
-                  width: 32,
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: colors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '${i + 1}',
-                          style: _strong(
-                            context,
-                            size: 15,
-                            line: 20,
-                          )?.copyWith(color: colors.onPrimary),
-                        ),
-                      ),
-                      if (i < steps.length - 1)
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: AppSpacing.xs,
-                            ),
-                            child: SizedBox(
-                              width: 2,
-                              child: ColoredBox(color: colors.primaryContainer),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: 5,
-                      bottom: i < steps.length - 1 ? AppSpacing.lg : 0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 2,
-                      children: [
-                        Text(step.title, style: _strong(context)),
-                        if (step.summary != null)
-                          Text(step.summary!, style: _body(context)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-/// Uma linha com ícone num círculo (linha_recurso); sem frase, centrada.
-class _IconLine extends StatelessWidget {
-  const _IconLine({required this.item, this.green = false});
-
-  final CourseSaleItem item;
-  final bool green;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final summary = item.summary;
-    return Row(
-      crossAxisAlignment: summary == null
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
-      spacing: 14,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: green ? _greenSoft : colors.primaryContainer,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            _icon(item.icon),
-            size: AppIconSize.standard,
-            color: green ? _green : colors.primary,
-          ),
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 2,
-            children: [
-              Text(item.title, style: _strong(context)),
-              if (summary != null) Text(summary, style: _body(context)),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
@@ -652,13 +459,12 @@ class _Overview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colors = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _Section(l10n.courseSaleLearn),
+        SaleSection(l10n.courseSaleLearn),
         // lista_check: check verde, título e frase, 14 entre os itens.
-        _Card(
+        SaleCard(
           spacing: 14,
           children: [
             for (final item in sale.learn)
@@ -666,19 +472,19 @@ class _Overview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: AppSpacing.md,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.check_circle,
                     size: AppIconSize.standard,
-                    color: _green,
+                    color: saleGreen,
                   ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 2,
                       children: [
-                        Text(item.title, style: _strong(context)),
-                        if (item.summary != null)
-                          Text(item.summary!, style: _body(context)),
+                        Text(item.title, style: saleStrong(context)),
+                        if (item.summary case final summary?)
+                          Text(summary, style: saleBody(context)),
                       ],
                     ),
                   ),
@@ -686,64 +492,23 @@ class _Overview extends StatelessWidget {
               ),
           ],
         ),
-        _Section(l10n.courseSaleAudience),
+        SaleSection(l10n.courseSaleAudience),
         // cartao_faixa: abre a tela "Para quem é" (PropV2CursoFaixa).
-        Material(
-          color: colors.primaryContainer,
-          borderRadius: BorderRadius.circular(AppShape.large),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            key: CoursePreviewKeys.audience,
-            onTap: () => context.push(Routes.pilaresBand),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Row(
-                spacing: AppSpacing.md,
-                children: [
-                  Icon(
-                    Icons.groups_outlined,
-                    size: AppIconSize.standard,
-                    color: colors.primary,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 2,
-                      children: [
-                        Text(sale.audience.title, style: _strong(context)),
-                        if (sale.audience.summary != null)
-                          Text(
-                            sale.audience.summary!,
-                            style: _body(context, color: colors.onSurface),
-                          ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    size: AppIconSize.standard,
-                    color: colors.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
+        SaleAudienceCard(
+          item: sale.audience,
+          tapKey: CoursePreviewKeys.audience,
         ),
         const SizedBox(height: AppSpacing.sm),
-        _Card(
+        SaleCard(
           children: [
-            for (final item in sale.audienceItems) _IconLine(item: item),
+            for (final item in sale.audienceItems) SaleIconLine(item: item),
           ],
         ),
-        _Section(l10n.courseSaleIncluded),
-        // card_recursos: o que vem no curso (azul), a linha e o que o app faz
-        // no treino (verde).
-        _Card(
+        SaleSection(l10n.courseSaleIncluded),
+        SaleCard(
           spacing: AppSpacing.lg,
           children: [
-            for (final item in sale.included) _IconLine(item: item),
-            Divider(height: 1, thickness: 1, color: colors.outlineVariant),
-            for (final item in sale.app) _IconLine(item: item, green: true),
+            for (final item in sale.included) SaleIconLine(item: item),
           ],
         ),
       ],
@@ -751,7 +516,8 @@ class _Overview extends StatelessWidget {
   }
 }
 
-/// A aba Conteúdo: o atalho dos exercícios (teste de nível) e o sumário.
+/// A aba Conteúdo: o teste de nível e o sumário por parte (a primeira
+/// aberta).
 class _Content extends StatelessWidget {
   const _Content({required this.sale});
 
@@ -760,353 +526,20 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: AppSpacing.lg),
-        // destaque_nivel.
-        _Card(
-          color: colors.primaryContainer,
-          spacing: 10,
-          children: [
-            Row(
-              spacing: 10,
-              children: [
-                Icon(
-                  Icons.insights_rounded,
-                  size: AppIconSize.standard,
-                  color: colors.primary,
-                ),
-                Expanded(
-                  child: Text(
-                    sale.level.title,
-                    style: _strong(context, size: 17),
-                  ),
-                ),
-              ],
-            ),
-            if (sale.level.summary != null)
-              Text(
-                sale.level.summary!,
-                style: _body(context, color: colors.onSurface),
-              ),
-            _Card(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
-              spacing: 0,
-              children: [
-                for (final example in sale.levelExamples)
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 36),
-                    child: Row(
-                      spacing: AppSpacing.md,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            example.title,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontSize: 15,
-                              height: 20 / 15,
-                            ),
-                          ),
-                        ),
-                        _Pill(text: example.status, tone: example.tone),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ),
-        _Section(l10n.courseSaleSummary),
-        Text(sale.summaryNote, style: _body(context)),
+        SaleLevelCard(item: sale.level, examples: sale.levelExamples),
+        SaleSection(l10n.courseSaleSummary),
+        Text(sale.summaryNote, style: saleBody(context)),
         const SizedBox(height: AppSpacing.md),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.sm,
-          children: [
-            for (final (i, part) in sale.parts.indexed)
-              _PartTile(
-                key: CoursePreviewKeys.part(i),
-                part: part,
-                initiallyOpen: i == 0,
-              ),
-          ],
+        SaleSummary(
+          parts: sale.parts,
+          openings: sale.openings,
+          keyOf: CoursePreviewKeys.part,
         ),
       ],
-    );
-  }
-}
-
-/// A situação do exemplo do teste de nível.
-class _Pill extends StatelessWidget {
-  const _Pill({required this.text, required this.tone});
-
-  final String text;
-  final String tone;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final (foreground, background) = switch (tone) {
-      'mastered' => (_green, _greenSoft),
-      // #8A5A00 sobre #FBEFD6 no canvas: o âmbar das estrelas.
-      'review' => (
-        AppColors.goldInk,
-        AppColors.goldColor.withValues(alpha: 0.2),
-      ),
-      _ => (colors.primary, colors.primaryContainer),
-    };
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppShape.full),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-        child: Text(
-          text,
-          style: theme.textTheme.labelMedium?.copyWith(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: foreground,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Uma parte do sumário (parte_fechada e parte_aberta, Sumário B): tocar no
-/// cabeçalho abre todos os capítulos de uma vez, sem expansível por capítulo.
-/// Na prévia, tocar num capítulo aberto leva ao mapa.
-class _PartTile extends StatefulWidget {
-  const _PartTile({required this.part, required this.initiallyOpen, super.key});
-
-  final CourseSalePart part;
-  final bool initiallyOpen;
-
-  @override
-  State<_PartTile> createState() => _PartTileState();
-}
-
-class _PartTileState extends State<_PartTile> {
-  late bool _open = widget.initiallyOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final part = widget.part;
-    return Material(
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
-      clipBehavior: Clip.antiAlias,
-      child: AnimatedSize(
-        duration: AppMotion.panel,
-        alignment: Alignment.topCenter,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            InkWell(
-              key: CoursePreviewKeys.partHeader(part.number),
-              onTap: () => setState(() => _open = !_open),
-              child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(
-                  16,
-                  14,
-                  8,
-                  _open ? 6 : 14,
-                ),
-                child: _header(context),
-              ),
-            ),
-            if (_open)
-              for (final chapter in part.chapters)
-                _SummaryChapter(chapter: chapter),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final part = widget.part;
-    return Row(
-      spacing: AppSpacing.md,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n.coursePartLessons(part.number, part.lessons),
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontSize: 13,
-                  height: 18 / 13,
-                  color: colors.primary,
-                ),
-              ),
-              Text(part.title, style: _strong(context, size: 17)),
-            ],
-          ),
-        ),
-        SizedBox(
-          width: 48,
-          height: 48,
-          child: Icon(
-            _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-            size: AppIconSize.standard,
-            color: colors.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Um capítulo da parte aberta: "N · Título" em negrito e as linhas
-/// numeradas (lições e, por último, os exercícios) com o número em cinza.
-class _SummaryChapter extends StatelessWidget {
-  const _SummaryChapter({required this.chapter});
-
-  final CourseSaleChapter chapter;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return InkWell(
-      key: CoursePreviewKeys.summaryChapter(chapter.number),
-      onTap: () => context.push(Routes.pilaresMap),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: colors.outlineVariant)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppSpacing.md,
-            horizontal: AppSpacing.lg,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 6,
-            children: [
-              Text(
-                '${chapter.number} · ${chapter.title}',
-                style: _strong(context, size: 15),
-              ),
-              for (final (j, item) in chapter.items.indexed)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    SizedBox(
-                      width: 28,
-                      child: Text(
-                        '${chapter.number}.${j + 1}',
-                        style: _body(context),
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        item,
-                        style: _body(context, color: colors.onSurface),
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// A aba Dúvidas (FAQ D3): cada pergunta num `ExpansionTile` com o ícone do
-/// assunto; a primeira aberta.
-class _Faq extends StatefulWidget {
-  const _Faq({required this.items});
-
-  final List<CourseSaleFaq> items;
-
-  @override
-  State<_Faq> createState() => _FaqState();
-}
-
-class _FaqState extends State<_Faq> {
-  final _open = <int>{0};
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.lg),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(AppShape.large),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-          child: Column(
-            children: [
-              for (final (i, item) in widget.items.indexed) ...[
-                if (i > 0)
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                    indent: AppSpacing.lg,
-                    endIndent: AppSpacing.lg,
-                    color: colors.outlineVariant,
-                  ),
-                ExpansionTile(
-                  key: CoursePreviewKeys.faq(i),
-                  initiallyExpanded: _open.contains(i),
-                  onExpansionChanged: (open) =>
-                      setState(() => open ? _open.add(i) : _open.remove(i)),
-                  shape: const Border(),
-                  collapsedShape: const Border(),
-                  minTileHeight: 56,
-                  tilePadding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.lg,
-                    end: AppSpacing.sm,
-                  ),
-                  // A resposta recuada até o texto da pergunta (16 + 24 + 16).
-                  childrenPadding: const EdgeInsetsDirectional.fromSTEB(
-                    56,
-                    0,
-                    AppSpacing.lg,
-                    AppSpacing.lg,
-                  ),
-                  expandedAlignment: AlignmentDirectional.centerStart,
-                  leading: Icon(
-                    _icon(item.icon),
-                    size: AppIconSize.standard,
-                    color: _open.contains(i)
-                        ? colors.primary
-                        : colors.onSurfaceVariant,
-                  ),
-                  trailing: Icon(
-                    _open.contains(i)
-                        ? Icons.expand_less_rounded
-                        : Icons.expand_more_rounded,
-                    color: colors.onSurfaceVariant,
-                  ),
-                  textColor: colors.primary,
-                  title: Text(item.question, style: _strong(context)),
-                  children: [Text(item.answer, style: _body(context))],
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

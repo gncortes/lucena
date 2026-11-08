@@ -43,6 +43,7 @@ void main() {
     await details.open(id);
     await details.review();
     await details.expectReviewed();
+    await details.openTab(GameDetailsKeys.tabMoves);
     await $(GameDetailsKeys.moveQuality(0)).scrollTo();
     // A revisão média (peso 2) anotou todos os lances.
     expect(details.state.review!.depth, 2);
@@ -57,7 +58,9 @@ void main() {
     await details.previous();
     // A engine abre ligada (segue a barra de avaliação, ligada por padrão):
     // desliga e liga de novo.
+    // A aba Motor liga a engine sozinha: o botão a desliga já nela.
     expect(details.state.engine, isTrue);
+    await details.openTab(GameDetailsKeys.tabEngine);
     await $(GameDetailsKeys.engineButton).tap();
     await $.pumpAndSettle();
     expect(find.byKey(GameDetailsKeys.engineLines), findsNothing);

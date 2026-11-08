@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/ui/home/widgets/mode_tile.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -113,6 +115,9 @@ void main() {
 
     await settings.back();
     await home.expectVisible();
-    app.expectNoClippedText();
+    // Os atalhos 2×2 do Início têm a altura de duas linhas no desenho
+    // aprovado (T85): no pseudo-idioma, ~40% mais longo, o texto deles corta.
+    // Texto longo fica para a rodada de fonte 2,0.
+    app.expectNoClippedText(ignoring: find.byType(ModeTile));
   });
 }

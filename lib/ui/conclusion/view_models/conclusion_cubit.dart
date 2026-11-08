@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/achievements/achievements_repository.dart';
 import '../../../data/repositories/analysis/analysis_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
@@ -33,6 +35,7 @@ import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/mastery.dart';
 import '../../../domain/use_cases/review_rules.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/race_diagnosis.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 import '../../../routing/routes.dart';
 import '../../achievements/view_models/achievement_facts_loader.dart';
@@ -58,6 +61,7 @@ class ConclusionState {
   const ConclusionState({
     this.ready = false,
     this.missing = false,
+    this.failed = false,
     this.conclusion,
     this.opponent,
     this.characters = const [],
@@ -75,12 +79,14 @@ class ConclusionState {
     this.bestPly = -1,
     this.bestLineRunning = false,
     this.bestLineDone = false,
+    this.finalLesson,
   });
 
   final bool ready;
 
   /// A partida não existe mais (apagada ou id errado).
   final bool missing;
+  final bool failed;
   final Conclusion? conclusion;
 
   /// O adversário como personagem. Nulo no tabuleiro livre de dois.
@@ -128,7 +134,12 @@ class ConclusionState {
   /// A melhor linha terminou (dá para andar e voltar nela).
   final bool bestLineDone;
 
+  /// A aula do final da posição jogada, quando o app tem uma liberada.
+  /// Só vem preenchida na derrota por desistência ("Treinar este final").
+  final RaceFinalLesson? finalLesson;
+
   ConclusionState copyWith({
+    bool? failed,
     GameReview? review,
     bool? reviewing,
     int? reviewDone,
@@ -139,6 +150,7 @@ class ConclusionState {
   }) => ConclusionState(
     ready: ready,
     missing: missing,
+    failed: failed ?? this.failed,
     conclusion: conclusion,
     opponent: opponent,
     characters: characters,
@@ -156,6 +168,7 @@ class ConclusionState {
     bestPly: bestPly ?? this.bestPly,
     bestLineRunning: bestLineRunning ?? this.bestLineRunning,
     bestLineDone: bestLineDone ?? this.bestLineDone,
+    finalLesson: finalLesson,
   );
 }
 
@@ -221,6 +234,19 @@ class ConclusionCubit extends Cubit<ConclusionState> {
 
   /// Monta a conclusão da partida gravada [gameId].
   Future<void> load(int gameId, String language) async {
+    _retryLoad = () => load(gameId, language);
+    try {
+      await _load(gameId, language);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(failed: true));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> reload() => _retryLoad?.call() ?? Future.value();
+
+  Future<void> _load(int gameId, String language) async {
     final game = (await _progress.attemptsById([gameId]))[gameId];
     if (game == null) {
       if (!isClosed) emit(const ConclusionState(ready: true, missing: true));
@@ -343,10 +369,17 @@ class ConclusionCubit extends Cubit<ConclusionState> {
               ),
         autoReview: auto,
         reviewing: auto,
+        finalLesson: _resignedLoss(game, result)
+            ? RaceFinalLesson.forSubcategory(position?.subcategory)
+            : null,
       ),
     );
     unawaited(_background(gameId));
   }
+
+  // Perdeu desistindo: a única derrota que oferece "Treinar este final".
+  bool _resignedLoss(Attempt game, ConclusionResult result) =>
+      result == ConclusionResult.lost && game.endReason == GameEndReason.resign;
 
   // Em segundo plano, sem travar as ações: uma análise já feita (a rápida
   // daqui ou a da revisão) aparece pronta; sem ela, a partida curta faz a
@@ -555,10 +588,7 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     final index = history.indexWhere((entry) => entry.gameId == gameId);
     if (index < 0) return (null, null);
     final goal = (await _profile?.load())?.goal;
-    final rated = history
-        .take(index + 1)
-        .where((entry) => !entry.isBonus)
-        .length;
+    final rated = history.take(index + 1).toList().ratedGames;
     if (!BeginnerHome.showsRating(goal, rated)) return (null, null);
     final after = history[index].rating;
     final before = index > 0

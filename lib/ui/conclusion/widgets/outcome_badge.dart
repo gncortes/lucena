@@ -9,7 +9,8 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_colors.dart';
 
 /// O que o ícone animado desenha.
-enum OutcomeMark { check, cross, record }
+/// [flag] é a desistência: a bandeira, em cinza neutro (só ela usa a bandeira).
+enum OutcomeMark { check, cross, record, flag }
 
 /// O resultado em destaque, logo abaixo do cabeçalho da conclusão: o ícone
 /// animado à esquerda, o título e a linha de baixo. O ✓ entra com o círculo
@@ -175,7 +176,7 @@ class _MarkPainter extends CustomPainter {
     canvas.drawCircle(center, radius * grow, Paint()..color = color);
 
     // As faíscas do sucesso.
-    if (mark != OutcomeMark.cross) {
+    if (mark == OutcomeMark.check || mark == OutcomeMark.record) {
       final burst = _phase(0.35, 0.9);
       if (burst > 0 && burst < 1) {
         final spark = Paint()
@@ -197,8 +198,16 @@ class _MarkPainter extends CustomPainter {
     }
 
     final draw = _phase(0.3, 0.75);
-    if (mark == OutcomeMark.record) {
-      _record(canvas, center, radius, _phase(0.3, 0.7, AppMotion.pop));
+    if (mark == OutcomeMark.record || mark == OutcomeMark.flag) {
+      _icon(
+        canvas,
+        center,
+        radius,
+        _phase(0.3, 0.7, AppMotion.pop),
+        mark == OutcomeMark.flag
+            ? Icons.flag_rounded
+            : Icons.leaderboard_rounded,
+      );
       return;
     }
     final w = radius * 2;
@@ -236,10 +245,15 @@ class _MarkPainter extends CustomPainter {
     }
   }
 
-  // O recorde: o ícone do Material, crescendo com um pulo.
-  void _record(Canvas canvas, Offset center, double radius, double scale) {
+  // O recorde e a desistência: o ícone do Material, crescendo com um pulo.
+  void _icon(
+    Canvas canvas,
+    Offset center,
+    double radius,
+    double scale,
+    IconData icon,
+  ) {
     if (scale <= 0) return;
-    const icon = Icons.leaderboard_rounded;
     final painter = TextPainter(
       textDirection: TextDirection.ltr,
       text: TextSpan(

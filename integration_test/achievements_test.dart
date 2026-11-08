@@ -63,7 +63,9 @@ void main() {
       // As conquistas vêm em cartões, com o nome delas.
       expect(feedback, contains('First endgame'));
       expect(feedback, contains('Beat Coco'));
-      expect(feedback, contains('You beat Coco for the first time!'));
+      // A primeira vitória contra o Coco já vem no cartão da conquista (S3b):
+      // a linha à parte não se repete.
+      expect(feedback, isNot(contains('You beat Coco for the first time!')));
     }
 
     await app.restart();

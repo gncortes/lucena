@@ -24,8 +24,18 @@ class FakeAchievementsRepository implements AchievementsRepository {
     for (final entry in unlockedById.entries) entry.key: entry.value.at,
   };
 
+  /// Com valor, a próxima leitura da lista falha com ele.
+  Object? allFailure;
+
   @override
-  Future<List<Achievement>> all() async => achievements;
+  Future<List<Achievement>> all() async {
+    final error = allFailure;
+    if (error != null) {
+      allFailure = null;
+      throw error;
+    }
+    return achievements;
+  }
 
   @override
   Future<Map<String, UnlockedAchievement>> unlocked() async => {

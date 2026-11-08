@@ -25,6 +25,34 @@ String _manifest({String status = 'published', String? digest}) => jsonEncode({
 });
 
 void main() {
+  test('refresh checks server even with cached content and rejects mutation of immutable release', () async {
+    var calls = 0;
+    var manifest = _manifest();
+    final reader = PublishedLessonContentReader(
+      release: 'test_v1',
+      currentUser: () => 'student',
+      cache: FakeSecureStorageService(),
+      download: (object) async {
+        ++calls;
+        return _bytes(object.endsWith('/manifest.json') ? manifest : _text);
+      },
+    );
+    await reader.read(_path);
+    final cachedCalls = calls;
+    await reader.refreshManifest();
+    expect(calls, cachedCalls + 1);
+    manifest = _manifest(status: 'draft');
+    await expectLater(
+      reader.refreshManifest(),
+      throwsA(isA<LessonContentUnavailable>()),
+    );
+    manifest = _manifest(digest: '0' * 64);
+    await expectLater(
+      reader.refreshManifest(),
+      throwsA(isA<LessonContentUnavailable>()),
+    );
+    expect(await reader.read(_path), _text);
+  });
   test('no source gives empty catalog, never bundled lesson data', () async {
     const assets = LessonContentAssets();
     expect(

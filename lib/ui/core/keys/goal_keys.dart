@@ -5,7 +5,6 @@ import '../../../domain/models/goal_preference.dart';
 /// "O que você quer fazer?" e a folha que troca o objetivo, no Perfil.
 abstract final class GoalKeys {
   static const screen = Key('goal.screen');
-  static const back = Key('goal.back');
   static const viktor = Key('goal.viktor');
   static const speech = Key('goal.speech');
   static const continueButton = Key('goal.continue');

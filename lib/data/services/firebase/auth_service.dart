@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../domain/models/account.dart';
+import '../../../domain/use_cases/now.dart';
 
 /// A conta pelo Firebase Auth: Google ou e-mail e senha.
 ///
@@ -32,9 +33,15 @@ abstract class AuthService {
 
   Future<void> signOut();
 
-  /// Apaga a conta do Auth (os dados do Firestore saem antes, no
-  /// repositório).
-  Future<void> delete();
+  /// Reautentica o Google antes de [deleteData] e serializa mudanças de
+  /// sessão até apagar o Auth. False: seleção cancelada.
+  /// Em divergência, [beforeSignOut] libera recursos da sessão atual sob
+  /// o mesmo bloqueio. Uma falha dessa limpeza não impede tentar o logout.
+  Future<bool> delete({
+    required String expectedUid,
+    required Future<void> Function() deleteData,
+    required Future<void> Function(String uid) beforeSignOut,
+  });
 }
 
 /// Build sem Firebase: nada de conta, e cada tentativa diz que não está
@@ -71,20 +78,41 @@ class NoAuthService implements AuthService {
   Future<void> signOut() async {}
 
   @override
-  Future<void> delete() => Future.error(_unavailable);
+  Future<bool> delete({
+    required String expectedUid,
+    required Future<void> Function() deleteData,
+    required Future<void> Function(String uid) beforeSignOut,
+  }) => Future.error(_unavailable);
 }
 
 class FirebaseAuthService implements AuthService {
-  FirebaseAuthService({FirebaseAuth? auth, GoogleSignIn? google})
-    : _auth = auth ?? FirebaseAuth.instance,
-      _google = google ?? GoogleSignIn.instance;
+  FirebaseAuthService({
+    FirebaseAuth? auth,
+    GoogleSignIn? google,
+    this._now = const SystemNow(),
+  }) : _auth = auth ?? FirebaseAuth.instance,
+       _google = google ?? GoogleSignIn.instance;
 
   final FirebaseAuth _auth;
   final GoogleSignIn _google;
+  final Now _now;
 
   // O google_sign_in 7 pede um `initialize` antes de tudo, uma vez só. No
   // Android o id do cliente vem do `google-services.json`.
   Future<void>? _googleReady;
+
+  // O plugin Android resolve currentUser nativo ao receber o comando. Só
+  // capturar User no Dart não impede um login/logout entre os awaits.
+  Future<void> _pendingAuth = Future.value();
+
+  Future<T> _exclusive<T>(Future<T> Function() action) {
+    final result = _pendingAuth.then((_) => action());
+    _pendingAuth = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
+    return result;
+  }
 
   @override
   Account? get current => _account(_auth.currentUser);
@@ -93,87 +121,172 @@ class FirebaseAuthService implements AuthService {
   Stream<Account?> get changes => _auth.authStateChanges().map(_account);
 
   @override
-  Future<Account?> signInWithGoogle() async {
-    try {
-      await (_googleReady ??= _google.initialize());
-      final GoogleSignInAccount user;
-      try {
-        user = await _google.authenticate();
-      } on GoogleSignInException catch (error) {
-        if (error.code == GoogleSignInExceptionCode.canceled ||
-            error.code == GoogleSignInExceptionCode.interrupted) {
-          return null;
-        }
-        throw const AccountException(AccountFailure.unknown);
-      }
-      final token = user.authentication.idToken;
-      if (token == null) throw const AccountException(AccountFailure.unknown);
-      final result = await _auth.signInWithCredential(
-        GoogleAuthProvider.credential(idToken: token),
-      );
+  Future<Account?> signInWithGoogle() => _exclusive(
+    () => _guard(() async {
+      final credential = await _googleCredential();
+      if (credential == null) return null;
+      final result = await _auth.signInWithCredential(credential);
       return _account(result.user);
-    } on FirebaseAuthException catch (error) {
-      throw AccountException(_failure(error.code));
+    }),
+  );
+
+  Future<AuthCredential?> _googleCredential() async {
+    await (_googleReady ??= _google.initialize());
+    final GoogleSignInAccount user;
+    try {
+      user = await _google.authenticate();
+    } on GoogleSignInException catch (error) {
+      if (error.code == GoogleSignInExceptionCode.canceled ||
+          error.code == GoogleSignInExceptionCode.interrupted) {
+        return null;
+      }
+      throw const AccountException(AccountFailure.unknown);
     }
+    final token = user.authentication.idToken;
+    if (token == null) throw const AccountException(AccountFailure.unknown);
+    return GoogleAuthProvider.credential(idToken: token);
   }
 
   @override
-  Future<Account> signInWithEmail(String email, String password) =>
-      _guard(() async {
-        final result = await _auth.signInWithEmailAndPassword(
-          email: email.trim(),
-          password: password,
-        );
-        return _account(result.user)!;
-      });
+  Future<Account> signInWithEmail(String email, String password) => _exclusive(
+    () => _guard(() async {
+      final result = await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      return _account(result.user)!;
+    }),
+  );
 
   @override
   Future<Account> createWithEmail(
     String email,
     String password, {
     String? name,
-  }) => _guard(() async {
-    final result = await _auth.createUserWithEmailAndPassword(
-      email: email.trim(),
-      password: password,
-    );
-    final user = result.user!;
-    // A confirmação do endereço vai por e-mail; a pessoa joga enquanto isso
-    // (regra 11), então a conta não espera por ela.
-    unawaited(
-      user.sendEmailVerification().catchError(
-        (Object error) => debugPrint('Confirmação não enviada: $error'),
-      ),
-    );
-    final trimmed = name?.trim();
-    if (trimmed != null && trimmed.isNotEmpty) {
-      await user.updateDisplayName(trimmed);
-      await user.reload();
-    }
-    return _account(_auth.currentUser ?? user)!;
-  });
+  }) => _exclusive(
+    () => _guard(() async {
+      final result = await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      final user = result.user!;
+      // A confirmação do endereço vai por e-mail; a pessoa joga enquanto isso
+      // (regra 11), então a conta não espera por ela.
+      unawaited(
+        user.sendEmailVerification().catchError(
+          (Object error) => debugPrint('Confirmação não enviada: $error'),
+        ),
+      );
+      final trimmed = name?.trim();
+      if (trimmed != null && trimmed.isNotEmpty) {
+        await user.updateDisplayName(trimmed);
+        await user.reload();
+      }
+      return _account(_auth.currentUser ?? user)!;
+    }),
+  );
 
   @override
   Future<void> sendPasswordReset(String email) =>
       _guard(() => _auth.sendPasswordResetEmail(email: email.trim()));
 
   @override
-  Future<void> signOut() async {
-    if (_googleReady != null) await _google.signOut();
-    await _auth.signOut();
+  Future<void> signOut() => _exclusive(() => _guard(_signOut));
+
+  Future<void> _signOut() async {
+    // A falha de um provedor não pode impedir a tentativa no outro.
+    Object? failure;
+    StackTrace? trace;
+    try {
+      await _auth.signOut();
+    } on Object catch (error, stack) {
+      failure = error;
+      trace = stack;
+    }
+    try {
+      if (_googleReady != null) await _google.signOut();
+    } on Object catch (error, stack) {
+      failure ??= error;
+      trace ??= stack;
+    }
+    if (failure != null) Error.throwWithStackTrace(failure, trace!);
   }
 
   @override
-  Future<void> delete() => _guard(() async {
-    await _auth.currentUser?.delete();
-    if (_googleReady != null) await _google.disconnect();
+  Future<bool> delete({
+    required String expectedUid,
+    required Future<void> Function() deleteData,
+    required Future<void> Function(String uid) beforeSignOut,
+  }) => _exclusive(() async {
+    try {
+      return await _guard(() async {
+        final user = _requireUser(expectedUid);
+        if (_account(user)!.provider == AccountProvider.google) {
+          final credential = await _googleCredential();
+          _requireUser(expectedUid);
+          if (credential == null) return false;
+          final result = await user.reauthenticateWithCredential(credential);
+          if (result.user?.uid != expectedUid) {
+            throw const AccountException(AccountFailure.userMismatch);
+          }
+          _requireUser(expectedUid);
+        } else if (!_recentSignIn(user)) {
+          // E-mail: o Firebase recusaria o delete só no fim, com a nuvem já
+          // apagada. Pede o login antes de tocar em qualquer dado (gap 2).
+          throw const AccountException(AccountFailure.recentLoginRequired);
+        }
+        await deleteData();
+        _requireUser(expectedUid);
+        await user.delete();
+        // A conta já foi apagada; revogar o acesso Google é limpeza auxiliar.
+        try {
+          if (_googleReady != null) await _google.disconnect();
+        } on Object {
+          debugPrint('Conta apagada; revogação Google pendente.');
+        }
+        return true;
+      });
+    } on AccountException catch (error) {
+      if (error.failure == AccountFailure.userMismatch) {
+        // Ainda sob exclusão mútua: nenhum login pode escapar da limpeza.
+        final uid = _auth.currentUser?.uid;
+        try {
+          if (uid != null) await beforeSignOut(uid);
+        } on Object {
+          debugPrint('Conta diferente; limpeza da sessão não concluída.');
+        }
+        try {
+          await _signOut();
+        } on Object {
+          debugPrint('Conta diferente; saída não concluída.');
+        }
+      }
+      rethrow;
+    }
   });
+
+  // O Firebase aceita apagar até 5 min depois do login; a folga cobre o
+  // relógio do aparelho e o tempo de apagar a nuvem.
+  static const _recentLogin = Duration(minutes: 3);
+
+  bool _recentSignIn(User user) {
+    final at = user.metadata.lastSignInTime;
+    return at != null && _now().toUtc().difference(at) < _recentLogin;
+  }
+
+  User _requireUser(String expectedUid) {
+    final user = _auth.currentUser;
+    if (user == null || user.uid != expectedUid) {
+      throw const AccountException(AccountFailure.userMismatch);
+    }
+    return user;
+  }
 
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
       return await action();
     } on FirebaseAuthException catch (error) {
-      throw AccountException(_failure(error.code));
+      throw AccountException(failureOf(error.code));
     }
   }
 
@@ -191,7 +304,9 @@ class FirebaseAuthService implements AuthService {
     );
   }
 
-  static AccountFailure _failure(String code) => switch (code) {
+  /// O código do Firebase Auth traduzido para o app.
+  @visibleForTesting
+  static AccountFailure failureOf(String code) => switch (code) {
     'invalid-email' => AccountFailure.invalidEmail,
     'weak-password' => AccountFailure.weakPassword,
     'invalid-credential' ||
@@ -202,7 +317,9 @@ class FirebaseAuthService implements AuthService {
     'too-many-requests' => AccountFailure.tooManyAttempts,
     'network-request-failed' => AccountFailure.network,
     'requires-recent-login' => AccountFailure.recentLoginRequired,
+    'user-mismatch' || 'no-current-user' => AccountFailure.userMismatch,
     'operation-not-allowed' => AccountFailure.unavailable,
+    'user-disabled' => AccountFailure.disabled,
     _ => AccountFailure.unknown,
   };
 }

@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/campaign/campaign_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
@@ -13,6 +16,7 @@ import '../../../domain/use_cases/race_rules.dart';
 class LessonFinishedState {
   const LessonFinishedState({
     this.ready = false,
+    this.failure,
     this.title = '',
     this.lessonId = '',
     this.nextId,
@@ -23,6 +27,7 @@ class LessonFinishedState {
   });
 
   final bool ready;
+  final LoadFailure? failure;
 
   /// O título da aula concluída.
   final String title;
@@ -68,17 +73,27 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
   final CampaignRepository? campaigns;
 
   Future<void> load(String language) async {
+    try {
+      await _load(language);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(LessonFinishedState(failure: LoadFailure.of(error)));
+    }
+  }
+
+  Future<void> _load(String language) async {
     final LessonTexts texts = kind == SurveyKind.school
         ? await school.texts(language)
         : await endgames.texts(language);
     EndgameLesson? lesson;
     String? subcategory;
-    if (kind == SurveyKind.endgames) {
+    if (kind == SurveyKind.pilares) {
       lesson = (await endgames.trail()).lesson(lessonId);
-      if (lesson != null) {
+      final practice = lesson?.practice;
+      if (practice != null) {
         subcategory = RaceRules.subcategoryOf(
           await race.problems(),
-          lesson.practice.fen,
+          practice.fen,
         );
       }
     }

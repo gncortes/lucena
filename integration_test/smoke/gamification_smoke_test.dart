@@ -28,7 +28,7 @@ void main() {
     // O tabuleiro e a voz abrem o tour.
     await tour.expectStep(TourStep.board);
     app.expectNoClippedText();
-    await tour.next();
+    await tour.nextUntil(TourStep.voice);
     await tour.expectStep(TourStep.voice);
     app.expectNoClippedText();
     await tour.nextUntilLevel();
@@ -45,7 +45,7 @@ void main() {
 
     await HomeRobot($).openSettings();
     await $(SettingsKeys.profileTile).tap();
-    await $(ProfileKeys.ratingCard).scrollTo();
+    await $(ProfileKeys.rowNotices).scrollTo();
     app.expectNoClippedText();
     await $(BackButton).tap();
     await $(BackButton).tap();
@@ -102,7 +102,7 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: const Locale('en', 'US'), tour: true);
-    await tour.next();
+    await tour.nextUntil(TourStep.voice);
     await app.sendToBackgroundAndReturn();
     await tour.expectStep(TourStep.voice);
     await tour.skip();

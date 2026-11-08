@@ -125,7 +125,7 @@ void main() {
     expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
     expect(
       tester.widget<Text>(find.byKey(ChallengeKeys.leadText)).data,
-      'Quer ver esta aula gratuita?',
+      'Quer ver esta lição gratuita?',
     );
     expect(find.byKey(ChallengeKeys.leadStep(0)), findsOneWidget);
     expect(find.byKey(ChallengeKeys.leadStep(1)), findsOneWidget);
@@ -149,8 +149,8 @@ void main() {
     expect(answers(), ['agora_nao']);
   });
 
-  testWidgets('"Criar conta e ver a aula": o cadastro com o título da aula, '
-      'sem o "sem conta, tudo continua"', (tester) async {
+  testWidgets('"Criar conta e ver a lição": o convite do link (H-CON-04), '
+      'com "Agora não"', (tester) async {
     await pumpGate(tester);
     await tester.tap(find.byKey(ChallengeKeys.leadCreate));
     await tester.pumpAndSettle();
@@ -158,15 +158,15 @@ void main() {
     expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
     expect(
       tester.widget<Text>(find.byKey(AccountKeys.enterTitle)).data,
-      'Crie sua conta para ter acesso à aula gratuita',
+      'Quer salvar seu progresso?',
     );
     expect(
       tester.widget<Text>(find.byKey(AccountKeys.enterText)).data,
-      'Leva menos de um minuto.',
+      'Dá para criar a conta depois, no Perfil.',
     );
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
-    expect(find.byIcon(Icons.devices_other), findsOneWidget);
-    expect(find.byIcon(Icons.wifi_off), findsNothing);
+    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    expect(find.byKey(AccountKeys.later), findsOneWidget);
     expect(answers(), ['aceitou']);
   });
 

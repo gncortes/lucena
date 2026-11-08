@@ -241,7 +241,7 @@ void main() {
     final now = FakeNow(DateTime(2026, 10, 27, 9));
     Future<void> finish(String id) async {
       final cubit = LessonFinishedCubit(
-        kind: SurveyKind.endgames,
+        kind: SurveyKind.pilares,
         lessonId: id,
         nextId: null,
         school: FakeLessonRepository(),

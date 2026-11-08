@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +18,7 @@ import '../../core/widgets/next_steps.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/race_performance_cubit.dart';
 import 'race_progress_card.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// "Seu desempenho" (canvas V2 · Ligações, L6b): primeiro o que o jogador já
 /// domina; depois onde pode melhorar (acertos, sem vermelho, do pior ao
@@ -27,75 +31,89 @@ class RacePerformanceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final failure = context.watch<RacePerformanceCubit>().state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<RacePerformanceCubit>().load,
+      );
+    }
     return Scaffold(
       key: RaceKeys.performanceScreen,
       appBar: LucenaAppBar(title: Text(l10n.racePerformanceTitle)),
       body: BlocBuilder<RacePerformanceCubit, RacePerformanceState>(
-        builder: (context, state) {
-          if (!state.ready) return const SizedBox.shrink();
-          final diagnosis = state.diagnosis;
-          final weakest = diagnosis.weakest;
-          return ListView(
-            padding: scrollPadding(
-              context,
-              left: AppSpacing.lg,
-              right: AppSpacing.lg,
-              top: AppSpacing.sm,
-            ),
-            children: [
-              if (!diagnosis.ready)
-                RaceProgressCard(diagnosis: diagnosis)
-              else ...[
-                if (diagnosis.mastered.isNotEmpty) ...[
-                  _Mastered(scores: diagnosis.mastered),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
-                if (diagnosis.toImprove.isNotEmpty) ...[
-                  _ToImprove(scores: diagnosis.toImprove),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
-                if (weakest != null) ...[
-                  NextSteps(
-                    steps: [
-                      for (final lesson in state.lessons)
-                        NextStep(
-                          id: 'lesson.${lesson.lessonId}',
-                          icon: Icons.school,
-                          title: l10n.racePerformanceLessonTitle(
-                            endgameName(l10n, lesson.subcategory),
-                          ),
-                          body: _lessonBody(l10n, lesson.subcategory),
-                          onTap: () => context.push(
-                            lesson.school
-                                ? Routes.lessonScript(lesson.lessonId)
-                                : Routes.endgameLesson(lesson.lessonId),
-                          ),
-                        ),
-                      NextStep(
-                        id: 'practice',
-                        icon: Icons.sports_esports,
-                        title: l10n.nextStepsPractice(
-                          endgameName(l10n, weakest.subcategory),
-                        ),
-                        body: l10n.racePerformancePracticeBody,
-                        onTap: () => context.push(
-                          Routes.catalogCategory(weakest.category),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                ],
-                Text(
-                  l10n.racePerformanceFooter,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+        builder: (context, state) => ShimmerConteudo(
+          carregando: !state.ready,
+          esqueleto: const SkeletonList(),
+          child: Builder(
+            builder: (context) {
+              if (!state.ready) return const SizedBox.shrink();
+              final diagnosis = state.diagnosis;
+              final weakest = diagnosis.weakest;
+              return ListView(
+                padding: scrollPadding(
+                  context,
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  top: AppSpacing.sm,
                 ),
-              ],
-            ],
-          );
-        },
+                children: [
+                  if (!diagnosis.ready)
+                    RaceProgressCard(diagnosis: diagnosis)
+                  else ...[
+                    if (diagnosis.mastered.isNotEmpty) ...[
+                      _Mastered(scores: diagnosis.mastered),
+                      const SizedBox(height: AppSpacing.lg),
+                    ],
+                    if (diagnosis.toImprove.isNotEmpty) ...[
+                      _ToImprove(scores: diagnosis.toImprove),
+                      const SizedBox(height: AppSpacing.lg),
+                    ],
+                    if (weakest != null) ...[
+                      NextSteps(
+                        steps: [
+                          for (final lesson in state.lessons)
+                            NextStep(
+                              id: 'lesson.${lesson.lessonId}',
+                              icon: Icons.school,
+                              title: l10n.racePerformanceLessonTitle(
+                                endgameName(l10n, lesson.subcategory),
+                              ),
+                              body: _lessonBody(l10n, lesson.subcategory),
+                              onTap: () => context.push(
+                                lesson.school
+                                    ? Routes.lessonScript(lesson.lessonId)
+                                    : Routes.endgameLesson(lesson.lessonId),
+                              ),
+                            ),
+                          NextStep(
+                            id: 'practice',
+                            icon: Icons.sports_esports,
+                            title: l10n.nextStepsPractice(
+                              endgameName(l10n, weakest.subcategory),
+                            ),
+                            body: l10n.racePerformancePracticeBody,
+                            onTap: () => context.push(
+                              Routes.catalogCategory(weakest.category),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                    ],
+                    Text(
+                      l10n.racePerformanceFooter,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

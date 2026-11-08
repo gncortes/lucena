@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../../config/ambiente.dart';
+import '../../../domain/models/legal_document.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/open_link.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../legal/widgets/legal_sheet.dart';
 
-/// Sobre o Lucena: o site, o código aberto, as licenças, o tour e a versão.
+/// Sobre o Lucena: o site, as licenças, o tour e a versão.
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key, this.version = ''});
 
   /// A versão do app, para quem relata um problema. Vazia: não aparece.
   final String version;
 
-  /// O site do app, no idioma de quem usa (pt na raiz; en e es com prefixo;
-  /// os outros idiomas vão para o inglês).
+  /// O site do app ([Ambiente.siteHost]), no idioma de quem usa (todos com
+  /// prefixo: pt, es e en; os outros idiomas vão para o inglês).
   static Uri websiteFor(String languageCode) {
-    const base = 'https://gncortes.github.io/lucena/';
+    final base = 'https://${Ambiente.atual().siteHost}/';
     return Uri.parse(switch (languageCode) {
-      'pt' => base,
+      'pt' => '${base}pt/',
       'es' => '${base}es/',
       _ => '${base}en/',
     });
@@ -46,12 +51,7 @@ class AboutScreen extends StatelessWidget {
       });
 
   /// O endereço como a linha mostra: sem `https://` e sem a barra do fim.
-  static String shown(Uri uri) {
-    final text = '${uri.host}${uri.path}';
-    return text.endsWith('/') ? text.substring(0, text.length - 1) : text;
-  }
-
-  static final source = Uri.parse('https://github.com/gncortes/lucena');
+  static String shown(Uri uri) => shownAddress(uri);
 
   @override
   Widget build(BuildContext context) {
@@ -59,110 +59,120 @@ class AboutScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final language = Localizations.localeOf(context).languageCode;
-    return Scaffold(
-      key: SettingsKeys.aboutScreen,
-      appBar: LucenaAppBar(title: Text(l10n.settingsAbout)),
-      body: ListView(
-        padding: scrollPadding(context),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            child: Column(
-              children: [
-                // O mascote do app, na versão do tema.
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppShape.large),
-                  child: Image.asset(
-                    theme.brightness == Brightness.dark
-                        ? 'assets/branding/mascot_dark.png'
-                        : 'assets/branding/mascot_light.png',
-                    width: 96,
-                    height: 96,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Text(l10n.appTitle, style: theme.textTheme.headlineSmall),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  l10n.aboutTagline,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                if (version.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    l10n.homeVersion(version),
-                    key: SettingsKeys.aboutVersion,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
+    return EntradaDaTela(
+      id: 'PropV1LegalSobre',
+      child: Scaffold(
+        key: SettingsKeys.aboutScreen,
+        appBar: LucenaAppBar(title: Text(l10n.settingsAbout)),
+        body: ListView(
+          padding: scrollPadding(context),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: EntradaEmCascata(
+                montar: (itens) => Column(children: itens),
+                itens: [
+                  // O mascote do app: o ícone B2, com o fundo escuro (a figura
+                  // clara sumiria no fundo da tela).
+                  ItemDaCascata.selo(
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(AppShape.large),
+                      child: Image.asset(
+                        'assets/branding/mascote.png',
+                        width: 96,
+                        height: 96,
+                      ),
                     ),
                   ),
+                  ItemDaCascata.titulo(
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.md),
+                      child: Text(
+                        l10n.appTitle,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.headlineSmall,
+                      ),
+                    ),
+                  ),
+                  ItemDaCascata.texto(
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.xs),
+                      child: Text(
+                        l10n.aboutTagline,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (version.isNotEmpty)
+                    ItemDaCascata.texto(
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.sm),
+                        child: Text(
+                          l10n.homeVersion(version),
+                          key: SettingsKeys.aboutVersion,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
-              ],
+              ),
             ),
-          ),
-          ListTile(
-            key: SettingsKeys.aboutWebsite,
-            leading: const Icon(Icons.public),
-            title: Text(l10n.aboutWebsite),
-            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () => launchUrl(
-              websiteFor(language),
-              mode: LaunchMode.externalApplication,
+            ListTile(
+              key: SettingsKeys.aboutWebsite,
+              leading: const Icon(Icons.public),
+              title: Text(l10n.aboutWebsite),
+              trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
+              onTap: () => openLink(context, websiteFor(language)),
             ),
-          ),
-          ListTile(
-            key: SettingsKeys.aboutSource,
-            leading: const Icon(Icons.code),
-            title: Text(l10n.aboutSource),
-            subtitle: Text(l10n.aboutSourceHint),
-            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () =>
-                launchUrl(source, mode: LaunchMode.externalApplication),
-          ),
-          ListTile(
-            key: SettingsKeys.aboutLicenses,
-            leading: const Icon(Icons.description_outlined),
-            title: Text(l10n.aboutLicenses),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => showLicensePage(
-              context: context,
-              applicationName: l10n.appTitle,
-              applicationVersion: version.isEmpty ? null : version,
+            ListTile(
+              key: SettingsKeys.aboutLicenses,
+              leading: const Icon(Icons.description_outlined),
+              title: Text(l10n.aboutLicenses),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => showLicensePage(
+                context: context,
+                applicationName: l10n.appTitle,
+                applicationVersion: version.isEmpty ? null : version,
+              ),
             ),
-          ),
-          ListTile(
-            key: SettingsKeys.aboutPrivacy,
-            leading: const Icon(Icons.policy_outlined),
-            title: Text(l10n.aboutPrivacy),
-            subtitle: Text(shown(privacyFor(language))),
-            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () => launchUrl(
-              privacyFor(language),
-              mode: LaunchMode.externalApplication,
+            ListTile(
+              key: SettingsKeys.aboutPrivacy,
+              leading: const Icon(Icons.policy_outlined),
+              title: Text(l10n.aboutPrivacy),
+              subtitle: Text(shown(privacyFor(language))),
+              trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
+              onTap: () => openLegal(
+                context,
+                LegalKind.privacy,
+                website: privacyFor(language),
+              ),
             ),
-          ),
-          ListTile(
-            key: SettingsKeys.aboutTerms,
-            leading: const Icon(Icons.gavel),
-            title: Text(l10n.aboutTerms),
-            subtitle: Text(shown(termsFor(language))),
-            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () => launchUrl(
-              termsFor(language),
-              mode: LaunchMode.externalApplication,
+            ListTile(
+              key: SettingsKeys.aboutTerms,
+              leading: const Icon(Icons.gavel),
+              title: Text(l10n.aboutTerms),
+              subtitle: Text(shown(termsFor(language))),
+              trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
+              onTap: () => openLegal(
+                context,
+                LegalKind.terms,
+                website: termsFor(language),
+              ),
             ),
-          ),
-          ListTile(
-            key: SettingsKeys.tourTile,
-            leading: const Icon(Icons.tour_outlined),
-            title: Text(l10n.settingsTour),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push(Routes.tour),
-          ),
-        ],
+            ListTile(
+              key: SettingsKeys.tourTile,
+              leading: const Icon(Icons.tour_outlined),
+              title: Text(l10n.settingsTour),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push(Routes.tour),
+            ),
+          ],
+        ),
       ),
     );
   }

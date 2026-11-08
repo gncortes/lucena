@@ -86,7 +86,8 @@ void main() {
     expect(level.state.choice, LevelChoice.test);
     expect(level.state.testPending, isTrue);
     expect(level.state.placed, isNull);
-    expect(onboarding.saved.stage, OnboardingStage.level);
+    expect(onboarding.saved.stage, OnboardingStage.tour);
+    expect(onboarding.saved.step, 3);
     // Sem o teste feito, "Continuar" não termina nada.
     await level.finish();
     expect(level.state.finished, isFalse);
@@ -180,7 +181,7 @@ void main() {
       expect(home.layout, HomeSuggestion.of(RatingLevel.of(1712)));
     });
 
-    test('cancelado na página do Lichess volta sem erro', () async {
+    test('cancelado na página do Lichess avisa, sem tela de erro', () async {
       lichess.hold = true;
       final level = cubit();
       await level.load();
@@ -190,7 +191,8 @@ void main() {
       await connecting;
       expect(level.state.lichessBusy, isFalse);
       expect(level.state.lichess, isNull);
-      expect(level.state.error, isNull);
+      expect(level.state.error, LevelError.lichessCancelled);
+      expect(level.state.lichessOffline, isFalse);
       expect(level.state.choice, LevelChoice.lichess);
     });
 
@@ -200,6 +202,7 @@ void main() {
       await level.load();
       await level.connectLichess();
       expect(level.state.error, LevelError.lichessOffline);
+      expect(level.state.lichessOffline, isTrue);
       expect(level.state.errorCount, 1);
       await level.connectLichess();
       expect(level.state.errorCount, 2);
@@ -262,7 +265,14 @@ void main() {
       await level.load();
       await level.lookUpChess('gabriel_finais');
       expect(level.state.error, LevelError.chessOffline);
+      expect(level.state.chessOffline, isTrue);
       expect(level.state.chessNotFound, isFalse);
+      level.dismissOffline();
+      expect(level.state.chessOffline, isFalse);
+      chessCom.offline = false;
+      await level.lookUpChess('gabriel_finais');
+      expect(level.state.chessOffline, isFalse);
+      expect(level.state.chess, isNotNull);
     });
 
     test('a resposta de uma busca antiga não ganha da nova', () async {
@@ -344,7 +354,7 @@ void main() {
     await level.load();
     expect(level.fromProfile, isTrue);
     expect(level.state.placed, isNull);
-    expect(onboarding.saved.stage, isNot(OnboardingStage.level));
+    expect(onboarding.saved.step, isNot(3));
     level.setManual(1800);
     level.setManualOrigin(RatingOrigin.lichess);
     await level.useManual();
@@ -474,6 +484,55 @@ void main() {
       await level.useLichess();
       expect(profile.profile.lichessLinkedAt, before);
     });
+  });
+
+  group('no tour', () {
+    LevelCubit tour() {
+      final cubit = LevelCubit(
+        home: home,
+        onboarding: onboarding,
+        profile: profile,
+        characters: FakeCharacterRepository(),
+        lichess: lichess,
+        chessCom: chessCom,
+        inTour: true,
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    test(
+      'abre em "Estou começando" e não mexe na etapa do onboarding',
+      () async {
+        final before = onboarding.saved;
+        final level = tour();
+        await level.load();
+        expect(level.state.choice, LevelChoice.zero);
+        expect(onboarding.saved.stage, before.stage);
+        expect(onboarding.saved.step, before.step);
+      },
+    );
+
+    test(
+      'a faixa grava o rating dela, sem dar o onboarding por feito',
+      () async {
+        final level = tour();
+        await level.load();
+        level.selectBand(RatingLevel.intermediate);
+        expect(level.state.choice, LevelChoice.band);
+        await level.finish();
+        expect(
+          onboarding.saved.selectedRating,
+          RatingLevel.intermediate.rating,
+        );
+        expect(onboarding.saved.byHand, isTrue);
+        expect(onboarding.saved.done, isFalse);
+        expect(level.state.finished, isTrue);
+        level.acknowledged();
+        expect(level.state.finished, isFalse);
+        expect(level.state.choice, LevelChoice.band);
+      },
+    );
   });
 }
 

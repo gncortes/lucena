@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/survey.dart';
-import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
 import 'package:patrol/patrol.dart';
 
@@ -11,17 +14,13 @@ class SurveyRobot {
 
   final PatrolIntegrationTester $;
 
-  /// Rola a trilha de finais até o convite de [kind] e toca em "Responder".
-  Future<void> openInviteFromTrail(SurveyKind kind) async {
-    await $(SurveyKeys.invite(kind)).scrollTo(maxScrolls: 80);
-    // O cartão pode entrar só até a metade: leva o botão para o meio.
-    await $(SurveyKeys.inviteAction(kind)).scrollTo();
-    await $(SurveyKeys.inviteAction(kind)).tap();
+  /// Abre a pesquisa de [kind] por cima da tela atual, como o convite do
+  /// fim de lição faz (o convite em si tem teste de widget; chegar ao fim de
+  /// uma lição real aqui custaria minutos).
+  Future<void> open(SurveyKind kind) async {
+    final context = $.tester.element(find.byType(Scaffold).first);
+    unawaited(GoRouter.of(context).push(Routes.survey(kind, origin: 'e2e')));
     await $(SurveyKeys.screen).waitUntilVisible();
-  }
-
-  void expectInvite(SurveyKind kind, {required bool visible}) {
-    expect($(SurveyKeys.invite(kind)).exists, visible);
   }
 
   Future<void> pickFace(int n) async {
@@ -46,9 +45,14 @@ class SurveyRobot {
     await $(SurveyKeys.interest(interest)).scrollTo().tap();
   }
 
-  /// Está no passo 2: as opções de interesse aparecem.
-  void expectStepTwo() {
-    expect($(SurveyKeys.interest(SurveyInterest.maybe)).exists, isTrue);
+  Future<void> writeWish(String text) async {
+    await $(SurveyKeys.wishText).scrollTo().enterText(text);
+  }
+
+  /// Está no passo 2 do Pilares: o campo "O que mais você gostaria de ver?".
+  void expectStepTwo({String? wish}) {
+    expect($(SurveyKeys.wishText).exists, isTrue);
+    if (wish != null) expect($(wish).exists, isTrue);
   }
 
   /// A opção [interest] está marcada.
@@ -63,8 +67,11 @@ class SurveyRobot {
     await $(SurveyKeys.thanks).waitUntilVisible();
   }
 
+  /// "Voltar ao Pilares": a pesquisa saiu da pilha, volta à tela de origem.
   Future<void> backFromThanks() async {
     await $(SurveyKeys.thanksBack).tap();
-    await $(EndgamesKeys.screen).waitUntilVisible();
+    await $.pumpAndSettle();
+    expect($(SurveyKeys.thanks).exists, isFalse);
+    expect($(SurveyKeys.screen).exists, isFalse);
   }
 }

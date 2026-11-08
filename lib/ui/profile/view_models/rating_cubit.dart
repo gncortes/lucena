@@ -1,6 +1,8 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/achievements/achievements_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
@@ -72,6 +74,7 @@ class LoggedGame {
 /// O rating do jogador, o histórico dele e os números do progresso.
 class RatingState {
   const RatingState({
+    this.failed = false,
     this.current,
     this.history = const [],
     this.attempts = const {},
@@ -92,6 +95,7 @@ class RatingState {
 
   /// Nulo enquanto é lido.
   final PlayerRating? current;
+  final bool failed;
 
   /// Da partida mais antiga para a mais recente.
   final List<RatingEntry> history;
@@ -180,6 +184,17 @@ class RatingCubit extends Cubit<RatingState> {
   final Now _now;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed && state.current == null) {
+        emit(const RatingState(failed: true));
+      }
+    }
+  }
+
+  Future<void> _load() async {
     final current = await _rating.current();
     final history = await _rating.history();
     final progress = _progress;

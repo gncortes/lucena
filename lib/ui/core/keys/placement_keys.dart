@@ -12,6 +12,7 @@ abstract final class PlacementKeys {
   static const stoppedCard = Key('placement.stoppedCard');
   static const stoppedAt = Key('placement.stoppedAt');
   static const answersSaved = Key('placement.answersSaved');
+  static const preferRating = Key('placement.preferRating');
   static const restart = Key('placement.restart');
 
   /// Na pergunta.
@@ -20,7 +21,13 @@ abstract final class PlacementKeys {
   static const prompt = Key('placement.prompt');
   static const board = Key('placement.board');
   static const confirm = Key('placement.confirm');
+
+  /// O início da régua do resultado, quando o nível fica abaixo de 1000.
+  static const rulerStart = Key('placement.rulerStart');
   static const dontKnow = Key('placement.dontKnow');
+
+  /// "Faltam N casas": quantas casas ainda marcar na pergunta de casas.
+  static const squaresLeft = Key('placement.squaresLeft');
 
   /// O rodapé com as respostas, embaixo do tabuleiro.
   static const answers = Key('placement.answers');

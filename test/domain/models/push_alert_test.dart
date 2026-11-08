@@ -74,6 +74,29 @@ void main() {
     });
   });
 
+  test('o presente leva curso, conta e o tipo no toque (H-R5-63)', () {
+    final alert = PushAlert.fromData(const {
+      'titulo': 'Você ganhou um presente',
+      'texto': 'O Pilares do Xadrez é seu.',
+      'tipo': 'presente',
+      'curso': 'pilares',
+      'pushId': 'p9',
+      'uid': 'u1',
+      'conta': 'ra***@gmail.com',
+    })!;
+    expect(alert.kind, PushKind.gift);
+    final opening = PushOpening.fromPayload(alert.payload)!;
+    expect(opening.isGift, isTrue);
+    expect(opening.course, 'pilares');
+    expect(opening.uid, 'u1');
+    expect(opening.account, 'ra***@gmail.com');
+    expect(opening.pushId, 'p9');
+    expect(
+      PushOpening.fromPayload(PushAlert.fromData(data)!.payload)!.isGift,
+      isFalse,
+    );
+  });
+
   test('canais por tipo', () {
     const texts = PushTexts(
       tournaments: 'T',
@@ -85,5 +108,6 @@ void main() {
     expect(texts.channel(PushKind.daily).id, 'push_dia_quieto');
     expect(texts.channel(PushKind.lesson).id, 'push_aulas_quieto');
     expect(texts.channel(PushKind.free).id, 'push_novidades_quieto');
+    expect(texts.channel(PushKind.gift).id, 'push_novidades_quieto');
   });
 }

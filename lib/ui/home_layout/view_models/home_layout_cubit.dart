@@ -1,4 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/home/home_layout_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
@@ -8,8 +12,10 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 
 class HomeLayoutState {
+  final LoadFailure? failure;
   const HomeLayoutState({
     this.layout,
+    this.failure,
     this.level = RatingLevel.casual,
     this.goal,
   });
@@ -35,6 +41,16 @@ class HomeLayoutCubit extends Cubit<HomeLayoutState> {
   final ProfileRepository _profile;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      debugPrint('home_layout load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(HomeLayoutState(failure: LoadFailure.generic));
+    }
+  }
+
+  Future<void> _load() async {
     final profile = await _profile.load();
     final saved = await _layouts.load();
     if (isClosed) return;

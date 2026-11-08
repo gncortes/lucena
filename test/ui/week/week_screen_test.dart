@@ -86,5 +86,9 @@ void main() {
 
     expect(find.text('Sua semana ainda não tem finais'), findsOneWidget);
     expect(find.textContaining('melhor dia'), findsNothing);
+    // Sem partida na semana não há variação: "Rating: 1152 para 1152" não
+    // diz nada (o canvas só desenha a linha na semana com finais).
+    expect(find.byKey(WeekKeys.rating), findsNothing);
+    expect(find.textContaining('Rating:'), findsNothing);
   });
 }

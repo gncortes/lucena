@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/race/race_repository.dart';
@@ -8,6 +11,7 @@ import 'race_cubit.dart';
 
 class RaceWarmUpState {
   const RaceWarmUpState({
+    this.failure,
     this.problems = const [],
     this.results = const [],
     this.feedback,
@@ -16,6 +20,8 @@ class RaceWarmUpState {
     this.boardFen,
     this.replying = false,
   });
+
+  final LoadFailure? failure;
 
   final List<RaceProblem> problems;
 
@@ -54,16 +60,21 @@ class RaceWarmUpCubit extends Cubit<RaceWarmUpState> {
   /// completa com os da mesma categoria ([category]) e depois com os mais
   /// fáceis do banco.
   Future<void> load({String? subcategory, String? category}) async {
-    final bank = await _repository.problems();
-    emit(
-      RaceWarmUpState(
-        problems: RaceRules.warmUp(
-          bank,
-          subcategory: subcategory,
-          category: category,
+    try {
+      final bank = await _repository.problems();
+      emit(
+        RaceWarmUpState(
+          problems: RaceRules.warmUp(
+            bank,
+            subcategory: subcategory,
+            category: category,
+          ),
         ),
-      ),
-    );
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(RaceWarmUpState(failure: LoadFailure.of(error)));
+    }
   }
 
   Future<void> answer(String move) async {

@@ -15,6 +15,14 @@ abstract final class ProfileKeys {
   /// Com conta: "Tudo guardado na conta".
   static const syncCard = Key('profile.syncCard');
 
+  /// O ícone e a frase do cartão: salvando, salvo agora, última vez.
+  static const syncIcon = Key('profile.syncIcon');
+  static const syncStatus = Key('profile.syncStatus');
+
+  /// O aviso da conta suspensa pelo admin, no lugar do cartão da
+  /// sincronização (H-R5-43).
+  static const accountBlocked = Key('profile.accountBlocked');
+
   static const rowCountry = Key('profile.rowCountry');
   static const rowRegion = Key('profile.rowRegion');
   static const rowLanguage = Key('profile.rowLanguage');
@@ -33,13 +41,12 @@ abstract final class ProfileKeys {
   static const lichessRefresh = Key('profile.lichessRefresh');
   static const lichessDisconnect = Key('profile.lichessDisconnect');
 
-  /// O histórico do rating de finais.
-  static const ratingCard = Key('profile.rating');
+  /// O aviso de falha dentro da folha do Lichess.
+  static const lichessNotice = Key('profile.lichessNotice');
+
+  /// "Notificações", no segundo grupo: abre a tela dos avisos.
+  static const rowNotices = Key('profile.rowNotices');
 
   /// Os grupos do fim (E1.25): "Remover anúncios"; Privacidade, feedback e
   /// avaliar.
-  static const rowRemoveAds = Key('profile.rowRemoveAds');
-  static const rowPrivacy = Key('profile.rowPrivacy');
-  static const rowFeedback = Key('profile.rowFeedback');
-  static const rowRate = Key('profile.rowRate');
 }

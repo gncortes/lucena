@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
@@ -33,6 +35,15 @@ import '../../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/goldens/golden_harness.dart';
+
+class _FailingProgress extends FakeProgressRepository {
+  bool fails = true;
+  @override
+  Future<Set<String>> fulfilledChallenges() async {
+    if (fails) throw StateError('banco indisponível');
+    return super.fulfilledChallenges();
+  }
+}
 
 /// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
 class _Home extends StatelessWidget {
@@ -93,6 +104,55 @@ class _Home extends StatelessWidget {
 }
 
 void main() {
+  testWidgets('falha no início mostra erro sem voltar e retry carrega', (
+    tester,
+  ) async {
+    final progress = _FailingProgress();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: _Home(const HomeScreen(), progress: progress),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+    expect(find.text('Voltar'), findsNothing);
+    progress.fails = false;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+  });
+  testWidgets('carregando: barra fixa e esqueleto, sem erro nem rating', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(locale: const Locale('pt'), child: _Home(const HomeScreen())),
+    );
+    // Antes da carga terminar: o nome, a engrenagem e o esqueleto.
+    expect(find.byKey(HomeKeys.title), findsOneWidget);
+    expect(find.byKey(HomeKeys.settingsButton), findsOneWidget);
+    expect(find.byKey(HomeKeys.loading), findsOneWidget);
+    expect(find.byKey(HomeKeys.playerCard), findsNothing);
+    expect(find.byKey(HomeKeys.error), findsNothing);
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.loading), findsNothing);
+    expect(find.byKey(HomeKeys.shortcutsTitle), findsOneWidget);
+  });
+
+  testWidgets('falha no início: a tela de erro leva a chave do Início', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: _Home(const HomeScreen(), progress: _FailingProgress()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.error), findsOneWidget);
+    expect(find.byKey(HomeKeys.loading), findsNothing);
+  });
+
   double opacityOf(WidgetTester tester, Key key) {
     final fade = tester.widget<FadeTransition>(
       find
@@ -211,9 +271,8 @@ void main() {
       'Escola, Jornada, Problemas e Estrelas', (tester) async {
     await pumpHome(tester, profile: learner);
 
-    expect(text(tester, HomeKeys.heroLabel), 'Primeiros passos');
-    expect(text(tester, HomeKeys.goalTitle), 'Como mover as peças');
-    expect(action(tester), 'Começar');
+    // Aprender a jogar: a próxima aula da Escola no cartão (S6 do T85).
+    expect(text(tester, HomeKeys.heroLabel), 'Escola');
     expect(tiles(tester), [
       HomeKeys.schoolButton,
       HomeKeys.journeyButton,
@@ -224,7 +283,32 @@ void main() {
     expect(find.byKey(FeaturedKeys.homeSection), findsNothing);
   });
 
-  testWidgets('aprender a jogar, depois do Coco: a Jornada no cartão e a '
+  testWidgets('aprender a jogar: o cartão do objetivo é o primeiro do Início '
+      'e entra com pop', (tester) async {
+    Finder first() => find.descendant(
+      of: find.byKey(MotionKeys.itemDaLista(0)),
+      matching: find.byKey(HomeKeys.goalCard),
+    );
+
+    await pumpHome(tester, profile: learner);
+    expect(first(), findsOneWidget);
+    expect(text(tester, HomeKeys.goalTitle), 'The rook');
+    expect(action(tester), 'Continuar');
+    expect(find.byKey(MotionKeys.entradaDoObjetivo), findsOneWidget);
+  });
+
+  testWidgets('enfrentar desafios: a Jornada no cartão, sem a entrada do '
+      'objetivo', (tester) async {
+    await pumpHome(
+      tester,
+      profile: const UserProfile(rating: 800, goal: GoalPreference.challenge),
+    );
+
+    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
+    expect(find.byKey(MotionKeys.entradaDoObjetivo), findsNothing);
+  });
+
+  testWidgets('aprender a jogar, depois do Coco: a Escola no cartão e a '
       'Escola primeiro', (tester) async {
     await pumpHome(
       tester,
@@ -235,9 +319,8 @@ void main() {
       progress: await wonCoco(),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
-    expect(action(tester), 'Jogar');
-    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
+    expect(text(tester, HomeKeys.heroLabel), 'Escola');
+    expect(action(tester), 'Continuar');
     expect(tiles(tester), [
       HomeKeys.schoolButton,
       HomeKeys.journeyButton,
@@ -250,15 +333,13 @@ void main() {
       'atalhos', (tester) async {
     await pumpHome(
       tester,
-      profile: const UserProfile(rating: 1450, goal: GoalPreference.endgames),
+      profile: const UserProfile(rating: 1450, goal: GoalPreference.improve),
       locale: const Locale('en'),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Endgame course');
-    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
-    expect(action(tester), 'Start');
+    expect(text(tester, HomeKeys.heroLabel), 'Journey');
     expect(tiles(tester), [
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.journeyButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
@@ -267,8 +348,8 @@ void main() {
     ]);
   });
 
-  testWidgets('aula de final aberta: Continuar, a barra e o exercício em '
-      'miniatura', (tester) async {
+  testWidgets('lição de final aberta: o Início mostra a Jornada, '
+      'não a lição (H-INI-02)', (tester) async {
     await pumpHome(
       tester,
       locale: const Locale('en'),
@@ -283,10 +364,9 @@ void main() {
       ),
     );
 
-    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
-    expect(action(tester), 'Continue');
-    expect(find.byKey(HomeKeys.heroProgress), findsOneWidget);
-    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
+    // A lição aberta não vira cartão no Início (H-INI-02): sem objetivo,
+    // o cartão é o da Jornada.
+    expect(text(tester, HomeKeys.heroLabel), 'Journey');
   });
 
   testWidgets('treinar finais: o final da faixa no cartão e Treinar primeiro '
@@ -301,7 +381,7 @@ void main() {
     expect(tiles(tester), [
       HomeKeys.catalogButton,
       HomeKeys.journeyButton,
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
       HomeKeys.starsButton,
@@ -316,7 +396,7 @@ void main() {
     final shown = tiles(tester);
     expect(shown, [
       HomeKeys.journeyButton,
-      HomeKeys.endgamesButton,
+      HomeKeys.pillarsButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
@@ -330,18 +410,21 @@ void main() {
     }
   });
 
-  testWidgets('sem aula liberada: nem o Curso de finais nos atalhos', (
-    tester,
-  ) async {
+  testWidgets('os Pilares do Xadrez ficam nos atalhos, com ou sem aula de '
+      'final: nunca o Curso de finais', (tester) async {
     await pumpHome(
       tester,
-      profile: const UserProfile(rating: 1450, goal: GoalPreference.endgames),
+      profile: const UserProfile(rating: 1450, goal: GoalPreference.improve),
       trail: const EndgameTrail(modules: []),
     );
 
-    expect(text(tester, HomeKeys.heroLabel), 'Treinar finais');
-    expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
-    expect(find.byKey(HomeKeys.forYouButton), findsNothing);
+    expect(find.byKey(HomeKeys.pillarsButton), findsOneWidget);
+    expect(find.text('Pilares do Xadrez'), findsOneWidget);
+    expect(
+      find.text('Seu guia de treino, feito para o seu jogo'),
+      findsWidgets,
+    );
+    expect(find.text('Curso de finais'), findsNothing);
     expect(tiles(tester).last, HomeKeys.starsButton);
   });
 
@@ -487,6 +570,44 @@ void main() {
 
     expect(find.byKey(HomeKeys.ratingValue), findsNothing);
     expect(text(tester, HomeKeys.ratingPending), 'Começando');
+  });
+
+  testWidgets('"Começando" é pílula de cartão com contorno e o texto na cor '
+      'primária (canvas PropV2UxHome; sem branco, T85-D0)', (tester) async {
+    await pumpHome(tester, profile: learner);
+    final colors = Theme.of(tester.element(find.byKey(HomeKeys.playerCard)))
+        .colorScheme;
+    final pill = tester
+        .widgetList<Material>(
+          find.ancestor(
+            of: find.byKey(HomeKeys.playerCard),
+            matching: find.byType(Material),
+          ),
+        )
+        .first;
+    expect(pill.color, AppColors.cardSurface);
+    final shape = pill.shape! as OutlinedBorder;
+    expect(shape.side.color, AppColors.cardOutline);
+    expect(shape.side.width, 1);
+    expect(
+      tester.getSize(find.byKey(HomeKeys.playerCard)).height,
+      greaterThanOrEqualTo(40),
+    );
+    final label = tester.widget<Text>(find.byKey(HomeKeys.ratingPending));
+    expect(label.style?.color, colors.primary);
+  });
+
+  testWidgets('com o número, o rating segue solto, sem pílula', (tester) async {
+    await pumpHome(tester, profile: const UserProfile(rating: 1450));
+    final card = tester
+        .widgetList<Material>(
+          find.ancestor(
+            of: find.byKey(HomeKeys.playerCard),
+            matching: find.byType(Material),
+          ),
+        )
+        .first;
+    expect(card.color, Colors.transparent);
   });
 
   testWidgets('o nome do app e o rating ficam fixos ao rolar a tela', (

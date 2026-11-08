@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/use_cases/clock_format.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/history/widgets/history_labels.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_cubit.dart';
@@ -71,6 +72,8 @@ void main() {
     double scale = 1,
     ThemeMode mode = ThemeMode.light,
     String? speedrunId,
+    Future<bool> Function()? trainingGoalDone,
+    VoidCallback? onNextGoal,
   }) async {
     tester.view.physicalSize = size * 2;
     tester.view.devicePixelRatio = 2;
@@ -85,12 +88,42 @@ void main() {
           maxScaleFactor: scale,
           child: BlocProvider.value(
             value: cubit,
-            child: const SpeedrunScreen(),
+            child: SpeedrunScreen(
+              trainingGoalDone: trainingGoalDone,
+              onNextGoal: onNextGoal,
+            ),
           ),
         ),
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  for (final done in [false, true]) {
+    testWidgets(
+      'training speedrun exposes next only after authoritative completion $done',
+      (tester) async {
+        var taps = 0;
+        await pump(
+          tester,
+          size: const Size(360, 740),
+          trainingGoalDone: () async => done,
+          onNextGoal: () => taps++,
+        );
+        expect(
+          find.byKey(TrainingKeys.nextGoal),
+          done ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(SpeedrunKeys.start),
+          done ? findsNothing : findsOneWidget,
+        );
+        if (done) {
+          await tester.tap(find.byKey(TrainingKeys.nextGoal));
+          expect(taps, 1);
+        }
+      },
+    );
   }
 
   Future<int> start() async {

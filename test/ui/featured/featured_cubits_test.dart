@@ -12,17 +12,20 @@ import 'package:lucena/ui/featured/view_models/find_move_cubit.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_push_repository.dart';
 
 void main() {
   late FakeFeaturedRepository repository;
   late FakeFeaturedProgressRepository progress;
   late FakeFeaturedAlertsRepository alerts;
+  late FakePushRepository push;
   final now = FakeNow(DateTime(2026, 1, 1, 12));
 
   setUp(() {
     repository = FakeFeaturedRepository(sampleFeaturedCatalog());
     progress = FakeFeaturedProgressRepository();
     alerts = FakeFeaturedAlertsRepository();
+    push = FakePushRepository();
   });
 
   group('FeaturedCatalogCubit', () {
@@ -30,6 +33,8 @@ void main() {
       final cubit = FeaturedCatalogCubit(
         featured: repository,
         progress: progress,
+        alerts: alerts,
+        push: push,
         now: now,
         country: country,
       );
@@ -37,64 +42,103 @@ void main() {
       return cubit;
     }
 
-    test('carrega a lista, o torneio em andamento e os países', () async {
+    test('separa recentes (30 dias) e históricos, e acha o torneio', () async {
       final cubit = newCatalog();
       expect(cubit.state.ready, isFalse);
       await cubit.load();
       expect(cubit.state.ready, isTrue);
-      expect([for (final i in cubit.state.items) i.id], ['b', 'a', 'c']);
+      expect([for (final i in cubit.state.recent) i.id], ['b']);
+      expect([for (final i in cubit.state.historic) i.id], ['a', 'c']);
       expect([for (final t in cubit.state.ongoing) t.id], ['live']);
-      expect(cubit.state.countries, ['NO', 'US']);
+      expect(cubit.state.finalsOf('live'), 1);
     });
 
-    test('sem finais, a lista está vazia (e não filtrada)', () async {
+    test('sem finais, a lista está vazia', () async {
       repository.value = FeaturedCatalog.empty;
       final cubit = newCatalog();
       await cubit.load();
       expect(cubit.state.isEmpty, isTrue);
-      expect(cubit.state.filteredOut, isFalse);
     });
 
-    test('filtros de país e origem, e limpar', () async {
-      final cubit = newCatalog();
-      await cubit.load();
-      cubit.setCountry('US');
-      expect([for (final i in cubit.state.items) i.id], ['a']);
-      expect(cubit.state.ongoing, isEmpty);
-      cubit.setOrigin(FeaturedOrigin.video);
-      expect(cubit.state.filteredOut, isTrue);
-      cubit.clearFilters();
-      expect(cubit.state.items, hasLength(3));
-      cubit.setOrigin(FeaturedOrigin.video);
-      expect([for (final i in cubit.state.items) i.id], ['c']);
-      cubit.setOrigin(null);
-      cubit.setCountry(null);
-      expect(cubit.state.filter.isActive, isFalse);
-    });
-
-    test('abre filtrada pelo país do perfil, se houver final de lá', () async {
+    test('o país do perfil só muda a ordem, nenhum final some', () async {
       final cubit = newCatalog(country: 'US');
       await cubit.load();
-      expect(cubit.state.filter.country, 'US');
-      expect([for (final i in cubit.state.items) i.id], ['a']);
-      cubit.setCountry(null);
-      await cubit.load();
-      expect(cubit.state.filter.isActive, isFalse);
+      expect(cubit.state.recent.length + cubit.state.historic.length, 3);
     });
 
-    test('sem final do país do perfil, abre com todos', () async {
-      final cubit = newCatalog(country: 'BR');
-      await cubit.load();
-      expect(cubit.state.filter.isActive, isFalse);
-      expect(cubit.state.items, hasLength(3));
-    });
-
-    test('os jogados vão para o fim', () async {
-      progress.playedIds.add('c');
+    test('os jogados vão para o fim do grupo', () async {
+      progress.playedIds.add('a');
       final cubit = newCatalog();
       await cubit.load();
-      expect(cubit.state.items.last.id, 'c');
-      expect(cubit.state.items.last.played, isTrue);
+      expect(cubit.state.historic.last.id, 'a');
+      expect(cubit.state.historic.last.played, isTrue);
+    });
+
+    test('catálogo ilegível termina em erro e "tentar de novo" relê', () async {
+      repository.failure = StateError('lixo');
+      final cubit = newCatalog();
+      await cubit.load();
+      expect(cubit.state.failure, isNotNull);
+      expect(cubit.state.ready, isFalse);
+      repository.failure = null;
+      await cubit.retryLoad();
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.ready, isTrue);
+    });
+
+    group('sino', () {
+      test('abre desligado e liga com a permissão, guardando', () async {
+        push.granted = true;
+        final cubit = newCatalog();
+        await cubit.load();
+        expect(cubit.state.bellOn, isFalse);
+        await cubit.toggleBell();
+        expect(push.permissionRequests, 1);
+        expect(cubit.state.bellOn, isTrue);
+        expect(cubit.state.notice, FeaturedBellNotice.turnedOn);
+        expect(alerts.all, isTrue);
+        final again = newCatalog();
+        await again.load();
+        expect(again.state.bellOn, isTrue);
+      });
+
+      test('desligar guarda e avisa que desligou', () async {
+        alerts.all = true;
+        push.allowed = true;
+        final cubit = newCatalog();
+        await cubit.load();
+        expect(cubit.state.bellOn, isTrue);
+        await cubit.toggleBell();
+        expect(cubit.state.bellOn, isFalse);
+        expect(cubit.state.notice, FeaturedBellNotice.turnedOff);
+        expect(alerts.all, isFalse);
+        expect(push.permissionRequests, 0);
+      });
+
+      test(
+        'permissão negada: continua desligado e oferece os ajustes',
+        () async {
+          push.granted = false;
+          final cubit = newCatalog();
+          await cubit.load();
+          await cubit.toggleBell();
+          expect(cubit.state.bellOn, isFalse);
+          expect(cubit.state.notice, FeaturedBellNotice.permissionDenied);
+          expect(alerts.all, isFalse);
+          await cubit.openSystemSettings();
+          expect(push.settingsOpened, 1);
+        },
+      );
+
+      test('cada aviso conta de novo, mesmo repetido', () async {
+        push.allowed = true;
+        final cubit = newCatalog();
+        await cubit.load();
+        await cubit.toggleBell();
+        await cubit.toggleBell();
+        await cubit.toggleBell();
+        expect(cubit.state.noticeCount, 3);
+      });
     });
   });
 
@@ -104,7 +148,6 @@ void main() {
         id: id,
         featured: repository,
         progress: progress,
-        alerts: alerts,
         now: now,
       );
       addTearDown(cubit.close);
@@ -117,7 +160,6 @@ void main() {
       expect(cubit.state.tournament!.id, 'live');
       expect([for (final i in cubit.state.items) i.id], ['b']);
       expect(cubit.state.ongoing, isTrue);
-      expect(cubit.state.alertAvailable, isTrue);
     });
 
     test('torneio que não existe termina pronto e sem torneio', () async {
@@ -127,25 +169,20 @@ void main() {
       expect(cubit.state.tournament, isNull);
     });
 
-    test('o aviso por torneio é guardado', () async {
-      final cubit = newTournament('live');
+    test('torneio passado não está em andamento', () async {
+      final cubit = newTournament('old');
       await cubit.load();
-      await cubit.setAlert(value: true);
-      expect(cubit.state.alertOn, isTrue);
-      expect(alerts.tournaments, {'live'});
-      final again = newTournament('live');
-      await again.load();
-      expect(again.state.alertOn, isTrue);
+      expect(cubit.state.ongoing, isFalse);
     });
 
-    test('sem canal de aviso, o interruptor não faz nada', () async {
-      alerts = FakeFeaturedAlertsRepository(available: false);
+    test('falha de leitura vira erro e "tentar de novo" relê', () async {
+      repository.failure = StateError('lixo');
       final cubit = newTournament('live');
       await cubit.load();
-      expect(cubit.state.alertAvailable, isFalse);
-      await cubit.setAlert(value: true);
-      expect(cubit.state.alertOn, isFalse);
-      expect(alerts.tournaments, isEmpty);
+      expect(cubit.state.failure, isNotNull);
+      repository.failure = null;
+      await cubit.retryLoad();
+      expect(cubit.state.ready, isTrue);
     });
   });
 
@@ -296,7 +333,7 @@ void main() {
         expect(cubit.state.phase, FindMovePhase.wrong);
         expect(cubit.state.attempts, 1);
         expect(progress.playedIds, isEmpty);
-        cubit.retry();
+        await cubit.retry();
         expect(cubit.state.phase, FindMovePhase.asking);
         await cubit.play(Move.parse('c8b8')!);
         expect(cubit.state.phase, FindMovePhase.solved);
@@ -309,14 +346,14 @@ void main() {
 
     test('dica e ver a resposta', () async {
       final cubit = newFind();
-      cubit.showHint();
+      await cubit.showHint();
       expect(cubit.state.hint, isTrue);
       await cubit.reveal();
       expect(cubit.state.phase, FindMovePhase.revealed);
       expect(progress.playedIds, {'b'});
       // Depois de ver a resposta, dá para tentar de novo (tabuleiro novo).
       final attempts = cubit.state.attempts;
-      cubit.retry();
+      await cubit.retry();
       expect(cubit.state.phase, FindMovePhase.asking);
       expect(cubit.state.attempts, attempts + 1);
       expect(cubit.state.hint, isFalse);

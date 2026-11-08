@@ -1,308 +1,532 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/characters/character_repository.dart';
+import 'package:lucena/data/repositories/course_preview/course_preview_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/course_preview.dart';
+import 'package:lucena/domain/models/pilares_access.dart';
+import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
-import 'package:lucena/ui/course_preview/view_models/course_preview_cubit.dart';
-import 'package:lucena/ui/course_preview/widgets/course_band_preview_screen.dart';
-import 'package:lucena/ui/course_preview/widgets/course_chapter_preview_screen.dart';
-import 'package:lucena/ui/course_preview/widgets/course_map_preview_screen.dart';
-import 'package:lucena/ui/course_preview/widgets/course_sale_screen.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/keys/purchase_keys.dart';
+import 'package:lucena/ui/course_preview/widgets/course_details_screen.dart';
+import 'package:lucena/ui/course_preview/widgets/course_sale_parts.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/fakes/fake_account_repository.dart';
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_course_preview_repository.dart';
+import '../../../testing/fakes/fake_purchase_service.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
-import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
   final preview = FakeCoursePreviewRepository.example();
+  late FakePurchaseRepository purchases;
+  late FakeAnalyticsRepository analytics;
 
-  /// As três telas da prévia nas mesmas rotas do app, em PT.
-  Future<GoRouter> pump(
-    WidgetTester tester, {
-    String at = Routes.pilaresSale,
-  }) async {
-    final cubit = CoursePreviewCubit(
-      FakeCoursePreviewRepository(preview: preview),
-      FakeCharacterRepository(),
+  setUp(() {
+    purchases = FakePurchaseRepository(
+      const PurchaseState(
+        pricesReady: true,
+        prices: {
+          PilaresPlan.lifetime: r'R$ 99,90',
+          PilaresPlan.monthly: r'R$ 19,90',
+        },
+      ),
     );
-    addTearDown(cubit.close);
-    await cubit.load();
+    analytics = FakeAnalyticsRepository();
+  });
+
+  /// A apresentação pelas rotas da D2, a partir de um Início de mentira.
+  Future<GoRouter> pump(WidgetTester tester, String location) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(412, 915);
+    addTearDown(tester.view.reset);
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
     );
     addTearDown(settings.close);
     await settings.load();
-    Widget provide(Widget child) =>
-        BlocProvider.value(value: cubit, child: child);
     final router = GoRouter(
-      initialLocation: at,
+      initialLocation: Routes.home,
       routes: [
         GoRoute(
-          path: Routes.pilaresSale,
-          builder: (context, state) => provide(const CourseSaleScreen()),
-          routes: [
-            GoRoute(
-              path: 'faixa',
-              builder: (context, state) =>
-                  provide(const CourseBandPreviewScreen()),
-            ),
-            GoRoute(
-              path: 'mapa',
-              builder: (context, state) =>
-                  provide(const CourseMapPreviewScreen()),
-              routes: [
-                GoRoute(
-                  path: 'capitulo',
-                  builder: (context, state) =>
-                      provide(const CourseChapterPreviewScreen()),
-                ),
-              ],
-            ),
-          ],
+          path: Routes.home,
+          builder: (_, _) => const Scaffold(body: Text('inicio')),
         ),
+        GoRoute(
+          path: '${Routes.training('pilares')}/help',
+          builder: (context, _) => Scaffold(
+            body: Column(
+              children: [const Text('como funciona'), const CourseAboutTile()],
+            ),
+          ),
+        ),
+        ...d2Routes,
       ],
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      TestApp(
-        settingsCubit: settings,
-        router: router,
-        locale: const Locale('pt'),
-        child: const SizedBox(),
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<CoursePreviewRepository>.value(
+            value: FakeCoursePreviewRepository(preview: preview),
+          ),
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
+          RepositoryProvider<AccountRepository>.value(
+            value: FakeAccountRepository(),
+          ),
+        ],
+        child: TestApp(
+          locale: const Locale('pt'),
+          settingsCubit: settings,
+          purchaseRepository: purchases,
+          analytics: analytics,
+          router: router,
+          child: const SizedBox.shrink(),
+        ),
       ),
     );
+    await tester.pumpAndSettle();
+    router.push(location);
     await tester.pumpAndSettle();
     return router;
   }
 
-  Finder saleScrollable() => find
+  Finder scrollable() => find
       .descendant(
         of: find.byKey(CoursePreviewKeys.saleScroll),
         matching: find.byType(Scrollable),
       )
       .first;
 
-  /// Rola a venda até a aba [i] aparecer e toca nela.
+  Future<Finder> show(WidgetTester tester, Finder finder) async {
+    await tester.scrollUntilVisible(finder, 200, scrollable: scrollable());
+    await Scrollable.ensureVisible(tester.element(finder), alignment: 0.3);
+    await tester.pumpAndSettle();
+    return finder;
+  }
+
   Future<void> openTab(WidgetTester tester, int i) async {
     final tab = find.byKey(CoursePreviewKeys.tab(i));
-    await tester.scrollUntilVisible(tab, 200, scrollable: saleScrollable());
-    // A preview with shorter synthetic text can leave the tab behind the
-    // fixed purchase footer; bring the actual touch target above it first.
-    await Scrollable.ensureVisible(tester.element(tab), alignment: 0.2);
-    for (
-      var attempt = 0;
-      attempt < 5 && tab.hitTestable().evaluate().isEmpty;
-      attempt++
-    ) {
-      await tester.drag(
-        find.byKey(CoursePreviewKeys.saleScroll),
-        const Offset(0, -180),
-      );
-      await tester.pumpAndSettle();
-    }
-    expect(tab.hitTestable(), findsOneWidget);
+    await show(tester, tab);
     await tester.tap(tab);
     await tester.pumpAndSettle();
   }
 
-  test('a fixture sintética tem as três telas', () {
-    expect(preview.sale.title, 'Curso de exemplo');
-    expect(preview.sale.price, 'R\$ 10,00');
-    expect(preview.sale.parts, isNotEmpty);
-    expect(preview.sale.faq, isNotEmpty);
-    expect(preview.map.chapters, hasLength(preview.map.total));
-    expect(preview.chapter.lessons, isNotEmpty);
-  });
-
-  testWidgets('o cartão da faixa abre "Para quem é" com o gráfico e o '
-      'aviso', (tester) async {
-    setPhoneSize(tester, phoneSizes.first);
-    await pump(tester);
-    final card = find.byKey(CoursePreviewKeys.audience);
-    await tester.scrollUntilVisible(card, 200, scrollable: saleScrollable());
-    await tester.ensureVisible(card);
-    await tester.pumpAndSettle();
-    await tester.tap(card);
-    await tester.pumpAndSettle();
-    expect(find.byKey(CoursePreviewKeys.band), findsOneWidget);
-    expect(find.text('Faixa de exemplo'), findsOneWidget);
-    expect(find.text('Tema de exemplo'), findsOneWidget);
-    expect(find.text('12,5 %'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.text('Aviso de exemplo'),
-      200,
-      scrollable: find.byType(Scrollable).last,
+  void expectTitleBar(WidgetTester tester) {
+    final bars = tester.widgetList<SliverAppBar>(find.byType(SliverAppBar));
+    expect(bars, hasLength(1));
+    expect(bars.single.bottom, isNull);
+    expect(
+      find.descendant(
+        of: find.byType(SliverAppBar),
+        matching: find.text('Curso de exemplo'),
+      ),
+      findsOneWidget,
     );
-    expect(find.text('Aviso de exemplo'), findsOneWidget);
-  });
-
-  for (final size in phoneSizes) {
-    final w = size.width;
-    final h = size.height;
-    testWidgets('H4 venda ${w.toInt()}×${h.toInt()}: topo, preço, abas e o '
-        'botão de comprar fixo', (tester) async {
-      setPhoneSize(tester, size);
-      await pump(tester);
-      expect(find.text('Comprar · R\$ 10,00'), findsOneWidget);
-      // Expandida: o nome só no topo, a barra ainda sem título visível.
-      final bar = tester.widget<AnimatedOpacity>(
-        find.ancestor(
-          of: find.text('Curso de exemplo').first,
-          matching: find.byType(AnimatedOpacity),
-        ),
-      );
-      expect(bar.opacity, 0);
-
-      final price = rectOf(tester, CoursePreviewKeys.priceCard);
-      expect(price.left, closeToDp(16));
-      expect(price.right, closeToDp(w - 16));
-
-      final buy = rectOf(tester, CoursePreviewKeys.buy);
-      expect(buy.height, closeToDp(52));
-      expect(buy.left, closeToDp(16));
-      expect(buy.right, closeToDp(w - 16));
-      expect(buy.bottom, closeToDp(h - 24));
-
-      // Rolada: as abas grudam embaixo da barra e o nome aparece nela.
-      await tester.drag(
-        find.byKey(CoursePreviewKeys.saleScroll),
-        const Offset(0, -3000),
-      );
-      await tester.pumpAndSettle();
-      final collapsed = tester.widget<AnimatedOpacity>(
-        find
-            .ancestor(
-              of: find.text('Curso de exemplo'),
-              matching: find.byType(AnimatedOpacity),
-            )
-            .first,
-      );
-      expect(collapsed.opacity, 1);
-      final appBar = tester.getRect(find.byType(AppBar));
-      final tabs = tester.getRect(find.byType(TabBar));
-      expect(tabs.top, closeToDp(appBar.bottom));
-      expect(tabs.height, closeToDp(48));
-    });
-
-    testWidgets('H4 Conteúdo ${w.toInt()}×${h.toInt()}: a Parte I aberta com '
-        'todos os capítulos, a parte abre e fecha num toque e o capítulo '
-        'abre o mapa; Continuar abre o capítulo', (tester) async {
-      setPhoneSize(tester, size);
-      final router = await pump(tester);
-      await openTab(tester, 1);
-      expect(
-        find.text('Toque numa parte para ver os capítulos e as lições.'),
-        findsOneWidget,
-      );
-      final part = find.byKey(CoursePreviewKeys.part(0));
-      await tester.scrollUntilVisible(part, 200, scrollable: saleScrollable());
-      await tester.pumpAndSettle();
-      final rect = tester.getRect(part);
-      expect(rect.left, closeToDp(16));
-      expect(rect.right, closeToDp(w - 16));
-      expect(find.text('Parte I · 18 lições'), findsOneWidget);
-      // A Parte I aberta: os seis capítulos, o último sem
-      // exercícios; as outras partes fechadas.
-      for (var n = 1; n <= 6; n++) {
-        expect(find.byKey(CoursePreviewKeys.summaryChapter(n)), findsOneWidget);
-      }
-      expect(find.text('1 · Capítulo de exemplo 1'), findsOneWidget);
-      expect(find.text('1.4'), findsOneWidget);
-      expect(find.text('Exercícios'), findsNWidgets(5));
-      expect(find.text('6 · Capítulo de exemplo 6'), findsOneWidget);
-      expect(find.text('6.4'), findsNothing);
-      expect(find.byKey(CoursePreviewKeys.summaryChapter(7)), findsNothing);
-
-      final header = find.byKey(CoursePreviewKeys.partHeader('I'));
-      expect(tester.getRect(header).height, greaterThanOrEqualTo(48));
-      await tester.tap(header);
-      await tester.pumpAndSettle();
-      expect(find.byKey(CoursePreviewKeys.summaryChapter(1)), findsNothing);
-      final second = find.byKey(CoursePreviewKeys.partHeader('II'));
-      await tester.tap(second);
-      await tester.pumpAndSettle();
-      expect(find.text('7 · Capítulo de exemplo 7'), findsOneWidget);
-      expect(find.text('10 · Capítulo de exemplo 10'), findsOneWidget);
-
-      final chapter = find.byKey(CoursePreviewKeys.summaryChapter(7));
-      await tester.ensureVisible(chapter);
-      await tester.pumpAndSettle();
-      await tester.tap(chapter);
-      await tester.pumpAndSettle();
-      expect(find.byKey(CoursePreviewKeys.map), findsOneWidget);
-      expect(router.state.uri.toString(), Routes.pilaresMap);
-
-      // H5 mapa: Continuar, o teste de nível e os seis capítulos.
-      // O botão do cartão: 16 de margem da tela e 16 de dentro do cartão.
-      final next = rectOf(tester, CoursePreviewKeys.mapContinue);
-      expect(next.left, closeToDp(32));
-      expect(next.right, closeToDp(w - 32));
-      expect(next.height, closeToDp(48));
-      expect(find.byKey(CoursePreviewKeys.mapTest), findsOneWidget);
-      final first = rectOf(
-        tester,
-        CoursePreviewKeys.mapChapter(preview.map.chapters.first.id),
-      );
-      expect(first.left, closeToDp(16));
-      expect(first.height, greaterThanOrEqualTo(48));
-
-      await tester.tap(find.byKey(CoursePreviewKeys.mapContinue));
-      await tester.pumpAndSettle();
-      expect(find.byKey(CoursePreviewKeys.chapter), findsOneWidget);
-      expect(router.state.uri.toString(), Routes.pilaresChapter);
-    });
-
-    testWidgets('H5 capítulo ${w.toInt()}×${h.toInt()}: lições, exercícios e '
-        '"Começar a lição 5.1"', (tester) async {
-      setPhoneSize(tester, size);
-      await pump(tester, at: Routes.pilaresChapter);
-      expect(find.text('Parte I · capítulo 5 de 6'), findsOneWidget);
-      expect(find.text('Capítulo de exemplo 5'), findsOneWidget);
-      for (final lesson in preview.chapter.lessons) {
-        final row = rectOf(tester, CoursePreviewKeys.chapterLesson(lesson.id));
-        expect(row.height, greaterThanOrEqualTo(48));
-      }
-      final exercises = rectOf(tester, CoursePreviewKeys.chapterExercises);
-      expect(exercises.height, greaterThanOrEqualTo(48));
-      expect(
-        find.descendant(
-          of: find.byKey(CoursePreviewKeys.chapterExercises),
-          matching: find.text('Exercícios'),
-        ),
-        findsOneWidget,
-      );
-      final start = rectOf(tester, CoursePreviewKeys.chapterStart);
-      expect(start.height, closeToDp(52));
-      expect(start.left, closeToDp(16));
-      expect(start.right, closeToDp(w - 16));
-      expect(start.bottom, closeToDp(h - 8));
-      expect(find.text('Começar a lição 5.1'), findsOneWidget);
-    });
+    expect(
+      find.descendant(
+        of: find.byType(SliverAppBar),
+        matching: find.byType(BackButton),
+      ),
+      findsOneWidget,
+    );
   }
 
-  testWidgets('H4 Dúvidas: a primeira pergunta aberta; tocar abre outra', (
-    tester,
-  ) async {
-    setPhoneSize(tester, phoneSizes.first);
-    await pump(tester);
-    await openTab(tester, 2);
-    final faq = preview.sale.faq;
-    expect(find.text(faq[0].answer), findsOneWidget);
-    expect(find.text(faq[1].answer), findsNothing);
-    final tile = rectOf(tester, CoursePreviewKeys.faq(1));
-    expect(tile.height, greaterThanOrEqualTo(56));
-    await tester.ensureVisible(find.text(faq[1].question));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(faq[1].question));
-    await tester.pumpAndSettle();
-    expect(find.text(faq[1].answer), findsOneWidget);
-    expect(find.text(faq[0].answer), findsOneWidget);
+  group('Apresentação (H-VEN-01)', () {
+    testWidgets('1: título na barra, números e a fala do Viktor', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.presentation(origin: 'home'));
+      expect(find.byKey(CoursePreviewKeys.sale), findsOneWidget);
+      expectTitleBar(tester);
+      // O nome só na barra, nunca no corpo.
+      expect(find.text('Curso de exemplo'), findsOneWidget);
+      expect(find.text('30'), findsOneWidget);
+      expect(find.text('100+'), findsOneWidget);
+      expect(
+        await show(tester, find.text('Conheça este exemplo de navegação.')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('2: os 8 itens em ordem, verde nos pares', (tester) async {
+      await pump(tester, D2Paths.pilaresPresentation);
+      for (var i = 0; i < 8; i++) {
+        final item = await show(
+          tester,
+          find.byKey(CoursePreviewKeys.benefit(i)),
+        );
+        expect(
+          find.descendant(of: item, matching: find.text('Benefício ${i + 1}')),
+          findsOneWidget,
+        );
+        expect(tester.widget<SaleIconLine>(item).green, i.isOdd);
+        if (i > 0) {
+          expect(
+            tester.getTopLeft(item).dy,
+            greaterThan(
+              tester
+                  .getTopLeft(find.byKey(CoursePreviewKeys.benefit(i - 1)))
+                  .dy,
+            ),
+          );
+        }
+      }
+    });
+
+    testWidgets('3: preço da loja, nota e o mensal', (tester) async {
+      await pump(tester, D2Paths.pilaresPresentation);
+      final card = await show(tester, find.byKey(CoursePreviewKeys.priceCard));
+      expect(
+        find.descendant(of: card, matching: find.text(r'R$ 99,90')),
+        findsOneWidget,
+      );
+      expect(find.text('Nota ilustrativa.'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(CoursePreviewKeys.planMonthly),
+          matching: find.text(r'R$ 19,90/mês'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('3: sem resposta da loja, os valores de referência', (
+      tester,
+    ) async {
+      purchases = FakePurchaseRepository(const PurchaseState());
+      await pump(tester, D2Paths.pilaresPresentation);
+      final card = await show(tester, find.byKey(CoursePreviewKeys.priceCard));
+      expect(
+        find.descendant(of: card, matching: find.text(r'R$ 99,90')),
+        findsOneWidget,
+      );
+      expect(find.text(r'R$ 19,90/mês'), findsOneWidget);
+      expect(find.textContaining('—'), findsNothing);
+    });
+
+    testWidgets('4: o comparativo com as linhas, a soma e a fonte', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresPresentation);
+      final cost = await show(
+        tester,
+        find.byKey(CoursePreviewKeys.costCompare),
+      );
+      for (final text in [
+        'Custo de exemplo',
+        'Opção A',
+        r'R$ 100',
+        r'R$ 300 a R$ 1.000',
+        'Linha do curso',
+        r'R$ 200',
+        'Nota B.',
+        'Fonte ilustrativa.',
+        r'R$ 99,90',
+      ]) {
+        expect(
+          find.descendant(of: cost, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+      expect(
+        find.descendant(
+          of: cost,
+          matching: find.byKey(MotionKeys.barraQueEnche),
+        ),
+        findsNWidgets(2),
+      );
+    });
+
+    testWidgets('5: rolando, a barra mantém o título e as abas ficam fixas', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresPresentation);
+      await openTab(tester, 1);
+      await tester.drag(scrollable(), const Offset(0, -1500));
+      await tester.pumpAndSettle();
+      expectTitleBar(tester);
+      final tab = tester.getTopLeft(find.byKey(CoursePreviewKeys.tab(0)));
+      expect(tab.dy, lessThan(200));
+    });
+
+    testWidgets('6: Ver opções de compra abre a oferta, de qualquer aba', (
+      tester,
+    ) async {
+      for (final i in [0, 2]) {
+        analytics = FakeAnalyticsRepository();
+        await pump(tester, D2Paths.presentation(origin: 'home'));
+        await openTab(tester, i);
+        await tester.tap(find.byKey(CoursePreviewKeys.buy));
+        await tester.pumpAndSettle();
+        expect(find.byKey(PurchaseKeys.offerScreen), findsOneWidget);
+        expect(
+          analytics
+              .eventsNamed('pilares_oferta_vista')
+              .map((e) => (e.params['destaque'], e.params['origem'])),
+          [('apresentacao', 'home'), ('oferta', 'home')],
+        );
+      }
+    });
+
+    testWidgets('7: o cartão abre "Para quem é" e o voltar retorna', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresPresentation);
+      await tester.tap(
+        await show(tester, find.byKey(CoursePreviewKeys.audience)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(CoursePreviewKeys.band), findsOneWidget);
+      expect(find.text('Tema de exemplo'), findsOneWidget);
+      expect(find.text('12,5 %'), findsOneWidget);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byType(BackButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(CoursePreviewKeys.sale), findsOneWidget);
+    });
+
+    testWidgets('8: quem comprou vai ao Sobre o Pilares', (tester) async {
+      purchases.state = purchases.state.copyWith(
+        access: const PilaresAccess(kind: PilaresAccessKind.lifetime),
+      );
+      await pump(tester, D2Paths.pilaresPresentation);
+      expect(find.byKey(CoursePreviewKeys.sale), findsNothing);
+      expect(find.byKey(CoursePreviewKeys.details), findsOneWidget);
+    });
+
+    testWidgets('conteúdo: Parte I aberta, lições numeradas, teste e '
+        'aberturas', (tester) async {
+      await pump(tester, D2Paths.pilaresPresentation);
+      await openTab(tester, 1);
+      expect(
+        await show(tester, find.byKey(CoursePreviewKeys.summaryChapter(1))),
+        findsOneWidget,
+      );
+      expect(find.text('1.1'), findsOneWidget);
+      expect(find.text('Exemplo 1.1'), findsOneWidget);
+      expect(find.text('1.4'), findsOneWidget);
+      expect(
+        find.text('Teste do capítulo · $saleChapterTestCount exercícios'),
+        findsNWidgets(6),
+      );
+      expect(find.text('Abertura de exemplo'), findsOneWidget);
+      expect(
+        find.byKey(CoursePreviewKeys.summaryChapter(7), skipOffstage: false),
+        findsNothing,
+      );
+      await tester.tap(
+        await show(tester, find.byKey(CoursePreviewKeys.partHeader('II'))),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(CoursePreviewKeys.summaryChapter(7), skipOffstage: false),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('dúvidas: a primeira aberta, tocar abre outra', (tester) async {
+      await pump(tester, D2Paths.pilaresPresentation);
+      await openTab(tester, 2);
+      expect(find.text('Resposta ilustrativa 1.'), findsOneWidget);
+      expect(find.text('Resposta ilustrativa 2.'), findsNothing);
+      await tester.tap(
+        await show(tester, find.byKey(CoursePreviewKeys.faq(1))),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Resposta ilustrativa 2.'), findsOneWidget);
+    });
+
+    testWidgets('abrir registra a oferta vista com o destaque apresentacao', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.presentation(origin: 'metas'));
+      final events = analytics.eventsNamed('pilares_oferta_vista');
+      expect(events, hasLength(1));
+      expect(events.single.params, containsPair('destaque', 'apresentacao'));
+      expect(events.single.params, containsPair('origem', 'metas'));
+    });
   });
+
+  group('Sobre o Pilares (H-VEN-02)', () {
+    Finder detailsScrollable() => find
+        .descendant(
+          of: find.byKey(CoursePreviewKeys.details),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+
+    Future<Finder> reveal(WidgetTester tester, Finder finder) async {
+      await tester.scrollUntilVisible(
+        finder,
+        200,
+        scrollable: detailsScrollable(),
+      );
+      await tester.pumpAndSettle();
+      return finder;
+    }
+
+    Future<void> openDetailsTab(WidgetTester tester, int i) async {
+      await tester.tap(find.byKey(CoursePreviewKeys.detailsTab(i)));
+      await tester.pumpAndSettle();
+    }
+
+    /// Abre "Como funciona" e toca no cartão "Sobre o Pilares".
+    Future<GoRouter> openFromHelp(WidgetTester tester) async {
+      final router = await pump(tester, '${Routes.training('pilares')}/help');
+      await tester.tap(find.byKey(CoursePreviewKeys.aboutTile));
+      await tester.pumpAndSettle();
+      return router;
+    }
+
+    testWidgets('1: o cartão da Ajuda abre a barra, 3 abas e Visão geral', (
+      tester,
+    ) async {
+      await pump(tester, '${Routes.training('pilares')}/help');
+      expect(find.text('Sobre o Pilares'), findsOneWidget);
+      expect(
+        find.text('Conteúdo, plano e dúvidas do Pilares do Xadrez.'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(CoursePreviewKeys.aboutTile));
+      await tester.pumpAndSettle();
+      expect(find.byKey(CoursePreviewKeys.details), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.text('Sobre o Pilares'),
+        ),
+        findsOneWidget,
+      );
+      for (var i = 0; i < 3; i++) {
+        expect(find.byKey(CoursePreviewKeys.detailsTab(i)), findsOneWidget);
+      }
+      expect(tester.widget<TabBar>(find.byType(TabBar)).controller!.index, 0);
+      expect(find.text('Como o curso funciona'), findsOneWidget);
+      for (var i = 1; i <= 5; i++) {
+        expect(find.text('Passo $i'), findsOneWidget);
+      }
+      expect(
+        await reveal(tester, find.byKey(CoursePreviewKeys.detailsAudience)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('2: Conteúdo com as partes e a Parte I aberta', (tester) async {
+      await openFromHelp(tester);
+      await openDetailsTab(tester, 1);
+      expect(find.text('Resultado de exemplo'), findsOneWidget);
+      expect(find.text('Sumário de exemplo.'), findsOneWidget);
+      expect(find.byKey(CoursePreviewKeys.detailsPart(0)), findsOneWidget);
+      expect(
+        find.byKey(CoursePreviewKeys.summaryChapter(1), skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(CoursePreviewKeys.summaryChapter(7), skipOffstage: false),
+        findsNothing,
+      );
+    });
+
+    testWidgets('3: Dúvidas com a primeira aberta; tocar abre outra', (
+      tester,
+    ) async {
+      await openFromHelp(tester);
+      await openDetailsTab(tester, 2);
+      expect(find.text('Resposta de exemplo 1.'), findsOneWidget);
+      expect(find.text('Resposta de exemplo 2.'), findsNothing);
+      await tester.tap(
+        await reveal(tester, find.byKey(CoursePreviewKeys.detailsFaq(1))),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Resposta de exemplo 2.'), findsOneWidget);
+      // O Acordeão gira a mesma seta em meia volta (H-ANI-22).
+      final seta = find.descendant(
+        of: find.byKey(CoursePreviewKeys.detailsFaq(1)),
+        matching: find.byKey(MotionKeys.setaDoAcordeao),
+      );
+      expect(tester.widget<AnimatedRotation>(seta).turns, .5);
+    });
+
+    testWidgets('5: a seta volta a "Como funciona", de qualquer aba', (
+      tester,
+    ) async {
+      for (var i = 0; i < 3; i++) {
+        await openFromHelp(tester);
+        await openDetailsTab(tester, i);
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
+        expect(find.byKey(CoursePreviewKeys.details), findsNothing);
+        expect(find.text('como funciona'), findsOneWidget);
+      }
+    });
+
+    testWidgets('5: aberta direto (comprador), a seta vai a "Como funciona"', (
+      tester,
+    ) async {
+      await pump(tester, D2Paths.pilaresAbout);
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      expect(find.text('como funciona'), findsOneWidget);
+    });
+  });
+
+  // 9: o texto real da venda só afirma e bate com o conteúdo (105, 20,
+  // 850+). O arquivo é privado: fora do CI, o teste pula.
+  final real = File('assets/courses/pt/pilares_venda.json');
+  test('9: a venda real só afirma e traz 105 lições, 20 capítulos e 850+', () {
+    final json = jsonDecode(real.readAsStringSync()) as Map<String, dynamic>;
+    final sale = CoursePreview.fromJson(json).sale;
+    expect(sale.title, 'Pilares do Xadrez');
+    expect(sale.lessons, 105);
+    expect(sale.chapters, 20);
+    expect(sale.exercises, '850+');
+    expect(sale.benefits, hasLength(8));
+    expect(sale.faq, hasLength(8));
+    // Sobre o Pilares (H-VEN-02): 5 partes que somam 105 e as 9 dúvidas.
+    final details = CoursePreview.fromJson(json).details;
+    expect(details.steps, hasLength(5));
+    expect(details.faq, hasLength(9));
+    expect(details.faq.first.question, 'Serve para o meu nível?');
+    expect(sale.parts.map((p) => p.lessons), [24, 17, 25, 21, 18]);
+    // 4 e 6: o fim da assinatura e o tempo de acesso, sem valores.
+    final ended = details.faq.singleWhere(
+      (f) => f.question == 'O que acontece quando a assinatura termina?',
+    );
+    for (final part in ['progresso', 'Capítulo 1', 'anúncio', '2 a 20']) {
+      expect(ended.answer, contains(part));
+    }
+    final access = details.faq.singleWhere(
+      (f) => f.question == 'Por quanto tempo tenho acesso?',
+    );
+    expect(access.answer, contains('Acesso vitalício ao Pilares'));
+    expect(access.answer, contains('assinatura mensal'));
+    expect(access.answer.contains(r'R$'), isFalse);
+    // Só a venda: o "Sobre o Pilares" explica regras ("sem dica").
+    final text = jsonEncode(json['sale']).toLowerCase();
+    for (final negation in ['não é um curso', ' sem ', 'nada de']) {
+      expect(text.contains(negation), isFalse, reason: negation);
+    }
+  }, skip: real.existsSync() ? false : 'conteúdo privado fora do CI');
 }

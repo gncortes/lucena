@@ -88,8 +88,18 @@ class ClockRow extends StatelessWidget {
                 : null)
           : null;
       final clock = state.clock;
+      // Sem relógio o lado não aparece no tempo: vai na linha de detalhe
+      // ("Nível 1000 · pretas", PropV1PartidaSemRelogio). Só contra a máquina.
+      final sideName = side == Side.white
+          ? l10n.playerSideWhiteLower
+          : l10n.playerSideBlackLower;
+      final shownDetail = clock != null || !mode.opponent.isMachine
+          ? detail
+          : detail == null
+          ? (side == Side.white ? l10n.sideWhite : l10n.sideBlack)
+          : l10n.playerDetailWithSide(detail, sideName);
       return PlayerEntry(
-        detail: detail,
+        detail: shownDetail,
         detailKey: FreeBoardKeys.playerDetail(side),
         side: side,
         name: name,

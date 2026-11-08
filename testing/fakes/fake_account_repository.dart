@@ -11,6 +11,9 @@ class FakeAccountRepository implements AccountRepository {
   Account? account;
   AccountFailure? failure;
   bool canceled = false;
+
+  /// Segura a entrada pelo Google até completar (para ver o carregando).
+  Completer<void>? googleHold;
   final _changes = StreamController<Account?>.broadcast();
 
   static const google = Account(
@@ -19,6 +22,24 @@ class FakeAccountRepository implements AccountRepository {
     email: 'teste@example.com',
     name: 'Teste',
   );
+
+  /// A conta foi suspensa pelo admin (`bloqueios/{uid}`). Mudar com o app
+  /// aberto avisa quem acompanha ao vivo ([blockedChanges]).
+  bool get blocked => _blocked;
+  set blocked(bool value) {
+    _blocked = value;
+    _blockedChanges.add(value);
+  }
+
+  bool _blocked = false;
+  final _blockedChanges = StreamController<bool>.broadcast();
+
+  @override
+  Stream<bool> blockedChanges(String uid) async* {
+    bool of(bool value) => account?.uid == uid && value;
+    yield of(_blocked);
+    yield* _blockedChanges.stream.map(of);
+  }
 
   @override
   Account? get current => account;
@@ -41,6 +62,8 @@ class FakeAccountRepository implements AccountRepository {
 
   @override
   Future<Account?> signInWithGoogle() async {
+    final hold = googleHold;
+    if (hold != null) await hold.future;
     _throwIfFailing();
     if (canceled) return null;
     _set(google);
@@ -80,6 +103,7 @@ class FakeAccountRepository implements AccountRepository {
 
   /// O `photo` do último [deleteAccount].
   bool? deletedWithPhoto;
+  final deletedUids = <String>[];
 
   @override
   Future<void> sendPasswordReset(String email) async {
@@ -105,8 +129,22 @@ class FakeAccountRepository implements AccountRepository {
     );
   }
 
+  /// Com valor, a próxima saída falha (e a conta fica).
+  Object? signOutError;
+
+  /// Quantas vezes o app pediu para sair.
+  int signOuts = 0;
+
   @override
-  Future<void> signOut() async => _set(null);
+  Future<void> signOut() async {
+    signOuts++;
+    final error = signOutError;
+    if (error != null) {
+      signOutError = null;
+      throw error;
+    }
+    _set(null);
+  }
 
   /// Quantas vezes o app ligou o push da conta na abertura.
   int pushLinks = 0;
@@ -115,9 +153,19 @@ class FakeAccountRepository implements AccountRepository {
   Future<void> linkPushDevice() async => pushLinks++;
 
   @override
-  Future<void> deleteAccount({bool photo = false}) async {
+  Future<bool> deleteAccount({
+    required String expectedUid,
+    bool photo = false,
+  }) async {
+    if (account?.uid != expectedUid) {
+      _set(null);
+      throw const AccountException(AccountFailure.userMismatch);
+    }
     _throwIfFailing();
+    if (canceled) return false;
     deletedWithPhoto = photo;
+    deletedUids.add(expectedUid);
     _set(null);
+    return true;
   }
 }

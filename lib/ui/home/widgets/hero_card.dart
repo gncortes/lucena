@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:dartchess/dartchess.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../../domain/use_cases/training/home_course_card.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
+import '../../core/keys/motion_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/relogio_de_entrada.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
-import '../../core/widgets/animated_progress.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
-import '../../endgames/widgets/endgame_ui.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 import 'home_actions.dart';
@@ -24,40 +32,60 @@ import 'home_actions.dart';
 /// o retrato, o ponto em que a pessoa está e a miniatura numa linha; embaixo,
 /// o lugar do app, a barra (só com progresso) e o botão. Nada além disso.
 class HeroCard extends StatelessWidget {
-  const HeroCard({required this.state, super.key});
+  const HeroCard({
+    required this.state,
+    this.orientation = Side.white,
+    this.pop = false,
+    super.key,
+  });
 
   /// A miniatura da posição.
   static const board = 60.0;
 
   final HomeState state;
+  final Side orientation;
+
+  /// O cartão do objetivo do aprendiz: entra com fade e um pop curto (escala
+  /// de 0,92 a 1) em vez de só subir com a lista (S6 do T85).
+  final bool pop;
 
   @override
   Widget build(BuildContext context) {
     final data = _data(context);
     if (data == null) return const SizedBox.shrink();
-    return _HeroLayout(data: data);
+    Widget card = _HeroLayout(
+      data: data,
+      orientation: data.orientation ?? orientation,
+    );
+    if (pop) {
+      card = EntradaNoTempo(
+        key: MotionKeys.entradaDoObjetivo,
+        inicio: Duration.zero,
+        duracao: LucenaMotion.itemDaLista,
+        escalaDe: LucenaMotion.escalaDoObjetivo,
+        child: card,
+      );
+    }
+    return state.training == null
+        ? card
+        : KeyedSubtree(key: HomeKeys.courseCard, child: card);
   }
 
   _HeroData? _data(BuildContext context) {
     final l10n = context.l10n;
     final school = state.school;
-    final endgame = state.endgame;
     final train = state.trainGoal;
     final current = state.current;
     final next = state.next;
     return switch (state.hero) {
       null => null,
-      HomeHero.firstSteps => _HeroData(
-        label: l10n.homeHeroFirstSteps,
-        title: l10n.boardMoveMethod,
-        action: l10n.homeHeroStart,
-        avatar: state.character,
-        fen: GameRules.initial.fen,
-        onPressed: () => context.push(Routes.boardControls),
+      HomeHero.course when state.training != null => _courseData(
+        context,
+        state.training!,
       ),
       HomeHero.school when school != null => _HeroData(
         label: l10n.homeHeroSchool,
-        title: l10n.homeHeroLesson(school.done + 1),
+        title: school.lessonTitle ?? l10n.homeHeroLesson(school.done + 1),
         progress: school.total == 0 ? 0 : school.done / school.total,
         action: l10n.homeContinue,
         avatar: school.teacher,
@@ -81,28 +109,8 @@ class HeroCard extends StatelessWidget {
         // O retrato e o tabuleiro voam até a tela do desafio.
         avatarTag: opponentHeroTag(current.rung.id),
         fen: next.position.fen,
-        boardTag: challengeBoardTag(next.id),
+        boardHeroId: next.position.fen,
         onPressed: () => continueJourney(context, state),
-      ),
-      HomeHero.endgame when endgame != null => _HeroData(
-        label: l10n.homeEndgames,
-        title: endgame.title,
-        progress: endgame.progress,
-        action: endgame.recommended ? l10n.homeHeroStart : l10n.homeContinue,
-        avatar: endgame.teacher,
-        fen: endgame.fen,
-        boardTag: endgame.openExerciseId == null
-            ? null
-            : exerciseHeroTag(endgame.lessonId, endgame.openExerciseId!),
-        onPressed: () =>
-            context.push(endgame.route, extra: endgame.exerciseFen),
-      ),
-      HomeHero.courseDone => _HeroData(
-        label: l10n.homeEndgames,
-        title: l10n.homeHeroCourseDone,
-        action: l10n.homeGoalTrain,
-        avatar: state.teacher,
-        onPressed: () => context.go(Routes.catalog),
       ),
       HomeHero.train when train != null => _HeroData(
         label: l10n.homeTrain,
@@ -120,15 +128,55 @@ class HeroCard extends StatelessWidget {
           ),
         ),
       ),
-      HomeHero.speedrun => _HeroData(
-        label: l10n.homeSpeedrun,
-        title: l10n.homeHeroSpeedrun,
-        action: l10n.homeHeroPlay,
-        avatar: Character.stockfish,
-        onPressed: () => context.go(Routes.speedruns),
+      HomeHero.board => _HeroData(
+        label: l10n.freeBoardTitle,
+        title: l10n.homeHeroLastPosition,
+        action: l10n.homeContinue,
+        avatar: state.teacher,
+        onPressed: () => context.go(Routes.freeBoard),
       ),
       _ => null,
     };
+  }
+
+  _HeroData _courseData(BuildContext context, HomeTraining training) {
+    final l = context.l10n;
+    final card = training.card;
+    final lesson = training.resources.lessons
+        .where((e) => e.id == card.ref)
+        .firstOrNull;
+    final fen = training.fen;
+    return _HeroData(
+      label: switch (card.status) {
+        HomeCourseStatus.lesson => l.homeCourseToday,
+        HomeCourseStatus.done => l.homeCourseAllDone,
+        HomeCourseStatus.dayOff => l.homeCourseDayOff,
+        _ => l.homeCourseNextGoal,
+      },
+      title: switch (card.goal?.kind) {
+        GoalKind.stars => l.starChallengeTitle(card.ref.split('.').last),
+        GoalKind.speedrun => l.trainingSpeedrunGoalTitle,
+        _ => lesson?.title ?? l.trainingOpeningsTitle,
+      },
+      action: switch (card.status) {
+        HomeCourseStatus.exercise => l.homeCourseSolve,
+        HomeCourseStatus.opening => l.homeCourseTrain,
+        HomeCourseStatus.challenge => l.homeHeroPlay,
+        HomeCourseStatus.lesson => l.homeContinue,
+        _ => l.homeHeroStart,
+      },
+      wrapLabel:
+          card.status == HomeCourseStatus.done ||
+          card.status == HomeCourseStatus.dayOff,
+      avatar: state.teacher,
+      fen: fen,
+      orientation: training.orientation,
+      // H-ANI-02 (combinado da D1): o tabuleiro voa com o id = FEN da
+      // posição que a tela de destino abre.
+      boardHeroId: fen,
+      onPressed: () =>
+          openTrainingCourse(context, training, teacher: state.teacher),
+    );
   }
 }
 
@@ -139,10 +187,12 @@ class _HeroData {
     required this.action,
     required this.onPressed,
     this.progress = 0,
+    this.wrapLabel = false,
     this.avatar,
     this.avatarTag,
     this.fen,
-    this.boardTag,
+    this.boardHeroId,
+    this.orientation,
   });
 
   final String label;
@@ -152,16 +202,21 @@ class _HeroData {
 
   /// De 0 a 1. Zero: sem barra.
   final double progress;
+  final bool wrapLabel;
   final Character? avatar;
   final Object? avatarTag;
   final String? fen;
-  final Object? boardTag;
+
+  /// O id do [TabuleiroHero] (o FEN que a tela de destino mostra ao abrir).
+  final String? boardHeroId;
+  final Side? orientation;
 }
 
 class _HeroLayout extends StatelessWidget {
-  const _HeroLayout({required this.data});
+  const _HeroLayout({required this.data, required this.orientation});
 
   final _HeroData data;
+  final Side orientation;
 
   @override
   Widget build(BuildContext context) {
@@ -171,10 +226,11 @@ class _HeroLayout extends StatelessWidget {
     final label = Text(
       data.label,
       key: HomeKeys.heroLabel,
-      maxLines: 1,
+      maxLines: data.wrapLabel ? 2 : 1,
       style: theme.textTheme.labelMedium?.copyWith(
         color: on.withValues(alpha: 0.85),
         fontWeight: AppWeight.strong,
+        letterSpacing: 0,
       ),
     );
     final avatar = data.avatar;
@@ -189,111 +245,116 @@ class _HeroLayout extends StatelessWidget {
       );
       if (avatarTag != null) portrait = Hero(tag: avatarTag, child: portrait);
     }
-    return Material(
-      key: HomeKeys.goalCard,
-      color: colors.primary,
-      borderRadius: BorderRadius.circular(AppShape.large),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: data.onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.md,
-            children: [
-              Row(
-                spacing: AppSpacing.md,
-                children: [
-                  ?portrait,
-                  Expanded(
-                    child: Text(
-                      data.title,
-                      key: HomeKeys.goalTitle,
-                      maxLines: 2,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: on,
-                        fontWeight: AppWeight.heavy,
+    // H-ANI-20: o cartão afunda no toque.
+    return CartaoPressionavel(
+      child: Material(
+        key: HomeKeys.goalCard,
+        color: colors.primary,
+        borderRadius: BorderRadius.circular(AppShape.large),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: data.onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.md,
+              children: [
+                Row(
+                  spacing: AppSpacing.md,
+                  children: [
+                    ?portrait,
+                    Expanded(
+                      child: Text(
+                        data.title,
+                        key: HomeKeys.goalTitle,
+                        maxLines: 2,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: on,
+                          fontWeight: AppWeight.heavy,
+                        ),
                       ),
                     ),
-                  ),
-                  if (fen != null)
-                    PositionBoard(
-                      key: HomeKeys.heroBoard,
-                      fen: fen,
-                      size: HeroCard.board,
-                      heroTag: data.boardTag,
-                    ),
-                ],
-              ),
-              Row(
-                children: [
-                  // Com a barra, ela ocupa o meio (o rótulo vai até a metade
-                  // do espaço antes do botão); sem, o rótulo vai até o botão.
-                  // O botão fica sempre encostado à direita.
-                  Expanded(
-                    child: data.progress > 0
-                        ? LayoutBuilder(
-                            builder: (context, constraints) => Row(
-                              children: [
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth: constraints.maxWidth / 2,
-                                  ),
-                                  child: label,
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  // A barra branca sobre o azul.
-                                  child: Theme(
-                                    data: theme.copyWith(
-                                      colorScheme: colors.copyWith(primary: on),
+                    if (fen != null)
+                      _comHero(
+                        data.boardHeroId,
+                        PositionBoard(
+                          key: HomeKeys.heroBoard,
+                          fen: fen,
+                          orientation: orientation,
+                          size: HeroCard.board,
+                        ),
+                      ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    // Com a barra, ela ocupa o meio (o rótulo vai até a metade
+                    // do espaço antes do botão); sem, o rótulo vai até o botão.
+                    // O botão fica sempre encostado à direita.
+                    Expanded(
+                      child: data.progress > 0
+                          ? LayoutBuilder(
+                              builder: (context, constraints) => Row(
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: constraints.maxWidth / 2,
                                     ),
-                                    child: AnimatedProgress(
+                                    child: label,
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  Expanded(
+                                    // A barra branca sobre o azul; enche até
+                                    // o ponto em que a pessoa está (H-ANI-13).
+                                    child: BarraQueEnche(
                                       key: HomeKeys.heroProgress,
-                                      value: data.progress,
-                                      backgroundColor: on.withValues(
-                                        alpha: 0.3,
-                                      ),
+                                      valor: data.progress,
+                                      cor: on,
+                                      corDoTrilho: on.withValues(alpha: 0.3),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : label,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  FilledButton.icon(
-                    key: HomeKeys.goalAction,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: on,
-                      foregroundColor: colors.primary,
-                      minimumSize: const Size(0, kButtonHeightPill),
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        AppSpacing.md,
-                        0,
-                        AppSpacing.lg,
-                        0,
+                                ],
+                              ),
+                            )
+                          : label,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    FilledButton.icon(
+                      key: HomeKeys.goalAction,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: on,
+                        foregroundColor: colors.primary,
+                        minimumSize: const Size(0, kButtonHeightPill),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          AppSpacing.md,
+                          0,
+                          AppSpacing.lg,
+                          0,
+                        ),
+                        // O desenho tem 36; o toque, os 48 do Material (D6).
+                        tapTargetSize: MaterialTapTargetSize.padded,
+                        visualDensity: VisualDensity.standard,
+                        shape: const StadiumBorder(),
                       ),
-                      // O desenho tem 36; o toque, os 48 do Material (D6).
-                      tapTargetSize: MaterialTapTargetSize.padded,
-                      visualDensity: VisualDensity.standard,
-                      shape: const StadiumBorder(),
+                      onPressed: data.onPressed,
+                      icon: const Icon(
+                        CanvasSymbols.playArrow,
+                        fill: 1,
+                        size: AppIconSize.button,
+                      ),
+                      label: Text(data.action),
                     ),
-                    onPressed: data.onPressed,
-                    icon: const Icon(
-                      Icons.play_arrow_rounded,
-                      size: AppIconSize.button,
-                    ),
-                    label: Text(data.action),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+Widget _comHero(String? id, Widget board) =>
+    id == null ? board : TabuleiroHero(id: id, child: board);

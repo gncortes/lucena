@@ -10,6 +10,9 @@ abstract class AnalyticsService {
 
   Future<void> setUserProperty(String name, String? value);
 
+  /// O id do usuário (o `uid` da conta; nulo ao sair), H-R5-65.
+  Future<void> setUserId(String? id);
+
   /// Liga ou desliga o envio. Desligado, o SDK não guarda nada.
   Future<void> setCollectionEnabled(bool enabled);
 
@@ -32,6 +35,9 @@ class NoAnalyticsService implements AnalyticsService {
 
   @override
   Future<void> setUserProperty(String name, String? value) async {}
+
+  @override
+  Future<void> setUserId(String? id) async {}
 
   @override
   Future<void> setCollectionEnabled(bool enabled) async {}
@@ -59,6 +65,9 @@ class FirebaseAnalyticsService implements AnalyticsService {
   @override
   Future<void> setUserProperty(String name, String? value) =>
       _analytics.setUserProperty(name: name, value: value);
+
+  @override
+  Future<void> setUserId(String? id) => _analytics.setUserId(id: id);
 
   @override
   Future<void> setCollectionEnabled(bool enabled) =>

@@ -9,16 +9,23 @@ class StarShape extends StatelessWidget {
   const StarShape({
     this.color = AppColors.goldColor,
     this.blinking = false,
+    this.outlined = false,
     super.key,
   });
 
   final Color color;
   final bool blinking;
+  final bool outlined;
 
   @override
   Widget build(BuildContext context) {
     final reduced = AppMotion.of(context).disabled;
-    final star = FittedBox(child: Icon(Icons.star_rounded, color: color));
+    final star = FittedBox(
+      child: Icon(
+        outlined ? Icons.star_outline_rounded : Icons.star_rounded,
+        color: color,
+      ),
+    );
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.3, end: 1),
       duration: AppMotion.of(context).celebrate,

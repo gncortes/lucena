@@ -108,6 +108,18 @@ void main() {
       expect(alerts.state.state, isNull);
     });
 
+    testWidgets('H-CON-11 critério 2: "Por" mostra Portugal e Porto Rico', (
+      tester,
+    ) async {
+      await pump(tester, CountryScreen.new);
+      await tester.enterText(find.byKey(RegionKeys.countrySearch), 'Por');
+      await tester.pumpAndSettle();
+      final portugal = tester.getTopLeft(find.text('Portugal')).dy;
+      final portoRico = tester.getTopLeft(find.text('Porto Rico')).dy;
+      // Ordem alfabética: "Porto" vem antes de "Portu".
+      expect(portoRico, lessThan(portugal));
+    });
+
     testWidgets('a busca ignora acento; sem resultado, avisa', (tester) async {
       await pump(tester, CountryScreen.new);
 
@@ -118,6 +130,8 @@ void main() {
       await tester.enterText(find.byKey(RegionKeys.countrySearch), 'xyzw');
       await tester.pumpAndSettle();
       expect(find.byKey(RegionKeys.countryNotFound), findsOneWidget);
+      // H-AJU-10, pergunta 4: o texto recomendado.
+      expect(find.text('Nenhum país encontrado'), findsOneWidget);
     });
   });
 
@@ -217,6 +231,8 @@ void main() {
           create: (_) => FeaturedCatalogCubit(
             featured: FakeFeaturedRepository(sampleFeaturedCatalog()),
             progress: FakeFeaturedProgressRepository(),
+            alerts: FakeFeaturedAlertsRepository(),
+            push: FakePushRepository(),
             now: FakeNow(DateTime(2026, 1, 1, 12)),
           )..load(),
         ),

@@ -1,6 +1,8 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
@@ -22,6 +24,7 @@ import '../../speedrun/view_models/speedrun_bonus_payer.dart';
 class HistoryState {
   const HistoryState({
     this.loaded = false,
+    this.failed = false,
     this.tab = HistoryTab.games,
     this.gamesFilter = const GamesHistoryFilter(),
     this.classicFilter = const SpeedrunHistoryFilter(),
@@ -38,6 +41,7 @@ class HistoryState {
 
   /// Falso até a primeira leitura terminar.
   final bool loaded;
+  final bool failed;
   final HistoryTab tab;
   final GamesHistoryFilter gamesFilter;
   final SpeedrunHistoryFilter classicFilter;
@@ -116,6 +120,15 @@ class HistoryCubit extends Cubit<HistoryState> {
   final SpeedrunBonusPayer _bonus;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed && !state.loaded) emit(const HistoryState(failed: true));
+    }
+  }
+
+  Future<void> _load() async {
     // O bônus de uma conclusão que fechou à força antes de ser gravado.
     await _bonus.payPending();
     final settings = await _settings.load();

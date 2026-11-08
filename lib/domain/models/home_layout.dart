@@ -10,7 +10,7 @@ enum HomePath {
   /// recomendou, no filtro "Para você".
   forYou,
 
-  /// As aulas de finais, todas.
+  /// Os Pilares do Xadrez (o antigo Curso de finais): o plano de treino.
   endgames,
 
   /// O speedrun.
@@ -23,7 +23,13 @@ enum HomePath {
   race,
 
   /// Os desafios de estrelas: cada peça contra o relógio.
-  stars;
+  stars,
+
+  /// O tabuleiro livre (o objetivo "Explorar posições").
+  board,
+
+  /// Montar uma posição.
+  position;
 
   static HomePath? fromCode(Object? code) => values.asNameMap()[code];
 }

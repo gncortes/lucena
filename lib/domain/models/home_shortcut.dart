@@ -7,8 +7,8 @@ enum HomeShortcut {
   /// A Jornada, do Coco ao Stockfish.
   journey,
 
-  /// O Curso de finais (com os finais para você dentro).
-  endgames,
+  /// Os Pilares do Xadrez: o plano de quem comprou, a venda para quem não.
+  pillars,
 
   /// Os finais avulsos do catálogo.
   train,
@@ -21,4 +21,10 @@ enum HomeShortcut {
 
   /// Os desafios das estrelas.
   stars,
+
+  /// O tabuleiro livre, pelos dois lados.
+  freeBoard,
+
+  /// Montar uma posição para jogar.
+  customPosition,
 }

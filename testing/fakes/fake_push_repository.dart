@@ -35,6 +35,10 @@ class FakePushRepository implements PushRepository {
   void open(Uri link, {String? pushId, String? country}) =>
       _opened.add(PushOpening(link: link, pushId: pushId, country: country));
 
+  /// A pessoa tocou no aviso [opening] (o do presente, por exemplo) com o
+  /// app em segundo plano.
+  void tap(PushOpening opening) => _opened.add(opening);
+
   @override
   Future<void> start() async => started = true;
 

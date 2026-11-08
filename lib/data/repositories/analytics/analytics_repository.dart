@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
 import '../../services/firebase/analytics_service.dart';
+import '../../services/firebase/crash_report_service.dart';
 import '../../services/preferences_service.dart';
 
 /// O último link pelo qual a pessoa chegou (E1.03 §9): preenche a `geracao`
@@ -45,6 +46,10 @@ abstract class AnalyticsRepository {
 
   /// Grava a propriedade só quando o valor muda.
   Future<void> setTrait(AnalyticsTrait trait, String value);
+
+  /// O `uid` da conta como id do usuário (H-R5-65): os resumos do painel
+  /// juntam o uso ao aluno. Nulo ao sair da conta.
+  Future<void> setUserId(String? uid);
 
   /// A origem da 1ª abertura (`origem_*`), uma vez só. Verdadeiro: era a 1ª
   /// abertura e a origem foi gravada agora.
@@ -100,6 +105,9 @@ class NoAnalyticsRepository implements AnalyticsRepository {
   Future<void> setTrait(AnalyticsTrait trait, String value) async {}
 
   @override
+  Future<void> setUserId(String? uid) async {}
+
+  @override
   Future<bool> recordOrigin({
     required String first,
     String? source,
@@ -144,6 +152,7 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
   bool _enabled = true;
   bool _team = false;
   Map<String, String> _traits = {};
+  String? _userId;
   late final Future<void> _loaded = _load();
 
   Future<void> _load() async {
@@ -165,7 +174,16 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
   @override
   Future<void> start() async {
     await _loaded;
-    await _safely(() => _service.setCollectionEnabled(_collects));
+    await _applyCollection();
+  }
+
+  Future<void> _applyCollection() async {
+    final enabled = _collects;
+    await _safely(() => setCrashReportsEnabled(enabled));
+    await _safely(() => _service.setCollectionEnabled(enabled));
+    // Religada (ou na abertura), o id volta junto: o reset apagou.
+    final uid = _userId;
+    if (enabled && uid != null) await _safely(() => _service.setUserId(uid));
   }
 
   @override
@@ -185,7 +203,7 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
       await _stop();
     } else {
       _enabled = true;
-      await _safely(() => _service.setCollectionEnabled(_collects));
+      await _applyCollection();
       await log(AnalyticsEvents.privacidadeAnalytics(ligado: true));
     }
     await _preferences.setBool(enabledKey, value: enabled);
@@ -206,14 +224,14 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
     if (team) {
       await _stop();
     } else {
-      await _safely(() => _service.setCollectionEnabled(_collects));
+      await _applyCollection();
     }
   }
 
   /// Desliga a coleta, zera os dados do aparelho e esquece as propriedades
   /// enviadas (se voltar a ligar, vão de novo).
   Future<void> _stop() async {
-    await _safely(() => _service.setCollectionEnabled(false));
+    await _applyCollection();
     await _safely(_service.resetData);
     _traits = {};
     await _preferences.remove(traitsKey);
@@ -233,6 +251,15 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
       return;
     }
     await _safely(() => _service.logEvent(event.name, params));
+  }
+
+  @override
+  Future<void> setUserId(String? uid) async {
+    await _loaded;
+    if (uid == _userId) return;
+    _userId = uid;
+    if (!_collects) return;
+    await _safely(() => _service.setUserId(uid));
   }
 
   @override
