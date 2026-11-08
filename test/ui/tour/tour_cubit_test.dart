@@ -66,7 +66,26 @@ void main() {
     expect(fractions, [0.20, 0.30, 0.40, 0.60, 0.80, 1.0]);
   });
 
-  test('com Aprender a jogar o nível some e a barra anda em quartos', () async {
+  test('A6: em todo caminho a barra só cresce, sem repetir valor', () {
+    for (final learn in [false, true]) {
+      for (final link in [false, true]) {
+        final state = TourState(learn: learn, linkSetupDone: link);
+        final values = [
+          for (final step in state.steps) step.progress(learn: learn),
+        ];
+        for (var i = 1; i < values.length; i++) {
+          expect(
+            values[i],
+            greaterThan(values[i - 1]),
+            reason: 'learn=$learn link=$link: $values',
+          );
+        }
+        expect(values.last, 1.0);
+      }
+    }
+  });
+
+  test('com Aprender a jogar o nível some e a barra não repete', () async {
     profile.profile = const UserProfile(goal: GoalPreference.learn);
     final tour = cubit();
     await tour.load('pt');
@@ -82,7 +101,7 @@ void main() {
       await tour.next();
       fractions.add(tour.state.progress);
     }
-    expect(fractions, [0.25, 0.25, 0.50, 0.75, 1.0]);
+    expect(fractions, [0.20, 0.35, 0.50, 0.75, 1.0]);
   });
 
   test('Voltar não existe no primeiro passo e volta nos outros', () async {

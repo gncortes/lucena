@@ -32,11 +32,13 @@ enum TourStep {
   bool get isLast => this == TourStep.account;
 
   /// Quanto da barra está cheio neste passo (canvas `PropV2TourB*`). Com o
-  /// objetivo "Aprender a jogar" não há o passo do nível e a barra fica em
-  /// quartos.
+  /// objetivo "Aprender a jogar" não há o passo do nível: a barra mantém a voz
+  /// e a região do canvas (`PropV2TourBRegiaoAprender`, 75%) e cresce a cada
+  /// passo, sem repetir valor (A6).
   double progress({required bool learn}) => learn
       ? switch (this) {
-          board || theme => 0.25,
+          board => 0.20,
+          theme => 0.35,
           voice => 0.50,
           level || region => 0.75,
           account => 1.0,
