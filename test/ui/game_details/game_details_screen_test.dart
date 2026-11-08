@@ -152,11 +152,18 @@ void main() {
     await pump(tester, id);
     setCentroAparelho(tester);
     await tester.pumpAndSettle();
+    debugPrint('A8 game_details fora do centro: ${foraDoCentro(tester)}');
     expectTabuleiroNoCentro(tester);
-    // A8: a revisão tem o tabuleiro no alto, as abas e a lista embaixo (como
-    // a análise do Lichess). No centro útil (135 dp abaixo), a lista ficaria
-    // com ~95 dp: fica de fora até o Gabriel decidir.
-  }, skip: true);
+    // As abas e a lista ficam com a sobra de baixo, acima da navegação.
+    final board = tester.getRect(find.byKey(GameDetailsKeys.board));
+    final tabs = tester.getRect(find.byKey(GameDetailsKeys.tabSummary));
+    final panel = tester.getRect(find.byKey(GameDetailsKeys.panel));
+    final next = tester.getRect(find.byKey(GameDetailsKeys.next));
+    expect(board.bottom, lessThanOrEqualTo(tabs.top));
+    expect(panel.bottom, lessThanOrEqualTo(next.top));
+    expect(panel.height, greaterThan(0));
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('H-ANI-10: o tabuleiro dos detalhes é o TabuleiroAnimado', (
     tester,
@@ -170,6 +177,15 @@ void main() {
       'tabela e Motor liga a engine', (tester) async {
     final id = await progress.addAttempt(game);
     await pump(tester, id, screen: const Size(1080, 2400));
+    // A8: com o tabuleiro no centro, o cartão fica mais abaixo na lista.
+    await tester.scrollUntilVisible(
+      find.byKey(GameDetailsKeys.opponent),
+      200,
+      scrollable: find.descendant(
+        of: find.byKey(GameDetailsKeys.panel),
+        matching: find.byType(Scrollable),
+      ),
+    );
     expect(find.byKey(GameDetailsKeys.opponent), findsOne);
     expect(find.byKey(GameDetailsKeys.move(0)), findsNothing);
 
