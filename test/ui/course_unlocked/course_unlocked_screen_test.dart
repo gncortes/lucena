@@ -127,7 +127,7 @@ void main() {
     final fala = speech(tester);
     expect(fala, contains('Parabéns pelo presente, Ana!'));
     expect(fala, contains('Agora treinamos juntos o que decide partidas'));
-    expect(fala, contains('Comecemos pelo seu plano.'));
+    expect(fala, contains('Vamos começar pelo seu plano.'));
     expect(find.byIcon(Icons.card_giftcard), findsOneWidget);
     expect(find.text('Montar o meu plano'), findsOneWidget);
   });
@@ -167,7 +167,7 @@ void main() {
 
   testWidgets('com plano: "Ir para o curso" abre o curso', (tester) async {
     await pump(tester, origin: CourseUnlockedOrigin.purchase, hasPlan: true);
-    expect(speech(tester), isNot(contains('Comecemos pelo seu plano.')));
+    expect(speech(tester), isNot(contains('Vamos começar pelo seu plano.')));
     expect(find.text('Ir para o curso'), findsOneWidget);
     await tester.tap(find.byKey(CourseUnlockedKeys.action));
     await tester.pumpAndSettle();
