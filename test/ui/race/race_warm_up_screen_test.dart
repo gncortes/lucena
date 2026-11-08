@@ -12,6 +12,7 @@ import 'package:lucena/ui/race/view_models/race_warm_up_cubit.dart';
 import 'package:lucena/ui/race/widgets/race_warm_up_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_race_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -109,4 +110,37 @@ void main() {
       },
     );
   }
+
+  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    final repository = FakeRaceRepository(
+      now: FakeNow(DateTime.utc(2026)),
+      problems: [raceTestProblems.first],
+    );
+    final cubit = RaceWarmUpCubit(repository);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings()),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(cubit.close);
+    addTearDown(settings.close);
+    await cubit.load();
+    await settings.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: cubit,
+          child: RaceWarmUpScreen(
+            args: RaceWarmUpArgs(opponent: 'Rafa', onPlay: (_) {}),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expectTabuleiroNoCentro(tester);
+  });
 }

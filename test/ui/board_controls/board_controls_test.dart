@@ -8,6 +8,7 @@ import 'package:lucena/ui/board_controls/widgets/board_controls_screen.dart';
 import 'package:lucena/ui/core/keys/board_controls_keys.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
@@ -144,4 +145,30 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    final cubit = BoardControlsCubit(FakeOnboardingRepository());
+    addTearDown(settings.close);
+    addTearDown(cubit.close);
+    await settings.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: cubit,
+          child: const BoardControlsScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expectTabuleiroNoCentro(tester);
+  });
 }

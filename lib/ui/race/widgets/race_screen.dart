@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
@@ -83,18 +84,21 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
           child: Scaffold(
             key: RaceKeys.screen,
             appBar: _appBar(context, state),
-            body: SafeArea(
-              bottom: false,
-              child: ShimmerConteudo(
-                carregando: state.phase == RacePhase.loading,
-                esqueleto: const SkeletonList(),
-                child: switch (state.phase) {
-                  RacePhase.loading => const SizedBox.shrink(),
-                  RacePhase.intro => RaceIntroView(state: state),
-                  RacePhase.playing => RaceGameView(state: state),
-                  RacePhase.finished => RaceResultView(state: state),
-                  RacePhase.reviewing => RaceReviewView(state: state),
-                },
+            body: BoardViewport(
+              usefulHeight: BoardViewport.usefulHeightOf(context),
+              child: SafeArea(
+                bottom: false,
+                child: ShimmerConteudo(
+                  carregando: state.phase == RacePhase.loading,
+                  esqueleto: const SkeletonList(),
+                  child: switch (state.phase) {
+                    RacePhase.loading => const SizedBox.shrink(),
+                    RacePhase.intro => RaceIntroView(state: state),
+                    RacePhase.playing => RaceGameView(state: state),
+                    RacePhase.finished => RaceResultView(state: state),
+                    RacePhase.reviewing => RaceReviewView(state: state),
+                  },
+                ),
               ),
             ),
           ),
