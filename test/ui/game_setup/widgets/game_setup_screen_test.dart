@@ -99,6 +99,15 @@ void main() {
     });
   }
 
+  testWidgets('A3: o tabuleiro vai de ponta a ponta, sem margem, como o da '
+      'Jornada e o do canvas (PropV1FinaisNovaPartida)', (tester) async {
+    await pump(tester);
+    final screen = tester.getRect(find.byType(Scaffold).first);
+    final board = tester.getRect(find.byKey(GameSetupKeys.preview));
+    expect(board.left, closeTo(screen.left, 0.5));
+    expect(board.width, closeTo(screen.width, 0.5));
+  });
+
   Future<void> tap(WidgetTester tester, Key key, {int times = 1}) async {
     // A lista só monta o que está perto da tela: rola até o botão.
     await tester.scrollUntilVisible(

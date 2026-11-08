@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_chip.dart';
 
@@ -110,13 +108,15 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
       // botão de começar no pé dele.
       body: LayoutBuilder(
         builder: (context, box) {
-          final side = math.min(box.maxWidth - 32, _Header.maxBoard);
+          // Tabuleiro de ponta a ponta, como o da Jornada (challenge_screen)
+          // e o do canvas (PropV1FinaisNovaPartida); em tela baixa, encolhe.
           final boardArea = BoardOptionsPanel.boardAreaFor(
             box.maxHeight,
             boardRoom:
-                side +
+                box.maxWidth +
                 2 * (_Header.chipsHeight + AppSpacing.md) +
-                AppSpacing.lg,
+                AppSpacing.md,
+            minPanel: 0.3,
           );
           return Column(
             children: [
@@ -255,9 +255,6 @@ class _Header extends StatelessWidget {
   /// A partida está abrindo: o tabuleiro voa até o centro dela.
   final bool launching;
 
-  /// O maior tabuleiro da prévia.
-  static const maxBoard = 340.0;
-
   /// O espaço da linha do objetivo e da vez.
   static const chipsHeight = 48.0;
 
@@ -265,9 +262,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return CenteredBoardLayout(
-      gutter: AppSpacing.lg,
       gap: AppSpacing.md,
-      maxBoard: maxBoard,
       reserveBottom: chipsHeight,
       // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula) e,
       // ao começar, segue voando até o centro da partida.
