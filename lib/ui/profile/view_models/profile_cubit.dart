@@ -22,13 +22,20 @@ class ProfileCubit extends Cubit<UserProfile?> {
     this._repository, {
     this._region,
     this._analytics = const NoAnalyticsRepository(),
-  }) : super(null);
+  }) : super(null) {
+    // O tour, a conta e outras telas gravam direto no repositório: o perfil
+    // em memória acompanha na hora (achado A1 da simulação em dev).
+    _changes = _repository.changes.listen((profile) {
+      if (!isClosed) emit(profile);
+    });
+  }
 
   final ProfileRepository _repository;
   final AnalyticsRepository _analytics;
   final String? Function()? _region;
   // Preserve the nullable public profile API and the last loaded profile.
   final failure = ValueNotifier<LoadFailure?>(null);
+  late final StreamSubscription<UserProfile> _changes;
 
   /// O país da região do celular, se ele informar.
   String? get phoneCountry {
@@ -59,6 +66,7 @@ class ProfileCubit extends Cubit<UserProfile?> {
 
   @override
   Future<void> close() {
+    unawaited(_changes.cancel());
     failure.dispose();
     return super.close();
   }

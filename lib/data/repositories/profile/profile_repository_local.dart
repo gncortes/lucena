@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 
 import '../../../domain/models/avatar_photo.dart';
@@ -15,6 +17,10 @@ class LocalProfileRepository implements ProfileRepository {
   static const _rowId = 1;
 
   final AppDatabase _database;
+  final _changes = StreamController<UserProfile>.broadcast();
+
+  @override
+  Stream<UserProfile> get changes => _changes.stream;
 
   @override
   Future<UserProfile> load() async {
@@ -61,5 +67,6 @@ class LocalProfileRepository implements ProfileRepository {
             city: Value(profile.city),
           ),
         );
+    _changes.add(profile);
   }
 }

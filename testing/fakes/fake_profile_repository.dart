@@ -9,6 +9,10 @@ class FakeProfileRepository implements ProfileRepository {
 
   UserProfile profile;
   final saved = <UserProfile>[];
+  final _changes = StreamController<UserProfile>.broadcast();
+
+  @override
+  Stream<UserProfile> get changes => _changes.stream;
 
   /// Segura a leitura até completar.
   Completer<void>? loadGate;
@@ -30,5 +34,6 @@ class FakeProfileRepository implements ProfileRepository {
     }
     this.profile = profile;
     saved.add(profile);
+    _changes.add(profile);
   }
 }
