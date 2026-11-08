@@ -352,7 +352,7 @@ void main() {
     await tester.pumpAndSettle();
     debugPrint('A8 training_opening fora do centro: ${foraDoCentro(tester)}');
     expectTabuleiroNoCentro(tester);
-  }, skip: true);
+  });
 
   for (final reduced in [false, true]) {
     testWidgets(
