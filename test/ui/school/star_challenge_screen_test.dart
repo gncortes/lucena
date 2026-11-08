@@ -152,9 +152,8 @@ void main() {
         : tester.getRect(find.byKey(action.single)).top - 8 - 1;
     final above = top - appBar;
     final below = footer - score.bottom;
-    final pad = tester.view.padding;
-    final ratio = tester.view.devicePixelRatio;
-    final useful = (pad.top / ratio + size.height - pad.bottom / ratio) / 2;
+    // A8 (08/11): centro da tela inteira, contando as barras do sistema.
+    final useful = size.height / 2;
     final off = board.center.dy - useful;
     if (off.abs() <= 1) return;
     final balanced = (above - below).abs() <= 1;

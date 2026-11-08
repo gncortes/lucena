@@ -34,8 +34,9 @@ import 'featured_next_sheet.dart';
 /// "Ache o lance": a posição de uma partida real, sem relógio, e o jogador
 /// acha o lance. O lance é conferido contra a solução (tablebase): errou,
 /// tenta de novo; pode pedir uma dica ou ver a resposta.
-/// O maior lado do tabuleiro (tablet).
-const _maxBoard = 420.0;
+/// O maior lado do tabuleiro (tablet). Acima da largura dos celulares grandes
+/// (Pixel 9 Pro, 448): neles o tabuleiro vai de ponta a ponta (A8).
+const _maxBoard = 480.0;
 
 class FindMoveScreen extends StatelessWidget {
   const FindMoveScreen({

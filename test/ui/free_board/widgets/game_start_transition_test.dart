@@ -191,13 +191,12 @@ void main() {
     final appBar = tester.getRect(find.byType(AppBar));
     final actions = tester.getRect(find.byKey(FreeBoardKeys.actionsBar));
     expect(board.center.dx, closeTo(area.center.dx, 1));
-    // R2-08: o tabuleiro fica no centro da área entre as barras do Android.
+    // A8 (Gabriel, 08/11): o tabuleiro fica no centro da tela inteira.
     final view = tester.view;
-    final usefulTop = view.viewPadding.top / view.devicePixelRatio;
-    final usefulBottom =
-        (view.physicalSize.height - view.viewPadding.bottom) /
-        view.devicePixelRatio;
-    expect(board.center.dy, closeTo((usefulTop + usefulBottom) / 2, .5));
+    expect(
+      board.center.dy,
+      closeTo(view.physicalSize.height / view.devicePixelRatio / 2, .5),
+    );
     expect(board.top, greaterThanOrEqualTo(appBar.bottom));
     expect(board.bottom, lessThanOrEqualTo(actions.top));
     expect(find.byType(StaticChessboard), findsNothing);

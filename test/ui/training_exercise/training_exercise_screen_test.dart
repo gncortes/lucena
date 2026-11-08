@@ -589,11 +589,11 @@ void expectTrainingSpeechFont(WidgetTester tester) {
   }
 }
 
-/// A8: o tabuleiro de ponta a ponta com o centro no centro útil da tela
-/// (entre a barra de status, 52, e a de navegação, 24), sem passar da app bar
+/// A8: o tabuleiro de ponta a ponta com o centro no centro da tela inteira
+/// (contando a barra de status, 52, e a de navegação, 24), sem passar da app bar
 /// (64) nem do rodapé (96): o lado é o dobro da menor folga até essas bordas.
 void expectCanvasBlock(WidgetTester tester, Size size, Key boardKey) {
-  final center = 52 + (size.height - 52 - 24) / 2;
+  final center = size.height / 2;
   final above = center - 52 - 64;
   final below = size.height - 24 - 96 - center;
   final side = math.min(size.width, 2 * math.min(above, below));

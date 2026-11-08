@@ -35,7 +35,7 @@ class RaceGameView extends StatelessWidget {
       MediaQuery.textScalerOf(context)
           .scale(RaceChances.height)
           .ceilToDouble() +
-      AppSpacing.sm;
+      AppSpacing.xs;
 
   final RaceState state;
 

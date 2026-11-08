@@ -100,7 +100,7 @@ void main() {
     );
   }
 
-  // A8: onde cabe, o centro do tabuleiro fica no centro útil da tela; em
+  // A8: onde cabe, o centro do tabuleiro fica no centro da tela inteira; em
   // tela baixa (o painel ficaria sem espaço), no centro do espaço entre a
   // barra do app e o painel (T64).
   for (final (screen, scale, centered) in [

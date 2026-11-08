@@ -12,7 +12,8 @@ class AparelhoA8 {
 
   /// O centro da área útil, entre o fim da barra de status e o início da
   /// barra de navegação, em coordenadas da tela.
-  double get centroUtilY => status + (size.height - status - nav) / 2;
+  // A8 (08/11): centro da tela inteira, contando as barras do sistema.
+  double get centroUtilY => size.height / 2;
 
   @override
   String toString() =>
@@ -33,6 +34,8 @@ const aparelhosA8 = [
   AparelhoA8(centroAparelho, status: centroStatusBar, nav: centroNavBar),
   AparelhoA8(Size(393, 873)),
   AparelhoA8(Size(412, 915)),
+  // Pixel 9 Pro (emuladores da simulação): câmera alta, barra de cima 52.
+  AparelhoA8(Size(448, 997), status: 52, nav: 24),
 ];
 
 AparelhoA8 _atual = aparelhosA8[1];

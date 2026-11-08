@@ -187,10 +187,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                   : endgameName(l10n, challenge.position.subcategory),
             ),
           );
-          // A8: o centro útil da tela nas coordenadas do corpo, que começa
-          // no fim da barra do app (o rodapé fica fora dele).
+          // A8: o centro da tela inteira (com as barras do sistema) nas
+          // coordenadas do corpo, que começa no fim da barra do app.
           final centerY =
-              BoardViewport.usefulHeightOf(context) / 2 -
+              MediaQuery.sizeOf(context).height / 2 -
+              MediaQuery.viewPaddingOf(context).top -
               appBar.preferredSize.height;
           return Scaffold(
             key: JourneyKeys.challengeScreen,
@@ -253,12 +254,15 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                               2 * AppSpacing.md +
                               _chipsHeight,
                           minPanel: kMinInteractiveDimension,
+                          // Sem subir: o painel de uma linha não deixa ver o
+                          // histórico; em tela baixa vale o centro do espaço.
+                          minTop: centerY,
                         );
                         return Column(
                           children: [
                             SizedBox(
                               height:
-                                  centered ??
+                                  centered?.area ??
                                   BoardOptionsPanel.boardAreaFor(
                                     box.maxHeight,
                                     boardRoom:
@@ -270,7 +274,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                               child: CenteredBoardLayout(
                                 gap: AppSpacing.md,
                                 reserveBottom: _chipsHeight,
-                                centerY: centered == null ? null : centerY,
+                                centerY: centered?.centerY,
                                 board: _BigBoard(
                                   homeHero: widget.homeHero,
                                   challenge: challenge,

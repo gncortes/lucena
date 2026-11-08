@@ -26,9 +26,14 @@ class BoardViewport extends StatelessWidget {
   /// rodapé fica fora do body, e o body não recebe a barra de navegação).
   final double bottomBar;
 
+  /// A8 (Gabriel, 08/11): o centro é o da TELA INTEIRA, contando as barras do
+  /// sistema, e não o do espaço entre elas. A altura devolvida é a de uma faixa
+  /// que termina no topo da barra de navegação e cujo meio é o meio da tela
+  /// (altura da tela menos duas vezes a barra de baixo), e as fórmulas de
+  /// centro (`fundo útil - altura / 2`) dão o meio da tela.
   static double usefulHeightOf(BuildContext context) =>
       MediaQuery.sizeOf(context).height -
-      MediaQuery.viewPaddingOf(context).vertical;
+      2 * MediaQuery.viewPaddingOf(context).bottom;
 
   static double? centerYOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<_BoardViewportData>()?.centerY;
@@ -698,20 +703,24 @@ class BoardOptionsPanel extends StatelessWidget {
       MediaQuery.paddingOf(context).bottom +
       kMinInteractiveDimension;
 
-  /// A altura da área do tabuleiro com o centro dele no centro útil (A8):
-  /// [centerY] é esse centro, nas coordenadas da área, e [below] o que vai
-  /// do centro do tabuleiro até o painel. Se o painel ficasse mais baixo que
-  /// [minPanel], devolve null: o tabuleiro não cabe no centro e a tela volta
-  /// a [boardAreaFor].
-  static double? centeredAreaFor(
+  /// A área do tabuleiro com o centro dele no centro da tela (A8): [centerY]
+  /// é esse centro, nas coordenadas da área, e [below] o que vai do centro do
+  /// tabuleiro até o painel. Se o painel ficasse mais baixo que [minPanel], o
+  /// tabuleiro sobe só o que falta (barra de navegação alta, de três botões),
+  /// em vez de pular para o centro do espaço acima do painel. Null quando
+  /// nem subindo ele cabe ([minTop] acima do centro): a tela volta a
+  /// [boardAreaFor].
+  static ({double area, double centerY})? centeredAreaFor(
     double available, {
     required double? centerY,
     required double below,
     required double minPanel,
+    required double minTop,
   }) {
     if (centerY == null) return null;
-    final area = centerY + below;
-    return available - area >= minPanel ? area : null;
+    final center = min(centerY, available - minPanel - below);
+    if (center < minTop) return null;
+    return (area: center + below, centerY: center);
   }
 
   @override

@@ -1137,10 +1137,9 @@ void main() {
 void expectEqualGaps(WidgetTester tester) {
   final view = tester.view;
   final dpr = view.devicePixelRatio;
-  final top = view.viewPadding.top / dpr;
-  final bottom = view.viewPadding.bottom / dpr;
   final height = view.physicalSize.height / dpr;
-  final usefulCenter = top + (height - top - bottom) / 2;
+  // A8 (08/11): centro da tela inteira, contando as barras do sistema.
+  final usefulCenter = height / 2;
   final area = tester.getRect(find.byKey(BlindKeys.boardArea));
   final picker = tester.getRect(find.byType(SegmentedButton<BlindView>));
   final status = tester.getRect(find.byKey(BlindKeys.status));

@@ -121,9 +121,10 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
               centerY: centerY,
               below: box.maxWidth / 2 + 2 * AppSpacing.md + _Header.chipsHeight,
               minPanel: BoardOptionsPanel.minHeightOf(context),
+              minTop: box.maxWidth / 2 + AppSpacing.md + _Header.chipsHeight,
             );
             final boardArea =
-                centered ??
+                centered?.area ??
                 BoardOptionsPanel.boardAreaFor(
                   box.maxHeight,
                   boardRoom:
@@ -139,7 +140,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                   child: _Header(
                     state: state,
                     launching: _launching,
-                    centerY: centered == null ? null : centerY,
+                    centerY: centered?.centerY,
                   ),
                 ),
                 Expanded(
