@@ -10,6 +10,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/training/goal/diagnostic_test_size.dart';
 import '../../../domain/use_cases/training/goal/goal_view.dart';
 import '../../core/board/board_settings_ui.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/motion/lucena_motion.dart';
 import '../../core/motion/valor_que_anima.dart';
@@ -74,6 +75,28 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
             : null;
       },
       onBack: widget.onBack,
+      // A posição: o tabuleiro no centro da área útil, de ponta a ponta, e o
+      // "Não sei" embaixo dele (A8).
+      fill: (context, view) {
+        final d = view.state.diagnostic;
+        if (d == null || d.method != DiagnosticMethod.test) return null;
+        if (d.testComplete || (_resumePending ?? d.testAnswered > 0)) {
+          return null;
+        }
+        final exercise = cubit.exerciseFor(d.testChapterIds[d.testAnswered]);
+        if (exercise == null) return null;
+        return Builder(
+          builder: (context) => CenteredBoardLayout(
+            centerY: BoardViewport.centerYOf(context),
+            gap: AppSpacing.md,
+            board: LayoutBuilder(
+              builder: (context, box) =>
+                  _board(context, cubit, exercise, box.maxWidth),
+            ),
+            bottom: _dontKnow(context, cubit),
+          ),
+        );
+      },
       builder: (context, view) {
         final d = view.state.diagnostic;
         if (d == null || d.method != DiagnosticMethod.test) return const [];
@@ -147,32 +170,17 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
     GoalView view,
     TrainingDiagnostic d,
   ) {
-    final t = context.l10n;
-    final index = d.testAnswered;
-    final exercise = cubit.exerciseFor(d.testChapterIds[index]);
-    if (exercise == null) {
-      // Sem a posição no aparelho, conta como não respondida: "Não sei".
-      return [
-        TextButton(
-          key: TrainingGoalKeys.testDontKnow,
-          onPressed: () => _answer(cubit, false),
-          child: Text(t.treinoTestDontKnow),
-        ),
-      ];
-    }
-    return [
-      LayoutBuilder(
-        builder: (context, constraints) =>
-            _board(context, cubit, exercise, constraints.maxWidth),
-      ),
-      const SizedBox(height: AppSpacing.md),
-      TextButton(
-        key: TrainingGoalKeys.testDontKnow,
-        onPressed: () => _answer(cubit, false),
-        child: Text(t.treinoTestDontKnow),
-      ),
-    ];
+    // Com a posição, o corpo é o do [GoalPage.fill]. Sem ela no aparelho,
+    // conta como não respondida: "Não sei".
+    final exercise = cubit.exerciseFor(d.testChapterIds[d.testAnswered]);
+    return [if (exercise == null) _dontKnow(context, cubit)];
   }
+
+  Widget _dontKnow(BuildContext context, TrainingGoalCubit cubit) => TextButton(
+    key: TrainingGoalKeys.testDontKnow,
+    onPressed: () => _answer(cubit, false),
+    child: Text(context.l10n.treinoTestDontKnow),
+  );
 
   Widget _board(
     BuildContext context,

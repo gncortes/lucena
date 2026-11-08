@@ -21,6 +21,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/training_exercise/view_models/training_exercise_cubit.dart';
 import 'package:lucena/ui/training_exercise/widgets/training_exercise_screen.dart';
 
+import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -148,6 +149,62 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
   }
+
+  // A8: hoje 59 dp abaixo do centro útil. O bloco do canvas (balão + faixa +
+  // tabuleiro + notação, a ScriptPage da lição) é centrado inteiro; com o
+  // balão mínimo de 2 linhas, o tabuleiro cheio ainda fica 10 dp abaixo.
+  // Aguarda decisão.
+  testWidgets('A8: tabuleiro no centro útil e de ponta a ponta', (
+    tester,
+  ) async {
+    setCentroAparelho(tester);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    await settings.load();
+    addTearDown(settings.close);
+    final repo = FakeTrainingRepository(
+      states: {
+        TrainingCourse.pilares: TrainingState(
+          course: TrainingCourse.pilares,
+          installSeed: 'test',
+          day: DayGoals(date: '2026-10-29', studyDay: true, goals: [goal]),
+          cycles: {
+            'theme': ThemeCycle(lessonId: 'theme', startedOn: '2026-10-28'),
+          },
+        ),
+      },
+      content: {
+        TrainingCourse.pilares: TrainingResources(
+          banks: {
+            'theme': [exercise],
+          },
+        ),
+      },
+    );
+    addTearDown(repo.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: TrainingExerciseScreen(
+          repository: repo,
+          config: TrainingCourseConfig.pilares,
+          now: FakeNow(DateTime(2026, 10, 29, 12)),
+          goalKey: goal.key,
+          title: 'Tema',
+          teacher: teacher,
+          onNextGoal: () {},
+          onRedoLesson: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    debugPrint('A8 training_exercise fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    await tester.pumpWidget(const SizedBox());
+  }, skip: true);
 
   testWidgets(
     'completed failed exercise is read-only and shows solution action',

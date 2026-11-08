@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/use_cases/training/goal/goal_view.dart';
+import '../../core/board/centered_board_layout.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/load_skeleton.dart';
@@ -26,6 +27,7 @@ class GoalPage extends StatelessWidget {
     this.progressOf,
     this.titleKey,
     this.cascata = false,
+    this.fill,
     super.key,
   });
 
@@ -47,6 +49,11 @@ class GoalPage extends StatelessWidget {
   /// H-ANI-16: o texto que explica entra em cascata (o primeiro item como
   /// título), só na primeira entrada da tela.
   final bool cascata;
+
+  /// Corpo que ocupa a área toda, sem a lista com margem (o tabuleiro do
+  /// teste, centrado na área útil: [BoardViewport.centerYOf]). Quando devolve
+  /// `null`, vale a lista de [builder].
+  final Widget? Function(BuildContext context, GoalView view)? fill;
 
   List<Widget> _corpo(BuildContext context, GoalView view) {
     final filhos = builder(context, view);
@@ -92,18 +99,23 @@ class GoalPage extends StatelessWidget {
               icon: const Icon(Icons.arrow_back),
             ),
           ),
-          body: SafeArea(
-            top: false,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.screen),
-                    children: _corpo(context, view),
+          body: BoardViewport(
+            usefulHeight: BoardViewport.usefulHeightOf(context),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                children: [
+                  Expanded(
+                    child:
+                        fill?.call(context, view) ??
+                        ListView(
+                          padding: const EdgeInsets.all(AppSpacing.screen),
+                          children: _corpo(context, view),
+                        ),
                   ),
-                ),
-                if (footer != null) GoalFooter(child: footer!(context, view)),
-              ],
+                  if (footer != null) GoalFooter(child: footer!(context, view)),
+                ],
+              ),
             ),
           ),
         );
