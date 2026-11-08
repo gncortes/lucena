@@ -569,28 +569,36 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                 style: context.cardTitle,
               ),
               const SizedBox(height: AppSpacing.xs),
-              Semantics(
-                label: l10n.endgameEarnedStars(state.earned, level.stars),
-                excludeSemantics: true,
-                child: StarsRow(
-                  key: StarChallengeKeys.earned,
-                  total: level.stars,
-                  earned: state.earned,
-                  size: 36,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                state.newBest
-                    ? l10n.starChallengeNewBest
-                    : l10n.starChallengeBest(state.best ?? 0),
-                key: StarChallengeKeys.best,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: state.newBest
-                      ? colors.primary
-                      : colors.onSurfaceVariant,
-                ),
+              // A8: estrelas e recorde numa linha só, para o resultado caber
+              // acima do tabuleiro no centro sem rolar.
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: AppSpacing.sm,
+                children: [
+                  Semantics(
+                    label: l10n.endgameEarnedStars(state.earned, level.stars),
+                    excludeSemantics: true,
+                    child: StarsRow(
+                      key: StarChallengeKeys.earned,
+                      total: level.stars,
+                      earned: state.earned,
+                      size: 28,
+                    ),
+                  ),
+                  Text(
+                    state.newBest
+                        ? l10n.starChallengeNewBest
+                        : l10n.starChallengeBest(state.best ?? 0),
+                    key: StarChallengeKeys.best,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: state.newBest
+                          ? colors.primary
+                          : colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
               TextButton(
                 key: StarChallengeKeys.backButton,

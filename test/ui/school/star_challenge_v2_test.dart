@@ -236,6 +236,21 @@ void main() {
       expect(finishedScore.size, score.size);
       expect(finishedScore.top - finished.bottom, closeTo(8, 1));
       expect(rectOf(tester, StarChallengeKeys.retryButton), go);
+      // A8 (print 08/11): o resultado cabe acima do tabuleiro, sem rolagem.
+      // 360×740 segue na dívida pendente360x740 (canvas).
+      if (size.height >= 800) {
+        final resultScroll = find.ancestor(
+          of: find.byKey(StarChallengeKeys.result),
+          matching: find.byType(Scrollable),
+        );
+        for (final s in tester.stateList<ScrollableState>(resultScroll)) {
+          expect(s.position.maxScrollExtent, 0, reason: 'resultado rola');
+        }
+        expect(
+          rectOf(tester, StarChallengeKeys.result).bottom,
+          lessThanOrEqualTo(finished.top),
+        );
+      }
       expect(tester.takeException(), isNull);
     });
   }
