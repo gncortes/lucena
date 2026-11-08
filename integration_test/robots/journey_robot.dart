@@ -103,15 +103,17 @@ class JourneyRobot {
   }
 
   /// Os títulos de mês do histórico, de cima para baixo.
-  void expectMonths(List<String> months) {
+  Future<void> expectMonths(List<String> months) async {
     for (final (index, month) in months.indexed) {
+      await $(JourneyKeys.month(index)).scrollTo();
       expectText(_text(JourneyKeys.month(index)), month);
     }
     expect(find.byKey(JourneyKeys.month(months.length)), findsNothing);
   }
 
   /// Quantas partidas o histórico mostra.
-  void expectAttempts(int count) {
+  Future<void> expectAttempts(int count) async {
+    await $(JourneyKeys.attempt(count - 1)).scrollTo();
     expect(find.byKey(JourneyKeys.attempt(count - 1)), findsOneWidget);
     expect(find.byKey(JourneyKeys.attempt(count)), findsNothing);
   }

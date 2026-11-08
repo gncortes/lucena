@@ -100,7 +100,7 @@ void main() {
     // Fechar a conclusão volta ao desafio.
     await conclusion.close();
 
-    journey.expectAttempts(1);
+    await journey.expectAttempts(1);
     await journey.back();
     await journey.expectChallengeDone('basic.queen.0001', done: false);
     await journey.back();
@@ -166,8 +166,8 @@ void main() {
       await journey.expectChallengeDone('basic.rook.0001');
       await journey.openChallenge('basic.rook.0001');
 
-      journey.expectMonths(['February 2026', 'January 2026']);
-      journey.expectAttempts(2);
+      await journey.expectMonths(['February 2026', 'January 2026']);
+      await journey.expectAttempts(2);
     },
   );
 
