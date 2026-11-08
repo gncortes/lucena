@@ -96,8 +96,6 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
                 decoration: InputDecoration(
                   labelText: l10n.levelChessField,
                   helperText: l10n.levelChessHelp,
-                  // A ajuda inteira, sem reticências (A5).
-                  helperMaxLines: 3,
                   errorText: state.chessNotFound
                       ? l10n.levelChessNotFound
                       : null,

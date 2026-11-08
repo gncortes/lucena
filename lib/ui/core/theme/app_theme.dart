@@ -301,12 +301,14 @@ abstract final class AppTheme {
           ),
         ),
       ),
-      // Campo contornado de raio 12, rótulo sempre em cima (D31).
+      // Campo contornado de raio 12, rótulo sempre em cima (D31). A ajuda
+      // quebra linha em vez de cortar com reticências (A5).
       inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(AppShape.medium)),
         ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
+        helperMaxLines: 3,
       ),
       // Divisor fino de 1, colado no conteúdo (D32).
       dividerTheme: DividerThemeData(
