@@ -39,16 +39,12 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    debugPrint('A8 find_move fora do centro: ${foraDoCentro(tester)}');
+    expectTabuleiroNoCentro(tester);
+    // O cartão de cima cabe inteiro acima do tabuleiro, sem rolar.
     final board = maiorTabuleiro(tester);
-    // De ponta a ponta sempre.
-    expect(board.left, closeTo(0, 1));
-    expect(board.width, closeTo(centroAparelho.width, 1));
-    // No centro útil; só sai dele quando o cartão de cima não cabe no espaço
-    // acima do centro, e aí fica colado no cartão (12 dp), sem vão a mais.
     final header = tester.getRect(find.byType(Card).first);
-    if ((board.center.dy - centroUtilY).abs() > 1) {
-      expect(board.center.dy, greaterThan(centroUtilY));
-      expect(board.top - header.bottom, closeTo(12, 1));
-    }
+    expect(header.bottom, lessThanOrEqualTo(board.top));
+    expect(header.top, greaterThanOrEqualTo(80));
   });
 }

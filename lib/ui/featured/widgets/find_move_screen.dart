@@ -1,7 +1,5 @@
 import '../../core/widgets/load_error.dart';
 
-import 'dart:math' as math;
-
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -84,19 +82,19 @@ class FindMoveScreen extends StatelessWidget {
               ),
               // A8: o centro do tabuleiro fica no centro útil da tela, de
               // ponta a ponta; o cartão fica em cima e o retorno embaixo, com
-              // o que sobra. Se não couber, rola com o tabuleiro inteiro.
+              // o que sobra. O tabuleiro manda: o que não cabe rola.
               body: BoardViewport(
                 usefulHeight: BoardViewport.usefulHeightOf(context),
                 child: Column(
                   children: [
                     Expanded(
-                      child: LayoutBuilder(
-                        builder: (context, box) => CenteredBoardLayout(
+                      child: Builder(
+                        builder: (context) => CenteredBoardLayout(
                           centerY: BoardViewport.centerYOf(context),
-                          gap: AppSpacing.md,
+                          gap: AppSpacing.sm,
                           maxBoard: _maxBoard,
-                          minBoardSide: math.min(box.maxWidth, _maxBoard),
-                          top: Padding(
+                          shrinkSides: false,
+                          top: SingleChildScrollView(
                             padding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.lg,
                             ),
@@ -112,7 +110,7 @@ class FindMoveScreen extends StatelessWidget {
                               size: board.maxWidth,
                             ),
                           ),
-                          bottom: Padding(
+                          bottom: SingleChildScrollView(
                             padding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.lg,
                             ),
@@ -152,21 +150,33 @@ class _Header extends StatelessWidget {
     final side = endgame.userSide == Side.white ? 'white' : 'black';
     return Card(
       margin: EdgeInsets.zero,
+      // A8: compacto, para caber acima do tabuleiro no centro útil: a
+      // origem na linha dos jogadores e a folga de cima e de baixo menor.
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.xs,
+          spacing: 2,
           children: [
-            InfoChip(
-              compact: true,
-              icon: FeaturedLabels.originIcon(endgame.origin),
-              label: FeaturedLabels.origin(l10n, endgame.origin),
-            ),
-            Text(
-              FeaturedLabels.shortPlayers(l10n, endgame),
-              key: FeaturedKeys.endgamePlayers,
-              style: context.cardTitle,
+            Row(
+              spacing: AppSpacing.sm,
+              children: [
+                InfoChip(
+                  compact: true,
+                  icon: FeaturedLabels.originIcon(endgame.origin),
+                  label: FeaturedLabels.origin(l10n, endgame.origin),
+                ),
+                Expanded(
+                  child: Text(
+                    FeaturedLabels.shortPlayers(l10n, endgame),
+                    key: FeaturedKeys.endgamePlayers,
+                    style: context.cardTitle,
+                  ),
+                ),
+              ],
             ),
             Text(
               FeaturedLabels.subtitle(l10n, language, endgame, tournament),
