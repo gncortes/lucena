@@ -7,9 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 /// culto, como o Viktor: sem pra/pro/tá/tô/tava/num/numa.
 void main() {
   test('falas do Percival em pt sem contração informal', () {
-    final raw =
-        jsonDecode(File('assets/lines/pt/snob.json').readAsStringSync())
-            as Map<String, dynamic>;
+    final raw = jsonDecode(
+      File('assets/lines/pt/snob.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
     final informal = RegExp(
       r'(^|[^\p{L}])(pra|pras|pro|pros|tá|tô|tava|num|numa|nuns|numas)'
       r'(?![\p{L}])',

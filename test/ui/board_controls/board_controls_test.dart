@@ -131,10 +131,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       final board = tester.getRect(find.byKey(BoardControlsKeys.board));
-      expect(
-        (board.center.dy - size.height / 2).abs(),
-        lessThanOrEqualTo(.5),
-      );
+      expect((board.center.dy - size.height / 2).abs(), lessThanOrEqualTo(.5));
       expect(
         tester.getSize(find.byKey(BoardControlsKeys.continueButton)).height,
         greaterThanOrEqualTo(48),
