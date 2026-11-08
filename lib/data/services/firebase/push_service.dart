@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import '../../../domain/models/push_permission.dart';
+
 /// Um aviso que chegou pelo push. [data] traz o destino (por exemplo
 /// `link`, com o endereço de um desafio ou final).
 class PushMessage {
@@ -30,6 +32,15 @@ abstract class PushService {
 
   /// Se pode mostrar avisos agora, sem perguntar nada.
   Future<bool> permitted();
+
+  /// A permissão de agora, sem perguntar nada: permitida, negada ou nunca
+  /// perguntada (H-R5-60).
+  Future<PushPermission> permission();
+
+  /// Invalida o token deste aparelho no FCM (sair da conta, H-R5-64): um
+  /// token velho guardado numa conta deixa de receber. O próximo [token]
+  /// é outro.
+  Future<void> deleteToken();
 
   /// Falso sem o Firebase (build do F-Droid): não há push.
   bool get available;
@@ -63,6 +74,12 @@ class NoPushService implements PushService {
 
   @override
   Future<bool> permitted() async => false;
+
+  @override
+  Future<PushPermission> permission() async => PushPermission.never;
+
+  @override
+  Future<void> deleteToken() async {}
 
   @override
   bool get available => false;
@@ -111,6 +128,23 @@ class FirebasePushService implements PushService {
     final settings = await _messaging.getNotificationSettings();
     return _allowed(settings.authorizationStatus);
   }
+
+  @override
+  Future<PushPermission> permission() async {
+    final settings = await _messaging.getNotificationSettings();
+    return switch (settings.authorizationStatus) {
+      AuthorizationStatus.authorized ||
+      AuthorizationStatus.provisional => PushPermission.allowed,
+      AuthorizationStatus.denied ||
+      AuthorizationStatus.deniedPermanently => PushPermission.denied,
+      AuthorizationStatus.notDetermined => PushPermission.never,
+    };
+  }
+
+  // Par do getToken clássico acima: unregister() é do FID novo.
+  @override
+  // ignore: deprecated_member_use
+  Future<void> deleteToken() => _messaging.deleteToken();
 
   @override
   bool get available => true;

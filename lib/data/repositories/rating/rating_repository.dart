@@ -34,6 +34,12 @@ abstract class RatingRepository {
   /// sem partida nem bônus. Menor ou igual, nada muda.
   Future<void> restore(PlayerRating rating);
 
+  /// O jogador definiu o nível (Lichess, teste de nível ou faixa): [rating]
+  /// vira o rating atual, mesmo com partidas jogadas, e a incerteza volta ao
+  /// máximo. Sem partida nem bônus, nada a gravar: o ponto de partida já é o
+  /// do perfil. Igual ao atual, nada muda.
+  Future<void> setLevel(int rating);
+
   /// Conta a partida [game], gravada com o id [gameId], em que o jogador
   /// jogou com [userSide]; [drawGoal]: o objetivo era empatar. Devolve o
   /// rating novo; nulo se ela não conta.

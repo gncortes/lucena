@@ -15,6 +15,7 @@ class UpdateState {
     this.shown = false,
     this.downloading = false,
     this.ready = false,
+    this.offline = false,
   });
 
   final UpdateDecision decision;
@@ -31,6 +32,9 @@ class UpdateState {
   /// Baixou: falta reiniciar.
   final bool ready;
 
+  /// Sem internet para atualizar: a tela vira "Sem internet".
+  final bool offline;
+
   bool get required => decision == UpdateDecision.required;
 
   UpdateState copyWith({
@@ -39,12 +43,14 @@ class UpdateState {
     bool? shown,
     bool? downloading,
     bool? ready,
+    bool? offline,
   }) => UpdateState(
     decision: decision ?? this.decision,
     target: target ?? this.target,
     shown: shown ?? this.shown,
     downloading: downloading ?? this.downloading,
     ready: ready ?? this.ready,
+    offline: offline ?? this.offline,
   );
 }
 
@@ -100,6 +106,10 @@ class UpdateCubit extends Cubit<UpdateState> {
       playHasUpdate: _play.available,
     );
     if (isClosed) return;
+    // A obrigatória sem internet não tem como atualizar: avisa na tela.
+    final offline =
+        decision == UpdateDecision.required && !await _updates.hasConnection();
+    if (isClosed) return;
     // Já aberta nesta sessão, a recomendada fica como está até fechar.
     if (decision == UpdateDecision.none &&
         state.decision == UpdateDecision.recommended &&
@@ -113,6 +123,7 @@ class UpdateCubit extends Cubit<UpdateState> {
     emit(
       state.copyWith(
         decision: decision,
+        offline: offline,
         target: target,
         // Um valor maior é outra recomendada: pode aparecer de novo.
         shown: state.shown && target == state.target,
@@ -173,14 +184,33 @@ class UpdateCubit extends Cubit<UpdateState> {
         ),
       ),
     );
-    if (!_play.flexibleAllowed) return _updates.openStore();
+    if (!_play.flexibleAllowed) {
+      if (await _updates.hasConnection()) return _updates.openStore();
+      if (!isClosed) emit(state.copyWith(offline: true));
+      return;
+    }
     emit(state.copyWith(downloading: true));
+    if (!await _updates.hasConnection()) {
+      if (!isClosed) emit(state.copyWith(downloading: false, offline: true));
+      return;
+    }
     final done = await _updates.flexible();
     if (isClosed) return;
     emit(state.copyWith(downloading: false, ready: done));
   }
 
-  /// "Atualizar na Play" da obrigatória.
+  /// "Tentar novamente" das telas sem internet.
+  Future<void> retry() async {
+    emit(state.copyWith(offline: false));
+    await check();
+    if (state.decision == UpdateDecision.recommended &&
+        !await _updates.hasConnection() &&
+        !isClosed) {
+      emit(state.copyWith(offline: true));
+    }
+  }
+
+  /// "Atualizar" da obrigatória.
   Future<void> openStore() async {
     await _analytics.log(
       AnalyticsEvents.atualizacaoAcao(

@@ -21,6 +21,7 @@ abstract final class JourneyKeys {
   /// O resumo do alto: onde o jogador está e o próximo degrau.
   static const current = Key('journey.current');
   static const next = Key('journey.next');
+  static const summaryProgress = Key('journey.summary.progress');
   static const continueButton = Key('journey.continue');
 
   /// Na tela de um adversário: o cabeçalho com o progresso e o próximo

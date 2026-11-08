@@ -7,18 +7,42 @@ class ReloadOnReturn extends StatefulWidget {
   const ReloadOnReturn({
     required this.onReturn,
     required this.child,
+    this.onResume = false,
     super.key,
   });
 
   final VoidCallback onReturn;
   final Widget child;
+  final bool onResume;
 
   @override
   State<ReloadOnReturn> createState() => _ReloadOnReturnState();
 }
 
-class _ReloadOnReturnState extends State<ReloadOnReturn> {
+class _ReloadOnReturnState extends State<ReloadOnReturn>
+    with WidgetsBindingObserver {
   bool _wasCurrent = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (widget.onResume &&
+        state == AppLifecycleState.resumed &&
+        (ModalRoute.of(context)?.isCurrent ?? true)) {
+      widget.onReturn();
+    }
+  }
 
   @override
   void didChangeDependencies() {

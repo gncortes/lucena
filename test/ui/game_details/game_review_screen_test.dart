@@ -5,6 +5,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
@@ -20,6 +21,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import '../../../testing/fakes/fake_analysis_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -61,7 +63,10 @@ void main() {
     int id, {
     Size? viewport,
     FakeSettingsRepository? preferences,
+    Locale locale = const Locale('en'),
+    bool reduzir = false,
   }) async {
+    final reviews = FakeGameReviewRepository();
     tester.view.physicalSize = viewport ?? const Size(1080, 5000);
     tester.view.devicePixelRatio = viewport == null ? 2.625 : 1;
     addTearDown(tester.view.reset);
@@ -70,7 +75,12 @@ void main() {
       progress: progress,
       characters: FakeCharacterRepository(),
       analysis: analysis,
-      reviews: FakeGameReviewRepository(),
+      reviews: reviews,
+      deepAnalysis: EngineDeepAnalysisRepository(
+        analysis: analysis,
+        reviews: reviews,
+        now: FakeNow(DateTime.utc(2026, 10, 6, 12)),
+      ),
       lessons: FakeLessonRepository(
         texts: const LessonTexts({
           'review.stories': [
@@ -91,11 +101,15 @@ void main() {
     addTearDown(settings.close);
     await settings.load();
     await tester.pumpWidget(
-      TestApp(
-        settingsCubit: settings,
-        child: BlocProvider.value(
-          value: cubit,
-          child: const GameDetailsScreen(),
+      MediaQuery(
+        data: MediaQueryData(disableAnimations: reduzir),
+        child: TestApp(
+          settingsCubit: settings,
+          locale: locale,
+          child: BlocProvider.value(
+            value: cubit,
+            child: const GameDetailsScreen(),
+          ),
         ),
       ),
     );
@@ -103,27 +117,65 @@ void main() {
     return cubit;
   }
 
+  Future<void> openTab(WidgetTester tester, Key tab) async {
+    await tester.tap(find.byKey(tab));
+    await tester.pumpAndSettle();
+  }
+
   String text(WidgetTester tester, Key key) =>
       tester.widget<Text>(find.byKey(key)).data ?? '';
+
+  for (final reduzir in [false, true]) {
+    testWidgets('H-ANI-18: a precisão conta quando a análise chega '
+        '(reduzido: $reduzir)', (tester) async {
+      final id = await progress.addAttempt(game);
+      await pump(tester, id, reduzir: reduzir);
+      String precisao() => tester
+          .widget<Text>(
+            find.descendant(
+              of: find.byKey(GameDetailsKeys.accuracyWhite),
+              matching: find.byType(Text),
+            ),
+          )
+          .data!;
+      await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
+      for (var i = 0; i < 50; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+        if (find.byKey(GameDetailsKeys.accuracyWhite).evaluate().isNotEmpty) {
+          break;
+        }
+      }
+      final cedo = precisao();
+      await tester.pumpAndSettle();
+      final fim = precisao();
+      expect(fim, isNot('–'));
+      if (reduzir) {
+        expect(cedo, fim);
+      } else {
+        expect(cedo, isNot(fim));
+      }
+    });
+  }
 
   testWidgets('revisar: o resumo com a precisão, os símbolos na tabela e a '
       'anotação no tabuleiro', (tester) async {
     final id = await progress.addAttempt(game);
     await pump(tester, id);
-    expect(find.byKey(GameDetailsKeys.reviewSummary), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.oldAnalysis), findsOneWidget);
 
-    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pumpAndSettle();
 
     expect(find.byKey(GameDetailsKeys.reviewSummary), findsOneWidget);
-    expect(find.text('Accuracy'), findsOneWidget);
+    expect(find.text('Your accuracy'), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
     // Qg2, com o mate na mão, deixou escapar o mate em um lance: a engine de
     // mentira avalia o resto pelo material (+9), ainda ganho.
+    await openTab(tester, GameDetailsKeys.tabMoves);
     expect(find.byKey(GameDetailsKeys.moveQuality(0)), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.moveQuality(2)), findsOneWidget);
-    final board = tester.widget<Chessboard>(find.byKey(GameDetailsKeys.board));
-    expect(board.annotations, isNotEmpty);
+    // O selo do lance é o componente por cima do tabuleiro.
+    expect(find.byKey(GameDetailsKeys.pieceBadge), findsOneWidget);
   });
 
   testWidgets('navegar: os botões andam lance a lance e a explicação '
@@ -141,6 +193,7 @@ void main() {
     await tester.tap(find.byKey(GameDetailsKeys.first));
     await tester.pumpAndSettle();
     expect(cubit.state.shownIndex, -1);
+    await openTab(tester, GameDetailsKeys.tabMoves);
     expect(find.text('Starting position'), findsOneWidget);
 
     await tester.tap(find.byKey(GameDetailsKeys.next));
@@ -162,10 +215,11 @@ void main() {
     analysis.answer['7k/8/5K2/8/8/8/6Q1/8 b - - 1 1'] = [line('h8h7', cp: 0)];
     final id = await progress.addAttempt(game);
     final cubit = await pump(tester, id);
-    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pumpAndSettle();
     expect(cubit.state.review!.moves.first.quality, MoveQuality.blunder);
 
+    await openTab(tester, GameDetailsKeys.tabMoves);
     await tester.tap(find.byKey(GameDetailsKeys.move(0)));
     await tester.pumpAndSettle();
 
@@ -186,6 +240,7 @@ void main() {
 
     await tester.tap(find.byKey(GameDetailsKeys.engineButton));
     await tester.pumpAndSettle();
+    await openTab(tester, GameDetailsKeys.tabEngine);
 
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);
     expect(find.byKey(GameDetailsKeys.engineLine(0)), findsOneWidget);
@@ -194,7 +249,30 @@ void main() {
     expect(find.text('M1'), findsNWidgets(2));
     final board = tester.widget<Chessboard>(find.byKey(GameDetailsKeys.board));
     expect(board.shapes.whereType<Arrow>().single.dest, Square.g7);
+    await openTab(tester, GameDetailsKeys.tabSummary);
     expect(text(tester, GameDetailsKeys.result), contains('Win'));
+  });
+
+  testWidgets('H-PAR-15: Motor com seletor de linhas; tocar numa linha a '
+      'leva para Lances como variante', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id);
+    await tester.tap(find.byKey(GameDetailsKeys.first));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.engineButton));
+    await tester.pumpAndSettle();
+    await openTab(tester, GameDetailsKeys.tabEngine);
+
+    expect(find.byKey(GameDetailsKeys.engineHint), findsOneWidget);
+    await tester.tap(find.byKey(GameDetailsKeys.engineCount(1)));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.engineLine(0)), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.engineLine(1)), findsNothing);
+
+    await tester.tap(find.byKey(GameDetailsKeys.engineLine(0)));
+    await tester.pumpAndSettle();
+    expect(cubit.state.inVariation, isTrue);
+    expect(find.byKey(GameDetailsKeys.variation), findsOneWidget);
   });
 
   testWidgets('a legenda no fim explica os símbolos e, depois da revisão, '
@@ -206,10 +284,10 @@ void main() {
     expect(find.textContaining('Lichess'), findsNothing);
     expect(
       find.byKey(GameDetailsKeys.count('best', white: true)),
-      findsOneWidget,
+      findsNothing,
     );
 
-    await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pumpAndSettle();
 
     expect(
@@ -228,6 +306,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(cubit.state.engine, isTrue);
     expect(find.byKey(GameDetailsKeys.evalBar), findsOneWidget);
+    await openTab(tester, GameDetailsKeys.tabEngine);
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);
     final chip = tester.widget<FilterChip>(
       find.byKey(GameDetailsKeys.engineButton),
@@ -323,6 +402,8 @@ void main() {
     );
     // Como no app: a tela abre carregando e a partida chega depois.
     unawaited(cubit.load());
+    await tester.pump(const Duration(milliseconds: 100));
+    unawaited(cubit.review(speed: ReviewSpeed.quick));
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 500));
     }
@@ -349,16 +430,15 @@ void main() {
       GameDetailsKeys.engineButton,
     ]) {
       expect(find.byKey(key).hitTestable(), findsOneWidget);
-      expect(tester.getRect(find.byKey(key)).bottom, lessThan(sheetTop));
     }
-    expect(find.byKey(GameDetailsKeys.closeSheet).hitTestable(), findsNothing);
     hold.complete();
     analysis.hold = null;
     await tester.pumpAndSettle();
   });
 
-  testWidgets('ao abrir sem revisão guardada, a Rápida começa sozinha (sem '
-      'tocar em nada); com revisão guardada, nada é refeito', (tester) async {
+  testWidgets('H-PAR-17: partida antiga abre sem análise, com o texto e o '
+      'botão Analisar; tocar roda a Rápida; com revisão guardada, nada é '
+      'refeito', (tester) async {
     final id = await progress.addAttempt(game);
     final hold = Completer<void>();
     analysis.hold = hold;
@@ -381,6 +461,7 @@ void main() {
     await settings.load();
     await tester.pumpWidget(
       TestApp(
+        locale: const Locale('pt'),
         settingsCubit: settings,
         child: BlocProvider.value(
           value: cubit,
@@ -388,6 +469,21 @@ void main() {
         ),
       ),
     );
+    await tester.pump();
+    // Abre sem análise e sem pedir nada à engine.
+    expect(cubit.state.reviewing, isFalse);
+    expect(analysis.requests, isEmpty);
+    expect(find.byKey(GameDetailsKeys.oldAnalysis), findsOneWidget);
+    expect(
+      find.text(
+        'Esta partida é de antes das análises automáticas. A análise rápida '
+        'leva poucos segundos; a profunda, cerca de um minuto.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Analisar'), findsOneWidget);
+
+    await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
     await tester.pump();
     expect(cubit.state.reviewing, isTrue);
     expect(
@@ -418,52 +514,115 @@ void main() {
     expect(analysis.requests, isEmpty);
   });
 
-  testWidgets('revisão rápida feita: ela aparece marcada e sem toque; a '
-      'média e a profunda continuam', (tester) async {
+  testWidgets('H-PAR-13: análise rápida feita: cartão da rápida com o botão '
+      'Analisar a fundo; a folha oferece Média e Profunda (recomendada, já '
+      'escolhida)', (tester) async {
     final id = await progress.addAttempt(game);
-    final cubit = await pump(tester, id);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
     await cubit.review(speed: ReviewSpeed.quick);
     await tester.pumpAndSettle();
 
-    final quick = tester.widget<ButtonStyleButton>(
-      find.byKey(GameDetailsKeys.reviewQuick),
+    expect(find.text('Análise rápida'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+    await tester.tap(find.byKey(GameDetailsKeys.levelDeepen));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(GameDetailsKeys.depthSheet), findsOneWidget);
+    expect(find.text('Média'), findsOneWidget);
+    expect(find.text('Profunda (recomendada)'), findsOneWidget);
+    final deep = tester.widget<RadioListTile<ReviewSpeed>>(
+      find.byKey(GameDetailsKeys.depthDeep),
     );
-    expect(quick.onPressed, isNull);
+    expect(deep.value, ReviewSpeed.deep);
     expect(
-      find.descendant(
-        of: find.byKey(GameDetailsKeys.reviewQuick),
-        matching: find.byIcon(Icons.check_rounded),
-      ),
-      findsOneWidget,
+      RadioGroup.maybeOf<ReviewSpeed>(
+        tester.element(find.byKey(GameDetailsKeys.depthDeep)),
+      )?.groupValue,
+      ReviewSpeed.deep,
     );
+
+    await tester.tap(find.byKey(GameDetailsKeys.depthConfirm));
+    await tester.pumpAndSettle();
     expect(
-      tester
-          .widget<ButtonStyleButton>(find.byKey(GameDetailsKeys.reviewButton))
-          .onPressed,
-      isNotNull,
+      cubit.state.review!.depth,
+      GameDetailsCubit.reviewWeights[ReviewSpeed.deep],
     );
+    expect(find.text('Análise profunda'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.levelDeepen), findsNothing);
   });
 
-  testWidgets(
-    'ao abrir: precisão da Rápida e opções Média/Profunda sob demanda',
-    (tester) async {
-      final id = await progress.addAttempt(game);
-      final cubit = await pump(tester, id);
-      expect(find.byKey(GameDetailsKeys.reviewQuick), findsOneWidget);
-      expect(find.byKey(GameDetailsKeys.reviewButton), findsOneWidget);
-      expect(find.byKey(GameDetailsKeys.reviewDeep), findsOneWidget);
-      expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+  testWidgets('H-PAR-13: a rápida mostra os momentos decisivos; a média '
+      'acrescenta a tabela de qualidades; tocar no momento leva ao lance', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
+    await cubit.review(speed: ReviewSpeed.quick);
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(GameDetailsKeys.reviewDeep));
-      await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.moments), findsOneWidget);
+    expect(find.text('Momentos decisivos'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.qualityTable), findsNothing);
 
-      expect(
-        cubit.state.review!.depth,
-        GameDetailsCubit.reviewWeights[ReviewSpeed.deep],
-      );
-      expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
-    },
-  );
+    await cubit.review(speed: ReviewSpeed.medium);
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.qualityTable), findsOneWidget);
+    expect(find.text('Lances por qualidade'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.qualityRow('blunder')), findsOneWidget);
+  });
+
+  testWidgets('H-PAR-13: escolher a Média na folha roda a análise média', (
+    tester,
+  ) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
+    await cubit.review(speed: ReviewSpeed.quick);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(GameDetailsKeys.levelDeepen));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.depthMedium));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(GameDetailsKeys.depthConfirm));
+    await tester.pumpAndSettle();
+
+    expect(
+      cubit.state.review!.depth,
+      GameDetailsCubit.reviewWeights[ReviewSpeed.medium],
+    );
+    expect(find.text('Análise média'), findsOneWidget);
+  });
+
+  testWidgets('H-PAR-13: aprofundando, o tabuleiro não se mexe, os números '
+      'ficam em esqueleto e a nota explica; o progresso diz o lance e o '
+      'tempo', (tester) async {
+    final id = await progress.addAttempt(game);
+    final cubit = await pump(tester, id, locale: const Locale('pt'));
+    await cubit.review(speed: ReviewSpeed.quick);
+    await tester.pumpAndSettle();
+    cubit.first();
+    await tester.pumpAndSettle();
+
+    final hold = Completer<void>();
+    analysis.hold = hold;
+    addTearDown(() {
+      if (!hold.isCompleted) hold.complete();
+    });
+    unawaited(cubit.review(speed: ReviewSpeed.deep));
+    await tester.pump(const Duration(seconds: 3));
+
+    expect(cubit.state.reviewing, isTrue);
+    expect(cubit.state.shownIndex, -1);
+    expect(find.text('Analisando a fundo'), findsOneWidget);
+    expect(find.textContaining('falta cerca de'), findsOneWidget);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsNothing);
+    expect(find.byKey(GameDetailsKeys.levelNote), findsOneWidget);
+    hold.complete();
+    analysis.hold = null;
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.levelNote), findsNothing);
+    expect(find.byKey(GameDetailsKeys.accuracyWhite), findsOneWidget);
+  });
 
   for (final viewport in [
     const Size(360, 640),
@@ -506,7 +665,7 @@ void main() {
       final cubit = await pump(tester, id);
       analysis.hold = Completer<void>();
 
-      await tester.tap(find.byKey(GameDetailsKeys.reviewButton));
+      await tester.tap(find.byKey(GameDetailsKeys.oldAnalysisButton));
       await tester.pump(const Duration(seconds: 3));
 
       expect(cubit.state.reviewing, isTrue);

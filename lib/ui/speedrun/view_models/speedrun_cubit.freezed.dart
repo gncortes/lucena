@@ -364,7 +364,7 @@ $SpeedrunRunCopyWith<$Res>? get ongoing {
 /// @nodoc
 mixin _$SpeedrunState {
 
-/// Os speedruns no ritmo da lista, sem as Maratonas. Nulo enquanto são
+ LoadFailure? get failure;/// Os speedruns no ritmo da lista, sem as Maratonas. Nulo enquanto são
 /// lidos.
  List<SpeedrunSummary>? get all;/// As Maratonas, no ritmo delas.
  List<SpeedrunSummary> get marathons;/// O speedrun aberto (tela dele ou de uma tentativa).
@@ -399,20 +399,20 @@ $SpeedrunStateCopyWith<SpeedrunState> get copyWith => _$SpeedrunStateCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as SpeedrunState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunState&&const DeepCollectionEquality().equals(other.all, _this.all)&&const DeepCollectionEquality().equals(other.marathons, _this.marathons)&&(identical(other.selected, _this.selected) || other.selected == _this.selected)&&(identical(other.run, _this.run) || other.run == _this.run)&&(identical(other.previousBest, _this.previousBest) || other.previousBest == _this.previousBest)&&(identical(other.bonus, _this.bonus) || other.bonus == _this.bonus)&&(identical(other.offer, _this.offer) || other.offer == _this.offer)&&(identical(other.ongoingOffer, _this.ongoingOffer) || other.ongoingOffer == _this.ongoingOffer)&&(identical(other.paid, _this.paid) || other.paid == _this.paid)&&(identical(other.pace, _this.pace) || other.pace == _this.pace)&&(identical(other.marathonPace, _this.marathonPace) || other.marathonPace == _this.marathonPace)&&(identical(other.marathonMode, _this.marathonMode) || other.marathonMode == _this.marathonMode)&&(identical(other.compactPace, _this.compactPace) || other.compactPace == _this.compactPace)&&(identical(other.category, _this.category) || other.category == _this.category)&&const DeepCollectionEquality().equals(other.characters, _this.characters));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunState&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&const DeepCollectionEquality().equals(other.all, _this.all)&&const DeepCollectionEquality().equals(other.marathons, _this.marathons)&&(identical(other.selected, _this.selected) || other.selected == _this.selected)&&(identical(other.run, _this.run) || other.run == _this.run)&&(identical(other.previousBest, _this.previousBest) || other.previousBest == _this.previousBest)&&(identical(other.bonus, _this.bonus) || other.bonus == _this.bonus)&&(identical(other.offer, _this.offer) || other.offer == _this.offer)&&(identical(other.ongoingOffer, _this.ongoingOffer) || other.ongoingOffer == _this.ongoingOffer)&&(identical(other.paid, _this.paid) || other.paid == _this.paid)&&(identical(other.pace, _this.pace) || other.pace == _this.pace)&&(identical(other.marathonPace, _this.marathonPace) || other.marathonPace == _this.marathonPace)&&(identical(other.marathonMode, _this.marathonMode) || other.marathonMode == _this.marathonMode)&&(identical(other.compactPace, _this.compactPace) || other.compactPace == _this.compactPace)&&(identical(other.category, _this.category) || other.category == _this.category)&&const DeepCollectionEquality().equals(other.characters, _this.characters));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SpeedrunState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.all),const DeepCollectionEquality().hash(_this.marathons),_this.selected,_this.run,_this.previousBest,_this.bonus,_this.offer,_this.ongoingOffer,_this.paid,_this.pace,_this.marathonPace,_this.marathonMode,_this.compactPace,_this.category,const DeepCollectionEquality().hash(_this.characters));
+  return Object.hash(runtimeType,_this.failure,const DeepCollectionEquality().hash(_this.all),const DeepCollectionEquality().hash(_this.marathons),_this.selected,_this.run,_this.previousBest,_this.bonus,_this.offer,_this.ongoingOffer,_this.paid,_this.pace,_this.marathonPace,_this.marathonMode,_this.compactPace,_this.category,const DeepCollectionEquality().hash(_this.characters));
 }
 
 @override
 String toString() {
   final _this = this as SpeedrunState;
-  return 'SpeedrunState(all: ${_this.all}, marathons: ${_this.marathons}, selected: ${_this.selected}, run: ${_this.run}, previousBest: ${_this.previousBest}, bonus: ${_this.bonus}, offer: ${_this.offer}, ongoingOffer: ${_this.ongoingOffer}, paid: ${_this.paid}, pace: ${_this.pace}, marathonPace: ${_this.marathonPace}, marathonMode: ${_this.marathonMode}, compactPace: ${_this.compactPace}, category: ${_this.category}, characters: ${_this.characters})';
+  return 'SpeedrunState(failure: ${_this.failure}, all: ${_this.all}, marathons: ${_this.marathons}, selected: ${_this.selected}, run: ${_this.run}, previousBest: ${_this.previousBest}, bonus: ${_this.bonus}, offer: ${_this.offer}, ongoingOffer: ${_this.ongoingOffer}, paid: ${_this.paid}, pace: ${_this.pace}, marathonPace: ${_this.marathonPace}, marathonMode: ${_this.marathonMode}, compactPace: ${_this.compactPace}, category: ${_this.category}, characters: ${_this.characters})';
 }
 
 
@@ -423,7 +423,7 @@ abstract mixin class $SpeedrunStateCopyWith<$Res>  {
   factory $SpeedrunStateCopyWith(SpeedrunState value, $Res Function(SpeedrunState) _then) = _$SpeedrunStateCopyWithImpl;
 @useResult
 $Res call({
- List<SpeedrunSummary>? all, List<SpeedrunSummary> marathons, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, SpeedrunBonus? bonus, int offer, int ongoingOffer, SpeedrunBonus? paid, TimeControl pace, TimeControl marathonPace, bool marathonMode, bool compactPace, SpeedrunCategory? category, List<Character> characters
+ LoadFailure? failure, List<SpeedrunSummary>? all, List<SpeedrunSummary> marathons, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, SpeedrunBonus? bonus, int offer, int ongoingOffer, SpeedrunBonus? paid, TimeControl pace, TimeControl marathonPace, bool marathonMode, bool compactPace, SpeedrunCategory? category, List<Character> characters
 });
 
 
@@ -440,9 +440,10 @@ class _$SpeedrunStateCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? all = freezed,Object? marathons = null,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? bonus = freezed,Object? offer = null,Object? ongoingOffer = null,Object? paid = freezed,Object? pace = null,Object? marathonPace = null,Object? marathonMode = null,Object? compactPace = null,Object? category = freezed,Object? characters = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? failure = freezed,Object? all = freezed,Object? marathons = null,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? bonus = freezed,Object? offer = null,Object? ongoingOffer = null,Object? paid = freezed,Object? pace = null,Object? marathonPace = null,Object? marathonMode = null,Object? compactPace = null,Object? category = freezed,Object? characters = null,}) {
   return _then(SpeedrunState(
-all: freezed == all ? _self.all : all // ignore: cast_nullable_to_non_nullable
+failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,all: freezed == all ? _self.all : all // ignore: cast_nullable_to_non_nullable
 as List<SpeedrunSummary>?,marathons: null == marathons ? _self.marathons : marathons // ignore: cast_nullable_to_non_nullable
 as List<SpeedrunSummary>,selected: freezed == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
 as SpeedrunSummary?,run: freezed == run ? _self.run : run // ignore: cast_nullable_to_non_nullable
@@ -584,10 +585,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  SpeedrunBonus? bonus,  int offer,  int ongoingOffer,  SpeedrunBonus? paid,  TimeControl pace,  TimeControl marathonPace,  bool marathonMode,  bool compactPace,  SpeedrunCategory? category,  List<Character> characters)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LoadFailure? failure,  List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  SpeedrunBonus? bonus,  int offer,  int ongoingOffer,  SpeedrunBonus? paid,  TimeControl pace,  TimeControl marathonPace,  bool marathonMode,  bool compactPace,  SpeedrunCategory? category,  List<Character> characters)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SpeedrunState() when $default != null:
-return $default(_that.all,_that.marathons,_that.selected,_that.run,_that.previousBest,_that.bonus,_that.offer,_that.ongoingOffer,_that.paid,_that.pace,_that.marathonPace,_that.marathonMode,_that.compactPace,_that.category,_that.characters);case _:
+return $default(_that.failure,_that.all,_that.marathons,_that.selected,_that.run,_that.previousBest,_that.bonus,_that.offer,_that.ongoingOffer,_that.paid,_that.pace,_that.marathonPace,_that.marathonMode,_that.compactPace,_that.category,_that.characters);case _:
   return orElse();
 
 }
@@ -605,10 +606,10 @@ return $default(_that.all,_that.marathons,_that.selected,_that.run,_that.previou
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  SpeedrunBonus? bonus,  int offer,  int ongoingOffer,  SpeedrunBonus? paid,  TimeControl pace,  TimeControl marathonPace,  bool marathonMode,  bool compactPace,  SpeedrunCategory? category,  List<Character> characters)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LoadFailure? failure,  List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  SpeedrunBonus? bonus,  int offer,  int ongoingOffer,  SpeedrunBonus? paid,  TimeControl pace,  TimeControl marathonPace,  bool marathonMode,  bool compactPace,  SpeedrunCategory? category,  List<Character> characters)  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunState():
-return $default(_that.all,_that.marathons,_that.selected,_that.run,_that.previousBest,_that.bonus,_that.offer,_that.ongoingOffer,_that.paid,_that.pace,_that.marathonPace,_that.marathonMode,_that.compactPace,_that.category,_that.characters);case _:
+return $default(_that.failure,_that.all,_that.marathons,_that.selected,_that.run,_that.previousBest,_that.bonus,_that.offer,_that.ongoingOffer,_that.paid,_that.pace,_that.marathonPace,_that.marathonMode,_that.compactPace,_that.category,_that.characters);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -625,10 +626,10 @@ return $default(_that.all,_that.marathons,_that.selected,_that.run,_that.previou
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  SpeedrunBonus? bonus,  int offer,  int ongoingOffer,  SpeedrunBonus? paid,  TimeControl pace,  TimeControl marathonPace,  bool marathonMode,  bool compactPace,  SpeedrunCategory? category,  List<Character> characters)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LoadFailure? failure,  List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons,  SpeedrunSummary? selected,  SpeedrunRun? run,  Duration? previousBest,  SpeedrunBonus? bonus,  int offer,  int ongoingOffer,  SpeedrunBonus? paid,  TimeControl pace,  TimeControl marathonPace,  bool marathonMode,  bool compactPace,  SpeedrunCategory? category,  List<Character> characters)?  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunState() when $default != null:
-return $default(_that.all,_that.marathons,_that.selected,_that.run,_that.previousBest,_that.bonus,_that.offer,_that.ongoingOffer,_that.paid,_that.pace,_that.marathonPace,_that.marathonMode,_that.compactPace,_that.category,_that.characters);case _:
+return $default(_that.failure,_that.all,_that.marathons,_that.selected,_that.run,_that.previousBest,_that.bonus,_that.offer,_that.ongoingOffer,_that.paid,_that.pace,_that.marathonPace,_that.marathonMode,_that.compactPace,_that.category,_that.characters);case _:
   return null;
 
 }
@@ -640,9 +641,10 @@ return $default(_that.all,_that.marathons,_that.selected,_that.run,_that.previou
 
 
 class _SpeedrunState implements SpeedrunState {
-  const _SpeedrunState({ List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons = const <SpeedrunSummary>[], this.selected, this.run, this.previousBest, this.bonus, this.offer = 0, this.ongoingOffer = 0, this.paid, this.pace = SpeedrunPaces.standard, this.marathonPace = SpeedrunPaces.standard, this.marathonMode = false, this.compactPace = false, this.category,  List<Character> characters = const <Character>[]}): _all = all,_marathons = marathons,_characters = characters;
+  const _SpeedrunState({this.failure,  List<SpeedrunSummary>? all,  List<SpeedrunSummary> marathons = const <SpeedrunSummary>[], this.selected, this.run, this.previousBest, this.bonus, this.offer = 0, this.ongoingOffer = 0, this.paid, this.pace = SpeedrunPaces.standard, this.marathonPace = SpeedrunPaces.standard, this.marathonMode = false, this.compactPace = false, this.category,  List<Character> characters = const <Character>[]}): _all = all,_marathons = marathons,_characters = characters;
   
 
+@override final  LoadFailure? failure;
 /// Os speedruns no ritmo da lista, sem as Maratonas. Nulo enquanto são
 /// lidos.
  final  List<SpeedrunSummary>? _all;
@@ -716,18 +718,18 @@ _$SpeedrunStateCopyWith<_SpeedrunState> get copyWith => __$SpeedrunStateCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunState&&const DeepCollectionEquality().equals(other.all, _all)&&const DeepCollectionEquality().equals(other.marathons, _marathons)&&(identical(other.selected, selected) || other.selected == selected)&&(identical(other.run, run) || other.run == run)&&(identical(other.previousBest, previousBest) || other.previousBest == previousBest)&&(identical(other.bonus, bonus) || other.bonus == bonus)&&(identical(other.offer, offer) || other.offer == offer)&&(identical(other.ongoingOffer, ongoingOffer) || other.ongoingOffer == ongoingOffer)&&(identical(other.paid, paid) || other.paid == paid)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.marathonPace, marathonPace) || other.marathonPace == marathonPace)&&(identical(other.marathonMode, marathonMode) || other.marathonMode == marathonMode)&&(identical(other.compactPace, compactPace) || other.compactPace == compactPace)&&(identical(other.category, category) || other.category == category)&&const DeepCollectionEquality().equals(other.characters, _characters));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunState&&(identical(other.failure, failure) || other.failure == failure)&&const DeepCollectionEquality().equals(other.all, _all)&&const DeepCollectionEquality().equals(other.marathons, _marathons)&&(identical(other.selected, selected) || other.selected == selected)&&(identical(other.run, run) || other.run == run)&&(identical(other.previousBest, previousBest) || other.previousBest == previousBest)&&(identical(other.bonus, bonus) || other.bonus == bonus)&&(identical(other.offer, offer) || other.offer == offer)&&(identical(other.ongoingOffer, ongoingOffer) || other.ongoingOffer == ongoingOffer)&&(identical(other.paid, paid) || other.paid == paid)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.marathonPace, marathonPace) || other.marathonPace == marathonPace)&&(identical(other.marathonMode, marathonMode) || other.marathonMode == marathonMode)&&(identical(other.compactPace, compactPace) || other.compactPace == compactPace)&&(identical(other.category, category) || other.category == category)&&const DeepCollectionEquality().equals(other.characters, _characters));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_all),const DeepCollectionEquality().hash(_marathons),selected,run,previousBest,bonus,offer,ongoingOffer,paid,pace,marathonPace,marathonMode,compactPace,category,const DeepCollectionEquality().hash(_characters));
+    return Object.hash(runtimeType,failure,const DeepCollectionEquality().hash(_all),const DeepCollectionEquality().hash(_marathons),selected,run,previousBest,bonus,offer,ongoingOffer,paid,pace,marathonPace,marathonMode,compactPace,category,const DeepCollectionEquality().hash(_characters));
 }
 
 @override
 String toString() {
-    return 'SpeedrunState(all: $all, marathons: $marathons, selected: $selected, run: $run, previousBest: $previousBest, bonus: $bonus, offer: $offer, ongoingOffer: $ongoingOffer, paid: $paid, pace: $pace, marathonPace: $marathonPace, marathonMode: $marathonMode, compactPace: $compactPace, category: $category, characters: $characters)';
+    return 'SpeedrunState(failure: $failure, all: $all, marathons: $marathons, selected: $selected, run: $run, previousBest: $previousBest, bonus: $bonus, offer: $offer, ongoingOffer: $ongoingOffer, paid: $paid, pace: $pace, marathonPace: $marathonPace, marathonMode: $marathonMode, compactPace: $compactPace, category: $category, characters: $characters)';
 }
 
 
@@ -738,7 +740,7 @@ abstract mixin class _$SpeedrunStateCopyWith<$Res> implements $SpeedrunStateCopy
   factory _$SpeedrunStateCopyWith(_SpeedrunState value, $Res Function(_SpeedrunState) _then) = __$SpeedrunStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<SpeedrunSummary>? all, List<SpeedrunSummary> marathons, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, SpeedrunBonus? bonus, int offer, int ongoingOffer, SpeedrunBonus? paid, TimeControl pace, TimeControl marathonPace, bool marathonMode, bool compactPace, SpeedrunCategory? category, List<Character> characters
+ LoadFailure? failure, List<SpeedrunSummary>? all, List<SpeedrunSummary> marathons, SpeedrunSummary? selected, SpeedrunRun? run, Duration? previousBest, SpeedrunBonus? bonus, int offer, int ongoingOffer, SpeedrunBonus? paid, TimeControl pace, TimeControl marathonPace, bool marathonMode, bool compactPace, SpeedrunCategory? category, List<Character> characters
 });
 
 
@@ -755,9 +757,10 @@ class __$SpeedrunStateCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? all = freezed,Object? marathons = null,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? bonus = freezed,Object? offer = null,Object? ongoingOffer = null,Object? paid = freezed,Object? pace = null,Object? marathonPace = null,Object? marathonMode = null,Object? compactPace = null,Object? category = freezed,Object? characters = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? failure = freezed,Object? all = freezed,Object? marathons = null,Object? selected = freezed,Object? run = freezed,Object? previousBest = freezed,Object? bonus = freezed,Object? offer = null,Object? ongoingOffer = null,Object? paid = freezed,Object? pace = null,Object? marathonPace = null,Object? marathonMode = null,Object? compactPace = null,Object? category = freezed,Object? characters = null,}) {
   return _then(_SpeedrunState(
-all: freezed == all ? _self._all : all // ignore: cast_nullable_to_non_nullable
+failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,all: freezed == all ? _self._all : all // ignore: cast_nullable_to_non_nullable
 as List<SpeedrunSummary>?,marathons: null == marathons ? _self._marathons : marathons // ignore: cast_nullable_to_non_nullable
 as List<SpeedrunSummary>,selected: freezed == selected ? _self.selected : selected // ignore: cast_nullable_to_non_nullable
 as SpeedrunSummary?,run: freezed == run ? _self.run : run // ignore: cast_nullable_to_non_nullable

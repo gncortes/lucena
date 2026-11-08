@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/theme/app_motion.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 
 void main() {
@@ -48,8 +47,8 @@ void main() {
 
     await tester.pumpWidget(app('dois', 100));
     await tester.pump();
-    await tester.pump(AnimatedSpeechSwitcher.fade ~/ 2);
-    // No meio: as duas falas na tela, uma saindo e outra entrando.
+    await tester.pump(AnimatedSpeechSwitcher.saida ~/ 2);
+    // No meio da saída: as duas falas na tela, uma saindo e outra entrando.
     expect(find.text('um'), findsOneWidget);
     expect(find.text('dois'), findsOneWidget);
     expect(opacityOf(tester, 'um'), inExclusiveRange(0, 1));
@@ -94,11 +93,11 @@ void main() {
     Transform scale() => tester.widget<Transform>(
       find
           .descendant(of: find.byKey(bubble), matching: find.byType(Transform))
-          .first,
+          .at(1),
     );
     await tester.pumpWidget(app('um', 40));
     await tester.pump(SpeechPop.duration ~/ 2);
-    expect(scale().transform.storage[0], inExclusiveRange(0.95, 1));
+    expect(scale().transform.storage[0], inExclusiveRange(SpeechPop.scale, 1));
     await tester.pumpAndSettle();
     expect(scale().transform.storage[0], 1);
 
@@ -109,13 +108,18 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('movimento reduzido: troca seca, sem pop', (tester) async {
+  testWidgets('movimento reduzido: fade curto, sem pop nem altura animada', (
+    tester,
+  ) async {
     await tester.pumpWidget(app('um', 40, reduced: true));
-    expect(find.byType(TweenAnimationBuilder<double>), findsNothing);
+    expect(
+      find.descendant(of: find.byKey(bubble), matching: find.byType(Transform)),
+      findsNothing,
+    );
     await tester.pumpWidget(app('dois', 100, reduced: true));
     await tester.pump();
-    expect(find.text('um'), findsNothing);
     expect(top(tester), 100);
-    expect(AppMotion.state, AnimatedSpeechSwitcher.fade);
+    await tester.pump(const Duration(milliseconds: 116));
+    expect(find.text('um'), findsNothing);
   });
 }

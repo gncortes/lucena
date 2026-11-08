@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_bar_height.dart';
+
 /// A barra superior padrão do app. Sem ações (ou com a lista vazia), o título
 /// fica centralizado; com ação, fica à esquerda, como no Material. Quem precisa
 /// de outra coisa passa `centerTitle` explicitamente.
@@ -35,7 +37,9 @@ class LucenaAppBar extends StatelessWidget implements PreferredSizeWidget {
          elevation: elevation,
          scrolledUnderElevation: scrolledUnderElevation,
          shape: shape,
-         toolbarHeight: toolbarHeight,
+         // O `preferredSize` do AppBar não lê o tema: sem a altura aqui, o
+         // Scaffold reservaria os 56 do Flutter.
+         toolbarHeight: toolbarHeight ?? AppBarHeight.standard,
          leadingWidth: leadingWidth,
          titleSpacing: titleSpacing,
          flexibleSpace: flexibleSpace,

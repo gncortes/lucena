@@ -9,35 +9,44 @@ abstract final class FeaturedKeys {
   // O cartão de um final (a chave leva o id).
   static Key card(String id) => Key('featured.card.$id');
   static const cardPlayed = Key('featured.card.played');
+  static const cardNew = Key('featured.card.new');
+  static const cardTournament = Key('featured.card.tournament');
+  static const cardHistoric = Key('featured.card.historic');
 
   // A lista.
   static const listScreen = Key('featured.list.screen');
   static const listEmpty = Key('featured.list.empty');
-  static const listFilteredOut = Key('featured.list.filteredOut');
-  static const clearFilters = Key('featured.list.clearFilters');
-  static const countryFilter = Key('featured.list.country');
   static const ongoingTitle = Key('featured.list.ongoing');
-  static Key originFilter(String code) => Key('featured.list.origin.$code');
-  static const originAll = Key('featured.list.origin.all');
-  static Key countryOption(String code) => Key('featured.list.country.$code');
-  static const countryAll = Key('featured.list.country.all');
+  static const recentTitle = Key('featured.list.recent');
+  static const historicTitle = Key('featured.list.historic');
+  static const tournamentCarousel = Key('featured.list.carousel');
+  static const listLoading = Key('featured.list.loading');
+  static const listError = Key('featured.list.error');
+
+  // O sino de finais novos e o aviso dele.
+  static const bell = Key('featured.list.bell');
+  static const bellNotice = Key('featured.list.bellNotice');
+  static const bellSettings = Key('featured.list.bellSettings');
   static Key tournamentCard(String id) => Key('featured.tournamentCard.$id');
 
   // O torneio.
   static const tournamentScreen = Key('featured.tournament.screen');
   static const tournamentSummary = Key('featured.tournament.summary');
+  static const tournamentHeader = Key('featured.tournament.header');
   static const tournamentName = Key('featured.tournament.name');
   static const tournamentOngoing = Key('featured.tournament.ongoing');
-  static Key tournamentLink(String kind) =>
-      Key('featured.tournament.link.$kind');
+  static const tournamentLinkResults = Key('featured.tournament.link.results');
+  static const tournamentLinkLive = Key('featured.tournament.link.live');
+  static const tournamentLinkAbout = Key('featured.tournament.link.about');
   static const tournamentNoFinals = Key('featured.tournament.noFinals');
-  static const tournamentAlert = Key('featured.tournament.alert');
+  static const tournamentPractice = Key('featured.tournament.practice');
+  static const tournamentLoading = Key('featured.tournament.loading');
   static const tournamentMissing = Key('featured.tournament.missing');
 
   // O final.
   static const endgameScreen = Key('featured.endgame.screen');
-  static const crowdCard = Key('featured.endgame.crowdCard');
-  static const crowdFew = Key('featured.endgame.crowdFew');
+  static const endgameLoading = Key('featured.endgame.loading');
+  static const endgameError = Key('featured.endgame.error');
   static const endgameMissing = Key('featured.endgame.missing');
   static const endgamePlayers = Key('featured.endgame.players');
   static const endgamePrompt = Key('featured.endgame.prompt');
@@ -75,6 +84,11 @@ abstract final class FeaturedKeys {
   static const nextSimilar = Key('featured.next.similar');
   static const nextMore = Key('featured.next.more');
   static const nextAgain = Key('featured.next.again');
+
+  // O cartão do aviso de final novo de torneio, sobre o rodapé do fim.
+  static const alertCard = Key('featured.alert.card');
+  static const alertAccept = Key('featured.alert.accept');
+  static const alertDecline = Key('featured.alert.decline');
 
   // Ache o lance.
   static const findScreen = Key('featured.find.screen');

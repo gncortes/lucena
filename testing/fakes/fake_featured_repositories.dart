@@ -1,3 +1,4 @@
+import 'package:lucena/domain/models/find_move_checkpoint.dart';
 import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_repository.dart';
@@ -11,11 +12,40 @@ class FakeFeaturedRepository implements FeaturedRepository {
 
   FeaturedCatalog value;
 
+  /// Catálogo ilegível ou ausente: [catalog] lança isto.
+  Object? failure;
+
   @override
-  Future<FeaturedCatalog> catalog() async => value;
+  Future<FeaturedCatalog> catalog() async {
+    if (failure case final error?) throw error;
+    return value;
+  }
 }
 
 class FakeFeaturedProgressRepository implements FeaturedProgressRepository {
+  final checkpoints = <String, FindMoveCheckpoint>{};
+
+  @override
+  Future<FindMoveCheckpoint?> findMove(FeaturedEndgame endgame) =>
+      FeaturedProgressRepository.serializeFindMove(endgame.id, () async {
+        final saved = checkpoints[endgame.id];
+        return saved != null && saved.matches(endgame) ? saved : null;
+      });
+
+  @override
+  Future<void> saveFindMove(
+    String id,
+    FindMoveCheckpoint checkpoint, {
+    Future<void> Function()? onPlayed,
+  }) => FeaturedProgressRepository.serializeFindMove(id, () async {
+    if (checkpoint.phase == FindMovePhase.solved ||
+        checkpoint.phase == FindMovePhase.revealed) {
+      await markPlayed(id);
+      await onPlayed?.call();
+    }
+    checkpoints[id] = checkpoint;
+  });
+
   final playedIds = <String>{};
   final choices = <String, FeaturedChoice>{};
 
@@ -33,14 +63,9 @@ class FakeFeaturedProgressRepository implements FeaturedProgressRepository {
       choices[id] = choice;
 }
 
-/// Um canal de aviso que existe, para testar o interruptor.
+/// O aviso geral de finais novos (o sino), em memória.
 class FakeFeaturedAlertsRepository implements FeaturedAlertsRepository {
-  FakeFeaturedAlertsRepository({this.available = true});
-
-  @override
-  final bool available;
   var all = false;
-  final tournaments = <String>{};
 
   @override
   Future<bool> enabled() async => all;
@@ -48,17 +73,14 @@ class FakeFeaturedAlertsRepository implements FeaturedAlertsRepository {
   @override
   Future<void> setEnabled({required bool value}) async => all = value;
 
-  @override
-  Future<bool> tournamentEnabled(String tournamentId) async =>
-      tournaments.contains(tournamentId);
+  /// Os finais cujo cartão de aviso já foi respondido.
+  final prompted = <String>{};
 
   @override
-  Future<void> setTournamentEnabled(
-    String tournamentId, {
-    required bool value,
-  }) async {
-    value ? tournaments.add(tournamentId) : tournaments.remove(tournamentId);
-  }
+  Future<bool> promptAnswered(String id) async => prompted.contains(id);
+
+  @override
+  Future<void> markPromptAnswered(String id) async => prompted.add(id);
 }
 
 /// Três finais em dois torneios: um em andamento em 1/1/2026 e outro passado.

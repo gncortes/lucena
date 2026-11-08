@@ -12,6 +12,9 @@ import '../../../domain/use_cases/marathon.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
+import '../../core/motion/entrada_de_resultado.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -52,6 +55,22 @@ class MarathonAttemptView extends StatelessWidget {
     final stopped = math.min(run.currentStage, total - 1);
     final bonus = state.bonus;
     final best = summary.records.best;
+    final retry = completed
+        ? null
+        : SpeedrunActionBar(
+            buttonKey: SpeedrunKeys.retry,
+            icon: Icons.replay,
+            label: l10n.speedrunRetry,
+            onPressed: () => _retry(context, speedrun),
+          );
+    Widget bloco(List<Widget> filhos, {double top = 0}) => Padding(
+      padding: EdgeInsets.fromLTRB(AppSpacing.lg, top, AppSpacing.lg, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.md,
+        children: filhos,
+      ),
+    );
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
       appBar: LucenaAppBar(
@@ -59,104 +78,112 @@ class MarathonAttemptView extends StatelessWidget {
           endgameName(l10n, speedrun.stages.first.position.subcategory),
         ),
       ),
-      bottomNavigationBar: completed
-          ? null
-          : SpeedrunActionBar(
-              buttonKey: SpeedrunKeys.retry,
-              icon: Icons.replay,
-              label: l10n.speedrunRetry,
-              onPressed: () => _retry(context, speedrun),
+      // H-ANI-25: como acabou (ou o tempo que sobrou) entra primeiro, depois o
+      // resto e as etapas; o "Tentar novamente" desliza por último.
+      body: EntradaDeResultado(
+        id: 'maratona-${run.attempt.id}',
+        placar: bloco(top: AppSpacing.lg, [
+          if (completed) ...[
+            // H-ANI-18: o tempo que sobrou conta até o valor; o leitor de
+            // tela lê só o final. O valor animado é a fração do tempo final.
+            ValorQueAnima(
+              valor: 1,
+              duracao: LucenaMotion.numeroConta,
+              builder: (context, fracao) => TimeDisplay(
+                value: runTime(
+                  context,
+                  recordTime(speedrun, run.total) * fracao,
+                ),
+                semanticsLabel: l10n.marathonLeftValue(
+                  runTime(context, recordTime(speedrun, run.total)),
+                ),
+                type: TimeDisplayType.record,
+                size: TimeDisplaySize.block,
+                state: TimeDisplayState.highlight,
+                label: l10n.marathonLeft,
+                textKey: SpeedrunKeys.total,
+              ),
             ),
-      body: ListView(
-        padding: scrollPadding(context),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.md,
-              children: [
-                if (completed) ...[
-                  TimeDisplay(
-                    value: runTime(context, recordTime(speedrun, run.total)),
-                    semanticsLabel: l10n.marathonLeftValue(
-                      runTime(context, recordTime(speedrun, run.total)),
-                    ),
-                    type: TimeDisplayType.record,
-                    size: TimeDisplaySize.block,
-                    state: TimeDisplayState.highlight,
-                    label: l10n.marathonLeft,
-                    textKey: SpeedrunKeys.total,
-                  ),
-                  if (bonus != null && bonus.points > 0)
-                    SpeedrunRatingBonusCard.earned(bonus: bonus),
-                ] else ...[
-                  _EndCard(
-                    end: end,
-                    speedrun: speedrun,
-                    run: run,
-                    characters: characters,
-                    stage: stopped,
-                  ),
-                  if (best != null)
-                    _RecordCard(speedrun: speedrun, best: best)
-                  else
-                    _NotFinished(
-                      speedrun: speedrun,
-                      characters: characters,
-                      reached: [run, ...summary.abandoned]
-                          .map((r) => math.min(r.currentStage, total - 1))
-                          .reduce(math.max),
-                      offer: state.offer,
-                    ),
-                ],
-                RunChips(speedrun: speedrun, run: run, marathon: true),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.sm,
-            ),
-            child: Text(l10n.speedrunStages, style: context.cardTitle),
-          ),
-          for (final (index, stage) in run.stages.indexed)
-            SpeedrunStageRow(
-              key: SpeedrunKeys.stage(index),
-              index: index,
-              stage: speedrun.stages[index],
+            if (bonus != null && bonus.points > 0)
+              SpeedrunRatingBonusCard.earned(bonus: bonus),
+          ] else ...[
+            _EndCard(
+              end: end,
               speedrun: speedrun,
-              last: index == total - 1,
-              note: !completed && index == stopped ? _note(l10n, end) : null,
-              noteKey: SpeedrunKeys.stageNote(index),
-              status: stage.done
-                  ? SpeedrunStageStatus.done
-                  : !completed && index == stopped
-                  // A etapa em que a tentativa parou.
-                  ? SpeedrunStageStatus.current
-                  : SpeedrunStageStatus.ahead,
-              trailing: stage.done || stage.losses > 0
-                  ? TimeDisplay(
-                      value: runTime(context, stage.time),
-                      semanticsLabel: l10n.speedrunStageTimeValue(
-                        index + 1,
-                        total,
-                        runTime(context, stage.time),
-                      ),
-                      size: TimeDisplaySize.inline,
-                      textKey: SpeedrunKeys.stageTime(index),
-                    )
-                  : null,
+              run: run,
+              characters: characters,
+              stage: stopped,
             ),
-        ],
+            if (best != null)
+              _RecordCard(speedrun: speedrun, best: best)
+            else
+              _NotFinished(
+                speedrun: speedrun,
+                characters: characters,
+                reached: [run, ...summary.abandoned]
+                    .map((r) => math.min(r.currentStage, total - 1))
+                    .reduce(math.max),
+                offer: state.offer,
+              ),
+          ],
+          RunChips(speedrun: speedrun, run: run, marathon: true),
+        ]),
+        viktor: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.sm,
+              ),
+              child: Text(l10n.speedrunStages, style: context.cardTitle),
+            ),
+            for (final (index, stage) in run.stages.indexed)
+              SpeedrunStageRow(
+                key: SpeedrunKeys.stage(index),
+                index: index,
+                stage: speedrun.stages[index],
+                speedrun: speedrun,
+                last: index == total - 1,
+                note: !completed && index == stopped ? _note(l10n, end) : null,
+                noteKey: SpeedrunKeys.stageNote(index),
+                status: stage.done
+                    ? SpeedrunStageStatus.done
+                    : !completed && index == stopped
+                    // A etapa em que a tentativa parou.
+                    ? SpeedrunStageStatus.current
+                    : SpeedrunStageStatus.ahead,
+                trailing: stage.done || stage.losses > 0
+                    ? TimeDisplay(
+                        value: runTime(context, stage.time),
+                        semanticsLabel: l10n.speedrunStageTimeValue(
+                          index + 1,
+                          total,
+                          runTime(context, stage.time),
+                        ),
+                        size: TimeDisplaySize.inline,
+                        textKey: SpeedrunKeys.stageTime(index),
+                      )
+                    : null,
+              ),
+          ],
+        ),
+        botoes: retry,
+        montar: (partes) => Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: scrollPadding(context),
+                children: retry == null
+                    ? partes
+                    : partes.sublist(0, partes.length - 1),
+              ),
+            ),
+            if (retry != null) partes.last,
+          ],
+        ),
       ),
     );
   }

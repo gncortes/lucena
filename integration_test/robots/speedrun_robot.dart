@@ -22,6 +22,9 @@ class SpeedrunRobot {
 
   final PatrolIntegrationTester $;
 
+  /// O speedrun aberto por último ([openSpeedrun]).
+  static String? _current;
+
   /// A partir da tela inicial. Os cenários jogam no 5+3 ([pace]); nulo
   /// deixa a lista no ritmo em que ela abre (o escolhido ou o do nível).
   Future<void> open({String? pace = '300+3'}) async {
@@ -59,7 +62,11 @@ class SpeedrunRobot {
   /// A Maratona terminou: a conclusão dela abriu sozinha, com o total.
   Future<void> expectMarathonSummary() async {
     final conclusion = ConclusionRobot($);
-    await conclusion.expectTitle('Marathon completed!');
+    // Sem texto fixo (vale em qualquer idioma): só o fim da Maratona tem a
+    // seta de voltar à lista, e ele oferece o resumo e tentar de novo.
+    await conclusion.waitConclusion();
+    expect(find.byKey(ConclusionKeys.back), findsOneWidget);
+    await conclusion.expectAction(ConclusionAction.summary);
     await $(ConclusionKeys.total).scrollTo();
     await conclusion.expectAction(ConclusionAction.retry);
   }
@@ -90,6 +97,7 @@ class SpeedrunRobot {
   }
 
   Future<void> openSpeedrun(String id) async {
+    _current = id;
     await $(SpeedrunKeys.item(id)).scrollTo().tap();
     await $(SpeedrunKeys.screen).waitUntilVisible();
   }
@@ -146,6 +154,17 @@ class SpeedrunRobot {
   /// speedrun (as etapas foram trocadas por ela).
   Future<void> back() async {
     if (find.byKey(ConclusionKeys.screen).evaluate().isNotEmpty) {
+      // T85: o fim da tentativa abre por `go`; a seta leva à lista dos
+      // Speedruns. Os cenários seguem na tela do speedrun: ela reabre.
+      if (find.byKey(ConclusionKeys.back).evaluate().isNotEmpty) {
+        await ConclusionRobot($).back();
+        await $(SpeedrunKeys.listScreen).waitUntilVisible();
+        await $.pumpAndSettle();
+        final id = _current;
+        if (id != null) await openSpeedrun(id);
+        await $.pumpAndSettle();
+        return;
+      }
       await ConclusionRobot($).close();
       return;
     }

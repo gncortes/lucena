@@ -9,6 +9,11 @@ import '../../../domain/models/lesson_script.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/movimento_reduzido.dart';
+import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_animado.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/square_flash.dart';
 import '../view_models/lesson_script_state.dart';
@@ -45,12 +50,18 @@ class ScriptBoard extends StatefulWidget {
     this.onSquare,
     this.flash,
     this.showMarks = true,
+    this.canvasFeedback = false,
+    this.vibrar = true,
     super.key,
   });
 
+  /// A vibração ligada nos ajustes do app (retorno do lance, H-ANI-11).
+  final bool vibrar;
+
   /// O tempo de cada lance rápido (`seq`) e do crossfade da posição nova.
   static const seqStep = AppMotion.component;
-  static const fade = AppMotion.component;
+  // H-ANI-03: a posição nova troca em fade, no tempo do TrocaComFade do kit.
+  static const fade = LucenaMotion.trocaComFade;
 
   /// O tempo até as setas aparecerem depois de um lance (o lance mais 120 ms de respiro; protótipo, 420 ms).
   static final shapesDelay = Duration(
@@ -60,6 +71,8 @@ class ScriptBoard extends StatefulWidget {
   final LessonScriptState state;
   final double size;
   final BoardSettings settings;
+  final bool canvasFeedback;
+
   final ValueChanged<String> onMove;
 
   /// Toque numa casa (qualquer uma, até vazia) na prática do tipo toque.
@@ -90,12 +103,59 @@ class _ScriptBoardState extends State<ScriptBoard> {
   StaticChessboard? _ghost;
   int _ghostId = 0;
 
+  /// H-ANI-11/12: o retorno do último lance julgado do aluno (casa, cor da
+  /// peça que chegou, tipo e tentativa).
+  ({Square casa, Side cor, TipoDeRetorno tipo, int id})? _retorno;
+  final _boardKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     _orientation = widget.state.orientation;
     widget.flash?.addListener(_onFlash);
     _controller = ChessboardController(game: _data(widget.state.fen));
+    // Posição retomada já julgada: o sinal fica parado na peça do lance.
+    final last = widget.state.lastMove;
+    if (last != null) _julgar(widget.state, Move.parse(last));
+  }
+
+  /// A cor da peça em [casa]; lê só o tabuleiro do FEN, que na Escola pode
+  /// não ter rei (e não vira posição de xadrez).
+  static Side? _corNa(String fen, Square casa) {
+    try {
+      return Setup.parseFen(fen).board.pieceAt(casa)?.color;
+    } on FenException {
+      return null;
+    }
+  }
+
+  /// Guarda o retorno do lance [move] quando o estado [s] o julga.
+  void _julgar(LessonScriptState s, Move? move) {
+    final tipo = switch (s.tone) {
+      ScriptTone.good => TipoDeRetorno.acerto,
+      ScriptTone.bad => TipoDeRetorno.erro,
+      ScriptTone.neutral => null,
+    };
+    final cor = move is NormalMove ? _corNa(s.fen, move.to) : null;
+    if (tipo == null || move is! NormalMove || cor == null) return;
+    _retorno = (casa: move.to, cor: cor, tipo: tipo, id: s.transition.id);
+  }
+
+  /// O retorno vale enquanto o tom não volta ao neutro, o lance não é
+  /// desfeito e a peça que chegou segue na casa.
+  ({Square casa, Side cor, TipoDeRetorno tipo, int id})? get _retornoVisivel {
+    final r = _retorno;
+    final s = widget.state;
+    if (r == null ||
+        s.tone == ScriptTone.neutral ||
+        s.touching ||
+        s.transition.kind == TransitionKind.back) {
+      return null;
+    }
+    if (_corNa(s.fen, r.casa) != r.cor) {
+      return null;
+    }
+    return r;
   }
 
   void _onFlash() => setState(() {});
@@ -128,7 +188,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
           position?.turn ?? (fen.contains(' b') ? Side.black : Side.white),
       validMoves: live ? dests : const {},
       lastMove: last == null ? null : Move.parse(last),
-      kingSquareInCheck: position == null
+      kingSquareInCheck: widget.canvasFeedback || position == null
           ? null
           : GameRules.checkedKing(position),
     );
@@ -142,6 +202,15 @@ class _ScriptBoardState extends State<ScriptBoard> {
       widget.flash?.addListener(_onFlash);
     }
     final s = widget.state;
+    // O lance do aluno é o primeiro do trecho que chega com o julgamento: o
+    // tom mudou ou o aluno tinha a vez. A resposta da máquina não é julgada.
+    if (s.tone == ScriptTone.neutral) {
+      _retorno = null;
+    } else if (s.transition.id != old.state.transition.id &&
+        s.transition.ucis.isNotEmpty &&
+        (old.state.movable != null || s.tone != old.state.tone)) {
+      _julgar(s, Move.parse(s.transition.ucis.first));
+    }
     final flipping = s.orientation != old.state.orientation;
     final moved =
         s.transition.id != old.state.transition.id || s.fen != old.state.fen;
@@ -202,10 +271,14 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   bool _alive(int run) => mounted && run == _run;
 
+  /// O tempo do crossfade: o do kit, ou o fade curto com movimento reduzido.
+  Duration get _fade => MovimentoReduzido.of(context)
+      ? LucenaMotion.fadeReduzido
+      : ScriptBoard.fade;
+
   /// Põe por cima uma cópia fixa do que está na tela, que se dissolve no
-  /// tabuleiro novo embaixo (sem movimento reduzido, troca seca).
+  /// tabuleiro novo embaixo (com movimento reduzido, o fade curto do kit).
   void _crossfade() {
-    if (AppMotion.reduced(context)) return;
     final game = _controller.game;
     _ghostId++;
     _ghost = StaticChessboard(
@@ -255,9 +328,9 @@ class _ScriptBoardState extends State<ScriptBoard> {
           resetPremove: true,
         );
         if (t.ucis.isEmpty) {
-          await _finish(run, s, ScriptBoard.fade);
+          await _finish(run, s, _fade);
         } else {
-          await _wait(ScriptBoard.fade);
+          await _wait(_fade);
           if (!_alive(run)) return;
           await _play(run, s, start, t.ucis, fade: true);
         }
@@ -368,25 +441,51 @@ class _ScriptBoardState extends State<ScriptBoard> {
     // As coordenadas na casa vão por cima das marcações (canvas
     // `T71-360-propostas`, 3B); na borda, ficam com o chessground.
     final coordinates = settings.enableCoordinates && settings.border == null;
+    Widget tabuleiro = KeyedSubtree(
+      key: _boardKey,
+      // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
+      child: TabuleiroAnimado(
+        controlador: _controller,
+        orientacao: _orientation,
+        tamanho: widget.size,
+        pecas: settings.pieceAssets,
+        child: Chessboard(
+          key: LessonScriptKeys.board,
+          size: widget.size,
+          controller: _controller,
+          settings: TabuleiroAnimado.ajustes(
+            context,
+            coordinates
+                ? settings.copyWith(enableCoordinates: false)
+                : settings,
+          ),
+          orientation: _orientation,
+          shapes: _drawn,
+          onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
+          onTouchedSquare: widget.state.touching && widget.onSquare != null
+              ? (square) => widget.onSquare!(square.name)
+              : null,
+        ),
+      ),
+    );
+    if (_retornoVisivel case final r?) {
+      tabuleiro = RetornoDoLance(
+        key: ValueKey('script ${r.id}'),
+        tipo: r.tipo,
+        casa: r.casa,
+        orientacao: _orientation,
+        tamanho: widget.size,
+        vibrar: widget.vibrar,
+        child: tabuleiro,
+      );
+    }
     // O tabuleiro não espelha em idiomas da direita para a esquerda.
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Chessboard(
-            key: LessonScriptKeys.board,
-            size: widget.size,
-            controller: _controller,
-            settings: coordinates
-                ? settings.copyWith(enableCoordinates: false)
-                : settings,
-            orientation: _orientation,
-            shapes: _drawn,
-            onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
-            onTouchedSquare: widget.state.touching && widget.onSquare != null
-                ? (square) => widget.onSquare!(square.name)
-                : null,
-          ),
+          tabuleiro,
           if (ghost != null)
             Positioned.fill(
               child: IgnorePointer(
@@ -395,7 +494,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
                   // Cópia nova, animação nova (troca antes do fim recomeça).
                   key: ValueKey(_ghostId),
                   tween: Tween(begin: 1, end: 0),
-                  duration: ScriptBoard.fade,
+                  duration: _fade,
                   onEnd: () => setState(() => _ghost = null),
                   builder: (_, opacity, child) =>
                       Opacity(opacity: opacity, child: child),
@@ -409,9 +508,35 @@ class _ScriptBoardState extends State<ScriptBoard> {
                 key: LessonScriptKeys.coordinates,
                 orientation: _orientation,
                 settings: settings,
+                proportional: widget.canvasFeedback,
               ),
             ),
+          for (final name in widget.state.stars) _star(name),
         ],
+      ),
+    );
+  }
+
+  Widget _star(String name) {
+    final square = Square.fromName(name.split(':').first);
+    final white = _orientation == Side.white;
+    final side = widget.size / 8;
+    return Positioned(
+      left: (white ? square.file : 7 - square.file) * side,
+      top: (white ? 7 - square.rank : square.rank) * side,
+      width: side,
+      height: side,
+      child: IgnorePointer(
+        child: Center(
+          child: Icon(
+            CanvasSymbols.star,
+            fill: 1,
+            opticalSize: widget.size * .09,
+            key: LessonScriptKeys.star(name),
+            size: widget.size * .09,
+            color: const Color(0xFFF2B705),
+          ),
+        ),
       ),
     );
   }

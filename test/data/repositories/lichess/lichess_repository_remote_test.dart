@@ -226,7 +226,7 @@ void main() {
 
   test('sem volta pendente, resume() não faz nada', () async {
     expect(await repository().resume(), isNull);
-    links.initial = Uri.parse('https://playlucena.com/p/abc');
+    links.initial = Uri.parse('https://playlucenachess.com/p/abc');
     expect(await repository().resume(), isNull);
   });
 

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,6 +30,9 @@ abstract class AppUpdateService {
   /// A atualização flexível: baixa em segundo plano. Verdadeiro: baixou.
   Future<bool> flexible();
 
+  /// Há internet para falar com a Play (sem ela, a atualização não baixa).
+  Future<bool> hasConnection();
+
   /// Instala o que [flexible] baixou (o app reinicia).
   Future<void> completeFlexible();
 
@@ -38,6 +44,18 @@ abstract class AppUpdateService {
 final playStorePage = Uri.parse(
   'https://play.google.com/store/apps/details?id=com.gncortes.lucena',
 );
+
+Future<bool> _hasConnection() async {
+  try {
+    final found = await InternetAddress.lookup('play.google.com')
+        .timeout(const Duration(seconds: 4));
+    return found.isNotEmpty && found.first.rawAddress.isNotEmpty;
+  } on SocketException {
+    return false;
+  } on TimeoutException {
+    return false;
+  }
+}
 
 Future<void> _openStore() =>
     launchUrl(playStorePage, mode: LaunchMode.externalApplication);
@@ -54,6 +72,9 @@ class NoAppUpdateService implements AppUpdateService {
 
   @override
   Future<bool> flexible() async => false;
+
+  @override
+  Future<bool> hasConnection() => _hasConnection();
 
   @override
   Future<void> completeFlexible() async {}
@@ -103,6 +124,9 @@ class PlayAppUpdateService implements AppUpdateService {
       return false;
     }
   }
+
+  @override
+  Future<bool> hasConnection() => _hasConnection();
 
   @override
   Future<void> completeFlexible() async {

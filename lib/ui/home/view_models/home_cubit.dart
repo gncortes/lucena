@@ -1,10 +1,23 @@
 import 'dart:async';
 
-import 'package:dartchess/dartchess.dart' show Move;
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
+import 'package:dartchess/dartchess.dart' show Move, Side;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/lesson_content.dart';
+import '../../../data/repositories/training/course_training_repository.dart'
+    as course_training;
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../domain/models/training/training_resources.dart';
+import '../../../domain/models/training/training_state.dart';
+import '../../../domain/models/training/training_content.dart';
+import '../../../domain/use_cases/training/play_training_opening.dart';
+import '../../lesson_script/view_models/lesson_script_state.dart';
+import '../../../domain/use_cases/training/build_day_goals.dart';
+import '../../../domain/use_cases/training/home_course_card.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -14,7 +27,6 @@ import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/featured/featured_progress_repository.dart';
 import '../../../data/repositories/featured/featured_repository.dart';
 import '../../../data/repositories/home/home_layout_repository.dart';
-import '../../../data/repositories/home/unlock_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
@@ -33,11 +45,12 @@ import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
 import '../../../domain/models/journey.dart';
+import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/streak.dart';
+import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/beginner_home.dart';
-import '../../../domain/use_cases/course_availability.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -45,6 +58,10 @@ import '../../../domain/use_cases/home_shortcuts.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/mastery.dart';
+import '../../../domain/use_cases/opening_overlay.dart';
+import '../../../domain/use_cases/training/demo_offer_rules.dart';
+import '../../../data/repositories/purchase/opening_offer_repository.dart';
+import '../../../data/repositories/purchase/purchase_repository.dart';
 import '../../../domain/use_cases/streak_rules.dart';
 import '../../../domain/use_cases/train_suggestion.dart';
 
@@ -53,7 +70,10 @@ import '../../../domain/use_cases/train_suggestion.dart';
 class HomeState {
   const HomeState({
     this.ready = false,
+    this.failed = false,
     this.tourPending = false,
+    this.offerPending = false,
+    this.offerOpen = false,
     this.boardControlsDone = false,
     this.stage = OnboardingStage.tour,
     this.current,
@@ -67,7 +87,6 @@ class HomeState {
     this.level,
     this.ratingChange,
     this.layout,
-    this.unlockedBlind = false,
     this.featured,
     this.goal,
     this.courseDone = false,
@@ -75,15 +94,32 @@ class HomeState {
     this.trainGoal,
     this.journeyStarted = false,
     this.streak = Streak.none,
-    this.courseAvailable = true,
     this.placementDone = true,
     this.ratedGames = 0,
+    this.training,
   });
 
   final bool ready;
+  final bool failed;
 
   /// A primeira abertura: o tour ainda não foi visto.
   final bool tourPending;
+
+  /// Só a folha da sequência perdida está na vez (nem tour, nem oferta).
+  bool get lostSheetTurn =>
+      OpeningOverlay.of(
+        tourPending: tourPending,
+        offerPending: offerPending,
+        streakLost: streak.lost > 0,
+      ) ==
+      OpeningOverlay.lostStreak;
+
+  /// A oferta (tela de venda) é a vez desta abertura (H-INI-14): vai abrir ou
+  /// já abriu. A folha da sequência perdida espera a próxima abertura.
+  final bool offerPending;
+
+  /// A oferta ainda não abriu nesta abertura: o Início a abre por cima.
+  final bool offerOpen;
   final bool boardControlsDone;
 
   /// Com [tourPending], a tela da primeira abertura em que a pessoa parou.
@@ -120,7 +156,6 @@ class HomeState {
 
   /// O cartão "Novo modo desbloqueado: às cegas", depois do primeiro desafio
   /// às cegas vencido na Jornada. Aparece uma vez.
-  final bool unlockedBlind;
 
   /// O final em destaque da seção "Finais em destaque". Nulo: a seção some.
   final FeaturedItem? featured;
@@ -147,15 +182,12 @@ class HomeState {
   /// sai uma vez.
   final Streak streak;
 
-  /// Há aula de final liberada. Falso: o Curso de finais e os finais para
-  /// você não aparecem (T83 B1).
-  final bool courseAvailable;
-
   /// A pessoa fez o teste de nível (T83 B4).
   final bool placementDone;
 
   /// As partidas que mexeram no rating (sem os bônus de speedrun).
   final int ratedGames;
+  final HomeTraining? training;
 
   /// O número do rating aparece (T83 B3).
   bool get showsRating => BeginnerHome.showsRating(goal, ratedGames);
@@ -163,32 +195,32 @@ class HomeState {
   /// "Finais em destaque" (o final do dia e o destaque) aparece (T83 B3).
   bool get showsFeatured => BeginnerHome.showsFeatured(goal, journeyStarted);
 
-  /// O que o cartão azul de cima mostra (T83, os 20 estados da prancha
-  /// "card-estados"). Nulo: nenhum cartão.
+  /// O que o cartão azul de cima mostra (H-INI-02 e H-INI-03): o treino dos
+  /// Pilares primeiro; senão, o que o objetivo pede. Nulo: nenhum cartão
+  /// (sem nada a retomar, o Início começa nos finais em destaque ou nos
+  /// atalhos).
   HomeHero? get hero {
     if (!ready) return null;
+    if (training != null) return HomeHero.course;
     final goal = this.goal;
-    if (goal == GoalPreference.learn && !boardControlsDone) {
-      return HomeHero.firstSteps;
-    }
     if (goal == null) {
-      // Sem objetivo: a aula de final em andamento (ou recomendada), as
-      // aulas do iniciante ou a Jornada.
-      if (endgame != null) return HomeHero.endgame;
+      // Sem objetivo: a lição da Escola aberta ou a Jornada.
       if (school != null) return HomeHero.school;
-      return _journeyOr(HomeHero.speedrun);
+      return _journeyOr(null);
     }
-    return switch (HomeSuggestion.goalPath(goal, course: courseAvailable)) {
-      HomePath.learn when school != null => HomeHero.school,
-      HomePath.endgames when endgame != null => HomeHero.endgame,
-      HomePath.endgames when courseDone => HomeHero.courseDone,
-      HomePath.endgames ||
-      HomePath.train => trainGoal != null ? HomeHero.train : HomeHero.speedrun,
-      _ => _journeyOr(trainGoal != null ? HomeHero.train : HomeHero.speedrun),
+    // Aprender a jogar (S6 do T85): a próxima aula da Escola, quando a
+    // Escola está no app e ainda tem aula por fazer; senão, o que segue.
+    if (goal == GoalPreference.learn && school != null) return HomeHero.school;
+    return switch (HomeSuggestion.goalPath(goal)) {
+      HomePath.train => trainGoal != null ? HomeHero.train : null,
+      HomePath.board => HomeHero.board,
+      // Aprender a jogar, melhorar sem treino e enfrentar desafios: a
+      // Jornada, sem texto de venda no cartão.
+      _ => _journeyOr(null),
     };
   }
 
-  HomeHero _journeyOr(HomeHero done) =>
+  HomeHero? _journeyOr(HomeHero? done) =>
       current != null && next != null ? HomeHero.journey : done;
 
   /// Os atalhos da grade: todos os caminhos marcados, na ordem do nível.
@@ -201,9 +233,12 @@ class HomeState {
     );
   }
 
-  HomeState copyWith({bool? unlockedBlind, Streak? streak}) => HomeState(
+  HomeState copyWith({Streak? streak, bool? offerOpen}) => HomeState(
     ready: ready,
+    failed: failed,
     tourPending: tourPending,
+    offerPending: offerPending,
+    offerOpen: offerOpen ?? this.offerOpen,
     boardControlsDone: boardControlsDone,
     stage: stage,
     current: current,
@@ -217,7 +252,6 @@ class HomeState {
     level: level,
     ratingChange: ratingChange,
     layout: layout,
-    unlockedBlind: unlockedBlind ?? this.unlockedBlind,
     featured: featured,
     goal: goal,
     courseDone: courseDone,
@@ -225,39 +259,71 @@ class HomeState {
     trainGoal: trainGoal,
     journeyStarted: journeyStarted,
     streak: streak ?? this.streak,
-    courseAvailable: courseAvailable,
     placementDone: placementDone,
     ratedGames: ratedGames,
+    training: training,
   );
 }
 
 /// O cartão azul de cima da tela inicial: um lugar do app por vez.
 enum HomeHero {
-  /// Como mover as peças, antes da primeira partida de quem aprende a jogar.
-  firstSteps(HomePath.journey),
+  /// O plano dos Pilares: a lição, a meta, a folga (cinco estados).
+  course,
 
   /// A lição da vez na Escola.
-  school(HomePath.learn),
+  school,
 
   /// O adversário atual da Jornada.
-  journey(HomePath.journey),
-
-  /// A aula de final em andamento ou a recomendada.
-  endgame(HomePath.endgames),
-
-  /// O Curso de finais todo aprovado: o botão leva ao treino.
-  courseDone(HomePath.train),
+  journey,
 
   /// O final sugerido pelo nível.
-  train(HomePath.train),
+  train,
 
-  /// Nada por fazer nos outros: o speedrun.
-  speedrun(HomePath.speedrun);
+  /// O Tabuleiro livre, na última posição.
+  board,
+}
 
-  const HomeHero(this.path);
+final class HomeTraining {
+  const HomeTraining({
+    required this.config,
+    required this.state,
+    required this.resources,
+    required this.card,
+    this.lessonPreview,
+    this.challenge,
+    this.speedrun,
+  });
+  final TrainingCourseConfig config;
+  final TrainingState state;
+  final TrainingResources resources;
+  final HomeCourseCard card;
+  final LessonScriptState? lessonPreview;
+  final Challenge? challenge;
+  final Speedrun? speedrun;
+  String? get challengeFen =>
+      challenge?.position.fen ?? speedrun?.stages.firstOrNull?.position.fen;
 
-  /// O caminho que o cartão já mostra (sai dos atalhos).
-  final HomePath path;
+  TrainingExercise? get exercise => resources.banks[card.ref]
+      ?.where((e) => e.id == card.goal?.itemId)
+      .firstOrNull;
+  OpeningTrecho? get opening => resources.openings[card.ref]
+      ?.where((e) => e.id == card.goal?.items[card.ref])
+      .firstOrNull;
+  PlayTrainingOpening? get openingLine =>
+      opening == null ? null : PlayTrainingOpening(opening!);
+
+  String? get fen {
+    if (card.destination == HomeCourseDestination.lessonTab) return null;
+    final line = openingLine;
+    return challengeFen ??
+        exercise?.fen ??
+        (line == null ? lessonPreview?.fen : line.fens[line.initialCursor]);
+  }
+
+  Side get orientation => opening != null
+      ? (opening!.black ? Side.black : Side.white)
+      : lessonPreview?.orientation ??
+            (fen?.split(' ')[1] == 'b' ? Side.black : Side.white);
 }
 
 /// O final sugerido pelo nível e a primeira posição dele por cumprir (a
@@ -276,11 +342,16 @@ class SchoolSummary {
     required this.total,
     required this.teacher,
     this.ongoingLessonId,
+    this.lessonTitle,
   });
 
   final int done;
   final int total;
   final Character? teacher;
+
+  /// O título da próxima aula (a começada ou a primeira por fazer), no idioma
+  /// da tela. Nulo: o cartão diz "Lição N".
+  final String? lessonTitle;
 
   /// A lição começada e não terminada: "continuar" abre direto nela.
   final String? ongoingLessonId;
@@ -362,7 +433,6 @@ class HomeCubit extends Cubit<HomeState> {
     required this._endgameLessons,
     required this._endgameProgress,
     this._homeLayout,
-    this._unlocks,
     this._placement,
     this._featured,
     this._featuredProgress,
@@ -371,9 +441,25 @@ class HomeCubit extends Cubit<HomeState> {
     this._activity,
     this._games,
     this._analytics = const NoAnalyticsRepository(),
+    this._courseTraining,
+    this._trainingCourses = const [],
+    this._openingOffer,
+    this._purchases,
+    this.trainingLessonPreview,
   }) : super(const HomeState());
 
   final AnalyticsRepository _analytics;
+
+  // A oferta do Pilares ao abrir o app: sem ela (ou sem a compra), não sai.
+  final OpeningOfferRepository? _openingOffer;
+  final PurchaseRepository? _purchases;
+  final course_training.TrainingRepository? _courseTraining;
+  final List<TrainingCourseConfig> _trainingCourses;
+
+  /// Reads the same resolved script/checkpoint as the lesson destination.
+  /// Absent content leaves the preview empty rather than inventing a FEN.
+  final Future<LessonScriptState?> Function(TrainingLesson)?
+  trainingLessonPreview;
 
   // A sequência de dias: sem ela (ou sem o relógio), a folha não sai.
   final ActivityRepository? _activity;
@@ -389,11 +475,9 @@ class HomeCubit extends Cubit<HomeState> {
   final FeaturedProgressRepository? _featuredProgress;
   final Now? _now;
 
-  final UnlockRepository? _unlocks;
   final PlacementRepository? _placement;
 
   /// O modo às cegas, para o cartão de modo novo.
-  static const blindMode = 'blind';
 
   // Os caminhos escolhidos. Nulo: sempre a sugestão do nível.
   final HomeLayoutRepository? _homeLayout;
@@ -410,7 +494,24 @@ class HomeCubit extends Cubit<HomeState> {
   final EndgameProgressRepository _endgameProgress;
 
   /// [language] escolhe as falas das aulas de finais (o título da aula).
+  ///
+  /// Cargas em sequência (voltar ao Início, segundo plano, "Tentar de novo")
+  /// não se acumulam: só a última responde, a mais velha termina sem emitir.
   Future<void> load([String language = 'en']) async {
+    final serial = ++_loadSerial;
+    try {
+      await _load(language, serial);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed && serial == _loadSerial && !state.ready) {
+        emit(const HomeState(failed: true));
+      }
+    }
+  }
+
+  int _loadSerial = 0;
+
+  Future<void> _load(String language, int serial) async {
     final onboarding = await _onboarding.load();
     final fulfilled = await _progress.fulfilledChallenges();
     final progress = Mastery.of(
@@ -418,17 +519,6 @@ class HomeCubit extends Cubit<HomeState> {
       fulfilled,
       startRung: onboarding.startRung,
     );
-    // O primeiro especial às cegas vencido destrava o modo (o anúncio sai
-    // uma vez só).
-    final blindWon = progress.rungs.any(
-      (rung) => rung.rung.specials.any(
-        (special) =>
-            special.mode == ChallengeMode.blind &&
-            rung.specialsDone.contains(special.id),
-      ),
-    );
-    final unlockedBlind =
-        blindWon && _unlocks != null && !await _unlocks.seen(blindMode);
     final current = progress.current;
     Challenge? next;
     for (final challenge in current?.rung.challenges ?? const <Challenge>[]) {
@@ -440,21 +530,15 @@ class HomeCubit extends Cubit<HomeState> {
     final characters = await _characters.characters();
     final rating = await _rating.current();
     final history = await _rating.history();
-    final school = await _optionalContent(() => _schoolSummary(characters));
+    final school = await _optionalContent(
+      () => _schoolSummary(language, characters),
+    );
     final profile = await _profile.load();
     final saved = await _homeLayout?.load();
     final goal = profile.goal;
-    final courseAvailable = await CourseAvailability(_endgameLessons.trail)();
-    final layout = HomeSuggestion.resolve(
-      saved,
-      profile.level,
-      goal: goal,
-      course: courseAvailable,
-    );
+    final layout = HomeSuggestion.resolve(saved, profile.level, goal: goal);
     final priority = layout.shown.firstOrNull;
-    final goalPath = goal == null
-        ? null
-        : HomeSuggestion.goalPath(goal, course: courseAvailable);
+    final goalPath = goal == null ? null : HomeSuggestion.goalPath(goal);
     final endgame = await _optionalContent(
       () => _endgameSummary(
         language,
@@ -483,11 +567,15 @@ class HomeCubit extends Cubit<HomeState> {
     final streak = await _streak();
     final placementDone =
         _placement == null || await _placement.result() != null;
-    if (isClosed) return;
+    final training = await _optionalContent(_trainingSummary);
+    final offer = await _offerTurn(tourPending: !onboarding.done);
+    if (isClosed || serial != _loadSerial) return;
     emit(
       HomeState(
         ready: true,
         tourPending: !onboarding.done,
+        offerPending: offer.pending,
+        offerOpen: offer.open,
         boardControlsDone: onboarding.boardControlsDone,
         stage: onboarding.stage,
         current: current,
@@ -502,12 +590,8 @@ class HomeCubit extends Cubit<HomeState> {
         endgame: endgame,
         nickname: profile.nickname,
         level: profile.level,
-        ratingChange: history.length < 2
-            ? null
-            : history.last.rating.rounded -
-                  history[history.length - 2].rating.rounded,
+        ratingChange: history.lastChange,
         layout: layout,
-        unlockedBlind: unlockedBlind,
         featured: featured,
         goal: goal,
         courseDone: courseDone,
@@ -515,11 +599,106 @@ class HomeCubit extends Cubit<HomeState> {
         trainGoal: trainGoal,
         journeyStarted: fulfilled.isNotEmpty,
         streak: streak,
-        courseAvailable: courseAvailable,
         placementDone: placementDone,
-        ratedGames: history.where((entry) => !entry.isBonus).length,
+        ratedGames: history.ratedGames,
+        training: training,
       ),
     );
+  }
+
+  /// A vez da oferta nesta abertura (H-INI-14 / H-VEN-15): só para quem não
+  /// comprou, no máximo 2 vezes com 3 dias entre elas e nunca na abertura do
+  /// tour. Depois de aberta, segue sendo a vez dela até o app fechar.
+  Future<({bool pending, bool open})> _offerTurn({
+    required bool tourPending,
+  }) async {
+    final offer = _openingOffer;
+    final purchases = _purchases;
+    final now = _now;
+    const none = (pending: false, open: false);
+    if (offer == null || purchases == null || now == null) return none;
+    if (tourPending) {
+      offer.markTour();
+      return none;
+    }
+    if (offer.shownThisOpening) return (pending: true, open: false);
+    if (offer.tourThisOpening) return none;
+    final due = DemoOfferRules.shouldOffer(
+      await offer.load(),
+      demo: !purchases.state.access.owns,
+      now: now(),
+    );
+    return (pending: due, open: due);
+  }
+
+  /// A oferta abriu: conta a vez já ao abrir (fechar à força com ela aberta
+  /// conta como vista).
+  Future<void> offerOpened() async {
+    final offer = _openingOffer;
+    if (offer == null || !state.offerOpen) return;
+    emit(state.copyWith(offerOpen: false));
+    await offer.markShown();
+  }
+
+  Future<HomeTraining?> _trainingSummary() async {
+    final repository = _courseTraining;
+    final now = _now;
+    if (repository == null || now == null) return null;
+    final active =
+        <
+          ({
+            TrainingCourseConfig config,
+            TrainingState state,
+            TrainingResources resources,
+          })
+        >[];
+    for (final config in _trainingCourses) {
+      final before = await repository.load(config.course);
+      if (!before.onboardingDone) continue;
+      final resources = await repository.resources(config.course);
+      // Só leitura: o Início calcula as metas do dia em memória e não grava.
+      final state = BuildDayGoals(now, config)(before, resources);
+      active.add((config: config, state: state, resources: resources));
+    }
+    final latest = latestTrainingCourse(active.map((e) => e.state));
+    if (latest == null) return null;
+    final selected = active.firstWhere((e) => e.state.course == latest.course);
+    final card = homeCourseCard(selected.state, selected.resources);
+    final lesson = selected.resources.lessons
+        .where((l) => l.id == card?.ref)
+        .firstOrNull;
+    final preview =
+        card?.destination == HomeCourseDestination.lesson && lesson != null
+        ? await _optionalContent(
+            () async => trainingLessonPreview?.call(lesson),
+          )
+        : null;
+    Challenge? challenge;
+    Speedrun? speedrun;
+    final challengeGoal = card?.goal;
+    if (challengeGoal?.kind == GoalKind.bot) {
+      for (final rung in await _journey.ladder()) {
+        if (rung.id != challengeGoal!.items['rung']) continue;
+        challenge = rung.challenges
+            .where((c) => c.position.id == challengeGoal.itemId)
+            .firstOrNull;
+      }
+    } else if (challengeGoal?.kind == GoalKind.speedrun) {
+      speedrun = (await _journey.speedruns())
+          .where((s) => s.id == challengeGoal!.itemId)
+          .firstOrNull;
+    }
+    return card == null
+        ? null
+        : HomeTraining(
+            config: selected.config,
+            state: selected.state,
+            resources: selected.resources,
+            card: card,
+            lessonPreview: preview,
+            challenge: challenge,
+            speedrun: speedrun,
+          );
   }
 
   /// A sequência de hoje. [Streak.lost] só fica quando a folha da sequência
@@ -620,17 +799,20 @@ class HomeCubit extends Cubit<HomeState> {
     final progress = _featuredProgress;
     final now = _now;
     if (repository == null || progress == null || now == null) return null;
-    final catalog = await repository.catalog();
-    final played = await progress.played();
-    return FeaturedRules.home(FeaturedRules.items(catalog, played, now: now()));
+    try {
+      final catalog = await repository.catalog();
+      final played = await progress.played();
+      return FeaturedRules.home(
+        FeaturedRules.items(catalog, played, now: now()),
+      );
+    } on Object {
+      // O catálogo ilegível é erro na lista de finais; na tela inicial o
+      // destaque só não aparece.
+      return null;
+    }
   }
 
   /// O cartão do modo novo saiu (fechado ou tocado): não volta.
-  Future<void> dismissUnlocked() async {
-    emit(state.copyWith(unlockedBlind: false));
-    await _unlocks?.markSeen(blindMode);
-  }
-
   Future<T?> _optionalContent<T>(Future<T> Function() read) async {
     try {
       return await read();
@@ -641,11 +823,18 @@ class HomeCubit extends Cubit<HomeState> {
 
   /// Para quem marcou "iniciante" e ainda não se formou, ou para quem tem
   /// uma lição começada (qualquer perfil): o cartão leva direto a ela.
-  Future<SchoolSummary?> _schoolSummary(List<Character> characters) async {
+  Future<SchoolSummary?> _schoolSummary(
+    String language,
+    List<Character> characters,
+  ) async {
     final profile = await _profile.load();
     final progress = await _school.load();
     final ongoing = progress.ongoing;
-    if (profile.level != RatingLevel.beginner && ongoing == null) return null;
+    if (profile.level != RatingLevel.beginner &&
+        profile.goal != GoalPreference.learn &&
+        ongoing == null) {
+      return null;
+    }
     final lessons = (await _lessons.course()).lessons;
     final completed = progress.completed;
     final done = lessons.where((lesson) => completed.contains(lesson.id));
@@ -654,11 +843,20 @@ class HomeCubit extends Cubit<HomeState> {
     for (final character in characters) {
       if (character.id == 'master') teacher = character;
     }
+    final next =
+        lessons.where((lesson) => lesson.id == ongoing?.lessonId).firstOrNull ??
+        lessons.where((lesson) => !completed.contains(lesson.id)).firstOrNull;
+    // O título da aula é do cartão do objetivo; os outros perfis seguem com
+    // "Lição N".
+    final texts = profile.goal == GoalPreference.learn
+        ? await _lessons.texts(language)
+        : null;
     return SchoolSummary(
       done: done.length,
       total: lessons.length,
       teacher: teacher,
       ongoingLessonId: ongoing?.lessonId,
+      lessonTitle: next == null ? null : texts?.plain('${next.id}.title'),
     );
   }
 
@@ -755,7 +953,7 @@ class HomeCubit extends Cubit<HomeState> {
       fen:
           exercise?.fen ??
           lesson.keyPositions.firstOrNull?.fen ??
-          lesson.practice.fen,
+          lesson.practice?.fen,
       recommended: recommended,
       title: texts.lessonTitle(lesson.id),
       score: done.scoreOf(lesson),

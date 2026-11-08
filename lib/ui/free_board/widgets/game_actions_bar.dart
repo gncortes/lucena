@@ -103,11 +103,13 @@ class GameActionButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.buttonKey,
+    this.loading = false,
     super.key,
   });
 
   /// A key do botão (a do toque nos testes).
   final Key? buttonKey;
+  final bool loading;
   final IconData icon;
   final String label;
   final VoidCallback? onPressed;
@@ -138,7 +140,13 @@ class GameActionButton extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: AppIconSize.standard),
+                  if (loading)
+                    const SizedBox.square(
+                      dimension: AppIconSize.standard,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else
+                    Icon(icon, size: AppIconSize.standard),
                   const SizedBox(height: AppSpacing.xs),
                   Flexible(
                     child: Text(

@@ -1,8 +1,35 @@
+import 'package:lucena/data/repositories/account/account_invite_repository.dart';
+import 'package:lucena/data/repositories/training/training_endgame_content.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:lucena/data/services/lesson_content_service.dart';
+import 'package:lucena/data/services/lesson_package_service.dart';
+import 'package:lucena/data/repositories/training/course_download_repository.dart';
+import 'package:lucena/data/repositories/training/course_training_repository.dart'
+    as course_training;
+import 'package:lucena/data/repositories/training/course_training_repository_local.dart'
+    as course_training;
+import 'package:lucena/data/repositories/training/course_access_training_repository.dart'
+    as course_training;
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:lucena/data/services/secure_storage_service.dart';
+import 'package:lucena/domain/use_cases/now.dart';
+import 'package:lucena/data/repositories/learning/learning_repository.dart';
+import 'package:lucena/data/repositories/learning/learning_content_version.dart';
+import 'package:lucena/data/repositories/training/training_learning_bridge.dart';
+import 'package:lucena/data/repositories/training/training_school_content.dart';
+import 'package:lucena/data/repositories/training/observed_training_repository.dart';
+import 'package:lucena/data/repositories/training/school_training_observer.dart';
+import 'package:lucena/data/repositories/training/school_training_observation_source.dart';
+import 'package:lucena/domain/models/training/training_course_config.dart';
+import 'package:lucena/domain/models/training/school_training_resources.dart';
+import 'package:lucena/domain/use_cases/training/training_analytics.dart';
+
+import 'training/e2e_training.dart';
 
 import 'dart:async';
 
+import 'fakes/fake_lesson_ad_repositories.dart';
 import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
 import 'fakes/fake_sync_repository.dart';
@@ -13,10 +40,18 @@ import 'fakes/fake_photo_repository.dart';
 import 'fakes/fake_chesscom_repository.dart';
 import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
-import 'fakes/fake_ads_service.dart';
+import 'fakes/fake_notification_service.dart';
+
+import 'package:lucena/data/services/notification_service.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_grants_repository.dart';
+import 'package:lucena/data/repositories/push/push_repository.dart';
+
+import 'package:lucena/data/repositories/reminders/reminders_repository.dart';
+
 import 'fakes/fake_remote_flags_repository.dart';
 
-import 'package:lucena/data/repositories/ads/ads_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/course_access_repository.dart';
+import 'package:lucena/data/repositories/lesson_ad/demo_ad_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
@@ -25,7 +60,6 @@ import 'package:lucena/data/repositories/endgames/endgame_progress_repository_no
 import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 
 import 'fakes/fake_position_judge.dart';
-import 'fakes/fake_blind_checkpoint_repository.dart';
 
 import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
@@ -45,6 +79,7 @@ import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart
 import 'package:lucena/data/repositories/opponent/opponent_repository_maia.dart';
 import 'package:lucena/data/services/maia_service.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository_local.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository.dart';
@@ -53,7 +88,6 @@ import 'package:lucena/data/repositories/positions/positions_repository_asset.da
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
 import 'package:lucena/data/services/stockfish_service.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
-import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/repositories/training/training_repository_local.dart';
@@ -87,6 +121,7 @@ import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_a
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/repositories/school/star_challenge_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
+import 'package:lucena/data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'package:lucena/data/repositories/review/game_review_repository.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/domain/models/onboarding.dart';
@@ -101,8 +136,10 @@ import 'fakes/fake_speech_input_repository.dart';
 
 import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
+import 'package:lucena/data/repositories/blind/blind_checkpoint_repository.dart';
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
 import 'package:lucena/data/repositories/course_preview/course_preview_repository_asset.dart';
+import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_repository_asset.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
@@ -154,6 +191,25 @@ class E2EAnalysis extends FakeAnalysisRepository {
 Future<int> seedAttempt(Attempt attempt) =>
     LocalProgressRepository(_database!).addAttempt(attempt);
 
+/// Grava no histórico do rating os [ratings], um por dia, terminando hoje
+/// (no relógio dos cenários): para o gráfico do Histórico ter curva.
+Future<void> seedRatingHistory(List<int> ratings) async {
+  final database = _database!;
+  final today = e2eNow();
+  for (final (index, rating) in ratings.indexed) {
+    await database
+        .into(database.ratingHistory)
+        .insert(
+          RatingHistoryCompanion.insert(
+            at: today.subtract(Duration(days: ratings.length - 1 - index)),
+            rating: rating.toDouble(),
+            deviation: 80,
+            volatility: 0.06,
+          ),
+        );
+  }
+}
+
 /// Os sons dos cenários: nada toca; os pedidos ficam guardados para conferir.
 final e2eSound = FakeSoundRepository();
 
@@ -170,6 +226,11 @@ final e2eChessCom = FakeChessComRepository();
 
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
+final e2eReviews = LocalGameReviewRepository(PreferencesService());
+
+/// Real reminder composition, with an inspectable device boundary in Patrol.
+final e2eNotifications = FakeNotificationService();
+final e2ePush = FakePushRepository(allowed: true);
 
 final _e2eStart = DateTime.utc(2026, 1, 1, 12);
 
@@ -249,6 +310,8 @@ class E2EOpponent implements OpponentRepository {
 
 // O banco aberto pelo app em execução: fechado antes de abrir o próximo.
 AppDatabase? _database;
+bool _courseFixturePackages = false;
+FakeAccountRepository? _courseFixtureAccount;
 
 /// Composição dos cenários Patrol: relógio controlado e o pseudo-idioma na lista,
 /// mas com a gravação de verdade no aparelho (preferências e banco), para os
@@ -256,43 +319,191 @@ AppDatabase? _database;
 ///
 /// Cada chamada fecha o banco da anterior e abre outro, como um app reaberto.
 ///
-/// Com [ads], o anúncio falso da E1.25 (desenhado pelo app, sem SDK) entra
-/// antes das aulas; sem ele, os outros cenários não veem anúncio.
-Future<Dependencies> e2eDependencies({bool ads = false}) async {
+/// Com [demo], a pessoa está na demonstração do Pilares: aviso e anúncio
+/// (desenhado pelo app, sem SDK) antes das lições, capítulos 2+ trancados;
+/// sem ela, o curso está aberto e os outros cenários não veem anúncio.
+/// [nativeInitialAccount] permite iniciar como visitante os pacotes locais.
+/// [realCourseTraining] usa bancos reais e não aceita cenários pré-preenchidos.
+Future<Dependencies> e2eDependencies({
+  bool demo = false,
+  E2ETrainingScenario? trainingScenario,
+  NotificationService? notifications,
+  PushRepository? push,
+  bool localContentPackages = false,
+  bool realCourseTraining = false,
+  Account? nativeInitialAccount = FakeAccountRepository.google,
+  Now? now,
+  PurchaseRepository? purchases,
+  bool signedIn = false,
+  bool accountInvite = false,
+  CourseGrantsRepository? courseGrants,
+}) async {
+  if (realCourseTraining && trainingScenario != null) {
+    throw ArgumentError('Real course training cannot use a seeded scenario');
+  }
+  final clock = now ?? e2eNow;
+  // Reabrir fecha o banco, mas conserva a instalação e a sessão da fixture.
+  // Um cenário novo (resetE2EData) começa novamente sem esse contexto.
+  final startCourseFixture = localContentPackages || trainingScenario != null;
+  final withCoursePackages = startCourseFixture || _courseFixturePackages;
   await _database?.close();
   final database = _database = AppDatabase();
-  final content = createLessonContentAssets(
+  var source = createLessonContentAssets(
     releaseBuild: kReleaseMode,
     firebase: false,
     localUrl: const String.fromEnvironment('CONTENT_URL'),
   );
+  final account = FakeAccountRepository(
+    account: startCourseFixture
+        ? nativeInitialAccount
+        : signedIn
+        ? FakeAccountRepository.google
+        : _courseFixtureAccount?.current,
+  );
+  _courseFixturePackages = withCoursePackages;
+  _courseFixtureAccount = withCoursePackages ? account : null;
+  final localReader = source.reader;
+  if (withCoursePackages && localReader is LocalHttpLessonContentReader) {
+    // Native local evidence exercises the production manifest/cache contract.
+    // This synthetic release exists only on the loopback fixture server.
+    source = LessonContentAssets(
+      reader: PublishedLessonContentReader(
+        release: 't85-local-fixture',
+        currentUser: () => account.current?.uid,
+        cache: DeviceSecureStorageService(),
+        download: (object) async {
+          final response = await http
+              .get(localReader.base.resolve('/$object'))
+              .timeout(const Duration(seconds: 15));
+          if (response.statusCode == 404) return null;
+          if (response.statusCode != 200) {
+            throw const LessonContentUnavailable();
+          }
+          return response.bodyBytes;
+        },
+      ),
+    );
+  }
+  final packages = withCoursePackages && source.reader != null
+      ? LessonPackageService(
+          source: source.reader!,
+          directory: getApplicationSupportDirectory,
+          identity: () => account.current?.uid,
+        )
+      : null;
+  final content = packages == null
+      ? source
+      : LessonContentAssets(reader: packages);
   final positions = AssetPositionsRepository(const AssetService());
   final lessons = AssetLessonRepository(content);
   final progress = LocalProgressRepository(database);
   final activity = LocalActivityRepository(
     PreferencesService(),
     progress,
-    e2eNow,
+    clock,
   );
   final flags = FakeRemoteFlagsRepository();
+  final trainingSchool = TrainingSchoolContent(lessons, includeAll: true);
+  late final TrainingAnalytics trainingAnalytics;
+  schoolContent() async => schoolTrainingResources(
+    await trainingSchool.course(),
+    await trainingSchool.texts('pt'),
+  );
+  final CourseAccessRepository courseAccess = purchases != null
+      ? PurchaseCourseAccessRepository(purchases)
+      : demo
+      ? FakeCourseAccessRepository()
+      : const FullCourseAccessRepository();
+  final course_training.TrainingRepository courseTrainingRaw =
+      realCourseTraining
+      ? course_training.TrainingRepositoryLocal(
+          PreferencesService(),
+          content,
+          installSeed: await Dependencies.trainingInstallSeed(),
+          onSaved: (before, after) => trainingAnalytics.onSaved(before, after),
+          configs: {
+            for (final config in TrainingCourseConfig.all)
+              config.course: config,
+          },
+          contentSources: {
+            TrainingCourseConfig.escola.indexSource: schoolContent,
+          },
+        )
+      : E2ETrainingRepository(
+          PreferencesService(),
+          content,
+          onSaved: (before, after) => trainingAnalytics.onSaved(before, after),
+          schoolContent: schoolContent,
+        );
+  trainingAnalytics = TrainingAnalytics(
+    now: clock,
+    log: e2eAnalytics.log,
+    read: courseTrainingRaw.load,
+    write: courseTrainingRaw.update,
+  );
+  final stars = LocalStarChallengeRepository(PreferencesService());
+  final speedruns = LocalSpeedrunRepository(database);
+  final journey = E2EJourneyRepository(
+    AssetJourneyRepository(const AssetService(), positions),
+  );
+  final courseTraining = ObservedTrainingRepository(
+    course_training.CourseAccessTrainingRepository(
+      courseTrainingRaw,
+      courseAccess,
+    ),
+    observers: {
+      TrainingCourseConfig.escola.course: SchoolTrainingObserver(
+        now: clock,
+        source: SchoolTrainingObservationSource(
+          now: clock,
+          stars: stars,
+          progress: progress,
+          speedruns: speedruns,
+          journey: journey,
+        ),
+        analytics: trainingAnalytics,
+      ).call,
+    },
+  );
+  if (trainingScenario != null && courseTrainingRaw is E2ETrainingRepository) {
+    if (packages != null) {
+      // A seeded native scenario starts with installed course metadata. Fresh
+      // emulators must download it through the same verified package service
+      // before the repository can construct the requested fixture state.
+      await CourseDownloadRepository(packages).prepare(
+        trainingScenario.name.startsWith('school')
+            ? TrainingCourseConfig.escola
+            : TrainingCourseConfig.pilares,
+      );
+    }
+    await courseTrainingRaw.seed(
+      trainingScenario,
+      e2eNow,
+      access: courseAccess.access,
+    );
+  }
   return Dependencies(
-    now: e2eNow,
+    now: clock,
+    // Como no app de verdade (`main.dart`): a versão instalada aparece nas
+    // Configurações e no Sobre (PropV1ConfigB, PropV1LegalSobre).
+    version: await Dependencies.installedVersion(),
     remoteFlagsRepository: flags,
-    adsRepository: ads
-        ? ServiceAdsRepository(
-            service: FakeAdsService(),
-            preferences: PreferencesService(),
-            flags: flags,
-            purchases: const NoPurchaseRepository(),
-            now: e2eNow,
-          )
-        : const NoAdsRepository(),
+    courseAccessRepository: courseAccess,
+    purchaseRepository: purchases ?? const NoPurchaseRepository(),
+    demoAdRepository: demo
+        ? LocalDemoAdRepository(PreferencesService())
+        : const NoDemoAdRepository(),
     settingsRepository: LocalSettingsRepository(PreferencesService()),
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: e2eHaptics,
     shareRepository: e2eShare,
     deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
-    accountRepository: FakeAccountRepository(),
+    accountRepository: account,
+    // Os cenários não esperam o convite da conta; o print do Progresso
+    // (PropV2UxProgresso) o mostra pendente, como para o visitante novo.
+    accountInviteRepository: accountInvite
+        ? LocalAccountInviteRepository(PreferencesService())
+        : const NoAccountInviteRepository(),
     syncRepository: FakeSyncRepository(),
     avatarRepository: FakeAvatarRepository(),
     photoRepository: FakePhotoRepository(),
@@ -301,7 +512,16 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     analyticsRepository: e2eAnalytics,
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
-    pushRepository: FakePushRepository(allowed: true),
+    pushRepository: push ?? e2ePush,
+    // O acesso aos cursos que o cenário do presente controla (H-R5-63).
+    courseGrantsRepository: courseGrants ?? const NoCourseGrantsRepository(),
+    remindersRepository: LocalRemindersRepository(
+      notifications ?? e2eNotifications,
+      progress: LocalEndgameProgressRepository(PreferencesService()),
+      lessons: VisibleEndgameLessonRepository(
+        AssetEndgameLessonRepository(content, school: lessons),
+      ),
+    ),
     alertsRepository: LocalAlertsRepository(PreferencesService()),
     placementRepository: LocalPlacementRepository(
       const AssetService(),
@@ -309,33 +529,54 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     ),
     soundRepository: e2eSound,
     analysisRepository: e2eAnalysis,
-    gameReviewRepository: LocalGameReviewRepository(PreferencesService()),
+    gameReviewRepository: e2eReviews,
+    deepAnalysisRepository: EngineDeepAnalysisRepository(
+      analysis: e2eAnalysis,
+      reviews: e2eReviews,
+      now: e2eNow,
+    ),
     ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
     conclusionRepository: LocalConclusionRepository(PreferencesService()),
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
     positionsRepository: positions,
     trainingRepository: LocalTrainingRepository(PreferencesService()),
+    courseTrainingRepository: courseTraining,
+    courseDownloads: CourseDownloadRepository(
+      packages,
+      openingProfile: () async =>
+          (await courseTraining.load(TrainingCourseConfig.pilares.course))
+              .openingProfile,
+    ),
+    trainingAnalytics: trainingAnalytics,
+    learningRepository: LearningRepository(
+      PreferencesService(),
+      clock,
+      currentUid: () => null,
+      versionOf: LearningContentVersion(content).call,
+      onUnitCompleted: TrainingLearningBridge(
+        courseTraining,
+        courses: TrainingCourseConfig.all,
+      ).call,
+    ),
     opponentRepository: e2eOpponent,
     // O modelo de verdade: a tela de depuração mostra o que ele responde.
     maiaRepository: e2eMaia,
     progressRepository: progress,
     // A Jornada e os speedruns de verdade.
-    journeyRepository: E2EJourneyRepository(
-      AssetJourneyRepository(const AssetService(), positions),
-    ),
-    speedrunRepository: LocalSpeedrunRepository(database),
+    journeyRepository: journey,
+    speedrunRepository: speedruns,
     // Sem a oferta de aquecimento: os cenários seguem direto para a partida.
     raceRepository: LocalRaceRepository(
       const AssetService(),
       PreferencesService(),
-      e2eNow,
+      clock,
       offersWarmUpByDefault: false,
     ),
     ratingRepository: LocalRatingRepository(
       database,
       maia: e2eMaia,
       profile: LocalProfileRepository(database),
-      now: e2eNow,
+      now: clock,
     ),
     achievementsRepository: LocalAchievementsRepository(
       const AssetService(),
@@ -347,16 +588,23 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     talkRepository: LocalTalkRepository(PreferencesService()),
     onboardingRepository: LocalOnboardingRepository(PreferencesService()),
     homeLayoutRepository: LocalHomeLayoutRepository(PreferencesService()),
-    unlockRepository: LocalUnlockRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
     lessonRepository: VisibleLessonRepository(lessons),
+    trainingSchoolContent: trainingSchool,
     schoolProgressRepository: ActiveSchoolProgressRepository(
       LocalSchoolProgressRepository(PreferencesService()),
       activity,
     ),
-    starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
+    starChallengeRepository: stars,
     // Só as aulas liberadas, como no app (VisibleLessons).
+    trainingEndgameContent: showsDevTools
+        ? TrainingEndgameContent.fromConfigs(
+            content,
+            school: lessons,
+            configs: activeTrainingCourses,
+          )
+        : null,
     endgameLessonRepository: VisibleEndgameLessonRepository(
       AssetEndgameLessonRepository(content, school: lessons),
     ),
@@ -378,9 +626,12 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
       e2eTts,
     ),
     speechInputRepository: e2eSpeechInput,
-    blindCheckpointRepository: FakeBlindCheckpointRepository(),
+    // Real: a partida às cegas guardada tem de sobreviver ao restart().
+    blindCheckpointRepository: LocalBlindCheckpointRepository(
+      PreferencesService(),
+    ),
     // Real: o rascunho e a resposta têm de sobreviver ao restart() do cenário.
-    surveyRepository: LocalSurveyRepository(PreferencesService(), e2eNow),
+    surveyRepository: LocalSurveyRepository(PreferencesService(), clock),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(content),
     featuredRepository: AssetFeaturedRepository(const AssetService()),
@@ -388,6 +639,9 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     featuredProgressRepository: ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(PreferencesService()),
       activity,
+    ),
+    featuredAlertsRepository: LocalFeaturedAlertsRepository(
+      PreferencesService(),
     ),
     activityRepository: activity,
     dailyFinalRepository: LocalDailyFinalRepository(
@@ -445,12 +699,32 @@ class E2EMaia implements MaiaRepository {
 
 /// Apaga o que os cenários anteriores gravaram: cada cenário começa do zero.
 Future<void> resetE2EData() async {
+  _courseFixturePackages = false;
+  _courseFixtureAccount = null;
   e2eNow.value = _e2eStart;
+  e2eNotifications
+    ..allowed = true
+    ..permissionResult = null
+    ..permissionRequests = 0
+    ..shown.clear()
+    ..scheduled.clear();
+  e2ePush
+    ..initial = null
+    ..allowed = true
+    ..granted = false
+    ..available = true
+    ..followed.clear()
+    ..settingsOpened = 0
+    ..permissionRequests = 0
+    ..shown.clear();
   e2eOpponent.reset();
   e2eMaia.reset();
   e2eSound.played.clear();
   e2eHaptics.events.clear();
   e2eTts.reset();
+  e2eSpeechInput
+    ..permitted = true
+    ..grants = true;
   e2eAnalysis
     ..useStockfish = false
     ..requests.clear()

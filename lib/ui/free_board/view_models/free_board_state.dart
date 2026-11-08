@@ -36,6 +36,11 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// Falso enquanto a partida em andamento ainda está sendo lida do aparelho.
     @Default(true) bool ready,
+    @Default(false) bool failed,
+
+    /// A tentativa não coube no aparelho ao gravar o fim da partida (falta
+    /// de espaço): a tela mostra o erro com "Tentar novamente" (H-PAR-19).
+    @Default(false) bool recordFailed,
 
     /// Os lances jogados, em notação algébrica (`e4`, `Nf3`, `O-O`).
     @Default(<String>[]) List<String> moves,
@@ -80,6 +85,10 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// A máquina está escolhendo o lance.
     @Default(false) bool machineThinking,
+
+    /// O adversário falhou 3 vezes seguidas: a folha de erro está na tela,
+    /// com o relógio parado (H-PAR-18).
+    @Default(false) bool opponentError,
 
     /// O relógio e a máquina esperam o aviso da etapa nova da Maratona sair
     /// da tela.

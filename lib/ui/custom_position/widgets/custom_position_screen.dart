@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +19,7 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -25,6 +29,7 @@ import '../../core/theme/app_shape.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/sheet_header.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// Montar uma posição: no editor (tocar na peça da paleta e depois nas casas)
 /// ou colando um FEN. A posição só segue quando é jogável.
@@ -152,6 +157,14 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
         }
       },
       builder: (context, state) {
+        if (state.failed) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.generic,
+            onAction: context.read<CustomPositionCubit>().load,
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go(Routes.home),
+          );
+        }
         return Scaffold(
           key: CustomPositionKeys.screen,
           appBar: LucenaAppBar(
@@ -165,42 +178,46 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
               ),
             ],
           ),
-          body: !state.ready
-              ? const SizedBox.shrink()
-              : Column(
-                  children: [
-                    // O tabuleiro fica parado no alto: arrastar nele move as
-                    // peças, nunca rola a tela.
-                    _editor(state, board),
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+          body: ShimmerConteudo(
+            carregando: !state.ready,
+            esqueleto: const SafeArea(child: SkeletonList()),
+            child: !state.ready
+                ? const SizedBox.shrink()
+                : Column(
+                    children: [
+                      // O tabuleiro fica parado no alto: arrastar nele move as
+                      // peças, nunca rola a tela.
+                      _editor(state, board),
+                      Expanded(
+                        child: ListView(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                          children: [
+                            _palette(board),
+                            const SizedBox(height: AppSpacing.md),
+                            _turnAndGoal(state),
+                            _fenField(state),
+                          ],
+                        ),
+                      ),
+                      ActionsFooter(
                         children: [
-                          _palette(board),
-                          const SizedBox(height: AppSpacing.md),
-                          _turnAndGoal(state),
-                          _fenField(state),
+                          FilledButton(
+                            key: CustomPositionKeys.continueButton,
+                            onPressed: state.position == null
+                                ? null
+                                : () => context.push(
+                                    Routes.setup(
+                                      state.position!.fen,
+                                      goal: state.goal.code,
+                                    ),
+                                  ),
+                            child: Text(l10n.customContinue),
+                          ),
                         ],
                       ),
-                    ),
-                    ActionsFooter(
-                      children: [
-                        FilledButton(
-                          key: CustomPositionKeys.continueButton,
-                          onPressed: state.position == null
-                              ? null
-                              : () => context.push(
-                                  Routes.setup(
-                                    state.position!.fen,
-                                    goal: state.goal.code,
-                                  ),
-                                ),
-                          child: Text(l10n.customContinue),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+          ),
         );
       },
     );

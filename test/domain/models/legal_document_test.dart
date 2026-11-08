@@ -1,0 +1,113 @@
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/legal_document.dart';
+
+void main() {
+  test('lê seções, itens, negrito e a tabela', () {
+    final doc = LegalDocument.parse('''
+# TÍTULO
+
+Versão 1, em vigor desde [DATA].
+
+## 1. Primeira
+Texto com **negrito** no meio.
+- **Item:** um.
+
+| Dado | Para quê |
+|---|---|
+| Nome | Conta |
+
+## 2. Segunda
+Fim.
+''');
+
+    expect(doc.intro, hasLength(1));
+    expect(doc.sections.map((s) => s.title), ['1. Primeira', '2. Segunda']);
+    final first = doc.sections.first.blocks;
+    expect((first[0] as LegalParagraph).spans, [
+      (text: 'Texto com ', bold: false),
+      (text: 'negrito', bold: true),
+      (text: ' no meio.', bold: false),
+    ]);
+    expect((first[1] as LegalBullet).spans.first, (text: 'Item:', bold: true));
+    final table = first[2] as LegalTable;
+    expect(table.header, ['Dado', 'Para quê']);
+    expect(table.rows, [
+      ['Nome', 'Conta'],
+    ]);
+  });
+
+  test('os textos embarcados: 16 seções nos Termos e 13 na Política', () {
+    final terms = LegalDocument.parse(
+      File('assets/legal/termos_pt.md').readAsStringSync(),
+    );
+    final privacy = LegalDocument.parse(
+      File('assets/legal/privacidade_pt.md').readAsStringSync(),
+    );
+    expect(terms.sections, hasLength(16));
+    expect(privacy.sections, hasLength(13));
+    expect(
+      privacy.sections[1].blocks.whereType<LegalTable>().single.rows,
+      hasLength(10),
+    );
+  });
+
+  // Decisões do Gabriel (04/11) sobre a exclusão da conta.
+  test('a Política diz o que é apagado, o prazo e o caminho do app', () {
+    final text = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    expect(text, isNot(contains('[PRAZO EXCLUSÃO]')));
+    expect(text, contains('em até 15 dias a contar do pedido'));
+    for (final item in ['região', 'Lichess', 'preferências']) {
+      expect(text, contains(item), reason: item);
+    }
+    expect(text, contains('em Perfil, Excluir a conta'));
+    expect(text, isNot(contains('Privacidade e dados, Excluir conta')));
+    expect(text, isNot(contains('nome fantasia Lucena')));
+  });
+
+  // Regra do Gabriel: "salvar", nunca "guardar" (canvas de 04/11).
+  test('Termos e Política falam em salvar, não em guardar', () {
+    for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
+      final text = File('assets/legal/$arquivo').readAsStringSync();
+      expect(
+        RegExp('guard', caseSensitive: false).hasMatch(text),
+        isFalse,
+        reason: arquivo,
+      );
+    }
+    final privacy = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    expect(privacy, contains('## 10. Por quanto tempo salvamos'));
+  });
+
+  // Caminhos reais do app: excluir em Perfil; o resto em Configurações.
+  test('Termos e Política dão os mesmos caminhos do app', () {
+    final terms = File('assets/legal/termos_pt.md').readAsStringSync();
+    final privacy = File('assets/legal/privacidade_pt.md').readAsStringSync();
+    for (final (nome, text) in [('termos', terms), ('privacidade', privacy)]) {
+      expect(text, contains('em Perfil, Excluir a conta'), reason: nome);
+      for (final antigo in ['Perfil, Privacidade', 'Ajustes, Privacidade']) {
+        expect(text, isNot(contains(antigo)), reason: '$nome: $antigo');
+      }
+    }
+    for (final item in [
+      'Falar sobre meus dados',
+      'Ajudar a melhorar o Lucena',
+      'Baixar meus dados',
+    ]) {
+      expect(
+        privacy,
+        contains('Configurações, Privacidade e dados, $item'),
+        reason: item,
+      );
+    }
+  });
+
+  test('Termos e Política dão o mesmo nome fantasia', () {
+    for (final arquivo in ['termos_pt.md', 'privacidade_pt.md']) {
+      final text = File('assets/legal/$arquivo').readAsStringSync();
+      expect(text, contains('nome fantasia [NOME FANTASIA]'), reason: arquivo);
+      expect(text, isNot(contains('nome fantasia Lucena')), reason: arquivo);
+    }
+  });
+}

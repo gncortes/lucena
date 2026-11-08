@@ -22,10 +22,14 @@ import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
+import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
+import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/fakes/fake_account_invite_repository.dart';
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_achievements_repository.dart';
@@ -508,48 +512,255 @@ void main() {
     });
   });
 
-  group('aviso de conquista', () {
-    for (final size in const [Size(360, 740), Size(412, 917)]) {
-      testWidgets('fica no alto, acima do título (${size.width.toInt()})', (
+  group('H-PAR-12 repetir a partida', () {
+    for (final outcome in [AttemptOutcome.win, AttemptOutcome.loss]) {
+      testWidgets('${outcome.name}: o botão se chama "Jogar novamente"', (
         tester,
       ) async {
-        await open(tester, size: size, fresh: true, settled: false);
-        await tester.pump(AchievementToasts.duration * 0.3);
-        final toast = tester.getRect(find.byKey(AchievementsKeys.toast));
-        final title = tester.getRect(find.byKey(ConclusionKeys.title));
-        expect(toast.top, closeTo(8, 1));
-        expect(toast.bottom, lessThanOrEqualTo(title.top));
-        // Some sozinho e o título fica livre.
-        await tester.pump(AchievementToasts.duration);
-        await tester.pumpAndSettle();
-        expect(find.byKey(AchievementsKeys.toast).hitTestable(), findsNothing);
-        expect(find.byKey(ConclusionKeys.title).hitTestable(), findsOneWidget);
+        await open(
+          tester,
+          outcome: outcome,
+          locale: const Locale('pt'),
+          moves: _longMoves,
+          played: const Duration(minutes: 5),
+        );
+        final again = find.byKey(
+          ConclusionKeys.action(ConclusionAction.playAgain),
+        );
+        expect(again, findsOneWidget);
+        expect(
+          find.descendant(of: again, matching: find.text('Jogar novamente')),
+          findsOneWidget,
+        );
+        expect(find.text('Jogar de novo'), findsNothing);
       });
     }
+    testWidgets(
+      'vitória: "Nova partida" na barra e "Ver a análise" no rodapé',
+      (tester) async {
+        await open(
+          tester,
+          locale: const Locale('pt'),
+          moves: _longMoves,
+          played: const Duration(minutes: 5),
+        );
+        expect(find.byKey(ConclusionKeys.appBarNewGame), findsOneWidget);
+        expect(
+          find.byKey(ConclusionKeys.action(ConclusionAction.newGame)),
+          findsNothing,
+        );
+        expect(find.byKey(ConclusionKeys.seeAnalysis), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byKey(ConclusionKeys.seeAnalysis),
+            matching: find.text('Ver a análise'),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('derrota: sem "Nova partida" na barra; rodapé a traz', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        outcome: AttemptOutcome.loss,
+        locale: const Locale('pt'),
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      expect(find.byKey(ConclusionKeys.appBarNewGame), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(ConclusionKeys.action(ConclusionAction.newGame)),
+          matching: find.text('Nova partida'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(ConclusionKeys.seeAnalysis), findsNothing);
+    });
+  });
+
+  group('aviso de conquista na AppBar (S3b)', () {
+    for (final size in const [Size(360, 740), Size(412, 917)]) {
+      testWidgets('fica na faixa da AppBar, sem cobrir X, + nem compartilhar '
+          '(${size.width.toInt()})', (tester) async {
+        await open(size: size, tester, fresh: true, settled: false);
+        final bar = find.byType(AppBar);
+        var vistos = 0;
+        for (var ms = 0; ms < 1400; ms += 40) {
+          await tester.pump(const Duration(milliseconds: 40));
+          final aviso = find.byKey(AchievementsKeys.toast);
+          if (aviso.evaluate().isEmpty) continue;
+          vistos++;
+          final toast = tester.getRect(aviso);
+          for (final key in [
+            ConclusionKeys.close,
+            ConclusionKeys.appBarNewGame,
+            ConclusionKeys.share,
+          ]) {
+            final icone = find.byKey(key);
+            if (icone.evaluate().isEmpty) continue;
+            expect(
+              toast.overlaps(tester.getRect(icone)),
+              isFalse,
+              reason: '$key em ${ms}ms: $toast x ${tester.getRect(icone)}',
+            );
+          }
+          // Cai de cima: nunca passa da base da AppBar.
+          expect(toast.bottom, lessThanOrEqualTo(tester.getRect(bar).bottom));
+        }
+        expect(vistos, greaterThan(10));
+        // Some sozinho e a AppBar fica livre.
+        await tester.pump(AchievementToasts.duration * 3);
+        await tester.pumpAndSettle();
+        expect(find.byKey(AchievementsKeys.toast), findsNothing);
+      });
+    }
+
+    testWidgets('a AppBar não se move durante a entrada', (tester) async {
+      await open(tester, fresh: true, settled: false);
+      final bar = find.byType(AppBar);
+      expect(bar, findsOneWidget);
+      final inicio = tester.getRect(bar);
+      expect(find.byKey(ConclusionKeys.close), findsOneWidget);
+      for (var ms = 0; ms < 1600; ms += 80) {
+        await tester.pump(const Duration(milliseconds: 80));
+        expect(tester.getRect(bar), inicio, reason: '${ms}ms');
+        expect(find.byKey(ConclusionKeys.close), findsOneWidget);
+      }
+      await tester.pumpAndSettle();
+    });
+  });
+
+  group('S3b entrada e fala', () {
+    testWidgets('sem esqueleto à vista nos primeiros quadros e botões '
+        'habilitados ao fim', (tester) async {
+      await open(
+        tester,
+        settled: false,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      expect(find.byKey(MotionKeys.shimmerEsqueleto), findsNothing);
+      await tester.pump(const Duration(milliseconds: 1300));
+      final principal = tester.widget<FilledButton>(
+        find.byKey(ConclusionKeys.action(ConclusionAction.playAgain)),
+      );
+      expect(principal.onPressed, isNotNull);
+      expect(
+        opacidadeDaParte(
+          tester,
+          find.byKey(MotionKeys.parteDoResultado('botoes')),
+        ),
+        1,
+      );
+      await settle(tester);
+    });
+
+    testWidgets('as faixas entram escalonadas, na ordem, sem pular', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        settled: false,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      const ordem = ['titulo', 'placar', 'viktor', 'botoes'];
+      await tester.pump(const Duration(milliseconds: 16));
+      await tester.pump(const Duration(milliseconds: 150));
+      double op(String p) =>
+          opacidadeDaParte(tester, find.byKey(MotionKeys.parteDoResultado(p)));
+      // Em 150 ms o cabeçalho já aparece e as últimas faixas ainda não.
+      expect(op('titulo'), greaterThan(0));
+      expect(op('botoes'), 0);
+      await tester.pump(const Duration(milliseconds: 1000));
+      for (final p in ordem) {
+        expect(op(p), 1, reason: p);
+      }
+      await settle(tester);
+    });
+
+    testWidgets('a fala é o componente de fala do professor, com a ponta '
+        'para cima e avatar de 56', (tester) async {
+      await open(
+        tester,
+        fresh: true,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      final fala = tester.widget<TeacherSpeech>(
+        find.byKey(ConclusionKeys.comment),
+      );
+      expect(fala.speechContext, SpeechContext.teaching);
+      expect(
+        tester.getSize(
+          find.descendant(
+            of: find.byKey(ConclusionKeys.comment),
+            matching: find.byType(CharacterAvatar),
+          ),
+        ),
+        const Size(56, 56),
+      );
+    });
+
+    testWidgets('a conquista da partida é um cartão, não a linha de '
+        'confete', (tester) async {
+      await open(
+        tester,
+        fresh: true,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+        locale: const Locale('pt'),
+      );
+      expect(find.text('Conquista desbloqueada'), findsNothing);
+      expect(find.byIcon(Icons.celebration_rounded), findsNothing);
+      final cartoes = find.descendant(
+        of: find.byKey(FreeBoardKeys.report),
+        matching: find.byType(Card),
+      );
+      expect(cartoes, findsWidgets);
+      expect(
+        find.descendant(of: cartoes.first, matching: find.byType(Icon)),
+        findsOneWidget,
+      );
+    });
   });
 
   group('convite da conta', () {
-    testWidgets('resultado livre; convite abre apenas ao tocar no cartão', (
+    testWidgets('H-CON-02: cartão na tela; o X fecha e suspende 7 dias', (
       tester,
     ) async {
       final invite = FakeAccountInviteRepository();
-      await open(tester, fresh: true, invite: invite);
+      await open(
+        tester,
+        fresh: true,
+        invite: invite,
+        locale: const Locale('pt'),
+      );
 
+      // Cartão dentro da tela, sem folha por cima: o resultado fica livre.
       expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
       expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+      expect(
+        find.text(
+          cubit.state.conclusion!.achievements.isEmpty
+              ? 'Salve seu progresso'
+              : 'Salve suas conquistas',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(AccountKeys.google), findsOneWidget);
       expect(invite.shown, isFalse);
       expect(find.byKey(ConclusionKeys.close).hitTestable(), findsOneWidget);
-      await tester.ensureVisible(find.byKey(ConclusionKeys.accountInvite));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(ConclusionKeys.accountInvite));
-      await tester.pumpAndSettle();
-      expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
-      expect(invite.shown, isTrue);
 
-      // "Agora não" só fecha: a conclusão fica.
-      await tester.tap(find.byKey(AccountKeys.notNow));
+      await tester.ensureVisible(find.byKey(AccountKeys.inviteCardClose));
       await tester.pumpAndSettle();
-      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      await tester.tap(find.byKey(AccountKeys.inviteCardClose));
+      await tester.pumpAndSettle();
+      expect(invite.shown, isTrue);
       expect(find.byKey(ConclusionKeys.screen), findsOneWidget);
       expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
     });
@@ -607,6 +818,25 @@ void main() {
       expect(invite.shown, isFalse);
     });
 
+    testWidgets('H-PAR-20 sem conta e com conquista nova: aviso e convite', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        fresh: true,
+        settled: false,
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+        invite: FakeAccountInviteRepository(),
+        locale: const Locale('pt'),
+      );
+      await tester.pump(AchievementToasts.duration * 0.3);
+      expect(cubit.state.conclusion!.achievements, isNotEmpty);
+      expect(find.byKey(AchievementsKeys.toast), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+      expect(find.text('Salve suas conquistas'), findsOneWidget);
+    });
+
     testWidgets('com conta, não convida', (tester) async {
       final invite = FakeAccountInviteRepository();
       await open(
@@ -619,5 +849,90 @@ void main() {
       expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
       expect(invite.shown, isFalse);
     });
+  });
+
+  // H-ANI-25: o resultado se monta em ordem (o cabeçalho, os números, o resto
+  // e as ações fixas por último); com movimento reduzido, tudo pronto.
+  group('H-ANI-18 a precisão conta quando a análise chega', () {
+    for (final reduzido in [false, true]) {
+      testWidgets('reduzido: $reduzido', (tester) async {
+        analysis.hold = Completer<void>();
+        await open(tester, disableAnimations: reduzido);
+        expect(cubit.state.reviewing, isTrue);
+        analysis.hold!.complete();
+        analysis.hold = null;
+        String? precisao() {
+          final f = find.byKey(ConclusionKeys.accuracy);
+          return f.evaluate().isEmpty ? null : tester.widget<Text>(f).data;
+        }
+
+        for (var i = 0; i < 10 && cubit.state.review == null; i++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 20)),
+          );
+        }
+        expect(cubit.state.review, isNotNull);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 16));
+        final cedo = precisao();
+        await settle(tester);
+        final fim = precisao();
+        expect(fim, isNot('–'));
+        if (reduzido) {
+          expect(cedo, fim);
+        } else {
+          expect(cedo, isNot(fim));
+        }
+      });
+    }
+  });
+
+  group('H-ANI-25 entrada do resultado', () {
+    for (final reduzido in [false, true]) {
+      testWidgets('em ordem, as ações por último (reduzido: $reduzido)', (
+        tester,
+      ) async {
+        await open(
+          tester,
+          moves: _longMoves,
+          played: const Duration(minutes: 5),
+          settled: false,
+          disableAnimations: reduzido,
+        );
+        for (var i = 0; i < 30; i++) {
+          if (find
+              .byKey(MotionKeys.parteDoResultado('titulo'))
+              .evaluate()
+              .isNotEmpty) {
+            break;
+          }
+          await tester.pump(const Duration(milliseconds: 16));
+        }
+        expectEntradaDeResultado(
+          tester,
+          partes: const ['titulo', 'placar', 'viktor', 'botoes'],
+          animando: !reduzido,
+        );
+        Finder dentro(String parte, Key key) => find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado(parte)),
+          matching: find.byKey(key),
+        );
+        expect(dentro('titulo', ConclusionKeys.title), findsOneWidget);
+        expect(dentro('placar', ConclusionKeys.rating), findsOneWidget);
+        expect(
+          dentro('botoes', ConclusionKeys.action(ConclusionAction.playAgain)),
+          findsOneWidget,
+        );
+        await tester.pump(const Duration(milliseconds: 1300));
+        expect(
+          opacidadeDaParte(
+            tester,
+            find.byKey(MotionKeys.parteDoResultado('botoes')),
+          ),
+          1,
+        );
+        await settle(tester);
+      });
+    }
   });
 }

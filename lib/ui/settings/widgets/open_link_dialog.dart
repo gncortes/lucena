@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/ambiente.dart';
 import '../../../domain/models/challenge_link.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
@@ -55,7 +56,7 @@ class _OpenLinkDialogState extends State<_OpenLinkDialog> {
         autofocus: true,
         keyboardType: TextInputType.url,
         decoration: InputDecoration(
-          hintText: l10n.devOpenLinkHint,
+          hintText: l10n.devOpenLinkHint(Ambiente.atual().siteHost),
           errorText: _invalid ? l10n.devOpenLinkInvalid : null,
         ),
         onChanged: (_) {

@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +25,7 @@ import '../view_models/speedrun_history_cubit.dart';
 import 'speedrun_pace_chip.dart';
 import 'speedrun_ui.dart';
 import '../../core/widgets/skeleton.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// O histórico de um speedrun (um final num ritmo): o recorde, as contagens e
 /// as tentativas terminadas por mês. Cada uma abre o resumo dela.
@@ -34,18 +37,32 @@ class SpeedrunHistoryScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<SpeedrunHistoryCubit>().state;
     final speedrun = state.speedrun;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<SpeedrunHistoryCubit>().retry,
+      );
+    }
     return Scaffold(
       key: SpeedrunKeys.historyScreen,
       appBar: LucenaAppBar(title: Text(l10n.historyTitle)),
-      body: speedrun == null
-          ? (state.loaded ? null : const SkeletonList())
-          : ListView(
-              padding: scrollPadding(context),
-              children: [
-                _Header(speedrun: speedrun, state: state),
-                _Numbers(speedrun: speedrun, state: state),
-                ..._months(context, speedrun, state),
-              ],
+      body: speedrun == null && state.loaded
+          ? null
+          : ShimmerConteudo(
+              carregando: speedrun == null,
+              esqueleto: const SkeletonList(),
+              child: speedrun == null
+                  ? const SizedBox.shrink()
+                  : ListView(
+                      padding: scrollPadding(context),
+                      children: [
+                        _Header(speedrun: speedrun, state: state),
+                        _Numbers(speedrun: speedrun, state: state),
+                        ..._months(context, speedrun, state),
+                      ],
+                    ),
             ),
     );
   }

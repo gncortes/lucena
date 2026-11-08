@@ -47,16 +47,20 @@ jobs:
         id: apk
         with:
           tag: ${{ github.ref_name }}
+          flavor: dev
           keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON_DEV }}
 
       - uses: ./.github/actions/app-distribution
         id: dist
         with:
           apk: ${{ steps.apk.outputs.apk }}
+          # QA vai para o app dev (Firebase lucena-dev-gnc); a variável guarda o ID do app Android dele.
+          project-id: ${{ vars.FIREBASE_DEV_PROJECT_ID }}
+          app-id: ${{ vars.FIREBASE_DEV_ANDROID_APP_ID }}
 
       - name: Resultado
         env:

@@ -1,28 +1,29 @@
 import 'package:flutter/widgets.dart';
 
-/// O final do dia (E1.22): o fim da partida, o resultado e
-/// a imagem para compartilhar.
+/// O final do dia (H-DES-01 a 04): o compartilhar da app bar, a folha, o
+/// "Parabéns!" da vitória e o carregando.
 abstract final class DailyKeys {
-  static const streakPill = Key('daily.streakPill');
-  static const goalSubtitle = Key('daily.goalSubtitle');
-  static const playAgain = Key('daily.playAgain');
-  static const openResult = Key('daily.openResult');
-  static const resultScreen = Key('daily.resultScreen');
-  static const resultTitle = Key('daily.resultTitle');
-  static const squares = Key('daily.squares');
+  /// O ícone de compartilhar da app bar da partida.
+  static const appBarShare = Key('daily.appBarShare');
 
-  /// O quadradinho do lance [index] (a partir de 0).
-  static Key square(int index) => Key('daily.square.$index');
+  /// A folha "Compartilhar final do dia" e o X dela.
+  static const shareSheet = Key('daily.shareSheet');
+  static const shareSheetClose = Key('daily.shareSheetClose');
 
-  static const streakCard = Key('daily.streakCard');
-  static const crowdCard = Key('daily.crowdCard');
-  static const crowdPercent = Key('daily.crowdPercent');
-  static const crowdBar = Key('daily.crowdBar');
-  static const crowdYouAre = Key('daily.crowdYouAre');
-  static const crowdFew = Key('daily.crowdFew');
-  static const share = Key('daily.share');
-  static const shareScreen = Key('daily.shareScreen');
+  /// A imagem da posição inicial dentro da folha.
   static const shareImage = Key('daily.shareImage');
+
+  /// O botão "Compartilhar" da folha.
   static const shareButton = Key('daily.shareButton');
-  static const continueButton = Key('daily.continueButton');
+
+  /// O modal "Parabéns!" e os dois botões dele.
+  static const winSheet = Key('daily.winSheet');
+  static const winShare = Key('daily.winShare');
+  static const winLater = Key('daily.winLater');
+
+  /// O carregando do final do dia (título + jogador + tabuleiro + jogador).
+  static const loading = Key('daily.loading');
+
+  /// O aviso "Hoje não há final do dia. Volte amanhã."
+  static const noFinalNotice = Key('daily.noFinalNotice');
 }

@@ -4,22 +4,18 @@ import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
-import 'robots/endgames_robot.dart';
 import 'robots/survey_robot.dart';
 
 const _english = Locale('en', 'US');
+const _portuguese = Locale('pt', 'BR');
 
 void main() {
-  patrolTest('finais: o rascunho volta, o envio é offline e o convite some', (
-    $,
-  ) async {
+  patrolTest('Pilares: o rascunho volta e o envio é offline', ($) async {
     final app = AppRobot($);
-    await app.open(systemLocale: _english);
-    final endgames = EndgamesRobot($);
+    await app.open(systemLocale: _portuguese);
     final survey = SurveyRobot($);
 
-    await endgames.openFromHome();
-    await survey.openInviteFromTrail(SurveyKind.endgames);
+    await survey.open(SurveyKind.pilares);
 
     // Passo 1: nota 4 e dois chips, depois Continuar.
     await survey.pickFace(4);
@@ -27,14 +23,12 @@ void main() {
     await survey.pickImprove('exercises');
     await survey.next();
     survey.expectStepTwo();
-    await survey.pickInterest(SurveyInterest.maybe);
+    await survey.writeWish('mais finais de torre');
 
-    // O rascunho sobrevive a fechar à força: volta no passo 2, "Talvez".
+    // O rascunho sobrevive a fechar à força: volta no passo 2 com o texto.
     await app.restart();
-    await endgames.openFromHome();
-    await survey.openInviteFromTrail(SurveyKind.endgames);
-    survey.expectStepTwo();
-    survey.expectInterest(SurveyInterest.maybe);
+    await survey.open(SurveyKind.pilares);
+    survey.expectStepTwo(wish: 'mais finais de torre');
 
     // Sem Wi-Fi nem dados, o envio funciona: a resposta fica no aparelho.
     await app.goOffline();
@@ -45,12 +39,6 @@ void main() {
       await app.goOnline();
     }
     await survey.backFromThanks();
-    survey.expectInvite(SurveyKind.endgames, visible: false);
-
-    // Enviada, a resposta continua enviada depois de fechar o app.
-    await app.restart();
-    await endgames.openFromHome();
-    survey.expectInvite(SurveyKind.endgames, visible: false);
   });
 
   // A Escola está escondida (VisibleLessons.school): o cenário volta quando

@@ -11,8 +11,10 @@ import 'package:lucena/ui/achievements/view_models/achievements_cubit.dart';
 import 'package:lucena/ui/achievements/widgets/achievement_detail.dart';
 import 'package:lucena/ui/achievements/widgets/achievements_screen.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
+import 'package:lucena/ui/core/widgets/skeleton.dart';
 
 import '../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
@@ -137,6 +139,18 @@ void main() {
     await tester.tap(find.byKey(AchievementsKeys.item(id)));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('H-CON-18 gap 3: leitura falhando mostra o erro padrão e '
+      '"Tentar novamente" lê de novo', (tester) async {
+    repository.allFailure = StateError('banco');
+    await pumpScreen(tester);
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+    expect(find.byType(SkeletonList), findsNothing);
+    await tester.tap(find.byKey(LoadErrorKeys.action));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+    expect(find.byKey(AchievementsKeys.screen), findsOneWidget);
+  });
 
   testWidgets('progresso geral no topo e grupos com o progresso de cada um', (
     tester,

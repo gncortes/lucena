@@ -62,6 +62,25 @@ const _texts = PushTexts(
 );
 
 void main() {
+  test('sem Firebase, permissão local é pedida e relida pelo mesmo serviço de notificações', () async {
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+    final local = FakeNotificationService(
+      allowed: false,
+      permissionResult: true,
+    );
+    final none = FirebasePushRepository(
+      const NoPushService(),
+      PreferencesService(),
+      notifications: local,
+    );
+    expect(none.available, isFalse);
+    expect(await none.permitted(), isFalse);
+    expect(await none.requestPermission(), isTrue);
+    expect(local.permissionRequests, 1);
+    expect(await none.permitted(), isTrue);
+  });
+
   late _Push service;
   late FakeNotificationService notifications;
   late _Counts counts;
@@ -97,7 +116,7 @@ void main() {
   test('o aviso que abriu o app entrega o link, o envio e o país', () async {
     service.initial = const PushMessage(
       data: {
-        'link': 'https://lucena-2f4de.web.app/p/k7Qe2',
+        'link': 'https://playlucenachess.com/p/k7Qe2',
         'pushId': 'p1',
         'pais': 'BR',
       },
@@ -106,7 +125,7 @@ void main() {
     expect(
       await repository.initialOpening(),
       PushOpening(
-        link: Uri.parse('https://lucena-2f4de.web.app/p/k7Qe2'),
+        link: Uri.parse('https://playlucenachess.com/p/k7Qe2'),
         pushId: 'p1',
         country: 'BR',
       ),
@@ -158,7 +177,7 @@ void main() {
     );
 
     service.controller.add(
-      const PushMessage(data: {'link': 'https://playlucena.com/p/a'}),
+      const PushMessage(data: {'link': 'https://playlucenachess.com/p/a'}),
     );
     notifications
       ..tap(alert.payload)
@@ -166,7 +185,7 @@ void main() {
     await pumpEventQueue();
 
     expect(openings, [
-      PushOpening(link: Uri.parse('https://playlucena.com/p/a')),
+      PushOpening(link: Uri.parse('https://playlucenachess.com/p/a')),
       PushOpening(link: Uri.parse('/featured/a'), pushId: 'p2'),
     ]);
     await subscription.cancel();

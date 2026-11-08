@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/voice.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/voice/widgets/voice_settings_screen.dart';
@@ -15,8 +16,9 @@ void main() {
   Future<void> pump(
     WidgetTester tester, {
     Locale locale = const Locale('pt'),
+    Object? loadError,
   }) async {
-    voice = FakeVoiceRepository();
+    voice = FakeVoiceRepository()..loadError = loadError;
     final speech = SpeechCubit(voice, characters: FakeCharacterRepository());
     addTearDown(speech.close);
     await speech.load();
@@ -69,5 +71,20 @@ void main() {
     );
     expect(find.text('Vozes dos adversários'), findsNothing);
     expect(find.byKey(VoiceKeys.voice('pt-br-b')), findsOneWidget);
+  });
+
+  testWidgets('H-AJU-08 Gap 3: leitura falha mostra o erro padrão, nunca '
+      'tela em branco, e "Tentar novamente" lê de novo', (tester) async {
+    await pump(tester, loadError: Exception('tts'));
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+    expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.back), findsOneWidget);
+    expect(find.byKey(VoiceKeys.enabledSwitch), findsNothing);
+
+    await tester.tap(find.byKey(LoadErrorKeys.action));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+    expect(find.byKey(VoiceKeys.enabledSwitch), findsOneWidget);
   });
 }

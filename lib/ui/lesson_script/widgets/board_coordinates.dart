@@ -10,11 +10,13 @@ class BoardCoordinates extends StatelessWidget {
   const BoardCoordinates({
     required this.orientation,
     required this.settings,
+    this.proportional = false,
     super.key,
   });
 
   final Side orientation;
   final ChessboardSettings settings;
+  final bool proportional;
 
   @override
   Widget build(BuildContext context) => IgnorePointer(
@@ -27,6 +29,7 @@ class BoardCoordinates extends StatelessWidget {
           orientation: orientation,
           light: settings.colorScheme.lightSquare,
           dark: settings.colorScheme.darkSquare,
+          proportional: proportional,
         ),
       ),
     ),
@@ -38,11 +41,13 @@ class _CoordinatesPainter extends CustomPainter {
     required this.orientation,
     required this.light,
     required this.dark,
+    required this.proportional,
   });
 
   final Side orientation;
   final Color light;
   final Color dark;
+  final bool proportional;
 
   static const _edge = 2.0;
 
@@ -56,7 +61,7 @@ class _CoordinatesPainter extends CustomPainter {
         style: TextStyle(
           inherit: false,
           fontWeight: FontWeight.bold,
-          fontSize: 10,
+          fontSize: proportional ? size.shortestSide * .026 : 10,
           color: (rank + file).isEven ? dark : light,
           fontFamily: 'Roboto',
           height: 1,
@@ -68,7 +73,10 @@ class _CoordinatesPainter extends CustomPainter {
       final number = label(white ? '${8 - rank}' : '${rank + 1}', rank, 7);
       number.paint(
         canvas,
-        Offset(8 * square - number.width - _edge, rank * square + _edge),
+        Offset(
+          8 * square - number.width - (proportional ? square * .04 : _edge),
+          rank * square + (proportional ? square * .02 : _edge),
+        ),
       );
     }
     for (var file = 0; file < 8; file++) {
@@ -79,12 +87,18 @@ class _CoordinatesPainter extends CustomPainter {
       );
       letter.paint(
         canvas,
-        Offset(file * square + _edge, 8 * square - letter.height - _edge),
+        Offset(
+          file * square + (proportional ? square * .05 : _edge),
+          8 * square - letter.height - (proportional ? square * .02 : _edge),
+        ),
       );
     }
   }
 
   @override
   bool shouldRepaint(_CoordinatesPainter old) =>
-      old.orientation != orientation || old.light != light || old.dark != dark;
+      old.orientation != orientation ||
+      old.light != light ||
+      old.dark != dark ||
+      old.proportional != proportional;
 }

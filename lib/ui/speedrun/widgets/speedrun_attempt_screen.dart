@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -31,6 +33,7 @@ import 'marathon_attempt_view.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
 import '../../core/widgets/skeleton.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// O resumo de uma tentativa terminada do clássico (artboards
 /// `SpeedrunTentativa*`): concluída, com o tempo, a comparação com o recorde e
@@ -44,13 +47,27 @@ class SpeedrunAttemptScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<SpeedrunCubit>().state;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<SpeedrunCubit>().retry,
+      );
+    }
     final summary = state.selected;
     final run = state.run;
     if (summary == null || run == null) {
       return Scaffold(
         key: SpeedrunKeys.attemptScreen,
         appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
-        body: state.all != null ? null : const SkeletonList(),
+        body: state.all != null
+            ? null
+            : const ShimmerConteudo(
+                carregando: true,
+                esqueleto: SkeletonList(),
+                child: SizedBox.shrink(),
+              ),
       );
     }
     final speedrun = summary.speedrun;
@@ -77,69 +94,73 @@ class SpeedrunAttemptScreen extends StatelessWidget {
               // etapa; o resumo sai da pilha.
               onPressed: () => startSpeedrun(context, speedrun, replace: true),
             ),
-      body: ListView(
-        padding: scrollPadding(context),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              0,
+      body: ShimmerConteudo(
+        carregando: false,
+        esqueleto: const SkeletonList(),
+        child: ListView(
+          padding: scrollPadding(context),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: AppSpacing.md,
+                children: [
+                  if (completed)
+                    ..._finish(context, state, summary, run)
+                  else
+                    ..._ended(context, state, summary, run, end, stopped),
+                  RunChips(speedrun: speedrun, run: run),
+                ],
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.md,
-              children: [
-                if (completed)
-                  ..._finish(context, state, summary, run)
-                else
-                  ..._ended(context, state, summary, run, end, stopped),
-                RunChips(speedrun: speedrun, run: run),
-              ],
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.sm,
+              ),
+              child: Text(l10n.speedrunStages, style: context.cardTitle),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.sm,
-            ),
-            child: Text(l10n.speedrunStages, style: context.cardTitle),
-          ),
-          for (final (index, stage) in run.stages.indexed)
-            SpeedrunStageRow(
-              key: SpeedrunKeys.stage(index),
-              index: index,
-              stage: speedrun.stages[index],
-              speedrun: speedrun,
-              last: index == total - 1,
-              note: !completed && index == stopped ? _note(l10n, end) : null,
-              noteKey: SpeedrunKeys.stageNote(index),
-              status: stage.done
-                  ? SpeedrunStageStatus.done
-                  : !completed && index == stopped
-                  // A etapa em que a tentativa parou.
-                  ? SpeedrunStageStatus.current
-                  : SpeedrunStageStatus.ahead,
-              trailing: stage.done || (!completed && index == stopped)
-                  ? stage.time == Duration.zero && !stage.done
-                        ? null
-                        : TimeDisplay(
-                            value: runTime(context, stage.time),
-                            semanticsLabel: l10n.speedrunStageTimeValue(
-                              index + 1,
-                              total,
-                              runTime(context, stage.time),
-                            ),
-                            type: TimeDisplayType.duration,
-                            size: TimeDisplaySize.inline,
-                            textKey: SpeedrunKeys.stageTime(index),
-                          )
-                  : null,
-            ),
-        ],
+            for (final (index, stage) in run.stages.indexed)
+              SpeedrunStageRow(
+                key: SpeedrunKeys.stage(index),
+                index: index,
+                stage: speedrun.stages[index],
+                speedrun: speedrun,
+                last: index == total - 1,
+                note: !completed && index == stopped ? _note(l10n, end) : null,
+                noteKey: SpeedrunKeys.stageNote(index),
+                status: stage.done
+                    ? SpeedrunStageStatus.done
+                    : !completed && index == stopped
+                    // A etapa em que a tentativa parou.
+                    ? SpeedrunStageStatus.current
+                    : SpeedrunStageStatus.ahead,
+                trailing: stage.done || (!completed && index == stopped)
+                    ? stage.time == Duration.zero && !stage.done
+                          ? null
+                          : TimeDisplay(
+                              value: runTime(context, stage.time),
+                              semanticsLabel: l10n.speedrunStageTimeValue(
+                                index + 1,
+                                total,
+                                runTime(context, stage.time),
+                              ),
+                              type: TimeDisplayType.duration,
+                              size: TimeDisplaySize.inline,
+                              textKey: SpeedrunKeys.stageTime(index),
+                            )
+                    : null,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -728,7 +749,7 @@ class _RecordCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final value = runTime(context, best);
-    final label = l10n.speedrunYourRecord;
+    final label = l10n.desafiosSpeedrunRecordHere;
     final spoken = '$label: $value';
     return _SurfaceCard(
       cardKey: SpeedrunKeys.recordCard,

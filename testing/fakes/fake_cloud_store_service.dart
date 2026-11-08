@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:lucena/data/services/firebase/cloud_store_service.dart';
+import 'package:lucena/domain/models/push_permission.dart';
 
 /// O Firestore na memória. Com [offline], a leitura falha e a gravação não
 /// termina (fica na fila, como no Firestore de verdade).
@@ -13,12 +14,26 @@ class FakeCloudStoreService implements CloudStoreService {
   /// O token do push de cada conta (`push/device`).
   final pushTokens = <String, String>{};
 
+  /// A permissão e a abertura gravadas em `push/device` (H-R5-60).
+  final pushStatus = <String, PushDeviceStatus>{};
+
   /// Os documentos abertos a todos, por `coleção/id`.
   final public = <String, Map<String, Object?>>{};
   bool offline = false;
 
-  /// Os documentos criados em `feedback/` (sem o `createdAt` do servidor).
+  /// Os documentos criados em `feedback/` (com o uid de [currentUid], sem o
+  /// `createdAt` do servidor).
   final feedback = <Map<String, Object?>>[];
+
+  /// Quem está logado no Auth. Nulo: o feedback é recusado
+  /// (`unauthenticated`), como no serviço de verdade.
+  String? currentUid = 'me';
+
+  /// As contas suspensas pelo admin (`bloqueios/{uid}`).
+  final blocked = <String>{};
+
+  /// Com `true`, a regra recusa o `feedback/` (a gravação falha na hora).
+  bool refuseFeedback = false;
 
   /// Quantas vezes cada partida foi mandada (a regra deixa só criar).
   final gameWrites = <String, int>{};
@@ -59,6 +74,8 @@ class FakeCloudStoreService implements CloudStoreService {
     progress.remove(uid);
     games.remove(uid);
     pushTokens.remove(uid);
+    pushStatus.remove(uid);
+    feedback.removeWhere((doc) => doc['uid'] == uid);
   }
 
   @override
@@ -78,6 +95,14 @@ class FakeCloudStoreService implements CloudStoreService {
   Future<void> deletePushToken(String uid) {
     if (offline) return Completer<void>().future;
     pushTokens.remove(uid);
+    pushStatus.remove(uid);
+    return Future.value();
+  }
+
+  @override
+  Future<void> writePushStatus(String uid, PushDeviceStatus status) {
+    if (offline) return Completer<void>().future;
+    pushStatus[uid] = status;
     return Future.value();
   }
 
@@ -89,8 +114,39 @@ class FakeCloudStoreService implements CloudStoreService {
 
   @override
   Future<void> addFeedback(Map<String, Object?> data) {
+    if (refuseFeedback) {
+      return Future.error(const CloudStoreException('permission-denied'));
+    }
+    final uid = currentUid;
+    if (uid == null) {
+      return Future.error(const CloudStoreException('unauthenticated'));
+    }
     if (offline) return Completer<void>().future;
-    feedback.add(data);
+    feedback.add({...data, 'uid': uid});
     return Future.value();
+  }
+
+  final _blockedChanges = StreamController<void>.broadcast();
+
+  /// O admin suspende ou libera [uid] (avisa quem acompanha ao vivo).
+  void setBlocked(String uid, bool value) {
+    value ? blocked.add(uid) : blocked.remove(uid);
+    _blockedChanges.add(null);
+  }
+
+  @override
+  Stream<bool> watchBlocked(String uid, DateTime Function() now) async* {
+    yield !offline && blocked.contains(uid);
+    yield* _blockedChanges.stream.map((_) => !offline && blocked.contains(uid));
+  }
+
+  @override
+  Future<CloudExport> exportUser(String uid) async {
+    if (offline) throw const CloudStoreException('unavailable');
+    return CloudExport(
+      user: users[uid],
+      progress: progress[uid],
+      games: {...?games[uid]},
+    );
   }
 }

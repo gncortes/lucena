@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -14,10 +17,13 @@ import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/journey_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import 'journey_ui.dart';
 import 'trail_widgets.dart';
-import '../../core/widgets/animated_progress.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 
@@ -33,46 +39,63 @@ class JourneyScreen extends StatelessWidget {
     final progress = context.select(
       (JourneyCubit cubit) => cubit.state.progress,
     );
+    final failure = context.watch<JourneyCubit>().state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<JourneyCubit>().retry,
+      );
+    }
     return Scaffold(
       key: JourneyKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.journeyTitle)),
-      body: progress == null
-          ? const SkeletonList()
-          : ListView(
-              padding: scrollPadding(context),
-              children: [
-                // Para quem chega: a Jornada é o passo seguinte às aulas.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg,
-                    AppSpacing.xs,
-                    AppSpacing.lg,
-                    AppSpacing.md,
+      body: ShimmerConteudo(
+        carregando: progress == null,
+        esqueleto: const SkeletonList(),
+        child: progress == null
+            ? const SizedBox.shrink()
+            : EntradaDaTela(
+                id: 'Jornada',
+                child: ListaEmOrdem(
+                  montar: (itens) => ListView(
+                    padding: scrollPadding(context),
+                    children: itens,
                   ),
-                  child: Text(
-                    l10n.journeyIntro,
-                    key: JourneyKeys.intro,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  itens: [
+                    // Para quem chega: a Jornada é o passo seguinte às aulas.
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.xs,
+                        AppSpacing.lg,
+                        AppSpacing.md,
+                      ),
+                      child: Text(
+                        l10n.journeyIntro,
+                        key: JourneyKeys.intro,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: _Summary(progress: progress),
+                    ),
+                    // A trilha vai do mais fraco ao mais forte: o Stockfish no
+                    // fim, como chefe final.
+                    for (final (index, rung) in progress.rungs.indexed)
+                      _TrailNode(
+                        rung: rung,
+                        progress: progress,
+                        first: index == 0,
+                        last: index == progress.rungs.length - 1,
+                      ),
+                  ],
                 ),
-                _Summary(progress: progress),
-                const SizedBox(height: AppSpacing.sm),
-                // A trilha vai do mais fraco ao mais forte: o Stockfish no
-                // fim, como chefe final.
-                for (final (index, rung) in progress.rungs.indexed)
-                  StaggeredEntrance(
-                    index: index,
-                    child: _TrailNode(
-                      rung: rung,
-                      progress: progress,
-                      first: index == 0,
-                      last: index == progress.rungs.length - 1,
-                    ),
-                  ),
-              ],
-            ),
+              ),
+      ),
     );
   }
 }
@@ -197,15 +220,21 @@ class _Summary extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.lg),
-            AnimatedProgress(
-              value: total == 0 ? 0 : done / total,
-              backgroundColor: colors.surface,
+            // H-ANI-13/18: a barra enche e os desafios feitos contam junto.
+            BarraQueEnche(
+              valor: total == 0 ? 0 : done / total,
+              corDoTrilho: colors.surface,
             ),
             const SizedBox(height: AppSpacing.sm),
-            Text(
-              l10n.journeyRungProgress(done, total),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onPrimaryContainer,
+            ValorQueAnima(
+              valor: done.toDouble(),
+              duracao: LucenaMotion.numeroConta,
+              builder: (context, agora) => Text(
+                l10n.journeyRungProgress(agora.round(), total),
+                key: JourneyKeys.summaryProgress,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onPrimaryContainer,
+                ),
               ),
             ),
             const SizedBox(height: AppSpacing.md),

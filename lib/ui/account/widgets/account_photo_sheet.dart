@@ -97,7 +97,7 @@ class _PhotoSheet extends StatelessWidget {
               ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              l10n.accountPhotoInitial,
+              l10n.conFotoInitial,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),

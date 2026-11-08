@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
-import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
@@ -46,9 +45,8 @@ class JourneyRobot {
   /// "Jogar" no desafio aberto: a partida abre no tabuleiro.
   Future<void> play() async {
     await $(JourneyKeys.play).tap();
-    // O painel do ritmo: o último escolhido (de fábrica, sem relógio).
-    await $(PaceKeys.confirm).waitUntilVisible();
-    await $(PaceKeys.confirm).tap();
+    // "Jogar" abre direto no ritmo do desafio: o ritmo se troca antes, no
+    // "Trocar o ritmo" da tela do desafio.
     await $(FreeBoardKeys.board).waitUntilVisible();
   }
 

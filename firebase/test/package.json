@@ -1,0 +1,13 @@
+{
+  "name": "lucena-regras",
+  "private": true,
+  "description": "Testes das regras do Firestore e do Storage no emulador do Firebase.",
+  "type": "module",
+  "scripts": {
+    "test": "bash rodar.sh"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "6.0.0",
+    "firebase": "13.2.0"
+  }
+}

@@ -1,6 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/busy_button.dart';
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/skeleton.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,8 +22,8 @@ import '../../profile/view_models/profile_cubit.dart';
 import '../view_models/goal_cubit.dart';
 import 'goal_ui.dart';
 
-/// "O que você quer fazer?" (E1.11, canvas página 18): entre o tour e "Seu
-/// nível". "Aprender a jogar" pula o nível e cai na tela inicial.
+/// "O que você quer fazer?" (T85, `PropV2UxObjetivoPrimeiro`): a primeira
+/// tela, antes do tour.
 class GoalScreen extends StatelessWidget {
   const GoalScreen({super.key});
 
@@ -33,95 +38,88 @@ class GoalScreen extends StatelessWidget {
       listener: (context, state) {
         // Respondeu a pergunta: é a hora do consentimento do Google (E1.25).
         unawaited(context.read<AdsRepository>().requestConsent());
-        if (state.exit == GoalExit.level) return context.go(Routes.level);
-        // O objetivo e a faixa de iniciante já estão no perfil.
+        // O objetivo (e a faixa de iniciante) já estão no perfil.
         context.read<ProfileCubit>().load();
-        context.go(
-          state.exit == GoalExit.controls ? Routes.boardControls : Routes.home,
-        );
+        context.go(Routes.tour);
       },
       builder: (context, state) {
-        if (!state.ready) return const Scaffold(key: GoalKeys.screen);
-        return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) context.go(Routes.tour);
-          },
-          child: Scaffold(
-            key: GoalKeys.screen,
-            appBar: LucenaAppBar(
-              // Volta para o tour (o voltar do sistema fecharia o app).
-              leading: BackButton(
-                key: GoalKeys.back,
-                onPressed: () => context.go(Routes.tour),
-              ),
-            ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ViktorConversation(
-                    viktor: state.viktor,
-                    speech: l10n.goalViktorSay,
-                    viktorKey: GoalKeys.viktor,
-                    speechKey: GoalKeys.speech,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.xl,
-                      AppSpacing.lg,
-                      AppSpacing.xl,
-                      0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          l10n.goalTitle,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        GoalOptions(
-                          l10n: l10n,
-                          selected: state.goal,
-                          without: cubit.fromLink
-                              ? const {GoalPreference.learn}
-                              : const {},
-                          onSelected: cubit.select,
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        Text(
-                          l10n.goalHint,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            bottomNavigationBar: ActionsFooter(
-              stacked: true,
+        if (state.failure case final failure?) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.fromFailure(failure),
+            onAction: cubit.load,
+          );
+        }
+        if (!state.ready) {
+          return const Scaffold(key: GoalKeys.screen, body: SkeletonList());
+        }
+        // A primeira tela: sem seta de voltar; o voltar do sistema sai do app.
+        return Scaffold(
+          key: GoalKeys.screen,
+          appBar: LucenaAppBar(automaticallyImplyLeading: false),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                FilledButton(
-                  key: GoalKeys.continueButton,
-                  onPressed: cubit.finish,
-                  child: Text(l10n.goalContinue),
+                ViktorConversation(
+                  viktor: state.viktor,
+                  speech: l10n.goalViktorSay,
+                  viktorKey: GoalKeys.viktor,
+                  speechKey: GoalKeys.speech,
                 ),
-                TextButton.icon(
-                  key: GoalKeys.haveAccount,
-                  onPressed: () =>
-                      context.push(Routes.accountEnterFrom('tour')),
-                  icon: const Icon(Icons.cloud_sync),
-                  label: Text(l10n.goalHaveAccount),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    AppSpacing.lg,
+                    AppSpacing.xl,
+                    0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l10n.goalTitle,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      GoalOptions(
+                        l10n: l10n,
+                        selected: state.goal,
+                        without: cubit.fromLink
+                            ? const {GoalPreference.learn}
+                            : const {},
+                        onSelected: cubit.select,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        l10n.goalHint,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
+          ),
+          bottomNavigationBar: ActionsFooter(
+            stacked: true,
+            children: [
+              BusyButton(
+                buttonKey: GoalKeys.continueButton,
+                onPressed: cubit.finish,
+                label: l10n.goalContinue,
+              ),
+              TextButton.icon(
+                key: GoalKeys.haveAccount,
+                onPressed: () => context.push(Routes.accountEnterFrom('tour')),
+                icon: const Icon(Icons.cloud_sync),
+                label: Text(l10n.goalHaveAccount),
+              ),
+            ],
           ),
         );
       },

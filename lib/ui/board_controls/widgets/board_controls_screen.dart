@@ -1,6 +1,9 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -56,72 +59,80 @@ class _BoardControlsScreenState extends State<BoardControlsScreen> {
         _board.updatePosition(_data(state));
         if (state.leaving) context.go(Routes.home);
       },
-      builder: (context, state) => PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {
-          if (!didPop) cubit.finish(completed: false);
-        },
-        child: Scaffold(
-          key: BoardControlsKeys.screen,
-          appBar: LucenaAppBar(
-            title: Text(l10n.boardMoveMethod),
-            leading: BackButton(
-              onPressed: () => cubit.finish(completed: false),
-            ),
-          ),
-          body: BoardViewport(
-            usefulHeight: BoardViewport.usefulHeightOf(context),
-            child: SafeArea(
-              child: Builder(
-                builder: (context) => CenteredBoardLayout(
-                  centerY: BoardViewport.centerYOf(context),
-                  reserveTop: 100,
-                  reserveBottom: 0,
-                  top: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    child: Text(
-                      state.moved
-                          ? l10n.boardControlsDone
-                          : l10n.boardControlsHint,
-                      key: BoardControlsKeys.instruction,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+      builder: (context, state) => state.failure != null
+          ? LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(state.failure!),
+              onAction: cubit.load,
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            )
+          : PopScope(
+              canPop: false,
+              onPopInvokedWithResult: (didPop, _) {
+                if (!didPop) cubit.finish(completed: false);
+              },
+              child: Scaffold(
+                key: BoardControlsKeys.screen,
+                appBar: LucenaAppBar(
+                  title: Text(l10n.boardMoveMethod),
+                  leading: BackButton(
+                    onPressed: () => cubit.finish(completed: false),
                   ),
-                  board: LayoutBuilder(
-                    builder: (context, box) => Chessboard(
-                      key: BoardControlsKeys.board,
-                      size: box.maxWidth,
-                      controller: _board,
-                      orientation: Side.white,
-                      settings: board
-                          .copyWith(
-                            moveMethod: MoveMethod.either,
-                            showLegalMoves: true,
-                            premoves: false,
-                          )
-                          .chessground,
-                      onMove: (move, {viaDragAndDrop}) => cubit.play(move),
-                    ),
-                  ),
-                  footer: ActionsFooter(
-                    children: [
-                      FilledButton(
-                        key: BoardControlsKeys.continueButton,
-                        onPressed: cubit.finish,
-                        child: Text(
-                          state.moved
-                              ? l10n.goalContinue
-                              : l10n.boardControlsSkip,
+                ),
+                body: BoardViewport(
+                  usefulHeight: BoardViewport.usefulHeightOf(context),
+                  child: SafeArea(
+                    child: Builder(
+                      builder: (context) => CenteredBoardLayout(
+                        centerY: BoardViewport.centerYOf(context),
+                        reserveTop: 100,
+                        reserveBottom: 0,
+                        top: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
+                          child: Text(
+                            state.moved
+                                ? l10n.boardControlsDone
+                                : l10n.boardControlsHint,
+                            key: BoardControlsKeys.instruction,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                        board: LayoutBuilder(
+                          builder: (context, box) => Chessboard(
+                            key: BoardControlsKeys.board,
+                            size: box.maxWidth,
+                            controller: _board,
+                            orientation: Side.white,
+                            settings: board
+                                .copyWith(
+                                  moveMethod: MoveMethod.either,
+                                  showLegalMoves: true,
+                                  premoves: false,
+                                )
+                                .chessground,
+                            onMove: (move, {viaDragAndDrop}) =>
+                                cubit.play(move),
+                          ),
+                        ),
+                        footer: ActionsFooter(
+                          children: [
+                            FilledButton(
+                              key: BoardControlsKeys.continueButton,
+                              onPressed: cubit.finish,
+                              child: Text(
+                                state.moved
+                                    ? l10n.goalContinue
+                                    : l10n.boardControlsSkip,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

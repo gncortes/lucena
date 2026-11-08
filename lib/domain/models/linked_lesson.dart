@@ -60,7 +60,7 @@ class LinkedLesson {
 }
 
 /// O link de campanha que abre direto numa aula, sem desafio
-/// (`https://playlucena.com/aula/rook.lucena?utm_source=instagram&utm_campaign=lucena`).
+/// (`https://playlucenachess.com/aula/rook.lucena?utm_source=instagram&utm_campaign=lucena`).
 class LessonLink {
   const LessonLink({required this.lesson, this.utm = const {}});
 

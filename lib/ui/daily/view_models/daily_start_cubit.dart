@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,13 +17,23 @@ import '../../../routing/routes.dart';
 
 /// Para onde vai o `/daily` (o toque da home e do lembrete): a partida do
 /// final de hoje, com o Maia no nível do rating da pessoa. Sem final hoje,
-/// volta à home.
+/// o estado é [DailyStartEmpty] (volta ao Início com um aviso).
 sealed class DailyStartState {
   const DailyStartState();
 }
 
 class DailyStartLoading extends DailyStartState {
   const DailyStartLoading();
+}
+
+class DailyStartFailed extends DailyStartState {
+  const DailyStartFailed(this.failure);
+  final LoadFailure failure;
+}
+
+/// Não há final publicado para hoje (H-DES-03).
+class DailyStartEmpty extends DailyStartState {
+  const DailyStartEmpty();
 }
 
 class DailyStartReady extends DailyStartState {
@@ -49,30 +62,35 @@ class DailyStartCubit extends Cubit<DailyStartState> {
   final String entry;
 
   Future<void> load() async {
-    final daily = await _daily.of(_now());
-    final rating = await _rating.current();
-    if (daily != null) {
-      final days = await _activity?.days() ?? const <DateTime>{};
-      unawaited(
-        _analytics.log(
-          AnalyticsEvents.finalDiaAberto(
-            entrada: entry,
-            sequencia: StreakRules.of(days, _now()).current,
-            jaJogouHoje: await _daily.record(_now()) != null,
+    try {
+      final daily = await _daily.of(_now());
+      final rating = await _rating.current();
+      if (daily != null) {
+        final days = await _activity?.days() ?? const <DateTime>{};
+        unawaited(
+          _analytics.log(
+            AnalyticsEvents.finalDiaAberto(
+              entrada: entry,
+              sequencia: StreakRules.of(days, _now()).current,
+              jaJogouHoje: await _daily.record(_now()) != null,
+            ),
           ),
-        ),
-      );
-    }
-    if (isClosed) return;
-    emit(
-      DailyStartReady(
+        );
+      }
+      if (isClosed) return;
+      emit(
         daily == null
-            ? Routes.home
-            : Routes.dailyGame(
-                daily,
-                level: MaiaLevels.nearest(rating.rounded),
+            ? const DailyStartEmpty()
+            : DailyStartReady(
+                Routes.dailyGame(
+                  daily,
+                  level: MaiaLevels.nearest(rating.rounded),
+                ),
               ),
-      ),
-    );
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(DailyStartFailed(LoadFailure.of(error)));
+    }
   }
 }

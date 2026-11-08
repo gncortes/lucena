@@ -11,6 +11,7 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -175,15 +176,22 @@ class RaceReviewView extends StatelessWidget {
           bottom: 0,
           child: SafeArea(
             top: false,
-            child: ActionsBar(
-              children: [
-                GameActionButton(
-                  buttonKey: RaceKeys.reviewNext,
-                  icon: last ? Icons.check : Icons.arrow_forward,
-                  label: last ? l10n.raceReviewDone : l10n.raceReviewNext,
-                  onPressed: cubit.nextMistake,
-                ),
-              ],
+            // H-ANI-25: ao abrir a revisão, o botão desliza por último; os
+            // erros seguintes trocam com ele parado (a mesma Corrida).
+            child: EntradaDeResultado(
+              id:
+                  'revisao-'
+                  '${state.outcome?.result.run.startedAt.microsecondsSinceEpoch}',
+              botoes: ActionsBar(
+                children: [
+                  GameActionButton(
+                    buttonKey: RaceKeys.reviewNext,
+                    icon: last ? Icons.check : Icons.arrow_forward,
+                    label: last ? l10n.raceReviewDone : l10n.raceReviewNext,
+                    onPressed: cubit.nextMistake,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

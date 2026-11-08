@@ -1,4 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../data/repositories/positions/positions_repository.dart';
@@ -24,6 +28,7 @@ abstract class CatalogState with _$CatalogState {
   const factory CatalogState({
     /// Nulo enquanto o catálogo é lido.
     List<CatalogCategory>? categories,
+    LoadFailure? failure,
 
     /// As posições da categoria aberta, na ordem do catálogo. Nulo fora da
     /// tela da categoria ou enquanto elas são lidas.
@@ -84,30 +89,46 @@ class CatalogCubit extends Cubit<CatalogState> {
   /// Lê o catálogo e o filtro. Com [category], lê também as posições de todos
   /// os finais dela.
   Future<void> load({String? category, String? subcategory}) async {
-    final filter = subcategory == null
-        ? await _training.loadCatalogFilter()
-        : GoalFilter.all;
-    final categories = await _positions.catalog();
-    List<EndgamePosition>? positions;
-    if (category != null) {
-      positions = [
-        for (final c in categories)
-          if (c.key == category)
-            for (final sub in c.subcategories)
-              if (subcategory == null || sub.key == subcategory)
-                ...await _positions.bySubcategory(sub.key),
-      ];
+    try {
+      final filter = subcategory == null
+          ? await _training.loadCatalogFilter()
+          : GoalFilter.all;
+      final categories = await _positions.catalog();
+      List<EndgamePosition>? positions;
+      if (category != null) {
+        positions = [
+          for (final c in categories)
+            if (c.key == category)
+              for (final sub in c.subcategories)
+                if (subcategory == null || sub.key == subcategory)
+                  ...await _positions.bySubcategory(sub.key),
+        ];
+      }
+      if (category != null &&
+          !categories.any(
+            (c) =>
+                c.key == category &&
+                (subcategory == null ||
+                    c.subcategories.any((s) => s.key == subcategory)),
+          )) {
+        if (!isClosed) emit(state.copyWith(failure: LoadFailure.notFound));
+        return;
+      }
+      final fulfilled = await _progress.fulfilledPositions();
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          categories: categories,
+          positions: positions,
+          filter: filter,
+          fulfilled: fulfilled,
+          failure: null,
+        ),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(failure: LoadFailure.of(error)));
     }
-    final fulfilled = await _progress.fulfilledPositions();
-    if (isClosed) return;
-    emit(
-      state.copyWith(
-        categories: categories,
-        positions: positions,
-        filter: filter,
-        fulfilled: fulfilled,
-      ),
-    );
   }
 
   Future<void> setFilter(GoalFilter filter) async {

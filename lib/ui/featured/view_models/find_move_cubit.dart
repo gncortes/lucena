@@ -1,3 +1,7 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+import '../../../domain/models/find_move_checkpoint.dart';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -5,19 +9,7 @@ import '../../../data/repositories/featured/featured_progress_repository.dart';
 import '../../../domain/models/featured.dart';
 import '../../../domain/use_cases/game_rules.dart';
 
-enum FindMovePhase {
-  /// Esperando o lance.
-  asking,
-
-  /// O lance não foi o certo: pode tentar de novo.
-  wrong,
-
-  /// Achou o lance.
-  solved,
-
-  /// Viu a resposta.
-  revealed,
-}
+export '../../../domain/models/find_move_checkpoint.dart' show FindMovePhase;
 
 /// O "ache o lance": um lance só, sem adversário e sem relógio.
 class FindMoveState {
@@ -25,8 +17,12 @@ class FindMoveState {
     this.phase = FindMovePhase.asking,
     this.hint = false,
     this.attempts = 0,
+    this.saving,
+    this.failure,
   });
 
+  final String? saving;
+  final LoadFailure? failure;
   final FindMovePhase phase;
 
   /// A dica (a casa de onde o lance sai) está aberta.
@@ -45,8 +41,19 @@ class FindMoveState {
 }
 
 class FindMoveCubit extends Cubit<FindMoveState> {
-  FindMoveCubit({required this.endgame, required this._progress})
-    : super(const FindMoveState());
+  FindMoveCubit({
+    required this.endgame,
+    required this._progress,
+    FindMoveCheckpoint? initial,
+  }) : super(
+         initial != null && initial.matches(endgame)
+             ? FindMoveState(
+                 phase: initial.phase,
+                 hint: initial.hint,
+                 attempts: initial.attempts,
+               )
+             : const FindMoveState(),
+       );
 
   final FeaturedEndgame endgame;
   final FeaturedProgressRepository _progress;
@@ -90,46 +97,93 @@ class FindMoveCubit extends Cubit<FindMoveState> {
     return position.board.bySide(position.turn).size > 1;
   }
 
-  /// O jogador fez [move]. Certo ou errado, o tabuleiro volta à posição.
-  Future<void> play(Move move) async {
-    if (state.finished) return;
-    if (endgame.solutions.contains(move.uci)) {
-      emit(state.copyWith(phase: FindMovePhase.solved));
-      await _progress.markPlayed(endgame.id);
-    } else {
-      emit(
-        state.copyWith(
-          phase: FindMovePhase.wrong,
-          attempts: state.attempts + 1,
+  FindMoveState? _pending;
+  String? _pendingAction;
+
+  bool get _blocked =>
+      state.finished || state.saving != null || _pending != null;
+
+  Future<void> _save(FindMoveState candidate, String action) async {
+    if (state.saving != null || isClosed) return;
+    _pending = candidate;
+    _pendingAction = action;
+    emit(
+      FindMoveState(
+        phase: state.phase,
+        hint: state.hint,
+        attempts: state.attempts,
+        saving: action,
+      ),
+    );
+    try {
+      await _progress.saveFindMove(
+        endgame.id,
+        FindMoveCheckpoint(
+          fen: endgame.fen,
+          solutions: List.unmodifiable(endgame.solutions),
+          phase: candidate.phase,
+          hint: candidate.hint,
+          attempts: candidate.attempts,
         ),
       );
+      _pending = null;
+      _pendingAction = null;
+      if (!isClosed) emit(candidate);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(
+          FindMoveState(
+            phase: state.phase,
+            hint: state.hint,
+            attempts: state.attempts,
+            failure: LoadFailure.of(error),
+          ),
+        );
+      }
     }
   }
 
-  void showHint() {
-    if (state.finished) return;
-    emit(state.copyWith(hint: true));
+  Future<void> retrySave() async {
+    final candidate = _pending;
+    if (candidate != null) await _save(candidate, _pendingAction!);
+  }
+
+  Future<void> play(Move move) async {
+    if (_blocked) return;
+    final correct = endgame.solutions.contains(move.uci);
+    await _save(
+      state.copyWith(
+        phase: correct ? FindMovePhase.solved : FindMovePhase.wrong,
+        attempts: correct ? state.attempts : state.attempts + 1,
+      ),
+      'play',
+    );
+  }
+
+  Future<void> showHint() async {
+    if (_blocked || state.hint) return;
+    await _save(state.copyWith(hint: true), 'hint');
   }
 
   Future<void> reveal() async {
-    if (state.finished) return;
-    emit(state.copyWith(phase: FindMovePhase.revealed));
-    await _progress.markPlayed(endgame.id);
+    if (_blocked) return;
+    await _save(state.copyWith(phase: FindMovePhase.revealed), 'answer');
   }
 
-  /// Depois de errar ou de ver a resposta, o jogador tenta de novo (o
-  /// tabuleiro volta à posição).
-  void retry() {
+  Future<void> retry() async {
+    if (state.saving != null || _pending != null) return;
     switch (state.phase) {
       case FindMovePhase.wrong:
-        emit(state.copyWith(phase: FindMovePhase.asking));
+        await _save(state.copyWith(phase: FindMovePhase.asking), 'retry');
       case FindMovePhase.revealed:
-        emit(
+        await _save(
           state.copyWith(
             phase: FindMovePhase.asking,
             hint: false,
             attempts: state.attempts + 1,
           ),
+          'retry',
         );
       case FindMovePhase.asking || FindMovePhase.solved:
         break;

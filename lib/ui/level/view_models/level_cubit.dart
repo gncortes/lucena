@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -19,6 +23,7 @@ import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/level_source.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/platform_rating.dart';
+import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
@@ -27,27 +32,33 @@ import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/rating_conversion.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
 
-/// Os cartões da tela "Seu nível", na ordem do canvas.
-/// `known` é o cartão "Já sei o meu rating": abre os três caminhos
+/// Os cartões do nível, na ordem do canvas. No tour: `zero` ("Estou
+/// começando"), `test`, `lichess`, `chess` e `band` ("Escolher minha faixa").
+/// No Perfil: `known` é o cartão "Já sei o meu rating", que abre os caminhos
 /// (`lichess`, `chess`, `manual`).
-enum LevelChoice { test, known, lichess, chess, manual, zero }
+enum LevelChoice { test, known, lichess, chess, manual, zero, band }
 
 /// O que deu errado na última tentativa (mostrado uma vez pela tela).
-enum LevelError { lichessOffline, chessOffline }
+enum LevelError { lichessOffline, lichessCancelled, chessOffline }
 
 class LevelState {
+  final LoadFailure? failure;
   const LevelState({
     this.ready = false,
+    this.failure,
     this.choice = LevelChoice.test,
     this.knowsRating = false,
     this.placed,
     this.lichess,
     this.lichessBusy = false,
+    this.lichessOffline = false,
     this.chess,
     this.chessBusy = false,
     this.chessNotFound = false,
+    this.chessOffline = false,
     this.manualRating,
     this.manualOrigin = RatingOrigin.fide,
+    this.band,
     this.error,
     this.errorCount = 0,
     this.finished = false,
@@ -76,6 +87,9 @@ class LevelState {
   /// O login do Lichess está aberto no navegador.
   final bool lichessBusy;
 
+  /// Sem internet ao abrir o Lichess: a tela mostra "Sem internet".
+  final bool lichessOffline;
+
   /// Os ratings públicos do usuário do Chess.com digitado.
   final PlatformRating? chess;
   final bool chessBusy;
@@ -83,9 +97,15 @@ class LevelState {
   /// O usuário digitado não existe no Chess.com (ou não tem rating).
   final bool chessNotFound;
 
+  /// Sem internet ao buscar no Chess.com: a tela mostra "Sem internet".
+  final bool chessOffline;
+
   /// O número digitado em "Informar o meu rating" e de onde ele é.
   final int? manualRating;
   final RatingOrigin manualOrigin;
+
+  /// A faixa de "Escolher minha faixa" (só no tour).
+  final RatingLevel? band;
 
   /// O último erro; [errorCount] muda a cada um, para a tela mostrar de novo
   /// o mesmo erro.
@@ -141,11 +161,14 @@ class LevelState {
     int? Function()? placed,
     PlatformRating? Function()? lichess,
     bool? lichessBusy,
+    bool? lichessOffline,
     PlatformRating? Function()? chess,
     bool? chessBusy,
     bool? chessNotFound,
+    bool? chessOffline,
     int? Function()? manualRating,
     RatingOrigin? manualOrigin,
+    RatingLevel? band,
     LevelError? error,
     bool? finished,
     bool? toSchool,
@@ -158,11 +181,14 @@ class LevelState {
     placed: placed == null ? this.placed : placed(),
     lichess: lichess == null ? this.lichess : lichess(),
     lichessBusy: lichessBusy ?? this.lichessBusy,
+    lichessOffline: lichessOffline ?? this.lichessOffline,
     chess: chess == null ? this.chess : chess(),
     chessBusy: chessBusy ?? this.chessBusy,
     chessNotFound: chessNotFound ?? this.chessNotFound,
+    chessOffline: chessOffline ?? this.chessOffline,
     manualRating: manualRating == null ? this.manualRating : manualRating(),
     manualOrigin: manualOrigin ?? this.manualOrigin,
+    band: band ?? this.band,
     error: error ?? this.error,
     errorCount: error == null ? errorCount : errorCount + 1,
     finished: finished ?? this.finished,
@@ -192,14 +218,19 @@ class LevelCubit extends Cubit<LevelState> {
     required this._chessCom,
     this._home,
     this.fromProfile = false,
+    this.inTour = false,
     this._analytics = const NoAnalyticsRepository(),
     this._accounts,
     this._sync,
     this._now = const SystemNow(),
-  }) : super(const LevelState());
+    this._rating,
+  }) : super(LevelState(choice: inTour ? LevelChoice.zero : LevelChoice.test));
 
   final AnalyticsRepository _analytics;
   final AccountRepository? _accounts;
+
+  /// O rating do app: o nível escolhido vira o atual, mesmo com partidas.
+  final RatingRepository? _rating;
   final SyncScheduler? _sync;
   final Now _now;
   StreamSubscription<Account?>? _accountSubscription;
@@ -210,6 +241,10 @@ class LevelCubit extends Cubit<LevelState> {
   final ChessComRepository _chessCom;
   final HomeLayoutRepository? _home;
   final bool fromProfile;
+
+  /// Dentro do passo "Nível" do tour: escolher grava o nível e o tour segue
+  /// ([LevelState.finished]); quem fecha a primeira abertura é o fim do tour.
+  final bool inTour;
   Onboarding _saved = const Onboarding();
   Future<void> _onboardingSaved = Future.value();
   bool _finishing = false;
@@ -223,6 +258,18 @@ class LevelCubit extends Cubit<LevelState> {
   String get _origin => fromProfile ? 'perfil' : 'nivel';
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      // A failed persisted write must not poison the next explicit load.
+      _onboardingSaved = Future<void>.value();
+      debugPrint('level load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(LevelState(failure: LoadFailure.generic));
+    }
+  }
+
+  Future<void> _load() async {
     // A conta criada depois do Lichess (pelo convite) liga os dois.
     _accountSubscription ??= _accounts?.changes.listen((account) {
       if (account != null) unawaited(_markLinked());
@@ -234,14 +281,16 @@ class LevelCubit extends Cubit<LevelState> {
     for (final character in characters) {
       if (character.id == 'master') viktor = character;
     }
-    if (!_saved.done && !fromProfile) {
-      unawaited(_save(_saved.copyWith(stage: OnboardingStage.level)));
+    if (!_saved.done && !fromProfile && !inTour) {
+      await _save(_saved.copyWith(stage: OnboardingStage.tour, step: 3));
+      if (isClosed) return;
     }
     final selected = _saved.selectedRating;
     final placed = !fromProfile && !_saved.byHand ? selected : null;
     emit(
       LevelState(
         ready: true,
+        choice: inTour && placed != null ? LevelChoice.test : state.choice,
         placed: placed,
         viktor: viktor,
         characters: characters,
@@ -269,6 +318,19 @@ class LevelCubit extends Cubit<LevelState> {
   void select(LevelChoice choice) {
     if (_locked) return;
     emit(state.copyWith(choice: choice));
+  }
+
+  /// O tour já seguiu para o próximo passo: a escolha fica, o aviso sai.
+  void acknowledged() {
+    if (isClosed) return;
+    emit(state.copyWith(finished: false));
+  }
+
+  /// "Escolher minha faixa" + Confirmar: a faixa fica marcada e o subtítulo
+  /// mostra onde a Jornada começa.
+  void selectBand(RatingLevel band) {
+    if (_locked) return;
+    emit(state.copyWith(choice: LevelChoice.band, band: band));
   }
 
   /// "Já sei o meu rating" + Continuar: mostra os três caminhos do rating.
@@ -305,7 +367,13 @@ class LevelCubit extends Cubit<LevelState> {
         ),
       );
       if (isClosed) return;
-      emit(state.copyWith(lichessBusy: false, lichess: () => rating));
+      emit(
+        state.copyWith(
+          lichessBusy: false,
+          lichessOffline: false,
+          lichess: () => rating,
+        ),
+      );
     } on LichessException catch (e) {
       if (isClosed) return;
       emit(state.copyWith(lichessBusy: false));
@@ -345,10 +413,28 @@ class LevelCubit extends Cubit<LevelState> {
     if (state.lichessBusy) _lichess.cancel();
   }
 
-  // Cancelar na página do Lichess volta sem erro (regra 7).
+  /// Recusar ou voltar sem autorizar avisa e deixa tentar de novo; sem
+  /// internet, a tela é a de "Sem internet".
   void _lichessFailed(LichessFailure failure) {
-    if (isClosed || failure == LichessFailure.cancelled) return;
-    emit(state.copyWith(error: LevelError.lichessOffline));
+    if (isClosed) return;
+    if (failure == LichessFailure.cancelled) {
+      emit(
+        state.copyWith(
+          lichessOffline: false,
+          error: LevelError.lichessCancelled,
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(lichessOffline: true, error: LevelError.lichessOffline),
+    );
+  }
+
+  /// "Voltar" (ou "Tentar novamente") da tela "Sem internet".
+  void dismissOffline() {
+    if (isClosed) return;
+    emit(state.copyWith(lichessOffline: false, chessOffline: false));
   }
 
   /// Procura o usuário no Chess.com. Vazio, limpa.
@@ -366,7 +452,13 @@ class LevelCubit extends Cubit<LevelState> {
       );
       return;
     }
-    emit(state.copyWith(chessBusy: true, chessNotFound: false));
+    emit(
+      state.copyWith(
+        chessBusy: true,
+        chessNotFound: false,
+        chessOffline: false,
+      ),
+    );
     try {
       final rating = await _chessCom.stats(name);
       if (isClosed || revision != _chessRevision) return;
@@ -379,6 +471,7 @@ class LevelCubit extends Cubit<LevelState> {
           chessBusy: false,
           chess: () => null,
           chessNotFound: notFound,
+          chessOffline: !notFound,
           error: notFound ? null : LevelError.chessOffline,
         ),
       );
@@ -441,6 +534,8 @@ class LevelCubit extends Cubit<LevelState> {
         await _finish(LevelSource.test, placed);
       case LevelChoice.zero:
         await _finish(LevelSource.zero, RatingLevel.beginner.rating);
+      case LevelChoice.band when state.band != null:
+        await _finish(LevelSource.manual, state.band!.rating, via: 'faixa');
       default:
         return;
     }
@@ -451,6 +546,7 @@ class LevelCubit extends Cubit<LevelState> {
     int rating, {
     String? lichessUser,
     String? chessComUser,
+    String? via,
   }) async {
     if (_locked) return;
     _finishing = true;
@@ -467,7 +563,8 @@ class LevelCubit extends Cubit<LevelState> {
         goal: zero ? GoalPreference.learn : saved.goal,
       );
       await _profile.save(profile);
-      unawaited(_counted(source, rating));
+      await _rating?.setLevel(rating);
+      unawaited(_counted(source, rating, via: via));
       final lichess = source == LevelSource.lichess;
       if (lichess) {
         unawaited(_markLinked());
@@ -481,21 +578,28 @@ class LevelCubit extends Cubit<LevelState> {
       }
       await home?.markNoticeSeen();
       await _save(
-        _saved.copyWith(
-          done: true,
-          step: 0,
-          startRung: '${RatingConversion.startRung(rating)}',
-          inProgress: false,
-          selectedRating: () => rating,
-          byHand: source != LevelSource.test,
-        ),
+        inTour
+            ? _saved.copyWith(
+                startRung: '${RatingConversion.startRung(rating)}',
+                selectedRating: () => rating,
+                byHand: source != LevelSource.test,
+              )
+            : _saved.copyWith(
+                done: true,
+                step: 0,
+                startRung: '${RatingConversion.startRung(rating)}',
+                inProgress: false,
+                selectedRating: () => rating,
+                byHand: source != LevelSource.test,
+              ),
       );
       if (!isClosed) {
         emit(
           state.copyWith(
             finished: true,
-            toSchool: zero && VisibleLessons.school,
-            inviteAccount: lichess && _accounts != null && !_hasAccount,
+            toSchool: !inTour && zero && VisibleLessons.school,
+            inviteAccount:
+                !inTour && lichess && _accounts != null && !_hasAccount,
             rating: rating,
           ),
         );
@@ -521,8 +625,8 @@ class LevelCubit extends Cubit<LevelState> {
     return super.close();
   }
 
-  Future<void> _counted(LevelSource source, int rating) async {
-    final via = switch (source) {
+  Future<void> _counted(LevelSource source, int rating, {String? via}) async {
+    via ??= switch (source) {
       LevelSource.test => 'teste',
       LevelSource.lichess => 'lichess',
       LevelSource.chesscom => 'chesscom',

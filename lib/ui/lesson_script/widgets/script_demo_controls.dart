@@ -10,6 +10,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/canvas_symbols.dart';
 
 /// As cores do rodapé da demonstração (canvas `T70-etapa1-estados`, `.cb`):
 /// o trilho e o arco do anel, e o cinza do anel pausado e do botão sem uso.
@@ -39,6 +40,7 @@ class ScriptDemoControls extends StatelessWidget {
     required this.onNext,
     this.speaking = false,
     this.full = true,
+    this.canvasLayout = false,
     super.key,
   });
 
@@ -46,6 +48,7 @@ class ScriptDemoControls extends StatelessWidget {
 
   /// Com ↻ e ⏮ (a demonstração); falso, só ⏸/▶ e o Continuar (a teoria).
   final bool full;
+  final bool canvasLayout;
 
   /// A voz do Viktor está falando: o anel espera parado (sem ficar cinza).
   final bool speaking;
@@ -79,14 +82,16 @@ class ScriptDemoControls extends StatelessWidget {
         if (full) ...[
           ScriptDemoButton(
             buttonKey: LessonScriptKeys.demoRepeat,
-            icon: Icons.replay_rounded,
+            icon: canvasLayout ? CanvasSymbols.replay : Icons.replay_rounded,
             tooltip: l10n.lessonDemoReplay,
             onPressed: onRepeat,
           ),
           const SizedBox(width: gap),
           ScriptDemoButton(
             buttonKey: LessonScriptKeys.demoStepBack,
-            icon: Icons.skip_previous_rounded,
+            icon: canvasLayout
+                ? CanvasSymbols.skipPrevious
+                : Icons.skip_previous_rounded,
             tooltip: l10n.lessonDemoBack,
             onPressed: canStepBack ? onStepBack : null,
           ),
@@ -94,7 +99,13 @@ class ScriptDemoControls extends StatelessWidget {
         ],
         ScriptDemoButton(
           buttonKey: LessonScriptKeys.demoToggle,
-          icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+          icon: canvasLayout
+              ? playing
+                    ? CanvasSymbols.pause
+                    : CanvasSymbols.playArrow
+              : playing
+              ? Icons.pause_rounded
+              : Icons.play_arrow_rounded,
           tooltip: playing ? l10n.lessonDemoPause : l10n.lessonDemoPlay,
           onPressed: onToggle,
         ),
@@ -117,7 +128,9 @@ class ScriptDemoControls extends StatelessWidget {
                   ),
                   ScriptDemoButton(
                     buttonKey: LessonScriptKeys.primary,
-                    icon: Icons.skip_next_rounded,
+                    icon: canvasLayout
+                        ? CanvasSymbols.skipNext
+                        : Icons.skip_next_rounded,
                     tooltip: mainTooltip,
                     onPressed: onNext,
                     main: true,
@@ -140,6 +153,7 @@ class ScriptDemoControls extends StatelessWidget {
                 progress: progress,
                 remaining: remaining,
                 tick: tick,
+                canvasLayout: canvasLayout,
               ),
             ),
           ),
@@ -177,7 +191,11 @@ class ScriptDemoButton extends StatelessWidget {
       key: buttonKey,
       tooltip: tooltip,
       onPressed: onPressed,
-      icon: Icon(icon, size: AppIconSize.standard),
+      icon: Icon(
+        icon,
+        size: AppIconSize.standard,
+        fill: icon.fontFamily == CanvasSymbols.family ? 1 : null,
+      ),
       style: IconButton.styleFrom(
         fixedSize: Size.square(side),
         minimumSize: Size.square(side),
@@ -325,6 +343,7 @@ class _FillButton extends StatelessWidget {
     required this.progress,
     required this.remaining,
     required this.tick,
+    this.canvasLayout = false,
   });
 
   /// A faixa do tempo sobre o botão (canvas, `corBarra`).
@@ -338,6 +357,7 @@ class _FillButton extends StatelessWidget {
   final double progress;
   final Duration remaining;
   final int tick;
+  final bool canvasLayout;
 
   @override
   Widget build(BuildContext context) => ClipRRect(
@@ -354,8 +374,12 @@ class _FillButton extends StatelessWidget {
               EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             ),
             textStyle: WidgetStatePropertyAll(
-              AppButtonText.footer(context)
-                  ?.copyWith(fontWeight: FontWeight.w500),
+              AppButtonText.footer(context)?.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: canvasLayout ? 14 : null,
+                height: canvasLayout ? 20 / 14 : null,
+                letterSpacing: canvasLayout ? .1 : null,
+              ),
             ),
           ),
           onPressed: onPressed,

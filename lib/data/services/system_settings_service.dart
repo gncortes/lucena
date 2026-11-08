@@ -29,6 +29,16 @@ class SystemSettingsService {
     }
   }
 
+  /// A tela do Lucena nos ajustes do sistema (permissões, como o microfone).
+  Future<bool> openAppDetails() async {
+    try {
+      return await _channel.invokeMethod<bool>('openAppDetails') ?? false;
+    } on Object catch (error) {
+      debugPrint('SystemSettingsService.openAppDetails: $error');
+      return false;
+    }
+  }
+
   /// Se há app de e-mail no aparelho.
   Future<bool> hasEmailApp() async {
     try {

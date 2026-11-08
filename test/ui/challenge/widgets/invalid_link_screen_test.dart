@@ -64,7 +64,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
     expect(controller.text, 'atividade preservada');
-    clipboard = 'https://playlucena.com/dia';
+    clipboard = 'https://playlucenachess.com/dia';
     await tester.tap(find.byKey(ChallengeKeys.invalidPaste));
     await tester.pumpAndSettle();
     expect(find.text('daily destination'), findsOneWidget);

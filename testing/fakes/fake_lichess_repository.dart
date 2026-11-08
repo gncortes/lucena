@@ -60,8 +60,16 @@ class FakeLichessRepository implements LichessRepository {
   @override
   Future<PlatformRating?> lastRead() async => connected ? rating : null;
 
+  /// Com valor, o próximo desconectar falha (e a conexão fica).
+  Object? disconnectError;
+
   @override
   Future<void> disconnect() async {
+    final error = disconnectError;
+    if (error != null) {
+      disconnectError = null;
+      throw error;
+    }
     disconnects++;
     connected = false;
   }

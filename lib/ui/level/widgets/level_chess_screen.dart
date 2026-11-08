@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,9 +8,11 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/widgets/tip_box.dart';
 import '../view_models/level_cubit.dart';
+import 'level_band_sheet.dart';
 import 'level_ui.dart';
 
 /// "Rating do Chess.com" (canvas `PropV1PerfilChess`): o usuário e o rating
@@ -25,10 +25,7 @@ class LevelChessScreen extends StatefulWidget {
 }
 
 class _LevelChessScreenState extends State<LevelChessScreen> {
-  // Procura depois que a pessoa para de digitar.
-  static const _pause = Duration(milliseconds: 600);
   final _user = TextEditingController();
-  Timer? _typing;
 
   @override
   void initState() {
@@ -38,19 +35,18 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
 
   @override
   void dispose() {
-    _typing?.cancel();
     _user.dispose();
     super.dispose();
   }
 
-  void _changed(String text) {
-    _typing?.cancel();
-    _typing = Timer(_pause, () => context.read<LevelCubit>().lookUpChess(text));
-  }
+  void _search() => context.read<LevelCubit>().lookUpChess(_user.text);
 
-  void _submitted(String text) {
-    _typing?.cancel();
-    context.read<LevelCubit>().lookUpChess(text);
+  Future<void> _pickBand() async {
+    final cubit = context.read<LevelCubit>();
+    final picked = await showLevelBandSheet(context, initial: cubit.state.band);
+    if (picked == null) return;
+    cubit.selectBand(picked);
+    if (mounted) Navigator.of(context).maybePop();
   }
 
   @override
@@ -58,15 +54,27 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<LevelCubit>();
-    return BlocConsumer<LevelCubit, LevelState>(
-      listenWhen: (previous, current) =>
-          current.errorCount != previous.errorCount &&
-          current.error == LevelError.chessOffline,
-      listener: (context, state) =>
-          showLucenaSnackBar(context, l10n.levelChessOffline),
+    return BlocBuilder<LevelCubit, LevelState>(
       builder: (context, state) {
         final chess = state.chess;
         final rating = state.chessRating;
+        if (state.chessOffline) {
+          return KeyedSubtree(
+            key: LevelKeys.chessOfflineScreen,
+            child: EntradaDaTela(
+              id: 'PropV1AbEstChessSemRede',
+              child: LoadErrorScreen(
+                kind: LoadErrorKind.offline,
+                message: l10n.levelChessNoNet,
+                actionKey: LevelKeys.chessRetry,
+                backKey: LevelKeys.chessOfflineBack,
+                onAction: _search,
+                onBack: cubit.dismissOffline,
+              ),
+            ),
+          );
+        }
+        final noRating = chess != null && rating == null;
         final success = AppColors.of(context).success;
         return Scaffold(
           key: LevelKeys.chessScreen,
@@ -83,25 +91,37 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
                 autocorrect: false,
                 enableSuggestions: false,
                 textInputAction: TextInputAction.search,
-                onChanged: _changed,
-                onSubmitted: _submitted,
+                enabled: !state.chessBusy,
+                onSubmitted: (_) => _search(),
                 decoration: InputDecoration(
                   labelText: l10n.levelChessField,
                   helperText: l10n.levelChessHelp,
                   errorText: state.chessNotFound
                       ? l10n.levelChessNotFound
                       : null,
-                  suffixIcon: state.chessBusy
-                      ? const Padding(
-                          padding: EdgeInsets.all(AppSpacing.md),
-                          child: SizedBox.square(
-                            dimension: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        )
-                      : null,
                 ),
               ),
+              const SizedBox(height: AppSpacing.md),
+              FilledButton(
+                key: LevelKeys.chessSearch,
+                onPressed: state.chessBusy ? null : _search,
+                child: state.chessBusy
+                    ? const SizedBox.square(
+                        dimension: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.levelChessSearch),
+              ),
+              if (noRating) ...[
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  l10n.levelChessNoRatingText,
+                  key: LevelKeys.chessNoRating,
+                  style: theme.textTheme.bodyLarge,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                TipBox(text: l10n.levelChessNoRatingTip),
+              ],
               if (chess != null && rating != null) ...[
                 const SizedBox(height: AppSpacing.lg),
                 Card(
@@ -148,12 +168,25 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
           bottomNavigationBar: ActionsFooter(
             stacked: true,
             children: [
-              FilledButton(
-                key: LevelKeys.chessUse,
-                onPressed: rating == null ? null : cubit.useChess,
-                child: Text(l10n.levelUseRating),
-              ),
-              const PreferTestButton(),
+              if (noRating) ...[
+                FilledButton(
+                  key: LevelKeys.chessTest,
+                  onPressed: () => takeLevelTest(context, finish: true),
+                  child: Text(l10n.levelTakeTest),
+                ),
+                OutlinedButton(
+                  key: LevelKeys.chessPickBand,
+                  onPressed: _pickBand,
+                  child: Text(l10n.tourLevelBandTitle),
+                ),
+              ] else ...[
+                FilledButton(
+                  key: LevelKeys.chessUse,
+                  onPressed: rating == null ? null : cubit.useChess,
+                  child: Text(l10n.levelUseRating),
+                ),
+                const PreferTestButton(),
+              ],
             ],
           ),
         );

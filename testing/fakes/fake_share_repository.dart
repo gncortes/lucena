@@ -8,8 +8,12 @@ class FakeShareRepository implements ShareRepository {
 
   final texts = <String>[];
 
+  /// Quando ligado, o menu do sistema lança exceção ao abrir.
+  bool failing = false;
+
   @override
   Future<bool> shareText(String text) async {
+    if (failing) throw StateError('o menu do sistema não abriu');
     texts.add(text);
     return true;
   }

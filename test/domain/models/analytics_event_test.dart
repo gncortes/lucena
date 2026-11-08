@@ -1,3 +1,5 @@
+import 'analytics_event_training_test.dart' show trainingAnalyticsSamples;
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/analytics_event.dart';
@@ -5,6 +7,7 @@ import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/linked_lesson.dart';
+import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/domain/use_cases/analytics_rules.dart';
 
 const _fen = '8/8/8/8/8/2k5/8/K1Q5 w - - 0 1';
@@ -25,6 +28,9 @@ const _campaign = Campaign(
 /// Um de cada fábrica, com valores de verdade: é a varredura de dado pessoal
 /// e a prova de que todo evento está na tabela.
 final _samples = <AnalyticsEvent>[
+  ...trainingAnalyticsSamples('pilares'),
+  AnalyticsEvents.torneioPushAgendado(curso: 'pilares'),
+  AnalyticsEvents.torneioPushMostrado(curso: 'pilares'),
   AnalyticsEvents.tutorialBegin(entrada: 'primeira_abertura'),
   AnalyticsEvents.tutorialComplete(pulado: false, passosVistos: 4),
   AnalyticsEvents.objetivoDefinido(objetivo: 'finais', trocado: false),
@@ -107,6 +113,7 @@ final _samples = <AnalyticsEvent>[
   ),
   AnalyticsEvents.analiseAberta(origem: 'fim_partida', posicaoId: 'kq_k'),
   AnalyticsEvents.aulaAberta(
+    curso: 'finais',
     aulaId: 'lucena',
     tipoAula: 'final',
     origem: 'trilha',
@@ -114,6 +121,7 @@ final _samples = <AnalyticsEvent>[
     primeiraVez: true,
   ),
   AnalyticsEvents.aulaCapituloInicio(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     capitulo: 2,
@@ -121,6 +129,7 @@ final _samples = <AnalyticsEvent>[
     tipoAula: 'final',
   ),
   AnalyticsEvents.aulaCapituloFim(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     capitulo: 2,
@@ -130,6 +139,7 @@ final _samples = <AnalyticsEvent>[
     dicas: 0,
   ),
   AnalyticsEvents.exercicioResultado(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     exercicioId: 'ponte_2',
@@ -139,8 +149,13 @@ final _samples = <AnalyticsEvent>[
     dicas: 0,
     tempo: const Duration(seconds: 20),
   ),
-  AnalyticsEvents.aulaTesteInicio(aulaId: 'lucena', exercicios: 5),
+  AnalyticsEvents.aulaTesteInicio(
+    curso: 'finais',
+    aulaId: 'lucena',
+    exercicios: 5,
+  ),
   AnalyticsEvents.aulaTesteFim(
+    curso: 'finais',
     aulaId: 'lucena',
     aprovado: true,
     acertosPrimeira: 4,
@@ -148,9 +163,14 @@ final _samples = <AnalyticsEvent>[
     tentativas: 6,
     tempo: const Duration(minutes: 5),
   ),
-  AnalyticsEvents.aulaConcluida(aulaId: 'lucena', tipoAula: 'final'),
+  AnalyticsEvents.aulaConcluida(
+    curso: 'finais',
+    aulaId: 'lucena',
+    tipoAula: 'final',
+  ),
   AnalyticsEvents.aulaIndisponivel(origem: 'escola'),
   AnalyticsEvents.aulaSaida(
+    curso: 'finais',
     aulaId: 'lucena',
     capituloId: 'ponte',
     tempo: const Duration(minutes: 1),
@@ -164,20 +184,12 @@ final _samples = <AnalyticsEvent>[
   AnalyticsEvents.finalBusca(tamanhoTermo: 5, resultados: 3),
   AnalyticsEvents.finalFiltro(tipo: 'grupo', valor: 'torre', resultados: 9),
   AnalyticsEvents.finalDestaqueAberto(finalId: 'f1', entrada: 'home'),
-  AnalyticsEvents.finalDestaqueFiltro(
-    tipo: 'ritmo',
-    valor: 'classico',
-    resultados: 4,
-  ),
   AnalyticsEvents.finalDestaqueTorneio(
     torneioId: 'candidatos_2026',
     emAndamento: true,
     entrada: 'home',
   ),
-  AnalyticsEvents.finalDestaqueAviso(
-    torneioId: 'candidatos_2026',
-    ligado: true,
-  ),
+  AnalyticsEvents.finalDestaqueAviso(ligado: true),
   AnalyticsEvents.finalDestaqueAcheLance(
     finalId: 'f1',
     acertou: true,
@@ -243,8 +255,22 @@ final _samples = <AnalyticsEvent>[
     tempo: const Duration(seconds: 30),
     licoesAbertas: 2,
   ),
-  AnalyticsEvents.anuncioRemocao(etapa: 'aberta', origem: 'configuracoes'),
-  AnalyticsEvents.purchase(value: 9.9),
+  AnalyticsEvents.pilaresOfertaVista(origem: 'home', destaque: 'oferta'),
+  AnalyticsEvents.pilaresOfertaFechada(origem: 'home', destaque: 'oferta'),
+  AnalyticsEvents.pilaresPlanoEscolhido(plan: PilaresPlan.monthly),
+  AnalyticsEvents.demoInicio(capituloId: 'cap_1'),
+  AnalyticsEvents.demoFim(),
+  AnalyticsEvents.pilaresCompraResultado(
+    resultado: 'ok',
+    plan: PilaresPlan.lifetime,
+  ),
+  AnalyticsEvents.pilaresRestaurar(resultado: 'achou'),
+  AnalyticsEvents.pilaresAssinaturaEncerrada(),
+  AnalyticsEvents.purchase(
+    plan: PilaresPlan.lifetime,
+    value: 99.9,
+    currency: 'BRL',
+  ),
   AnalyticsEvents.corridaAquecimento(acao: 'aceitou'),
   AnalyticsEvents.corridaIniciada(tema: 'mate', recorde: 12),
   AnalyticsEvents.corridaProblema(
@@ -274,14 +300,17 @@ final _samples = <AnalyticsEvent>[
     via: 'play_no_app',
   ),
   AnalyticsEvents.privacidadeAnalytics(ligado: false),
+  AnalyticsEvents.dadosBaixados(resultado: 'ok'),
+  AnalyticsEvents.aceiteTermos(versao: 1),
   AnalyticsEvents.screenView('/featured/:id'),
 ];
 
 void main() {
   group('catálogo', () {
-    test('tem os 82 eventos (79 do app, com os 9 do funil de campanha da '
-        'T84, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(79));
+    test('tem os eventos do app (com o treino, o funil de campanha da T84, '
+        'o dados_baixados, o aceite_termos e a venda do Pilares da T85) e 3 '
+        'da web', () {
+      expect(AnalyticsCatalog.app, hasLength(105));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(
@@ -345,6 +374,71 @@ void main() {
             isFalse,
             reason: '${event.name}.$key = $value',
           );
+        }
+      }
+    });
+  });
+
+  group('curso (H-R5-65)', () {
+    test('aulas e exercícios levam o curso', () {
+      expect(
+        AnalyticsEvents.cursoDaAula('pilares.peao-passado', finais: false),
+        'pilares',
+      );
+      expect(
+        AnalyticsEvents.cursoDaAula('pilares.peao-passado', finais: true),
+        'pilares',
+      );
+      expect(AnalyticsEvents.cursoDaAula('lucena', finais: true), 'finais');
+      expect(AnalyticsEvents.cursoDaAula('YPGC5', finais: false), 'escola');
+      final events = [
+        AnalyticsEvents.aulaAberta(
+          curso: 'pilares',
+          aulaId: 'pilares.a',
+          tipoAula: 'pilares',
+          origem: 'treino',
+          retomada: false,
+          primeiraVez: true,
+        ),
+        AnalyticsEvents.exercicioResultado(
+          curso: 'pilares',
+          aulaId: 'pilares.a',
+          capituloId: 'c1',
+          exercicioId: 'e1',
+          tipoPasso: 'lance',
+          acertou: true,
+          tentativas: 1,
+          dicas: 0,
+          tempo: const Duration(seconds: 5),
+        ),
+      ];
+      for (final event in events) {
+        expect(event.params['curso'], 'pilares', reason: event.name);
+        expect(AnalyticsCatalog.params(event.name), contains('curso'));
+      }
+    });
+
+    test('oferta e demo levam o curso', () {
+      final events = [
+        AnalyticsEvents.pilaresOfertaVista(origem: 'home', destaque: 'oferta'),
+        AnalyticsEvents.pilaresOfertaFechada(
+          origem: 'home',
+          destaque: 'oferta',
+        ),
+        AnalyticsEvents.demoInicio(capituloId: '1'),
+        AnalyticsEvents.demoFim(),
+      ];
+      for (final event in events) {
+        expect(event.params['curso'], 'pilares', reason: event.name);
+      }
+    });
+
+    test('todo aula_* e exercicio_* com aula aceita o curso', () {
+      for (final MapEntry(key: name, value: params)
+          in AnalyticsCatalog.app.entries) {
+        if ((name.startsWith('aula_') || name.startsWith('exercicio_')) &&
+            params.contains('aula_id')) {
+          expect(params, contains('curso'), reason: name);
         }
       }
     });

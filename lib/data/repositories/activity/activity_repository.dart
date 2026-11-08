@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../../domain/models/featured.dart';
+import '../../../domain/models/find_move_checkpoint.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/streak_rules.dart';
@@ -116,6 +117,24 @@ class ActiveFeaturedProgressRepository implements FeaturedProgressRepository {
 
   final FeaturedProgressRepository _inner;
   final ActivityRepository _activity;
+
+  @override
+  Future<FindMoveCheckpoint?> findMove(FeaturedEndgame endgame) =>
+      _inner.findMove(endgame);
+
+  @override
+  Future<void> saveFindMove(
+    String id,
+    FindMoveCheckpoint checkpoint, {
+    Future<void> Function()? onPlayed,
+  }) => _inner.saveFindMove(
+    id,
+    checkpoint,
+    onPlayed: () async {
+      await _activity.markToday();
+      await onPlayed?.call();
+    },
+  );
 
   @override
   Future<Set<String>> played() => _inner.played();

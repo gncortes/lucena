@@ -83,6 +83,7 @@ jobs:
         id: apk
         with:
           tag: ${{ github.ref_name }}
+          flavor: prod
           keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}

@@ -96,69 +96,42 @@ void main() {
       expect(items.last.isNew, isFalse);
     });
 
-    test('filtra por país do torneio e por origem', () {
+    test('o país do perfil só muda a ordem, ninguém perde final', () {
+      final plain = FeaturedRules.items(catalog, {}, now: now);
+      final us = FeaturedRules.items(catalog, {}, now: now, country: 'US');
+      expect(us, hasLength(plain.length));
+      expect([for (final i in us) i.id], ['b', 'a', 'c']);
+      final played = FeaturedRules.items(catalog, {'b'}, now: now);
+      expect(played.first.id, 'b');
+    });
+
+    test('torneios em andamento', () {
+      expect(FeaturedRules.ongoing(catalog, now: now), hasLength(1));
+      expect(FeaturedRules.ongoing(catalog, now: DateTime(2030)), isEmpty);
+    });
+
+    test('recentes são os dos últimos 30 dias; o resto é histórico', () {
       final items = FeaturedRules.items(catalog, {}, now: now);
+      // b: publicado em 30/12/2025 (e torneio em andamento); a: 1/6/2025; c: sem data.
+      expect([for (final i in FeaturedRules.recent(items, now)) i.id], ['b']);
       expect(
-        [
-          for (final i in FeaturedRules.filtered(
-            items,
-            const FeaturedFilter(country: 'US'),
-          ))
-            i.id,
-        ],
-        ['a'],
+        [for (final i in FeaturedRules.historic(items, now)) i.id],
+        ['a', 'c'],
       );
       expect(
-        [
-          for (final i in FeaturedRules.filtered(
-            items,
-            const FeaturedFilter(origin: FeaturedOrigin.video),
-          ))
-            i.id,
-        ],
-        ['c'],
-      );
-      expect(FeaturedRules.filtered(items, FeaturedFilter.none), hasLength(3));
-    });
-
-    test('torneios em andamento seguem os filtros', () {
-      expect(
-        FeaturedRules.ongoing(catalog, FeaturedFilter.none, now: now),
-        hasLength(1),
+        FeaturedRules.isRecent(items.first, DateTime(2026, 1, 28)),
+        isTrue,
       );
       expect(
-        FeaturedRules.ongoing(
-          catalog,
-          const FeaturedFilter(country: 'US'),
-          now: now,
-        ),
-        isEmpty,
+        FeaturedRules.isRecent(items.first, DateTime(2026, 2, 5)),
+        isFalse,
       );
-      expect(
-        FeaturedRules.ongoing(
-          catalog,
-          const FeaturedFilter(origin: FeaturedOrigin.video),
-          now: now,
-        ),
-        isEmpty,
-      );
-    });
-
-    test('países vêm só de torneios com final, em ordem', () {
-      expect(FeaturedRules.countries(catalog), ['NO', 'US']);
     });
 
     test('a home mostra o primeiro, ou nada', () {
       final items = FeaturedRules.items(catalog, {}, now: now);
       expect(FeaturedRules.home(items)!.id, 'b');
       expect(FeaturedRules.home(const []), isNull);
-    });
-
-    test('filtro compara por valor e copia', () {
-      const filter = FeaturedFilter(country: 'US');
-      expect(filter.isActive, isTrue);
-      expect(filter, const FeaturedFilter(country: 'US'));
-      expect(filter.copyWith(clearCountry: true).isActive, isFalse);
     });
   });
 }

@@ -1,5 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 
+import '../../../domain/models/load_failure.dart';
+
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/explanation.dart';
@@ -43,6 +45,7 @@ enum ExerciseSay {
 class ExerciseState {
   const ExerciseState({
     this.ready = false,
+    this.failure,
     this.missing = false,
     this.lesson,
     this.exercise,
@@ -66,6 +69,7 @@ class ExerciseState {
     this.emotion = Emotion.calm,
     this.earned,
     this.locked = false,
+    this.testAnswerPending = false,
     this.number = 0,
     this.count = 0,
     this.nextExercise,
@@ -81,6 +85,7 @@ class ExerciseState {
   });
 
   final bool ready;
+  final LoadFailure? failure;
 
   /// Quando o exercício abriu: o cronômetro conta daqui.
   final DateTime? startedAt;
@@ -162,7 +167,9 @@ class ExerciseState {
   /// Quantas vezes o aluno foi a um lance da notação depois de acabar.
   final int browsed;
 
-  bool get interactive => phase == ExercisePhase.active;
+  final bool testAnswerPending;
+
+  bool get interactive => phase == ExercisePhase.active && !testAnswerPending;
 
   /// Quanto o exercício vale agora: as estrelas dele menos erros e dicas;
   /// errar o primeiro lance zera. Depois de resolvido, o que ganhou.
@@ -194,6 +201,7 @@ class ExerciseState {
   }
 
   ExerciseState copyWith({
+    bool? testAnswerPending,
     String? fen,
     Move? lastMove,
     int? turn,
@@ -247,6 +255,7 @@ class ExerciseState {
     emotion: emotion ?? this.emotion,
     earned: earned ?? this.earned,
     locked: locked,
+    testAnswerPending: testAnswerPending ?? this.testAnswerPending,
     number: number,
     count: count,
     nextExercise: nextExercise,

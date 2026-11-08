@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
+import 'endgame_load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,6 +31,7 @@ class EndgameInfoScreen extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final state = context.watch<EndgameLessonCubit>().state;
+    if (endgameLoadError(context, state) case final error?) return error;
     final lesson = state.lesson;
     final texts = state.texts;
     return Scaffold(
@@ -33,7 +39,7 @@ class EndgameInfoScreen extends StatelessWidget {
       // O título da aula pode ser longo: ele vem no corpo, inteiro.
       appBar: LucenaAppBar(title: Text(l10n.endgameInfoTooltip)),
       body: lesson == null
-          ? const SizedBox.shrink()
+          ? const SkeletonList()
           : ListView(
               padding: scrollPadding(
                 context,

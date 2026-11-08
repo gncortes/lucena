@@ -11,7 +11,7 @@ import 'maia_level.dart';
 
 part 'challenge_link.freezed.dart';
 
-/// O desafio que viaja num link (`playlucena.com/p/<código>?fen=...`): a
+/// O desafio que viaja num link (`playlucenachess.com/p/<código>?fen=...`): a
 /// posição, o objetivo, o lado, o adversário, o relógio e se a configuração
 /// fica travada. Quem abre joga a mesma partida contra a máquina.
 ///
@@ -19,7 +19,7 @@ part 'challenge_link.freezed.dart';
 /// `?aula=<id da aula de finais>` ou `?escola=<id da aula da Escola>` liga a
 /// aula que o fim da partida oferece; `utm_source` (`instagram`...) e
 /// `utm_campaign` (o slug do post) dizem de onde veio. Ex.:
-/// `playlucena.com/p/x?fen=...&goal=win&aula=rook.lucena&utm_source=instagram&utm_campaign=torre-engana`.
+/// `playlucenachess.com/p/x?fen=...&goal=win&aula=rook.lucena&utm_source=instagram&utm_campaign=torre-engana`.
 @freezed
 abstract class ChallengeLink with _$ChallengeLink {
   const factory ChallengeLink({
@@ -151,7 +151,7 @@ abstract class ChallengeLink with _$ChallengeLink {
     return out.toString();
   }
 
-  /// O endereço do desafio: `https://playlucena.com/p/<código>?...`.
+  /// O endereço do desafio: `https://playlucenachess.com/p/<código>?...`.
   Uri get uri => AppLinks.uri('/${AppLinks.challengeSegment}/$code', {
     ...params,
     if (generation > 0) generationKey: '$generation',
@@ -173,7 +173,7 @@ abstract class ChallengeLink with _$ChallengeLink {
         generation: generation,
       );
 
-  /// O endereço curto, como a tela mostra (`playlucena.com/p/k7Qe2`).
+  /// O endereço curto, como a tela mostra (`playlucenachess.com/p/k7Qe2`).
   String get shortAddress =>
       '${AppLinks.host}/${AppLinks.challengeSegment}/$code';
 

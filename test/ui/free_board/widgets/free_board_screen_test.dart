@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/featured/view_models/featured_alert_cubit.dart';
+import 'package:lucena/ui/core/widgets/skeleton.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/free_board/widgets/game_actions_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/core/theme/app_motion.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/campaign.dart';
@@ -32,8 +35,11 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
-import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_sound_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
@@ -76,6 +82,8 @@ import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_featured_repositories.dart';
+import '../../../../testing/fakes/fake_alerts_repository.dart';
+import '../../../../testing/fakes/fake_push_repository.dart';
 import '../../../../testing/fakes/fake_evaluation_repository.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
 import '../../../../testing/fakes/fake_talk_repository.dart';
@@ -85,6 +93,7 @@ import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_ongoing_game_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';
+import '../../../../testing/motion_expectations.dart';
 
 void main() {
   late FreeBoardCubit cubit;
@@ -214,6 +223,15 @@ void main() {
                     characters: FakeCharacterRepository(),
                   ),
                 ),
+              if (mode.featuredId != null)
+                BlocProvider(
+                  create: (_) => FeaturedAlertCubit(
+                    id: mode.featuredId!,
+                    prompts: FakeFeaturedAlertsRepository(),
+                    alerts: FakeAlertsRepository(),
+                    push: FakePushRepository(),
+                  ),
+                ),
             ],
             child: const FreeBoardScreen(),
           ),
@@ -269,7 +287,11 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (cubit.state.ready) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
   }
 
   Rect boardRect(WidgetTester tester) =>
@@ -361,6 +383,13 @@ void main() {
     expect(boardFen(tester), GameRules.initial.fen);
     expectRing(tester);
     expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
+  });
+
+  testWidgets('H-ANI-10: o tabuleiro da partida é o TabuleiroAnimado', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    expectTabuleiroAnimado(tester, FreeBoardKeys.board);
   });
 
   testWidgets(
@@ -658,6 +687,28 @@ void main() {
     expect(settings.animationDuration, Duration.zero);
   });
 
+  testWidgets(
+    'H-PAR-07: a barra tem Virar, Relógio, Nova partida, nesta ordem',
+    (tester) async {
+      await pumpScreen(tester, locale: const Locale('pt'));
+
+      String label(Key key) => tester
+          .widget<Text>(
+            find.descendant(of: find.byKey(key), matching: find.byType(Text)),
+          )
+          .data!;
+      expect(label(FreeBoardKeys.flipButton), 'Virar');
+      expect(label(FreeBoardKeys.clockButton), 'Relógio');
+      expect(label(FreeBoardKeys.newGameButton), 'Nova partida');
+      final x = [
+        FreeBoardKeys.flipButton,
+        FreeBoardKeys.clockButton,
+        FreeBoardKeys.newGameButton,
+      ].map((k) => tester.getTopLeft(find.byKey(k)).dx).toList();
+      expect(x[0] < x[1] && x[1] < x[2], isTrue);
+    },
+  );
+
   testWidgets('virar o tabuleiro inverte a orientação e mantém a lista', (
     tester,
   ) async {
@@ -700,6 +751,60 @@ void main() {
       ['Cf3', 'Re7', 'Bc4', 'Rf6', 'Dd4+', 'Re7', 'Ta7+'],
     );
     expect(tester.getSemantics(find.byKey(FreeBoardKeys.move(0))).label, 'Cf3');
+  });
+
+  group('H-PAR-18 adversário que falha', () {
+    const vsMachine = GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+    );
+
+    // Três falhas seguidas, 2 s entre elas, como a tela faz a cada tique.
+    Future<void> failThreeTimes(WidgetTester tester) async {
+      opponent.failTimes = 3;
+      await move(tester, 'e2', 'e4');
+      await tester.pump();
+      for (var i = 0; i < 2; i++) {
+        now.advance(const Duration(seconds: 2));
+        cubit.tick();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('na 3ª falha abre a folha, sem ✕', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsOneWidget);
+      expect(find.byKey(SheetKeys.close), findsNothing);
+      expect(cubit.state.opponentError, isTrue);
+    });
+
+    testWidgets('Tentar novamente fecha a folha e o adversário joga', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.retry));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsNothing);
+      expect(cubit.state.moves, hasLength(2));
+    });
+
+    testWidgets('Sair mantém a partida gravada', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.leave));
+      await tester.pumpAndSettle();
+
+      final saved = await games.load();
+      expect(saved, isNotNull);
+      expect(saved!.moves, ['e2e4']);
+    });
   });
 
   testWidgets('pré-lance: marcado na vez do adversário e jogado em seguida', (
@@ -1038,6 +1143,7 @@ void main() {
 
       expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
       expect(find.byKey(FreeBoardKeys.board), findsNothing);
+      expect(find.byType(SkeletonBlock), findsWidgets);
     });
 
     testWidgets('a partida gravada volta com a posição, a lista e o relógio', (
@@ -1528,7 +1634,7 @@ void main() {
           // Com fala curta, longa ou sem fala: o mesmo tabuleiro (D11 V2).
           if (original != null) expect(board, original);
           original = board;
-          expect(board.width, lessThan(size.width));
+          expect(board.width, lessThanOrEqualTo(size.width));
           expect(find.text('Coco'), findsOneWidget);
           if (text == null) {
             expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
@@ -1571,6 +1677,57 @@ void main() {
         }
         expect(tester.takeException(), isNull);
       }
+    });
+    // Em tela mais baixa (360×800) a altura livre limita o lado: a partida não
+    // rola. Nas telas do vídeo (411×914) ele vai de ponta a ponta.
+    for (final size in const [Size(411, 914), Size(412, 915)]) {
+      testWidgets(
+        'T85 $size: contra personagem sem relógio, tabuleiro de ponta a ponta',
+        (tester) async {
+          await pumpScreen(
+            tester,
+            screen: size * 2.625,
+            systemInsets: const EdgeInsets.only(top: 52, bottom: 24),
+            mode: machine,
+            characters: _BubbleCharacters(shortSpeech),
+          );
+          await talk.settled();
+          await tester.pumpAndSettle();
+          final context = tester.element(find.byType(FreeBoardScreen));
+          // O caso do vídeo: personagem que fala, com o espaço da fala.
+          expect(context.read<TalkCubit>().state.character, isNotNull);
+          final board = boardRect(tester);
+          expect(board.width, closeTo(size.width, .5));
+          expect(board.left, closeTo(0, .5));
+          expectScreenBoardCenter(tester, board);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+    testWidgets('T85 print: partida contra personagem (411×914)', (
+      tester,
+    ) async {
+      await Goldens.loadFonts();
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        screen: const Size(411, 914) * 2.625,
+        systemInsets: const EdgeInsets.only(top: 52, bottom: 24),
+        mode: machine,
+        characters: _BubbleCharacters(shortSpeech),
+      );
+      await talk.settled();
+      await tester.pumpAndSettle();
+      // As imagens (peças e avatar) decodificam fora do relógio falso: sem
+      // esperar, o print depende de o cache já estar quente (ordem dos testes).
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 500)),
+      );
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(FreeBoardScreen),
+        matchesGoldenFile('goldens/t85/ponta_a_ponta_411x914.png'),
+      );
     });
     for (final insets in const [
       EdgeInsets.only(top: 52, bottom: 24),
@@ -2163,6 +2320,60 @@ void main() {
       },
     );
 
+    testWidgets('H-PAR-06: textos das folhas de desistir e de empate', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: machine, locale: const Locale('pt'));
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      final resign = find.byKey(FreeBoardKeys.resignSheet);
+      for (final t in [
+        'Desistir da partida?',
+        'A partida termina agora e conta como derrota.',
+        'Desistir',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: resign, matching: find.text(t)),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationClose));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.drawButton));
+      await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+      await tester.pumpAndSettle();
+      final draw = find.byKey(FreeBoardKeys.drawSheet);
+      for (final t in [
+        'Oferecer empate?',
+        'Oferecer empate',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: draw, matching: find.text(t)),
+          findsOneWidget,
+          reason: t,
+        );
+      }
+      // A dica traz o nome do personagem, não "o adversário".
+      final hint = tester
+          .widgetList<Text>(
+            find.descendant(
+              of: draw,
+              matching: find.textContaining('pode aceitar ou recusar'),
+            ),
+          )
+          .single
+          .data!;
+      expect(
+        hint,
+        endsWith(' pode aceitar ou recusar. Se recusar, a partida continua.'),
+      );
+      expect(hint, isNot(contains('adversário')));
+    });
+
     testWidgets('X de desistir fica fora da folha e cancela sem perda', (
       tester,
     ) async {
@@ -2326,6 +2537,30 @@ void main() {
       await tester.pump();
     }
 
+    // H-ANI-25: no fim contra a máquina, o resultado aparece no tabuleiro e o
+    // rodapé do fim desliza por último.
+    testWidgets('H-ANI-25: o rodapé do fim entra por último', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      await resign(tester);
+      final botoes = find.byKey(MotionKeys.parteDoResultado('botoes'));
+      expect(
+        find.descendant(
+          of: botoes,
+          matching: find.byKey(FreeBoardKeys.seeResultButton),
+        ),
+        findsOneWidget,
+      );
+      expect(opacidadeDaParte(tester, botoes), 0);
+      await tester.pump(const Duration(milliseconds: 1300));
+      expect(opacidadeDaParte(tester, botoes), 1);
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('desistir pede confirmação; o resultado aparece em destaque e '
         'a conclusão da partida gravada abre no lugar da partida', (
       tester,
@@ -2359,6 +2594,66 @@ void main() {
       expect(find.byType(FreeBoardScreen), findsNothing);
       expect(progress.attempts.single.fulfilled, isFalse);
       expect(progress.attempts.single.endReason, GameEndReason.resign);
+    });
+
+    /// Desiste sem mexer na rolagem (a tela de erro pode trocar o tabuleiro).
+    Future<void> resignOnly(WidgetTester tester) async {
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('H-PAR-19: sem espaço ao gravar mostra o erro; Tentar '
+        'novamente grava e abre a conclusão', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+
+      await resignOnly(tester);
+
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.text('Not enough space on your phone'), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.freeSpace), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.back), findsOneWidget);
+      expect(progress.attempts, isEmpty);
+
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+
+      final id = await cubit.savedGameId();
+      expect(id, 1);
+      expect(find.text('conclusion $id'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
+    });
+
+    testWidgets('H-PAR-19: Voltar leva ao fim da partida e Ver o resultado '
+        'grava de novo', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+      await resignOnly(tester);
+
+      await tester.tap(find.byKey(LoadErrorKeys.back));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+      expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.pumpAndSettle();
+      expect(find.text('conclusion 1'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
     });
 
     testWidgets(
@@ -2417,6 +2712,77 @@ void main() {
       });
     }
 
+    testWidgets('H-PAR-05: na 3ª fala escondida, a dica com "Ajustar" abre o '
+        'painel de som', (tester) async {
+      await pumpScreen(
+        tester,
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1000),
+        locale: const Locale('pt'),
+      );
+      await cubit.open();
+      await talk.settled();
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 3; i++) {
+        if (talk.state.line == null) {
+          talk.update(
+            cubit.state.copyWith(
+              drawOffer: DrawOffer.declined,
+              drawDeclinedAt: i,
+            ),
+          );
+          await talk.settled();
+        }
+        talk.dismissLine(lineId: talk.state.line!.id);
+        await talk.settled();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.speechHint), findsOneWidget);
+      expect(
+        find.textContaining('Você pode desligar as falas'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(FreeBoardKeys.speechHintAdjust));
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameSoundKeys.dialog), findsOneWidget);
+    });
+
+    testWidgets(
+      'H-PAR-05: sem relógio o detalhe leva o lado ("1164 · brancas"); '
+      'com relógio, não',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating · brancas',
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.black)),
+          'Pretas',
+        );
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+          clock: ClockConfig.same(
+            const TimeControl(initial: Duration(minutes: 5)),
+          ),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating',
+        );
+      },
+    );
+
     testWidgets('desafio de link sem rating ainda: "No rating" no lugar do '
         'número', (tester) async {
       await pumpScreen(
@@ -2426,7 +2792,7 @@ void main() {
       );
       expect(
         textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
-        'No rating',
+        'No rating · white',
       );
     });
 
@@ -2500,7 +2866,7 @@ void main() {
           .toList();
 
       testWidgets('não conseguiu: o fim de sempre e a folha da aula sozinha; '
-          '"Agora não" e o X deixam o fim, e "Ver a aula" reabre', (
+          '"Agora não" e o X deixam o fim, e "Ver a lição" reabre', (
         tester,
       ) async {
         await Goldens.loadFonts();
@@ -2523,12 +2889,12 @@ void main() {
         expect(find.byKey(ChallengeKeys.leadBoard), findsOneWidget);
         expect(
           textOf(tester, ChallengeKeys.leadCategory),
-          'Aula de finais de torre',
+          'Lição de finais de torre',
         );
         expect(textOf(tester, ChallengeKeys.leadTitle), 'Posição de Lucena');
         expect(
           textOf(tester, ChallengeKeys.leadText),
-          'Quer uma aula gratuita que explica como ganhar este final? Você '
+          'Quer uma lição gratuita que explica como ganhar este final? Você '
           'pratica e depois refaz este desafio.',
         );
         for (final (index, title) in [
@@ -2563,14 +2929,14 @@ void main() {
         await tester.tap(find.byKey(ChallengeKeys.leadNotNow));
         await tester.pumpAndSettle();
         // O fim de sempre: o selo sem texto de aula, jogar de novo,
-        // compartilhar e "Ver a aula" no rodapé.
+        // compartilhar e "Ver a lição" no rodapé.
         expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
         expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
         expect(find.byKey(ChallengeKeys.endPlayAgain), findsOneWidget);
         expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
         expect(find.byKey(ChallengeKeys.endMeetApp), findsNothing);
         expect(
-          tester.getSize(find.text('Ver a aula')).height,
+          tester.getSize(find.text('Ver a lição')).height,
           lessThanOrEqualTo(24),
         );
         expect(answers(), ['agora_nao']);
@@ -2586,7 +2952,7 @@ void main() {
         expect(answers(), ['agora_nao', 'agora_nao']);
         expect(analytics.eventsNamed('campanha_oferta_vista'), hasLength(1));
 
-        // "Criar conta e ver a aula": o cadastro, que termina na aula.
+        // "Criar conta e ver a lição": o cadastro, que termina na aula.
         await tester.tap(find.byKey(ChallengeKeys.endLesson));
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(ChallengeKeys.leadCreate));
@@ -2619,7 +2985,7 @@ void main() {
 
         expect(
           textOf(tester, ChallengeKeys.leadText),
-          'Quer uma aula gratuita que explica como empatar este final? Você '
+          'Quer uma lição gratuita que explica como empatar este final? Você '
           'pratica e depois refaz este desafio.',
         );
         expect(
@@ -2655,7 +3021,7 @@ void main() {
         expect(cubit.state.fulfilled, isTrue);
         expect(
           textOf(tester, ChallengeKeys.leadText),
-          'Quer ver uma aula gratuita sobre este final?',
+          'Quer ver uma lição gratuita sobre este final?',
         );
         expect(find.text('Com a ideia, em menos lances'), findsOneWidget);
         expect(
@@ -2945,10 +3311,13 @@ void main() {
       await moveNow(tester, 'h1', 'h8');
       double opacity() => tester
           .widget<Opacity>(
-            find.ancestor(
-              of: find.byKey(FreeBoardKeys.endFlash),
-              matching: find.byType(Opacity),
-            ),
+            // O mais perto: o da tela (H-ANI-07) fica por fora.
+            find
+                .ancestor(
+                  of: find.byKey(FreeBoardKeys.endFlash),
+                  matching: find.byType(Opacity),
+                )
+                .first,
           )
           .opacity;
       expect(opacity(), lessThan(1));
@@ -3286,7 +3655,7 @@ void main() {
       goal: PositionGoal.win,
     );
 
-    testWidgets('a meta aparece antes do primeiro lance', (tester) async {
+    testWidgets('o título é "Final do dia", sem a meta', (tester) async {
       await pumpScreen(
         tester,
         locale: const Locale('pt'),
@@ -3294,17 +3663,7 @@ void main() {
         fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
       );
       expect(cubit.state.ucis, isEmpty);
-      expect(textOf(tester, DailyKeys.goalSubtitle), 'Brancas jogam e ganham');
-    });
-
-    testWidgets('empate: "e empatam"', (tester) async {
-      await pumpScreen(
-        tester,
-        locale: const Locale('pt'),
-        mode: daily.copyWith(goal: PositionGoal.draw, userSide: Side.black),
-        fen: '3k4/8/3K4/8/8/8/8/7Q b - - 0 1',
-      );
-      expect(textOf(tester, DailyKeys.goalSubtitle), 'Pretas jogam e empatam');
+      expect(textOf(tester, FreeBoardKeys.title), 'Final do dia');
     });
 
     testWidgets('o jogador mostra o rating, não "Sem rating"', (tester) async {
@@ -3318,8 +3677,10 @@ void main() {
       await cubit.open();
       await tester.pumpAndSettle();
       final detail = textOf(tester, FreeBoardKeys.playerDetail(Side.white));
-      expect(detail, isNot('Sem rating'));
-      expect(int.tryParse(detail), isNotNull);
+      expect(detail, isNot(startsWith('Sem rating')));
+      // Sem relógio: "1164 · brancas" (PropV1PartidaSemRelogio).
+      expect(int.tryParse(detail.split(' · ').first), isNotNull);
+      expect(detail, endsWith(' · brancas'));
     });
   });
   group('Resultado persistente por modo e motivo', () {
@@ -3562,13 +3923,11 @@ void main() {
         above +
         (clocks == ClockPosition.bottom ? speechRoom + 4 : speechRoom - 12);
     topExtent = topReserve + 8;
-    // Tela baixa: o piso de 0,8 nunca passa da altura livre (sem rolar).
+    // De ponta a ponta: só diminui se a altura livre não couber a largura.
     final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea)).height;
     final below = clocks == ClockPosition.top ? 0.0 : 68.0 + 8;
     final fit = area - topExtent - below - GameActionsBar.height;
-    side = (2 * (center - contentTop - topExtent))
-        .clamp(min(width * .8, max(0, fit)), width)
-        .toDouble();
+    side = min(width, max(0, fit)).toDouble();
   }
   return (side: side, center: max(center, contentTop + topExtent + side / 2));
 }

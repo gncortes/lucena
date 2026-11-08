@@ -5,6 +5,7 @@ import 'package:patrol/patrol.dart';
 import 'robots/app_robot.dart';
 import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
+import 'robots/settings_robot.dart';
 
 const _initialFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
@@ -128,6 +129,8 @@ void main() {
     await board.expectClock(Side.black, '2:50');
 
     await board.leave();
+    // O tabuleiro abre por Todos os modos: sair dele volta para lá.
+    await SettingsRobot($).backToHome();
     await home.expectVisible();
     await app.advanceTime(const Duration(hours: 1));
     await app.restart();

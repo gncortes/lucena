@@ -12,6 +12,8 @@ import '../../../routing/routes.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/container_navigation.dart';
@@ -22,7 +24,6 @@ import '../view_models/history_cubit.dart';
 import 'game_row.dart';
 import 'history_filters.dart';
 import 'history_labels.dart';
-import 'rating_card.dart';
 
 /// A aba Partidas: o cartão do rating com a curva, os filtros, o placar e as
 /// partidas que contaram, por mês.
@@ -53,59 +54,34 @@ class HistoryGamesTab extends StatelessWidget {
     final games = state.filteredGames;
     final filteredOut = games.isEmpty && !filter.isEmpty;
     final score = HistoryGames.score(games);
-    return ListView(
-      key: RatingKeys.screen,
-      padding: padding,
-      children: [
-        HistoryFilterBar(
-          chips: [
-            HistoryChipData(
-              name: 'period',
-              label: filter.period == RatingPeriod.all
-                  ? l10n.historyFilterPeriod
-                  : HistoryLabels.period(l10n, filter.period),
-              active: filter.period != RatingPeriod.all,
-            ),
-            HistoryChipData(
-              name: 'result',
-              label: switch (filter.result) {
-                null => l10n.historyFilterResult,
-                AttemptOutcome.win => l10n.attemptWin,
-                AttemptOutcome.draw => l10n.attemptDraw,
-                AttemptOutcome.loss => l10n.attemptLoss,
-              },
-              active: filter.result != null,
-            ),
-            HistoryChipData(
-              name: 'pace',
-              label: filter.pace == null
-                  ? l10n.historyFilterPace
-                  : HistoryLabels.gamePace(l10n, filter.pace!),
-              active: filter.pace != null,
-            ),
+    // As linhas entram em ordem só na primeira vez da aba na sessão
+    // (H-ANI-17): filtrar, trocar de aba ou voltar mostra a lista pronta.
+    return EntradaDaTela(
+      id: 'HistoricoAbaPartidas',
+      child: ListaEmOrdem(
+        montar: (itens) =>
+            ListView(key: RatingKeys.screen, padding: padding, children: itens),
+        itens: [
+          if (filteredOut)
+            HistoryFilteredEmpty(
+              message: l10n.historyEmptyFilteredGames,
+              onClear: () => cubit.applyGamesFilter(const GamesHistoryFilter()),
+            )
+          else ...[
+            if (games.isNotEmpty) ...[
+              HistoryScore(
+                items: [
+                  (score.wins, l10n.historyStatWins(score.wins)),
+                  (score.draws, l10n.historyStatDraws(score.draws)),
+                  (score.losses, l10n.historyStatLosses(score.losses)),
+                ],
+              ),
+              ..._months(context, state, games),
+            ] else
+              _empty(context),
           ],
-          onOpen: () => _openSheet(context, state),
-        ),
-        if (filteredOut)
-          HistoryFilteredEmpty(
-            message: l10n.historyEmptyFilteredGames,
-            onClear: () => cubit.applyGamesFilter(const GamesHistoryFilter()),
-          )
-        else ...[
-          HistoryRatingCard(state: state),
-          if (games.isNotEmpty) ...[
-            HistoryScore(
-              items: [
-                (score.wins, l10n.historyStatWins(score.wins)),
-                (score.draws, l10n.historyStatDraws(score.draws)),
-                (score.losses, l10n.historyStatLosses(score.losses)),
-              ],
-            ),
-            ..._months(context, state, games),
-          ] else
-            _empty(context),
         ],
-      ],
+      ),
     );
   }
 
@@ -184,9 +160,11 @@ class HistoryGamesTab extends StatelessWidget {
     return children;
   }
 
-  Future<void> _openSheet(BuildContext context, HistoryState state) async {
-    final l10n = context.l10n;
+  /// Abre a folha de filtros da aba (o ícone da barra de cima chama).
+  Future<void> openFilter(BuildContext context) async {
     final cubit = context.read<HistoryCubit>();
+    final state = cubit.state;
+    final l10n = context.l10n;
     final now = state.now ?? DateTime.utc(2000);
     final chosen = await showHistoryFilterSheet(
       context,
@@ -233,20 +211,28 @@ class HistoryGamesTab extends StatelessWidget {
   }
 }
 
-/// O esqueleto enquanto o Histórico é lido: o cartão e a lista.
+/// O esqueleto enquanto o Histórico é lido (PropV1ParHistoricoCarregando):
+/// as abas (48, raio 24), o cartão (120, raio 16) e cinco linhas (64, raio 12).
 class HistoryLoading extends StatelessWidget {
   const HistoryLoading({super.key});
 
   @override
   Widget build(BuildContext context) => ListView(
     key: HistoryKeys.loading,
-    padding: scrollPadding(context),
-    children: const [
-      Padding(
-        padding: EdgeInsets.all(AppSpacing.screen),
-        child: SkeletonBlock(height: 220, radius: AppShape.large),
-      ),
-      SkeletonList(),
+    padding: scrollPadding(
+      context,
+      left: AppSpacing.screen,
+      right: AppSpacing.screen,
+    ),
+    children: [
+      const SizedBox(height: AppSpacing.screen),
+      const SkeletonBlock(height: 48, radius: 24),
+      const SizedBox(height: AppSpacing.md),
+      const SkeletonBlock(height: 120, radius: AppShape.large),
+      for (var i = 0; i < 5; i++) ...const [
+        SizedBox(height: AppSpacing.md),
+        SkeletonBlock(height: 64, radius: AppShape.medium),
+      ],
     ],
   );
 }

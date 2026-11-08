@@ -1,9 +1,19 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
+import '../../core/widgets/app_bar_progress.dart';
+import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/widgets/skeleton.dart';
+
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,7 +26,9 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/endgames_keys.dart';
+import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_bar_height.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
@@ -30,6 +42,7 @@ import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
 import '../../core/widgets/time_display.dart';
+import '../../core/widgets/training_canvas_layout.dart';
 import '../../../domain/use_cases/step_clock.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
@@ -46,6 +59,8 @@ import '../../../domain/use_cases/wiki_markup.dart';
 import 'move_sentence.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/motion/retorno_do_lance.dart';
+import '../../core/motion/tabuleiro_animado.dart';
 
 /// Um exercício (T72): como a lição roteirizada, o balão do Viktor em cima,
 /// o tabuleiro e, embaixo, a notação dos lances. O feedback do lance vem na
@@ -55,6 +70,7 @@ class ExerciseScreen extends StatefulWidget {
     this.lessonId,
     this.exerciseId,
     this.previewFen,
+    this.trainingTest = false,
     super.key,
   });
 
@@ -64,6 +80,7 @@ class ExerciseScreen extends StatefulWidget {
   final String? lessonId;
   final String? exerciseId;
   final String? previewFen;
+  final bool trainingTest;
 
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
@@ -72,11 +89,117 @@ class ExerciseScreen extends StatefulWidget {
 class _ExerciseScreenState extends State<ExerciseScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   ChessboardController? _board;
+  bool _allowExit = false, _askingExit = false;
 
-  late final _shake = AnimationController(
-    vsync: this,
-    duration: AppMotion.component,
-  );
+  Future<void> _submitTestMove(Move move) async {
+    final cubit = context.read<ExerciseCubit>();
+    final exerciseId = cubit.state.exercise?.id;
+    try {
+      await cubit.submitTestMove(move);
+    } on Object {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+      );
+      while (mounted &&
+          !cubit.isClosed &&
+          cubit.state.exercise?.id == exerciseId &&
+          cubit.state.testAnswerPending) {
+        await Future<void>.delayed(AppMotion.persistenceRetry);
+        if (!mounted ||
+            cubit.isClosed ||
+            cubit.state.exercise?.id != exerciseId) {
+          return;
+        }
+        try {
+          await cubit.submitTestMove(move);
+        } on Object {
+          // Keep the original answer and retry; input remains disabled.
+        }
+      }
+    }
+  }
+
+  Future<void> _requestExit() async {
+    if (_askingExit) return;
+    final cubit = context.read<ExerciseCubit>();
+    if (!widget.trainingTest || cubit.state.locked) {
+      context.pop();
+      return;
+    }
+    _askingExit = true;
+    final done = await cubit.savedExerciseCount();
+    if (!mounted) return;
+    final t = context.l10n;
+    final body = done == 0
+        ? t.testCanvasLeaveEmptyBody
+        : t.trainingTestLeaveBody(done, cubit.state.number);
+    // H-ANI-06: a saída do teste é a folha do kit, sobre o véu.
+    final confirmed = await showLucenaSheet<bool>(
+      context,
+      sheetKey: TrainingKeys.testLeaveDialog,
+      builder: (context) => SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SheetHeader(title: t.trainingTestLeaveTitle, hint: body),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    FilledButton(
+                      key: TrainingKeys.testContinue,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(kButtonHeight),
+                        textStyle: AppButtonText.footer(context),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(
+                        t.trainingTestContinue,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    OutlinedButton(
+                      key: TrainingKeys.testLeave,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(kButtonHeight),
+                        textStyle: AppButtonText.footer(context),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text(
+                        t.trainingTestLeave,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    _askingExit = false;
+    if (confirmed != true || !mounted) return;
+    setState(() => _allowExit = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.pop();
+    });
+  }
+
+  /// O tabuleiro guarda o estado quando o retorno do lance (H-ANI-11) o
+  /// envolve e quando sai.
+  final _boardKey = GlobalKey();
 
   // O cronômetro: anda enquanto o aluno resolve; resolvido, fica parado no
   // tempo final.
@@ -128,7 +251,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     _elapsed.dispose();
     _flash.dispose();
     _board?.dispose();
-    _shake.dispose();
     super.dispose();
   }
 
@@ -155,13 +277,22 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   void _onState(BuildContext context, ExerciseState state) {
     final previous = _previous;
     _previous = state;
+    if (widget.trainingTest &&
+        !state.locked &&
+        state.phase == ExercisePhase.done &&
+        previous.phase != ExercisePhase.done) {
+      final next = state.nextExercise;
+      context.pushReplacement(
+        next == null
+            ? Routes.endgameExercisesDone(state.lesson!.id)
+            : Routes.endgameExercise(state.lesson!.id, next),
+      );
+      return;
+    }
     // Resolvendo: o cronômetro já com o tempo do exercício (ao reabrir o
     // app, o tabuleiro nasce aqui, antes do primeiro tique).
     if (state.phase != ExercisePhase.done) {
       _elapsed.value = context.read<ExerciseCubit>().elapsed;
-    }
-    if (state.mistakes > previous.mistakes) {
-      _shake.forward(from: 0);
     }
     // Outro passo (posição ou fase nova): a casa marcada pela fala sai.
     if (state.fen != previous.fen || state.phase != previous.phase) {
@@ -187,12 +318,31 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final l10n = context.l10n;
     final cubit = context.read<ExerciseCubit>();
     return PopScope(
+      canPop: !widget.trainingTest || _allowExit || cubit.state.locked,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) cubit.leave();
+        if (didPop) {
+          cubit.leave();
+        } else if (widget.trainingTest) {
+          unawaited(_requestExit());
+        }
       },
       child: BlocConsumer<ExerciseCubit, ExerciseState>(
         listener: _onState,
         builder: (context, state) {
+          if (state.failure case final failure?) {
+            return LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(failure),
+              onAction: cubit.retryLoad,
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            );
+          }
+          if (state.missing) {
+            return LoadErrorScreen(
+              kind: LoadErrorKind.notFound,
+              onAction: () => context.go(Routes.home),
+            );
+          }
           if (state.fen != null && _board == null) {
             _board = ChessboardController(game: _gameData(state));
             _elapsed.value = cubit.elapsed;
@@ -202,33 +352,67 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: LucenaAppBar(
+              // H-LIC-45: a app bar de progresso, como no teste de nível. A
+              // barra de 4 px fica dentro da altura padrão (CompTopBar
+              // "progresso"), sem roubar altura do tabuleiro.
+              toolbarHeight: widget.trainingTest
+                  ? AppBarHeight.standard - AppBarProgress.height
+                  : null,
+              bottom: widget.trainingTest && lesson != null && state.count > 0
+                  ? PreferredSize(
+                      preferredSize: const Size.fromHeight(
+                        AppBarProgress.height,
+                      ),
+                      // H-ANI-13: enche do exercício anterior para o atual.
+                      child: BarraQueEnche(
+                        valor: state.number / state.count,
+                        altura: AppBarProgress.height,
+                      ),
+                    )
+                  : null,
+              centerTitle: widget.trainingTest ? true : null,
+              leading: widget.trainingTest
+                  ? BackButton(
+                      key: TrainingKeys.testBack,
+                      onPressed: _requestExit,
+                    )
+                  : null,
               title: lesson == null
                   ? null
                   : Text(
-                      l10n.exerciseTitle(state.number, state.count),
+                      widget.trainingTest
+                          ? l10n.testCanvasCounter(state.number, state.count)
+                          : l10n.exerciseTitle(state.number, state.count),
                       key: ExerciseKeys.counter,
                     ),
               // O que o exercício vale agora: dourada (3), prata (2) ou
               // bronze (1); cada erro ou dica desce um degrau, e a vazia fica
               // vazia até o fim.
               actions: [
-                if (state.exercise case final exercise?)
+                // Regra da app bar (T85): a estrela já aparece no
+                // carregando, apagada.
+                if (!widget.trainingTest)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(
                       end: AppSpacing.md,
                     ),
                     child: Semantics(
-                      label: _starLabel(l10n, state, exercise),
+                      label: state.exercise == null
+                          ? null
+                          : _starLabel(l10n, state, state.exercise!),
                       excludeSemantics: true,
                       // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
                       // ainda vale pontos, vazia se não.
                       child: Icon(
-                        state.worth > 0
+                        state.exercise == null || state.worth > 0
                             ? Icons.star_rounded
                             : Icons.star_outline_rounded,
                         key: ExerciseKeys.stars,
                         size: AppIconSize.large,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: state.exercise == null
+                            ? Theme.of(context).colorScheme.onSurface
+                                  .withValues(alpha: 0.38)
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -271,6 +455,25 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final boardSettings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
+    if (widget.trainingTest && !state.locked && state.viktor != null) {
+      return Column(
+        children: [
+          Expanded(
+            child: TrainingCanvasPage(
+              pageKey: ExerciseKeys.page,
+              teacher: state.viktor!,
+              text: state.side == Side.white
+                  ? l10n.testCanvasWhite
+                  : l10n.testCanvasBlack,
+              boardBuilder: (size) =>
+                  _boardArea(context, state, boardSettings, size: size),
+              notation: const SizedBox(height: 40),
+            ),
+          ),
+          const TrainingCanvasFooter(),
+        ],
+      );
+    }
     final hide = context.select(
       (SettingsCubit c) => c.state?.exerciseHiddenMoves ?? false,
     );
@@ -518,7 +721,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   /// Enquanto o exercício carrega: o tabuleiro parado no centro (se a rota
   /// trouxe a posição), para a miniatura pousar nele.
   Widget _loading(BuildContext context, ExerciseState state) {
-    if (widget.previewFen == null) return const SizedBox.shrink();
+    if (widget.previewFen == null) return const SkeletonList();
     return ScriptPage(
       pageKey: ExerciseKeys.page,
       speechBuilder: (_) => const SizedBox.shrink(),
@@ -544,12 +747,77 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final exerciseId = state.exercise?.id ?? widget.exerciseId ?? '';
     final hint = state.hint;
     final wrong = state.wrongMove;
-    return AnimatedBuilder(
-      animation: _shake,
-      builder: (context, child) => Transform.translate(
-        offset: Offset(sin(_shake.value * pi * 4) * 8 * (1 - _shake.value), 0),
-        child: child,
+    final retorno = _retorno(state);
+    final child = KeyedSubtree(
+      key: _boardKey,
+      child: _boardStack(
+        context,
+        state,
+        boardSettings,
+        size: size,
+        board: board,
+        previewFen: previewFen,
+        lessonId: lessonId,
+        exerciseId: exerciseId,
+        hint: hint,
+        wrong: wrong,
       ),
+    );
+    if (retorno == null) return child;
+    // H-ANI-11/12: o selo salta na peça e o tabuleiro
+    // respira (acerto) ou fica parado (erro). O teste do capítulo não tem
+    // retorno.
+    return RetornoDoLance(
+      key: ValueKey(retorno.id),
+      tipo: retorno.tipo,
+      casa: retorno.casa,
+      orientacao: state.side,
+      tamanho: size,
+      vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
+      child: child,
+    );
+  }
+
+  /// O retorno do último lance do aluno, se houver.
+  ({TipoDeRetorno tipo, Square casa, String id})? _retorno(
+    ExerciseState state,
+  ) {
+    if (widget.trainingTest) return null;
+    if (state.wrongMove case final NormalMove wrong) {
+      return (
+        tipo: TipoDeRetorno.erro,
+        casa: wrong.to,
+        id: 'e${state.mistakes}',
+      );
+    }
+    if (state.say == ExerciseSay.correct) {
+      if (state.sayMove case (:final fenBefore, :final uci)) {
+        if (Move.parse(uci) case final NormalMove move) {
+          return (
+            tipo: TipoDeRetorno.acerto,
+            casa: move.to,
+            id: '$fenBefore $uci',
+          );
+        }
+      }
+    }
+    return null;
+  }
+
+  Widget _boardStack(
+    BuildContext context,
+    ExerciseState state,
+    BoardSettings boardSettings, {
+    required double size,
+    required ChessboardController? board,
+    required String? previewFen,
+    required String lessonId,
+    required String exerciseId,
+    required Move? hint,
+    required Move? wrong,
+  }) {
+    return SizedBox.square(
+      dimension: size,
       // A miniatura da lista voa até aqui e vira o tabuleiro.
       child: Hero(
         tag: exerciseHeroTag(lessonId, exerciseId),
@@ -566,41 +834,53 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 // comentado (canvas PropV2ExA3/A8).
                 child: ListenableBuilder(
                   listenable: _flash,
-                  builder: (context, _) => Chessboard(
-                    key: ExerciseKeys.board,
-                    size: size,
-                    controller: board,
-                    settings: boardSettings.chessground,
-                    orientation: state.side,
-                    shapes: {
-                      // A casa tocada na fala do professor.
-                      if (_flash.square case final flashed?)
-                        Circle(
-                          color: ScriptShapes.arrow(
-                            Theme.of(context).colorScheme,
-                            'b',
+                  // H-ANI-10: deslize do kit, captura e halo do xeque.
+                  builder: (context, _) => TabuleiroAnimado(
+                    controlador: board,
+                    orientacao: state.side,
+                    tamanho: size,
+                    pecas: boardSettings.chessground.pieceAssets,
+                    child: Chessboard(
+                      key: ExerciseKeys.board,
+                      size: size,
+                      controller: board,
+                      settings: TabuleiroAnimado.ajustes(
+                        context,
+                        boardSettings.chessground,
+                      ),
+                      orientation: state.side,
+                      shapes: {
+                        // A casa tocada na fala do professor.
+                        if (_flash.square case final flashed?)
+                          Circle(
+                            color: ScriptShapes.arrow(
+                              Theme.of(context).colorScheme,
+                              'b',
+                            ),
+                            orig: Square.fromName(flashed),
                           ),
-                          orig: Square.fromName(flashed),
-                        ),
-                      if (hint is NormalMove)
-                        Arrow(
-                          color: AppColors.successColor.withValues(
-                            alpha: AppColors.boardMarkAlpha,
+                        if (hint is NormalMove)
+                          Arrow(
+                            color: AppColors.successColor.withValues(
+                              alpha: AppColors.boardMarkAlpha,
+                            ),
+                            orig: hint.from,
+                            dest: hint.to,
                           ),
-                          orig: hint.from,
-                          dest: hint.to,
-                        ),
-                      if (wrong is NormalMove)
-                        Arrow(
-                          color: AppColors.errorColor.withValues(
-                            alpha: AppColors.boardMarkAlpha,
+                        if (wrong is NormalMove)
+                          Arrow(
+                            color: AppColors.errorColor.withValues(
+                              alpha: AppColors.boardMarkAlpha,
+                            ),
+                            orig: wrong.from,
+                            dest: wrong.to,
                           ),
-                          orig: wrong.from,
-                          dest: wrong.to,
-                        ),
-                    },
-                    onMove: (move, {viaDragAndDrop}) =>
-                        context.read<ExerciseCubit>().play(move),
+                      },
+                      onMove: (move, {viaDragAndDrop}) =>
+                          widget.trainingTest && !state.locked
+                          ? _submitTestMove(move)
+                          : context.read<ExerciseCubit>().play(move),
+                    ),
                   ),
                 ),
               ),

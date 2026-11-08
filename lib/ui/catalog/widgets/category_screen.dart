@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+
+import '../../course_guide/widgets/training_load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -39,6 +43,17 @@ class CategoryScreen extends StatelessWidget {
     final sections = context.select(
       (CatalogCubit cubit) => cubit.state.sections,
     );
+    final failure = context.watch<CatalogCubit>().state.failure;
+    if (failure != null) {
+      return trainingLoadError(
+        context,
+        failure,
+        () => context.read<CatalogCubit>().load(
+          category: category,
+          subcategory: subcategory,
+        ),
+      );
+    }
     return Scaffold(
       key: CatalogKeys.categoryScreen,
       appBar: LucenaAppBar(
@@ -57,17 +72,21 @@ class CategoryScreen extends StatelessWidget {
             ),
           const GoalFilterBar(),
           Expanded(
-            child: sections == null
-                ? const SkeletonList()
-                : sections.isEmpty
-                ? const CatalogEmpty()
-                : ListView.builder(
-                    key: CatalogKeys.positionList,
-                    padding: scrollPadding(context),
-                    itemCount: sections.length,
-                    itemBuilder: (context, index) =>
-                        _Section(section: sections[index], blind: blind),
-                  ),
+            child: ShimmerConteudo(
+              carregando: sections == null,
+              esqueleto: const SkeletonList(),
+              child: sections == null
+                  ? const SizedBox.shrink()
+                  : sections.isEmpty
+                  ? const CatalogEmpty()
+                  : ListView.builder(
+                      key: CatalogKeys.positionList,
+                      padding: scrollPadding(context),
+                      itemCount: sections.length,
+                      itemBuilder: (context, index) =>
+                          _Section(section: sections[index], blind: blind),
+                    ),
+            ),
           ),
         ],
       ),
@@ -273,7 +292,7 @@ class _PositionCell extends StatelessWidget {
     return PositionCard(
       key: CatalogKeys.position(position.id),
       fen: position.fen,
-      heroTag: catalogBoardTag(position.id),
+      heroId: position.fen,
       doneKey: fulfilled ? CatalogKeys.fulfilled(position.id) : null,
       doneLabel: fulfilled ? l10n.catalogFulfilled : null,
       onTap: () => context.push(

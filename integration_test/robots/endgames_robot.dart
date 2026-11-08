@@ -1,11 +1,14 @@
+import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/routing/routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
-import 'package:lucena/data/services/asset_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:lucena/data/services/lesson_content_service.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
@@ -14,7 +17,6 @@ import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';
-import 'home_robot.dart';
 
 /// As aulas de finais do Viktor: a trilha, a aula, a lição e os exercícios.
 ///
@@ -25,9 +27,16 @@ class EndgamesRobot {
 
   final PatrolIntegrationTester $;
 
+  // As aulas não vão no APK: vêm do servidor de conteúdo (CONTENT_URL),
+  // pela mesma fonte do app.
+  static final _content = createLessonContentAssets(
+    releaseBuild: kReleaseMode,
+    firebase: false,
+    localUrl: const String.fromEnvironment('CONTENT_URL'),
+  );
   static final _lessons = AssetEndgameLessonRepository(
-    const AssetService(),
-    school: AssetLessonRepository(const AssetService()),
+    _content,
+    school: AssetLessonRepository(_content),
   );
 
   /// A aula [id] como o app a lê.
@@ -38,7 +47,12 @@ class EndgamesRobot {
 
   /// Da tela inicial, pelo cartão das aulas de finais.
   Future<void> openFromHome() async {
-    await tapHomePath($, HomePath.endgames);
+    // T85: o Curso de finais só abre pela Escola, depois de formado; o
+    // cenário vai direto à trilha (a formatura tem cenário próprio).
+    await $(HomeKeys.screen).waitUntilVisible();
+    GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+        .push(Routes.endgames);
+    await $.pumpAndSettle();
     await $(EndgamesKeys.screen).waitUntilVisible();
   }
 

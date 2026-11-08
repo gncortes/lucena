@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,12 +10,14 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/staggered_entrance.dart';
+import '../../core/motion/barra_que_enche.dart';
+import '../../core/motion/lista_em_ordem.dart';
+import '../../core/motion/segmentado_lucena.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../view_models/achievements_cubit.dart';
 import 'achievement_detail.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/section_title.dart';
 import '../../core/widgets/empty_state.dart';
@@ -30,19 +34,33 @@ class AchievementsScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<AchievementsCubit>().state;
     final all = state.all;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<AchievementsCubit>().load,
+      );
+    }
     return Scaffold(
       key: AchievementsKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.achievementsTitle)),
-      body: all == null
-          ? const SkeletonList()
-          : ListView(
-              padding: scrollPadding(context),
-              children: [
-                _Overall(done: state.unlockedCount, total: all.length),
-                _Filter(selected: state.filter),
-                ..._items(context, state),
-              ],
-            ),
+      // H-ANI-07: a primeira carga brilha e o conteúdo surge no lugar.
+      body: ShimmerConteudo(
+        carregando: all == null,
+        esqueleto: const SkeletonList(),
+        child: all == null
+            ? const SizedBox.shrink()
+            : ListView(
+                padding: scrollPadding(context),
+                children: [
+                  _Overall(done: state.unlockedCount, total: all.length),
+                  _Filter(selected: state.filter),
+                  // H-ANI-17: títulos e medalhas entram em ordem.
+                  ListaEmOrdem(itens: _items(context, state)),
+                ],
+              ),
+      ),
     );
   }
 
@@ -60,11 +78,8 @@ class AchievementsScreen extends StatelessWidget {
         ),
       ];
     }
-    var index = 0;
-    Widget row(Achievement achievement) => StaggeredEntrance(
-      index: index++,
-      child: _AchievementRow(achievement: achievement, state: state),
-    );
+    Widget row(Achievement achievement) =>
+        _AchievementRow(achievement: achievement, state: state);
     // O histórico é uma fileira só, pela data.
     if (state.filter == AchievementsFilter.history) {
       return [for (final achievement in visible) row(achievement)];
@@ -114,15 +129,16 @@ class _Overall extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            context.l10n.achievementsProgress(done, total),
-            key: AchievementsKeys.progress,
+          AchievementCount(
+            value: done,
+            text: (count) => context.l10n.achievementsProgress(count, total),
+            textKey: AchievementsKeys.progress,
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.sm),
-          AnimatedProgress(
+          BarraQueEnche(
             key: AchievementsKeys.progressBar,
-            value: total == 0 ? 0 : done / total,
+            valor: total == 0 ? 0 : done / total,
           ),
         ],
       ),
@@ -144,23 +160,17 @@ class _Filter extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
       child: SizedBox(
         width: double.infinity,
-        child: SegmentedButton<AchievementsFilter>(
-          showSelectedIcon: false,
-          segments: [
-            for (final filter in AchievementsFilter.values)
-              ButtonSegment(
-                value: filter,
-                label: OneLine(switch (filter) {
-                  AchievementsFilter.all => l10n.achievementsFilterAll,
-                  AchievementsFilter.unlocked =>
-                    l10n.achievementsFilterUnlocked,
-                  AchievementsFilter.locked => l10n.achievementsFilterLocked,
-                  AchievementsFilter.history => l10n.achievementsFilterHistory,
-                }, key: AchievementsKeys.filter(filter.name)),
-              ),
-          ],
-          selected: {selected},
-          onSelectionChanged: (selection) => cubit.filter(selection.single),
+        // CompSegmentado do canvas (TelaConquistas), com a troca da H-ANI-21.
+        child: SegmentadoLucena<AchievementsFilter>(
+          valores: AchievementsFilter.values,
+          selecionado: selected,
+          rotulo: (filter) => OneLine(switch (filter) {
+            AchievementsFilter.all => l10n.achievementsFilterAll,
+            AchievementsFilter.unlocked => l10n.achievementsFilterUnlocked,
+            AchievementsFilter.locked => l10n.achievementsFilterLocked,
+            AchievementsFilter.history => l10n.achievementsFilterHistory,
+          }, key: AchievementsKeys.filter(filter.name)),
+          aoEscolher: cubit.filter,
         ),
       ),
     );
@@ -217,11 +227,12 @@ class _AchievementRow extends StatelessWidget {
                 Text(achievement.description(l10n, state.characters)),
                 if (progress != null) ...[
                   const SizedBox(height: AppSpacing.xs),
-                  AnimatedProgress(value: progress.fraction),
+                  BarraQueEnche(valor: progress.fraction),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    progress.label(l10n),
-                    key: AchievementsKeys.itemProgress(achievement.id),
+                  AchievementCount(
+                    value: progress.done,
+                    text: (count) => progress.label(l10n, count: count),
+                    textKey: AchievementsKeys.itemProgress(achievement.id),
                     style: theme.textTheme.labelMedium,
                   ),
                 ],

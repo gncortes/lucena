@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +25,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/race_warm_up_cubit.dart';
 import 'race_game_view.dart';
 import 'race_scoreboard.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// O que a tela do aquecimento precisa de quem a abriu: o adversário que
 /// espera, o final do desafio (para escolher os problemas) e o que fazer ao
@@ -64,6 +68,15 @@ class RaceWarmUpScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<RaceWarmUpCubit>().state;
     final cubit = context.read<RaceWarmUpCubit>();
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        () =>
+            cubit.load(subcategory: args.subcategory, category: args.category),
+      );
+    }
     final settings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
@@ -80,87 +93,91 @@ class RaceWarmUpScreen extends StatelessWidget {
         ),
         title: Text(l10n.raceWarmUpTitle),
       ),
-      body: state.done
-          ? _Done(state: state, args: args)
-          : problem == null
-          ? const SizedBox.shrink()
-          : Stack(
-              fit: StackFit.expand,
-              children: [
-                SafeArea(
-                  child: CenteredBoardLayout(
-                    balanced: true,
-                    reserveTop: RaceScoreboard.height,
-                    reserveBottom: RaceGameView.bottomRoom(context),
-                    footer: const SizedBox(height: GameActionsBar.height),
-                    top: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: AppSpacing.sm,
-                      children: [
-                        InfoChip(
-                          key: objectiveKey,
-                          label: l10n.raceWarmUpObjective,
-                          icon: goal.icon,
-                          background: goal.container,
-                          foreground: goal.onContainer,
+      body: ShimmerConteudo(
+        carregando: !state.done && problem == null,
+        esqueleto: const SkeletonList(),
+        child: state.done
+            ? _Done(state: state, args: args)
+            : problem == null
+            ? const SizedBox.shrink()
+            : Stack(
+                fit: StackFit.expand,
+                children: [
+                  SafeArea(
+                    child: CenteredBoardLayout(
+                      balanced: true,
+                      reserveTop: RaceScoreboard.height,
+                      reserveBottom: RaceGameView.bottomRoom(context),
+                      footer: const SizedBox(height: GameActionsBar.height),
+                      top: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: AppSpacing.sm,
+                        children: [
+                          InfoChip(
+                            key: objectiveKey,
+                            label: l10n.raceWarmUpObjective,
+                            icon: goal.icon,
+                            background: goal.container,
+                            foreground: goal.onContainer,
+                          ),
+                          Text(
+                            problem.side == Side.white
+                                ? l10n.sideWhite
+                                : l10n.sideBlack,
+                            key: sideKey,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ],
+                      ),
+                      board: LayoutBuilder(
+                        builder: (context, box) => RaceFadingBoard(
+                          size: box.maxWidth,
+                          problem: problem,
+                          fen: state.boardFen ?? problem.fen,
+                          locked: state.replying,
+                          turn: state.results.length,
+                          settings: settings,
+                          onMove: (move) => cubit.answer(move.uci),
                         ),
-                        Text(
-                          problem.side == Side.white
-                              ? l10n.sideWhite
-                              : l10n.sideBlack,
-                          key: sideKey,
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                      ],
-                    ),
-                    board: LayoutBuilder(
-                      builder: (context, box) => RaceFadingBoard(
-                        size: box.maxWidth,
-                        problem: problem,
-                        fen: state.boardFen ?? problem.fen,
-                        locked: state.replying,
-                        turn: state.results.length,
-                        settings: settings,
-                        onMove: (move) => cubit.answer(move.uci),
+                      ),
+                      bottom: PlayersRow(
+                        detailed: true,
+                        board: settings,
+                        players: [
+                          PlayerEntry(
+                            side: problem.side,
+                            name: l10n.reviewYou,
+                            detail: l10n.raceWarmUpProgress(
+                              state.results.length + 1,
+                              state.problems.length,
+                            ),
+                            detailKey: RaceKeys.warmUpProgress,
+                          ),
+                        ],
                       ),
                     ),
-                    bottom: PlayersRow(
-                      detailed: true,
-                      board: settings,
-                      players: [
-                        PlayerEntry(
-                          side: problem.side,
-                          name: l10n.reviewYou,
-                          detail: l10n.raceWarmUpProgress(
-                            state.results.length + 1,
-                            state.problems.length,
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: SafeArea(
+                      top: false,
+                      child: ActionsBar(
+                        children: [
+                          GameActionButton(
+                            buttonKey: RaceKeys.warmUpSkip,
+                            icon: Icons.skip_next,
+                            label: l10n.raceWarmUpSkip,
+                            onPressed: () => args.onPlay(context),
                           ),
-                          detailKey: RaceKeys.warmUpProgress,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: SafeArea(
-                    top: false,
-                    child: ActionsBar(
-                      children: [
-                        GameActionButton(
-                          buttonKey: RaceKeys.warmUpSkip,
-                          icon: Icons.skip_next,
-                          label: l10n.raceWarmUpSkip,
-                          onPressed: () => args.onPlay(context),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 }

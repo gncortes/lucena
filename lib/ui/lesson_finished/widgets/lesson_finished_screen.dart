@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -6,11 +9,12 @@ import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/lesson_finished_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/celebracao.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../catalog/widgets/catalog_ui.dart';
-import '../../core/widgets/celebration.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/next_steps.dart';
 import '../../survey/widgets/survey_invite_card.dart';
@@ -34,21 +38,32 @@ class LessonFinishedScreen extends StatelessWidget {
   /// O curso de onde a pessoa veio: a Escola ou as aulas de finais.
   bool get _school => kind == SurveyKind.school;
 
+  String _backRoute(BuildContext context) {
+    final origin = GoRouterState.of(context).uri.queryParameters['origem'];
+    if (origin?.startsWith('treino_') == true) {
+      return Routes.training(_school ? 'escola' : 'pilares');
+    }
+    return _school ? Routes.school : Routes.endgames;
+  }
+
   void _next(BuildContext context, String id) {
+    final origin = GoRouterState.of(context).uri.queryParameters['origem'];
     context.pushReplacement(
-      _school ? Routes.lessonScript(id) : Routes.endgameLessonScript(id),
+      _school
+          ? Routes.lessonScript(id, origin: origin)
+          : Routes.endgameLessonScript(id, origin: origin),
     );
   }
 
   /// As opções dos "Próximos passos"; nulas na Escola.
   List<NextStep>? _steps(BuildContext context, LessonFinishedState state) {
     final practice = state.practice;
-    if (_school || practice == null) return null;
+    if (_school) return null;
     final l10n = context.l10n;
     final subcategory = state.raceSubcategory;
     final name = subcategory == null ? null : endgameName(l10n, subcategory);
     return [
-      if (subcategory != null)
+      if (practice != null && subcategory != null)
         NextStep(
           id: 'raceOnly',
           icon: Icons.timer,
@@ -56,21 +71,22 @@ class LessonFinishedScreen extends StatelessWidget {
           body: l10n.lessonFinishedRaceBody,
           onTap: () => context.push(Routes.raceOnly(subcategory: subcategory)),
         ),
-      NextStep(
-        id: 'train',
-        icon: Icons.sports_esports,
-        title: name == null
-            ? l10n.lessonFinishedTrainTitle
-            : l10n.nextStepsPractice(name),
-        body: l10n.lessonFinishedTrainBody,
-        onTap: () => context.push(
-          Routes.setup(
-            practice.fen,
-            goal: practice.goal.code,
-            position: practice.positionId,
+      if (practice != null)
+        NextStep(
+          id: 'train',
+          icon: Icons.sports_esports,
+          title: name == null
+              ? l10n.lessonFinishedTrainTitle
+              : l10n.nextStepsPractice(name),
+          body: l10n.lessonFinishedTrainBody,
+          onTap: () => context.push(
+            Routes.setup(
+              practice.fen,
+              goal: practice.goal.code,
+              position: practice.positionId,
+            ),
           ),
         ),
-      ),
       if (state.hasExercises)
         NextStep(
           id: 'exercises',
@@ -86,6 +102,17 @@ class LessonFinishedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final failure = context.watch<LessonFinishedCubit>().state.failure;
+    if (failure != null) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: () => context.read<LessonFinishedCubit>().load(
+          Localizations.localeOf(context).languageCode,
+        ),
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final colors = Theme.of(context).colorScheme;
     return BlocBuilder<LessonFinishedCubit, LessonFinishedState>(
       builder: (context, state) => Scaffold(
@@ -93,70 +120,71 @@ class LessonFinishedScreen extends StatelessWidget {
         appBar: LucenaAppBar(
           title: Text(state.title),
           leading: IconButton(
+            key: LessonFinishedKeys.close,
             icon: const Icon(Icons.close),
             tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () =>
-                context.go(_school ? Routes.school : Routes.endgames),
+            onPressed: () => context.go(_backRoute(context)),
           ),
         ),
-        body: Stack(
-          children: [
-            // O bloco fica centralizado na altura quando cabe e rola quando
-            // não cabe (canvas: `<main>` com `justify-content: center`).
-            LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xl,
-                  vertical: AppSpacing.lg,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight - 2 * AppSpacing.lg,
+        body: Celebracao(
+          tamanho: TamanhoDaCelebracao.pequena,
+          escalar: false,
+          child:
+              // O bloco fica centralizado na altura quando cabe e rola quando
+              // não cabe (canvas: `<main>` com `justify-content: center`).
+              LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
+                    vertical: AppSpacing.lg,
                   ),
-                  child: state.ready
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          spacing: _blockGap,
-                          children: [
-                            Column(
-                              spacing: AppSpacing.lg,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 2 * AppSpacing.lg,
+                    ),
+                    child: state.ready
+                        // H-ANI-25: o selo salta, o título sobe, os próximos
+                        // passos e o convite entram e os botões vêm por último;
+                        // a mesma aula concluída de novo na sessão abre pronta.
+                        ? EntradaDeResultado(
+                            id: 'aula-${state.lessonId}',
+                            estrela: Container(
+                              width: 104,
+                              height: 104,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: colors.primaryContainer,
+                              ),
+                              child: Icon(
+                                Icons.check_circle,
+                                size: _iconSize,
+                                color: colors.onPrimaryContainer,
+                              ),
+                            ),
+                            titulo: Text(
+                              l10n.lessonFinishedTitle(state.title),
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            viktor: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: _blockGap,
                               children: [
-                                Container(
-                                  width: 104,
-                                  height: 104,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: colors.primaryContainer,
-                                  ),
-                                  child: Icon(
-                                    Icons.check_circle,
-                                    size: _iconSize,
-                                    color: colors.onPrimaryContainer,
-                                  ),
-                                ),
-                                Text(
-                                  l10n.lessonFinishedTitle(state.title),
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                if (_steps(context, state) case final steps?
+                                    when steps.isNotEmpty) ...[
+                                  NextSteps(steps: steps),
+                                  const ResultsInfoLine(),
+                                ],
+                                SurveyInviteCard(
+                                  kind: kind,
+                                  source: _school
+                                      ? SurveyInviteSource.schoolLesson
+                                      : SurveyInviteSource.pilaresLesson,
                                 ),
                               ],
                             ),
-                            if (_steps(context, state) case final steps?
-                                when steps.isNotEmpty) ...[
-                              NextSteps(steps: steps),
-                              const ResultsInfoLine(),
-                            ],
-                            SurveyInviteCard(
-                              kind: kind,
-                              source: _school
-                                  ? SurveyInviteSource.schoolLesson
-                                  : SurveyInviteSource.endgameLesson,
-                            ),
-                            FooterButtonTheme(
+                            botoes: FooterButtonTheme(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 spacing: AppSpacing.md,
@@ -180,11 +208,8 @@ class LessonFinishedScreen extends StatelessWidget {
                                     height: kButtonHeight,
                                     child: OutlinedButton(
                                       key: LessonFinishedKeys.back,
-                                      onPressed: () => context.go(
-                                        _school
-                                            ? Routes.school
-                                            : Routes.endgames,
-                                      ),
+                                      onPressed: () =>
+                                          context.go(_backRoute(context)),
                                       child: Text(
                                         _school
                                             ? l10n.surveyBackToSchool
@@ -195,14 +220,25 @@ class LessonFinishedScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          ],
-                        )
-                      : const SizedBox.shrink(),
+                            // O selo e o título juntos; o resto com o espaço
+                            // do canvas entre os blocos.
+                            montar: (partes) => Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              spacing: _blockGap,
+                              children: [
+                                Column(
+                                  spacing: AppSpacing.lg,
+                                  children: partes.sublist(0, 2),
+                                ),
+                                ...partes.sublist(2),
+                              ],
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
                 ),
               ),
-            ),
-            const Positioned.fill(child: IgnorePointer(child: Celebration())),
-          ],
         ),
       ),
     );

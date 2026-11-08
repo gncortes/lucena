@@ -42,8 +42,18 @@ class FakeVoiceRepository implements VoiceRepository {
   /// Conta [event] a quem ouve, como o sintetizador.
   void emit(TtsEvent event) => _events.add(event);
 
+  /// Quando não nulo, a próxima leitura lança este erro.
+  Object? loadError;
+
   @override
-  Future<VoiceSettings> load() async => settings;
+  Future<VoiceSettings> load() async {
+    final error = loadError;
+    if (error != null) {
+      loadError = null;
+      throw error;
+    }
+    return settings;
+  }
 
   @override
   Future<void> save(VoiceSettings settings) async => this.settings = settings;

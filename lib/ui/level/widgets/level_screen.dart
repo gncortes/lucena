@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/skeleton.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,7 +17,6 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/choice_card.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/viktor_conversation.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../view_models/level_cubit.dart';
@@ -129,7 +132,7 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
         await _open(Routes.levelChess);
       case LevelChoice.manual:
         await _open(Routes.levelRating);
-      case LevelChoice.zero:
+      case LevelChoice.zero || LevelChoice.band:
         await cubit.finish();
     }
   }
@@ -149,24 +152,24 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
           listener: (context, state) => unawaited(_onFinished(state)),
         ),
         // A volta do Lichess (também com o app reaberto por ela).
-        BlocListener<LevelCubit, LevelState>(
-          listenWhen: (previous, current) =>
-              previous.lichess == null && current.lichess != null,
-          listener: (context, state) => _open(Routes.levelLichess),
-        ),
-        BlocListener<LevelCubit, LevelState>(
-          listenWhen: (previous, current) =>
-              current.errorCount != previous.errorCount &&
-              current.error == LevelError.lichessOffline,
-          listener: (context, state) =>
-              showLucenaSnackBar(context, l10n.levelLichessOffline),
-        ),
+        ...lichessOwnerListeners(),
       ],
       child: BlocBuilder<LevelCubit, LevelState>(
         builder: (context, state) {
-          if (!state.ready) return const Scaffold(key: LevelKeys.screen);
+          if (state.failure case final failure?) {
+            return LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(failure),
+              onAction: context.read<LevelCubit>().load,
+            );
+          }
+          if (!state.ready) {
+            return const Scaffold(key: LevelKeys.screen, body: SkeletonList());
+          }
           final choice = state.choice;
           final placed = state.placed;
+          // Pelo Perfil, os textos do quadro PropV1PerfilNivel (H-CON-16); a
+          // abertura é da frente da Abertura (H-ABE-08).
+          final profile = cubit.fromProfile;
           Widget card(
             LevelChoice option,
             IconData icon,
@@ -201,7 +204,9 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                   children: [
                     ViktorConversation(
                       viktor: state.viktor,
-                      speech: l10n.levelViktorSay,
+                      speech: profile
+                          ? l10n.conNivelViktor
+                          : l10n.levelViktorSay,
                       viktorKey: LevelKeys.viktor,
                       speechKey: LevelKeys.speech,
                     ),
@@ -220,18 +225,24 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                               LevelChoice.lichess,
                               Icons.link,
                               l10n.levelLichessTitle,
-                              l10n.levelLichessText,
+                              profile
+                                  ? l10n.conNivelLichess
+                                  : l10n.levelLichessText,
                             ),
                             card(
                               LevelChoice.chess,
                               Icons.link,
                               l10n.levelChessTitle,
-                              l10n.levelChessText,
+                              profile
+                                  ? l10n.conNivelChess
+                                  : l10n.levelChessText,
                             ),
                             card(
                               LevelChoice.manual,
                               Icons.trending_up,
-                              l10n.levelManualTitle,
+                              profile
+                                  ? l10n.conNivelManual
+                                  : l10n.levelManualTitle,
                               l10n.levelManualText,
                             ),
                           ] else ...[
@@ -258,8 +269,12 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                               // Com a Escola escondida, quem não sabe jogar cai
                               // na tela inicial: o texto não promete a Escola.
                               VisibleLessons.school
-                                  ? l10n.levelZeroText
-                                  : l10n.levelZeroTextHome,
+                                  ? (profile
+                                        ? l10n.conNivelZero
+                                        : l10n.levelZeroText)
+                                  : (profile
+                                        ? l10n.conNivelZeroHome
+                                        : l10n.levelZeroTextHome),
                             ),
                           ],
                         ],

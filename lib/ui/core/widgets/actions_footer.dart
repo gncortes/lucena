@@ -20,6 +20,7 @@ class ActionsFooter extends StatelessWidget {
     this.fade = false,
     this.stacked = false,
     this.margin = AppSpacing.lg,
+    this.padding,
     this.note,
     this.noteAfter,
     super.key,
@@ -32,7 +33,8 @@ class ActionsFooter extends StatelessWidget {
   final Widget? note;
 
   /// Com [stacked], a [note] entra logo depois deste filho em vez de no fim
-  /// (o aviso que fala do botão fica colado nele).
+  /// (o aviso que fala do botão fica colado nele); -1 a põe antes do primeiro
+  /// (a caixa do aceite, acima do Continuar).
   final int? noteAfter;
   final bool fade;
   final bool stacked;
@@ -40,12 +42,16 @@ class ActionsFooter extends StatelessWidget {
   /// A margem dos lados: 16 na tela; 24 na folha e no painel da Nova partida.
   final double margin;
 
+  /// Canvas variants can override the outer spacing while keeping the same buttons.
+  final EdgeInsetsGeometry? padding;
+
   @override
   Widget build(BuildContext context) {
     final background = Theme.of(context).scaffoldBackgroundColor;
     final note = this.note;
     final after = stacked ? noteAfter : null;
     final items = [
+      if (note != null && after == -1) note,
       for (final (i, child) in children.indexed) ...[
         stacked
             ? SizedBox(height: kButtonHeight, child: child)
@@ -78,12 +84,14 @@ class ActionsFooter extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            margin,
-            fade ? AppSpacing.xl : AppSpacing.sm,
-            margin,
-            AppSpacing.sm,
-          ),
+          padding:
+              padding ??
+              EdgeInsets.fromLTRB(
+                margin,
+                fade ? AppSpacing.xl : AppSpacing.sm,
+                margin,
+                AppSpacing.sm,
+              ),
           child: FooterButtonTheme(
             child: note == null || after != null
                 ? buttons

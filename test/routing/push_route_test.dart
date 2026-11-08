@@ -33,15 +33,15 @@ void main() {
 
   test('o endereço do app vale como o caminho', () async {
     expect(
-      await route('https://playlucena.com/daily'),
+      await route('https://playlucenachess.com/daily'),
       Routes.dailyFrom('aviso'),
     );
     expect(
-      await route('https://playlucena.com/dia'),
+      await route('https://playlucenachess.com/dia'),
       Routes.dailyFrom('aviso'),
     );
     expect(
-      await route('https://playlucena.com/featured/tournament/wch'),
+      await route('https://playlucenachess.com/featured/tournament/wch'),
       Routes.featuredTournament('wch'),
     );
   });
@@ -53,15 +53,25 @@ void main() {
     );
   });
 
+  test('o curso e o capítulo (H-R5-63)', () async {
+    expect(await route('/curso/pilares'), Routes.training('pilares'));
+    expect(
+      await route('/curso/pilares/3'),
+      Routes.trainingChapter('pilares', '3'),
+    );
+    expect(await route('/course/escola'), Routes.training('escola'));
+    expect(await route('/curso/xadrez-total'), isNull);
+  });
+
   test(
-    'aula já terminada, outro site ou tela desconhecida: o início',
+    'aula já terminada, outro site ou tela desconhecida: sem destino',
     () async {
-      expect(await route('/lesson', lesson: null), Routes.home);
-      expect(await route('https://example.com/daily'), Routes.home);
-      expect(await route('javascript:/daily'), Routes.home);
-      expect(await route('/settings'), Routes.home);
+      expect(await route('/lesson', lesson: null), isNull);
+      expect(await route('https://example.com/daily'), isNull);
+      expect(await route('javascript:/daily'), isNull);
+      expect(await route('/settings'), isNull);
       // Um link de uma versão nova (tela que esta versão não tem).
-      expect(await route('/featured/ranking/2026'), Routes.home);
+      expect(await route('/featured/ranking/2026'), isNull);
     },
   );
 }

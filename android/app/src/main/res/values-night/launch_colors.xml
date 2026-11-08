@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Mesmo fundo da tela inicial do Flutter (tema escuro): a abertura não pisca. -->
+    <!-- Mesmo fundo do primeiro quadro do Flutter, a abertura escura (H-ANI-43/44):
+         entre o toque no ícone e o app não aparece quadro claro. -->
     <color name="launch_background">#14211B</color>
 </resources>

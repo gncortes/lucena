@@ -2,12 +2,17 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../core/motion/entrada_helpers.dart';
+
 import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
+import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/keys/next_steps_keys.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_animado.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/race/view_models/race_cubit.dart';
 import 'package:lucena/ui/race/view_models/race_warm_up_cubit.dart';
@@ -19,6 +24,7 @@ import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_race_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/motion_expectations.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -61,6 +67,44 @@ void main() {
     return cubit;
   }
 
+  // Os acertos do resultado contam pelo NumeroQueConta (H-ANI-25): o texto
+  // visível é o Text dentro da chave.
+  String? acertos(WidgetTester tester) => tester
+      .widget<Text>(
+        find.descendant(
+          of: find.byKey(RaceKeys.resultCorrects),
+          matching: find.byType(Text),
+        ),
+      )
+      .data;
+
+  // H-ANI-16: a introdução da Corrida se monta em ordem, o "Começar" por
+  // último, e o toque fica liberado desde o início.
+  testWidgets('introdução: entra em cascata e o Começar vem por último', (
+    tester,
+  ) async {
+    phone(tester);
+    final cubit = RaceCubit(repository, now);
+    addTearDown(cubit.close);
+    await cubit.load();
+    await tester.pumpWidget(
+      TestApp(
+        settingsCubit: await settings(),
+        child: BlocProvider.value(value: cubit, child: const RaceScreen()),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    final porque = opacidadeAcima(tester, find.byKey(RaceKeys.facts));
+    final comecar = opacidadeAcima(tester, find.byKey(RaceKeys.start));
+    expect(porque, greaterThan(0));
+    expect(comecar, lessThan(porque));
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(opacidadeAcima(tester, find.byKey(RaceKeys.facts)), 1);
+    expect(opacidadeAcima(tester, find.byKey(RaceKeys.start)), 1);
+    await tester.pumpAndSettle();
+  });
+
   // Joga [from] -> [to] no tabuleiro da vez, em dois toques.
   Future<void> move(WidgetTester tester, String from, String to) async {
     final rect = tester.getRect(find.byType(Chessboard));
@@ -75,25 +119,23 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('abertura: regras, filtro de finais, recorde vazio e Começar', (
-    tester,
-  ) async {
+  testWidgets('abertura: três fatos, filtro de finais, recorde vazio e '
+      'Começar', (tester) async {
     await pumpRace(tester);
 
     expect(find.byKey(RaceKeys.introView), findsOneWidget);
-    expect(find.text('3 minutes'), findsOneWidget);
-    // Por que só finais, logo abaixo do título (canvas V2 · Ligações, L4).
-    expect(find.byKey(RaceKeys.whyEndgames), findsOneWidget);
-    expect(find.textContaining('Why only endgames?'), findsOneWidget);
-    expect(find.text('Three mistakes and it is over'), findsOneWidget);
+    expect(find.text('Selected endgame puzzles'), findsOneWidget);
+    // Os três fatos de uma linha; o texto longo e o quadro "Por que só
+    // finais?" saíram (canvas SugP2CorridaIntroA).
+    expect(find.byKey(RaceKeys.facts), findsOneWidget);
+    expect(find.textContaining('3 minutes', findRichText: true), findsOne);
+    expect(find.textContaining('3 mistakes', findRichText: true), findsOne);
+    expect(find.text('Each correct answer raises the level'), findsOne);
+    expect(find.textContaining('Why only endgames?'), findsNothing);
+    expect(find.text('Three mistakes and it is over'), findsNothing);
     final list = find.descendant(
       of: find.byKey(RaceKeys.introView),
       matching: find.byType(Scrollable),
-    );
-    await tester.scrollUntilVisible(
-      find.text('The shortest path counts'),
-      200,
-      scrollable: list,
     );
     // A linha de filtros resume o objetivo e os finais.
     await tester.scrollUntilVisible(
@@ -202,10 +244,10 @@ void main() {
   testWidgets('duração: 5 min troca a regra e fica guardada', (tester) async {
     final cubit = await pumpRace(tester);
 
-    // A seção Duração vem acima das regras (E1.33, opção B).
+    // A seção Duração vem acima dos fatos (E1.33, opção B).
     expect(
       tester.getTopLeft(find.byKey(RaceKeys.duration)).dy,
-      lessThan(tester.getTopLeft(find.text('3 minutes')).dy),
+      lessThan(tester.getTopLeft(find.byKey(RaceKeys.facts)).dy),
     );
     await tester.tap(
       find.byKey(RaceKeys.durationOption(RaceDuration.fiveMinutes)),
@@ -213,7 +255,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(cubit.state.duration, RaceDuration.fiveMinutes);
-    expect(find.text('5 minutes'), findsOneWidget);
+    expect(find.textContaining('5 minutes', findRichText: true), findsOne);
     expect(await repository.duration(), RaceDuration.fiveMinutes);
   });
 
@@ -235,6 +277,62 @@ void main() {
     // O segundo problema entrou no tabuleiro.
     expect(cubit.state.problem?.id, 'race.350.01');
     expect(find.byType(Chessboard), findsOneWidget);
+  });
+
+  // H-ANI-10/11: o tabuleiro é o do kit, e o lance que fecha o problema
+  // ganha o retorno (casa, selo e respiro no acerto) antes da troca.
+  Finder seloDa(IconData icone) => find.descendant(
+    of: find.byKey(MotionKeys.seloNaPeca),
+    matching: find.byIcon(icone),
+  );
+
+  testWidgets('H-ANI-10: o tabuleiro da Corrida é o TabuleiroAnimado', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    await start(tester);
+    final board = find.descendant(
+      of: find.byKey(RaceKeys.board),
+      matching: find.byType(Chessboard),
+    );
+    expect(
+      find.ancestor(of: board, matching: find.byType(TabuleiroAnimado)),
+      findsOneWidget,
+    );
+    expect(
+      tester.widget<Chessboard>(board).settings.animationDuration,
+      TabuleiroAnimado.duracaoDoLance(tester.element(board)),
+    );
+  });
+
+  testWidgets('H-ANI-11: o acerto põe o ✓ na peça, sem pintar a casa', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    await start(tester);
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
+    await move(tester, 'a1', 'g7');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsOneWidget);
+    expect(seloDa(Icons.check), findsOneWidget);
+    expect(seloDa(Icons.close), findsNothing);
+    await tester.pumpAndSettle();
+    // O problema novo entra limpo.
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
+  });
+
+  testWidgets('H-ANI-11: o erro pinta a casa e põe o ✗ na peça', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    await start(tester);
+    await move(tester, 'a1', 'b1');
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsOneWidget);
+    expect(seloDa(Icons.close), findsOneWidget);
+    expect(seloDa(Icons.check), findsNothing);
+    await tester.pumpAndSettle();
+    expect(find.byKey(MotionKeys.tabuleiroDoRetorno), findsNothing);
   });
 
   testWidgets('erro: o ícone de erro aparece e uma chance se perde', (
@@ -264,16 +362,29 @@ void main() {
     }
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
-    expect(find.text('Three mistakes'), findsOneWidget);
-    expect(tester.widget<Text>(find.byKey(RaceKeys.resultCorrects)).data, '0');
+    expect(find.text('Three mistakes and the run ended'), findsOneWidget);
+    // Só 3 problemas: nada de "Ver os N".
+    expect(find.byKey(RaceKeys.seeAllProblems), findsNothing);
+    expect(acertos(tester), '0');
     expect(find.byKey(RaceKeys.problemTile(2)), findsOneWidget);
     expect(find.text('Review the 3 mistakes'), findsOneWidget);
     // Antes de 3 Corridas: quantas faltam para o desempenho por final (L5).
     expect(find.byKey(RaceKeys.diagnosisProgress), findsOneWidget);
-    expect(find.text('1 of 3'), findsOneWidget);
+    expect(
+      find.text('You entered your per-ending performance: 1 of 3'),
+      findsOneWidget,
+    );
     expect(find.byKey(RaceKeys.performance), findsNothing);
 
     await tester.tap(find.byKey(RaceKeys.reviewMistakes));
+    await tester.pump();
+    // H-ANI-25: na revisão, o "Próximo" desliza por último uma vez só; os
+    // erros seguintes trocam com ele já parado.
+    Finder barraDaRevisao() => find.ancestor(
+      of: find.byKey(RaceKeys.reviewNext),
+      matching: find.byKey(MotionKeys.parteDoResultado('botoes')),
+    );
+    expect(opacidadeDaParte(tester, barraDaRevisao()), lessThan(1));
     await tester.pumpAndSettle();
     expect(find.text('Mistake 1 of 3'), findsOneWidget);
     // Lance que também ganhava, só que devagar, tem o texto próprio.
@@ -285,6 +396,8 @@ void main() {
       findsOneWidget,
     );
     await tester.tap(find.byKey(RaceKeys.reviewNext));
+    await tester.pump();
+    expect(opacidadeDaParte(tester, barraDaRevisao()), 1);
     await tester.pumpAndSettle();
     expect(find.text('Mistake 2 of 3'), findsOneWidget);
     await tester.tap(find.byKey(RaceKeys.reviewNext));
@@ -298,6 +411,61 @@ void main() {
     expect(find.byKey(RaceKeys.gameView), findsOneWidget);
     expect(tester.widget<Text>(find.byKey(RaceKeys.count)).data, '0');
   });
+
+  // H-ANI-25: o resultado se monta em ordem; os acertos contam antes de os
+  // botões entrarem, e em 1,3 s tudo está parado.
+  for (final reduzido in [false, true]) {
+    testWidgets('H-ANI-25: o resultado se monta em ordem (reduzido: '
+        '$reduzido)', (tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue =
+          FakeAccessibilityFeatures(disableAnimations: reduzido);
+      addTearDown(
+        tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+      );
+      await pumpRace(tester);
+      await start(tester);
+      for (final (from, to) in [('a1', 'a2'), ('a1', 'b1')]) {
+        await move(tester, from, to);
+        await tester.pumpAndSettle();
+      }
+      await move(tester, 'h1', 'g1');
+      for (var i = 0; i < 300; i++) {
+        if (find.byKey(RaceKeys.resultView).evaluate().isNotEmpty) break;
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      expect(find.byKey(RaceKeys.resultView), findsOneWidget);
+      expectEntradaDeResultado(
+        tester,
+        partes: const ['titulo', 'placar', 'viktor', 'botoes'],
+        animando: !reduzido,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado('placar')),
+          matching: find.byKey(RaceKeys.resultCorrects),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(MotionKeys.parteDoResultado('botoes')),
+          matching: find.byKey(RaceKeys.again),
+        ),
+        findsOneWidget,
+      );
+      await tester.pump(const Duration(milliseconds: 1300));
+      await tester.pump();
+      expect(
+        opacidadeDaParte(
+          tester,
+          find.byKey(MotionKeys.parteDoResultado('botoes')),
+        ),
+        1,
+      );
+      expect(acertos(tester), '0');
+      await tester.pumpAndSettle();
+    });
+  }
 
   testWidgets('com 3 Corridas, o resultado mostra a linha do desempenho e '
       'a dos dados, sem ponto fraco', (tester) async {
@@ -326,7 +494,41 @@ void main() {
     expect(find.byKey(RaceKeys.diagnosisProgress), findsNothing);
     expect(find.byKey(RaceKeys.performance), findsOneWidget);
     expect(find.text('Your performance by endgame'), findsOneWidget);
-    expect(find.byKey(NextStepsKeys.resultsInfo), findsOneWidget);
+    // A linha dos dados saiu do resultado da Corrida (canvas SugP2CorridaFimA).
+    expect(find.byKey(NextStepsKeys.resultsInfo), findsNothing);
+  });
+
+  testWidgets('resultado com 9 problemas: 8 na grade e Ver os 9 abre a lista '
+      'inteira (H-DES-11)', (tester) async {
+    repository = FakeRaceRepository(
+      now: now,
+      ongoing: RaceRun(
+        startedAt: now(),
+        answers: [
+          for (var i = 0; i < 9; i++)
+            RaceAnswer(
+              problemId: 'race.001',
+              level: 600 + i,
+              move: 'a1a2',
+              correct: i != 4,
+            ),
+        ],
+      ),
+    );
+    now.advance(const Duration(minutes: 10));
+    await pumpRace(tester);
+
+    expect(find.byKey(RaceKeys.resultView), findsOneWidget);
+    expect(find.text('Time is up'), findsOneWidget);
+    expect(find.byKey(RaceKeys.problemTile(7)), findsOneWidget);
+    expect(find.byKey(RaceKeys.problemTile(8)), findsNothing);
+    expect(find.text('See all 9'), findsOneWidget);
+
+    await tester.ensureVisible(find.byKey(RaceKeys.seeAllProblems));
+    await tester.tap(find.byKey(RaceKeys.seeAllProblems));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.problemsScreen), findsOneWidget);
+    expect(find.byKey(RaceKeys.problemTile(8)), findsOneWidget);
   });
 
   testWidgets('num celular de 384 de largura, as miniaturas têm vão entre si', (
@@ -361,7 +563,7 @@ void main() {
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
     expect(find.text('Time is up'), findsOneWidget);
-    expect(tester.widget<Text>(find.byKey(RaceKeys.resultCorrects)).data, '1');
+    expect(acertos(tester), '1');
     // Sem erros: não há o que revisar.
     expect(find.byKey(RaceKeys.reviewMistakes), findsNothing);
   });

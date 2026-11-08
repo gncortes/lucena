@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/voice.dart';
+import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/widgets/voice_pickers.dart';
 import 'package:patrol/patrol.dart';
@@ -16,14 +18,28 @@ class VoiceRobot {
 
   /// Escolhe uma voz da lista (e ela fala uma amostra).
   Future<void> choose(String voiceId) async {
-    await $(VoiceKeys.voice(voiceId)).scrollTo().tap();
+    await $(_voiceKey(voiceId)).scrollTo().tap();
     await $.pumpAndSettle();
   }
 
   /// "Sem voz", no tour.
   Future<void> chooseNone() async {
-    await $(VoiceKeys.none).scrollTo().tap();
+    await $(_inTour ? TourKeys.voiceNone : VoiceKeys.none).scrollTo().tap();
     await $.pumpAndSettle();
+  }
+
+  bool get _inTour => find.byKey(TourKeys.screen).evaluate().isNotEmpty;
+
+  /// O tour tem a grade própria, com as vozes numeradas na ordem do idioma.
+  Key _voiceKey(String voiceId) {
+    if (!_inTour) return VoiceKeys.voice(voiceId);
+    final language = voiceLanguage(
+      $.tester.element(find.byKey(TourKeys.screen)),
+    );
+    final voices = TtsVoice.forLanguage(e2eTts.installed, language);
+    final index = voices.indexWhere((v) => v.id == voiceId);
+    expect(index, isNonNegative, reason: 'voz $voiceId fora de $language');
+    return TourKeys.voiceCard(index + 1);
   }
 
   /// O botão de áudio do balão.

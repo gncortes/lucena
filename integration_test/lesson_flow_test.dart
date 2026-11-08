@@ -16,8 +16,8 @@ const _mateInOne = '3k4/8/3K4/8/8/8/8/7Q w - - 0 1';
 /// (barra contínua, demonstração, modo variante, apresentação B) saíram com
 /// ela; a lição nova é coberta por `lesson_script_test.dart`.
 void main() {
-  patrolTest('S1: o selo de vitória entra, some sozinho em 1,6 s e não volta '
-      'ao reabrir', ($) async {
+  patrolTest('S1: o selo de vitória entra e fica sobre o tabuleiro com o '
+      '"Ver o resultado"', ($) async {
     final app = AppRobot($);
     await app.open(systemLocale: _english);
     final board = FreeBoardRobot($);
@@ -29,28 +29,16 @@ void main() {
       goal: 'win',
       position: 'basic.queen.0001',
     );
-    // Sem esperar assentar: o selo inteiro dura 1,6 s.
+    // Sem esperar assentar: o selo entra junto com o lance.
     await board.move('h1', 'h8', settle: false);
     // Sob IgnorePointer: existe, mas não recebe toque.
     await $(FreeBoardKeys.endFlash).waitUntilExists();
-    final shown = DateTime.now();
     expect(find.text('You won!'), findsOneWidget);
-    // Some sozinho depois do pico, sem toque.
-    while (find.byKey(FreeBoardKeys.endFlash).evaluate().isNotEmpty &&
-        DateTime.now().difference(shown) < const Duration(seconds: 4)) {
-      await $.pump(const Duration(milliseconds: 100));
-    }
-    expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
-    expect(
-      DateTime.now().difference(shown),
-      lessThan(const Duration(milliseconds: 2500)),
-    );
-    // O rodapé "Ver o resultado" continua; o tabuleiro fica limpo.
+    // H-PAR-11 (desde 175263a9a): o selo fica sobre o tabuleiro até o
+    // jogador seguir; não some sozinho.
+    await $.pump(const Duration(seconds: 3));
+    expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+    expect(find.text('You won!'), findsOneWidget);
     await $(FreeBoardKeys.seeResultButton).waitUntilVisible();
-
-    // Reabrir não toca o selo de novo.
-    await app.restart();
-    await $.pump(const Duration(milliseconds: 300));
-    expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
   });
 }

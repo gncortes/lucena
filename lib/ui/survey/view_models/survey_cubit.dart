@@ -1,5 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+import '../../../domain/models/load_failure.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/survey/survey_repository.dart';
 import '../../../domain/models/character.dart';
@@ -7,13 +11,16 @@ import '../../../domain/models/survey.dart';
 import '../../../domain/use_cases/survey_rules.dart';
 
 class SurveyState {
+  final LoadFailure? failure;
   const SurveyState({
+    this.failure,
     required this.kind,
     this.ready = false,
     this.step = 0,
     this.answers = const SurveyAnswers(),
     this.sending = false,
     this.sent = false,
+    this.sendErrors = 0,
     this.viktor,
   });
 
@@ -27,8 +34,12 @@ class SurveyState {
   final SurveyAnswers answers;
   final bool sending;
 
-  /// A resposta foi gravada: mostra o agradecimento.
+  /// A resposta foi gravada: abre o agradecimento.
   final bool sent;
+
+  /// Quantas vezes o envio falhou: cada falha nova mostra o aviso de erro,
+  /// e as respostas ficam.
+  final int sendErrors;
   final Character? viktor;
 
   int get total => SurveyRules.totalSteps(kind);
@@ -41,6 +52,7 @@ class SurveyState {
     SurveyAnswers? answers,
     bool? sending,
     bool? sent,
+    int? sendErrors,
     Character? viktor,
   }) => SurveyState(
     kind: kind,
@@ -49,6 +61,7 @@ class SurveyState {
     answers: answers ?? this.answers,
     sending: sending ?? this.sending,
     sent: sent ?? this.sent,
+    sendErrors: sendErrors ?? this.sendErrors,
     viktor: viktor ?? this.viktor,
   );
 }
@@ -60,20 +73,53 @@ class SurveyCubit extends Cubit<SurveyState> {
     required SurveyKind kind,
     required this.surveys,
     required this.characters,
+    this.origin,
+    this.analytics = const NoAnalyticsRepository(),
   }) : super(SurveyState(kind: kind));
 
   final SurveyRepository surveys;
   final CharacterRepository characters;
 
+  /// De onde abriu (`licao_pilares`, `licao_escola`, `diploma_pilares`,
+  /// `diploma_escola`), só para o registro.
+  final String? origin;
+  final AnalyticsRepository analytics;
+
+  /// O tipo no registro: `pilares` ou `escola`.
+  String get _type => kind == SurveyKind.school ? 'escola' : 'pilares';
+
   SurveyKind get kind => state.kind;
 
   Future<void> load() async {
+    _retryLoad = () => load();
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(SurveyState(kind: state.kind, failure: LoadFailure.of(error)));
+      }
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> retryLoad() async => _retryLoad?.call();
+
+  Future<void> _load() async {
     final draft = await surveys.loadDraft(kind);
     Character? viktor;
     for (final character in await characters.characters()) {
       if (character.id == 'master') viktor = character;
     }
     if (isClosed) return;
+    if (!state.ready) {
+      analytics.log(
+        AnalyticsEvents.questionarioAberto(
+          tipo: _type,
+          origem: origin ?? 'outra',
+        ),
+      );
+    }
     emit(
       state.copyWith(
         ready: true,
@@ -91,10 +137,16 @@ class SurveyCubit extends Cubit<SurveyState> {
       : text;
 
   Future<void> _change({int? step, SurveyAnswers? answers}) async {
+    if (state.sent) return;
     emit(state.copyWith(step: step, answers: answers));
-    await surveys.saveDraft(
-      SurveyDraft(kind: kind, step: state.step, answers: state.answers),
-    );
+    try {
+      await surveys.saveDraft(
+        SurveyDraft(kind: kind, step: state.step, answers: state.answers),
+      );
+    } on Object catch (error, stack) {
+      // Sem espaço, por exemplo: o passo segue na memória e a tela não cai.
+      reportHandledError(error, stack);
+    }
   }
 
   Future<void> pickRating(int rating) =>
@@ -138,6 +190,25 @@ class SurveyCubit extends Cubit<SurveyState> {
   Future<void> next() async {
     if (state.isLast || !state.canAdvance) return;
     await _change(step: state.step + 1);
+    analytics.log(
+      AnalyticsEvents.questionarioPasso(
+        tipo: _type,
+        passo: state.step + 1,
+        passosTotal: state.total,
+      ),
+    );
+  }
+
+  /// Saiu sem enviar (X do passo 1 ou voltar do sistema). O rascunho fica.
+  void dismissed() {
+    if (state.sent || !state.ready) return;
+    analytics.log(
+      AnalyticsEvents.questionarioDispensado(
+        tipo: _type,
+        passo: state.step + 1,
+        como: 'fechou',
+      ),
+    );
   }
 
   /// Volta um passo. No primeiro não faz nada: a tela sai e o rascunho fica.
@@ -146,14 +217,43 @@ class SurveyCubit extends Cubit<SurveyState> {
     await _change(step: state.step - 1);
   }
 
-  /// Grava a resposta (uma vez só) e mostra o agradecimento.
+  /// Grava a resposta (uma vez só) e abre o agradecimento. Se a gravação
+  /// falha, sai do carregando, conta o erro e mantém as respostas.
   Future<void> send() async {
     if (state.sending || state.sent || !state.isLast || !state.canAdvance) {
       return;
     }
     emit(state.copyWith(sending: true));
-    await surveys.saveResponse(kind, state.answers);
+    // "Quer rever?" vem com "Sim": sem toque, vale "Sim".
+    final answers = state.answers.copyWith(
+      reReview: SurveyRules.reReviewOf(state.answers),
+    );
+    try {
+      await surveys.saveResponse(kind, answers);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(state.copyWith(sending: false, sendErrors: state.sendErrors + 1));
+      }
+      return;
+    }
+    final clean = answers.cleaned;
+    analytics.log(
+      AnalyticsEvents.questionarioEnviado(
+        tipo: _type,
+        nota: clean.rating,
+        interesse: clean.interest?.name,
+        melhorar: clean.improve,
+        topicos: clean.topics,
+        dificuldades: clean.difficulties,
+        temTexto:
+            clean.improveText != null ||
+            clean.wishText != null ||
+            clean.difficultyText != null,
+        reverAula: clean.reReview,
+      ),
+    );
     if (isClosed) return;
-    emit(state.copyWith(sending: false, sent: true));
+    emit(state.copyWith(sending: false, sent: true, answers: answers));
   }
 }

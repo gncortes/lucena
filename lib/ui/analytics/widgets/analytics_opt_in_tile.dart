@@ -7,7 +7,7 @@ import '../../core/l10n/l10n.dart';
 import '../view_models/analytics_opt_in_cubit.dart';
 
 /// "Ajudar a melhorar o Lucena" (quadro `PropV1EventosPrivacidade`): a chave
-/// das estatísticas, para a tela Privacidade e anúncios. Traz o próprio view
+/// das estatísticas, para a tela Privacidade e dados. Traz o próprio view
 /// model.
 class AnalyticsOptInTile extends StatelessWidget {
   const AnalyticsOptInTile({super.key});

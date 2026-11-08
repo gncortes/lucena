@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/game_setup.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
@@ -33,6 +36,14 @@ class ChallengeLinkScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<ChallengeLinkCubit>().state;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<ChallengeLinkCubit>().load,
+      );
+    }
     final link = state.link;
     final theme = Theme.of(context);
     final goal = GoalStyle.of(context, link.goal);
@@ -52,132 +63,136 @@ class ChallengeLinkScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: !state.ready
-          ? const SkeletonList()
-          : LayoutBuilder(
-              builder: (context, box) => Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.md,
-                      AppSpacing.lg,
-                      0,
-                    ),
-                    child: Column(
-                      spacing: AppSpacing.md,
-                      children: [
-                        // Colado no topo, como no quadro; encolhe se a tela
-                        // for baixa, para sobrar espaço aos cartões.
-                        SizedBox.square(
-                          dimension: math.min(
-                            box.maxWidth - 2 * AppSpacing.lg,
-                            box.maxHeight * _maxBoardShare,
-                          ),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) => PositionBoard(
-                              boardKey: ChallengeKeys.board,
-                              fen: link.fen,
-                              size: constraints.maxWidth,
-                              orientation: link.userSide,
-                              coordinates: true,
+      body: ShimmerConteudo(
+        carregando: !state.ready,
+        esqueleto: const SkeletonList(),
+        child: !state.ready
+            ? const SizedBox.shrink()
+            : LayoutBuilder(
+                builder: (context, box) => Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.md,
+                        AppSpacing.lg,
+                        0,
+                      ),
+                      child: Column(
+                        spacing: AppSpacing.md,
+                        children: [
+                          // Colado no topo, como no quadro; encolhe se a tela
+                          // for baixa, para sobrar espaço aos cartões.
+                          SizedBox.square(
+                            dimension: math.min(
+                              box.maxWidth - 2 * AppSpacing.lg,
+                              box.maxHeight * _maxBoardShare,
                             ),
-                          ),
-                        ),
-                        Wrap(
-                          spacing: AppSpacing.sm,
-                          runSpacing: AppSpacing.sm,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            InfoChip(
-                              icon: goal.icon,
-                              label: goalLabel(l10n, link.goal),
-                            ),
-                            InfoChip(
-                              label: link.userSide.name == 'white'
-                                  ? l10n.freeBoardWhiteToMove
-                                  : l10n.freeBoardBlackToMove,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-                      children: [
-                        OpponentCard(
-                          key: ChallengeKeys.opponentCard,
-                          character: state.opponent,
-                          name: link.opponent == OpponentKind.stockfish
-                              ? l10n.setupOpponentStockfish
-                              : [
-                                  state.opponent?.name ??
-                                      l10n.setupOpponentMaia,
-                                  '${state.level}',
-                                ].join(' · '),
-                          tagline:
-                              state.opponent?.taglineIn(
-                                Localizations.localeOf(context).languageCode,
-                              ) ??
-                              '',
-                        ),
-                        Card(
-                          margin: const EdgeInsets.fromLTRB(
-                            AppSpacing.lg,
-                            AppSpacing.md,
-                            AppSpacing.lg,
-                            0,
-                          ),
-                          child: Column(
-                            children: [
-                              _LockedRow(
-                                key: ChallengeKeys.clockRow,
-                                icon: Icons.av_timer_outlined,
-                                label: l10n.freeBoardClock,
-                                value: link.clock == null
-                                    ? l10n.challengeNoClock
-                                    : paceShort(l10n, link.clock!),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) => PositionBoard(
+                                boardKey: ChallengeKeys.board,
+                                fen: link.fen,
+                                size: constraints.maxWidth,
+                                orientation: link.userSide,
+                                coordinates: true,
                               ),
-                              _LockedRow(
-                                key: ChallengeKeys.modeRow,
-                                icon: Icons.grid_on,
-                                label: l10n.setupMode,
-                                value: l10n.setupModeNormal,
+                            ),
+                          ),
+                          Wrap(
+                            spacing: AppSpacing.sm,
+                            runSpacing: AppSpacing.sm,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              InfoChip(
+                                icon: goal.icon,
+                                label: goalLabel(l10n, link.goal),
+                              ),
+                              InfoChip(
+                                label: link.userSide.name == 'white'
+                                    ? l10n.freeBoardWhiteToMove
+                                    : l10n.freeBoardBlackToMove,
                               ),
                             ],
                           ),
-                        ),
-                        Padding(
-                          key: ChallengeKeys.lockedNote,
-                          padding: const EdgeInsets.all(AppSpacing.lg),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: AppSpacing.md,
-                            children: [
-                              Icon(
-                                Icons.lock,
-                                size: AppIconSize.button,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  l10n.challengeLockedNote,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+                        children: [
+                          OpponentCard(
+                            key: ChallengeKeys.opponentCard,
+                            character: state.opponent,
+                            name: link.opponent == OpponentKind.stockfish
+                                ? l10n.setupOpponentStockfish
+                                : [
+                                    state.opponent?.name ??
+                                        l10n.setupOpponentMaia,
+                                    '${state.level}',
+                                  ].join(' · '),
+                            tagline:
+                                state.opponent?.taglineIn(
+                                  Localizations.localeOf(context).languageCode,
+                                ) ??
+                                '',
+                          ),
+                          Card(
+                            margin: const EdgeInsets.fromLTRB(
+                              AppSpacing.lg,
+                              AppSpacing.md,
+                              AppSpacing.lg,
+                              0,
+                            ),
+                            child: Column(
+                              children: [
+                                _LockedRow(
+                                  key: ChallengeKeys.clockRow,
+                                  icon: Icons.av_timer_outlined,
+                                  label: l10n.freeBoardClock,
+                                  value: link.clock == null
+                                      ? l10n.challengeNoClock
+                                      : paceShort(l10n, link.clock!),
+                                ),
+                                _LockedRow(
+                                  key: ChallengeKeys.modeRow,
+                                  icon: Icons.grid_on,
+                                  label: l10n.setupMode,
+                                  value: l10n.setupModeNormal,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            key: ChallengeKeys.lockedNote,
+                            padding: const EdgeInsets.all(AppSpacing.lg),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: AppSpacing.md,
+                              children: [
+                                Icon(
+                                  Icons.lock,
+                                  size: AppIconSize.button,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    l10n.challengeLockedNote,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

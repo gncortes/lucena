@@ -33,6 +33,11 @@ class ConclusionRobot {
       // assentar esperaria por ele.
       await $(FreeBoardKeys.seeResultButton)
           .tap(settlePolicy: SettlePolicy.noSettle);
+      // A conclusão abre por navegação: até ela chegar o botão ainda está
+      // na árvore, e um segundo toque cairia num botão que já não responde.
+      for (var i = 0; i < 100 && screen.evaluate().isEmpty; i++) {
+        await $.pump(const Duration(milliseconds: 100));
+      }
     }
   }
 
@@ -119,6 +124,15 @@ class ConclusionRobot {
   }
 
   /// Fecha a conclusão: volta para onde o jogador estava antes da partida.
+  /// No fim do speedrun ou da Maratona: a seta leva à lista dos Speedruns.
+  Future<void> back() async {
+    await waitConclusion();
+    await _waitToastGone();
+    await $(ConclusionKeys.back).tap();
+    await $.pumpAndSettle();
+    expect(find.byKey(ConclusionKeys.screen), findsNothing);
+  }
+
   Future<void> close() async {
     await waitConclusion();
     // O aviso de conquista fica por cima da tela toda e cobre o "X".
@@ -204,9 +218,11 @@ class ConclusionRobot {
     position.jumpTo(position.maxScrollExtent);
     await $.pumpAndSettle();
     final texts = <String>[];
-    for (var index = 0; ; index++) {
+    // A key guarda o índice da mensagem no relatório: a linha que repete a
+    // conquista (S3b) sai da tela e deixa um buraco na numeração.
+    for (var index = 0; index < 20; index++) {
       final finder = find.byKey(FreeBoardKeys.feedback(index));
-      if (finder.evaluate().isEmpty) return texts;
+      if (finder.evaluate().isEmpty) continue;
       texts.add(
         $.tester
             .widgetList<Text>(
@@ -216,6 +232,7 @@ class ConclusionRobot {
             .data!,
       );
     }
+    return texts;
   }
 
   Future<void> _waitBoard() async {

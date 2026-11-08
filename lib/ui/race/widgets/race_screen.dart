@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -9,9 +12,11 @@ import '../../core/theme/app_motion.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/race_cubit.dart';
 import 'race_game_view.dart';
+import 'race_how_sheet.dart';
 import 'race_intro_view.dart';
 import 'race_result_view.dart';
 import 'race_review_view.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// A Corrida de problemas: abertura, corrida, resultado e revisão numa tela
 /// só; o [RaceCubit] diz em que ponto ela está.
@@ -56,6 +61,14 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
     final cubit = context.read<RaceCubit>();
     return BlocBuilder<RaceCubit, RaceState>(
       builder: (context, state) {
+        final failure = state.failure;
+        if (failure != null) {
+          return challengeLoadError(
+            context,
+            failure,
+            context.read<RaceCubit>().load,
+          );
+        }
         final playing = state.phase == RacePhase.playing;
         final reviewing = state.phase == RacePhase.reviewing;
         // Voltar no meio da corrida a abandona; na revisão, volta ao
@@ -72,13 +85,17 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
             appBar: _appBar(context, state),
             body: SafeArea(
               bottom: false,
-              child: switch (state.phase) {
-                RacePhase.loading => const SizedBox.shrink(),
-                RacePhase.intro => RaceIntroView(state: state),
-                RacePhase.playing => RaceGameView(state: state),
-                RacePhase.finished => RaceResultView(state: state),
-                RacePhase.reviewing => RaceReviewView(state: state),
-              },
+              child: ShimmerConteudo(
+                carregando: state.phase == RacePhase.loading,
+                esqueleto: const SkeletonList(),
+                child: switch (state.phase) {
+                  RacePhase.loading => const SizedBox.shrink(),
+                  RacePhase.intro => RaceIntroView(state: state),
+                  RacePhase.playing => RaceGameView(state: state),
+                  RacePhase.finished => RaceResultView(state: state),
+                  RacePhase.reviewing => RaceReviewView(state: state),
+                },
+              ),
             ),
           ),
         );
@@ -108,7 +125,23 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
             key: RaceKeys.reviewTitle,
           ),
         );
-      case RacePhase.loading || RacePhase.intro || RacePhase.playing:
+      case RacePhase.intro:
+        // O (i) abre as regras completas (canvas SugP2CorridaIntroA).
+        return LucenaAppBar(
+          centerTitle: true,
+          title: Text(l10n.raceTitle),
+          actions: [
+            IconButton(
+              key: RaceKeys.howButton,
+              icon: const Icon(Icons.info_outline),
+              tooltip: l10n.raceHowTitle,
+              onPressed: () => unawaited(
+                showRaceHowSheet(context, minutes: state.duration.minutes),
+              ),
+            ),
+          ],
+        );
+      case RacePhase.loading || RacePhase.playing:
         return LucenaAppBar(title: Text(l10n.raceTitle));
     }
   }

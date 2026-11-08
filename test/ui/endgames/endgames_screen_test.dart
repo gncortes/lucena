@@ -42,7 +42,7 @@ void main() {
     tester,
   ) async {
     await pump(tester, locale: const Locale('pt'), trail: EndgameTrail.empty);
-    final message = find.text('As aulas ainda não estão disponíveis.');
+    final message = find.text('As lições ainda não estão disponíveis.');
     expect(message, findsOneWidget);
     expect(find.byKey(EndgamesKeys.filtersButton), findsNothing);
     expect(

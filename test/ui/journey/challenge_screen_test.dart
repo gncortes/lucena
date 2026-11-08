@@ -10,8 +10,9 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/routing/router.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/core/widgets/game_board_hero.dart';
-import 'package:lucena/ui/journey/widgets/journey_ui.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/challenge_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -28,7 +29,13 @@ void main() {
   final rung = sampleLadder.first;
   final challenge = rung.challenges.first;
 
-  Future<void> pump(WidgetTester tester, Size screen, double scale) async {
+  Future<void> pump(
+    WidgetTester tester,
+    Size screen,
+    double scale, {
+    Future<bool> Function()? trainingGoalDone,
+    VoidCallback? onNextGoal,
+  }) async {
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = screen;
@@ -53,11 +60,43 @@ void main() {
         settingsCubit: settings,
         child: BlocProvider.value(
           value: cubit,
-          child: ChallengeScreen(rungId: rung.id),
+          child: ChallengeScreen(
+            rungId: rung.id,
+            trainingGoalDone: trainingGoalDone,
+            onNextGoal: onNextGoal,
+          ),
         ),
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  for (final done in [false, true]) {
+    testWidgets(
+      'training bot exposes next only after authoritative completion $done',
+      (tester) async {
+        var taps = 0;
+        await pump(
+          tester,
+          const Size(360, 740),
+          1,
+          trainingGoalDone: () async => done,
+          onNextGoal: () => taps++,
+        );
+        expect(
+          find.byKey(TrainingKeys.nextGoal),
+          done ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(JourneyKeys.play),
+          done ? findsNothing : findsOneWidget,
+        );
+        if (done) {
+          await tester.tap(find.byKey(TrainingKeys.nextGoal));
+          expect(taps, 1);
+        }
+      },
+    );
   }
 
   for (final (screen, scale) in [
@@ -196,7 +235,8 @@ void main() {
         matching: find.byType(Hero),
       ),
     );
-    expect(hero.tag, challengeBoardTag(challenge.id));
+    // H-ANI-02: a marca é a do kit, com o id = FEN da posição.
+    expect(hero.tag, TabuleiroHero.tag(challenge.position.fen));
     expect(tester.getRect(find.byKey(JourneyKeys.challengeBoard)), start);
     expect(tester.takeException(), isNull);
   });

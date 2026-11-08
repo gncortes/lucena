@@ -1,8 +1,12 @@
 import '../../core/widgets/empty_state.dart';
-import '../../../domain/models/ads_state.dart';
-import '../../core/ads/lesson_gate.dart';
+import '../../lesson_ad/widgets/lesson_entry.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
+import '../../core/widgets/load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -67,12 +71,23 @@ class _SchoolScreenState extends State<SchoolScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final failure = context.watch<SchoolCubit>().state.failure;
+    if (failure != null) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: () => context.read<SchoolCubit>().load(
+          Localizations.localeOf(context).languageCode,
+        ),
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     return Scaffold(
       key: SchoolKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.schoolTitle)),
       body: BlocBuilder<SchoolCubit, SchoolState>(
         builder: (context, state) {
-          if (!state.ready) return const SizedBox.shrink();
+          if (!state.ready) return const SkeletonList();
           if (state.course.lessons.isEmpty) {
             return SafeArea(
               top: false,
@@ -152,12 +167,13 @@ class _SchoolScreenState extends State<SchoolScreen> {
   }
 }
 
-void _openLesson(BuildContext context, String id) => LessonGate.open(
-  context,
-  lessonId: id,
-  kind: LessonKind.school,
-  open: () => context.go(Routes.lessonScript(id)),
-);
+void _openLesson(BuildContext context, String id, String title) =>
+    LessonEntry.open(
+      context,
+      lessonId: id,
+      lessonTitle: title,
+      open: () => context.go(Routes.lessonScript(id)),
+    );
 
 /// O cartão "Continuar": a parte e o número da lição, o título e o resumo.
 class _Continue extends StatelessWidget {
@@ -185,7 +201,8 @@ class _Continue extends StatelessWidget {
       summary: texts.lessonSummary(lessonId),
       buttonLabel: fresh ? l10n.endgamePartStart : l10n.homeContinue,
       buttonKey: SchoolKeys.continueButton,
-      onPressed: () => _openLesson(context, lessonId),
+      onPressed: () =>
+          _openLesson(context, lessonId, texts.lessonTitle(lessonId)),
     );
   }
 }
@@ -268,7 +285,7 @@ class _LessonTile extends StatelessWidget {
         );
         return;
       }
-      _openLesson(context, lesson.id);
+      _openLesson(context, lesson.id, texts.lessonTitle(lesson.id));
     }
 
     return Semantics(
@@ -396,11 +413,10 @@ class _SkippedGroup extends StatelessWidget {
                     key: SchoolKeys.skippedLesson(lesson.id),
                     title: state.texts.lessonTitle(lesson.id),
                     reason: reason,
-                    onTap: () => LessonGate.open(
+                    onTap: () => _openLesson(
                       context,
-                      lessonId: lesson.id,
-                      kind: LessonKind.school,
-                      open: () => context.go(Routes.lessonScript(lesson.id)),
+                      lesson.id,
+                      state.texts.lessonTitle(lesson.id),
                     ),
                   ),
               ],

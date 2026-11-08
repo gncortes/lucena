@@ -56,6 +56,13 @@ enum AccountFailure {
   /// Apagar a conta pede um login recente.
   recentLoginRequired,
 
+  /// A sessão ou a credencial não pertence à conta confirmada.
+  userMismatch,
+
+  /// A conta foi desativada pelo admin (`user-disabled`). O progresso no
+  /// aparelho continua; só a nuvem fica fechada.
+  disabled,
+
   /// Qualquer outro erro.
   unknown,
 }

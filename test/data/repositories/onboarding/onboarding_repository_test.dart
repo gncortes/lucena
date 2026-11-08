@@ -112,7 +112,7 @@ void main() {
   );
 
   test(
-    'o passo do tour antigo migra para a chave nova e a velha some',
+    'o passo do tour de 12 passos migra para a chave V3 e a velha some',
     () async {
       Future<int> migrated(String? legacy) async {
         SharedPreferencesAsyncPlatform.instance =
@@ -127,21 +127,71 @@ void main() {
       expect(await migrated(null), 0);
       expect(await migrated('3'), 0);
       expect(await migrated('11'), 0);
-      expect(await migrated('12'), 4);
-      expect(await migrated('13'), 4);
+      expect(await migrated('12'), 3);
+      expect(await migrated('13'), 3);
     },
   );
 
-  test('a chave nova vale e não é sobrescrita pela antiga', () async {
+  test('o passo V2 (5 passos) vira o passo do tour novo', () async {
+    // V2: tabuleiro 0, voz 1, escola 2, ajuda 3, jogar 4.
+    // V3: tabuleiro 0, tema 1, voz 2, nível 3, região 4, conta 5.
+    Future<int> migrated(String v2) async {
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      final preferences = PreferencesService();
+      await preferences.setString('tour.stepV2', v2);
+      final step = (await LocalOnboardingRepository(preferences).load()).step;
+      expect(await preferences.getString('tour.stepV2'), isNull);
+      return step;
+    }
+
+    expect(await migrated('0'), 0);
+    expect(await migrated('1'), 2);
+    expect(await migrated('2'), 3);
+    expect(await migrated('3'), 3);
+    expect(await migrated('4'), 3);
+  });
+
+  test('a chave V3 vale e não é sobrescrita pelas antigas', () async {
     final preferences = PreferencesService();
     await preferences.setString('tour.step', '12');
-    await preferences.setString('tour.stepV2', '2');
+    await preferences.setString('tour.stepV2', '4');
+    await preferences.setString('tour.stepV3', '2');
     final repository = LocalOnboardingRepository(preferences);
     expect((await repository.load()).step, 2);
     await repository.save(const Onboarding(step: 4));
-    expect(await preferences.getString('tour.stepV2'), '4');
+    expect(await preferences.getString('tour.stepV3'), '4');
     expect((await repository.load()).step, 4);
   });
+
+  test('a etapa antiga "level" leva ao passo Nível do tour, sem repetir o '
+      'Objetivo', () async {
+    final preferences = PreferencesService();
+    await preferences.setString('tour.stage', 'level');
+    final loaded = await LocalOnboardingRepository(preferences).load();
+    expect(loaded.stage, OnboardingStage.tour);
+    expect(loaded.step, 3);
+  });
+
+  test(
+    'a etapa antiga "goal" ainda pede o Objetivo; "tour" segue o tour',
+    () async {
+      final preferences = PreferencesService();
+      await preferences.setString('tour.stage', 'goal');
+      expect(
+        (await LocalOnboardingRepository(preferences).load()).stage,
+        OnboardingStage.goal,
+      );
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      final other = PreferencesService();
+      await other.setString('tour.stage', 'tour');
+      await other.setString('tour.stepV2', '1');
+      final loaded = await LocalOnboardingRepository(other).load();
+      expect(loaded.stage, OnboardingStage.tour);
+      expect(loaded.step, 2);
+    },
+  );
 
   test('a memória do personagem volta com a partida', () async {
     final snapshot = TalkSnapshot(

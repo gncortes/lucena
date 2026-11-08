@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/dependencies.dart' show activeTrainingCourses;
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
+import '../../../domain/models/training/training_course.dart';
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/cartao_pressionavel.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -18,11 +23,13 @@ extension HomeShortcutUi on HomeShortcut {
   IconData get icon => switch (this) {
     HomeShortcut.school => HomePath.learn.icon,
     HomeShortcut.journey => HomePath.journey.icon,
-    HomeShortcut.endgames => HomePath.endgames.icon,
+    HomeShortcut.pillars => HomePath.endgames.icon,
     HomeShortcut.train => HomePath.train.icon,
     HomeShortcut.speedrun => HomePath.speedrun.icon,
     HomeShortcut.race => HomePath.race.icon,
     HomeShortcut.stars => HomePath.stars.icon,
+    HomeShortcut.freeBoard => HomePath.board.icon,
+    HomeShortcut.customPosition => HomePath.position.icon,
   };
 
   /// O fundo e a cor do ícone (canvas `CompModoTile`).
@@ -32,7 +39,7 @@ extension HomeShortcutUi on HomeShortcut {
           background: colors.primaryContainer,
           foreground: colors.onPrimaryContainer,
         ),
-        HomeShortcut.endgames => (
+        HomeShortcut.pillars => (
           background: colors.tertiaryContainer,
           foreground: AppColors.goldInk,
         ),
@@ -44,7 +51,10 @@ extension HomeShortcutUi on HomeShortcut {
           background: AppColors.tileGreen,
           foreground: AppColors.tileGreenOn,
         ),
-        HomeShortcut.speedrun || HomeShortcut.race => (
+        HomeShortcut.speedrun ||
+        HomeShortcut.race ||
+        HomeShortcut.freeBoard ||
+        HomeShortcut.customPosition => (
           background: colors.surfaceContainerHighest,
           foreground: colors.onSurface,
         ),
@@ -53,42 +63,58 @@ extension HomeShortcutUi on HomeShortcut {
   String title(AppLocalizations l10n) => switch (this) {
     HomeShortcut.school => HomePath.learn.title(l10n),
     HomeShortcut.journey => l10n.homeJourney,
-    HomeShortcut.endgames => l10n.homeEndgames,
+    HomeShortcut.pillars => l10n.homeEndgames,
     HomeShortcut.train => l10n.homeTrain,
     HomeShortcut.speedrun => l10n.homeSpeedrun,
     HomeShortcut.race => l10n.homeRace,
     HomeShortcut.stars => l10n.homeShortcutStars,
+    HomeShortcut.freeBoard => HomePath.board.title(l10n),
+    HomeShortcut.customPosition => HomePath.position.title(l10n),
   };
 
   String body(AppLocalizations l10n) => switch (this) {
     HomeShortcut.school => HomePath.learn.body(l10n, null),
     HomeShortcut.journey => l10n.homeShortcutJourneyBody,
-    HomeShortcut.endgames => l10n.homeShortcutEndgamesBody,
+    HomeShortcut.pillars => l10n.homeShortcutEndgamesBody,
     HomeShortcut.train => l10n.homeShortcutTrainBody,
     HomeShortcut.speedrun => l10n.homeShortcutSpeedrunBody,
     HomeShortcut.race => l10n.homeShortcutRaceBody,
     HomeShortcut.stars => l10n.homeShortcutStarsBody,
+    HomeShortcut.freeBoard => l10n.homeShortcutBoardBody,
+    HomeShortcut.customPosition => l10n.homeShortcutPositionBody,
   };
 
-  String get route => switch (this) {
-    HomeShortcut.school => HomePath.learn.route,
+  /// A tela que o atalho abre. [hasPlan]: os Pilares abrem o plano para quem
+  /// comprou e a venda para quem não.
+  String route({bool hasPlan = false}) => switch (this) {
+    HomeShortcut.school =>
+      activeTrainingCourses.contains(TrainingCourseConfig.escola)
+          ? Routes.school
+          : HomePath.learn.route,
     HomeShortcut.journey => HomePath.journey.route,
-    HomeShortcut.endgames => HomePath.endgames.route,
+    HomeShortcut.pillars =>
+      hasPlan
+          ? Routes.training(TrainingCourse.pilares.name)
+          : Routes.pilaresSale,
     HomeShortcut.train => HomePath.train.route,
     HomeShortcut.speedrun => HomePath.speedrun.route,
     HomeShortcut.race => HomePath.race.route,
     HomeShortcut.stars => HomePath.stars.route,
+    HomeShortcut.freeBoard => HomePath.board.route,
+    HomeShortcut.customPosition => HomePath.position.route,
   };
 
   /// A mesma key dos cartões de caminho de antes.
   Key get key => switch (this) {
     HomeShortcut.school => HomeKeys.schoolButton,
     HomeShortcut.journey => HomeKeys.journeyButton,
-    HomeShortcut.endgames => HomeKeys.endgamesButton,
+    HomeShortcut.pillars => HomeKeys.pillarsButton,
     HomeShortcut.train => HomeKeys.catalogButton,
     HomeShortcut.speedrun => HomeKeys.speedrunButton,
     HomeShortcut.race => HomeKeys.raceButton,
     HomeShortcut.stars => HomeKeys.starsButton,
+    HomeShortcut.freeBoard => HomeKeys.boardButton,
+    HomeShortcut.customPosition => HomeKeys.positionButton,
   };
 }
 
@@ -96,7 +122,7 @@ extension HomeShortcutUi on HomeShortcut {
 /// caixa colorida no alto e, embaixo, o nome e a frase de duas linhas. Todos
 /// com a mesma altura.
 class ModeTile extends StatelessWidget {
-  const ModeTile({required this.shortcut, super.key});
+  const ModeTile({required this.shortcut, this.hasPlan = false, super.key});
 
   /// A altura de todo atalho.
   static const height = 144.0;
@@ -106,6 +132,9 @@ class ModeTile extends StatelessWidget {
 
   final HomeShortcut shortcut;
 
+  /// Já tem o plano dos Pilares: o atalho abre o plano em vez da venda.
+  final bool hasPlan;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -114,61 +143,71 @@ class ModeTile extends StatelessWidget {
     final tone = shortcut.tone(colors);
     final body = theme.textTheme.bodySmall?.copyWith(
       color: colors.onSurfaceVariant,
+      letterSpacing: 0,
     );
     return SizedBox(
       height: height,
-      child: Material(
-        key: shortcut.key,
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.go(shortcut.route),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: iconBox,
-                  height: iconBox,
-                  decoration: BoxDecoration(
-                    color: tone.background,
-                    borderRadius: BorderRadius.circular(AppShape.large),
-                  ),
-                  child: Icon(
-                    shortcut.icon,
-                    size: AppIconSize.standard,
-                    color: tone.foreground,
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      shortcut.title(l10n),
-                      maxLines: 1,
-                      style: context.cardTitle?.copyWith(
-                        fontWeight: AppWeight.heavy,
-                      ),
+      // H-ANI-20: o atalho afunda no toque.
+      child: CartaoPressionavel(
+        child: Material(
+          key: shortcut.key,
+          color: colors.surfaceContainerLow,
+          // #FAFBF9 com contorno 1px #E1E5DF (H-INI-06).
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppShape.large),
+            side: const BorderSide(color: AppColors.cardOutline),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => context.go(shortcut.route(hasPlan: hasPlan)),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: iconBox,
+                    height: iconBox,
+                    decoration: BoxDecoration(
+                      color: tone.background,
+                      borderRadius: BorderRadius.circular(AppShape.large),
                     ),
-                    // Sempre a altura de duas linhas: o título fica na
-                    // mesma altura em todos os atalhos.
-                    SizedBox(
-                      height: _twoLines(context, body),
-                      child: Align(
-                        alignment: AlignmentDirectional.topStart,
-                        child: Text(
-                          shortcut.body(l10n),
-                          maxLines: 2,
-                          style: body,
+                    child: Icon(
+                      shortcut.icon,
+                      fill: 1,
+                      size: AppIconSize.standard,
+                      color: tone.foreground,
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        shortcut.title(l10n),
+                        maxLines: 1,
+                        style: context.cardTitle?.copyWith(
+                          fontWeight: AppWeight.heavy,
+                          letterSpacing: 0,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      // Sempre a altura de duas linhas: o título fica na
+                      // mesma altura em todos os atalhos.
+                      SizedBox(
+                        height: _twoLines(context, body),
+                        child: Align(
+                          alignment: AlignmentDirectional.topStart,
+                          child: Text(
+                            shortcut.body(l10n),
+                            maxLines: 2,
+                            style: body,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

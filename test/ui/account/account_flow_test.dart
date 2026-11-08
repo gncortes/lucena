@@ -21,10 +21,15 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_data_screen.dart';
 import 'package:lucena/ui/account/widgets/account_email_screen.dart';
 import 'package:lucena/ui/account/widgets/account_restored_screen.dart';
+import 'package:lucena/data/repositories/journey/journey_repository.dart';
+import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
+import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_avatar_repository.dart';
 import '../../../testing/fakes/fake_mail_app_repository.dart';
@@ -124,6 +129,12 @@ void main() {
           RepositoryProvider<AvatarRepository>.value(value: avatars),
           RepositoryProvider<PhotoRepository>.value(value: photos),
           RepositoryProvider<MailAppRepository>.value(value: mail),
+          RepositoryProvider<JourneyRepository>.value(
+            value: FakeJourneyRepository(),
+          ),
+          RepositoryProvider<CharacterRepository>.value(
+            value: FakeCharacterRepository(),
+          ),
         ],
         child: TestApp(
           router: router,
@@ -149,10 +160,16 @@ void main() {
       tester,
     ) async {
       await pump(tester, Routes.accountEmailFrom('tour'));
-      // O aviso fala do botão: fica entre ele e "Já tem conta? Entrar".
-      double top(Key key) => tester.getTopLeft(find.byKey(key)).dy;
-      expect(top(AccountKeys.emailSubmit), lessThan(top(AccountKeys.legal)));
-      expect(top(AccountKeys.legal), lessThan(top(AccountKeys.toSignIn)));
+      // H-CON-06 (PropV1ContaCriar): o aviso do e-mail, sem a nota legal (o
+      // aceite vem depois, H-CON-08).
+      expect(
+        find.text(
+          'Enviaremos um e-mail para confirmar seu endereço. Enquanto '
+          'isso, você já pode jogar.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('concorda', findRichText: true), findsNothing);
       await fill(tester, ' ana@example.com ', '12345678');
 
       expect(accounts.current?.email, 'ana@example.com');
@@ -172,6 +189,21 @@ void main() {
       expect(find.byKey(AccountKeys.createScreen), findsOneWidget);
     });
 
+    testWidgets('3. e-mail que já tem conta avisa e oferece Entrar', (
+      tester,
+    ) async {
+      accounts.failure = AccountFailure.emailInUse;
+      await pump(tester, Routes.accountEmailFrom('tour'));
+      await fill(tester, 'ana@example.com', '12345678');
+
+      expect(find.text('Este e-mail já tem conta.'), findsOneWidget);
+      expect(find.byKey(AccountKeys.inUseSignIn), findsOneWidget);
+      await tester.tap(find.byKey(AccountKeys.inUseSignIn));
+      await tester.pumpAndSettle();
+      expect(find.byKey(AccountKeys.signInScreen), findsOneWidget);
+      expect(find.byKey(AccountKeys.createScreen), findsNothing);
+    });
+
     testWidgets('o olho mostra e esconde a senha', (tester) async {
       await pump(tester, Routes.accountEmailFrom('tour'));
       bool hidden() => tester
@@ -182,7 +214,7 @@ void main() {
       await tester.tap(find.byKey(AccountKeys.passwordEye));
       await tester.pump();
       expect(hidden(), isFalse);
-      expect(find.byTooltip('Esconder a senha'), findsOneWidget);
+      expect(find.byTooltip('Ocultar senha'), findsOneWidget);
     });
 
     testWidgets('"Já tem conta? Entrar" troca para Entrar', (tester) async {
@@ -192,7 +224,7 @@ void main() {
 
       expect(find.byKey(AccountKeys.signInScreen), findsOneWidget);
       expect(find.byKey(AccountKeys.createScreen), findsNothing);
-      expect(find.byKey(AccountKeys.legal), findsNothing);
+      expect(find.textContaining('concorda', findRichText: true), findsNothing);
     });
   });
 
@@ -211,11 +243,77 @@ void main() {
 
       expect(find.byKey(AccountKeys.restoredScreen), findsOneWidget);
       expect(find.text('Bem-vindo de volta, Ana'), findsOneWidget);
-      expect(find.text('2 desafios'), findsOneWidget);
+      expect(find.text('nenhum desafio'), findsOneWidget);
 
       await tester.tap(find.byKey(AccountKeys.restoredContinue));
       await tester.pumpAndSettle();
       expect(find.text('rota-perfil'), findsOneWidget);
+    });
+
+    testWidgets('H-CON-10: os textos do quadro e a Jornada no degrau atual', (
+      tester,
+    ) async {
+      sync.remote = const ProgressSummary(
+        profile: UserProfile(nickname: 'Gabriel', rating: 1712),
+        challenges: {'1000/basic.queen.0001'},
+        speedruns: {'a': 1000, 'b': 2000, 'c': 3000},
+      );
+      await pump(tester, signIn('profile'));
+      await fill(tester, 'ana@example.com', 'segredo123');
+
+      expect(find.text('Bem-vindo de volta, Gabriel'), findsOneWidget);
+      expect(find.text('Seu progresso está salvo na conta.'), findsOneWidget);
+      for (final text in [
+        'Rating',
+        '1712',
+        'Jornada',
+        'Coco, 1 de 2 desafios',
+        'Lições do Pilares',
+        'nenhuma concluída',
+        'Speedrun',
+        '3 recordes',
+        'Se este celular já tinha progresso, os dois foram unidos: em cada '
+            'item vale o maior.',
+      ]) {
+        expect(find.text(text), findsOneWidget, reason: text);
+      }
+    });
+
+    testWidgets('H-CON-10: voltar do sistema é igual a Continuar', (
+      tester,
+    ) async {
+      sync.remote = const ProgressSummary(
+        profile: UserProfile(nickname: 'Ana', rating: 1500),
+        challenges: {'a'},
+      );
+      await pump(tester, signIn('profile'));
+      await fill(tester, 'ana@example.com', 'segredo123');
+      expect(find.byKey(AccountKeys.restoredScreen), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byKey(AccountKeys.restoredScreen), findsNothing);
+      expect(find.text('rota-perfil'), findsOneWidget);
+    });
+
+    testWidgets('5. erro inesperado libera e "Tentar de novo" entra (gap 4)', (
+      tester,
+    ) async {
+      accounts.failure = AccountFailure.unknown;
+      await pump(tester, signIn('tour'));
+      await fill(tester, 'ana@example.com', '12345678');
+
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(AccountKeys.emailSubmit))
+            .onPressed,
+        isNotNull,
+      );
+      accounts.failure = null;
+      await tester.tap(find.byKey(AccountKeys.failureRetry));
+      await tester.pumpAndSettle();
+      expect(accounts.current?.email, 'ana@example.com');
+      expect(find.byKey(AccountKeys.signInScreen), findsNothing);
     });
 
     testWidgets('e-mail ou senha errados avisam e ficam na tela', (
@@ -265,11 +363,17 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('o e-mail vem do campo; mandar mostra "Confira o seu e-mail"', (
+    testWidgets('o e-mail vem do campo; mandar mostra "Verifique seu e-mail"', (
       tester,
     ) async {
       await openReset(tester);
       expect(find.byKey(AccountKeys.resetSheet), findsOneWidget);
+      // H-CON-07 (PropV1ContaSenha): os textos do quadro.
+      expect(
+        find.text('Enviaremos um link para você criar uma senha nova.'),
+        findsOneWidget,
+      );
+      expect(find.text('Enviar link'), findsOneWidget);
       expect(
         find.descendant(
           of: find.byKey(AccountKeys.resetEmail),
@@ -291,6 +395,8 @@ void main() {
         ),
         findsOneWidget,
       );
+
+      expect(find.textContaining('spam', findRichText: true), findsNothing);
 
       await tester.tap(find.byKey(AccountKeys.resetOpenMail));
       await tester.pumpAndSettle();
@@ -317,6 +423,8 @@ void main() {
       await tester.tap(find.byKey(AccountKeys.resetOk));
       await tester.pumpAndSettle();
       expect(find.byKey(AccountKeys.resetSentSheet), findsNothing);
+      // 3. "Entendi" volta a Entrar.
+      expect(find.byKey(AccountKeys.signInScreen), findsOneWidget);
     });
 
     testWidgets('e-mail mal escrito avisa no campo e fica na folha', (
@@ -328,7 +436,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(AccountKeys.resetSheet), findsOneWidget);
-      expect(find.text('Confira o e-mail.'), findsOneWidget);
+      expect(find.text('Verifique o e-mail.'), findsOneWidget);
     });
   });
 
@@ -439,13 +547,64 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(
-          'Não deu para enviar a foto. Confira a internet e tente de novo.',
-        ),
+        find.text('Não foi possível enviar a foto. Tente novamente.'),
         findsOneWidget,
       );
       expect(find.byKey(AccountKeys.dataScreen), findsOneWidget);
-      expect(profiles.saved, isEmpty);
+      // H-CON-11 critério 4 (gap 6): o apelido é salvo, a foto antiga fica.
+      expect(profiles.saved, hasLength(1));
+      expect(profiles.profile.nickname, 'Teste');
+      expect(profiles.profile.photo, AvatarPhoto.none);
+    });
+
+    testWidgets('H-CON-11 gap 7: a câmera que falha avisa e a tela fica', (
+      tester,
+    ) async {
+      accounts.account = FakeAccountRepository.google;
+      photos.error = Exception('permissão negada');
+      await pump(tester, Routes.accountDataFrom('profile'));
+      await tester.tap(find.byKey(AccountKeys.photo));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(AccountKeys.photoCamera));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(find.byKey(AccountKeys.dataScreen), findsOneWidget);
+    });
+
+    testWidgets('H-CON-11: conta nova mostra os textos do quadro', (
+      tester,
+    ) async {
+      accounts.account = FakeAccountRepository.google;
+      await pump(tester, Routes.accountDataFrom('tour', welcome: true));
+      expect(
+        find.text('Seu progresso deste celular já está salvo na conta.'),
+        findsOneWidget,
+      );
+      expect(find.text('Salvar e continuar'), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowRegion), findsOneWidget);
+      await tester.tap(find.byKey(AccountKeys.photo));
+      await tester.pumpAndSettle();
+      expect(find.text('Ou sua inicial, na cor que quiser'), findsOneWidget);
+    });
+
+    testWidgets('H-CON-11: pelo lápis do Perfil, a edição do quadro', (
+      tester,
+    ) async {
+      accounts.account = FakeAccountRepository.google;
+      await pump(tester, Routes.accountDataFrom('profile'));
+      expect(
+        find.text('Opcional. A inicial na cor que quiser ou a foto do Google.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(ProfileKeys.rowCountry), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowLanguage), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowRegion), findsNothing);
+      expect(
+        find.text('O que você já fez neste celular agora fica salvo na conta.'),
+        findsOneWidget,
+      );
+      expect(find.text('Salvar'), findsOneWidget);
     });
 
     testWidgets('remover a foto enviada apaga a do Storage', (tester) async {

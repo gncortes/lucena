@@ -18,11 +18,12 @@ import '../../../domain/models/conclusion.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
-import '../../account/widgets/account_invite_sheet.dart';
+import '../../account/widgets/account_invite_card.dart';
 import '../../achievements/widgets/achievement_detail.dart';
 import '../../achievements/widgets/achievement_toast.dart';
 import '../../core/keys/conclusion_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/review/move_quality_ui.dart';
@@ -54,10 +55,16 @@ import '../../core/pace/pace_ui.dart';
 import '../../speedrun/widgets/speedrun_ui.dart';
 import '../view_models/conclusion_cubit.dart';
 import 'outcome_badge.dart';
+import 'resign_learn_list.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
+import '../../core/motion/casca_com_atraso.dart';
+import '../../core/motion/entrada_em_faixas.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/valor_que_anima.dart';
+import '../../core/motion/barra_que_enche.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o
@@ -102,13 +109,12 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     setState(() => _inviteAvailable = true);
   }
 
-  Future<void> _openInvite() async {
+  // O X do cartão vale como "Agora não": some e suspende por 7 dias
+  // (H-CON-02).
+  Future<void> _closeInvite() async {
     if (!_inviteAvailable) return;
     setState(() => _inviteAvailable = false);
-    if (context.read<AccountRepository>().current != null) return;
     await widget.invite!.markShown();
-    if (!mounted) return;
-    await showAccountInviteSheet(context);
   }
 
   @override
@@ -125,6 +131,16 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     final state = context.watch<ConclusionCubit>().state;
     final conclusion = state.conclusion;
     final language = Localizations.localeOf(context).languageCode;
+    if (state.failed || state.missing) {
+      return LoadErrorScreen(
+        kind: state.missing ? LoadErrorKind.notFound : LoadErrorKind.generic,
+        onAction: state.missing
+            ? () => context.go(Routes.home)
+            : context.read<ConclusionCubit>().reload,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final scaffold = PopScope(
       canPop: conclusion?.run?.nextChallenge == null,
       onPopInvokedWithResult: (didPop, _) {
@@ -133,13 +149,48 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
       child: Scaffold(
         key: ConclusionKeys.screen,
         appBar: LucenaAppBar(
-          leading: IconButton(
-            key: ConclusionKeys.close,
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            icon: const Icon(Icons.close_rounded),
-            onPressed: () => _close(context),
-          ),
+          centerTitle: true,
+          // O aviso de conquista cai dentro da faixa da AppBar, entre o X e
+          // as ações, sem cobrir nenhum ícone (S3b).
+          title:
+              widget.fresh &&
+                  conclusion != null &&
+                  conclusion.achievements.isNotEmpty
+              ? AchievementToasts(
+                  achievements: conclusion.achievements,
+                  characters: state.characters,
+                  onTap: (achievement) => showAchievementDetail(
+                    context,
+                    achievement: achievement,
+                    unlocked: conclusion.unlocked[achievement.id],
+                    characters: state.characters,
+                    speedrunId: conclusion.run?.speedrunId,
+                  ),
+                )
+              : null,
+          // O fim do speedrun e da Maratona abre por `go`, sem tela por baixo:
+          // a seta leva à lista dos Speedruns, de onde o jogador veio.
+          leading: _endsRun(conclusion)
+              ? IconButton(
+                  key: ConclusionKeys.back,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                  icon: const BackButtonIcon(),
+                  onPressed: () => context.go(Routes.speedruns),
+                )
+              : IconButton(
+                  key: ConclusionKeys.close,
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: () => _close(context),
+                ),
           actions: [
+            if (conclusion != null && _winNewGame(conclusion, state))
+              IconButton(
+                key: ConclusionKeys.appBarNewGame,
+                tooltip: l10n.freeBoardNewGame,
+                icon: const Icon(Icons.add_rounded),
+                onPressed: () => context.pushReplacement(state.setup!),
+              ),
             if (conclusion != null)
               ShareIconButton(
                 key: ConclusionKeys.share,
@@ -159,51 +210,32 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
               ),
           ],
         ),
-        body: !state.ready
-            ? const SkeletonList()
-            : conclusion == null
-            ? const SizedBox.shrink()
-            : Stack(
-                children: [
-                  _Body(
-                    state: state,
-                    conclusion: conclusion,
-                    card: _card,
-                    analysis: _analysis,
-                    onAccountInvite: _inviteAvailable ? _openInvite : null,
-                  ),
-                ],
+        // Sem esqueleto à vista: a casca só aparece se o dado demora mais
+        // que 0,3 s; o conteúdo entra em faixas (EntradaEmFaixas).
+        body: !state.ready || conclusion == null
+            ? (state.ready
+                  ? const SizedBox.shrink()
+                  : const CascaComAtraso(child: SkeletonList()))
+            : _Body(
+                state: state,
+                conclusion: conclusion,
+                card: _card,
+                analysis: _analysis,
+                onAccountInviteClose: _inviteAvailable ? _closeInvite : null,
               ),
       ),
     );
-    // O aviso de conquista vai por cima da tela inteira, AppBar incluída
-    // (TelaConclusaoAviso: 8 do topo), sem cobrir o título do painel.
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        BlocListener<ConclusionCubit, ConclusionState>(
-          listenWhen: (before, now) => !before.ready && now.ready,
-          listener: (context, state) => _invite(state),
-          child: scaffold,
-        ),
-        if (widget.fresh &&
-            conclusion != null &&
-            conclusion.achievements.isNotEmpty)
-          AchievementToasts(
-            achievements: conclusion.achievements,
-            characters: state.characters,
-            onTap: (achievement) => showAchievementDetail(
-              context,
-              achievement: achievement,
-              unlocked: conclusion.unlocked[achievement.id],
-              characters: state.characters,
-              speedrunId: conclusion.run?.speedrunId,
-            ),
-          ),
-      ],
+    return BlocListener<ConclusionCubit, ConclusionState>(
+      listenWhen: (before, now) => !before.ready && now.ready,
+      listener: (context, state) => _invite(state),
+      child: scaffold,
     );
   }
 }
+
+bool _endsRun(Conclusion? conclusion) =>
+    conclusion?.kind == ConclusionKind.speedrunEnd ||
+    conclusion?.kind == ConclusionKind.marathonEnd;
 
 // Entre etapas do Clássico, fecha no detalhe sem iniciar a próxima partida.
 // A Maratona mantém a continuação própria; os demais resultados voltam.
@@ -302,7 +334,7 @@ class _Body extends StatelessWidget {
     required this.conclusion,
     required this.card,
     required this.analysis,
-    this.onAccountInvite,
+    this.onAccountInviteClose,
   });
 
   final ConclusionState state;
@@ -311,7 +343,10 @@ class _Body extends StatelessWidget {
 
   /// O cartão da análise rápida (entra na imagem depois de pronta).
   final GlobalKey analysis;
-  final VoidCallback? onAccountInvite;
+
+  /// Com o convite da conta na tela (sem conta, fora da suspensão): o X do
+  /// cartão.
+  final VoidCallback? onAccountInviteClose;
 
   @override
   Widget build(BuildContext context) {
@@ -319,9 +354,12 @@ class _Body extends StatelessWidget {
     final actions = conclusion.actions;
     // As duas primeiras ações lado a lado, logo abaixo dos jogadores; as de
     // histórico viram links; "Analisar" fica fixo embaixo.
+    final winFooter = _winNewGame(conclusion, state);
     final main = [
       for (final action in actions)
         if (!_links.contains(action) &&
+            // Vitória: "Nova partida" vai para a barra do alto.
+            !(winFooter && action == ConclusionAction.newGame) &&
             // Sem para onde ir (posição sem configuração): sem o botão.
             (action != ConclusionAction.playAgain || state.replay != null) &&
             (action != ConclusionAction.newGame || state.setup != null))
@@ -343,11 +381,11 @@ class _Body extends StatelessWidget {
             conclusion.achievements.isNotEmpty);
     // O que vai na imagem de compartilhar: o resultado e os números, sem
     // botões.
-    final shared = <Widget>[
-      _Header(state: state, conclusion: conclusion),
-      ?_outcome(context, state, conclusion),
-      if (conclusion.before != null && conclusion.after != null)
-        _Rating(conclusion: conclusion),
+    final outcome = _outcome(context, state, conclusion);
+    final rating = conclusion.before != null && conclusion.after != null
+        ? _Rating(conclusion: conclusion)
+        : null;
+    final numbers = <Widget>[
       _Mode(state: state, conclusion: conclusion),
       // O tempo só quando há tempo a mostrar (perder a primeira etapa logo
       // de cara não tem tempo nenhum).
@@ -391,33 +429,20 @@ class _Body extends StatelessWidget {
             ],
           )
         : null;
+    final speech = opponent != null && comment != null
+        ? TeacherSpeech(
+            key: ConclusionKeys.comment,
+            // O mesmo componente de fala do professor, com a ponta para cima
+            // ligada ao avatar (S3b).
+            speechContext: SpeechContext.teaching,
+            teacher: opponent,
+            text: comment,
+            emotion: state.emotion,
+            // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
+            avatarSize: CharacterAvatar.speech,
+          )
+        : null;
     final sections = <Widget>[
-      RepaintBoundary(
-        key: card,
-        child: ColoredBox(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (final (index, section) in shared.indexed)
-                Padding(
-                  padding: EdgeInsets.only(top: index == 0 ? 0 : AppSpacing.lg),
-                  child: StaggeredEntrance(index: index, child: section),
-                ),
-            ],
-          ),
-        ),
-      ),
-      if (opponent != null && comment != null)
-        TeacherSpeech(
-          key: ConclusionKeys.comment,
-          speechContext: SpeechContext.game,
-          teacher: opponent,
-          text: comment,
-          emotion: state.emotion,
-          // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
-          avatarSize: CharacterAvatar.speech,
-        ),
       if (feedback.isNotEmpty)
         ReportPanel(
           report: GameReport(
@@ -427,65 +452,111 @@ class _Body extends StatelessWidget {
             characters: state.characters,
           ),
         ),
+      // O convite da conta logo abaixo das conquistas
+      // (PropV2UxConclusaoConta): "Salve suas conquistas" quando houve
+      // conquista nova; sem ela, "Salve seu progresso".
+      if (onAccountInviteClose case final onClose?)
+        AccountInviteCard(
+          key: ConclusionKeys.accountInvite,
+          title: conclusion.achievements.isNotEmpty
+              ? context.l10n.conCartaoTitleWin
+              : context.l10n.conCartaoTitleProgress,
+          onClose: onClose,
+        ),
       // A partida de novo com o Stockfish no lugar do jogador. Fora da imagem
       // de compartilhar.
       if (context.read<ConclusionCubit>().canPlayBestLine)
         _BestLine(state: state, conclusion: conclusion),
+      // Perdeu desistindo: rever a partida e treinar o final (P9 B).
+      if (conclusion.end?.reason == GameEndReason.resign &&
+          conclusion.result == ConclusionResult.lost &&
+          conclusion.run == null)
+        ?ResignLearnList.maybe(
+          gameId: (conclusion.game?.moves.isNotEmpty ?? false)
+              ? conclusion.gameId
+              : null,
+          lesson: state.finalLesson,
+        ),
       if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
       // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
       // curta, no toque na longa.
       ?quick,
-      if (onAccountInvite != null)
-        Card(
-          child: ListTile(
-            key: ConclusionKeys.accountInvite,
-            leading: const Icon(Icons.cloud_sync_outlined),
-            title: Text(context.l10n.accountTitle),
-            subtitle: Text(context.l10n.accountInviteTextSheet),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: onAccountInvite,
-          ),
-        ),
     ];
+    final cardKey = card;
+    Widget spaced(Iterable<Widget> blocks) => Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (index, block) in blocks.indexed)
+          Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 0 : AppSpacing.lg),
+            child: block,
+          ),
+      ],
+    );
+    // As ações, fixas embaixo: fora da imagem de compartilhar.
+    final actionsBar = main.isEmpty
+        ? null
+        : _ActionsBar(
+            state: state,
+            actions: main,
+            seeAnalysisId: winFooter ? conclusion.gameId : null,
+          );
+    // O cabeçalho, o resultado e os números vão na imagem de compartilhar.
+    final faixas = <FaixaDeEntrada>[
+      FaixaDeEntrada('titulo', _Header(state: state, conclusion: conclusion)),
+      if (outcome != null) FaixaDeEntrada('subtitulo', outcome),
+      if (rating != null) FaixaDeEntrada('placar', rating, conta: true),
+      FaixaDeEntrada('ritmo', spaced(numbers)),
+    ];
+    final sharedCount = faixas.length;
+    faixas.addAll([
+      if (speech != null) FaixaDeEntrada('viktor', speech),
+      if (sections.isNotEmpty) FaixaDeEntrada('conquista', spaced(sections)),
+      if (actionsBar != null) FaixaDeEntrada('botoes', actionsBar),
+    ]);
     return Stack(
       children: [
-        Column(
-          children: [
-            Expanded(
-              // Rolagem simples, não lista preguiçosa: todos os blocos ficam
-              // montados, e compartilhar acha o cartão e a análise mesmo com
-              // a tela rolada para longe deles.
-              child: SingleChildScrollView(
-                padding: scrollPadding(
-                  context,
-                  left: AppSpacing.screen,
-                  top: AppSpacing.sm,
-                  right: AppSpacing.screen,
-                  bottom: AppSpacing.xl,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (final (index, section) in sections.indexed)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: index == 0 ? 0 : AppSpacing.lg,
+        // S3b: o cabeçalho, o objetivo, o rating (contando), o ritmo, a fala,
+        // a conquista e as ações entram em faixas escalonadas; reaberta,
+        // tudo já pronto. A AppBar fica fixa o tempo todo.
+        EntradaEmFaixas(
+          id: 'conclusao-${conclusion.kind.name}-${conclusion.gameId}',
+          faixas: faixas,
+          montar: (parts) {
+            final shared = parts.take(sharedCount);
+            final rest = parts.skip(sharedCount).toList();
+            final bottom = actionsBar == null ? null : rest.removeLast();
+            return Column(
+              children: [
+                Expanded(
+                  // Rolagem simples, não lista preguiçosa: todos os blocos
+                  // ficam montados, e compartilhar acha o cartão e a análise
+                  // mesmo com a tela rolada para longe deles.
+                  child: SingleChildScrollView(
+                    padding: scrollPadding(
+                      context,
+                      left: AppSpacing.screen,
+                      top: AppSpacing.sm,
+                      right: AppSpacing.screen,
+                      bottom: AppSpacing.xl,
+                    ),
+                    child: spaced([
+                      RepaintBoundary(
+                        key: cardKey,
+                        child: ColoredBox(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          child: spaced(shared),
                         ),
-                        // O bloco de cima já entra em cascata por dentro.
-                        child: index == 0
-                            ? section
-                            : StaggeredEntrance(
-                                index: shared.length + index,
-                                child: section,
-                              ),
                       ),
-                  ],
+                      ...rest,
+                    ]),
+                  ),
                 ),
-              ),
-            ),
-            // As ações, fixas embaixo: fora da imagem de compartilhar.
-            if (main.isNotEmpty) _ActionsBar(state: state, actions: main),
-          ],
+                ?bottom,
+              ],
+            );
+          },
         ),
         if (celebrate && !motion.disabled)
           const Positioned.fill(child: IgnorePointer(child: Celebration())),
@@ -685,10 +756,17 @@ class _Player extends StatelessWidget {
 /// As ações principais, fixas embaixo, uma embaixo da outra: a principal em
 /// cima.
 class _ActionsBar extends StatelessWidget {
-  const _ActionsBar({required this.state, required this.actions});
+  const _ActionsBar({
+    required this.state,
+    required this.actions,
+    this.seeAnalysisId,
+  });
 
   final ConclusionState state;
   final List<ConclusionAction> actions;
+
+  /// Vitória: o segundo botão é "Ver a análise" desta partida.
+  final int? seeAnalysisId;
 
   @override
   Widget build(BuildContext context) {
@@ -697,6 +775,13 @@ class _ActionsBar extends StatelessWidget {
       children: [
         for (final (index, action) in actions.take(2).indexed)
           _ActionButton(action: action, primary: index == 0, state: state),
+        if (seeAnalysisId case final id? when actions.length < 2)
+          OutlinedButton.icon(
+            key: ConclusionKeys.seeAnalysis,
+            onPressed: () => context.push(Routes.game(id)),
+            icon: const Icon(Icons.insights_rounded),
+            label: OneLine(context.l10n.partidaConclusaoVerAnalise),
+          ),
       ],
     );
   }
@@ -875,48 +960,17 @@ class _Mode extends StatelessWidget {
 }
 
 /// O rating contando do antigo até o novo.
-class _Rating extends StatefulWidget {
+class _Rating extends StatelessWidget {
   const _Rating({required this.conclusion});
 
   final Conclusion conclusion;
 
   @override
-  State<_Rating> createState() => _RatingState();
-}
-
-class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
-  late final _controller = AnimationController(
-    vsync: this,
-    duration: AppMotion.celebrate,
-  );
-  late final _counting = CurvedAnimation(
-    parent: _controller,
-    curve: AppMotion.enter,
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Sem animações: já no valor novo.
-    if (AppMotion.of(context).disabled) {
-      _controller.value = 1;
-    } else if (!_controller.isAnimating && _controller.value == 0) {
-      _controller.forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final before = widget.conclusion.before!.rating;
-    final after = widget.conclusion.after!.rating;
+    final before = conclusion.before!.rating;
+    final after = conclusion.after!.rating;
     return Card(
       key: ConclusionKeys.rating,
       child: Padding(
@@ -933,11 +987,14 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
                 style: theme.textTheme.titleSmall,
               ),
             ),
-            AnimatedBuilder(
-              animation: _counting,
-              builder: (context, _) => RatingValue(
-                rating: (before + (after - before) * _counting.value).round(),
-                change: ((after - before) * _counting.value).round(),
+            // O rating conta do antigo ao novo quando os números entram
+            // (H-ANI-18); reaberta ou sem animações, já no valor novo.
+            ValorQueAnima(
+              valor: 1,
+              duracao: AppMotion.celebrate,
+              builder: (context, t) => RatingValue(
+                rating: (before + (after - before) * t).round(),
+                change: ((after - before) * t).round(),
                 up: after >= before,
                 valueKey: ConclusionKeys.ratingValue,
                 changeKey: ConclusionKeys.ratingDelta,
@@ -1366,10 +1423,10 @@ class _Analysis extends StatelessWidget {
         onTap: review == null && !state.reviewing
             ? () => context.read<ConclusionCubit>().quickReview()
             : null,
-        child: AnimatedSize(
-          duration: motion.component,
-          curve: AppMotion.move,
-          alignment: Alignment.topCenter,
+        // Movimento reduzido: sem AnimatedSize (com duração zero ele se
+        // remarca dentro do próprio layout quando a análise chega).
+        child: _TamanhoQueAcompanha(
+          duracao: motion.component,
           child: LayoutBuilder(
             builder: (context, box) {
               final board = math.min(
@@ -1397,6 +1454,24 @@ class _Analysis extends StatelessWidget {
       ),
     );
   }
+}
+
+/// [AnimatedSize] quando há movimento; com duração zero, o filho direto.
+class _TamanhoQueAcompanha extends StatelessWidget {
+  const _TamanhoQueAcompanha({required this.duracao, required this.child});
+
+  final Duration duracao;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => duracao == Duration.zero
+      ? child
+      : AnimatedSize(
+          duration: duracao,
+          curve: AppMotion.move,
+          alignment: Alignment.topCenter,
+          child: child,
+        );
 }
 
 /// O título do cartão: o raio e "Análise rápida", com a linha de baixo.
@@ -1479,7 +1554,7 @@ class _AnalysisRunning extends StatelessWidget {
           child: _ReviewBoard(state: state, size: board),
         ),
         const SizedBox(height: AppSpacing.md),
-        AnimatedProgress(value: total == 0 ? 0 : state.reviewDone / total),
+        BarraQueEnche(valor: total == 0 ? 0 : state.reviewDone / total),
       ],
     );
   }
@@ -1569,11 +1644,11 @@ class _AnalysisSummary extends StatelessWidget {
             children: [
               // O quadrado da precisão, sempre todo azul; o número conta até o
               // valor.
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: (mine ?? 0) / 100),
-                duration: AppMotion.of(context).celebrate,
-                curve: AppMotion.enter,
-                builder: (context, value, _) => Container(
+              // H-ANI-18: o número conta pelo kit (reduzido: valor final).
+              ValorQueAnima(
+                valor: (mine ?? 0) / 100,
+                duracao: LucenaMotion.numeroConta,
+                builder: (context, value) => Container(
                   width: 76,
                   height: 52,
                   alignment: Alignment.center,
@@ -1788,6 +1863,18 @@ Widget? _outcome(
   }
   final fulfilled = conclusion.fulfilled;
   if (fulfilled == null) return null;
+  // Desistir não é falha de sistema: faixa cinza com a bandeira, sem o
+  // vermelho (P9 B).
+  if (!fulfilled &&
+      conclusion.result == ConclusionResult.lost &&
+      conclusion.end?.reason == GameEndReason.resign) {
+    return OutcomeStrip(
+      key: ConclusionKeys.goal,
+      mark: OutcomeMark.flag,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      title: l10n.resultNotFulfilled,
+    );
+  }
   return OutcomeStrip(
     key: ConclusionKeys.goal,
     mark: fulfilled ? OutcomeMark.check : OutcomeMark.cross,
@@ -1819,3 +1906,12 @@ class DetailedReviewButton extends StatelessWidget {
     label: OneLine(context.l10n.conclusionDetailedReview),
   );
 }
+
+/// Vitória de partida comum (com "Jogar novamente" e "Nova partida"): a
+/// "Nova partida" sobe para a barra e o rodapé ganha "Ver a análise".
+bool _winNewGame(Conclusion conclusion, ConclusionState state) =>
+    conclusion.result == ConclusionResult.won &&
+    conclusion.gameId != null &&
+    conclusion.actions.contains(ConclusionAction.playAgain) &&
+    conclusion.actions.contains(ConclusionAction.newGame) &&
+    state.setup != null;

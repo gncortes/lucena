@@ -1,12 +1,11 @@
-/// O endereço público do app. O domínio fica só aqui: quando a E1.01 comprar o
-/// definitivo, a troca é nesta constante.
-abstract final class AppLinks {
-  /// O domínio dos links (sem `https://`). Provisório: o Firebase Hosting, até
-  /// o [finalHost] ser comprado.
-  static const host = 'lucena-2f4de.web.app';
+import '../../config/ambiente.dart';
 
-  /// O domínio definitivo. O app já abre os links dele.
-  static const finalHost = 'playlucena.com';
+/// O endereço público do app. O domínio de cada ambiente vem do
+/// [Ambiente.siteHost] (único lugar de ambiente em Dart).
+abstract final class AppLinks {
+  /// O domínio dos links que o app gera (sem `https://`): o site do ambiente
+  /// deste build (dev: dev.playlucenachess.com; prod: playlucenachess.com).
+  static String get host => Ambiente.atual().siteHost;
 
   /// O começo do caminho de um desafio: `<host>/p/<código>`.
   static const challengeSegment = 'p';
@@ -18,10 +17,10 @@ abstract final class AppLinks {
   static Uri uri(String path, [Map<String, String>? query]) =>
       Uri.https(host, path, query);
 
-  /// O link é do app (o provisório, ou o definitivo com ou sem `www`)?
+  /// O link é do app? O site do ambiente e o de prod (com ou sem `www`).
   static bool isOwn(Uri uri) =>
       uri.scheme == 'https' &&
       (uri.host == host ||
-          uri.host == finalHost ||
-          uri.host == 'www.$finalHost');
+          uri.host == Ambiente.prod.siteHost ||
+          uri.host == 'www.${Ambiente.prod.siteHost}');
 }

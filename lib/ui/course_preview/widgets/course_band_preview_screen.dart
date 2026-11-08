@@ -1,3 +1,8 @@
+import '../../core/widgets/load_skeleton.dart';
+import '../../core/widgets/load_error.dart';
+import '../../../routing/routes.dart';
+
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -21,12 +26,31 @@ class CourseBandPreviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loadState = context.watch<CoursePreviewCubit>().state;
+    if (!loadState.ready && loadState.failure == null) {
+      return const LoadSkeletonScreen();
+    }
+    if (loadState.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<CoursePreviewCubit>().retryLoad,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
+
     return BlocBuilder<CoursePreviewCubit, CoursePreviewState>(
       builder: (context, state) {
         final band = state.preview?.sale.band;
         return Scaffold(
           key: CoursePreviewKeys.band,
-          appBar: LucenaAppBar(title: Text(context.l10n.courseSaleAudience)),
+          appBar: LucenaAppBar(
+            leading: BackButton(
+              onPressed: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            ),
+            title: Text(context.l10n.courseSaleAudience),
+          ),
           body: band == null
               ? const SizedBox.shrink()
               : ListView(
