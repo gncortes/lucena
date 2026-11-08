@@ -214,7 +214,9 @@ void main() {
 
   testWidgets('lance certo no meio: "Correct." e "Your turn." no balão, e a '
       'lista traz o lance e a resposta', (tester) async {
-    setSize(tester, sizes.first);
+    // A8: o tabuleiro no centro deixa 2 linhas ao balão na 360×740 (o resto
+    // abre em "Ver mais"); a fala inteira cabe na tela normal.
+    setSize(tester, sizes.last);
     await pump(tester, 'e02');
     await move(tester, 'c1', 'c4');
     expect(said('Correct.'), findsOneWidget);

@@ -15,11 +15,16 @@ class BoardViewport extends StatelessWidget {
   const BoardViewport({
     required this.usefulHeight,
     required this.child,
+    this.bottomBar = 0,
     super.key,
   });
 
   final double usefulHeight;
   final Widget child;
+
+  /// A altura do `bottomNavigationBar` do Scaffold, sem a área segura (o
+  /// rodapé fica fora do body, e o body não recebe a barra de navegação).
+  final double bottomBar;
 
   static double usefulHeightOf(BuildContext context) =>
       MediaQuery.sizeOf(context).height -
@@ -32,7 +37,8 @@ class BoardViewport extends StatelessWidget {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) => _BoardViewportData(
       centerY:
-          box.maxHeight -
+          box.maxHeight +
+          bottomBar -
           MediaQuery.paddingOf(context).bottom -
           usefulHeight / 2,
       child: child,

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../core/board/centered_board_layout.dart';
 import 'script_speech.dart';
 
 /// The Canvas teaching block geometry, shared by the page and its host when
@@ -56,8 +57,17 @@ class ScriptPage extends StatelessWidget {
     required this.list,
     this.canvasLayout = false,
     this.actionsBelowBoard = false,
+    this.centerBoard = false,
     super.key,
   });
+
+  /// A8: o tabuleiro de ponta a ponta com o centro no centro útil da tela
+  /// ([BoardViewport.centerYOf]; sem ele, o centro da página). O balão e a
+  /// faixa ficam na sobra de cima, com as linhas que couberem (no mínimo
+  /// [ScriptSpeechMetrics.minLines]: se nem assim couberem, a faixa fica sob
+  /// a borda do tabuleiro); a lista fica embaixo e rola. Exercícios e
+  /// abertura do treino; a lição segue com o bloco do canvas (desligado).
+  final bool centerBoard;
 
   /// A altura da faixa do Viktor: retrato 40, nos botões de 48 dp do lado
   /// (protótipo, 50).
@@ -91,6 +101,7 @@ class ScriptPage extends StatelessWidget {
     final metrics = ScriptSpeechMetrics.of(context);
     return LayoutBuilder(
       builder: (context, box) {
+        if (centerBoard) return _centered(context, metrics, box);
         if (canvasLayout) {
           // medidas_lance/tela_lance: centre the complete teaching block,
           // reserving notation before reducing the board.
@@ -168,6 +179,92 @@ class ScriptPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _centered(
+    BuildContext context,
+    ScriptSpeechMetrics metrics,
+    BoxConstraints box,
+  ) {
+    final height = box.maxHeight;
+    final width = box.maxWidth;
+    final centerY = (BoardViewport.centerYOf(context) ?? height / 2)
+        .clamp(0.0, height)
+        .toDouble();
+    final double side = math.max(
+      0.0,
+      math.min(width, 2 * math.min(centerY, height - centerY)),
+    );
+    final boardTop = centerY - side / 2;
+    final boardBottom = boardTop + side;
+    // As linhas que cabem na sobra de cima, de [minLines] até 4.
+    final ScriptSpeechMetrics speech;
+    final double header;
+    if (canvasLayout) {
+      var lines = ScriptSpeechMetrics.minLines;
+      for (final candidate in [4, 3]) {
+        if (42 + 22.5 * candidate + canvasStripHeight <= boardTop) {
+          lines = candidate;
+          break;
+        }
+      }
+      speech = ScriptSpeechMetrics.canvas(lines);
+      header = speech.areaHeight(context) + canvasStripHeight;
+    } else {
+      final base = metrics.withLines(ScriptSpeechMetrics.minLines);
+      final line = base.lineExtent(context);
+      final room = boardTop - base.areaHeight(context) - stripHeight;
+      final extra = line <= 0 || room <= 0 ? 0 : (room / line).floor();
+      speech = metrics.withLines(ScriptSpeechMetrics.minLines + extra);
+      header = speech.areaHeight(context) + stripHeight;
+    }
+    return Stack(
+      key: pageKey,
+      clipBehavior: Clip.none,
+      children: [
+        Positioned(
+          left: 0,
+          right: 0,
+          top: math.max(0.0, boardTop - header),
+          height: header,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: speechBuilder(speech)),
+              strip,
+            ],
+          ),
+        ),
+        // O tabuleiro vem por cima: na tela baixa, a faixa que passar da
+        // borda fica embaixo dele e não rouba o toque das casas.
+        Positioned(
+          left: (width - side) / 2,
+          top: boardTop,
+          width: side,
+          height: side,
+          child: boardBuilder(side),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          top: boardBottom,
+          bottom: 0,
+          child: actionsBelowBoard
+              ? OverflowBox(
+                  alignment: Alignment.topCenter,
+                  minHeight: 0,
+                  maxHeight: double.infinity,
+                  child: list,
+                )
+              : ClipRect(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: SingleChildScrollView(child: list),
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }
