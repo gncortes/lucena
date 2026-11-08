@@ -3683,6 +3683,53 @@ void main() {
       expect(detail, endsWith(' · brancas'));
     });
   });
+  // Achado A2 da simulação em dev (b16): o voltar do Android no meio do
+  // desafio da Jornada saía direto, sem perguntar.
+  group('Voltar no meio do desafio da Jornada', () {
+    const journey = GameMode(
+      opponent: OpponentKind.maia,
+      level: 1450,
+      userSide: Side.white,
+      positionId: 'basic.queen.0001',
+      challengeId: 'queen.1',
+    );
+
+    testWidgets('pergunta antes de sair; continuar jogando fica na partida', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        mode: journey,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+      );
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.leaveSheet), findsOneWidget);
+      expect(find.text('Sair da partida?'), findsOneWidget);
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationCancel));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.leaveSheet), findsNothing);
+      expect(find.byType(FreeBoardScreen), findsOneWidget);
+      expect(cubit.state.end, isNull);
+    });
+
+    testWidgets('sair guarda a partida e fecha a tela', (tester) async {
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        mode: journey,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+      );
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.leaveConfirm));
+      await tester.pumpAndSettle();
+      expect(cubit.state.end, isNull);
+      expect(games.saved, isNotEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  });
   group('Resultado persistente por modo e motivo', () {
     const machine = GameMode(
       opponent: OpponentKind.stockfish,

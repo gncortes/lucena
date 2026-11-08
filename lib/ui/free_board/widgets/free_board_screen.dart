@@ -271,6 +271,37 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     });
   }
 
+  // Sair no meio do desafio da Jornada: a partida fica salva (o "Retomar" do
+  // Início) e a tela fecha para quem estava embaixo.
+  Future<void> _confirmLeave(FreeBoardCubit cubit) async {
+    if (_confirmingQuit || _quitting) return;
+    _confirmingQuit = true;
+    final l10n = context.l10n;
+    final confirmed = await _showGameConfirmation(
+      context,
+      sheetKey: FreeBoardKeys.leaveSheet,
+      confirmKey: FreeBoardKeys.leaveConfirm,
+      cancelKey: FreeBoardKeys.confirmationCancel,
+      title: l10n.gameLeaveTitle,
+      hint: l10n.gameLeaveHint,
+      action: l10n.gameLeave,
+      cancel: l10n.gameKeepPlaying,
+    );
+    _confirmingQuit = false;
+    if (confirmed != true || !mounted) return;
+    setState(() => _quitting = true);
+    // Só depois de a tela aceitar fechar (o PopScope guarda a partida).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        unawaited(cubit.leave());
+        context.go(Routes.home);
+      }
+    });
+  }
+
   GameData _gameData(FreeBoardState state) {
     // Revendo um lance anterior, o tabuleiro mostra a posição daquele
     // momento.
@@ -409,15 +440,24 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           state.mode.isSpeedrun &&
                           state.end == null &&
                           !_quitting;
+                      // No meio do desafio da Jornada, pergunta antes de sair
+                      // (a partida fica salva para retomar; achado A2).
+                      final journeyOpen =
+                          state.mode.challengeId != null &&
+                          state.ready &&
+                          state.end == null &&
+                          !_quitting;
                       return PopScope(
-                        canPop: !speedrunOpen,
+                        canPop: !speedrunOpen && !journeyOpen,
                         onPopInvokedWithResult: (didPop, _) {
                           if (didPop) {
                             if (!state.mode.isSpeedrun) {
                               unawaited(cubit.leave());
                             }
-                          } else {
+                          } else if (speedrunOpen) {
                             unawaited(_confirmQuitSpeedrun(cubit));
+                          } else {
+                            unawaited(_confirmLeave(cubit));
                           }
                         },
                         child: _scaffold(
