@@ -127,9 +127,9 @@ export function mascararEmail(email: string | undefined): string {
 export function textoDoPush(curso: string, origem: PedidoDarCurso['origem']): { title: string; body: string } {
   const nome = CURSOS[curso].nome;
   if (origem === 'pagoPorFora') {
-    return { title: 'Pagamento confirmado', body: `O ${nome} é seu. Os 20 capítulos já estão abertos.` };
+    return { title: 'Pagamento confirmado', body: `O ${nome} está liberado.` };
   }
-  return { title: `Você ganhou o ${nome}`, body: 'Os 20 capítulos já estão abertos.' };
+  return { title: `Você ganhou o ${nome}`, body: '' };
 }
 
 export async function darCursoCore(

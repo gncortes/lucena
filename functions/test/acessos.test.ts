@@ -56,14 +56,14 @@ describe('lerPedidoDarCurso', () => {
   test('texto do presente', () => {
     assert.deepEqual(textoDoPush('pilares', 'presente'), {
       title: 'Você ganhou o Pilares do Xadrez',
-      body: 'Os 20 capítulos já estão abertos.',
+      body: '',
     });
   });
 
   test('pago por fora: o push fala de pagamento, não de presente', () => {
     assert.deepEqual(textoDoPush('pilares', 'pagoPorFora'), {
       title: 'Pagamento confirmado',
-      body: 'O Pilares do Xadrez é seu. Os 20 capítulos já estão abertos.',
+      body: 'O Pilares do Xadrez está liberado.',
     });
   });
 });

@@ -66,7 +66,7 @@ describe('darCurso', () => {
       tipo: 'presente',
       curso: 'pilares',
       titulo: 'Você ganhou o Pilares do Xadrez',
-      texto: 'Os 20 capítulos já estão abertos.',
+      texto: '',
       pushId: r.registroId,
       uid: 'rafael',
       conta: 'ra***@exemplo.com',
@@ -86,7 +86,7 @@ describe('darCurso', () => {
     assert.equal((await acessos('bruno'))!.cursos.pilares.origem, 'pagoPorFora');
     assert.equal(enviadas.length, 1);
     assert.equal(enviadas[0].data.titulo, 'Pagamento confirmado');
-    assert.equal(enviadas[0].data.texto, 'O Pilares do Xadrez é seu. Os 20 capítulos já estão abertos.');
+    assert.equal(enviadas[0].data.texto, 'O Pilares do Xadrez está liberado.');
     assert.equal(enviadas[0].data.tipo, 'presente'); // o toque abre o curso liberado
   });
 
