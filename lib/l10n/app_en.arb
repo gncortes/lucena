@@ -13621,11 +13621,11 @@
   "@unlockedPurchaseTitle": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },
-  "unlockedGiftHello": "{name}, you got Pilares do Xadrez!",
+  "unlockedGiftHello": "Congratulations on your gift, {name}!",
   "@unlockedGiftHello": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },
-  "unlockedGiftHelloNoName": "You got Pilares do Xadrez!",
+  "unlockedGiftHelloNoName": "Congratulations on your gift!",
   "@unlockedGiftHelloNoName": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },
@@ -13637,7 +13637,7 @@
   "@unlockedPurchaseHelloNoName": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },
-  "unlockedChapters": "All 20 chapters are open; make the most of every lesson.",
+  "unlockedChapters": "Now we train together what decides games.",
   "@unlockedChapters": {
     "description": "Curso liberado (H-R5-62): presente ou compra pelo servidor."
   },

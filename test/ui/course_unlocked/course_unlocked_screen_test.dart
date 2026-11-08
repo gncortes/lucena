@@ -120,8 +120,8 @@ void main() {
     await pump(tester, origin: CourseUnlockedOrigin.gift);
     expect(find.text('Você ganhou o Pilares do Xadrez'), findsOneWidget);
     final fala = speech(tester);
-    expect(fala, contains('Ana, você ganhou o Pilares do Xadrez!'));
-    expect(fala, contains('Os 20 capítulos estão abertos'));
+    expect(fala, contains('Parabéns pelo presente, Ana!'));
+    expect(fala, contains('Agora treinamos juntos o que decide partidas'));
     expect(fala, contains('Comecemos pelo seu plano.'));
     expect(find.byIcon(Icons.card_giftcard), findsOneWidget);
     expect(find.text('Montar o meu plano'), findsOneWidget);
@@ -142,7 +142,7 @@ void main() {
     await pump(tester, origin: CourseUnlockedOrigin.gift, nickname: '');
     expect(
       speech(tester),
-      contains('Mestre Viktor Você ganhou o Pilares do Xadrez!'),
+      contains('Mestre Viktor Parabéns pelo presente!'),
     );
   });
 
