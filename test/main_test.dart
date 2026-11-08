@@ -683,6 +683,9 @@ void main() {
       // A tela inicial está embaixo: voltar cai nela.
       await tester.pageBack();
       await tester.pumpAndSettle();
+      // No meio da partida, a folha "Sair da partida?" pergunta antes.
+      await tester.tap(find.byKey(FreeBoardKeys.leaveConfirm));
+      await tester.pumpAndSettle();
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
       expect(games.snapshot?.onScreen, isFalse);
     });
@@ -754,6 +757,9 @@ void main() {
     expect(find.byKey(FreeBoardKeys.clock(Side.black)), findsOneWidget);
 
     await tester.pageBack();
+    await tester.pumpAndSettle();
+    // No meio da partida, a folha "Sair da partida?" pergunta antes.
+    await tester.tap(find.byKey(FreeBoardKeys.leaveConfirm));
     await tester.pumpAndSettle();
     expect(find.byKey(CatalogKeys.categoryScreen), findsOneWidget);
   });
@@ -1012,6 +1018,9 @@ void main() {
       expect(find.byKey(FreeBoardKeys.board), findsOneWidget);
       // O caminho continua: voltar cai no início.
       await tester.pageBack();
+      await tester.pumpAndSettle();
+      // No meio da partida, a folha "Sair da partida?" pergunta antes.
+      await tester.tap(find.byKey(FreeBoardKeys.leaveConfirm));
       await tester.pumpAndSettle();
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
     });
