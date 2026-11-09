@@ -2816,6 +2816,7 @@
   "sjEstiloSoForte": "Seu ponto forte: {forte}.",
   "sjEstiloSoAcertar": "Ponto a melhorar: {acertar}.",
   "sjEstiloSemLeitura": "Ainda é cedo para falar de estilo.",
+  "sjEstiloPoucas": "Ainda é cedo para falar de estilo. {resumo}",
   "sjEstiloTitulo": "Seu estilo",
   "sjEstiloNivel": "{nivel} · {partidas, plural, =0{{partidas} partidas} =1{1 partida} other{{partidas} partidas}}",
   "sjEstiloComPartidas": "{partidas, plural, =0{Com {partidas} partidas} =1{Com 1 partida} other{Com {partidas} partidas}}: {nivel, select, primeira{primeira leitura} formacao{em formação} other{leitura firme}}",
@@ -2906,6 +2907,9 @@
   "sjPilaresOfertaTexto": "O repertório Sólido traz Sistema London, Caro-Kann e Defesa Eslava; o Agressivo, 1.e4, Dragão Acelerado e Índia do Rei.",
   "sjPilaresOfertaParte": "A parte {numero} trata do lance {lance}, onde você sai da teoria.",
   "sjPilaresConhecer": "Conhecer o plano",
-  "sjMetasDestaqueAviso": "{nome} entrou nas metas de hoje: é onde as suas partidas mais pedem estudo.",
-  "sjMetasDestaqueSecao": "ABERTURA"
+  "sjMetasDestaqueAviso": "Esta lição entrou nas metas de hoje porque é onde as tuas partidas mais pedem estudo.",
+  "sjMetasDestaqueSecao": "ABERTURA",
+  "sjMetasDestaqueTitulo": "{abertura} · Parte {n}",
+  "sjVerMeuEstilo": "Ver meu estilo",
+  "sjTeoriaVoceJogouCurto": "Você jogou"
 }

@@ -9,9 +9,9 @@ import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
-import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/cartao_destaque.dart';
 import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -79,7 +79,6 @@ class _Lista extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
-    final primaria = theme.colorScheme.primary;
     final perfil = abertura.perfil == 'solido'
         ? t.trainingProfileSolid
         : t.trainingProfileAggressive;
@@ -106,56 +105,33 @@ class _Lista extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
         ],
         const SizedBox(height: AppSpacing.sm),
-        DecoratedBox(
+        // O mesmo cartão azul de destaque do "Seu estilo" (componente único).
+        CartaoDestaque(
           key: SeuJogoKeys.pilaresOferta,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(AppShape.card),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.lock_outline,
-                      size: AppIconSize.notice,
-                      color: primaria,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        t.sjPilaresOfertaTitulo(t.sjSlotNome(abertura.slot)),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+          icon: Icons.lock_outline,
+          title: t.sjPilaresOfertaTitulo(t.sjSlotNome(abertura.slot)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                [
+                  t.sjPilaresOfertaTexto,
+                  if (parte != null && lance != null)
+                    t.sjPilaresOfertaParte(abertura.destaque.numero, lance!),
+                ].join(' '),
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              FilledButton(
+                key: SeuJogoKeys.pilaresConhecer,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(kButtonHeight),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  [
-                    t.sjPilaresOfertaTexto,
-                    if (parte != null && lance != null)
-                      t.sjPilaresOfertaParte(abertura.destaque.numero, lance!),
-                  ].join(' '),
-                  style: theme.textTheme.bodyMedium,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                FilledButton(
-                  key: SeuJogoKeys.pilaresConhecer,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(kButtonHeight),
-                  ),
-                  onPressed: () =>
-                      context.push(D2Paths.plan(origin: 'treinador')),
-                  child: Text(t.sjPilaresConhecer),
-                ),
-              ],
-            ),
+                onPressed: () =>
+                    context.push(D2Paths.plan(origin: 'treinador')),
+                child: Text(t.sjPilaresConhecer),
+              ),
+            ],
           ),
         ),
       ],
@@ -176,9 +152,9 @@ class _ParteComCadeado extends StatelessWidget {
       key: SeuJogoKeys.pilaresParte(parte.licao.id),
       state: CourseItemState.locked,
       title: context.l10n.sjPilaresParte(parte.numero),
-      summary: parte.licao.summary.isEmpty
-          ? parte.licao.title
-          : parte.licao.summary,
+      // Canvas DPilaresEslava: cada parte com 1 linha (o título curto da
+      // lição), para a oferta caber na primeira tela.
+      summary: parte.licao.title,
     );
     if (!destaque) return tile;
     return DecoratedBox(

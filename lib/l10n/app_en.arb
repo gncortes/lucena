@@ -14557,7 +14557,7 @@
   "@sjPlataformaChesscom": {
     "description": "Nome da plataforma. (T87)"
   },
-  "sjRitmoTodos": "All time controls",
+  "sjRitmoTodos": "All",
   "@sjRitmoTodos": {
     "description": "Filtro de ritmo: todos. (T87)"
   },
@@ -14639,6 +14639,15 @@
   "@sjEstiloSemLeitura": {
     "description": "Resumo do estilo sem pontos. (T87)"
   },
+  "sjEstiloPoucas": "It is still too early to talk about style. {resumo}",
+  "@sjEstiloPoucas": {
+    "description": "Resumo do estilo com poucas partidas (< 10): a ressalva antes do resumo (canvas DSeuJogoPoucas). (T87)",
+    "placeholders": {
+      "resumo": {
+        "type": "String"
+      }
+    }
+  },
   "sjEstiloTitulo": "Your style",
   "@sjEstiloTitulo": {
     "description": "Título do card e da tela de estilo. (T87)"
@@ -14709,7 +14718,7 @@
   "@sjFocoAbertura": {
     "description": "Título do foco na abertura. (T87)"
   },
-  "sjFocoAberturaTexto": "In {vezes} of {partidas} games of {abertura}, you left theory with {jogada} and the position got worse. See what the masters play there.",
+  "sjFocoAberturaTexto": "In {vezes} of {partidas} games of {abertura}, you left theory with {jogada} and the position got worse. See what is played most there.",
   "@sjFocoAberturaTexto": {
     "description": "Foco na abertura: vezes que saiu da teoria, partidas, nome e jogada. (T87)",
     "placeholders": {
@@ -14802,7 +14811,7 @@
   "@sjPoucasPrecisaoTitulo": {
     "description": "Card com poucas partidas. (T87)"
   },
-  "sjPoucasPrecisaoTexto": "{partidas, plural, =0{In the {partidas} games played since you connected Lichess.} =1{In the game played since you connected Lichess.} other{In the {partidas} games played since you connected Lichess.}}",
+  "sjPoucasPrecisaoTexto": "{partidas, plural, =0{No games played since you connected Lichess.} =1{In the game played since you connected Lichess.} other{In the {partidas} games played since you connected Lichess.}}",
   "@sjPoucasPrecisaoTexto": {
     "description": "Card com poucas partidas. (T87)",
     "placeholders": {
@@ -15111,7 +15120,7 @@
   "@sjTeoriaSem": {
     "description": "Partida sem teoria. (T87)"
   },
-  "sjTeoriaSaiu": "You left theory with {jogada}. See what the masters play here.",
+  "sjTeoriaSaiu": "You left theory with {jogada}. See what is played most here.",
   "@sjTeoriaSaiu": {
     "description": "Comentário do tabuleiro. (T87)",
     "placeholders": {
@@ -15120,7 +15129,7 @@
       }
     }
   },
-  "sjTeoriaSaiuSemLance": "You left theory here. See what the masters play.",
+  "sjTeoriaSaiuSemLance": "You left theory here. See what is played most.",
   "@sjTeoriaSaiuSemLance": {
     "description": "Comentário sem a jogada. (T87)"
   },
@@ -15261,17 +15270,32 @@
   "@sjPilaresConhecer": {
     "description": "Botão da oferta. (T87)"
   },
-  "sjMetasDestaqueAviso": "{nome} is in today's goals: it is where your games most need study.",
+  "sjMetasDestaqueAviso": "This lesson is in today's goals because it covers the opening your games most need to study.",
   "@sjMetasDestaqueAviso": {
-    "description": "Aviso no alto das Metas de hoje. (T87)",
-    "placeholders": {
-      "nome": {
-        "type": "String"
-      }
-    }
+    "description": "Aviso no alto das Metas de hoje. (T87)"
   },
   "sjMetasDestaqueSecao": "OPENING",
   "@sjMetasDestaqueSecao": {
     "description": "Seção das Metas. (T87)"
+  },
+  "sjMetasDestaqueTitulo": "{abertura} · Part {n}",
+  "@sjMetasDestaqueTitulo": {
+    "description": "Título da lição do Treinador nas Metas: abertura e número da parte (canvas DMetasEslava). (T87)",
+    "placeholders": {
+      "abertura": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjVerMeuEstilo": "See my style",
+  "@sjVerMeuEstilo": {
+    "description": "Botão-link do cartão Seu estilo na aba. (T87)"
+  },
+  "sjTeoriaVoceJogouCurto": "You played",
+  "@sjTeoriaVoceJogouCurto": {
+    "description": "Marca curta na linha do lance que ele jogou entre os candidatos. (T87)"
   }
 }

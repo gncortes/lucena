@@ -579,7 +579,8 @@ class TrainingGoalsTab extends StatelessWidget {
             ? CourseItemState.locked
             : goal.done
             ? CourseItemState.approved
-            : goal.key == training.day?.next?.key
+            // Com o destaque do Treinador no alto, ele é o único em azul.
+            : focus == null && goal.key == training.day?.next?.key
             ? CourseItemState.next
             : CourseItemState.open,
         title: title,

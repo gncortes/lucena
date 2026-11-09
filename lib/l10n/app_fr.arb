@@ -2816,6 +2816,7 @@
   "sjEstiloSoForte": "Your strength: {forte}.",
   "sjEstiloSoAcertar": "Something to improve: {acertar}.",
   "sjEstiloSemLeitura": "It is still too early to talk about style.",
+  "sjEstiloPoucas": "It is still too early to talk about style. {resumo}",
   "sjEstiloTitulo": "Your style",
   "sjEstiloNivel": "{nivel} · {partidas, plural, =0{{partidas} games} =1{1 game} other{{partidas} games}}",
   "sjEstiloComPartidas": "{partidas, plural, =0{With {partidas} games} =1{With 1 game} other{With {partidas} games}}: {nivel, select, primeira{first read} formacao{taking shape} other{solid read}}",
@@ -2906,6 +2907,9 @@
   "sjPilaresOfertaTexto": "The Solid repertoire covers London System, Caro-Kann and Slav Defense; the Aggressive one, 1.e4, Accelerated Dragon and King's Indian.",
   "sjPilaresOfertaParte": "Part {numero} covers move {lance}, where you leave theory.",
   "sjPilaresConhecer": "See the plan",
-  "sjMetasDestaqueAviso": "{nome} is in today's goals: it is where your games most need study.",
-  "sjMetasDestaqueSecao": "OPENING"
+  "sjMetasDestaqueAviso": "This lesson is in today's goals because it is where your games most need study.",
+  "sjMetasDestaqueSecao": "OPENING",
+  "sjMetasDestaqueTitulo": "{abertura} · Part {n}",
+  "sjVerMeuEstilo": "See my style",
+  "sjTeoriaVoceJogouCurto": "You played"
 }

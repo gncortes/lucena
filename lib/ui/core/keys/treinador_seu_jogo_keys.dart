@@ -26,6 +26,7 @@ abstract final class SeuJogoKeys {
   static ValueKey<String> fase(String fase) => ValueKey('seuJogo.fase.$fase');
   static const semanas = ValueKey('seuJogo.semanas');
   static const estilo = ValueKey('seuJogo.estilo');
+  static const estiloTexto = ValueKey('seuJogo.estilo.texto');
   static const temas = ValueKey('seuJogo.temas');
   static ValueKey<String> tema(String tema) => ValueKey('seuJogo.tema.$tema');
   static const ritmos = ValueKey('seuJogo.ritmos');
@@ -59,6 +60,12 @@ abstract final class SeuJogoKeys {
   static ValueKey<String> teoriaCandidato(String san) =>
       ValueKey('seuJogo.teoriaScreen.candidato.$san');
   static const teoriaModelos = ValueKey('seuJogo.teoriaScreen.modelos');
+  static const teoriaLances = ValueKey('seuJogo.teoriaScreen.lances');
+  static const teoriaJogou = ValueKey('seuJogo.teoriaScreen.jogou');
+  static const teoriaInicio = ValueKey('seuJogo.teoriaScreen.inicio');
+  static const teoriaAnterior = ValueKey('seuJogo.teoriaScreen.anterior');
+  static const teoriaProximo = ValueKey('seuJogo.teoriaScreen.proximo');
+  static const teoriaFim = ValueKey('seuJogo.teoriaScreen.fim');
 
   // Partidas-modelo.
   static const modelosScreen = ValueKey('seuJogo.modelosScreen');
@@ -80,4 +87,5 @@ abstract final class SeuJogoKeys {
   // Destaque nas metas de hoje (com o curso).
   static const metasDestaque = ValueKey('seuJogo.metasDestaque');
   static const metasDestaqueParte = ValueKey('seuJogo.metasDestaque.parte');
+  static const metasDestaqueAviso = ValueKey('seuJogo.metasDestaque.aviso');
 }

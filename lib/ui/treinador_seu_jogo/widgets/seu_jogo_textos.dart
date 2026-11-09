@@ -6,6 +6,13 @@ import '../../../domain/use_cases/treinador/resumo_seu_jogo.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../core/board/board_settings_ui.dart';
 
+/// Frase do servidor que entra no meio de outra: sem o ponto final dela.
+String? _noMeio(String? texto) {
+  final t = texto?.trim();
+  if (t == null || t.isEmpty) return null;
+  return t.endsWith('.') ? t.substring(0, t.length - 1) : t;
+}
+
 /// Os textos que as telas do Seu jogo montam a partir dos dados.
 extension SeuJogoTextos on AppLocalizations {
   String plataformaNome(Plataforma? p) => switch (p) {
@@ -41,16 +48,20 @@ extension SeuJogoTextos on AppLocalizations {
     NivelEstilo.firme => sjNivelFirme,
   };
 
-  /// A frase do estilo: o ponto forte e o que acertar, o que houver.
-  String estiloResumo(EstiloJogador estilo) {
-    final forte = estilo.fortes.firstOrNull?.texto;
-    final acertar = estilo.acertar.firstOrNull?.texto;
-    return switch ((forte, acertar)) {
+  /// A frase do estilo: o ponto forte e o que acertar, o que houver. Com
+  /// [poucas] partidas (canvas DSeuJogoPoucas), abre com a ressalva "Ainda é
+  /// cedo para falar de estilo."
+  String estiloResumo(EstiloJogador estilo, {bool poucas = false}) {
+    final forte = _noMeio(estilo.fortes.firstOrNull?.texto);
+    final acertar = _noMeio(estilo.acertar.firstOrNull?.texto);
+    final resumo = switch ((forte, acertar)) {
       (final f?, final a?) => sjEstiloResumo(f, a),
       (final f?, null) => sjEstiloSoForte(f),
       (null, final a?) => sjEstiloSoAcertar(a),
-      (null, null) => sjEstiloSemLeitura,
+      (null, null) => null,
     };
+    if (resumo == null) return sjEstiloSemLeitura;
+    return poucas ? sjEstiloPoucas(resumo) : resumo;
   }
 
   /// O nome do tema; chave que o app ainda não conhece sai legível

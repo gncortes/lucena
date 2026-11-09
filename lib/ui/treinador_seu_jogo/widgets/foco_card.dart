@@ -12,10 +12,10 @@ import '../../../routing/routes.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../view_models/curso_da_abertura_cubit.dart';
 import 'seu_jogo_textos.dart';
 
@@ -50,96 +50,97 @@ class FocoCard extends StatelessWidget {
         SeuJogoPaths.temaDe(tema.tema),
       ),
     };
-    return DecoratedBox(
+    return KeyedSubtree(
       key: SeuJogoKeys.foco,
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppShape.large),
-        border: Border.all(color: AppColors.cardOutline),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppShape.large),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ColoredBox(color: primaria, child: const SizedBox(width: 4)),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(
-                    AppSpacing.lg,
-                    AppSpacing.lg,
-                    AppSpacing.lg,
-                    AppSpacing.md,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.my_location,
-                            size: AppIconSize.compact,
-                            color: primaria,
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              t.sjFocoTitulo,
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: primaria,
-                                fontWeight: FontWeight.w500,
+      child: LucenaCard(
+        padding: EdgeInsets.zero,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppShape.large),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ColoredBox(color: primaria, child: const SizedBox(width: 4)),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      AppSpacing.lg,
+                      AppSpacing.lg,
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.my_location,
+                              size: AppIconSize.compact,
+                              color: primaria,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                t.sjFocoTitulo,
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: primaria,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          titulo,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        titulo,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(texto, style: theme.textTheme.bodyMedium),
-                      const SizedBox(height: AppSpacing.lg),
-                      FilledButton(
-                        key: SeuJogoKeys.focoVer,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(kButtonHeight),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(texto, style: theme.textTheme.bodyMedium),
+                        const SizedBox(height: AppSpacing.lg),
+                        FilledButton(
+                          key: SeuJogoKeys.focoVer,
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(kButtonHeight),
+                          ),
+                          onPressed: () => context.push(destino),
+                          child: Text(botao),
                         ),
-                        onPressed: () => context.push(destino),
-                        child: Text(botao),
-                      ),
-                      if (foco case FocoAbertura(:final abertura, :final saida))
-                        if (slotDaAbertura(
-                              eco: abertura.eco,
-                              nome: abertura.nome,
-                              cor: abertura.cor,
-                              curso: abertura.curso,
-                            )
-                            case final slot?)
-                          BlocProvider(
-                            key: ValueKey(slot),
-                            create: (c) => CursoDaAberturaCubit(
-                              training: c.read<TrainingRepository>(),
-                              access: c.read<CourseAccessRepository>(),
-                              slot: slot,
-                              parte: abertura.curso?.parte,
-                            )..load(),
-                            child: _LigacaoAoCurso(
-                              slot: slot,
-                              parteDoServidor: abertura.curso?.parte,
-                              lance: saida.lance,
+                        if (foco case FocoAbertura(
+                          :final abertura,
+                          :final saida,
+                        ))
+                          if (slotDaAbertura(
+                                eco: abertura.eco,
+                                nome: abertura.nome,
+                                cor: abertura.cor,
+                                curso: abertura.curso,
+                              )
+                              case final slot?)
+                            BlocProvider(
+                              key: ValueKey(slot),
+                              create: (c) => CursoDaAberturaCubit(
+                                training: c.read<TrainingRepository>(),
+                                access: c.read<CourseAccessRepository>(),
+                                slot: slot,
+                                parte: abertura.curso?.parte,
+                              )..load(),
+                              child: _LigacaoAoCurso(
+                                slot: slot,
+                                parteDoServidor: abertura.curso?.parte,
+                                lance: saida.lance,
+                              ),
                             ),
-                          ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -171,7 +172,9 @@ class _LigacaoAoCurso extends StatelessWidget {
       padding: const EdgeInsets.only(top: AppSpacing.xs),
       child: TextButton(
         key: SeuJogoKeys.focoCurso,
-        style: TextButton.styleFrom(minimumSize: const Size.fromHeight(44)),
+        style: TextButton.styleFrom(
+          minimumSize: const Size.fromHeight(kButtonHeightCompact),
+        ),
         onPressed: () => context.push(
           state.temOCurso
               ? Routes.trainingGoals(

@@ -6,11 +6,11 @@ import '../../../domain/models/treinador/treinador.dart';
 import '../../../routing/frentes/treinador_seu_jogo_routes.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../view_models/seu_jogo_cubit.dart';
 import 'seu_jogo_aba.dart';
 import 'seu_jogo_pecas.dart';
@@ -126,7 +126,6 @@ class _Confianca extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
-    final primaria = theme.colorScheme.primary;
     final variante = theme.textTheme.bodySmall?.copyWith(
       color: theme.colorScheme.onSurfaceVariant,
     );
@@ -135,59 +134,13 @@ class _Confianca extends StatelessWidget {
       NivelEstilo.formacao => 50 - partidas,
       NivelEstilo.firme => 0,
     };
-    return DecoratedBox(
+    return KeyedSubtree(
       key: SeuJogoKeys.estiloConfianca,
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppShape.card),
-        border: Border.all(color: AppColors.cardOutline),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+      child: LucenaCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              t.sjEstiloComPartidas(partidas, nivel.name),
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Row(
-              children: [
-                for (final n in NivelEstilo.values) ...[
-                  if (n.index > 0) const SizedBox(width: AppSpacing.xs),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(AppSpacing.xs),
-                          child: SizedBox(
-                            height: 6,
-                            child: ColoredBox(
-                              color: n.index <= nivel.index
-                                  ? primaria
-                                  : AppColors.sheetSurface,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          t.nivelNome(n),
-                          style: n == nivel
-                              ? theme.textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                )
-                              : variante,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
+            MedidorConfianca(nivel: nivel, partidas: partidas),
             const SizedBox(height: AppSpacing.md),
             Text(
               falta > 0 ? t.sjEstiloFalta(falta) : t.sjEstiloRefeita,
@@ -240,7 +193,7 @@ class _Ponto extends StatelessWidget {
               key: a.key,
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
-                minimumSize: const Size(0, 44),
+                minimumSize: const Size(0, kButtonHeightCompact),
               ),
               onPressed: () => context.push(a.destino),
               child: Text(t.sjVerPosicoes),

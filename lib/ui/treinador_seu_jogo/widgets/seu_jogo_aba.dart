@@ -15,8 +15,10 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/cartao_destaque.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/load_error.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/tip_box.dart';
 import '../view_models/seu_jogo_cubit.dart';
@@ -146,7 +148,7 @@ class _Lista extends StatelessWidget {
         _Cores(resumo: resumo),
         if (resumo.aberturas.isNotEmpty) _Aberturas(resumo: resumo),
         if (_aberturaDosModelos(resumo) case final a?)
-          _LinkModelos(abertura: a),
+          LinkModelos(eco: a.eco, nome: a.nome),
       ],
     ];
     return ListView.separated(
@@ -179,18 +181,22 @@ class _Ritmos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.l10n;
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children: [
-        for (final r in <Ritmo?>[null, ...Ritmo.values])
-          ChipLucena(
-            key: SeuJogoKeys.ritmo(r?.wire ?? 'todos'),
-            label: Text(t.ritmoNome(r)),
-            selecionado: r == ritmo,
-            aoEscolher: (_) => context.read<SeuJogoCubit>().escolherRitmo(r),
-          ),
-      ],
+    // Uma linha só (canvas DSeuJogo): se não couber, rola na horizontal.
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final (i, r) in <Ritmo?>[null, ...Ritmo.values].indexed) ...[
+            if (i > 0) const SizedBox(width: AppSpacing.sm),
+            ChipLucena(
+              key: SeuJogoKeys.ritmo(r?.wire ?? 'todos'),
+              label: Text(t.ritmoNome(r)),
+              selecionado: r == ritmo,
+              aoEscolher: (_) => context.read<SeuJogoCubit>().escolherRitmo(r),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -208,14 +214,9 @@ class _Numeros extends StatelessWidget {
     final variacao = resumo.variacaoPrecisao;
     final fase = resumo.faseMaisErros;
     final borda = BorderSide(color: theme.colorScheme.outlineVariant);
-    return DecoratedBox(
+    return KeyedSubtree(
       key: SeuJogoKeys.numeros,
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppShape.large),
-        border: Border.all(color: AppColors.cardOutline),
-      ),
-      child: Padding(
+      child: LucenaCard(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
         child: IntrinsicHeight(
           child: Row(
@@ -442,62 +443,51 @@ class _EstiloCard extends StatelessWidget {
     final partidas = state.estatisticas.partidasAnalisadas > 0
         ? state.estatisticas.partidasAnalisadas
         : resumo.partidas;
-    final texto = t.estiloResumo(estilo);
-    return Material(
-      color: AppColors.cardSurface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppShape.large),
-        side: const BorderSide(color: AppColors.cardOutline),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        key: SeuJogoKeys.estilo,
-        onTap: () => context.push(SeuJogoPaths.estilo),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: 14,
+    // Canvas DSeuJogoPoucas: com poucas partidas, a frase abre com a ressalva.
+    final texto = t.estiloResumo(estilo, poucas: resumo.poucas);
+    final cores = theme.colorScheme;
+    // Canvas DSeuJogoPoucas/DSeuJogo: o cartão azul de destaque com o medidor
+    // de 3 etapas e o link "Ver meu estilo".
+    return CartaoDestaque(
+      key: SeuJogoKeys.estilo,
+      icon: Icons.psychology,
+      title: t.sjEstiloTitulo,
+      onTap: () => context.push(SeuJogoPaths.estilo),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            texto,
+            key: SeuJogoKeys.estiloTexto,
+            style: theme.textTheme.bodyMedium,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.psychology,
-                    size: AppIconSize.notice,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      t.sjEstiloTitulo,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      t.sjEstiloNivel(t.nivelNome(estilo.nivel), partidas),
-                      textAlign: TextAlign.end,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    size: AppIconSize.button,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(texto, style: theme.textTheme.bodyMedium),
-            ],
+          const SizedBox(height: AppSpacing.md),
+          MedidorConfianca(
+            nivel: estilo.nivel,
+            partidas: partidas,
+            corDoTrilho: cores.outlineVariant,
           ),
-        ),
+          const SizedBox(height: AppSpacing.sm),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Row(
+              children: [
+                Text(
+                  t.sjVerMeuEstilo,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cores.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  size: AppIconSize.button,
+                  color: cores.primary,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -543,6 +533,10 @@ class _Temas extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     final theme = Theme.of(context);
+    final maior = resumo.temas.fold(
+      0,
+      (m, e) => e.posicoes.length > m ? e.posicoes.length : m,
+    );
     return SecaoSeuJogo(
       key: SeuJogoKeys.temas,
       titulo: t.sjTemasTitulo,
@@ -555,39 +549,25 @@ class _Temas extends StatelessWidget {
               onTap: () => context.push(SeuJogoPaths.temaDe(tema.tema)),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              t.temaNome(tema.tema),
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            if (t.sjTemaDescricao(tema.tema) case final d
-                                when d.isNotEmpty)
-                              _Pequeno(d),
-                          ],
-                        ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: LinhaComBarra(
+                        rotulo: t.temaNome(tema.tema),
+                        detalhe: t.sjTemaDescricao(tema.tema).isEmpty
+                            ? null
+                            : t.sjTemaDescricao(tema.tema),
+                        valor: '${tema.posicoes.length}',
+                        fracao: maior == 0 ? 0 : tema.posicoes.length / maior,
+                        destaque: tema.posicoes.length == maior,
                       ),
-                      Text(
-                        '${tema.posicoes.length}',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Icon(
-                        Icons.chevron_right,
-                        size: AppIconSize.button,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ],
-                  ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      size: AppIconSize.button,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -806,19 +786,17 @@ class LinhaDaAbertura extends StatelessWidget {
   }
 }
 
-class _LinkModelos extends StatelessWidget {
-  const _LinkModelos({required this.abertura});
+class LinkModelos extends StatelessWidget {
+  const LinkModelos({required this.eco, required this.nome, super.key});
 
-  final ResumoAbertura abertura;
+  final String eco, nome;
 
   @override
   Widget build(BuildContext context) {
     final primaria = Theme.of(context).colorScheme.primary;
     return InkWell(
       key: SeuJogoKeys.modelosLink,
-      onTap: () => context.push(
-        SeuJogoPaths.modelosDe(abertura.eco, nome: abertura.nome),
-      ),
+      onTap: () => context.push(SeuJogoPaths.modelosDe(eco, nome: nome)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 44),
         child: Padding(
@@ -833,7 +811,7 @@ class _LinkModelos extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  context.l10n.sjModelosDe(abertura.nome),
+                  context.l10n.sjModelosDe(nome),
                   style: Theme.of(context).textTheme.bodyMedium
                       ?.copyWith(color: primaria, fontWeight: FontWeight.w500),
                 ),

@@ -5,13 +5,13 @@ import '../../../data/repositories/treinador/treinador_repository.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../../core/widgets/open_link.dart';
 import '../view_models/partidas_modelo_cubit.dart';
 
@@ -74,67 +74,59 @@ class _Lista extends StatelessWidget {
         AppSpacing.xl,
       ),
       children: [
-        _Cartao(
-          child: SwitchListTile(
-            key: SeuJogoKeys.modelosAviso,
-            contentPadding: const EdgeInsetsDirectional.only(
-              start: AppSpacing.lg,
-              end: AppSpacing.sm,
-            ),
-            value: state.aviso,
-            onChanged: (v) =>
-                context.read<PartidasModeloCubit>().definirAviso(ligado: v),
-            title: Text(
-              t.sjModelosAviso,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
+        LucenaCard(
+          padding: EdgeInsets.zero,
+          child: Material(
+            type: MaterialType.transparency,
+            child: SwitchListTile(
+              key: SeuJogoKeys.modelosAviso,
+              contentPadding: const EdgeInsetsDirectional.only(
+                start: AppSpacing.lg,
+                end: AppSpacing.sm,
               ),
+              value: state.aviso,
+              onChanged: (v) =>
+                  context.read<PartidasModeloCubit>().definirAviso(ligado: v),
+              title: Text(
+                t.sjModelosAviso,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              subtitle: Text(t.sjModelosAvisoTexto(abertura), style: variante),
             ),
-            subtitle: Text(t.sjModelosAvisoTexto(abertura), style: variante),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Text(
-          t.sjModelosSecao(abertura),
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w500,
+        // Canvas DPartidasModelo: título, subtítulo e as partidas num cartão
+        // só, separadas por divisores.
+        LucenaCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                t.sjModelosSecao(abertura),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(t.sjModelosSecaoTexto, style: variante),
+              const SizedBox(height: AppSpacing.md),
+              if (state.modelos.isEmpty)
+                EmptyState(
+                  key: SeuJogoKeys.modelosVazio,
+                  icon: Icons.emoji_events_outlined,
+                  message: t.sjModelosVazio,
+                )
+              else
+                for (final (i, m) in state.modelos.indexed) ...[
+                  if (i > 0) const Divider(height: AppSpacing.lg),
+                  _Modelo(indice: i, modelo: m),
+                ],
+            ],
           ),
         ),
-        Text(t.sjModelosSecaoTexto, style: variante),
-        const SizedBox(height: AppSpacing.md),
-        if (state.modelos.isEmpty)
-          EmptyState(
-            key: SeuJogoKeys.modelosVazio,
-            icon: Icons.emoji_events_outlined,
-            message: t.sjModelosVazio,
-          )
-        else
-          for (final (i, m) in state.modelos.indexed) ...[
-            _Modelo(indice: i, modelo: m),
-            const SizedBox(height: AppSpacing.sm),
-          ],
       ],
-    );
-  }
-}
-
-class _Cartao extends StatelessWidget {
-  const _Cartao({required this.child, super.key});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: AppColors.cardSurface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppShape.large),
-        side: const BorderSide(color: AppColors.cardOutline),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: child,
     );
   }
 }
@@ -157,57 +149,45 @@ class _Modelo extends StatelessWidget {
       'artigo' => (t.sjModeloFonteArtigo, t.sjModeloAbrirArtigo),
       _ => (t.sjModeloFonteTorneio, t.sjModeloAbrirLichess),
     };
-    return _Cartao(
+    return Column(
       key: SeuJogoKeys.modelo(indice),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.md,
-          AppSpacing.lg,
-          AppSpacing.xs,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          fonte,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: primaria,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.6,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              fonte,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.6,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              modelo.titulo,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            if (modelo.subtitulo case final s?)
-              Text(
-                s,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            if (url != null)
-              TextButton.icon(
-                key: SeuJogoKeys.modeloAbrir(indice),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(0, 44),
-                  foregroundColor: primaria,
-                ),
-                onPressed: () => openLink(context, url),
-                icon: const Icon(Icons.open_in_new, size: AppIconSize.compact),
-                label: Text(abrir),
-              )
-            else
-              const SizedBox(height: AppSpacing.sm),
-          ],
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          modelo.titulo,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
-      ),
+        if (modelo.subtitulo case final s?)
+          Text(
+            s,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        if (url != null)
+          TextButton.icon(
+            key: SeuJogoKeys.modeloAbrir(indice),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(0, kButtonHeightCompact),
+              foregroundColor: primaria,
+            ),
+            onPressed: () => openLink(context, url),
+            icon: const Icon(Icons.open_in_new, size: AppIconSize.compact),
+            label: Text(abrir),
+          ),
+      ],
     );
   }
 }

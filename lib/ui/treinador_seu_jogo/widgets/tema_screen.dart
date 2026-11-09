@@ -8,13 +8,13 @@ import '../../../domain/use_cases/treinador/resumo_seu_jogo.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_card.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/open_link.dart';
 import '../../core/widgets/position_board.dart';
@@ -89,27 +89,19 @@ class _Lista extends StatelessWidget {
         AppSpacing.xl,
       ),
       children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            borderRadius: BorderRadius.circular(AppShape.card),
-            border: Border.all(color: AppColors.cardOutline),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (descricao.isNotEmpty) ...[
-                  Text(descricao, style: theme.textTheme.bodyLarge),
-                  const SizedBox(height: AppSpacing.xs),
-                ],
-                Text(
-                  t.sjTemaContagem(tema.posicoes.length, partidas),
-                  style: variante,
-                ),
+        LucenaCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (descricao.isNotEmpty) ...[
+                Text(descricao, style: theme.textTheme.bodyLarge),
+                const SizedBox(height: AppSpacing.xs),
               ],
-            ),
+              Text(
+                t.sjTemaContagem(tema.posicoes.length, partidas),
+                style: variante,
+              ),
+            ],
           ),
         ),
         const SizedBox(height: AppSpacing.lg),

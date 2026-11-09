@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
+import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/keys/treinador_seu_jogo_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/fakes/fake_treinador_repository.dart';
 import '../testing/treinador_fixtures.dart';
 import '../testing/treinador_seu_jogo_fixtures.dart';
+import '../testing/training/e2e_training.dart';
 import 'robots/app_robot.dart';
 import 'robots/seu_jogo_robot.dart';
 
@@ -39,6 +41,9 @@ void main() {
     await app.restart();
     await seuJogo.open();
     seuJogo.expectBase('Últimas 20 partidas do Lichess');
+
+    await seuJogo.abrirTeoriaPeloFoco();
+    await seuJogo.voltarPeloSistema(SeuJogoKeys.aba);
   });
 
   patrolTest('do foco à teoria e às partidas-modelo, com segundo plano', (
@@ -50,7 +55,7 @@ void main() {
     await app.open(systemLocale: const Locale('pt'), treinador: treinador);
     await seuJogo.open();
     await seuJogo.abrirTeoriaPeloFoco();
-    await seuJogo.escolherCandidato('Bf5');
+    await seuJogo.escolherCandidato('Nd7');
 
     await app.sendToBackgroundAndReturn();
     await $(SeuJogoKeys.teoriaLinha).waitUntilVisible();
@@ -59,6 +64,9 @@ void main() {
     await seuJogo.expectModelo(0);
     await seuJogo.ligarAvisoModelos();
     expect(treinador.avisosModelos, [true]);
+
+    await seuJogo.voltarPelaSeta(SeuJogoKeys.teoriaScreen);
+    await seuJogo.voltarPelaSeta(SeuJogoKeys.aba);
   });
 
   patrolTest('sem o curso: o foco leva às partes travadas e à oferta', (
@@ -75,6 +83,9 @@ void main() {
     await seuJogo.abrirCursoPeloFoco();
     await seuJogo.expectPilaresTravado();
     await seuJogo.conhecerOPilares();
+
+    await seuJogo.voltarPelaSeta(SeuJogoKeys.pilaresScreen);
+    await seuJogo.voltarPelaSeta(SeuJogoKeys.aba);
   });
 
   patrolTest('com o curso: o foco leva às Metas de hoje com a parte', (
@@ -82,9 +93,15 @@ void main() {
   ) async {
     final app = AppRobot($);
     final seuJogo = SeuJogoRobot($);
-    await app.open(systemLocale: const Locale('pt'), treinador: _treinador());
+    // Com o plano já escolhido (sem plano, as Metas ainda não existem).
+    await app.open(
+      systemLocale: const Locale('pt'),
+      treinador: _treinador(),
+      trainingScenario: E2ETrainingScenario.large,
+    );
     await seuJogo.open();
     await seuJogo.abrirCursoPeloFoco();
     await seuJogo.expectMetasComDestaque();
+    await seuJogo.voltarPelaSeta(SeuJogoKeys.aba, seta: CourseGuideKeys.back);
   });
 }

@@ -8,6 +8,7 @@ import 'package:lucena/ui/core/keys/purchase_keys.dart';
 import 'package:lucena/ui/core/keys/treinador_seu_jogo_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'app_robot.dart';
 import 'variant.dart';
 
 /// A aba Seu jogo do Treinador de partidas (T87) e as telas que saem dela.
@@ -63,7 +64,23 @@ class SeuJogoRobot {
   }
 
   Future<void> expectModelo(int i) async {
-    await $(SeuJogoKeys.modelo(i)).scrollTo();
+    // O texto do modelo, não a coluna: sem link, o centro da coluna cai ao
+    // lado do título curto e o Patrol não a conta como visível. A rolagem é
+    // a da tela das partidas-modelo (a teoria embaixo também rola).
+    final texto = find
+        .descendant(
+          of: find.byKey(SeuJogoKeys.modelo(i)),
+          matching: find.byType(Text),
+        )
+        .first;
+    await $(texto).scrollTo(
+      view: find
+          .descendant(
+            of: find.byKey(SeuJogoKeys.modelosScreen),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
   }
 
   /// O link do foco para o curso: sem o curso, a abertura no Pilares; com
@@ -87,5 +104,32 @@ class SeuJogoRobot {
   Future<void> expectMetasComDestaque() async {
     await $(SeuJogoKeys.metasDestaque).waitUntilVisible();
     await $(SeuJogoKeys.metasDestaqueParte).waitUntilVisible();
+  }
+
+  /// A seta da AppBar e a tela de baixo de volta.
+  /// [seta]: a key da seta quando a tela tem a própria (o guia do curso).
+  Future<void> voltarPelaSeta(Key telaDeBaixo, {Key? seta}) async {
+    await (seta == null ? $(BackButton) : $(seta)).tap();
+    await $(telaDeBaixo).waitUntilVisible();
+  }
+
+  /// O Voltar do sistema (só no primeiro caso do arquivo: ver a skill).
+  Future<void> voltarPeloSistema(Key telaDeBaixo) async {
+    await $.platform.android.pressBack();
+    await $(telaDeBaixo).waitUntilVisible();
+  }
+
+  /// Rola a aba até o fim, conferindo a cada tela que nenhum texto ficou
+  /// cortado (dados reais: nomes de abertura e de adversário compridos).
+  Future<void> rolarConferindoTexto(AppRobot app) async {
+    final rolavel = find.byType(Scrollable).first;
+    app.expectNoClippedText();
+    for (var i = 0; i < 30; i++) {
+      final pos = $.tester.state<ScrollableState>(rolavel).position;
+      if (pos.pixels >= pos.maxScrollExtent) break;
+      await $.tester.drag(rolavel, const Offset(0, -500));
+      await $.pumpAndSettle();
+      app.expectNoClippedText();
+    }
   }
 }

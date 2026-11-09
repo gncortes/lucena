@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/treinador/seu_jogo_filtro_repository.dart';
 import 'package:lucena/data/services/firebase/treinador_service.dart';
@@ -131,13 +132,59 @@ void main() {
       expect(c.state.status, TeoriaStatus.pronta);
       expect(c.state.jogado, 'c5');
       expect(c.state.escolhido, isNull);
-      expect(c.state.tabuleiro.fen, SeuJogoFixtures.fenAbertura);
+      // Sem toque: o tabuleiro depois do c5 dele, com o c5 em destaque e
+      // marcado na lista.
+      expect(c.state.tabuleiro.fen, partida.lances[9].fen);
+      expect(c.state.tabuleiro.lance, Move.parse('c6c5'));
+      expect(c.state.marcadoNaPartida, 9);
+      expect(c.state.marcadoNaLinha, isNull);
 
-      c.escolher('Bf5');
-      expect(c.state.linha, ['Bf5', 'Nf3', 'e6']);
-      expect(c.state.tabuleiro.lance, isNotNull);
-      c.escolher('Bf5');
+      c.escolher('Nd7');
+      expect(c.state.linha, ['Nd7', 'O-O', 'Ne7']);
+      expect(c.state.tabuleiro.lance, Move.parse('g8e7'));
+      expect(c.state.marcadoNaPartida, isNull);
+      expect(c.state.marcadoNaLinha, 2);
+
+      // Passo 0: a posição da saída, com 5.Be2 marcado e em destaque.
+      c.irPara(0);
+      expect(c.state.tabuleiro.fen, SeuJogoFixtures.fenTeoria);
+      expect(c.state.tabuleiro.lance, Move.parse('f1e2'));
+      expect(c.state.marcadoNaPartida, 8);
+      expect(c.state.marcadoNaLinha, isNull);
+      c.proximo();
+      expect(c.state.tabuleiro.lance, Move.parse('b8d7'));
+      expect(c.state.marcadoNaLinha, 0);
+
+      c.escolher('Nd7');
       expect(c.state.escolhido, isNull);
+      await c.close();
+    });
+
+    test('lista e tabuleiro só com os lances legais da linha', () async {
+      final json = SeuJogoFixtures.partidaJson(1);
+      final teoria = {...json['teoria']! as Map<String, Object?>};
+      teoria['candidatos'] = [
+        {
+          'san': 'Nd7',
+          'partidas': 1,
+          'brancas': 1,
+          'empates': 0,
+          'pretas': 0,
+          'linha': ['Nd7', 'O-O', 'Qxh8'],
+        },
+      ];
+      final partida = PartidaTreinador.fromJson(SeuJogoFixtures.id(1), {
+        ...json,
+        'teoria': teoria,
+      })!;
+      final c = TeoriaCubit(
+        repository: FakeTreinadorRepository(partidas: [partida]),
+        partidaId: partida.id,
+      )..load();
+      await pumpEventQueue();
+      c.escolher('Nd7');
+      expect(c.state.linha, ['Nd7', 'O-O']);
+      expect(c.state.marcadoNaLinha, 1);
       await c.close();
     });
 

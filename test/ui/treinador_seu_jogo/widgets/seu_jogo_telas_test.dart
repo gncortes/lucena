@@ -15,12 +15,15 @@ import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/ui/core/keys/treinador_seu_jogo_keys.dart';
+import 'package:lucena/ui/core/widgets/cartao_destaque.dart';
+import 'package:lucena/ui/core/widgets/tip_box.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/treinador_seu_jogo/widgets/metas_destaque_treinador.dart';
 import 'package:lucena/ui/treinador_seu_jogo/widgets/partidas_modelo_screen.dart';
 import 'package:lucena/ui/treinador_seu_jogo/widgets/pilares_abertura_screen.dart';
 import 'package:lucena/ui/treinador_seu_jogo/widgets/seu_jogo_aba.dart';
+import 'package:lucena/ui/treinador_seu_jogo/widgets/seu_jogo_pecas.dart';
 import 'package:lucena/ui/treinador_seu_jogo/widgets/tema_screen.dart';
 import 'package:lucena/ui/treinador_seu_jogo/widgets/teoria_screen.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -128,6 +131,9 @@ void main() {
       );
       expect(find.byKey(SeuJogoKeys.poucas), findsOneWidget);
       expect(find.byKey(SeuJogoKeys.numeros), findsNothing);
+      // Canvas DSeuJogoPoucas: o estilo abre com a ressalva.
+      final estilo = tester.widget<Text>(find.byKey(SeuJogoKeys.estiloTexto));
+      expect(estilo.data, startsWith('Ainda é cedo para falar de estilo. '));
       await tester.scrollUntilVisible(
         find.byKey(SeuJogoKeys.poucasAviso),
         300,
@@ -145,6 +151,108 @@ void main() {
     });
   });
 
+  group('layout do QA (411x914)', () {
+    testWidgets('chips de ritmo numa linha só', (tester) async {
+      await abrir(tester, const SeuJogoScreen());
+      final tops = [
+        for (final r in ['todos', 'bullet', 'blitz', 'rapida'])
+          tester.getTopLeft(find.byKey(SeuJogoKeys.ritmo(r))).dy,
+      ];
+      expect(tops.toSet(), hasLength(1));
+    });
+
+    testWidgets('barra do placar tem altura e largura', (tester) async {
+      await abrir(tester, const SeuJogoScreen());
+      await tester.scrollUntilVisible(
+        find.byKey(SeuJogoKeys.abertura(0)),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final barra = find.descendant(
+        of: find.byKey(SeuJogoKeys.abertura(0)),
+        matching: find.byType(BarraDoPlacar),
+      );
+      final tam = tester.getSize(barra);
+      expect(tam.height, greaterThan(0));
+      expect(tam.width, greaterThan(100));
+      final faixas = find.descendant(
+        of: barra,
+        matching: find.byType(ColoredBox),
+      );
+      expect(faixas, findsWidgets);
+      for (final f in faixas.evaluate()) {
+        expect(f.size!.height, greaterThan(0));
+        expect(f.size!.width, greaterThan(0));
+      }
+    });
+
+    testWidgets('degraus do medidor de confiança têm largura', (tester) async {
+      await abrir(tester, const SeuJogoScreen());
+      await tester.scrollUntilVisible(
+        find.byKey(SeuJogoKeys.estilo),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final degraus = find.descendant(
+        of: find.byType(MedidorConfianca),
+        matching: find.byType(ColoredBox),
+      );
+      expect(degraus, findsNWidgets(3));
+      for (final d in degraus.evaluate()) {
+        expect(d.size!.width, greaterThan(50));
+        expect(d.size!.height, greaterThan(0));
+      }
+    });
+
+    testWidgets('cartão Seu estilo com o medidor de 3 etapas', (tester) async {
+      await abrir(tester, const SeuJogoScreen());
+      await tester.scrollUntilVisible(
+        find.byKey(SeuJogoKeys.estilo),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Primeira leitura'), findsOneWidget);
+      expect(find.text('Em formação'), findsOneWidget);
+      expect(find.text('Leitura firme'), findsOneWidget);
+      expect(find.text('Ver meu estilo'), findsOneWidget);
+      // Com 10 partidas ou mais, sem a ressalva das poucas.
+      final estilo = tester.widget<Text>(find.byKey(SeuJogoKeys.estiloTexto));
+      expect(estilo.data, isNot(startsWith('Ainda é cedo')));
+    });
+
+    testWidgets('cartão Seu estilo é o cartão de destaque comum', (
+      tester,
+    ) async {
+      await abrir(tester, const SeuJogoScreen());
+      expect(
+        tester.widget(find.byKey(SeuJogoKeys.estilo, skipOffstage: false)),
+        isA<CartaoDestaque>(),
+      );
+    });
+
+    testWidgets('teoria: lista de lances, jogada marcada e navegação', (
+      tester,
+    ) async {
+      final partida = SeuJogoFixtures.partidas(2)[1];
+      await abrir(
+        tester,
+        SeuJogoTeoriaScreen(partidaId: partida.id),
+        repo: FakeTreinadorRepository(partidas: [partida]),
+      );
+      expect(find.byKey(SeuJogoKeys.teoriaLances), findsOneWidget);
+      expect(find.byKey(SeuJogoKeys.teoriaJogou), findsOneWidget);
+      await tester.tap(find.byKey(SeuJogoKeys.teoriaProximo));
+      await tester.pumpAndSettle();
+      expect(find.byKey(SeuJogoKeys.teoriaLinha), findsOneWidget);
+      await tester.tap(find.byKey(SeuJogoKeys.teoriaInicio));
+      await tester.pumpAndSettle();
+      final tab = tester.widget<IconButton>(
+        find.byKey(SeuJogoKeys.teoriaAnterior),
+      );
+      expect(tab.onPressed, isNull);
+    });
+  });
+
   testWidgets('teoria: candidatos e a linha ao tocar', (tester) async {
     final partida = SeuJogoFixtures.partidas(2)[1];
     await abrir(
@@ -154,9 +262,29 @@ void main() {
     );
     expect(find.byKey(SeuJogoKeys.teoriaScreen), findsOneWidget);
     expect(find.byKey(SeuJogoKeys.teoriaLinha), findsNothing);
-    await tester.tap(find.byKey(SeuJogoKeys.teoriaCandidato('Bf5')));
+    final variante = find.descendant(
+      of: find.byKey(SeuJogoKeys.teoriaLances),
+      matching: find.text('('),
+    );
+    expect(variante, findsNothing);
+    await tester.tap(find.byKey(SeuJogoKeys.teoriaCandidato('Nd7')));
     await tester.pumpAndSettle();
     expect(find.byKey(SeuJogoKeys.teoriaLinha), findsOneWidget);
+    // A linha entra na lista como variante, entre parênteses.
+    expect(variante, findsOneWidget);
+    // A barra das cores mostra o % das brancas e o das pretas dentro dela.
+    final barra = find.descendant(
+      of: find.byKey(SeuJogoKeys.teoriaCandidato('Nd7')),
+      matching: find.byType(BarraDoPlacar),
+    );
+    expect(
+      find.descendant(of: barra, matching: find.text('48%')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: barra, matching: find.text('43%')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('partidas-modelo: lista e o aviso grava', (tester) async {
@@ -199,6 +327,11 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.byKey(SeuJogoKeys.pilaresOferta), findsOneWidget);
+      // Componente único: a oferta usa o mesmo cartão azul do "Seu estilo".
+      expect(
+        tester.widget(find.byKey(SeuJogoKeys.pilaresOferta)),
+        isA<CartaoDestaque>(),
+      );
     });
   });
 
@@ -230,6 +363,14 @@ void main() {
       acesso: CourseAccess.owned,
     );
     expect(find.byKey(SeuJogoKeys.metasDestaque), findsOneWidget);
+    // Componente único: o aviso é o TipBox do app.
+    expect(
+      tester.widget(find.byKey(SeuJogoKeys.metasDestaqueAviso)),
+      isA<TipBox>(),
+    );
+    // Canvas DMetasEslava: "{abertura} · Parte {n}" e o título curto embaixo.
+    expect(find.text('Caro-Kann · Parte 2'), findsOneWidget);
+    expect(find.text('pilares.ab2.caroKann2'), findsOneWidget);
     await tester.tap(find.byKey(SeuJogoKeys.metasDestaqueParte));
     expect(aberta?.id, 'pilares.ab2.caroKann2');
   });
@@ -314,7 +455,7 @@ void main() {
         SeuJogoTeoriaScreen(partidaId: p.id),
         repo: FakeTreinadorRepository(partidas: [p]),
       );
-      await tester.tap(find.byKey(SeuJogoKeys.teoriaCandidato('Bf5')));
+      await tester.tap(find.byKey(SeuJogoKeys.teoriaCandidato('Nd7')));
       await tester.pumpAndSettle();
       await rolarConferindo(tester);
     });
