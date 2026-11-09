@@ -31,6 +31,16 @@ void main() {
     expect(await route('/featured/carlsen-2024'), '/featured/carlsen-2024');
   });
 
+  // Fluxo treinador-analise, E1: o aviso "Sua partida foi analisada" abre
+  // a partida, nunca a lista.
+  test('aviso do Treinador abre a partida analisada', () async {
+    expect(
+      await route('treinador/partida/lichess_AbC12345'),
+      Routes.treinadorPartida('lichess_AbC12345'),
+    );
+    expect(await route('/treinador'), Routes.treinador());
+  });
+
   test('o endereço do app vale como o caminho', () async {
     expect(
       await route('https://playlucenachess.com/daily'),

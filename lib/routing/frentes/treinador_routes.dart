@@ -59,6 +59,7 @@ final List<RouteBase> treinadorRoutes = [
         child: TreinadorScreen(
           key: ValueKey(state.uri.queryParameters['aba']),
           aba: AbaTreinador.parse(state.uri.queryParameters['aba']),
+          abrirUltima: state.uri.queryParameters['abrir'] == 'ultima',
           seuJogo: (_) => const SeuJogoAba(),
         ),
       ),

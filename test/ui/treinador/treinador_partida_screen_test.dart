@@ -146,7 +146,8 @@ void main() {
     ) async {
       aparelho411x914(tester);
       final repo = _RepoLento();
-      final bed = TreinadorBed(repo: repo, grants: comPlano());
+      // Sem o plano a partida nova fica no início (com plano, A10 G2).
+      final bed = TreinadorBed(repo: repo, grants: CourseGrants.empty);
       await bed.abrir(tester, Routes.treinadorPartida(_idNova));
 
       expect(find.byType(LoadSkeletonScreen), findsOneWidget);
@@ -183,16 +184,16 @@ void main() {
     });
   });
 
-  group('início (partida nova)', () {
+  // Sem o plano a partida nova pede o toque; com o plano ela já analisa (A10 G2).
+  group('início (partida nova, sem plano)', () {
     testWidgets('mostra o cartão, os três passos e o botão de analisar', (
       tester,
     ) async {
-      await _abrir(tester, _nova());
+      await _abrir(tester, _nova(), plano: false);
 
       expect(find.byKey(TreinadorKeys.inicio), findsOneWidget);
       expect(find.text('Análise da partida'), findsOneWidget);
       expect(find.byKey(TreinadorKeys.cartaoPartida), findsWidgets);
-      expect(find.text('Pronta para analisar'), findsOneWidget);
       _confereComoFunciona(4);
       expect(
         _textoEm(TreinadorKeys.comecar, 'Começar a análise'),
@@ -206,7 +207,7 @@ void main() {
     });
 
     testWidgets('"Ver minhas partidas" abre a aba Partidas', (tester) async {
-      final bed = await _abrir(tester, _nova());
+      final bed = await _abrir(tester, _nova(), plano: false);
 
       await _tocar(tester, find.byKey(TreinadorKeys.verPartidas));
       expect(bed.caminho, '/treinador?aba=partidas');
@@ -214,7 +215,7 @@ void main() {
     });
 
     testWidgets('o voltar fecha a tela', (tester) async {
-      await _abrir(tester, _nova());
+      await _abrir(tester, _nova(), plano: false);
 
       await tester.tap(find.byKey(TreinadorKeys.back));
       await assentar(tester);
@@ -222,7 +223,7 @@ void main() {
     });
 
     testWidgets('analisar pede a análise e passa à espera', (tester) async {
-      final bed = await _abrir(tester, _nova());
+      final bed = await _abrir(tester, _nova(), plano: false);
 
       await tester.tap(find.byKey(TreinadorKeys.comecar));
       await assentar(tester);
@@ -239,7 +240,7 @@ void main() {
       tester,
     ) async {
       final repo = _repo()..analisarConclui = true;
-      await _abrir(tester, _nova(), repo: repo);
+      await _abrir(tester, _nova(), repo: repo, plano: false);
 
       await tester.tap(find.byKey(TreinadorKeys.comecar));
       await assentar(tester);
@@ -781,7 +782,11 @@ void main() {
       tester,
     ) async {
       for (final partida in [_nova(), TreinadorFixtures.tiago()]) {
-        await _abrir(tester, partida);
+        await _abrir(
+          tester,
+          partida,
+          plano: partida.status != StatusPartida.nova,
+        );
         // A cascata de entrada (H-ANI-16) termina antes de medir.
         await tester.pump(const Duration(seconds: 2));
         final tela = tester.getRect(find.byKey(TreinadorKeys.screen));
@@ -937,6 +942,40 @@ void main() {
       await tester.pump();
       expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(4));
       expect(find.text('3 de 4'), findsOneWidget);
+    });
+  });
+
+  group('A10: aviso → espera → análise', () {
+    testWidgets('G2: com o plano, a partida nova já começa a analisar', (
+      tester,
+    ) async {
+      final bed = await _abrir(tester, _nova());
+
+      expect(bed.repo.pedidosAnalise, [(_idNova, false)]);
+      expect(find.byKey(TreinadorKeys.carregando), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.comecar), findsNothing);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('G2: sem o plano, a partida nova espera o toque', (
+      tester,
+    ) async {
+      final bed = await _abrir(tester, _nova(), plano: false);
+
+      expect(bed.repo.pedidosAnalise, isEmpty);
+      expect(find.byKey(TreinadorKeys.inicio), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('G3: a espera explica o que vem (Como funciona)', (
+      tester,
+    ) async {
+      await _abrir(tester, _nova());
+
+      expect(find.byKey(TreinadorKeys.carregando), findsOneWidget);
+      _confereComoFunciona(4);
+      await tester.pumpWidget(const SizedBox());
     });
   });
 }

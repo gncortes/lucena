@@ -503,8 +503,21 @@ class _Fim extends StatelessWidget {
                 buttonKey: TreinadorKeys.fimAnalise,
                 icon: Icons.analytics_outlined,
                 label: l.treinadorVerAnalise,
-                onPressed: () =>
-                    unawaited(context.push(Routes.treinadorAnalise(id))),
+                // A10 G4: abre na 1ª posição-chave, não no lance 0.
+                onPressed: () => unawaited(
+                  context.push(
+                    Routes.treinadorAnalise(
+                      id,
+                      lance: switch (partida?.exercicios.firstOrNull) {
+                        final ex? => TreinadorRegras.meioLance(
+                          ex.lance,
+                          brancas: partida!.cor == CorPartida.brancas,
+                        ),
+                        null => null,
+                      },
+                    ),
+                  ),
+                ),
               ),
               BusyButton(
                 buttonKey: TreinadorKeys.fimSeuJogo,

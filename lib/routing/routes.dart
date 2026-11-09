@@ -620,8 +620,16 @@ abstract final class Routes {
 
   /// O Treinador de partidas (T87): a casca na aba [aba] (`hoje`, `partidas`
   /// ou `seuJogo`; nula abre em Hoje).
-  static String treinador({String? aba}) =>
-      aba == null ? '/treinador' : '/treinador?aba=$aba';
+  ///
+  /// [abrirUltima] (atalho da Home, A10): abre por cima a última partida, se
+  /// ainda há o que fazer nela.
+  static String treinador({String? aba, bool abrirUltima = false}) {
+    final query = [
+      if (aba != null) 'aba=$aba',
+      if (abrirUltima) 'abrir=ultima',
+    ];
+    return query.isEmpty ? '/treinador' : '/treinador?${query.join('&')}';
+  }
 
   /// A partida do Treinador: início, espera, erro ou resumo.
   static String treinadorPartida(String id) =>

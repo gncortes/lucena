@@ -201,7 +201,11 @@ void main() {
       final bed = await abrirFim(tester);
       await _tocar(tester, find.byKey(TreinadorKeys.fimAnalise));
 
-      expect(bed.caminho, Routes.treinadorAnalise(_idTiago));
+      // A10 G4: abre na primeira posição-chave, não no lance 0.
+      expect(
+        bed.caminho,
+        startsWith('${Routes.treinadorAnalise(_idTiago)}?lance='),
+      );
       await tester.pumpWidget(const SizedBox());
     });
 

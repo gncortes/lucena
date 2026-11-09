@@ -34,6 +34,7 @@ final class TreinadorPartidaState {
     this.pedido = PedidoAnalise.nenhum,
     this.inicioAnalise,
     this.exerciciosPrevistos,
+    this.analiseAutomatica = false,
   });
 
   final bool carregando;
@@ -51,6 +52,10 @@ final class TreinadorPartidaState {
   /// até a config chegar.
   final int? exerciciosPrevistos;
 
+  /// A10 G2: partida nova com plano pede a análise ao abrir; a tela já mostra
+  /// a espera em vez do "Começar a análise".
+  final bool analiseAutomatica;
+
   bool get naoEncontrada => !carregando && !falhou && partida == null;
 
   TreinadorPartidaState copyWith({
@@ -61,6 +66,7 @@ final class TreinadorPartidaState {
     PedidoAnalise? pedido,
     DateTime? Function()? inicioAnalise,
     int? exerciciosPrevistos,
+    bool? analiseAutomatica,
   }) => TreinadorPartidaState(
     carregando: carregando ?? this.carregando,
     falhou: falhou ?? this.falhou,
@@ -69,6 +75,7 @@ final class TreinadorPartidaState {
     pedido: pedido ?? this.pedido,
     inicioAnalise: inicioAnalise == null ? this.inicioAnalise : inicioAnalise(),
     exerciciosPrevistos: exerciciosPrevistos ?? this.exerciciosPrevistos,
+    analiseAutomatica: analiseAutomatica ?? this.analiseAutomatica,
   );
 }
 
@@ -89,6 +96,7 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
 
   StreamSubscription<PartidaTreinador?>? _partida;
   StreamSubscription<Object?>? _grants;
+  var _pediuSozinha = false;
 
   Future<void> load() async {
     final inicio = await preferencias.inicioDaAnalise(id);
@@ -159,6 +167,15 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
         inicioAnalise: () => inicio,
       ),
     );
+    if (p?.status == StatusPartida.nova && state.acesso && !_pediuSozinha) {
+      _pediuSozinha = true;
+      emit(state.copyWith(analiseAutomatica: true));
+      unawaited(
+        analisar().then((ok) {
+          if (!ok && !isClosed) emit(state.copyWith(analiseAutomatica: false));
+        }),
+      );
+    }
     await gravar;
   }
 

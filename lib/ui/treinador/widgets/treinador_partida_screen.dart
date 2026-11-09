@@ -92,7 +92,20 @@ class TreinadorPartidaScreen extends StatelessWidget {
         final (titulo, corpo) = switch (partida.status) {
           StatusPartida.naFila || StatusPartida.analisando => (
             l.treinadorAnaliseTitulo,
-            _Carregando(partida: partida, inicio: state.inicioAnalise),
+            _Carregando(
+              partida: partida,
+              inicio: state.inicioAnalise,
+              previstos: _previstos(state),
+            ),
+          ),
+          // A10 G2: com plano, a partida nova já pede a análise ao abrir.
+          StatusPartida.nova when state.analiseAutomatica => (
+            l.treinadorAnaliseTitulo,
+            _Carregando(
+              partida: partida,
+              inicio: state.inicioAnalise,
+              previstos: _previstos(state),
+            ),
           ),
           StatusPartida.erro => (
             l.treinadorAnaliseTitulo,
@@ -127,7 +140,10 @@ class TreinadorPartidaScreen extends StatelessWidget {
           body: SafeArea(
             top: false,
             child: TransicaoEixoX(
-              child: KeyedSubtree(key: ValueKey(_passo(partida)), child: corpo),
+              child: KeyedSubtree(
+                key: ValueKey(_passo(partida, state)),
+                child: corpo,
+              ),
             ),
           ),
         );
@@ -136,11 +152,16 @@ class TreinadorPartidaScreen extends StatelessWidget {
   }
 
   /// O passo da tela: a troca entre passos desliza no eixo X.
-  static String _passo(PartidaTreinador p) => switch (p.status) {
-    StatusPartida.naFila || StatusPartida.analisando => 'carregando',
-    StatusPartida.pronta when _resumo(p) => 'resumo',
-    final s => s.name,
-  };
+  static String _passo(PartidaTreinador p, TreinadorPartidaState s) =>
+      switch (p.status) {
+        StatusPartida.naFila || StatusPartida.analisando => 'carregando',
+        StatusPartida.nova when s.analiseAutomatica => 'carregando',
+        StatusPartida.pronta when _resumo(p) => 'resumo',
+        final s => s.name,
+      };
+
+  static int _previstos(TreinadorPartidaState s) =>
+      s.exerciciosPrevistos ?? TreinadorConfig.padrao.exerciciosPorPartida;
 
   /// Pronta e sem exercício a fazer: vai direto ao resumo.
   static bool _resumo(PartidaTreinador p) =>
@@ -190,35 +211,7 @@ class _Inicio extends StatelessWidget {
           ItemDaCascata.texto(
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.lg),
-              child: LucenaCard(
-                key: TreinadorKeys.comoFunciona,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l.treinadorComoFunciona, style: context.cardTitle),
-                    const SizedBox(height: AppSpacing.lg),
-                    _Passo(
-                      icon: Icons.extension_outlined,
-                      titulo: total > 0
-                          ? l.treinadorPartidaPasso1Titulo(total)
-                          : l.treinadorPartidaPasso1TituloAte(previstos),
-                      texto: l.treinadorPartidaPasso1Texto,
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    _Passo(
-                      icon: Icons.visibility_outlined,
-                      titulo: l.treinadorPartidaPasso2Titulo,
-                      texto: l.treinadorPartidaPasso2Texto,
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    _Passo(
-                      icon: Icons.analytics_outlined,
-                      titulo: l.treinadorPartidaPasso3Titulo,
-                      texto: l.treinadorPartidaPasso3Texto,
-                    ),
-                  ],
-                ),
-              ),
+              child: _ComoFunciona(total: total, previstos: previstos),
             ),
           ),
           ItemDaCascata.botao(
@@ -270,6 +263,49 @@ class _Inicio extends StatelessWidget {
             itens.last,
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// "Como funciona": os três passos do que vem depois da análise. Aparece no
+/// início e na espera (A10 G3), para a espera já ensinar o que vem.
+class _ComoFunciona extends StatelessWidget {
+  const _ComoFunciona({required this.total, required this.previstos});
+
+  final int total;
+  final int previstos;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return LucenaCard(
+      key: TreinadorKeys.comoFunciona,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.treinadorComoFunciona, style: context.cardTitle),
+          const SizedBox(height: AppSpacing.lg),
+          _Passo(
+            icon: Icons.extension_outlined,
+            titulo: total > 0
+                ? l.treinadorPartidaPasso1Titulo(total)
+                : l.treinadorPartidaPasso1TituloAte(previstos),
+            texto: l.treinadorPartidaPasso1Texto,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          _Passo(
+            icon: Icons.visibility_outlined,
+            titulo: l.treinadorPartidaPasso2Titulo,
+            texto: l.treinadorPartidaPasso2Texto,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          _Passo(
+            icon: Icons.analytics_outlined,
+            titulo: l.treinadorPartidaPasso3Titulo,
+            texto: l.treinadorPartidaPasso3Texto,
+          ),
+        ],
       ),
     );
   }
@@ -361,10 +397,15 @@ class _Passo extends StatelessWidget {
 /// barra, o Viktor com a curiosidade e, no pé, a nota e "Me avise". Na fila
 /// do grátis a barra corre sem número, porque a análise ainda não começou.
 class _Carregando extends StatefulWidget {
-  const _Carregando({required this.partida, required this.inicio});
+  const _Carregando({
+    required this.partida,
+    required this.inicio,
+    required this.previstos,
+  });
 
   final PartidaTreinador partida;
   final DateTime? inicio;
+  final int previstos;
 
   @override
   State<_Carregando> createState() => _CarregandoState();
@@ -471,7 +512,26 @@ class _CarregandoState extends State<_Carregando> {
                   style: theme.textTheme.bodySmall?.copyWith(color: muted),
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                const _Curiosidade(),
+                // A10 G3: enquanto espera, a curiosidade e o que vem depois
+                // entram em cascata (H-ANI-16).
+                EntradaEmCascata(
+                  itens: [
+                    ItemDaCascata.texto(const _Curiosidade()),
+                    ItemDaCascata.texto(
+                      Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.lg),
+                        child: _ComoFunciona(
+                          total: 0,
+                          previstos: widget.previstos,
+                        ),
+                      ),
+                    ),
+                  ],
+                  montar: (itens) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: itens,
+                  ),
+                ),
               ],
             ),
           ),

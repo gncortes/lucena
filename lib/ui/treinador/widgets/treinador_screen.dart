@@ -47,6 +47,7 @@ class TreinadorScreen extends StatefulWidget {
   const TreinadorScreen({
     this.aba = AbaTreinador.hoje,
     this.seuJogo,
+    this.abrirUltima = false,
     super.key,
   });
 
@@ -56,20 +57,43 @@ class TreinadorScreen extends StatefulWidget {
   /// ela, o aviso de "em breve".
   final WidgetBuilder? seuJogo;
 
+  /// Atalho da Home (A10): ao carregar, abre a última partida por cima da
+  /// lista se ainda falta analisar ou fazer exercício nela.
+  final bool abrirUltima;
+
   @override
   State<TreinadorScreen> createState() => _TreinadorScreenState();
 }
 
 class _TreinadorScreenState extends State<TreinadorScreen> {
   late var _aba = widget.aba;
+  late var _abrirUltima = widget.abrirUltima;
+
+  /// Uma vez só, com a lista carregada e o plano: a última partida nova, na
+  /// espera ou com exercício pendente abre por cima; feita, fica no Hoje.
+  void _talvezAbrirUltima(TreinadorState state) {
+    if (!_abrirUltima || state.carregando) return;
+    _abrirUltima = false;
+    final ultima = state.ultima;
+    if (!state.acesso || ultima == null) return;
+    final feita = ultima.pronta && _proximo(ultima) == null;
+    if (!feita) _abrir(context, ultima);
+  }
 
   void _voltar() => context.canPop() ? context.pop() : context.go(Routes.home);
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return BlocBuilder<TreinadorCubit, TreinadorState>(
+    return BlocConsumer<TreinadorCubit, TreinadorState>(
+      listenWhen: (_, _) => _abrirUltima,
+      listener: (context, state) => _talvezAbrirUltima(state),
       builder: (context, state) {
+        if (_abrirUltima && !state.carregando) {
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => mounted ? _talvezAbrirUltima(state) : null,
+          );
+        }
         if (state.carregando) {
           return LoadSkeletonScreen(title: l.treinadorTitle);
         }

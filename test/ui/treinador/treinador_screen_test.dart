@@ -639,14 +639,17 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('tocar numa partida nova abre o início dela', (tester) async {
+    testWidgets('tocar numa partida nova já começa a analisar (A10 G2)', (
+      tester,
+    ) async {
       await abrirPartidas(tester);
 
       await tester.tap(find.byKey(TreinadorKeys.partida('lichess_DeF67890')));
       await assentar(tester);
 
       expect(bed.caminho, '/treinador/partida/lichess_DeF67890');
-      expect(find.byKey(TreinadorKeys.inicio), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.carregando), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
     });
 
     testWidgets('sem partidas, mostra o aviso e não os filtros vazios', (
@@ -713,6 +716,37 @@ void main() {
       await tester.tap(find.byKey(TreinadorKeys.tabHoje));
       await assentar(tester);
       expect(find.byKey(TreinadorKeys.hoje), findsOneWidget);
+    });
+  });
+
+  group('A10 G1: atalho Análise da Home', () {
+    testWidgets('abre a última partida, com a lista embaixo', (tester) async {
+      aparelho411x914(tester);
+      final bed = TreinadorBed(repo: _comDados(), grants: comPlano());
+      await bed.abrir(tester, Routes.treinador(abrirUltima: true));
+
+      final ultima = TreinadorFixtures.lista().first;
+      expect(bed.caminho, Routes.treinadorPartida(ultima.id));
+      await tester.tap(find.byKey(TreinadorKeys.back));
+      await assentar(tester);
+      expect(find.byKey(TreinadorKeys.hoje), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('a última já feita: fica na aba Hoje', (tester) async {
+      aparelho411x914(tester);
+      final ultima = TreinadorFixtures.lista().first;
+      final repo = _comDados();
+      await repo.salvarProgresso(
+        ultima.id,
+        _progresso(ultima.exercicios.length),
+      );
+      final bed = TreinadorBed(repo: repo, grants: comPlano());
+      await bed.abrir(tester, Routes.treinador(abrirUltima: true));
+
+      expect(find.byKey(TreinadorKeys.hoje), findsOneWidget);
+      expect(bed.caminho, isNot(Routes.treinadorPartida(ultima.id)));
+      await tester.pumpWidget(const SizedBox());
     });
   });
 }
