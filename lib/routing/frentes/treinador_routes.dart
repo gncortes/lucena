@@ -1,3 +1,5 @@
+import '../../ui/treinador_seu_jogo/widgets/seu_jogo_aba.dart';
+
 import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
@@ -59,6 +61,7 @@ final List<RouteBase> treinadorRoutes = [
         child: TreinadorScreen(
           key: ValueKey(state.uri.queryParameters['aba']),
           aba: AbaTreinador.parse(state.uri.queryParameters['aba']),
+          seuJogo: (_) => const SeuJogoAba(),
         ),
       ),
     ),
