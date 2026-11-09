@@ -2929,6 +2929,7 @@
   "treinadorPartidaComecarAnalise": "Começar a análise",
   "treinadorPartidaVerMinhas": "Ver minhas partidas",
   "treinadorPartidaPasso1Titulo": "{n, plural, =0{Exercícios} =1{1 exercício} other{{n} exercícios}}",
+  "treinadorPartidaPasso1TituloAte": "{n, plural, =1{Up to 1 exercise} other{Up to {n} exercises}}",
   "treinadorPartidaPasso1Texto": "Posições-chave que decidiram a partida.",
   "treinadorPartidaPasso2Titulo": "Pense antes de jogar",
   "treinadorPartidaPasso2Texto": "Sem pressa, olhando as ameaças dos dois lados.",

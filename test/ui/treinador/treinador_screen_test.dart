@@ -578,7 +578,7 @@ void main() {
         (TreinadorKeys.filtroRitmo('todos'), 'Todos'),
         (TreinadorKeys.filtroRitmo('bullet'), 'Bullet'),
         (TreinadorKeys.filtroRitmo('blitz'), 'Blitz'),
-        (TreinadorKeys.filtroRitmo('rapida'), 'Rápida'),
+        (TreinadorKeys.filtroRitmo('rapida'), 'Rápido'),
         (TreinadorKeys.filtroResultado('todos'), 'Todas'),
         (TreinadorKeys.filtroResultado('vitoria'), 'Vitórias'),
         (TreinadorKeys.filtroResultado('derrota'), 'Derrotas'),

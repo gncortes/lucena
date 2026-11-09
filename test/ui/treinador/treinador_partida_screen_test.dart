@@ -106,7 +106,11 @@ Finder _textoEm(Key key, String texto) =>
 void _confereComoFunciona(int n) {
   expect(find.byKey(TreinadorKeys.comoFunciona), findsWidgets);
   expect(find.text('Como funciona'), findsOneWidget);
-  expect(find.text('$n exercícios'), findsOneWidget);
+  // Antes da análise o total é a previsão: "Até n exercícios".
+  expect(
+    find.textContaining(RegExp('^(Até )?$n exercícios\$')),
+    findsOneWidget,
+  );
   expect(find.text('Posições-chave que decidiram a partida.'), findsOneWidget);
   expect(find.text('Pense antes de jogar'), findsOneWidget);
   expect(find.text('Depois, a partida inteira'), findsOneWidget);
@@ -803,7 +807,7 @@ void main() {
       final repo = _repo()
         ..configAtual = const TreinadorConfig(exerciciosPorPartida: 6);
       await _abrir(tester, _nova(), repo: repo);
-      expect(find.text('6 exercícios'), findsOneWidget);
+      expect(find.text('Até 6 exercícios'), findsOneWidget);
     });
   });
 

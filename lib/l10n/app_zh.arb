@@ -2929,6 +2929,7 @@
   "treinadorPartidaComecarAnalise": "Start the analysis",
   "treinadorPartidaVerMinhas": "See my games",
   "treinadorPartidaPasso1Titulo": "{n, plural, =0{Exercises} =1{1 exercise} other{{n} exercises}}",
+  "treinadorPartidaPasso1TituloAte": "{n, plural, =1{Up to 1 exercise} other{Up to {n} exercises}}",
   "treinadorPartidaPasso1Texto": "Key positions that decided the game.",
   "treinadorPartidaPasso2Titulo": "Think before you move",
   "treinadorPartidaPasso2Texto": "Look at the threats on both sides before choosing the move.",

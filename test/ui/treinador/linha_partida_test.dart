@@ -81,7 +81,7 @@ void main() {
       final textos = [
         for (final p in _paragrafos(tester)) p.text.toPlainText(),
       ];
-      expect(textos, contains('15+10 Rápida · Pretas'));
+      expect(textos, contains('15+10 Rápido · Pretas'));
       expect(
         textos,
         contains('Defesa Siciliana: Variante Najdorf, Ataque Inglês · Hoje'),

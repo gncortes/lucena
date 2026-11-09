@@ -10,6 +10,8 @@ import '../../../domain/models/treinador/treinador.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/treinador/treinador_regras.dart';
 import '../../../routing/routes.dart';
+import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -52,17 +54,12 @@ class TreinadorPartidaScreen extends StatelessWidget {
             cubit.pedidoVisto();
             unawaited(context.push(Routes.pilaresSale));
           case PedidoAnalise.recusado || PedidoAnalise.falhou:
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.pedido == PedidoAnalise.recusado
-                        ? l.treinadorRecusado
-                        : l.treinadorPedidoFalhou,
-                  ),
-                ),
-              );
+            showLucenaSnackBar(
+              context,
+              state.pedido == PedidoAnalise.recusado
+                  ? l.treinadorRecusado
+                  : l.treinadorPedidoFalhou,
+            );
             cubit.pedidoVisto();
           case PedidoAnalise.nenhum || PedidoAnalise.enviando:
             break;
@@ -188,7 +185,9 @@ class _Inicio extends StatelessWidget {
                     const SizedBox(height: AppSpacing.lg),
                     _Passo(
                       icon: Icons.extension_outlined,
-                      titulo: l.treinadorPartidaPasso1Titulo(previstos),
+                      titulo: total > 0
+                          ? l.treinadorPartidaPasso1Titulo(total)
+                          : l.treinadorPartidaPasso1TituloAte(previstos),
                       texto: l.treinadorPartidaPasso1Texto,
                     ),
                     const SizedBox(height: AppSpacing.lg),
@@ -502,34 +501,11 @@ class _Curiosidade extends StatelessWidget {
           children: [
             Align(
               alignment: AlignmentDirectional.centerStart,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(AppShape.full),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.lightbulb_outline,
-                        size: AppIconSize.compact,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        l.treinadorVoceSabia,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              child: InfoChip(
+                label: l.treinadorVoceSabia,
+                icon: Icons.auto_stories_outlined,
+                background: theme.colorScheme.primaryContainer,
+                foreground: theme.colorScheme.onPrimaryContainer,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -578,6 +554,10 @@ class _Curiosidade extends StatelessWidget {
 class _Ponto extends StatelessWidget {
   const _Ponto({required this.ativo});
 
+  /// O ponto (8 dp, [AppSpacing.sm]) e a pílula do ativo (20 dp).
+  static const _lado = AppSpacing.sm;
+  static const _ativo = AppSpacing.lg + AppSpacing.xs;
+
   final bool ativo;
 
   @override
@@ -585,11 +565,11 @@ class _Ponto extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return AnimatedContainer(
       duration: AppMotion.of(context).state,
-      width: ativo ? 20 : 8,
-      height: 8,
+      width: ativo ? _ativo : _lado,
+      height: _lado,
       decoration: BoxDecoration(
         color: ativo ? colors.primary : colors.outlineVariant,
-        borderRadius: BorderRadius.circular(AppShape.tiny),
+        borderRadius: BorderRadius.circular(AppShape.full),
       ),
     );
   }

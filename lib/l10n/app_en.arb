@@ -15165,7 +15165,7 @@
       }
     }
   },
-  "treinadorFimVikPerfeito": "You found every move. Your game is improving.",
+  "treinadorFimVikPerfeito": "You found every move. Bring that focus to your next game.",
   "@treinadorFimVikPerfeito": {
     "description": "T87 Treinador: Viktor at the end"
   },
@@ -15173,7 +15173,7 @@
   "@treinadorFimVikBom": {
     "description": "T87 Treinador: Viktor at the end"
   },
-  "treinadorFimVikAbaixo": "These moments repeat in your games. The analysis shows each one calmly.",
+  "treinadorFimVikAbaixo": "These moves cost you in this game. The analysis shows each one calmly.",
   "@treinadorFimVikAbaixo": {
     "description": "T87 Treinador: Viktor at the end"
   },
@@ -15255,7 +15255,16 @@
         "type": "int"
       }
     }
+  },  "treinadorPartidaPasso1TituloAte": "{n, plural, =1{Up to 1 exercise} other{Up to {n} exercises}}",
+  "@treinadorPartidaPasso1TituloAte": {
+    "description": "T87 Treinador: Game screen before the analysis: at most n exercises (the real count comes after)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   },
+
   "treinadorPartidaPasso1Texto": "Key positions that decided the game.",
   "@treinadorPartidaPasso1Texto": {
     "description": "T87 Treinador: Game screen: how it works, item 1 text"

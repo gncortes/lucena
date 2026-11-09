@@ -147,7 +147,6 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
                   key: TreinadorKeys.back,
                   onPressed: _voltar,
                 ),
-                centerTitle: true,
                 title: Text(l.treinadorExercicioTitulo(s.indice + 1, s.total)),
                 actions: [
                   Padding(
