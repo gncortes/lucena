@@ -137,6 +137,16 @@ void main() {
   }
 
   group('Partidas', () {
+    testWidgets('com muitas partidas, só as linhas visíveis são montadas', (
+      tester,
+    ) async {
+      await world.play(List.filled(120, win));
+      await pump(tester);
+
+      expect(find.byKey(RatingKeys.entry(0)), findsOneWidget);
+      expect(find.byKey(RatingKeys.entry(119)), findsNothing);
+    });
+
     testWidgets('as linhas entram em ordem só na primeira vez da aba', (
       tester,
     ) async {
