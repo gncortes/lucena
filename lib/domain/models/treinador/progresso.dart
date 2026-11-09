@@ -8,6 +8,7 @@ final class ResultadoExercicio {
     required this.pontos,
     this.tentativas = 1,
     this.viuSolucao = false,
+    this.dicas = 0,
   });
 
   final int n;
@@ -17,6 +18,9 @@ final class ResultadoExercicio {
   final int pontos;
   final int tentativas;
   final bool viuSolucao;
+
+  /// Quantas dicas pediu (cada uma desce um degrau dos pontos).
+  final int dicas;
 
   static ResultadoExercicio? fromJson(Object? json) {
     final m = mapa(json);
@@ -28,6 +32,7 @@ final class ResultadoExercicio {
       pontos: inteiro(m['pontos']),
       tentativas: inteiro(m['tentativas'], 1),
       viuSolucao: logico(m['viuSolucao']),
+      dicas: inteiro(m['dicas']),
     );
   }
 
@@ -37,6 +42,7 @@ final class ResultadoExercicio {
     'pontos': pontos,
     'tentativas': tentativas,
     'viuSolucao': viuSolucao,
+    'dicas': dicas,
   };
 }
 
@@ -58,7 +64,8 @@ final class ProgressoPartida {
 
   final List<ResultadoExercicio> resultados;
 
-  /// Exercício `n` → acertou de primeira (uma tentativa, sem a solução).
+  /// Exercício `n` → acertou de primeira (uma tentativa, sem dica nem a
+  /// solução).
   /// Gravado uma vez por exercício: refazer não muda.
   final Map<int, bool> primeiras;
 
@@ -101,6 +108,7 @@ final class ProgressoPartida {
             resultado.n:
                 resultado.acertou &&
                 resultado.tentativas == 1 &&
+                resultado.dicas == 0 &&
                 !resultado.viuSolucao,
           },
     viuAnalise: viuAnalise,

@@ -433,6 +433,111 @@ void main() {
     });
   });
 
+  group('dica', () {
+    String errado(TreinadorExercicioCubit c) {
+      final pos = GameRules.fromFen(c.state.exercicio!.fen)!;
+      return [
+        for (final e in GameRules.legalMoves(pos).entries)
+          for (final to in e.value) NormalMove(from: e.key, to: to).uci,
+      ].firstWhere((u) => !c.state.exercicio!.aceita(u));
+    }
+
+    test('cada dica desce um degrau e para no lance mostrado', () async {
+      final c = await aberto();
+      expect(c.state.vale, 3);
+      expect(c.state.podeDica, isTrue);
+
+      c.dica();
+      expect(c.state.dicas, 1);
+      expect(c.state.vale, 2);
+
+      c.dica();
+      expect(c.state.dicas, 2);
+      expect(c.state.vale, 1);
+      expect(c.state.podeDica, isFalse);
+
+      c.dica();
+      expect(c.state.dicas, 2);
+    });
+
+    test('acertar com uma dica vale 2 e não conta como de primeira', () async {
+      final c = await aberto();
+      c.dica();
+      await c.jogar(certos[0]);
+
+      final r = c.state.progresso.resultados.single;
+      expect(r.pontos, 2);
+      expect(r.dicas, 1);
+      expect(c.state.progresso.primeiras[1], isFalse);
+    });
+
+    test('dica depois de errar zera o exercício', () async {
+      final c = await aberto();
+      await c.jogar(errado(c));
+      c.tentarDeNovo();
+      c.dica();
+      expect(c.state.vale, 0);
+      await c.jogar(certos[0]);
+      expect(c.state.progresso.resultados.single.pontos, 0);
+    });
+
+    test('só jogando: errado ou resolvido não pede dica', () async {
+      final c = await aberto();
+      await c.jogar(errado(c));
+      c.dica();
+      expect(c.state.dicas, 0);
+
+      c.tentarDeNovo();
+      await c.jogar(certos[0]);
+      c.dica();
+      expect(c.state.dicas, 0);
+    });
+
+    test('o próximo exercício começa sem dica', () async {
+      final c = await aberto();
+      c.dica();
+      await c.jogar(certos[0]);
+      c.proximo();
+      expect(c.state.indice, 1);
+      expect(c.state.dicas, 0);
+      expect(c.state.vale, 3);
+    });
+
+    test('fechar à força guarda as dicas, também depois do erro', () async {
+      final prefs = TreinadorPreferencias(MemoriaPreferencias());
+      TreinadorExercicioCubit novo() {
+        final c = TreinadorExercicioCubit(
+          id: id,
+          repository: repo,
+          preferencias: prefs,
+        );
+        addTearDown(c.close);
+        return c;
+      }
+
+      final c = novo();
+      await c.load();
+      c.dica();
+      await pumpEventQueue();
+
+      final reaberto = novo();
+      await reaberto.load();
+      expect(reaberto.state.dicas, 1);
+      expect(reaberto.state.tentativas, 1);
+
+      await reaberto.jogar(errado(reaberto));
+      await pumpEventQueue();
+      final terceiro = novo();
+      await terceiro.load();
+      expect(terceiro.state.tentativas, 2);
+      expect(terceiro.state.dicas, 1);
+
+      await terceiro.jogar(certos[0]);
+      expect(terceiro.state.progresso.resultados.single.pontos, 0);
+      expect(await prefs.dicas(id, 1), 0);
+    });
+  });
+
   test('fechar durante a carga não emite depois', () async {
     final c = criar();
     final carga = c.load();

@@ -159,7 +159,7 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
                       excludeSemantics: true,
                       // Neutra, na cor do texto (canvas DEx*): cheia enquanto o
                       // exercício vale os pontos da primeira tentativa, vazia
-                      // depois do erro ou da solução vista (regra T85 da
+                      // depois do erro, da dica ou da solução vista (regra T85 da
                       // exercise_screen). A dificuldade fica na semântica.
                       child: Icon(
                         _vale(s)
@@ -202,7 +202,7 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
   }
 
   static bool _vale(TreinadorExercicioState s) =>
-      s.tentativas <= 1 &&
+      s.vale >= TreinadorRegras.pontosMaximos &&
       (s.fase == FaseExercicio.jogando || s.fase == FaseExercicio.acertou);
 
   /// O lance tentado (com "?" no erro) ou a solução, em SAN, como no Treino,
@@ -261,6 +261,18 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
     final avancar =
         s.fase == FaseExercicio.acertou || s.fase == FaseExercicio.solucao;
     return TrainingCanvasFooter(
+      // A lâmpada à esquerda, como no exercício do Treino.
+      leading: s.podeDica
+          ? TrainingCanvasFooter.hint(
+              key: TreinadorKeys.dica,
+              label: switch (s.vale) {
+                0 => l.exerciseHintFree,
+                1 => l.exerciseHintLast,
+                _ => l.exerciseHint,
+              },
+              onPressed: cubit.dica,
+            )
+          : null,
       secondary:
           s.fase == FaseExercicio.jogando || s.fase == FaseExercicio.errou
           ? TrainingCanvasFooter.button(
@@ -318,6 +330,22 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
             ),
             orientation: lado,
             shapes: {
+              // A dica: a peça que joga (1) e depois o lance (2).
+              if (s.fase == FaseExercicio.jogando &&
+                  s.dicas == 1 &&
+                  solucao is NormalMove)
+                Circle(
+                  color: Theme.of(context).colorScheme.primary,
+                  orig: solucao.from,
+                ),
+              if (s.fase == FaseExercicio.jogando &&
+                  s.dicas >= 2 &&
+                  solucao is NormalMove)
+                Arrow(
+                  color: Theme.of(context).colorScheme.primary,
+                  orig: solucao.from,
+                  dest: solucao.to,
+                ),
               if (s.fase == FaseExercicio.errou && jogado is NormalMove)
                 Arrow(
                   color: AppColors.errorColor.withValues(

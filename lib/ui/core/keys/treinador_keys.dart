@@ -86,6 +86,7 @@ abstract final class TreinadorKeys {
   static const exercicioFala = Key('treinador.exercicio.fala');
   static const tentarDeNovo = Key('treinador.exercicio.tentar');
   static const verSolucao = Key('treinador.exercicio.solucao');
+  static const dica = Key('treinador.exercicio.dica');
   static const proximo = Key('treinador.exercicio.proximo');
 
   // Fim.

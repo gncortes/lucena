@@ -14,11 +14,22 @@ abstract final class TreinadorRegras {
       acesso || partida.pronta;
 
   /// Os pontos de um exercício: 3 na primeira tentativa, 1 depois de errar,
-  /// 0 se viu a solução.
-  static int pontos({required int tentativas, required bool viuSolucao}) {
+  /// 0 se viu a solução; cada dica desce um degrau (nunca abaixo de 0).
+  static int pontos({
+    required int tentativas,
+    required bool viuSolucao,
+    int dicas = 0,
+  }) {
     if (viuSolucao) return 0;
-    return tentativas <= 1 ? 3 : 1;
+    final base = tentativas <= 1 ? pontosMaximos : 1;
+    return base - dicas < 0 ? 0 : base - dicas;
   }
+
+  /// O que vale o exercício de primeira, sem dica.
+  static const pontosMaximos = 3;
+
+  /// Quantas dicas um exercício tem: a peça que joga e depois o lance.
+  static const maxDicas = 2;
 
   /// A faixa da nota pelos acertos: todos = perfeito, 75% = bom, metade =
   /// aprovado, menos = abaixo.

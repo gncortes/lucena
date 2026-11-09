@@ -34,6 +34,7 @@ final class TreinadorExercicioState {
     this.progresso = ProgressoPartida.vazio,
     this.indice = 0,
     this.tentativas = 1,
+    this.dicas = 0,
     this.fen,
     this.ultimoLance,
     this.salvando = false,
@@ -47,6 +48,10 @@ final class TreinadorExercicioState {
   final int indice;
   final int tentativas;
 
+  /// As dicas pedidas no exercício aberto: 1 marca a peça que joga, 2 mostra
+  /// o lance.
+  final int dicas;
+
   /// A posição no tabuleiro agora (depois do lance jogado, se houver).
   final String? fen;
   final String? ultimoLance;
@@ -58,12 +63,24 @@ final class TreinadorExercicioState {
       indice < total ? exercicios[indice] : null;
   bool get ultimo => indice >= total - 1;
 
+  /// Quanto o exercício vale agora (tentativas e dicas).
+  int get vale => TreinadorRegras.pontos(
+    tentativas: tentativas,
+    viuSolucao: false,
+    dicas: dicas,
+  );
+
+  /// Ainda dá para pedir dica: jogando e sem o lance já mostrado.
+  bool get podeDica =>
+      fase == FaseExercicio.jogando && dicas < TreinadorRegras.maxDicas;
+
   TreinadorExercicioState copyWith({
     FaseExercicio? fase,
     PartidaTreinador? partida,
     ProgressoPartida? progresso,
     int? indice,
     int? tentativas,
+    int? dicas,
     String? fen,
     String? Function()? ultimoLance,
     bool? salvando,
@@ -73,6 +90,7 @@ final class TreinadorExercicioState {
     progresso: progresso ?? this.progresso,
     indice: indice ?? this.indice,
     tentativas: tentativas ?? this.tentativas,
+    dicas: dicas ?? this.dicas,
     fen: fen ?? this.fen,
     ultimoLance: ultimoLance == null ? this.ultimoLance : ultimoLance(),
     salvando: salvando ?? this.salvando,
@@ -138,15 +156,15 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
           ),
         );
       }
-      final tentativas = await preferencias.tentativas(
-        id,
-        partida.exercicios[proximo - 1].n,
-      );
+      final n = partida.exercicios[proximo - 1].n;
+      final tentativas = await preferencias.tentativas(id, n);
+      final dicas = await preferencias.dicas(id, n);
       _emit(
         _abrir(
           state.copyWith(partida: partida, progresso: progresso),
           proximo - 1,
           tentativas: tentativas,
+          dicas: dicas,
         ),
       );
     } on Object {
@@ -159,9 +177,11 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
     TreinadorExercicioState base,
     int indice, {
     int tentativas = 1,
+    int dicas = 0,
   }) => base.copyWith(
     indice: indice,
     tentativas: tentativas,
+    dicas: dicas,
     fen: base.exercicios[indice].fen,
     ultimoLance: () => null,
     fase: FaseExercicio.jogando,
@@ -190,17 +210,20 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
         ResultadoExercicio(
           n: exercicio.n,
           acertou: true,
-          pontos: TreinadorRegras.pontos(
-            tentativas: state.tentativas,
-            viuSolucao: false,
-          ),
+          pontos: state.vale,
           tentativas: state.tentativas,
+          dicas: state.dicas,
         ),
       );
     } else {
       // O erro já conta: fechar à força aqui reabre na tentativa seguinte.
       unawaited(
-        preferencias.salvarTentativas(id, exercicio.n, state.tentativas + 1),
+        preferencias.salvarTentativas(
+          id,
+          exercicio.n,
+          state.tentativas + 1,
+          dicas: state.dicas,
+        ),
       );
       _emit(
         state.copyWith(
@@ -210,6 +233,24 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
         ),
       );
     }
+  }
+
+  /// A dica: a primeira marca a peça que joga, a segunda mostra o lance.
+  /// Cada uma desce um degrau dos pontos e fica guardada (fechar à força não
+  /// devolve o ponto).
+  void dica() {
+    final exercicio = state.exercicio;
+    if (!state.podeDica || exercicio == null) return;
+    final dicas = state.dicas + 1;
+    unawaited(
+      preferencias.salvarTentativas(
+        id,
+        exercicio.n,
+        state.tentativas,
+        dicas: dicas,
+      ),
+    );
+    _emit(state.copyWith(dicas: dicas));
   }
 
   /// "Tentar novamente": volta à posição e conta mais uma tentativa.
@@ -249,6 +290,7 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
         pontos: 0,
         tentativas: state.tentativas,
         viuSolucao: true,
+        dicas: state.dicas,
       ),
     );
   }

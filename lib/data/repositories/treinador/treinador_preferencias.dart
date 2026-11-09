@@ -5,8 +5,8 @@ import '../../services/preferences_service.dart';
 
 /// O que o Treinador guarda só no aparelho: o filtro da aba Partidas e
 /// quando cada análise começou (para a porcentagem da espera continuar de
-/// onde estava depois de fechar o app) e as tentativas do exercício aberto
-/// (fechar à força no meio não devolve os pontos).
+/// onde estava depois de fechar o app) e as tentativas e dicas do exercício
+/// aberto (fechar à força no meio não devolve os pontos).
 class TreinadorPreferencias {
   TreinadorPreferencias([PreferencesService? preferences])
     : _preferences = preferences ?? PreferencesService();
@@ -45,18 +45,38 @@ class TreinadorPreferencias {
 
   /// Quantas tentativas o exercício [n] da partida [id] já está na (1 se não
   /// houve erro guardado, ou se o guardado é de outro exercício).
-  Future<int> tentativas(String id, int n) async {
+  Future<int> tentativas(String id, int n) async =>
+      (await _guardado(id, n))?.tentativas ?? 1;
+
+  /// Quantas dicas o exercício [n] da partida [id] já usou (0 se nenhuma, ou
+  /// se o guardado é de outro exercício).
+  Future<int> dicas(String id, int n) async =>
+      (await _guardado(id, n))?.dicas ?? 0;
+
+  /// "n:tentativas" ou, com dica, "n:tentativas:dicas".
+  Future<({int tentativas, int dicas})?> _guardado(String id, int n) async {
     final partes = (await _preferences.getString(tentativasKey(id)))
         ?.split(':');
-    if (partes == null || partes.length != 2) return 1;
+    if (partes == null || partes.length < 2 || partes.length > 3) return null;
     final guardado = int.tryParse(partes[0]);
     final tentativas = int.tryParse(partes[1]);
-    if (guardado != n || tentativas == null || tentativas < 1) return 1;
-    return tentativas;
+    final dicas = partes.length == 3 ? int.tryParse(partes[2]) : 0;
+    if (guardado != n || tentativas == null || tentativas < 1) return null;
+    return (
+      tentativas: tentativas,
+      dicas: dicas == null || dicas < 0 ? 0 : dicas,
+    );
   }
 
-  Future<void> salvarTentativas(String id, int n, int tentativas) =>
-      _preferences.setString(tentativasKey(id), '$n:$tentativas');
+  Future<void> salvarTentativas(
+    String id,
+    int n,
+    int tentativas, {
+    int dicas = 0,
+  }) => _preferences.setString(
+    tentativasKey(id),
+    dicas > 0 ? '$n:$tentativas:$dicas' : '$n:$tentativas',
+  );
 
   Future<void> esquecerTentativas(String id) =>
       _preferences.remove(tentativasKey(id));
