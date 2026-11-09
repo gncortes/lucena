@@ -214,6 +214,7 @@ class _Hoje extends StatelessWidget {
                       agora: agora,
                       acesso: state.acesso,
                       mostrarResumo: true,
+                      onTap: () => _abrir(context, ultima),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
