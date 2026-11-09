@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/training/course_training_repository.dart';
 import 'package:lucena/data/repositories/treinador/seu_jogo_filtro_repository.dart';
 import 'package:lucena/data/repositories/treinador/treinador_repository.dart';
@@ -57,6 +58,7 @@ void main() {
     Widget tela, {
     TreinadorRepository? repo,
     CourseAccess acesso = CourseAccess.demo,
+    GoRouter? router,
   }) async {
     tester.view
       ..physicalSize = const Size(1080, 2400)
@@ -93,6 +95,7 @@ void main() {
           locale: const Locale('pt'),
           settingsCubit: settings,
           courseAccessRepository: FakeCourseAccessRepository(acesso),
+          router: router,
           child: tela,
         ),
       ),
@@ -468,6 +471,31 @@ void main() {
       );
       await rolarConferindo(tester);
       expect(find.text(modelo), findsWidgets);
+    });
+
+    testWidgets('posição do tema abre a análise no meio-lance do erro', (
+      tester,
+    ) async {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const SeuJogoTemaScreen(tema: 'garfo'),
+          ),
+          GoRoute(
+            path: '/treinador/partida/:id/analise',
+            builder: (_, state) => Text(
+              'análise ${state.pathParameters['id']} '
+              '${state.uri.queryParameters['lance']}',
+            ),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await abrir(tester, const SizedBox(), repo: repo(), router: router);
+      await tester.tap(find.byKey(SeuJogoKeys.temaPosicao(0)));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('análise '), findsOneWidget);
     });
 
     testWidgets('posições de um tema, com o adversário', (tester) async {

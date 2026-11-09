@@ -1,10 +1,13 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/treinador/treinador.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/treinador/resumo_seu_jogo.dart';
+import '../../../domain/use_cases/treinador/treinador_regras.dart';
+import '../../../routing/routes.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
@@ -181,8 +184,19 @@ class _Posicao extends StatelessWidget {
     );
   }
 
-  Future<void> _abrir(BuildContext context) =>
-      showLucenaSheet<void>(context, builder: (sheet) => _Folha(pos: pos));
+  // Partida analisada: abre a análise no lance (como no canvas, SeuJogoTema →
+  // AnaliseL32). Sem análise pronta, fica a folha com a posição e o site.
+  Future<void> _abrir(BuildContext context) => pos.partida.pronta
+      ? context.push(
+          Routes.treinadorAnalise(
+            pos.partida.id,
+            lance: TreinadorRegras.meioLance(
+              pos.posicao.lance,
+              brancas: pos.partida.cor == CorPartida.brancas,
+            ),
+          ),
+        )
+      : showLucenaSheet<void>(context, builder: (sheet) => _Folha(pos: pos));
 }
 
 /// A posição grande e o link para a partida no site.
