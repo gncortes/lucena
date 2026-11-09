@@ -143,27 +143,44 @@ class ExercisesIntroScreen extends StatelessWidget {
                     ),
                   ),
                   // Fixo embaixo, como o "Continuar" da aula.
-                  ActionsFooter(
-                    children: [
-                      FilledButton.icon(
-                        key: ExercisesIntroKeys.start,
-                        icon: const Icon(Icons.play_arrow_rounded),
-                        onPressed: next == null
-                            ? null
-                            : () => context.pushReplacement(
-                                Routes.endgameExercise(lesson.id, next.id),
-                              ),
-                        label: Text(
-                          state.solved == 0
-                              ? l10n.endgameExercisesStart
-                              : l10n.endgameExercisesContinue,
-                        ),
-                      ),
-                    ],
+                  _StartFooter(
+                    onStart: next == null
+                        ? null
+                        : () => context.pushReplacement(
+                            Routes.endgameExercise(lesson.id, next.id),
+                          ),
+                    starting: state.solved == 0,
                   ),
                 ],
               ),
       ),
+    );
+  }
+}
+
+/// Fixo embaixo, como o "Continuar" da aula: abre o primeiro (ou o próximo).
+class _StartFooter extends StatelessWidget {
+  const _StartFooter({required this.onStart, required this.starting});
+
+  final VoidCallback? onStart;
+  final bool starting;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ActionsFooter(
+      children: [
+        FilledButton.icon(
+          key: ExercisesIntroKeys.start,
+          icon: const Icon(Icons.play_arrow_rounded),
+          onPressed: onStart,
+          label: Text(
+            starting
+                ? l10n.endgameExercisesStart
+                : l10n.endgameExercisesContinue,
+          ),
+        ),
+      ],
     );
   }
 }

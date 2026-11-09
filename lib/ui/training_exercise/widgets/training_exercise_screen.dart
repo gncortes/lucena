@@ -20,7 +20,9 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/training/training_course.dart';
+import '../../../domain/models/training/training_content.dart';
 import '../../../domain/models/training/training_course_config.dart';
+import '../../../domain/models/training/theme_cycle.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
@@ -203,38 +205,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
                       boardBuilder: (size) => Builder(
                         builder: (context) => _board(context, state, size),
                       ),
-                      notation: Column(
-                        children: [
-                          ScriptMoveList(
-                            moves: [
-                              for (var i = 0; i < sans.length; i++)
-                                ScriptMoveEntry(
-                                  id: '$i',
-                                  san: sans[i],
-                                  number:
-                                      start!.fullmoves +
-                                      (i +
-                                              (start.turn == Side.black
-                                                  ? 1
-                                                  : 0)) ~/
-                                          2,
-                                  side: i.isEven
-                                      ? start.turn
-                                      : start.turn.opposite,
-                                  variant: false,
-                                ),
-                            ],
-                            currentId: sans.isEmpty
-                                ? null
-                                : '${sans.length - 1}',
-                            onTap: (_) {},
-                          ),
-                          if (state.error)
-                            Text(
-                              l.trainingExerciseSaveError,
-                              key: TrainingKeys.exerciseSaveError,
-                            ),
-                        ],
+                      notation: _ExerciseNotation(
+                        sans: sans,
+                        start: start,
+                        saveError: state.error,
                       ),
                     ),
                   ),
@@ -242,77 +216,12 @@ class _ExerciseViewState extends State<_ExerciseView> {
         ),
         bottomNavigationBar: !ready
             ? null
-            : SafeArea(
-                child: IgnorePointer(
-                  ignoring: loading,
-                  child: TrainingCanvasFooter(
-                    // A lupa só no acerto (PropV1TreinoAcertou); no erro, o
-                    // rodapé é "Ver a solução" + "Tentar novamente".
-                    leading: result && state.displayedCorrect
-                        ? TrainingCanvasFooter.round(
-                            key: TrainingKeys.exerciseAnalyze,
-                            icon: CanvasSymbols.search,
-                            label: l.learningAnalysisTitle,
-                            onPressed: () => context.push(
-                              Routes.learningAnalysisAt(
-                                exercise.fen,
-                                moves: moves,
-                                orientation: exercise.fen.split(' ')[1] == 'b'
-                                    ? 'black'
-                                    : 'white',
-                              ),
-                            ),
-                          )
-                        // Sem dica cadastrada a lâmpada não aparece
-                        // (canvas LicaoPraticaSemDica).
-                        : state.phase == TrainingExercisePhase.playing &&
-                              !state.solving &&
-                              !state.hint &&
-                              exercise.hintText != null
-                        ? TrainingCanvasFooter.hint(
-                            key: TrainingKeys.exerciseHint,
-                            label: l.exerciseHintFree,
-                            onPressed: cubit.hint,
-                          )
-                        : null,
-                    secondary: result && !state.displayedCorrect
-                        ? TrainingCanvasFooter.button(
-                            key: TrainingKeys.secondary,
-                            label: l.trainingSeeSolution,
-                            onPressed: cubit.showSolution,
-                          )
-                        : null,
-                    primary: state.error
-                        ? TrainingCanvasFooter.button(
-                            key: TrainingKeys.exerciseRetry,
-                            label: l.lessonRetry,
-                            primary: true,
-                            onPressed:
-                                state.phase == TrainingExercisePhase.playing
-                                ? cubit.hint
-                                : cubit.save,
-                          )
-                        : state.canRetryPractice
-                        ? TrainingCanvasFooter.button(
-                            key: TrainingKeys.exercisePracticeRetry,
-                            label: l.lessonRetry,
-                            primary: true,
-                            onPressed: cubit.retryPractice,
-                          )
-                        : result
-                        ? TrainingCanvasFooter.button(
-                            key: TrainingKeys.nextGoal,
-                            label: cubit.historicalPractice
-                                ? l.trainingViewProgress
-                                : l.trainingNextGoal,
-                            primary: true,
-                            onPressed: () {
-                              if (cubit.next()) widget.screen.onNextGoal();
-                            },
-                          )
-                        : null,
-                  ),
-                ),
+            : _ExerciseFooter(
+                state: state,
+                exercise: exercise,
+                moves: moves,
+                loading: loading,
+                onNextGoal: widget.screen.onNextGoal,
               ),
       );
     },
@@ -483,7 +392,6 @@ class _CycleEnd extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final cubit = context.read<TrainingExerciseCubit>();
     final cycle = state.cycle!;
     final firm = cycle.phase == ThemePhase.firm;
     final reinforce = cycle.phase == ThemePhase.reinforce;
@@ -527,7 +435,6 @@ class _CycleEnd extends StatelessWidget {
         : redoAfter
         ? l.trainingEndRedoAfterViktor
         : l.trainingEndRedoViktor;
-    final theme = Theme.of(context);
     return Scaffold(
       key: TrainingKeys.exerciseEnd,
       appBar: LucenaAppBar(
@@ -541,93 +448,25 @@ class _CycleEnd extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
             children: [
-              GradeMedal(
+              _CycleHeader(
                 grade: firm
                     ? ExerciseGrade.good
                     : reinforce
                     ? ExerciseGrade.passed
                     : ExerciseGrade.below,
-              ),
-              // Canvas inline medal reserves four extra baseline pixels.
-              const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontSize: 22,
-                  height: 28 / 22,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                state.reinforcement
+                title: title,
+                score: state.reinforcement
                     ? l.trainingEndReinforceScore(
                         days.where((d) => d.earned).length,
                         days.length,
                         score,
                       )
                     : l.trainingEndCycleScore(score),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontSize: 16,
-                  height: 24 / 16,
-                  letterSpacing: 0,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
               ),
               const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
-                children: [
-                  for (final day in days)
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: day.earned
-                          ? AppColors.trainingDayCorrect
-                          : AppColors.trainingDayWrong,
-                      foregroundColor: AppColors.chessWhiteColor,
-                      child: Icon(
-                        day.earned ? Icons.check : Icons.close,
-                        size: AppIconSize.button,
-                      ),
-                    ),
-                ],
-              ),
+              _CycleDays(days: days),
               const SizedBox(height: 12),
-              Text(
-                body,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontSize: 14,
-                  height: 20 / 14,
-                  letterSpacing: 0,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Theme(
-                data: Theme.of(context).copyWith(
-                  textTheme: Theme.of(context).textTheme.copyWith(
-                    bodyLarge: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 14,
-                      height: 20 / 14,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                ),
-                child: TeacherSpeech(
-                  showSpeedBadge: false,
-                  canvasTrainingBalloon: true,
-                  teacher: screen.teacher,
-                  avatarSize: 56,
-                  text: viktor,
-                  speechContext: SpeechContext.teaching,
-                ),
-              ),
+              _CycleBody(body: body, teacher: screen.teacher, viktor: viktor),
               if (state.error)
                 Text(
                   l.trainingExerciseSaveError,
@@ -637,71 +476,351 @@ class _CycleEnd extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: ActionsFooter(
-        stacked: true,
-        children: [
-          FilledButton.icon(
-            key: TrainingKeys.endPrimary,
-            icon: Icon(firm || reinforce ? Icons.task_alt : Icons.replay),
-            label: Text(
-              firm
-                  ? l.trainingEndBackToGoals
-                  : reinforce
-                  ? l.trainingEndSeeGoals
-                  : l.trainingEndRedo,
-            ),
-            onPressed: () => _cycleAction(
-              context,
-              state,
-              firm
-                  ? 'voltar_metas'
-                  : reinforce
-                  ? 'ver_metas'
-                  : 'refazer_aula',
-              firm || reinforce
-                  ? screen.onNextGoal
-                  : () => screen.onRedoLesson(state.goal!.ref),
+      bottomNavigationBar: _CycleFooter(
+        screen: screen,
+        state: state,
+        firm: firm,
+        reinforce: reinforce,
+        redoAfter: redoAfter,
+        onAction: (action, next) => _cycleAction(context, state, action, next),
+      ),
+    );
+  }
+}
+
+/// A medalha, o título e a pontuação do fim do ciclo.
+class _CycleHeader extends StatelessWidget {
+  const _CycleHeader({
+    required this.grade,
+    required this.title,
+    required this.score,
+  });
+
+  final ExerciseGrade grade;
+  final String title;
+  final String score;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        GradeMedal(grade: grade),
+        // Canvas inline medal reserves four extra baseline pixels.
+        const SizedBox(height: 12),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontSize: 22,
+            height: 28 / 22,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          score,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontSize: 16,
+            height: 24 / 16,
+            letterSpacing: 0,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Uma bolinha por dia do ciclo: acertou ou errou.
+class _CycleDays extends StatelessWidget {
+  const _CycleDays({required this.days});
+
+  final List<ThemeDay> days;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      alignment: WrapAlignment.center,
+      children: [
+        for (final day in days)
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: day.earned
+                ? AppColors.trainingDayCorrect
+                : AppColors.trainingDayWrong,
+            foregroundColor: AppColors.chessWhiteColor,
+            child: Icon(
+              day.earned ? Icons.check : Icons.close,
+              size: AppIconSize.button,
             ),
           ),
-          if (!firm)
-            OutlinedButton.icon(
-              key: TrainingKeys.endSecondary,
-              icon: redoAfter
-                  ? null
-                  : Icon(reinforce ? Icons.menu_book : Icons.task_alt),
-              label: Text(
-                reinforce
-                    ? l.trainingEndReviewLesson
-                    : redoAfter
-                    ? l.trainingEndNotNow
-                    : l.trainingEndReinforceFirst,
-              ),
-              onPressed: reinforce
-                  ? () => _cycleAction(
-                      context,
-                      state,
-                      'rever_aula',
-                      () => screen.onRedoLesson(state.goal!.ref),
-                    )
-                  : redoAfter
-                  ? () => _cycleAction(
-                      context,
-                      state,
-                      'agora_nao',
-                      screen.onNextGoal,
-                    )
-                  : () async {
-                      if (await cubit.reinforceFirst() && context.mounted) {
-                        _cycleAction(
-                          context,
-                          state,
-                          'reforco_antes',
-                          screen.onNextGoal,
-                        );
-                      }
-                    },
+      ],
+    );
+  }
+}
+
+/// O texto do resultado e a fala do Viktor.
+class _CycleBody extends StatelessWidget {
+  const _CycleBody({
+    required this.body,
+    required this.teacher,
+    required this.viktor,
+  });
+
+  final String body;
+  final Character teacher;
+  final String viktor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Text(
+          body,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontSize: 14,
+            height: 20 / 14,
+            letterSpacing: 0,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Theme(
+          data: Theme.of(context).copyWith(
+            textTheme: Theme.of(context).textTheme.copyWith(
+              bodyLarge: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(fontSize: 14, height: 20 / 14, letterSpacing: 0),
             ),
-        ],
+          ),
+          child: TeacherSpeech(
+            showSpeedBadge: false,
+            canvasTrainingBalloon: true,
+            teacher: teacher,
+            avatarSize: 56,
+            text: viktor,
+            speechContext: SpeechContext.teaching,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Os botões do fim do ciclo; cada um registra a ação e segue.
+class _CycleFooter extends StatelessWidget {
+  const _CycleFooter({
+    required this.screen,
+    required this.state,
+    required this.firm,
+    required this.reinforce,
+    required this.redoAfter,
+    required this.onAction,
+  });
+
+  final TrainingExerciseScreen screen;
+  final TrainingExerciseState state;
+  final bool firm, reinforce, redoAfter;
+  final void Function(String action, VoidCallback next) onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final cubit = context.read<TrainingExerciseCubit>();
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        FilledButton.icon(
+          key: TrainingKeys.endPrimary,
+          icon: Icon(firm || reinforce ? Icons.task_alt : Icons.replay),
+          label: Text(
+            firm
+                ? l.trainingEndBackToGoals
+                : reinforce
+                ? l.trainingEndSeeGoals
+                : l.trainingEndRedo,
+          ),
+          onPressed: () => onAction(
+            firm
+                ? 'voltar_metas'
+                : reinforce
+                ? 'ver_metas'
+                : 'refazer_aula',
+            firm || reinforce
+                ? screen.onNextGoal
+                : () => screen.onRedoLesson(state.goal!.ref),
+          ),
+        ),
+        if (!firm)
+          OutlinedButton.icon(
+            key: TrainingKeys.endSecondary,
+            icon: redoAfter
+                ? null
+                : Icon(reinforce ? Icons.menu_book : Icons.task_alt),
+            label: Text(
+              reinforce
+                  ? l.trainingEndReviewLesson
+                  : redoAfter
+                  ? l.trainingEndNotNow
+                  : l.trainingEndReinforceFirst,
+            ),
+            onPressed: reinforce
+                ? () => onAction(
+                    'rever_aula',
+                    () => screen.onRedoLesson(state.goal!.ref),
+                  )
+                : redoAfter
+                ? () => onAction('agora_nao', screen.onNextGoal)
+                : () async {
+                    if (await cubit.reinforceFirst() && context.mounted) {
+                      onAction('reforco_antes', screen.onNextGoal);
+                    }
+                  },
+          ),
+      ],
+    );
+  }
+}
+
+/// A lista de lances jogados e o aviso de erro ao salvar.
+class _ExerciseNotation extends StatelessWidget {
+  const _ExerciseNotation({
+    required this.sans,
+    required this.start,
+    required this.saveError,
+  });
+
+  final List<String> sans;
+  final Position? start;
+  final bool saveError;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Column(
+      children: [
+        ScriptMoveList(
+          moves: [
+            for (var i = 0; i < sans.length; i++)
+              ScriptMoveEntry(
+                id: '$i',
+                san: sans[i],
+                number:
+                    start!.fullmoves +
+                    (i + (start!.turn == Side.black ? 1 : 0)) ~/ 2,
+                side: i.isEven ? start!.turn : start!.turn.opposite,
+                variant: false,
+              ),
+          ],
+          currentId: sans.isEmpty ? null : '${sans.length - 1}',
+          onTap: (_) {},
+        ),
+        if (saveError)
+          Text(
+            l.trainingExerciseSaveError,
+            key: TrainingKeys.exerciseSaveError,
+          ),
+      ],
+    );
+  }
+}
+
+/// O rodapé do exercício: dica ou análise, solução e o botão principal.
+class _ExerciseFooter extends StatelessWidget {
+  const _ExerciseFooter({
+    required this.state,
+    required this.exercise,
+    required this.moves,
+    required this.loading,
+    required this.onNextGoal,
+  });
+
+  final TrainingExerciseState state;
+  final TrainingExercise exercise;
+  final List<String> moves;
+  final bool loading;
+  final VoidCallback onNextGoal;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final cubit = context.read<TrainingExerciseCubit>();
+    final result = state.phase == TrainingExercisePhase.result;
+    return SafeArea(
+      child: IgnorePointer(
+        ignoring: loading,
+        child: TrainingCanvasFooter(
+          // A lupa só no acerto (PropV1TreinoAcertou); no erro, o
+          // rodapé é "Ver a solução" + "Tentar novamente".
+          leading: result && state.displayedCorrect
+              ? TrainingCanvasFooter.round(
+                  key: TrainingKeys.exerciseAnalyze,
+                  icon: CanvasSymbols.search,
+                  label: l.learningAnalysisTitle,
+                  onPressed: () => context.push(
+                    Routes.learningAnalysisAt(
+                      exercise.fen,
+                      moves: moves,
+                      orientation: exercise.fen.split(' ')[1] == 'b'
+                          ? 'black'
+                          : 'white',
+                    ),
+                  ),
+                )
+              // Sem dica cadastrada a lâmpada não aparece
+              // (canvas LicaoPraticaSemDica).
+              : state.phase == TrainingExercisePhase.playing &&
+                    !state.solving &&
+                    !state.hint &&
+                    exercise.hintText != null
+              ? TrainingCanvasFooter.hint(
+                  key: TrainingKeys.exerciseHint,
+                  label: l.exerciseHintFree,
+                  onPressed: cubit.hint,
+                )
+              : null,
+          secondary: result && !state.displayedCorrect
+              ? TrainingCanvasFooter.button(
+                  key: TrainingKeys.secondary,
+                  label: l.trainingSeeSolution,
+                  onPressed: cubit.showSolution,
+                )
+              : null,
+          primary: state.error
+              ? TrainingCanvasFooter.button(
+                  key: TrainingKeys.exerciseRetry,
+                  label: l.lessonRetry,
+                  primary: true,
+                  onPressed: state.phase == TrainingExercisePhase.playing
+                      ? cubit.hint
+                      : cubit.save,
+                )
+              : state.canRetryPractice
+              ? TrainingCanvasFooter.button(
+                  key: TrainingKeys.exercisePracticeRetry,
+                  label: l.lessonRetry,
+                  primary: true,
+                  onPressed: cubit.retryPractice,
+                )
+              : result
+              ? TrainingCanvasFooter.button(
+                  key: TrainingKeys.nextGoal,
+                  label: cubit.historicalPractice
+                      ? l.trainingViewProgress
+                      : l.trainingNextGoal,
+                  primary: true,
+                  onPressed: () {
+                    if (cubit.next()) onNextGoal();
+                  },
+                )
+              : null,
+        ),
       ),
     );
   }

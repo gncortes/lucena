@@ -1,26 +1,23 @@
-import '../../../domain/use_cases/clock_format.dart';
-import '../../core/theme/app_icon_size.dart';
-
-import 'package:flutter/material.dart';
-
-import '../../../domain/models/load_failure.dart';
-import '../../course_guide/widgets/training_load_error.dart';
-
 import 'package:dartchess/dartchess.dart' show Side;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/load_failure.dart';
 import '../../../domain/models/training/theme_cycle.dart';
 import '../../../domain/models/training/training_content.dart';
 import '../../../domain/models/training/training_course.dart';
+import '../../../domain/use_cases/clock_format.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/course/training_badge.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/position_board.dart';
 import '../../course_guide/view_models/course_guide_cubit.dart';
 import '../../course_guide/widgets/course_guide_copy.dart';
+import '../../course_guide/widgets/training_load_error.dart';
 
 class TrainingThemeScreen extends StatelessWidget {
   const TrainingThemeScreen({
@@ -36,208 +33,95 @@ class TrainingThemeScreen extends StatelessWidget {
   final bool embedded;
 
   @override
-  Widget build(
-    BuildContext context,
-  ) => BlocBuilder<CourseGuideCubit, CourseGuideState>(
-    builder: (context, state) {
-      final t = context.l10n;
-      final colors = Theme.of(context).colorScheme;
-      final cycle = state.training?.cycles[lessonId];
-      final lesson = state.resources?.lessons
-          .where((l) => l.id == lessonId)
-          .firstOrNull;
-      if (!state.loading && state.failed) {
-        return trainingLoadError(
-          context,
-          state.failure,
-          context.read<CourseGuideCubit>().load,
-        );
-      }
-      if (!state.loading && (cycle == null || lesson == null)) {
-        return trainingLoadError(
-          context,
-          lesson == null ? LoadFailure.notFound : LoadFailure.unavailable,
-          context.read<CourseGuideCubit>().load,
-        );
-      }
-      final days = cycle?.cycleDays ?? const <ThemeDay>[];
-      final bank =
-          state.resources?.banks[lessonId] ?? const <TrainingExercise>[];
-      final body = cycle == null || lesson == null
-          ? const SizedBox.shrink()
-          : ListView(
-              key: TrainingKeys.themeScroll,
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              children: [
-                _card(context, [
-                  Text(
-                    trainingMasteryLessonTitle(context, lesson),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 16,
-                      height: 24 / 16,
-                      letterSpacing: 0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          t.trainingCycleScore,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: colors.onSurfaceVariant,
-                                height: 20 / 14,
-                              ),
-                        ),
-                      ),
-                      Text(
-                        t.trainingPercent(cycle.score),
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(
-                              fontSize: 24,
-                              height: 32 / 24,
-                              fontWeight: FontWeight.w500,
-                              color: cycle.score >= 70
-                                  ? AppColors.trainingDayCorrect
-                                  : cycle.score >= 30
-                                  ? AppColors.trainingMasteryDeveloping
-                                  : AppColors.trainingDayWrong,
-                            ),
-                      ),
-                    ],
-                  ),
-                  Semantics(
-                    label:
-                        '${t.trainingCycleScore}: ${t.trainingPercent(cycle.score)}',
-                    child: SizedBox(
-                      key: TrainingKeys.themeChart,
-                      height: 168,
-                      width: double.infinity,
-                      child: CustomPaint(
-                        painter: _CyclePlot(
-                          days: days,
-                          primary: colors.primary,
-                          grid: AppColors.trainingChartGrid,
-                          success: AppColors.trainingDayCorrect,
-                          error: AppColors.trainingDayWrong,
-                          label:
-                              (Theme.of(context).textTheme.labelSmall ??
-                                      const TextStyle())
-                                  .copyWith(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w400,
-                                    color: colors.onSurfaceVariant,
-                                  ),
-                          threshold: t.trainingPercent(70),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Column(
-                    key: TrainingKeys.themeLegend,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 6,
-                    children: [
-                      _legend(
-                        context,
-                        t.themeCanvasCorrect,
-                        AppColors.trainingDayCorrect,
-                      ),
-                      _legend(
-                        context,
-                        t.themeCanvasWrong,
-                        AppColors.trainingDayWrong,
-                      ),
-                    ],
-                  ),
-                ]),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
-                  child: Text(
-                    t.themeCanvasExercisesDone,
-                    key: TrainingKeys.themeExercisesHeading,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 16,
-                      height: 24 / 16,
-                      letterSpacing: 0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _card(
-                  context,
-                  [
-                    for (final (index, day) in cycle.days.indexed)
-                      _HistoryRow(
-                        day: day,
-                        index: index,
-                        exercise: bank
-                            .where((e) => e.id == day.exerciseId)
-                            .firstOrNull,
-                        onExercise: onExercise,
-                      ),
-                  ],
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  spacing: 0,
-                ),
-                if (cycle.phase == ThemePhase.reinforce) ...[
-                  const SizedBox(height: 12),
-                  Material(
-                    color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(AppShape.card),
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Row(
-                        spacing: 12,
-                        children: [
-                          Icon(
-                            Icons.replay,
-                            size: AppIconSize.notice,
-                            color: colors.primary,
-                          ),
-                          Expanded(
-                            child: Text(
-                              t.themeCanvasReinforceInfo(
-                                cycle.reinforcement
-                                    .where(
-                                      (id) => !cycle.reinforceDays.any(
-                                        (d) => d.exerciseId == id,
-                                      ),
-                                    )
-                                    .length,
-                              ),
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(height: 20 / 14),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+  Widget build(BuildContext context) =>
+      BlocBuilder<CourseGuideCubit, CourseGuideState>(
+        builder: (context, state) {
+          final t = context.l10n;
+          final cycle = state.training?.cycles[lessonId];
+          final lesson = state.resources?.lessons
+              .where((l) => l.id == lessonId)
+              .firstOrNull;
+          if (!state.loading && state.failed) {
+            return trainingLoadError(
+              context,
+              state.failure,
+              context.read<CourseGuideCubit>().load,
             );
-      if (embedded) {
-        return KeyedSubtree(key: TrainingKeys.themeScreen, child: body);
-      }
-      return Scaffold(
-        key: TrainingKeys.themeScreen,
-        appBar: LucenaAppBar(
-          title: Text(t.trainingThemeTitle),
-          leading: BackButton(key: TrainingKeys.themeBack, onPressed: onBack),
-        ),
-        body: body,
+          }
+          if (!state.loading && (cycle == null || lesson == null)) {
+            return trainingLoadError(
+              context,
+              lesson == null ? LoadFailure.notFound : LoadFailure.unavailable,
+              context.read<CourseGuideCubit>().load,
+            );
+          }
+          final days = cycle?.cycleDays ?? const <ThemeDay>[];
+          final bank =
+              state.resources?.banks[lessonId] ?? const <TrainingExercise>[];
+          final body = cycle == null || lesson == null
+              ? const SizedBox.shrink()
+              : ListView(
+                  key: TrainingKeys.themeScroll,
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  children: [
+                    _CycleSummaryCard(lesson: lesson, cycle: cycle, days: days),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                      child: Text(
+                        t.themeCanvasExercisesDone,
+                        key: TrainingKeys.themeExercisesHeading,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontSize: 16,
+                              height: 24 / 16,
+                              letterSpacing: 0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _card(
+                      context,
+                      [
+                        for (final (index, day) in cycle.days.indexed)
+                          _HistoryRow(
+                            day: day,
+                            index: index,
+                            exercise: bank
+                                .where((e) => e.id == day.exerciseId)
+                                .firstOrNull,
+                            onExercise: onExercise,
+                          ),
+                      ],
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      spacing: 0,
+                    ),
+                    if (cycle.phase == ThemePhase.reinforce) ...[
+                      const SizedBox(height: 12),
+                      _ReinforceNotice(cycle: cycle),
+                    ],
+                  ],
+                );
+          if (embedded) {
+            return KeyedSubtree(key: TrainingKeys.themeScreen, child: body);
+          }
+          return Scaffold(
+            key: TrainingKeys.themeScreen,
+            appBar: LucenaAppBar(
+              title: Text(t.trainingThemeTitle),
+              leading: BackButton(
+                key: TrainingKeys.themeBack,
+                onPressed: onBack,
+              ),
+            ),
+            body: body,
+          );
+        },
       );
-    },
-  );
 
   static Widget _legend(BuildContext context, String label, Color color) => Row(
     spacing: 8,
@@ -279,6 +163,144 @@ class TrainingThemeScreen extends StatelessWidget {
   );
 }
 
+/// O cartão do ciclo: título, pontuação, gráfico e legenda.
+class _CycleSummaryCard extends StatelessWidget {
+  const _CycleSummaryCard({
+    required this.lesson,
+    required this.cycle,
+    required this.days,
+  });
+
+  final TrainingLesson lesson;
+  final ThemeCycle cycle;
+  final List<ThemeDay> days;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    return TrainingThemeScreen._card(context, [
+      Text(
+        trainingMasteryLessonTitle(context, lesson),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontSize: 16,
+          height: 24 / 16,
+          letterSpacing: 0,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      Row(
+        children: [
+          Expanded(
+            child: Text(
+              t.trainingCycleScore,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: colors.onSurfaceVariant, height: 20 / 14),
+            ),
+          ),
+          Text(
+            t.trainingPercent(cycle.score),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontSize: 24,
+              height: 32 / 24,
+              fontWeight: FontWeight.w500,
+              color: cycle.score >= 70
+                  ? AppColors.trainingDayCorrect
+                  : cycle.score >= 30
+                  ? AppColors.trainingMasteryDeveloping
+                  : AppColors.trainingDayWrong,
+            ),
+          ),
+        ],
+      ),
+      Semantics(
+        label: '${t.trainingCycleScore}: ${t.trainingPercent(cycle.score)}',
+        child: SizedBox(
+          key: TrainingKeys.themeChart,
+          height: 168,
+          width: double.infinity,
+          child: CustomPaint(
+            painter: _CyclePlot(
+              days: days,
+              primary: colors.primary,
+              grid: AppColors.trainingChartGrid,
+              success: AppColors.trainingDayCorrect,
+              error: AppColors.trainingDayWrong,
+              label:
+                  (Theme.of(context).textTheme.labelSmall ?? const TextStyle())
+                      .copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                        color: colors.onSurfaceVariant,
+                      ),
+              threshold: t.trainingPercent(70),
+            ),
+          ),
+        ),
+      ),
+      Column(
+        key: TrainingKeys.themeLegend,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 6,
+        children: [
+          TrainingThemeScreen._legend(
+            context,
+            t.themeCanvasCorrect,
+            AppColors.trainingDayCorrect,
+          ),
+          TrainingThemeScreen._legend(
+            context,
+            t.themeCanvasWrong,
+            AppColors.trainingDayWrong,
+          ),
+        ],
+      ),
+    ]);
+  }
+}
+
+/// O aviso de reforço: quantos exercícios faltam refazer.
+class _ReinforceNotice extends StatelessWidget {
+  const _ReinforceNotice({required this.cycle});
+
+  final ThemeCycle cycle;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.primaryContainer,
+      borderRadius: BorderRadius.circular(AppShape.card),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          spacing: 12,
+          children: [
+            Icon(Icons.replay, size: AppIconSize.notice, color: colors.primary),
+            Expanded(
+              child: Text(
+                t.themeCanvasReinforceInfo(
+                  cycle.reinforcement
+                      .where(
+                        (id) =>
+                            !cycle.reinforceDays.any((d) => d.exerciseId == id),
+                      )
+                      .length,
+                ),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(height: 20 / 14),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _HistoryRow extends StatelessWidget {
   const _HistoryRow({
     required this.day,
@@ -294,10 +316,6 @@ class _HistoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.l10n;
-    final colors = Theme.of(context).colorScheme;
-    final color = day.earned
-        ? AppColors.trainingDayCorrect
-        : AppColors.trainingDayWrong;
     final result = day.earned ? t.themeCanvasCorrect : t.themeCanvasWrong;
     final elapsed = day.elapsedMs;
     final seconds = elapsed == null
@@ -347,113 +365,147 @@ class _HistoryRow extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: 4,
-                        children: [
-                          TrainingBadge.difficultyIcon(
-                            context,
-                            day.stars,
-                            size: 16,
-                          ),
-                          Flexible(
-                            child: Text(
-                              TrainingBadge.difficultyLabel(context, day.stars),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.labelMedium
-                                  ?.copyWith(
-                                    fontSize: 12,
-                                    height: 16 / 12,
-                                    letterSpacing: 0,
-                                    color: colors.onSurfaceVariant,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '·',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: 6,
-                        children: [
-                          Container(
-                            width: 16,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              day.earned ? Icons.check : Icons.close,
-                              size: 10,
-                              color: colors.onError,
-                            ),
-                          ),
-                          Text(
-                            label,
-                            key: TrainingKeys.themeResult(index),
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(
-                                  fontSize: 12,
-                                  height: 16 / 12,
-                                  letterSpacing: 0,
-                                  color: color,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  _ThemeResultLine(day: day, index: index, label: label),
                 ],
               ),
             ),
-            SizedBox(
-              height: 56,
-              child: Center(
-                child: day.earned
-                    ? Icon(
-                        Icons.chevron_right,
-                        size: AppIconSize.standard,
-                        color: colors.onSurfaceVariant,
-                      )
-                    : FilledButton(
-                        key: TrainingKeys.themeRedo(index),
-                        onPressed: tap,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size(0, 32),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 6,
-                          ),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          textStyle: const TextStyle(
-                            fontFamily: 'Roboto',
-                            fontSize: 14,
-                            height: 20 / 14,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0,
-                          ),
-                        ),
-                        child: Text(t.trainingPartRedo),
-                      ),
+            _ThemeTrailing(day: day, index: index, onTap: tap),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A dificuldade do exercício e o resultado do dia, na mesma linha.
+class _ThemeResultLine extends StatelessWidget {
+  const _ThemeResultLine({
+    required this.day,
+    required this.index,
+    required this.label,
+  });
+
+  final ThemeDay day;
+  final int index;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final color = day.earned
+        ? AppColors.trainingDayCorrect
+        : AppColors.trainingDayWrong;
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 4,
+          children: [
+            TrainingBadge.difficultyIcon(
+              context,
+              day.stars,
+              size: AppIconSize.small,
+            ),
+            Flexible(
+              child: Text(
+                TrainingBadge.difficultyLabel(context, day.stars),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontSize: 12,
+                  height: 16 / 12,
+                  letterSpacing: 0,
+                  color: colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
         ),
+        Text(
+          '·',
+          style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 6,
+          children: [
+            Container(
+              width: 16,
+              height: 16,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              child: Icon(
+                day.earned ? Icons.check : Icons.close,
+                size: 10,
+                color: colors.onError,
+              ),
+            ),
+            Text(
+              label,
+              key: TrainingKeys.themeResult(index),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                fontSize: 12,
+                height: 16 / 12,
+                letterSpacing: 0,
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// A seta do exercício certo ou o botão de refazer o errado.
+class _ThemeTrailing extends StatelessWidget {
+  const _ThemeTrailing({
+    required this.day,
+    required this.index,
+    required this.onTap,
+  });
+
+  final ThemeDay day;
+  final int index;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    return SizedBox(
+      height: 56,
+      child: Center(
+        child: day.earned
+            ? Icon(
+                Icons.chevron_right,
+                size: AppIconSize.standard,
+                color: colors.onSurfaceVariant,
+              )
+            : FilledButton(
+                key: TrainingKeys.themeRedo(index),
+                onPressed: onTap,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(0, 32),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  textStyle: const TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 14,
+                    height: 20 / 14,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0,
+                  ),
+                ),
+                child: Text(t.trainingPartRedo),
+              ),
       ),
     );
   }

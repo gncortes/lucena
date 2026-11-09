@@ -165,27 +165,9 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
           if (!state.ready) {
             return const Scaffold(key: LevelKeys.screen, body: SkeletonList());
           }
-          final choice = state.choice;
-          final placed = state.placed;
           // Pelo Perfil, os textos do quadro PropV1PerfilNivel (H-CON-16); a
           // abertura é da frente da Abertura (H-ABE-08).
           final profile = cubit.fromProfile;
-          Widget card(
-            LevelChoice option,
-            IconData icon,
-            String title,
-            String body,
-          ) => Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: ChoiceCard(
-              key: LevelKeys.option(option),
-              icon: icon,
-              title: title,
-              body: body,
-              selected: choice == option,
-              onTap: () => cubit.select(option),
-            ),
-          );
           return PopScope(
             canPop: cubit.fromProfile && !state.knowsRating,
             onPopInvokedWithResult: (didPop, _) {
@@ -217,92 +199,123 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                         AppSpacing.xl,
                         0,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (state.knowsRating) ...[
-                            card(
-                              LevelChoice.lichess,
-                              Icons.link,
-                              l10n.levelLichessTitle,
-                              profile
-                                  ? l10n.conNivelLichess
-                                  : l10n.levelLichessText,
-                            ),
-                            card(
-                              LevelChoice.chess,
-                              Icons.link,
-                              l10n.levelChessTitle,
-                              profile
-                                  ? l10n.conNivelChess
-                                  : l10n.levelChessText,
-                            ),
-                            card(
-                              LevelChoice.manual,
-                              Icons.trending_up,
-                              profile
-                                  ? l10n.conNivelManual
-                                  : l10n.levelManualTitle,
-                              l10n.levelManualText,
-                            ),
-                          ] else ...[
-                            card(
-                              LevelChoice.test,
-                              Icons.quiz,
-                              l10n.levelTestTitle,
-                              placed == null
-                                  ? l10n.levelTestBody
-                                  : l10n.levelStart(
-                                      levelRung(context, state, placed),
-                                    ),
-                            ),
-                            card(
-                              LevelChoice.known,
-                              Icons.trending_up,
-                              l10n.levelKnownTitle,
-                              l10n.levelKnownText,
-                            ),
-                            card(
-                              LevelChoice.zero,
-                              Icons.school,
-                              l10n.levelZeroTitle,
-                              // Com a Escola escondida, quem não sabe jogar cai
-                              // na tela inicial: o texto não promete a Escola.
-                              VisibleLessons.school
-                                  ? (profile
-                                        ? l10n.conNivelZero
-                                        : l10n.levelZeroText)
-                                  : (profile
-                                        ? l10n.conNivelZeroHome
-                                        : l10n.levelZeroTextHome),
-                            ),
-                          ],
-                        ],
-                      ),
+                      child: _OptionList(state: state, profile: profile),
                     ),
                   ],
                 ),
               ),
-              bottomNavigationBar: ActionsFooter(
-                children: [
-                  FilledButton(
-                    key: LevelKeys.continueButton,
-                    onPressed: state.lichessBusy
-                        ? null
-                        : () => _continue(state),
-                    child: state.lichessBusy
-                        ? const SizedBox.square(
-                            dimension: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.levelContinue),
-                  ),
-                ],
+              bottomNavigationBar: _ContinueFooter(
+                state: state,
+                onContinue: () => _continue(state),
               ),
             ),
           );
         },
       ),
+    );
+  }
+}
+
+/// As opções de nível: com rating conhecido, os sites; sem, teste e afins.
+class _OptionList extends StatelessWidget {
+  const _OptionList({required this.state, required this.profile});
+
+  final LevelState state;
+  final bool profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<LevelCubit>();
+    final choice = state.choice;
+    final placed = state.placed;
+    Widget card(LevelChoice option, IconData icon, String title, String body) =>
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: ChoiceCard(
+            key: LevelKeys.option(option),
+            icon: icon,
+            title: title,
+            body: body,
+            selected: choice == option,
+            onTap: () => cubit.select(option),
+          ),
+        );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (state.knowsRating) ...[
+          card(
+            LevelChoice.lichess,
+            Icons.link,
+            l10n.levelLichessTitle,
+            profile ? l10n.conNivelLichess : l10n.levelLichessText,
+          ),
+          card(
+            LevelChoice.chess,
+            Icons.link,
+            l10n.levelChessTitle,
+            profile ? l10n.conNivelChess : l10n.levelChessText,
+          ),
+          card(
+            LevelChoice.manual,
+            Icons.trending_up,
+            profile ? l10n.conNivelManual : l10n.levelManualTitle,
+            l10n.levelManualText,
+          ),
+        ] else ...[
+          card(
+            LevelChoice.test,
+            Icons.quiz,
+            l10n.levelTestTitle,
+            placed == null
+                ? l10n.levelTestBody
+                : l10n.levelStart(levelRung(context, state, placed)),
+          ),
+          card(
+            LevelChoice.known,
+            Icons.trending_up,
+            l10n.levelKnownTitle,
+            l10n.levelKnownText,
+          ),
+          card(
+            LevelChoice.zero,
+            Icons.school,
+            l10n.levelZeroTitle,
+            // Com a Escola escondida, quem não sabe jogar cai
+            // na tela inicial: o texto não promete a Escola.
+            VisibleLessons.school
+                ? (profile ? l10n.conNivelZero : l10n.levelZeroText)
+                : (profile ? l10n.conNivelZeroHome : l10n.levelZeroTextHome),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// O rodapé com "Continuar", que vira o indicador enquanto lê o Lichess.
+class _ContinueFooter extends StatelessWidget {
+  const _ContinueFooter({required this.state, required this.onContinue});
+
+  final LevelState state;
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionsFooter(
+      children: [
+        FilledButton(
+          key: LevelKeys.continueButton,
+          onPressed: state.lichessBusy ? null : onContinue,
+          child: state.lichessBusy
+              ? const SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(context.l10n.levelContinue),
+        ),
+      ],
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/character.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/purchase_keys.dart';
@@ -26,7 +27,6 @@ class PilaresBeforeHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final teacher = context.watch<PilaresBeforeHomeCubit>().state;
     final cubit = context.read<PilaresBeforeHomeCubit>();
     void close() {
@@ -89,29 +89,8 @@ class PilaresBeforeHomeScreen extends StatelessWidget {
               ],
             ),
             itens: [
-              ItemDaCascata.selo(
-                SizedBox.square(
-                  dimension: CharacterAvatar.versus,
-                  child: teacher == null
-                      ? null
-                      : CharacterAvatar(
-                          character: teacher,
-                          size: CharacterAvatar.versus,
-                          radius: AppSpacing.xl,
-                        ),
-                ),
-              ),
-              ItemDaCascata.texto(
-                Text(
-                  l10n.venCourseName,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontSize: 14,
-                    height: 20 / 14,
-                    fontWeight: FontWeight.w500,
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ),
+              ItemDaCascata.selo(_TeacherAvatar(teacher: teacher)),
+              ItemDaCascata.texto(const _CourseName()),
               ItemDaCascata.titulo(
                 Text(
                   l10n.venBeforeHomeTitle,
@@ -139,28 +118,7 @@ class PilaresBeforeHomeScreen extends StatelessWidget {
                   text: l10n.venBeforeHomeChaptersText,
                 ),
               ),
-              ItemDaCascata.botao(
-                Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-                  child: ActionsFooter(
-                    stacked: true,
-                    children: [
-                      BusyButton(
-                        buttonKey: PurchaseKeys.beforeHomeLearn,
-                        label: l10n.venBeforeHomeLearn,
-                        onPressed: () {
-                          cubit.learn();
-                          final router = GoRouter.of(context);
-                          if (context.canPop()) context.pop();
-                          router.push(
-                            D2Paths.plan(origin: PilaresBeforeHomeCubit.origin),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              ItemDaCascata.botao(_LearnButton(cubit: cubit)),
             ],
           ),
         ),
@@ -220,6 +178,79 @@ class _Item extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// O avatar do professor (vazio até ele carregar).
+class _TeacherAvatar extends StatelessWidget {
+  const _TeacherAvatar({required this.teacher});
+
+  final Character? teacher;
+
+  @override
+  Widget build(BuildContext context) {
+    final teacher = this.teacher;
+    return SizedBox.square(
+      dimension: CharacterAvatar.versus,
+      child: teacher == null
+          ? null
+          : CharacterAvatar(
+              character: teacher,
+              size: CharacterAvatar.versus,
+              radius: AppSpacing.xl,
+            ),
+    );
+  }
+}
+
+/// O nome do curso acima do título.
+class _CourseName extends StatelessWidget {
+  const _CourseName();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Text(
+      l10n.venCourseName,
+      style: theme.textTheme.titleSmall?.copyWith(
+        fontSize: 14,
+        height: 20 / 14,
+        fontWeight: FontWeight.w500,
+        color: colors.onSurfaceVariant,
+      ),
+    );
+  }
+}
+
+/// O botão "Conhecer o plano": registra e abre a venda do plano.
+class _LearnButton extends StatelessWidget {
+  const _LearnButton({required this.cubit});
+
+  final PilaresBeforeHomeCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+      child: ActionsFooter(
+        stacked: true,
+        children: [
+          BusyButton(
+            buttonKey: PurchaseKeys.beforeHomeLearn,
+            label: l10n.venBeforeHomeLearn,
+            onPressed: () {
+              cubit.learn();
+              final router = GoRouter.of(context);
+              if (context.canPop()) context.pop();
+              router.push(D2Paths.plan(origin: PilaresBeforeHomeCubit.origin));
+            },
+          ),
+        ],
+      ),
     );
   }
 }

@@ -140,22 +140,9 @@ class _RegionSheetState extends State<_RegionSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(AppShape.large),
-                    ),
-                    child: SizedBox.square(
-                      dimension: 56,
-                      child: Icon(
-                        Icons.location_on,
-                        size: AppIconSize.large,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
+                _RegionIcon(
+                  color: colors.primary,
+                  background: colors.primaryContainer,
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
@@ -248,6 +235,31 @@ class _RegionSheetState extends State<_RegionSheet> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// O ícone de local no alto da folha.
+class _RegionIcon extends StatelessWidget {
+  const _RegionIcon({required this.color, required this.background});
+
+  final Color color;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(AppShape.large),
+        ),
+        child: SizedBox.square(
+          dimension: 56,
+          child: Icon(Icons.location_on, size: AppIconSize.large, color: color),
+        ),
       ),
     );
   }

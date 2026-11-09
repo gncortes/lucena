@@ -41,8 +41,6 @@ class RaceIntroView extends StatelessWidget {
         ),
       );
     }
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     // H-ANI-16: a explicação se monta em ordem (título, textos, regras) e o
     // "Começar" entra por último; o toque fica liberado desde o início.
     return EntradaEmCascata(
@@ -66,76 +64,11 @@ class RaceIntroView extends StatelessWidget {
       itens: [
         // O título curto e uma linha de apoio (canvas SugP2CorridaIntroA); as
         // regras completas ficam na folha do (i).
-        ItemDaCascata.titulo(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.xs,
-            children: [
-              Text(
-                l10n.raceIntroSubtitle,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              Text(
-                l10n.raceIntroLine,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
+        ItemDaCascata.titulo(const _IntroTitle()),
         // Duração em seção própria, acima das regras (E1.33, opção B).
-        ItemDaCascata.texto(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: AppSpacing.sm),
-              SectionTitle(l10n.raceDuration, inset: 0),
-              SegmentedButton<RaceDuration>(
-                key: RaceKeys.duration,
-                showSelectedIcon: false,
-                segments: [
-                  for (final option in RaceDuration.values)
-                    ButtonSegment(
-                      value: option,
-                      label: OneLine(
-                        l10n.raceDurationMinutes(option.minutes),
-                        key: RaceKeys.durationOption(option),
-                      ),
-                    ),
-                ],
-                selected: {state.duration},
-                onSelectionChanged: (selection) =>
-                    unawaited(cubit.selectDuration(selection.single)),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-            ],
-          ),
-        ),
+        ItemDaCascata.texto(_DurationPicker(duration: state.duration)),
         // Três fatos de uma linha; os minutos seguem a duração escolhida.
-        ItemDaCascata.texto(
-          Column(
-            key: RaceKeys.facts,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.md,
-            children: [
-              _Fact(
-                icon: Icons.timer,
-                lead: l10n.raceRuleTimeTitle(state.duration.minutes),
-                rest: l10n.raceFactTimeRest,
-              ),
-              _Fact(
-                icon: Icons.close,
-                lead: l10n.raceFactErrorsLead(RaceRules.maxErrors),
-                rest: l10n.raceFactErrorsRest,
-              ),
-              _Fact(icon: Icons.trending_up, rest: l10n.raceFactLevel),
-              const SizedBox(height: AppSpacing.sm),
-            ],
-          ),
-        ),
+        ItemDaCascata.texto(_Facts(duration: state.duration)),
         ItemDaCascata.texto(
           _RecordCard(record: state.record, duration: state.duration),
         ),
@@ -150,23 +83,7 @@ class RaceIntroView extends StatelessWidget {
           ),
         ),
         // A nota fica no pé, sobre o "Começar" (canvas).
-        ItemDaCascata.texto(
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.sm,
-              AppSpacing.lg,
-              0,
-            ),
-            child: Text(
-              l10n.raceFootnote,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ),
+        const ItemDaCascata.texto(_Footnote()),
         ItemDaCascata.botao(
           ActionsFooter(
             children: [
@@ -180,6 +97,131 @@ class RaceIntroView extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// O título curto e uma linha de apoio (canvas SugP2CorridaIntroA); as
+/// regras completas ficam na folha do (i).
+class _IntroTitle extends StatelessWidget {
+  const _IntroTitle();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: AppSpacing.xs,
+      children: [
+        Text(
+          l10n.raceIntroSubtitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        Text(
+          l10n.raceIntroLine,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// A duração da corrida (3 ou 5 min), em seção própria.
+class _DurationPicker extends StatelessWidget {
+  const _DurationPicker({required this.duration});
+
+  final RaceDuration duration;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<RaceCubit>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: AppSpacing.sm),
+        SectionTitle(l10n.raceDuration, inset: 0),
+        SegmentedButton<RaceDuration>(
+          key: RaceKeys.duration,
+          showSelectedIcon: false,
+          segments: [
+            for (final option in RaceDuration.values)
+              ButtonSegment(
+                value: option,
+                label: OneLine(
+                  l10n.raceDurationMinutes(option.minutes),
+                  key: RaceKeys.durationOption(option),
+                ),
+              ),
+          ],
+          selected: {duration},
+          onSelectionChanged: (selection) =>
+              unawaited(cubit.selectDuration(selection.single)),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+      ],
+    );
+  }
+}
+
+/// Três fatos de uma linha; os minutos seguem a duração escolhida.
+class _Facts extends StatelessWidget {
+  const _Facts({required this.duration});
+
+  final RaceDuration duration;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      key: RaceKeys.facts,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.md,
+      children: [
+        _Fact(
+          icon: Icons.timer,
+          lead: l10n.raceRuleTimeTitle(duration.minutes),
+          rest: l10n.raceFactTimeRest,
+        ),
+        _Fact(
+          icon: Icons.close,
+          lead: l10n.raceFactErrorsLead(RaceRules.maxErrors),
+          rest: l10n.raceFactErrorsRest,
+        ),
+        _Fact(icon: Icons.trending_up, rest: l10n.raceFactLevel),
+        const SizedBox(height: AppSpacing.sm),
+      ],
+    );
+  }
+}
+
+/// A nota do pé, sobre o "Começar" (canvas).
+class _Footnote extends StatelessWidget {
+  const _Footnote();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Text(
+        context.l10n.raceFootnote,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 }

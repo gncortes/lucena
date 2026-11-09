@@ -123,32 +123,9 @@ class _RestoredView extends StatelessWidget {
               AppSpacing.lg,
             ),
             children: [
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.goalWinBg,
-                    borderRadius: BorderRadius.circular(AppShape.extraLarge),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(AppSpacing.lg),
-                    child: Icon(
-                      Icons.cloud_done,
-                      size: AppIconSize.illustration,
-                      color: AppColors.record,
-                    ),
-                  ),
-                ),
-              ),
+              const _RestoredIcon(),
               const SizedBox(height: AppSpacing.xl),
-              Text(
-                l10n.accountRestoredTitle(name),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              _RestoredTitle(name: name),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.conVoltaText,
@@ -160,28 +137,7 @@ class _RestoredView extends StatelessWidget {
               if (!state.ready)
                 const SkeletonList()
               else
-                Material(
-                  color: colors.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(AppShape.large),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.xs,
-                    ),
-                    child: Column(
-                      children: [
-                        for (final (icon, title, value) in items)
-                          ListTile(
-                            leading: Icon(icon, color: colors.primary),
-                            title: Text(title),
-                            trailing: Text(
-                              value,
-                              style: theme.textTheme.titleSmall,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
+                _RestoredItems(items: items),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 l10n.conVoltaMerged,
@@ -199,6 +155,83 @@ class _RestoredView extends StatelessWidget {
               onPressed: next,
               label: l10n.accountRestoredContinue,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O ícone grande de nuvem do topo.
+class _RestoredIcon extends StatelessWidget {
+  const _RestoredIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppColors.goalWinBg,
+          borderRadius: BorderRadius.circular(AppShape.extraLarge),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(AppSpacing.lg),
+          child: Icon(
+            Icons.cloud_done,
+            size: AppIconSize.illustration,
+            color: AppColors.record,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O título com o nome de quem voltou.
+class _RestoredTitle extends StatelessWidget {
+  const _RestoredTitle({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    return Text(
+      l10n.accountRestoredTitle(name),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.headlineMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+}
+
+/// O que foi restaurado, uma linha por item.
+class _RestoredItems extends StatelessWidget {
+  const _RestoredItems({required this.items});
+
+  final List<(IconData, String, String)> items;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Material(
+      color: colors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Column(
+          children: [
+            for (final (icon, title, value) in items)
+              ListTile(
+                leading: Icon(icon, color: colors.primary),
+                title: Text(title),
+                trailing: Text(value, style: theme.textTheme.titleSmall),
+              ),
           ],
         ),
       ),

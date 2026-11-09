@@ -139,33 +139,7 @@ class _AccountView extends StatelessWidget {
                 horizontal: AppSpacing.xl,
                 vertical: AppSpacing.lg,
               ),
-              child: purchase
-                  ? AccountInviteHeader(
-                      icon: Icons.school,
-                      title: l10n.conCompraTitle,
-                      text: l10n.conCompraText,
-                      titleKey: AccountKeys.enterTitle,
-                      textKey: AccountKeys.enterText,
-                      benefits: [
-                        (Icons.devices, l10n.conCompraDevices),
-                        (Icons.cloud_done, l10n.conCompraSaved),
-                        (Icons.sync, l10n.conCompraSync),
-                      ],
-                    )
-                  : AccountInviteHeader(
-                      title: invite
-                          ? l10n.conConviteTitle
-                          : l10n.conEntradaTitle,
-                      text: invite
-                          ? l10n.conConviteLater
-                          : l10n.accountEntryText,
-                      titleKey: AccountKeys.enterTitle,
-                      textKey: AccountKeys.enterText,
-                      benefits: [
-                        (Icons.cloud_done, l10n.conEntradaSaved),
-                        (Icons.wifi_off, l10n.conEntradaOffline),
-                      ],
-                    ),
+              child: _AccountHeader(purchase: purchase, invite: invite),
             ),
             bottomNavigationBar: ActionsFooter(
               stacked: true,
@@ -189,5 +163,41 @@ class _AccountView extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// O cabeçalho da conta: compra, convite ou entrada.
+class _AccountHeader extends StatelessWidget {
+  const _AccountHeader({required this.purchase, required this.invite});
+
+  final bool purchase;
+  final bool invite;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return purchase
+        ? AccountInviteHeader(
+            icon: Icons.school,
+            title: l10n.conCompraTitle,
+            text: l10n.conCompraText,
+            titleKey: AccountKeys.enterTitle,
+            textKey: AccountKeys.enterText,
+            benefits: [
+              (Icons.devices, l10n.conCompraDevices),
+              (Icons.cloud_done, l10n.conCompraSaved),
+              (Icons.sync, l10n.conCompraSync),
+            ],
+          )
+        : AccountInviteHeader(
+            title: invite ? l10n.conConviteTitle : l10n.conEntradaTitle,
+            text: invite ? l10n.conConviteLater : l10n.accountEntryText,
+            titleKey: AccountKeys.enterTitle,
+            textKey: AccountKeys.enterText,
+            benefits: [
+              (Icons.cloud_done, l10n.conEntradaSaved),
+              (Icons.wifi_off, l10n.conEntradaOffline),
+            ],
+          );
   }
 }

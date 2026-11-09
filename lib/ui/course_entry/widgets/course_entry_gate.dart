@@ -207,25 +207,7 @@ class _AccountEntry extends StatelessWidget {
                 t.trainingEntrySaved,
                 if (!school) t.trainingEntryOffline,
               ])
-                Padding(
-                  key: text == t.trainingEntrySaved
-                      ? TrainingEntryKeys.saved
-                      : null,
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: AppColors.trainingDayCorrect,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(text, style: theme.textTheme.bodyMedium),
-                      ),
-                    ],
-                  ),
-                ),
+                _EntryCheck(text: text, saved: text == t.trainingEntrySaved),
             ],
           ),
         ),
@@ -271,6 +253,34 @@ class _AccountEntry extends StatelessWidget {
                   ),
                 ],
         ),
+      ),
+    );
+  }
+}
+
+/// Uma linha de garantia da tela de entrada: o visto e o texto.
+class _EntryCheck extends StatelessWidget {
+  const _EntryCheck({required this.text, required this.saved});
+
+  final String text;
+  final bool saved;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      key: saved ? TrainingEntryKeys.saved : null,
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.check_circle,
+            color: AppColors.trainingDayCorrect,
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
+        ],
       ),
     );
   }

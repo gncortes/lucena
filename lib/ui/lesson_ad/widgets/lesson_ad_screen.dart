@@ -94,12 +94,6 @@ class _AdBody extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final label = theme.textTheme.labelLarge?.copyWith(
-      fontSize: 14,
-      height: 20 / 14,
-      fontWeight: FontWeight.w500,
-      letterSpacing: 0,
-    );
     final progress = ((4 - state.secondsLeft) / 3).clamp(0.0, 1.0);
     return Scaffold(
       key: AdsKeys.screen,
@@ -107,60 +101,7 @@ class _AdBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Row(
-                children: [
-                  DecoratedBox(
-                    key: AdsKeys.badge,
-                    decoration: ShapeDecoration(
-                      color: colors.surfaceContainerHighest,
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 2,
-                      ),
-                      child: Text(
-                        l10n.adsLabel,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontSize: 12,
-                          height: 20 / 12,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  // H-ANI-31: "Conhecer o Pilares" entra e afunda no toque.
-                  ConhecerQueEntra(
-                    child: _TopText(
-                      key: AdsKeys.learnMore,
-                      onTap: () => context.pushNamed(
-                        RouteNames.pilaresPresentation,
-                        queryParameters: const {'origem': 'anuncio'},
-                      ),
-                      child: Text(
-                        l10n.licaoAdLearnMore,
-                        style: label?.copyWith(color: colors.primary),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  // H-ANI-31: a contagem cruza 3 → 2 → 1 → "Fechar".
-                  _TopText(
-                    key: AdsKeys.adCloseButton,
-                    child: ContagemParaFechar(
-                      restantes: state.canClose ? 0 : state.secondsLeft,
-                      aoFechar: () => Navigator.of(context).pop(true),
-                      estilo: label?.copyWith(color: colors.onSurfaceVariant),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _AdTopBar(state: state),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(
@@ -190,36 +131,123 @@ class _AdBody extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.md,
-                AppSpacing.lg,
-                AppSpacing.xl,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: AppSpacing.sm,
-                children: [
-                  Text(
-                    l10n.licaoAdAfter(lessonTitle),
-                    key: AdsKeys.after,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(AppShape.tiny),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 6,
-                      color: colors.primary,
-                      backgroundColor: colors.outlineVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _AdFooter(lessonTitle: lessonTitle, progress: progress),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// A barra do topo: o selo de anúncio, "Conhecer o Pilares" e a contagem.
+class _AdTopBar extends StatelessWidget {
+  const _AdTopBar({required this.state});
+
+  final LessonAdState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final label = theme.textTheme.labelLarge?.copyWith(
+      fontSize: 14,
+      height: 20 / 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0,
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: Row(
+        children: [
+          DecoratedBox(
+            key: AdsKeys.badge,
+            decoration: ShapeDecoration(
+              color: colors.surfaceContainerHighest,
+              shape: const StadiumBorder(),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              child: Text(
+                l10n.adsLabel,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontSize: 12,
+                  height: 20 / 12,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0,
+                ),
+              ),
+            ),
+          ),
+          const Spacer(),
+          // H-ANI-31: "Conhecer o Pilares" entra e afunda no toque.
+          ConhecerQueEntra(
+            child: _TopText(
+              key: AdsKeys.learnMore,
+              onTap: () => context.pushNamed(
+                RouteNames.pilaresPresentation,
+                queryParameters: const {'origem': 'anuncio'},
+              ),
+              child: Text(
+                l10n.licaoAdLearnMore,
+                style: label?.copyWith(color: colors.primary),
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          // H-ANI-31: a contagem cruza 3 → 2 → 1 → "Fechar".
+          _TopText(
+            key: AdsKeys.adCloseButton,
+            child: ContagemParaFechar(
+              restantes: state.canClose ? 0 : state.secondsLeft,
+              aoFechar: () => Navigator.of(context).pop(true),
+              estilo: label?.copyWith(color: colors.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O rodapé: a frase da aula e a barra que enche com a contagem.
+class _AdFooter extends StatelessWidget {
+  const _AdFooter({required this.lessonTitle, required this.progress});
+
+  final String lessonTitle;
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.xl,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.sm,
+        children: [
+          Text(
+            l10n.licaoAdAfter(lessonTitle),
+            key: AdsKeys.after,
+            style: theme.textTheme.bodyMedium,
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppShape.tiny),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 6,
+              color: colors.primary,
+              backgroundColor: colors.outlineVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

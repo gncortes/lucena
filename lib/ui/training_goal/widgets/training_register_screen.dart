@@ -91,76 +91,19 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            spacing: AppSpacing.md,
-            children: [
-              Expanded(
-                child: TextField(
-                  key: TrainingGoalKeys.registerPoints,
-                  controller: _points,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(_amountCharacters),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: t.treinoFieldPoints,
-                    errorText: error == DraftError.points
-                        ? t.treinoPointsRequired
-                        : error == DraftError.pointsTooHigh
-                        ? t.treinoPointsTooHigh
-                        : null,
-                  ),
-                  onChanged: (v) => _change(_draft.copyWith(points: v)),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  key: TrainingGoalKeys.registerRounds,
-                  controller: _rounds,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    labelText: t.treinoFieldRounds,
-                    errorText: error == DraftError.rounds
-                        ? t.treinoRoundsRequired
-                        : null,
-                  ),
-                  onChanged: (v) => _change(_draft.copyWith(rounds: v)),
-                ),
-              ),
-            ],
+          _AmountFields(
+            points: _points,
+            rounds: _rounds,
+            error: error,
+            draft: _draft,
+            onChange: _change,
           ),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            spacing: AppSpacing.md,
-            children: [
-              Expanded(
-                child: TextField(
-                  key: TrainingGoalKeys.registerRatingBefore,
-                  controller: _before,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    labelText: t.treinoFieldRatingBefore,
-                  ),
-                  onChanged: (v) => _change(_draft.copyWith(ratingBefore: v)),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  key: TrainingGoalKeys.registerRatingAfter,
-                  controller: _after,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: InputDecoration(
-                    labelText: t.treinoFieldRatingAfter,
-                  ),
-                  onChanged: (v) => _change(_draft.copyWith(ratingAfter: v)),
-                ),
-              ),
-            ],
+          _RatingFields(
+            before: _before,
+            after: _after,
+            draft: _draft,
+            onChange: _change,
           ),
           if (before != null && after != null)
             Padding(
@@ -176,67 +119,19 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
             t.treinoFieldPace,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          Wrap(
-            spacing: AppSpacing.sm,
-            children: [
-              for (final p in TournamentPace.values)
-                ChoiceChip(
-                  key: TrainingGoalKeys.registerPace(p.name),
-                  label: Text(switch (p) {
-                    TournamentPace.classical => t.treinoPaceClassical,
-                    TournamentPace.rapid => t.treinoPaceRapid,
-                    TournamentPace.blitz => t.treinoPaceBlitz,
-                  }),
-                  selected: _draft.pace == p,
-                  onSelected: (_) => _change(_draft.copyWith(pace: p)),
-                ),
-            ],
-          ),
+          _PaceChips(draft: _draft, onChange: _change),
           const SizedBox(height: AppSpacing.sm),
           Text(
             t.treinoFieldEntity,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          Wrap(
-            spacing: AppSpacing.sm,
-            children: [
-              for (final e in TournamentEntity.values)
-                ChoiceChip(
-                  key: TrainingGoalKeys.registerEntity(e.name),
-                  label: Text(switch (e) {
-                    TournamentEntity.fide => t.treinoEntityFide,
-                    TournamentEntity.cbx => t.treinoEntityCbx,
-                    TournamentEntity.online => t.treinoEntityOnline,
-                    TournamentEntity.other => t.treinoEntityOther,
-                  }),
-                  selected: _draft.entity == e,
-                  onSelected: (_) => _change(_draft.copyWith(entity: e)),
-                ),
-            ],
-          ),
+          _EntityChips(draft: _draft, onChange: _change),
           const SizedBox(height: AppSpacing.lg),
           Text(
             t.treinoFeelingTitle,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          Wrap(
-            spacing: AppSpacing.sm,
-            children: [
-              for (final (i, label) in [
-                t.treinoFeeling1,
-                t.treinoFeeling2,
-                t.treinoFeeling3,
-                t.treinoFeeling4,
-                t.treinoFeeling5,
-              ].indexed)
-                ChoiceChip(
-                  key: TrainingGoalKeys.registerFeeling(i + 1),
-                  label: Text(label),
-                  selected: _draft.feeling == i + 1,
-                  onSelected: (_) => _change(_draft.copyWith(feeling: i + 1)),
-                ),
-            ],
-          ),
+          _FeelingChips(draft: _draft, onChange: _change),
           const SizedBox(height: AppSpacing.md),
           TextField(
             key: TrainingGoalKeys.registerNotes,
@@ -271,3 +166,197 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
 }
 
 final _amountCharacters = RegExp(r'[0-9.,]');
+
+/// Pontos e rodadas do torneio, lado a lado.
+class _AmountFields extends StatelessWidget {
+  const _AmountFields({
+    required this.points,
+    required this.rounds,
+    required this.error,
+    required this.draft,
+    required this.onChange,
+  });
+
+  final TextEditingController points, rounds;
+  final DraftError? error;
+  final TournamentDraft draft;
+  final ValueChanged<TournamentDraft> onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Row(
+      spacing: AppSpacing.md,
+      children: [
+        Expanded(
+          child: TextField(
+            key: TrainingGoalKeys.registerPoints,
+            controller: points,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(_amountCharacters),
+            ],
+            decoration: InputDecoration(
+              labelText: t.treinoFieldPoints,
+              errorText: error == DraftError.points
+                  ? t.treinoPointsRequired
+                  : error == DraftError.pointsTooHigh
+                  ? t.treinoPointsTooHigh
+                  : null,
+            ),
+            onChanged: (v) => onChange(draft.copyWith(points: v)),
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            key: TrainingGoalKeys.registerRounds,
+            controller: rounds,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(
+              labelText: t.treinoFieldRounds,
+              errorText: error == DraftError.rounds
+                  ? t.treinoRoundsRequired
+                  : null,
+            ),
+            onChanged: (v) => onChange(draft.copyWith(rounds: v)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Rating antes e depois do torneio, lado a lado.
+class _RatingFields extends StatelessWidget {
+  const _RatingFields({
+    required this.before,
+    required this.after,
+    required this.draft,
+    required this.onChange,
+  });
+
+  final TextEditingController before, after;
+  final TournamentDraft draft;
+  final ValueChanged<TournamentDraft> onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Row(
+      spacing: AppSpacing.md,
+      children: [
+        Expanded(
+          child: TextField(
+            key: TrainingGoalKeys.registerRatingBefore,
+            controller: before,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(labelText: t.treinoFieldRatingBefore),
+            onChanged: (v) => onChange(draft.copyWith(ratingBefore: v)),
+          ),
+        ),
+        Expanded(
+          child: TextField(
+            key: TrainingGoalKeys.registerRatingAfter,
+            controller: after,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(labelText: t.treinoFieldRatingAfter),
+            onChanged: (v) => onChange(draft.copyWith(ratingAfter: v)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// As opções de ritmo do torneio.
+class _PaceChips extends StatelessWidget {
+  const _PaceChips({required this.draft, required this.onChange});
+
+  final TournamentDraft draft;
+  final ValueChanged<TournamentDraft> onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Wrap(
+      spacing: AppSpacing.sm,
+      children: [
+        for (final p in TournamentPace.values)
+          ChoiceChip(
+            key: TrainingGoalKeys.registerPace(p.name),
+            label: Text(switch (p) {
+              TournamentPace.classical => t.treinoPaceClassical,
+              TournamentPace.rapid => t.treinoPaceRapid,
+              TournamentPace.blitz => t.treinoPaceBlitz,
+            }),
+            selected: draft.pace == p,
+            onSelected: (_) => onChange(draft.copyWith(pace: p)),
+          ),
+      ],
+    );
+  }
+}
+
+/// As opções de entidade do torneio.
+class _EntityChips extends StatelessWidget {
+  const _EntityChips({required this.draft, required this.onChange});
+
+  final TournamentDraft draft;
+  final ValueChanged<TournamentDraft> onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Wrap(
+      spacing: AppSpacing.sm,
+      children: [
+        for (final e in TournamentEntity.values)
+          ChoiceChip(
+            key: TrainingGoalKeys.registerEntity(e.name),
+            label: Text(switch (e) {
+              TournamentEntity.fide => t.treinoEntityFide,
+              TournamentEntity.cbx => t.treinoEntityCbx,
+              TournamentEntity.online => t.treinoEntityOnline,
+              TournamentEntity.other => t.treinoEntityOther,
+            }),
+            selected: draft.entity == e,
+            onSelected: (_) => onChange(draft.copyWith(entity: e)),
+          ),
+      ],
+    );
+  }
+}
+
+/// As notas de sensação do torneio.
+class _FeelingChips extends StatelessWidget {
+  const _FeelingChips({required this.draft, required this.onChange});
+
+  final TournamentDraft draft;
+  final ValueChanged<TournamentDraft> onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Wrap(
+      spacing: AppSpacing.sm,
+      children: [
+        for (final (i, label) in [
+          t.treinoFeeling1,
+          t.treinoFeeling2,
+          t.treinoFeeling3,
+          t.treinoFeeling4,
+          t.treinoFeeling5,
+        ].indexed)
+          ChoiceChip(
+            key: TrainingGoalKeys.registerFeeling(i + 1),
+            label: Text(label),
+            selected: draft.feeling == i + 1,
+            onSelected: (_) => onChange(draft.copyWith(feeling: i + 1)),
+          ),
+      ],
+    );
+  }
+}

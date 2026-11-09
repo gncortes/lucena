@@ -114,9 +114,6 @@ class _CharacterBarContent extends StatelessWidget {
   final Object? dismissOn;
   final double width;
 
-  static const _topGap = CharacterBar.topGap;
-  static const _bottomGap = CharacterBar.bottomGap;
-
   @override
   Widget build(BuildContext context) {
     final character = talk.character!;
@@ -170,6 +167,38 @@ class _CharacterBarContent extends StatelessWidget {
         ),
       );
     }
+    return _BesideCharacter(
+      talk: talk,
+      avatarSize: avatarSize,
+      showName: showName,
+      width: width,
+      character: character,
+      line: line,
+    );
+  }
+}
+
+/// O retrato com o balão ao lado, numa faixa de altura fixa.
+class _BesideCharacter extends StatelessWidget {
+  const _BesideCharacter({
+    required this.talk,
+    required this.avatarSize,
+    required this.showName,
+    required this.width,
+    required this.character,
+    required this.line,
+  });
+
+  final TalkState talk;
+  final double avatarSize;
+  final bool showName;
+  final double width;
+  final Character character;
+  final CharacterLine? line;
+
+  @override
+  Widget build(BuildContext context) {
+    final line = this.line;
     // Ao lado do retrato, numa faixa de altura fixa: as linhas do espaço
     // fixo e, além delas, "… Ver mais" (sem abrir por cima).
     final besideWidth = math.max(
@@ -187,9 +216,9 @@ class _CharacterBarContent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(
           AppSpacing.md,
-          _topGap,
+          CharacterBar.topGap,
           AppSpacing.md,
-          _bottomGap,
+          CharacterBar.bottomGap,
         ),
         child: Row(
           // O balão alinhado pela base do retrato.

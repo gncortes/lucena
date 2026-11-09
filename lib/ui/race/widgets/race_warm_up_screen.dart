@@ -112,26 +112,7 @@ class RaceWarmUpScreen extends StatelessWidget {
                           reserveTop: RaceScoreboard.height,
                           reserveBottom: RaceGameView.bottomRoom(context),
                           footer: const SizedBox(height: GameActionsBar.height),
-                          top: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: AppSpacing.sm,
-                            children: [
-                              InfoChip(
-                                key: objectiveKey,
-                                label: l10n.raceWarmUpObjective,
-                                icon: goal.icon,
-                                background: goal.container,
-                                foreground: goal.onContainer,
-                              ),
-                              Text(
-                                problem.side == Side.white
-                                    ? l10n.sideWhite
-                                    : l10n.sideBlack,
-                                key: sideKey,
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                            ],
-                          ),
+                          top: _WarmUpTop(goal: goal, side: problem.side),
                           board: LayoutBuilder(
                             builder: (context, box) => RaceFadingBoard(
                               size: box.maxWidth,
@@ -161,26 +142,69 @@ class RaceWarmUpScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: SafeArea(
-                        top: false,
-                        child: ActionsBar(
-                          children: [
-                            GameActionButton(
-                              buttonKey: RaceKeys.warmUpSkip,
-                              icon: Icons.skip_next,
-                              label: l10n.raceWarmUpSkip,
-                              onPressed: () => args.onPlay(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    _SkipBar(onSkip: () => args.onPlay(context)),
                   ],
                 ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O objetivo e o lado do jogador, acima do tabuleiro do aquecimento.
+class _WarmUpTop extends StatelessWidget {
+  const _WarmUpTop({required this.goal, required this.side});
+
+  final GoalStyle goal;
+  final Side side;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      spacing: AppSpacing.sm,
+      children: [
+        InfoChip(
+          key: RaceWarmUpScreen.objectiveKey,
+          label: l10n.raceWarmUpObjective,
+          icon: goal.icon,
+          background: goal.container,
+          foreground: goal.onContainer,
+        ),
+        Text(
+          side == Side.white ? l10n.sideWhite : l10n.sideBlack,
+          key: RaceWarmUpScreen.sideKey,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+      ],
+    );
+  }
+}
+
+/// O botão de pular o aquecimento, fixo embaixo.
+class _SkipBar extends StatelessWidget {
+  const _SkipBar({required this.onSkip});
+
+  final VoidCallback onSkip;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: SafeArea(
+        top: false,
+        child: ActionsBar(
+          children: [
+            GameActionButton(
+              buttonKey: RaceKeys.warmUpSkip,
+              icon: Icons.skip_next,
+              label: context.l10n.raceWarmUpSkip,
+              onPressed: onSkip,
+            ),
+          ],
         ),
       ),
     );

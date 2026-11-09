@@ -91,60 +91,18 @@ class PilaresDemoCatalog extends StatelessWidget {
         children: [
           _Banner(done: done, total: free.length),
           const SizedBox(height: AppSpacing.sm),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, AppSpacing.sm, 4, 0),
-            child: Row(
-              spacing: AppSpacing.sm,
-              children: [
-                Expanded(
-                  child: CoursePartHeader(
-                    label: l10n.trainingChapterLabel(1),
-                    title: free.firstOrNull?.group ?? '',
-                    titleWeight: FontWeight.w500,
-                    padding: EdgeInsets.zero,
-                  ),
-                ),
-                PilaresBadge(text: l10n.venDemoCatalogFree),
-              ],
-            ),
-          ),
+          _FreeChapterHeader(free: free),
           const SizedBox(height: AppSpacing.sm),
           // H-ANI-17: os itens do capítulo grátis entram em ordem; o toque
           // afunda o cartão dentro do CourseItemTile (H-ANI-20).
-          ListaEmOrdem(
-            montar: (itens) => Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.sm,
-              children: itens,
-            ),
-            itens: [
-              for (final lesson in free)
-                CourseItemTile(
-                  key: CourseGuideKeys.chapterLesson(lesson.id),
-                  state: completed.contains(lesson.id)
-                      ? CourseItemState.approved
-                      : lesson.id == nextLessonId
-                      ? CourseItemState.next
-                      : CourseItemState.open,
-                  title: lesson.kind == TrainingLessonKind.test
-                      ? l10n.trainingChapterTestTitle
-                      : lesson.title,
-                  summary: l10n.venDemoCatalogAdFirst,
-                  onTap: () => onLesson(lesson),
-                ),
-            ],
+          _FreeLessons(
+            free: free,
+            completed: completed,
+            nextLessonId: nextLessonId,
+            onLesson: onLesson,
           ),
           const SizedBox(height: AppSpacing.sm),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
-            child: Text(
-              l10n.venDemoCatalogFull.toUpperCase(),
-              style: label?.copyWith(
-                height: 20 / 12,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ),
+          _FullCourseLabel(label: label),
           for (final part in partOrder)
             if (parts[part] case final chapters?) ...[
               Padding(
@@ -311,3 +269,96 @@ class _LockedRow extends StatelessWidget {
 }
 
 final _partIdNumber = RegExp(r'\.p(\d+)$');
+
+/// O título do Capítulo 1 com o selo de grátis.
+class _FreeChapterHeader extends StatelessWidget {
+  const _FreeChapterHeader({required this.free});
+
+  final List<TrainingLesson> free;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, AppSpacing.sm, 4, 0),
+      child: Row(
+        spacing: AppSpacing.sm,
+        children: [
+          Expanded(
+            child: CoursePartHeader(
+              label: l10n.trainingChapterLabel(1),
+              title: free.firstOrNull?.group ?? '',
+              titleWeight: FontWeight.w500,
+              padding: EdgeInsets.zero,
+            ),
+          ),
+          PilaresBadge(text: l10n.venDemoCatalogFree),
+        ],
+      ),
+    );
+  }
+}
+
+/// As lições do capítulo grátis, entrando em ordem.
+class _FreeLessons extends StatelessWidget {
+  const _FreeLessons({
+    required this.free,
+    required this.completed,
+    required this.nextLessonId,
+    required this.onLesson,
+  });
+
+  final List<TrainingLesson> free;
+  final Set<String> completed;
+  final String? nextLessonId;
+  final ValueChanged<TrainingLesson> onLesson;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ListaEmOrdem(
+      montar: (itens) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.sm,
+        children: itens,
+      ),
+      itens: [
+        for (final lesson in free)
+          CourseItemTile(
+            key: CourseGuideKeys.chapterLesson(lesson.id),
+            state: completed.contains(lesson.id)
+                ? CourseItemState.approved
+                : lesson.id == nextLessonId
+                ? CourseItemState.next
+                : CourseItemState.open,
+            title: lesson.kind == TrainingLessonKind.test
+                ? l10n.trainingChapterTestTitle
+                : lesson.title,
+            summary: l10n.venDemoCatalogAdFirst,
+            onTap: () => onLesson(lesson),
+          ),
+      ],
+    );
+  }
+}
+
+/// O rótulo do restante do curso, em caixa alta.
+class _FullCourseLabel extends StatelessWidget {
+  const _FullCourseLabel({required this.label});
+
+  final TextStyle? label;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+      child: Text(
+        l10n.venDemoCatalogFull.toUpperCase(),
+        style: label?.copyWith(height: 20 / 12, color: colors.onSurfaceVariant),
+      ),
+    );
+  }
+}

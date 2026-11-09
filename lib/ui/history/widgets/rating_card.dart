@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
+import '../../../domain/models/player_rating.dart';
 import '../../../domain/use_cases/history_games.dart';
 import '../../../domain/use_cases/rating_period.dart';
 import '../../core/keys/rating_keys.dart';
@@ -37,7 +38,6 @@ class HistoryRatingCard extends StatelessWidget {
     final highlighted = highlightedGame == null
         ? -1
         : entries.indexWhere((entry) => entry.gameId == highlightedGame);
-    final locale = Localizations.localeOf(context).toString();
     return Padding(
       // Padding 16 16 0 (artboard PropV2HistoricoAbaPartidasP360).
       padding: const EdgeInsetsDirectional.fromSTEB(
@@ -87,68 +87,107 @@ class HistoryRatingCard extends StatelessWidget {
                   // O mais alto, como no chess.com.
                   if (highest != null && state.history.length > 1) ...[
                     const SizedBox(width: AppSpacing.sm),
-                    Column(
-                      key: RatingKeys.highest,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          l10n.ratingHighest,
-                          maxLines: 1,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                        Text(
-                          '${highest.rating.rounded}',
-                          maxLines: 1,
-                          style: context.bigNumber?.copyWith(
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                        ),
-                        Text(
-                          DateFormat.yMMMd(locale).format(highest.at.toLocal()),
-                          maxLines: 1,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+                    _HighestRating(highest: highest),
                   ],
                 ],
               ),
               if (state.history.length > 1) ...[
                 const SizedBox(height: AppSpacing.md),
-                AnimatedSwitcher(
-                  duration: AppMotion.of(context).state,
-                  child: entries.length > 1
-                      ? RatingChart(
-                          key: RatingKeys.chart,
-                          highlighted: highlighted < 0 ? null : highlighted,
-                          periodo: period,
-                          ratings: [
-                            for (final entry in entries) entry.rating.rating,
-                          ],
-                        )
-                      : SizedBox(
-                          key: RatingKeys.chartEmpty,
-                          height: 200,
-                          child: Center(
-                            child: Text(
-                              l10n.ratingPeriodEmpty,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                        ),
+                _RatingChartArea(
+                  entries: entries,
+                  highlighted: highlighted,
+                  period: period,
                 ),
               ],
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// O rating mais alto do histórico e o dia em que foi feito.
+class _HighestRating extends StatelessWidget {
+  const _HighestRating({required this.highest});
+
+  final RatingEntry highest;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final locale = Localizations.localeOf(context).toString();
+    return Column(
+      key: RatingKeys.highest,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          l10n.ratingHighest,
+          maxLines: 1,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+        Text(
+          '${highest.rating.rounded}',
+          maxLines: 1,
+          style: context.bigNumber?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+        Text(
+          DateFormat.yMMMd(locale).format(highest.at.toLocal()),
+          maxLines: 1,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// O gráfico do período, ou o aviso de que não há pontos nele.
+class _RatingChartArea extends StatelessWidget {
+  const _RatingChartArea({
+    required this.entries,
+    required this.highlighted,
+    required this.period,
+  });
+
+  final List<RatingEntry> entries;
+  final int highlighted;
+  final RatingPeriod period;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    return AnimatedSwitcher(
+      duration: AppMotion.of(context).state,
+      child: entries.length > 1
+          ? RatingChart(
+              key: RatingKeys.chart,
+              highlighted: highlighted < 0 ? null : highlighted,
+              periodo: period,
+              ratings: [for (final entry in entries) entry.rating.rating],
+            )
+          : SizedBox(
+              key: RatingKeys.chartEmpty,
+              height: 200,
+              child: Center(
+                child: Text(
+                  l10n.ratingPeriodEmpty,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

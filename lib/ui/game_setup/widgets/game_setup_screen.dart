@@ -144,72 +144,93 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                   ),
                 ),
                 Expanded(
-                  child: BoardOptionsPanel(
-                    key: GameSetupKeys.panel,
-                    footer: ActionsFooter(
-                      margin: AppSpacing.xl,
-                      children: [
-                        if (state.ready)
-                          FilledButton(
-                            key: GameSetupKeys.startButton,
-                            onPressed:
-                                state.canStart &&
-                                    (!state.blindGame || voiceAvailable)
-                                ? () => _start(context, state)
-                                : null,
-                            child: Text(l10n.clockStartGame),
-                          ),
-                      ],
-                    ),
-                    child: ListView(
-                      // Margem de 24 como a das folhas (E1.08, P11): 8 aqui e
-                      // 16 em cada bloco.
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.sm,
-                        0,
-                        AppSpacing.sm,
-                        AppSpacing.lg,
-                      ),
-                      children: [
-                        // Lendo a configuração: esqueleto, sem o botão de
-                        // começar (H-PAR-02); depois ele se dissolve (H-ANI-07).
-                        ShimmerConteudo(
-                          carregando: !state.ready,
-                          esqueleto: const SkeletonList(rows: 5),
-                          child: !state.ready
-                              ? const SizedBox.shrink()
-                              : Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    SectionTitle(context.l10n.setupYourSide),
-                                    _SidePicker(state: state),
-                                    SectionTitle(context.l10n.setupOpponent),
-                                    _OpponentPicker(state: state),
-                                    // Às cegas: só contra a máquina e com voz no idioma.
-                                    if (machine) _ModePicker(state: state),
-                                    if (state.blindGame && !voiceAvailable)
-                                      EmptyState(
-                                        message: l10n.blindVoiceRequired,
-                                        actionLabel: l10n.voiceOpenSystem,
-                                        onAction: () =>
-                                            context.push(Routes.settingsVoice),
-                                      ),
-                                    const SizedBox(height: AppSpacing.xl),
-                                    _ClockSection(state: state),
-                                    if (state.attempts.isNotEmpty)
-                                      _History(state: state),
-                                  ],
-                                ),
-                        ),
-                      ],
-                    ),
+                  child: _OptionsPanel(
+                    state: state,
+                    voiceAvailable: voiceAvailable,
+                    machine: machine,
+                    onStart: () => _start(context, state),
                   ),
                 ),
               ],
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+/// O painel das opções, com o botão de começar no pé dele.
+class _OptionsPanel extends StatelessWidget {
+  const _OptionsPanel({
+    required this.state,
+    required this.voiceAvailable,
+    required this.machine,
+    required this.onStart,
+  });
+
+  final GameSetupState state;
+  final bool voiceAvailable;
+  final bool machine;
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return BoardOptionsPanel(
+      key: GameSetupKeys.panel,
+      footer: ActionsFooter(
+        margin: AppSpacing.xl,
+        children: [
+          if (state.ready)
+            FilledButton(
+              key: GameSetupKeys.startButton,
+              onPressed: state.canStart && (!state.blindGame || voiceAvailable)
+                  ? onStart
+                  : null,
+              child: Text(l10n.clockStartGame),
+            ),
+        ],
+      ),
+      child: ListView(
+        // Margem de 24 como a das folhas (E1.08, P11): 8 aqui e
+        // 16 em cada bloco.
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.sm,
+          0,
+          AppSpacing.sm,
+          AppSpacing.lg,
+        ),
+        children: [
+          // Lendo a configuração: esqueleto, sem o botão de
+          // começar (H-PAR-02); depois ele se dissolve (H-ANI-07).
+          ShimmerConteudo(
+            carregando: !state.ready,
+            esqueleto: const SkeletonList(rows: 5),
+            child: !state.ready
+                ? const SizedBox.shrink()
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SectionTitle(context.l10n.setupYourSide),
+                      _SidePicker(state: state),
+                      SectionTitle(context.l10n.setupOpponent),
+                      _OpponentPicker(state: state),
+                      // Às cegas: só contra a máquina e com voz no idioma.
+                      if (machine) _ModePicker(state: state),
+                      if (state.blindGame && !voiceAvailable)
+                        EmptyState(
+                          message: l10n.blindVoiceRequired,
+                          actionLabel: l10n.voiceOpenSystem,
+                          onAction: () => context.push(Routes.settingsVoice),
+                        ),
+                      const SizedBox(height: AppSpacing.xl),
+                      _ClockSection(state: state),
+                      if (state.attempts.isNotEmpty) _History(state: state),
+                    ],
+                  ),
+          ),
+        ],
       ),
     );
   }

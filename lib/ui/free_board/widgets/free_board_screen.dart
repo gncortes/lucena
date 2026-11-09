@@ -340,6 +340,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     context.read<FreeBoardCubit>().play(premove);
   }
 
+  // O personagem tem nome: avisa como ajustar a fala.
+  void _showSpeechHint(BuildContext context, TalkState state) {
+    final name = state.character?.name;
+    if (name == null) return;
+    showLucenaSnackBar(
+      context,
+      context.l10n.gameSpeechHint(name),
+      key: FreeBoardKeys.speechHint,
+      action: SnackBarAction(
+        key: FreeBoardKeys.speechHintAdjust,
+        label: context.l10n.gameSpeechAdjust,
+        onPressed: () => showGameSoundDialog(context),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<FreeBoardCubit>();
@@ -354,20 +370,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     return BlocListener<TalkCubit, TalkState>(
       listenWhen: (previous, current) =>
           previous.speechHintVersion != current.speechHintVersion,
-      listener: (context, state) {
-        final name = state.character?.name;
-        if (name == null) return;
-        showLucenaSnackBar(
-          context,
-          context.l10n.gameSpeechHint(name),
-          key: FreeBoardKeys.speechHint,
-          action: SnackBarAction(
-            key: FreeBoardKeys.speechHintAdjust,
-            label: context.l10n.gameSpeechAdjust,
-            onPressed: () => showGameSoundDialog(context),
-          ),
-        );
-      },
+      listener: _showSpeechHint,
       child: BlocListener<FreeBoardCubit, FreeBoardState>(
         // H-PAR-18: depois da 3ª falha seguida do adversário, a folha sem ✕.
         listenWhen: (previous, current) =>
@@ -432,34 +435,12 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                         previous.machineThinking != current.machineThinking,
                     listener: (context, state) => _onStateChanged(state),
                     builder: (context, state) {
-                      // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-                      // guarda a partida. No meio de um speedrun, sair encerra a
-                      // tentativa: antes, a confirmação.
-                      final speedrunOpen =
-                          state.mode.isSpeedrun &&
-                          state.end == null &&
-                          !_quitting;
-                      // No meio de qualquer outra partida, pergunta antes de
-                      // sair (a partida fica salva para retomar; achado A2,
-                      // estendido a todas as partidas pelo Gabriel em 08/11).
-                      final gameOpen =
-                          !state.mode.isSpeedrun &&
-                          state.ready &&
-                          state.end == null &&
-                          !_quitting;
-                      return PopScope(
-                        canPop: !speedrunOpen && !gameOpen,
-                        onPopInvokedWithResult: (didPop, _) {
-                          if (didPop) {
-                            if (!state.mode.isSpeedrun) {
-                              unawaited(cubit.leave());
-                            }
-                          } else if (speedrunOpen) {
-                            unawaited(_confirmQuitSpeedrun(cubit));
-                          } else {
-                            unawaited(_confirmLeave(cubit));
-                          }
-                        },
+                      return _LeaveGuard(
+                        state: state,
+                        quitting: _quitting,
+                        onLeave: cubit.leave,
+                        onQuitSpeedrun: () => _confirmQuitSpeedrun(cubit),
+                        onConfirmLeave: () => _confirmLeave(cubit),
                         child: _scaffold(
                           context,
                           cubit,
@@ -1150,6 +1131,51 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   }
 
   /// O menor tabuleiro com o espaço fixo da fala, em fração da largura.
+}
+
+/// Sair da tela pela seta ou pelo botão de voltar para o relógio e guarda a
+/// partida. No meio de um speedrun, sair encerra a tentativa e, em qualquer
+/// outra partida, pergunta antes (a partida fica salva para retomar; achado
+/// A2, estendido a todas as partidas pelo Gabriel em 08/11).
+class _LeaveGuard extends StatelessWidget {
+  const _LeaveGuard({
+    required this.state,
+    required this.quitting,
+    required this.onLeave,
+    required this.onQuitSpeedrun,
+    required this.onConfirmLeave,
+    required this.child,
+  });
+
+  final FreeBoardState state;
+  final bool quitting;
+  final Future<void> Function() onLeave;
+  final Future<void> Function() onQuitSpeedrun;
+  final Future<void> Function() onConfirmLeave;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final speedrunOpen =
+        state.mode.isSpeedrun && state.end == null && !quitting;
+    final gameOpen =
+        !state.mode.isSpeedrun && state.ready && state.end == null && !quitting;
+    return PopScope(
+      canPop: !speedrunOpen && !gameOpen,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          if (!state.mode.isSpeedrun) {
+            unawaited(onLeave());
+          }
+        } else if (speedrunOpen) {
+          unawaited(onQuitSpeedrun());
+        } else {
+          unawaited(onConfirmLeave());
+        }
+      },
+      child: child,
+    );
+  }
 }
 
 /// O rodapé da partida terminada contra a máquina: só "Ver o resultado"

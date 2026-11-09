@@ -759,6 +759,55 @@ class _EvalBar extends StatelessWidget {
   }
 }
 
+/// A caixa da explicação do lance: ícone, título, subtítulo e o fim da linha.
+class _ExplanationBox extends StatelessWidget {
+  const _ExplanationBox({
+    required this.leading,
+    required this.title,
+    required this.subtitle,
+    required this.trailing,
+  });
+
+  final Widget? leading;
+  final Widget title;
+  final Widget? subtitle;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final leading = this.leading;
+    return Container(
+      key: GameDetailsKeys.explanation,
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      child: Row(
+        children: [
+          if (leading != null) ...[
+            leading,
+            const SizedBox(width: AppSpacing.md),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [title, ?subtitle],
+            ),
+          ),
+          ?trailing,
+        ],
+      ),
+    );
+  }
+}
+
 /// Sob o tabuleiro: o lance mostrado, a qualidade e a avaliação; depois de
 /// um erro, o lance que era melhor.
 class MoveExplanation extends StatelessWidget {
@@ -866,34 +915,11 @@ class MoveExplanation extends StatelessWidget {
         }
       }
     }
-    return Container(
-      key: GameDetailsKeys.explanation,
-      margin: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.md,
-        AppSpacing.lg,
-        0,
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.md,
-      ),
-      child: Row(
-        children: [
-          if (leading != null) ...[
-            leading,
-            const SizedBox(width: AppSpacing.md),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [title, ?subtitle],
-            ),
-          ),
-          ?trailing,
-        ],
-      ),
+    return _ExplanationBox(
+      leading: leading,
+      title: title,
+      subtitle: subtitle,
+      trailing: trailing,
     );
   }
 
@@ -1096,6 +1122,144 @@ class ReviewNavigation extends StatelessWidget {
 
 enum _Export { lichess, chessCom, fen, pgn }
 
+/// Uma linha da engine: a avaliação e os primeiros lances; tocar nela joga a
+/// linha no tabuleiro.
+class _EngineLineRow extends StatelessWidget {
+  const _EngineLineRow({
+    required this.index,
+    required this.line,
+    required this.position,
+    required this.locale,
+  });
+
+  final int index;
+  final EngineLine line;
+  final Position position;
+  final String locale;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      key: GameDetailsKeys.engineLine(index),
+      borderRadius: BorderRadius.circular(AppShape.small),
+      onTap: () {
+        context.read<GameDetailsCubit>().playLine(line.moves);
+        DefaultTabController.maybeOf(context)?.animateTo(1);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Row(
+          children: [
+            Container(
+              width: 58,
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: line.score.whiteWinPercent >= 50
+                    ? AppColors.paper
+                    : AppColors.chessBlackColor,
+                borderRadius: BorderRadius.circular(AppShape.small),
+              ),
+              child: Text(
+                formatScore(line.score, locale),
+                style: TextStyle(
+                  fontWeight: AppWeight.heavy,
+                  color: line.score.whiteWinPercent >= 50
+                      ? AppColors.ink
+                      : AppColors.white,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: SanText(
+                _EngineLinesPanelState._numbered(
+                  position,
+                  GameRules.sanLine(position, line.moves, max: 8),
+                ),
+                style: theme.textTheme.bodyMedium,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A nota do lance forçado: o único lance legal da posição.
+class _ForcedNote extends StatelessWidget {
+  const _ForcedNote({required this.position, required this.moves});
+
+  final Position position;
+  final List<String> moves;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      key: GameDetailsKeys.forcedNote,
+      padding: const EdgeInsets.only(top: AppSpacing.xs),
+      child: Row(
+        children: [
+          Icon(
+            Icons.lock,
+            size: AppIconSize.button,
+            color: colors.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              l10n.partidaMotorForcado(
+                GameRules.sanLine(position, moves, max: 1).firstOrNull ?? '',
+              ),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A dica sob as linhas da engine: tocar numa linha a joga no tabuleiro.
+class _EngineHint extends StatelessWidget {
+  const _EngineHint();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    return Row(
+      key: GameDetailsKeys.engineHint,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          Icons.touch_app,
+          size: AppIconSize.button,
+          color: colors.onSurfaceVariant,
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Text(
+            l10n.partidaMotorDica,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// Com a engine ligada: as melhores linhas da posição mostrada, cada uma com
 /// a avaliação e os primeiros lances.
 class EngineLinesPanel extends StatefulWidget {
@@ -1146,84 +1310,14 @@ class _EngineLinesPanelState extends State<EngineLinesPanel> {
     } else {
       children = [
         for (final (index, line) in lines.indexed)
-          InkWell(
-            key: GameDetailsKeys.engineLine(index),
-            borderRadius: BorderRadius.circular(AppShape.small),
-            onTap: () {
-              context.read<GameDetailsCubit>().playLine(line.moves);
-              DefaultTabController.maybeOf(context)?.animateTo(1);
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-              child: Row(
-                children: [
-                  Container(
-                    width: 58,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.xs,
-                    ),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: line.score.whiteWinPercent >= 50
-                          ? AppColors.paper
-                          : AppColors.chessBlackColor,
-                      borderRadius: BorderRadius.circular(AppShape.small),
-                    ),
-                    child: Text(
-                      formatScore(line.score, locale),
-                      style: TextStyle(
-                        fontWeight: AppWeight.heavy,
-                        color: line.score.whiteWinPercent >= 50
-                            ? AppColors.ink
-                            : AppColors.white,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: SanText(
-                      _numbered(
-                        position,
-                        GameRules.sanLine(position, line.moves, max: 8),
-                      ),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          _EngineLineRow(
+            index: index,
+            line: line,
+            position: position,
+            locale: locale,
           ),
         if (forced && lines.isNotEmpty)
-          Padding(
-            key: GameDetailsKeys.forcedNote,
-            padding: const EdgeInsets.only(top: AppSpacing.xs),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.lock,
-                  size: AppIconSize.button,
-                  color: colors.onSurfaceVariant,
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    l10n.partidaMotorForcado(
-                      GameRules.sanLine(
-                            position,
-                            lines.first.moves,
-                            max: 1,
-                          ).firstOrNull ??
-                          '',
-                    ),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _ForcedNote(position: position, moves: lines.first.moves),
       ];
     }
     return Card(
@@ -1282,26 +1376,7 @@ class _EngineLinesPanelState extends State<EngineLinesPanel> {
             const SizedBox(height: AppSpacing.xs),
             ...children,
             const SizedBox(height: AppSpacing.sm),
-            Row(
-              key: GameDetailsKeys.engineHint,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.touch_app,
-                  size: AppIconSize.button,
-                  color: colors.onSurfaceVariant,
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    l10n.partidaMotorDica,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            const _EngineHint(),
           ],
         ),
       ),

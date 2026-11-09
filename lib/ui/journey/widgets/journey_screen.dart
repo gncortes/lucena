@@ -5,6 +5,7 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/character.dart';
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../core/motion/shimmer_conteudo.dart';
@@ -129,37 +130,7 @@ class _Summary extends StatelessWidget {
     final current = progress.current;
     final next = progress.next;
     if (current == null) {
-      return Card(
-        margin: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.sm,
-          AppSpacing.lg,
-          AppSpacing.sm,
-        ),
-        color: colors.primaryContainer,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            children: [
-              Icon(
-                Icons.hiking_rounded,
-                size: AppIconSize.large,
-                color: colors.primary,
-              ),
-              const SizedBox(width: AppSpacing.lg),
-              Expanded(
-                child: Text(
-                  l10n.journeyFinished,
-                  key: JourneyKeys.current,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: colors.onPrimaryContainer,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const _FinishedCard();
     }
     final opponent = current.rung.opponent;
     final character = opponentCharacter(characters, opponent);
@@ -181,43 +152,10 @@ class _Summary extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                if (character != null) ...[
-                  CharacterAvatar(
-                    character: character,
-                    size: CharacterAvatar.versus,
-                  ),
-                  const SizedBox(width: AppSpacing.lg),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.journeyNowFacing,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onPrimaryContainer,
-                        ),
-                      ),
-                      Text(
-                        opponentName(l10n, characters, opponent),
-                        key: JourneyKeys.current,
-                        style: context.bigNumber?.copyWith(
-                          color: colors.onPrimaryContainer,
-                        ),
-                      ),
-                      if (opponent.level case final level?)
-                        Text(
-                          l10n.journeyOpponentLevel('$level'),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onPrimaryContainer,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+            _CurrentOpponent(
+              character: character,
+              opponent: opponent,
+              characters: characters,
             ),
             const SizedBox(height: AppSpacing.lg),
             // H-ANI-13/18: a barra enche e os desafios feitos contam junto.
@@ -238,40 +176,168 @@ class _Summary extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            Row(
-              children: [
-                if (next != null) ...[
-                  if (nextCharacter != null) ...[
-                    CharacterAvatar(
-                      character: nextCharacter,
-                      size: CharacterAvatar.mini,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                  ],
-                  Expanded(
-                    child: Text(
-                      l10n.journeyThen(
-                        opponentName(l10n, characters, next.rung.opponent),
-                      ),
-                      key: JourneyKeys.next,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
-                ] else
-                  const Spacer(),
-                const SizedBox(width: AppSpacing.sm),
-                FilledButton(
-                  key: JourneyKeys.continueButton,
-                  onPressed: () => _openRung(context, current.rung.id),
-                  child: Text(l10n.homeContinue),
-                ),
-              ],
+            _NextAndContinue(
+              next: next,
+              nextCharacter: nextCharacter,
+              characters: characters,
+              onContinue: () => _openRung(context, current.rung.id),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// O cartão do alto quando a jornada acabou.
+class _FinishedCard extends StatelessWidget {
+  const _FinishedCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Card(
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
+      color: colors.primaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Row(
+          children: [
+            Icon(
+              Icons.hiking_rounded,
+              size: AppIconSize.large,
+              color: colors.primary,
+            ),
+            const SizedBox(width: AppSpacing.lg),
+            Expanded(
+              child: Text(
+                context.l10n.journeyFinished,
+                key: JourneyKeys.current,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: colors.onPrimaryContainer,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O retrato, o nome e o nível do adversário atual.
+class _CurrentOpponent extends StatelessWidget {
+  const _CurrentOpponent({
+    required this.character,
+    required this.opponent,
+    required this.characters,
+  });
+
+  final Character? character;
+  final OpponentRef opponent;
+  final List<Character> characters;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final character = this.character;
+    return Row(
+      children: [
+        if (character != null) ...[
+          CharacterAvatar(character: character, size: CharacterAvatar.versus),
+          const SizedBox(width: AppSpacing.lg),
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.journeyNowFacing,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colors.onPrimaryContainer,
+                ),
+              ),
+              Text(
+                opponentName(l10n, characters, opponent),
+                key: JourneyKeys.current,
+                style: context.bigNumber?.copyWith(
+                  color: colors.onPrimaryContainer,
+                ),
+              ),
+              if (opponent.level case final level?)
+                Text(
+                  l10n.journeyOpponentLevel('$level'),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onPrimaryContainer,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Quem vem depois e o botão de continuar.
+class _NextAndContinue extends StatelessWidget {
+  const _NextAndContinue({
+    required this.next,
+    required this.nextCharacter,
+    required this.characters,
+    required this.onContinue,
+  });
+
+  final RungProgress? next;
+  final Character? nextCharacter;
+  final List<Character> characters;
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final next = this.next;
+    final nextCharacter = this.nextCharacter;
+    return Row(
+      children: [
+        if (next != null) ...[
+          if (nextCharacter != null) ...[
+            CharacterAvatar(
+              character: nextCharacter,
+              size: CharacterAvatar.mini,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+          ],
+          Expanded(
+            child: Text(
+              l10n.journeyThen(
+                opponentName(l10n, characters, next.rung.opponent),
+              ),
+              key: JourneyKeys.next,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onPrimaryContainer,
+              ),
+            ),
+          ),
+        ] else
+          const Spacer(),
+        const SizedBox(width: AppSpacing.sm),
+        FilledButton(
+          key: JourneyKeys.continueButton,
+          onPressed: onContinue,
+          child: Text(l10n.homeContinue),
+        ),
+      ],
     );
   }
 }

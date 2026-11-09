@@ -26,74 +26,7 @@ class AllModesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    ({String id, IconData icon, String title, String body, String route}) path(
-      HomePath path,
-      String body,
-    ) => (
-      id: path.name,
-      icon: path.icon,
-      title: path.title(l10n),
-      body: body,
-      route: path.route,
-    );
-    final sections = [
-      (
-        l10n.allModesLearnSection,
-        [
-          (
-            id: 'pilares',
-            icon: Icons.auto_stories_outlined,
-            title: l10n.trainingPilaresTitle,
-            body: l10n.partidaModosPilaresBody,
-            route: Routes.pilaresSale,
-          ),
-          (
-            id: HomePath.stars.name,
-            icon: HomePath.stars.icon,
-            title: l10n.starChallengesTitle,
-            body: l10n.homeShortcutStarsBody,
-            route: HomePath.stars.route,
-          ),
-        ],
-      ),
-      (
-        l10n.allModesPlaySection,
-        [
-          path(HomePath.journey, l10n.partidaModosJourneyBody),
-          path(HomePath.train, l10n.partidaModosTrainBody),
-          path(HomePath.speedrun, l10n.partidaModosSpeedrunBody),
-          path(HomePath.race, l10n.allModesRaceBody),
-          // Às cegas é uma modalidade da partida: escolhe-se o final e,
-          // na configuração dele, "Às cegas".
-          (
-            id: 'blind',
-            icon: Icons.record_voice_over_outlined,
-            title: l10n.blindTitle,
-            body: l10n.partidaModosBlindBody,
-            route: Routes.blindEntry,
-          ),
-        ],
-      ),
-      (
-        l10n.homeTools,
-        [
-          (
-            id: 'freeBoard',
-            icon: Icons.grid_on_outlined,
-            title: l10n.freeBoardTitle,
-            body: l10n.partidaModosFreeBoardBody,
-            route: Routes.freeBoard,
-          ),
-          (
-            id: 'custom',
-            icon: Icons.edit_outlined,
-            title: l10n.customPositionTitle,
-            body: l10n.partidaModosCustomBody,
-            route: Routes.customPosition,
-          ),
-        ],
-      ),
-    ];
+    final sections = _sections(l10n);
     var index = 0;
     return Scaffold(
       key: AllModesKeys.screen,
@@ -166,6 +99,87 @@ class AllModesScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Um modo da lista: o que o cartão mostra e a rota que ele abre.
+typedef _Mode = ({
+  String id,
+  IconData icon,
+  String title,
+  String body,
+  String route,
+});
+
+/// Os modos de cada seção, na ordem em que aparecem.
+List<(String, List<_Mode>)> _sections(AppLocalizations l10n) {
+  ({String id, IconData icon, String title, String body, String route}) path(
+    HomePath path,
+    String body,
+  ) => (
+    id: path.name,
+    icon: path.icon,
+    title: path.title(l10n),
+    body: body,
+    route: path.route,
+  );
+  return [
+    (
+      l10n.allModesLearnSection,
+      [
+        (
+          id: 'pilares',
+          icon: Icons.auto_stories_outlined,
+          title: l10n.trainingPilaresTitle,
+          body: l10n.partidaModosPilaresBody,
+          route: Routes.pilaresSale,
+        ),
+        (
+          id: HomePath.stars.name,
+          icon: HomePath.stars.icon,
+          title: l10n.starChallengesTitle,
+          body: l10n.homeShortcutStarsBody,
+          route: HomePath.stars.route,
+        ),
+      ],
+    ),
+    (
+      l10n.allModesPlaySection,
+      [
+        path(HomePath.journey, l10n.partidaModosJourneyBody),
+        path(HomePath.train, l10n.partidaModosTrainBody),
+        path(HomePath.speedrun, l10n.partidaModosSpeedrunBody),
+        path(HomePath.race, l10n.allModesRaceBody),
+        // Às cegas é uma modalidade da partida: escolhe-se o final e,
+        // na configuração dele, "Às cegas".
+        (
+          id: 'blind',
+          icon: Icons.record_voice_over_outlined,
+          title: l10n.blindTitle,
+          body: l10n.partidaModosBlindBody,
+          route: Routes.blindEntry,
+        ),
+      ],
+    ),
+    (
+      l10n.homeTools,
+      [
+        (
+          id: 'freeBoard',
+          icon: Icons.grid_on_outlined,
+          title: l10n.freeBoardTitle,
+          body: l10n.partidaModosFreeBoardBody,
+          route: Routes.freeBoard,
+        ),
+        (
+          id: 'custom',
+          icon: Icons.edit_outlined,
+          title: l10n.customPositionTitle,
+          body: l10n.partidaModosCustomBody,
+          route: Routes.customPosition,
+        ),
+      ],
+    ),
+  ];
 }
 
 /// H-ANI-04: a venda (entrada única) cresce do cartão que a abre.

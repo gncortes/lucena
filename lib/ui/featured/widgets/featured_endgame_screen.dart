@@ -513,29 +513,9 @@ class _ChoiceSheetState extends State<_ChoiceSheet> {
                 const SizedBox(height: AppSpacing.lg),
                 Text(l10n.featuredClock, style: context.sectionTitle),
                 const SizedBox(height: AppSpacing.sm),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: [
-                    for (final clock in FeaturedLabels.clocks)
-                      ChoiceChip(
-                        key: FeaturedKeys.choiceClock(clock ?? 'none'),
-                        materialTapTargetSize: AppChip.tapTarget,
-                        visualDensity: AppChip.density,
-                        label: Text(
-                          clock == null
-                              ? l10n.featuredNoClock
-                              : FeaturedLabels.clockCode(clock),
-                        ),
-                        selected: _choice.clock == clock,
-                        onSelected: (_) => setState(
-                          () => _choice = _choice.copyWith(
-                            clock: clock,
-                            noClock: clock == null,
-                          ),
-                        ),
-                      ),
-                  ],
+                _ClockChips(
+                  choice: _choice,
+                  onChanged: (choice) => setState(() => _choice = choice),
                 ),
                 const SizedBox(height: AppSpacing.lg),
               ],
@@ -552,6 +532,40 @@ class _ChoiceSheetState extends State<_ChoiceSheet> {
             ),
           ],
         ),
+      ],
+    );
+  }
+}
+
+/// Os relógios da folha, um chip para cada.
+class _ClockChips extends StatelessWidget {
+  const _ClockChips({required this.choice, required this.onChanged});
+
+  final FeaturedChoice choice;
+  final ValueChanged<FeaturedChoice> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: [
+        for (final clock in FeaturedLabels.clocks)
+          ChoiceChip(
+            key: FeaturedKeys.choiceClock(clock ?? 'none'),
+            materialTapTargetSize: AppChip.tapTarget,
+            visualDensity: AppChip.density,
+            label: Text(
+              clock == null
+                  ? l10n.featuredNoClock
+                  : FeaturedLabels.clockCode(clock),
+            ),
+            selected: choice.clock == clock,
+            onSelected: (_) => onChanged(
+              choice.copyWith(clock: clock, noClock: clock == null),
+            ),
+          ),
       ],
     );
   }

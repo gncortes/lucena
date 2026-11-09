@@ -199,44 +199,7 @@ class _DataViewState extends State<_DataView> {
               helper: l10n.accountNicknameHelp,
             ),
             const SizedBox(height: AppSpacing.lg),
-            ProfileRowGroup(
-              children: [
-                ProfileRow(
-                  key: ProfileKeys.rowCountry,
-                  icon: Icons.public,
-                  title: l10n.profileCountry,
-                  value: profileCountryValue(
-                    l10n,
-                    profile?.country,
-                    phone: context.read<ProfileCubit>().phoneCountry,
-                  ),
-                  onTap: () => context.push(Routes.country),
-                ),
-                if (edit)
-                  ProfileRow(
-                    key: ProfileKeys.rowLanguage,
-                    icon: Icons.language,
-                    title: l10n.settingsLanguage,
-                    value: profileLanguageName(context),
-                    onTap: () => context.push(Routes.settingsLanguage),
-                  )
-                else
-                  ProfileRow(
-                    key: ProfileKeys.rowRegion,
-                    icon: Icons.location_on,
-                    title: l10n.profileRegion,
-                    value:
-                        regionLabel(
-                          l10n,
-                          country: profile?.country,
-                          state: profile?.state,
-                          city: profile?.city,
-                        ) ??
-                        l10n.profileRegionNone,
-                    onTap: () => showRegionSheet(context),
-                  ),
-              ],
-            ),
+            _DataRows(edit: edit, profile: profile),
             if (widget.welcome)
               _SavedNote(
                 key: AccountKeys.savedBanner,
@@ -381,6 +344,57 @@ class _SavedNote extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// As linhas de país e idioma (ou região) do perfil.
+class _DataRows extends StatelessWidget {
+  const _DataRows({required this.edit, required this.profile});
+
+  final bool edit;
+  final UserProfile? profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ProfileRowGroup(
+      children: [
+        ProfileRow(
+          key: ProfileKeys.rowCountry,
+          icon: Icons.public,
+          title: l10n.profileCountry,
+          value: profileCountryValue(
+            l10n,
+            profile?.country,
+            phone: context.read<ProfileCubit>().phoneCountry,
+          ),
+          onTap: () => context.push(Routes.country),
+        ),
+        if (edit)
+          ProfileRow(
+            key: ProfileKeys.rowLanguage,
+            icon: Icons.language,
+            title: l10n.settingsLanguage,
+            value: profileLanguageName(context),
+            onTap: () => context.push(Routes.settingsLanguage),
+          )
+        else
+          ProfileRow(
+            key: ProfileKeys.rowRegion,
+            icon: Icons.location_on,
+            title: l10n.profileRegion,
+            value:
+                regionLabel(
+                  l10n,
+                  country: profile?.country,
+                  state: profile?.state,
+                  city: profile?.city,
+                ) ??
+                l10n.profileRegionNone,
+            onTap: () => showRegionSheet(context),
+          ),
+      ],
     );
   }
 }

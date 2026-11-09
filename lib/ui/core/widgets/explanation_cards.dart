@@ -538,50 +538,15 @@ class _Line extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (hasRow)
-          Row(
-            children: [
-              Expanded(
-                child: MergeSemantics(
-                  child: Semantics(
-                    selected: selected,
-                    // Variante única (V2): o leitor lê só o lance, sem "A, ...".
-                    label: owner.widget.lessonV2 && principal && !letter
-                        ? null
-                        : '${variation.label}, ${variation.outcomeText ?? owner._outcome(context, variation.outcome)}',
-                    child: Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: TextButton(
-                        key: ExplanationKeys.variation(variation.id),
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size(48, 48),
-                          padding: EdgeInsets.zero,
-                          alignment: AlignmentDirectional.centerStart,
-                          tapTargetSize: MaterialTapTargetSize.padded,
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            height: 1.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        onPressed: owner.widget.onVariation == null
-                            ? null
-                            : () => owner._select(variation),
-                        child: owner.widget.lessonV2 && labelled
-                            ? owner._v2Title(context, variation, letter: letter)
-                            : Text(
-                                labelled
-                                    ? principal
-                                          ? '${variation.label}) ${variation.movesSan.first}'
-                                          : variation.movesSan.first
-                                    : variation.label,
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              if (expandable) _Chevron(owner, variation.id, expanded),
-            ],
+          _LineHeader(
+            owner,
+            variation,
+            principal: principal,
+            letter: letter,
+            labelled: labelled,
+            selected: selected,
+            expandable: expandable,
+            expanded: expanded,
           ),
         if (showText && texts.isNotEmpty)
           Padding(
@@ -630,6 +595,78 @@ class _Line extends StatelessWidget {
   }
 }
 
+/// A linha do lance: o botão com o título e, se expansível, o chevron.
+class _LineHeader extends StatelessWidget {
+  const _LineHeader(
+    this.owner,
+    this.variation, {
+    required this.principal,
+    required this.letter,
+    required this.labelled,
+    required this.selected,
+    required this.expandable,
+    required this.expanded,
+  });
+
+  final _ExplanationCardsState owner;
+  final ExplanationVariation variation;
+  final bool principal;
+  final bool letter;
+  final bool labelled;
+  final bool selected;
+  final bool expandable;
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: MergeSemantics(
+            child: Semantics(
+              selected: selected,
+              // Variante única (V2): o leitor lê só o lance, sem "A, ...".
+              label: owner.widget.lessonV2 && principal && !letter
+                  ? null
+                  : '${variation.label}, ${variation.outcomeText ?? owner._outcome(context, variation.outcome)}',
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton(
+                  key: ExplanationKeys.variation(variation.id),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    padding: EdgeInsets.zero,
+                    alignment: AlignmentDirectional.centerStart,
+                    tapTargetSize: MaterialTapTargetSize.padded,
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  onPressed: owner.widget.onVariation == null
+                      ? null
+                      : () => owner._select(variation),
+                  child: owner.widget.lessonV2 && labelled
+                      ? owner._v2Title(context, variation, letter: letter)
+                      : Text(
+                          labelled
+                              ? principal
+                                    ? '${variation.label}) ${variation.movesSan.first}'
+                                    : variation.movesSan.first
+                              : variation.label,
+                        ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (expandable) _Chevron(owner, variation.id, expanded),
+      ],
+    );
+  }
+}
+
 class _ParagraphWithChevron extends StatelessWidget {
   const _ParagraphWithChevron(this.owner, this.block);
 
@@ -674,8 +711,6 @@ class _LegacyCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final cursor = owner._cursor;
     // Old lessons supply only context, without authored sections. Preserve the
     // compact preview with one bubble per explanation.
     if (owner.widget.payload.positionId.isEmpty &&
@@ -698,138 +733,159 @@ class _LegacyCards extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final block in owner.widget.payload.explanations)
-          Card(
-            key: ExplanationKeys.block(block.id),
-            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+          _LegacyBlockCard(owner, block),
+      ],
+    );
+  }
+}
+
+/// O cartão de um bloco das aulas antigas: seletores, texto e navegação.
+class _LegacyBlockCard extends StatelessWidget {
+  const _LegacyBlockCard(this.owner, this.block);
+
+  final _ExplanationCardsState owner;
+  final ExplanationBlock block;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final cursor = owner._cursor;
+    return Card(
+      key: ExplanationKeys.block(block.id),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              key: ExplanationKeys.header(block.id),
+              block.title.isEmpty
+                  ? owner._title(context, block.kind)
+                  : block.title,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            if (block.variations.isNotEmpty)
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [
-                  Text(
-                    key: ExplanationKeys.header(block.id),
-                    block.title.isEmpty
-                        ? owner._title(context, block.kind)
-                        : block.title,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  if (block.variations.isNotEmpty)
-                    Wrap(
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.sm,
-                      children: [
-                        for (final variation in block.variations)
-                          if ((variation.parentId == null ||
-                                  variation.parentId == cursor?.variation.id ||
-                                  variation.id == cursor?.variation.id) &&
-                              owner._showSelector(block, variation))
-                            Semantics(
-                              selected: cursor?.variation.id == variation.id,
-                              label:
-                                  '${variation.label}, ${variation.outcomeText ?? owner._outcome(context, variation.outcome)}',
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  minHeight: 44,
-                                  minWidth: 44,
-                                ),
-                                child: OutlinedButton(
-                                  key: ExplanationKeys.variation(variation.id),
-                                  style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size(44, 44),
-                                    backgroundColor:
-                                        cursor?.variation.id == variation.id
-                                        ? colors.primaryContainer
-                                        : null,
-                                  ),
-                                  onPressed: owner.widget.onVariation == null
-                                      ? null
-                                      : () => owner._select(variation),
-                                  child: Text(variation.label),
-                                ),
-                              ),
+                  for (final variation in block.variations)
+                    if ((variation.parentId == null ||
+                            variation.parentId == cursor?.variation.id ||
+                            variation.id == cursor?.variation.id) &&
+                        owner._showSelector(block, variation))
+                      Semantics(
+                        selected: cursor?.variation.id == variation.id,
+                        label:
+                            '${variation.label}, ${variation.outcomeText ?? owner._outcome(context, variation.outcome)}',
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minHeight: 44,
+                            minWidth: 44,
+                          ),
+                          child: OutlinedButton(
+                            key: ExplanationKeys.variation(variation.id),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(44, 44),
+                              backgroundColor:
+                                  cursor?.variation.id == variation.id
+                                  ? colors.primaryContainer
+                                  : null,
                             ),
-                      ],
-                    ),
-                  if (owner._texts(block).isNotEmpty)
-                    Padding(
-                      key: ExplanationKeys.paragraph(block.id, 0),
-                      padding: const EdgeInsets.only(top: AppSpacing.sm),
-                      child: _Body(owner, block),
-                    ),
-                  if (owner._unavailable != null &&
-                      block.variations.any((v) => v.id == owner._unavailable))
-                    Text(
-                      context.l10n.explanationUnavailable,
-                      key: ExplanationKeys.unavailable,
-                    ),
-                  if (cursor != null &&
-                      block.variations.any(
-                        (v) => v.id == cursor.variation.id,
-                      )) ...[
-                    if (cursor.variation.parentId != null)
-                      TextButton.icon(
-                        key: ExplanationKeys.parent,
-                        onPressed: () => owner._move(
-                          owner.widget.payload.parentCursor(cursor.variation),
+                            onPressed: owner.widget.onVariation == null
+                                ? null
+                                : () => owner._select(variation),
+                            child: Text(variation.label),
+                          ),
                         ),
-                        icon: const Icon(Icons.chevron_left),
-                        label: Text(context.l10n.explanationParent),
                       ),
-                    Text(
-                      cursor.variation.outcomeText ??
-                          owner._outcome(context, cursor.variation.outcome),
-                    ),
-                    if (cursor.moves.length > 1)
-                      Wrap(
-                        spacing: AppSpacing.xs,
-                        children: [
-                          IconButton(
-                            key: ExplanationKeys.first,
-                            tooltip: context.l10n.explanationFirst,
-                            onPressed: cursor.canPrevious
-                                ? () => owner._move(cursor.at(0))
-                                : null,
-                            icon: const Icon(Icons.first_page),
-                          ),
-                          IconButton(
-                            key: ExplanationKeys.previous,
-                            tooltip: context.l10n.explanationPrevious,
-                            onPressed: cursor.canPrevious
-                                ? () => owner._move(cursor.previous())
-                                : null,
-                            icon: const Icon(Icons.chevron_left),
-                          ),
-                          IconButton(
-                            key: ExplanationKeys.next,
-                            tooltip: context.l10n.explanationNext,
-                            onPressed: cursor.canNext
-                                ? () => owner._move(cursor.next())
-                                : null,
-                            icon: const Icon(Icons.chevron_right),
-                          ),
-                          IconButton(
-                            key: ExplanationKeys.last,
-                            tooltip: context.l10n.explanationLast,
-                            onPressed: cursor.canNext
-                                ? () => owner._move(
-                                    cursor.at(cursor.moves.length),
-                                  )
-                                : null,
-                            icon: const Icon(Icons.last_page),
-                          ),
-                        ],
-                      ),
-                    TextButton.icon(
-                      key: ExplanationKeys.restore,
-                      onPressed: () => owner._move(null),
-                      icon: const Icon(Icons.undo),
-                      label: Text(context.l10n.explanationReturn),
-                    ),
-                  ],
                 ],
               ),
-            ),
-          ),
+            if (owner._texts(block).isNotEmpty)
+              Padding(
+                key: ExplanationKeys.paragraph(block.id, 0),
+                padding: const EdgeInsets.only(top: AppSpacing.sm),
+                child: _Body(owner, block),
+              ),
+            if (owner._unavailable != null &&
+                block.variations.any((v) => v.id == owner._unavailable))
+              Text(
+                context.l10n.explanationUnavailable,
+                key: ExplanationKeys.unavailable,
+              ),
+            if (cursor != null &&
+                block.variations.any((v) => v.id == cursor.variation.id)) ...[
+              if (cursor.variation.parentId != null)
+                TextButton.icon(
+                  key: ExplanationKeys.parent,
+                  onPressed: () => owner._move(
+                    owner.widget.payload.parentCursor(cursor.variation),
+                  ),
+                  icon: const Icon(Icons.chevron_left),
+                  label: Text(context.l10n.explanationParent),
+                ),
+              Text(
+                cursor.variation.outcomeText ??
+                    owner._outcome(context, cursor.variation.outcome),
+              ),
+              if (cursor.moves.length > 1) _LegacyNav(owner, cursor),
+              TextButton.icon(
+                key: ExplanationKeys.restore,
+                onPressed: () => owner._move(null),
+                icon: const Icon(Icons.undo),
+                label: Text(context.l10n.explanationReturn),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Primeiro, anterior, próximo e último lance da variação aberta.
+class _LegacyNav extends StatelessWidget {
+  const _LegacyNav(this.owner, this.cursor);
+
+  final _ExplanationCardsState owner;
+  final VariationCursor cursor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: AppSpacing.xs,
+      children: [
+        IconButton(
+          key: ExplanationKeys.first,
+          tooltip: context.l10n.explanationFirst,
+          onPressed: cursor.canPrevious
+              ? () => owner._move(cursor.at(0))
+              : null,
+          icon: const Icon(Icons.first_page),
+        ),
+        IconButton(
+          key: ExplanationKeys.previous,
+          tooltip: context.l10n.explanationPrevious,
+          onPressed: cursor.canPrevious
+              ? () => owner._move(cursor.previous())
+              : null,
+          icon: const Icon(Icons.chevron_left),
+        ),
+        IconButton(
+          key: ExplanationKeys.next,
+          tooltip: context.l10n.explanationNext,
+          onPressed: cursor.canNext ? () => owner._move(cursor.next()) : null,
+          icon: const Icon(Icons.chevron_right),
+        ),
+        IconButton(
+          key: ExplanationKeys.last,
+          tooltip: context.l10n.explanationLast,
+          onPressed: cursor.canNext
+              ? () => owner._move(cursor.at(cursor.moves.length))
+              : null,
+          icon: const Icon(Icons.last_page),
+        ),
       ],
     );
   }

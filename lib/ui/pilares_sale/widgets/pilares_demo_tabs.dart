@@ -170,102 +170,11 @@ class PilaresDemoGuide extends StatelessWidget {
               AppSpacing.lg,
             ),
             children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(AppShape.card),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.sm,
-                    children: [
-                      Icon(
-                        Icons.stadium,
-                        size: AppIconSize.standard,
-                        color: colors.primary,
-                      ),
-                      Text(
-                        l10n.venDemoGuideTitle,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontSize: 20,
-                          height: 28 / 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(l10n.venDemoGuideText, style: body),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, AppSpacing.lg, 4, 0),
-                child: Row(
-                  spacing: AppSpacing.sm,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.venDemoGuideEvent,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontSize: 16,
-                              height: 24 / 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            l10n.venDemoGuideDate,
-                            style: body?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    PilaresBadge(
-                      text: l10n.venDemoGuideExample,
-                      background: colors.surfaceContainerHighest,
-                      foreground: colors.onSurfaceVariant,
-                    ),
-                  ],
-                ),
-              ),
+              _GuideIntro(body: body),
+              _GuideEvent(body: body),
               const SizedBox(height: AppSpacing.sm),
               // H-ANI-20: toda linha leva ao plano; o cartão inteiro afunda.
-              CartaoPressionavel(
-                child: DecoratedBox(
-                  key: PurchaseKeys.demoGuideWeeks,
-                  decoration: BoxDecoration(
-                    color: AppColors.cardSurface,
-                    borderRadius: BorderRadius.circular(AppShape.card),
-                    border: Border.all(color: AppColors.cardOutline),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Column(
-                      children: [
-                        for (final (index, text) in weeks.indexed)
-                          _WeekRow(
-                            number: index + 1,
-                            label: l10n.venDemoGuideWeek(index + 1),
-                            text: text,
-                            onTap: plan,
-                          ),
-                        _WeekRow(
-                          text: l10n.venDemoGuideEnd(
-                            l10n.venDemoGuideDate,
-                            l10n.venDemoGuideEvent,
-                          ),
-                          onTap: plan,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              _GuideWeeks(weeks: weeks, plan: plan),
               const SizedBox(height: AppSpacing.lg),
               PilaresDemoCallout(
                 text: l10n.venDemoGuideClosing,
@@ -440,6 +349,139 @@ class _CalloutCard extends StatelessWidget {
               onPressed: () => PilaresDemo._presentation(context, origin),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O bloco de abertura do Guia da demo.
+class _GuideIntro extends StatelessWidget {
+  const _GuideIntro({required this.body});
+
+  final TextStyle? body;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.card),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.sm,
+          children: [
+            Icon(
+              Icons.stadium,
+              size: AppIconSize.standard,
+              color: colors.primary,
+            ),
+            Text(
+              l10n.venDemoGuideTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontSize: 20,
+                height: 28 / 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(l10n.venDemoGuideText, style: body),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O evento do exemplo, com a data e o selo "Exemplo".
+class _GuideEvent extends StatelessWidget {
+  const _GuideEvent({required this.body});
+
+  final TextStyle? body;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, AppSpacing.lg, 4, 0),
+      child: Row(
+        spacing: AppSpacing.sm,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.venDemoGuideEvent,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontSize: 16,
+                    height: 24 / 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  l10n.venDemoGuideDate,
+                  style: body?.copyWith(color: colors.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+          PilaresBadge(
+            text: l10n.venDemoGuideExample,
+            background: colors.surfaceContainerHighest,
+            foreground: colors.onSurfaceVariant,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// As semanas do exemplo, todas abrindo o plano.
+class _GuideWeeks extends StatelessWidget {
+  const _GuideWeeks({required this.weeks, required this.plan});
+
+  final List<String> weeks;
+  final VoidCallback plan;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return CartaoPressionavel(
+      child: DecoratedBox(
+        key: PurchaseKeys.demoGuideWeeks,
+        decoration: BoxDecoration(
+          color: AppColors.cardSurface,
+          borderRadius: BorderRadius.circular(AppShape.card),
+          border: Border.all(color: AppColors.cardOutline),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            children: [
+              for (final (index, text) in weeks.indexed)
+                _WeekRow(
+                  number: index + 1,
+                  label: l10n.venDemoGuideWeek(index + 1),
+                  text: text,
+                  onTap: plan,
+                ),
+              _WeekRow(
+                text: l10n.venDemoGuideEnd(
+                  l10n.venDemoGuideDate,
+                  l10n.venDemoGuideEvent,
+                ),
+                onTap: plan,
+              ),
+            ],
+          ),
         ),
       ),
     );

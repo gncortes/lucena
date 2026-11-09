@@ -205,6 +205,13 @@ class _Header extends StatelessWidget {
 String recordAtLabel(AppLocalizations l10n, String date, String time) =>
     l10n.speedrunRecordAt(date, time).replaceFirst(' $time', '\u00A0$time');
 
+/// Os números pequenos em cinza (data, rótulos das contagens).
+TextStyle? _mutedStyle(ThemeData theme) => theme.textTheme.bodySmall?.copyWith(
+  fontSize: 13,
+  height: 18 / 13,
+  color: theme.colorScheme.onSurfaceVariant,
+);
+
 /// "Seu recorde" com a data e, embaixo, as tentativas e as concluídas.
 class _Numbers extends StatelessWidget {
   const _Numbers({required this.speedrun, required this.state});
@@ -216,141 +223,50 @@ class _Numbers extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final locale = Localizations.localeOf(context).toString();
     final best = state.best;
     final bestAt = state.bestAt?.toLocal();
-    final muted = theme.textTheme.bodySmall?.copyWith(
-      fontSize: 13,
-      height: 18 / 13,
-      color: colors.onSurfaceVariant,
-    );
     final marathon = speedrun.kind == SpeedrunKind.marathon;
     final attempts = state.runs.length;
     final finished = state.finished;
-    Widget count(Key key, int value, String label) => Column(
-      key: key,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$value',
-          textDirection: TextDirection.ltr,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontSize: 20,
-            height: 24 / 20,
-            fontWeight: AppWeight.heavy,
-          ),
-        ),
-        Text(label, style: muted),
-      ],
-    );
     final counts = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        count(
-          SpeedrunKeys.historyAttempts,
-          attempts,
-          l10n.historyStatAttempts(attempts),
+        _Count(
+          countKey: SpeedrunKeys.historyAttempts,
+          value: attempts,
+          label: l10n.historyStatAttempts(attempts),
         ),
         const SizedBox(height: AppSpacing.md),
-        count(
-          SpeedrunKeys.historyFinished,
-          finished,
-          l10n.historyStatFinishedAttempts(finished),
+        _Count(
+          countKey: SpeedrunKeys.historyFinished,
+          value: finished,
+          label: l10n.historyStatFinishedAttempts(finished),
         ),
       ],
     );
-    // Verde de sucesso do GoalStyle (T67d, variante B): troféu e tempo.
-    final green = GoalStyle.of(context, PositionGoal.win).color;
     final Widget record = best == null || bestAt == null
         ? const SizedBox.shrink()
-        : Column(
-            key: SpeedrunKeys.historyRecord,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                marathon ? l10n.marathonBest : l10n.speedrunYourRecord,
-                style: muted,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Semantics(
-                container: true,
-                excludeSemantics: true,
-                label: marathon
-                    ? l10n.marathonBestValue(
-                        runTime(context, recordTime(speedrun, best)),
-                      )
-                    : '${l10n.speedrunYourRecord}: ${runTime(context, recordTime(speedrun, best))}',
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.emoji_events_rounded,
-                      size: AppIconSize.large,
-                      color: green,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Flexible(
-                      child: Text(
-                        runTime(context, recordTime(speedrun, best)),
-                        key: SpeedrunKeys.historyRecordTime,
-                        textDirection: TextDirection.ltr,
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          color: green,
-                          fontSize: 36,
-                          height: 44 / 36,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                recordAtLabel(
-                  l10n,
-                  (bestAt.year == state.year
-                          ? DateFormat.MMMMd(locale)
-                          : DateFormat.yMMMMd(locale))
-                      .format(bestAt),
-                  DateFormat.Hm(locale).format(bestAt),
-                ),
-                key: SpeedrunKeys.historyRecordAt,
-                style: muted,
-              ),
-            ],
+        : _RecordBlock(
+            speedrun: speedrun,
+            best: best,
+            bestAt: bestAt,
+            year: state.year,
+            marathon: marathon,
           );
-    // As contagens lado a lado, centradas, com divisor vertical.
-    Widget centered(Key key, int value, String label) => Expanded(
-      child: Column(
-        key: key,
-        children: [
-          Text(
-            '$value',
-            textDirection: TextDirection.ltr,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontSize: 20,
-              height: 24 / 20,
-            ),
-          ),
-          Text(label, textAlign: TextAlign.center, style: muted),
-        ],
-      ),
-    );
     final strip = IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          centered(
-            SpeedrunKeys.historyAttempts,
-            attempts,
-            l10n.historyStatAttempts(attempts),
+          _CenteredCount(
+            countKey: SpeedrunKeys.historyAttempts,
+            value: attempts,
+            label: l10n.historyStatAttempts(attempts),
           ),
           VerticalDivider(),
-          centered(
-            SpeedrunKeys.historyFinished,
-            finished,
-            l10n.historyStatFinishedAttempts(finished),
+          _CenteredCount(
+            countKey: SpeedrunKeys.historyFinished,
+            value: finished,
+            label: l10n.historyStatFinishedAttempts(finished),
           ),
         ],
       ),
@@ -394,6 +310,204 @@ class _Numbers extends StatelessWidget {
   }
 }
 
+/// Uma contagem à esquerda: o número grande e o rótulo embaixo.
+class _Count extends StatelessWidget {
+  const _Count({
+    required this.countKey,
+    required this.value,
+    required this.label,
+  });
+
+  final Key countKey;
+  final int value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      key: countKey,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$value',
+          textDirection: TextDirection.ltr,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontSize: 20,
+            height: 24 / 20,
+            fontWeight: AppWeight.heavy,
+          ),
+        ),
+        Text(label, style: _mutedStyle(theme)),
+      ],
+    );
+  }
+}
+
+/// Uma contagem centrada, lado a lado com a outra.
+class _CenteredCount extends StatelessWidget {
+  const _CenteredCount({
+    required this.countKey,
+    required this.value,
+    required this.label,
+  });
+
+  final Key countKey;
+  final int value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: Column(
+        key: countKey,
+        children: [
+          Text(
+            '$value',
+            textDirection: TextDirection.ltr,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontSize: 20,
+              height: 24 / 20,
+            ),
+          ),
+          Text(label, textAlign: TextAlign.center, style: _mutedStyle(theme)),
+        ],
+      ),
+    );
+  }
+}
+
+/// O recorde: o troféu com o tempo e a data em que foi feito.
+class _RecordBlock extends StatelessWidget {
+  const _RecordBlock({
+    required this.speedrun,
+    required this.best,
+    required this.bestAt,
+    required this.year,
+    required this.marathon,
+  });
+
+  final Speedrun speedrun;
+  final Duration best;
+  final DateTime bestAt;
+  final int? year;
+  final bool marathon;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final muted = _mutedStyle(theme);
+    // Verde de sucesso do GoalStyle (T67d, variante B): troféu e tempo.
+    final green = GoalStyle.of(context, PositionGoal.win).color;
+    return Column(
+      key: SpeedrunKeys.historyRecord,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          marathon ? l10n.marathonBest : l10n.speedrunYourRecord,
+          style: muted,
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Semantics(
+          container: true,
+          excludeSemantics: true,
+          label: marathon
+              ? l10n.marathonBestValue(
+                  runTime(context, recordTime(speedrun, best)),
+                )
+              : '${l10n.speedrunYourRecord}: ${runTime(context, recordTime(speedrun, best))}',
+          child: Row(
+            children: [
+              Icon(
+                Icons.emoji_events_rounded,
+                size: AppIconSize.large,
+                color: green,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: Text(
+                  runTime(context, recordTime(speedrun, best)),
+                  key: SpeedrunKeys.historyRecordTime,
+                  textDirection: TextDirection.ltr,
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    color: green,
+                    fontSize: 36,
+                    height: 44 / 36,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          recordAtLabel(
+            l10n,
+            (bestAt.year == year
+                    ? DateFormat.MMMMd(locale)
+                    : DateFormat.yMMMMd(locale))
+                .format(bestAt),
+            DateFormat.Hm(locale).format(bestAt),
+          ),
+          key: SpeedrunKeys.historyRecordAt,
+          style: muted,
+        ),
+      ],
+    );
+  }
+}
+
+/// O ícone e o texto de onde a tentativa parou (nulos se concluiu).
+(IconData?, String?) _stopLabel(
+  AppLocalizations l10n,
+  bool marathon,
+  SpeedrunRunEnd end,
+  int stage,
+  int total,
+) => marathon
+    ? switch (end) {
+        SpeedrunRunEnd.completed => (null, null),
+        SpeedrunRunEnd.drawn => (
+          Icons.drag_handle,
+          l10n.marathonDrawnHero(stage, total),
+        ),
+        SpeedrunRunEnd.timeout => (
+          Icons.hourglass_bottom,
+          l10n.marathonTimeoutHero(stage, total),
+        ),
+        SpeedrunRunEnd.abandoned => (
+          Icons.do_not_disturb_on_outlined,
+          l10n.speedrunAbandonedHero(stage, total),
+        ),
+        SpeedrunRunEnd.lost => (
+          Icons.remove,
+          l10n.speedrunLostHero(stage, total),
+        ),
+      }
+    : switch (end) {
+        SpeedrunRunEnd.completed => (null, null),
+        SpeedrunRunEnd.lost => (
+          Icons.remove,
+          l10n.speedrunLostHero(stage, total),
+        ),
+        SpeedrunRunEnd.drawn => (
+          Icons.drag_handle,
+          l10n.speedrunDrawnHero(stage, total),
+        ),
+        SpeedrunRunEnd.abandoned => (
+          Icons.do_not_disturb_on_outlined,
+          l10n.speedrunStoppedAt(stage, total),
+        ),
+        SpeedrunRunEnd.timeout => (
+          Icons.timer_off_outlined,
+          l10n.marathonTimeoutHero(stage, total),
+        ),
+      };
+
 /// Uma tentativa: o tempo (troféu no recorde) ou onde parou, o dia e, na
 /// primeira conclusão, o rating que ela deu.
 class _RunRow extends StatelessWidget {
@@ -418,55 +532,13 @@ class _RunRow extends StatelessWidget {
     final endedAt = entry.endedAt.toLocal();
     final total = speedrun.stages.length;
     final stage = entry.stage.clamp(1, total);
-    final muted = theme.textTheme.bodySmall?.copyWith(
-      fontSize: 13,
-      height: 18 / 13,
-      color: colors.onSurfaceVariant,
-    );
+    final muted = _mutedStyle(theme);
     final marathon = speedrun.kind == SpeedrunKind.marathon;
     final time = runTime(context, recordTime(speedrun, entry.run.total));
     final label = marathon
         ? l10n.marathonLeftValue(time)
         : '${l10n.speedrunTotal}: $time';
-    final (icon, stopped) = marathon
-        ? switch (entry.end) {
-            SpeedrunRunEnd.completed => (null, null),
-            SpeedrunRunEnd.drawn => (
-              Icons.drag_handle,
-              l10n.marathonDrawnHero(stage, total),
-            ),
-            SpeedrunRunEnd.timeout => (
-              Icons.hourglass_bottom,
-              l10n.marathonTimeoutHero(stage, total),
-            ),
-            SpeedrunRunEnd.abandoned => (
-              Icons.do_not_disturb_on_outlined,
-              l10n.speedrunAbandonedHero(stage, total),
-            ),
-            SpeedrunRunEnd.lost => (
-              Icons.remove,
-              l10n.speedrunLostHero(stage, total),
-            ),
-          }
-        : switch (entry.end) {
-            SpeedrunRunEnd.completed => (null, null),
-            SpeedrunRunEnd.lost => (
-              Icons.remove,
-              l10n.speedrunLostHero(stage, total),
-            ),
-            SpeedrunRunEnd.drawn => (
-              Icons.drag_handle,
-              l10n.speedrunDrawnHero(stage, total),
-            ),
-            SpeedrunRunEnd.abandoned => (
-              Icons.do_not_disturb_on_outlined,
-              l10n.speedrunStoppedAt(stage, total),
-            ),
-            SpeedrunRunEnd.timeout => (
-              Icons.timer_off_outlined,
-              l10n.marathonTimeoutHero(stage, total),
-            ),
-          };
+    final (icon, stopped) = _stopLabel(l10n, marathon, entry.end, stage, total);
     final day = l10n.historyDayAt(
       dayFormat.format(endedAt),
       timeFormat.format(endedAt),
@@ -507,28 +579,7 @@ class _RunRow extends StatelessWidget {
                         size: TimeDisplaySize.inline,
                       )
                     else
-                      // A altura da pílula do tempo: todas as linhas iguais.
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 28),
-                        child: Row(
-                          children: [
-                            Icon(
-                              icon,
-                              size: AppIconSize.button,
-                              color: colors.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Text(
-                                stopped,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      _StoppedLabel(icon: icon, text: stopped),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       marathon && stopped == null
@@ -547,6 +598,38 @@ class _RunRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Onde a tentativa parou: o ícone e o texto, na altura da pílula do tempo.
+class _StoppedLabel extends StatelessWidget {
+  const _StoppedLabel({required this.icon, required this.text});
+
+  final IconData? icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    // A altura da pílula do tempo: todas as linhas iguais.
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 28),
+      child: Row(
+        children: [
+          Icon(icon, size: AppIconSize.button, color: colors.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              text,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

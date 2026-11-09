@@ -74,32 +74,7 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
                 SectionTitle(l10n.settingsSectionApp, inset: AppSpacing.xs),
-                ProfileRowGroup(
-                  children: [
-                    _Group(
-                      tileKey: SettingsKeys.appearanceTile,
-                      icon: Icons.palette_outlined,
-                      title: l10n.settingsAppearance,
-                      hint: l10n.settingsAppearanceHint,
-                      route: Routes.settingsAppearance,
-                    ),
-                    _Group(
-                      tileKey: SettingsKeys.gameTile,
-                      icon: Icons.sports_esports_outlined,
-                      title: l10n.settingsGame,
-                      hint: l10n.settingsGameHint,
-                      route: Routes.settingsGame,
-                    ),
-                    _Group(
-                      tileKey: SettingsKeys.soundTile,
-                      icon: Icons.volume_up_outlined,
-                      title: l10n.settingsSoundGroup,
-                      hint: l10n.settingsSoundGroupHint,
-                      route: Routes.settingsSound,
-                    ),
-                    const _AlertsGroup(),
-                  ],
-                ),
+                const _AppGroup(),
                 SectionTitle(l10n.ajuSectionPrivacy, inset: AppSpacing.xs),
                 ProfileRowGroup(
                   children: [
@@ -113,69 +88,7 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
                 SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
-                ProfileRowGroup(
-                  children: [
-                    ProfileRow(
-                      key: SettingsKeys.feedbackTile,
-                      icon: Icons.feedback_outlined,
-                      title: l10n.ajuFeedbackTitle,
-                      value: l10n.ajuFeedbackHint,
-                      onTap: () => context.push(Routes.feedback),
-                    ),
-                    ProfileRow(
-                      key: SettingsKeys.rateTile,
-                      icon: Icons.storefront_outlined,
-                      title: l10n.ajuRateTitle,
-                      value: l10n.ajuRateHint,
-                      onTap: () {
-                        unawaited(
-                          context.analytics.log(
-                            AnalyticsEvents.avaliacaoPerfilAberto(),
-                          ),
-                        );
-                        unawaited(
-                          context.read<StoreListingRepository>().open(),
-                        );
-                      },
-                    ),
-                    _Group(
-                      tileKey: SettingsKeys.aboutTile,
-                      icon: Icons.info_outline,
-                      title: l10n.settingsAbout,
-                      hint: l10n.settingsAboutHint,
-                      route: Routes.settingsAbout,
-                    ),
-                    // Só em build de desenvolvimento e de teste.
-                    if (showsDevTools)
-                      ProfileRow(
-                        key: SettingsKeys.maiaDebugTile,
-                        icon: Icons.bug_report_outlined,
-                        title: l10n.maiaDebugTitle,
-                        onTap: () => context.go(Routes.settingsMaia),
-                      ),
-                    if (showsDevTools)
-                      ProfileRow(
-                        key: SettingsKeys.pilaresTrainingTile,
-                        icon: Icons.task_alt,
-                        title: l10n.trainingPilaresTitle,
-                        onTap: () => context.push(Routes.training('pilares')),
-                      ),
-                    if (showsDevTools)
-                      ProfileRow(
-                        key: SettingsKeys.escolaTrainingTile,
-                        icon: Icons.task_alt,
-                        title: l10n.schoolTitle,
-                        onTap: () => context.push(Routes.training('escola')),
-                      ),
-                    if (showsDevTools)
-                      ProfileRow(
-                        key: SettingsKeys.openLinkTile,
-                        icon: Icons.link,
-                        title: l10n.devOpenLinkTitle,
-                        onTap: () => showOpenLinkDialog(context),
-                      ),
-                  ],
-                ),
+                const _HelpGroup(),
               ],
             ),
             if (version.isNotEmpty)
@@ -325,6 +238,111 @@ class _AlertsGroup extends StatelessWidget {
           ? l10n.alertsCount(state.enabled, state.total)
           : l10n.alertsBlockedSummary,
       route: Routes.alerts,
+    );
+  }
+}
+
+/// O grupo do app: aparência, jogo, som e alertas.
+class _AppGroup extends StatelessWidget {
+  const _AppGroup();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ProfileRowGroup(
+      children: [
+        _Group(
+          tileKey: SettingsKeys.appearanceTile,
+          icon: Icons.palette_outlined,
+          title: l10n.settingsAppearance,
+          hint: l10n.settingsAppearanceHint,
+          route: Routes.settingsAppearance,
+        ),
+        _Group(
+          tileKey: SettingsKeys.gameTile,
+          icon: Icons.sports_esports_outlined,
+          title: l10n.settingsGame,
+          hint: l10n.settingsGameHint,
+          route: Routes.settingsGame,
+        ),
+        _Group(
+          tileKey: SettingsKeys.soundTile,
+          icon: Icons.volume_up_outlined,
+          title: l10n.settingsSoundGroup,
+          hint: l10n.settingsSoundGroupHint,
+          route: Routes.settingsSound,
+        ),
+        const _AlertsGroup(),
+      ],
+    );
+  }
+}
+
+/// O grupo de ajuda: opinião, avaliação, sobre e as ferramentas de desenvolvimento.
+class _HelpGroup extends StatelessWidget {
+  const _HelpGroup();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ProfileRowGroup(
+      children: [
+        ProfileRow(
+          key: SettingsKeys.feedbackTile,
+          icon: Icons.feedback_outlined,
+          title: l10n.ajuFeedbackTitle,
+          value: l10n.ajuFeedbackHint,
+          onTap: () => context.push(Routes.feedback),
+        ),
+        ProfileRow(
+          key: SettingsKeys.rateTile,
+          icon: Icons.storefront_outlined,
+          title: l10n.ajuRateTitle,
+          value: l10n.ajuRateHint,
+          onTap: () {
+            unawaited(
+              context.analytics.log(AnalyticsEvents.avaliacaoPerfilAberto()),
+            );
+            unawaited(context.read<StoreListingRepository>().open());
+          },
+        ),
+        _Group(
+          tileKey: SettingsKeys.aboutTile,
+          icon: Icons.info_outline,
+          title: l10n.settingsAbout,
+          hint: l10n.settingsAboutHint,
+          route: Routes.settingsAbout,
+        ),
+        // Só em build de desenvolvimento e de teste.
+        if (showsDevTools)
+          ProfileRow(
+            key: SettingsKeys.maiaDebugTile,
+            icon: Icons.bug_report_outlined,
+            title: l10n.maiaDebugTitle,
+            onTap: () => context.go(Routes.settingsMaia),
+          ),
+        if (showsDevTools)
+          ProfileRow(
+            key: SettingsKeys.pilaresTrainingTile,
+            icon: Icons.task_alt,
+            title: l10n.trainingPilaresTitle,
+            onTap: () => context.push(Routes.training('pilares')),
+          ),
+        if (showsDevTools)
+          ProfileRow(
+            key: SettingsKeys.escolaTrainingTile,
+            icon: Icons.task_alt,
+            title: l10n.schoolTitle,
+            onTap: () => context.push(Routes.training('escola')),
+          ),
+        if (showsDevTools)
+          ProfileRow(
+            key: SettingsKeys.openLinkTile,
+            icon: Icons.link,
+            title: l10n.devOpenLinkTitle,
+            onTap: () => showOpenLinkDialog(context),
+          ),
+      ],
     );
   }
 }

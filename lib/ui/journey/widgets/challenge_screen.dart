@@ -450,33 +450,56 @@ class _ChallengeBody extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: BoardOptionsPanel(
-                key: JourneyKeys.challengePanel,
-                child: ListView(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-                  children: [
-                    _journeyOpponent(context, challenge.opponent, rungId),
-                    SectionTitle(l10n.setupHistory),
-                    if (state.attempts.isEmpty)
-                      EmptyState(
-                        style: EmptyStateStyle.filters,
-                        icon: Icons.sports_esports_outlined,
-                        message: l10n.challengeHistoryInvite,
-                        messageKey: JourneyKeys.emptyHistory,
-                      )
-                    else
-                      AttemptHistory(
-                        attempts: state.attempts,
-                        monthKey: JourneyKeys.month,
-                        attemptKey: JourneyKeys.attempt,
-                      ),
-                  ],
-                ),
+              child: _ChallengePanel(
+                challenge: challenge,
+                state: state,
+                rungId: rungId,
               ),
             ),
           ],
         );
       },
+    );
+  }
+}
+
+/// O painel de baixo: o adversário do desafio e o histórico de partidas.
+class _ChallengePanel extends StatelessWidget {
+  const _ChallengePanel({
+    required this.challenge,
+    required this.state,
+    required this.rungId,
+  });
+
+  final Challenge challenge;
+  final JourneyState state;
+  final String rungId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return BoardOptionsPanel(
+      key: JourneyKeys.challengePanel,
+      child: ListView(
+        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+        children: [
+          _journeyOpponent(context, challenge.opponent, rungId),
+          SectionTitle(l10n.setupHistory),
+          if (state.attempts.isEmpty)
+            EmptyState(
+              style: EmptyStateStyle.filters,
+              icon: Icons.sports_esports_outlined,
+              message: l10n.challengeHistoryInvite,
+              messageKey: JourneyKeys.emptyHistory,
+            )
+          else
+            AttemptHistory(
+              attempts: state.attempts,
+              monthKey: JourneyKeys.month,
+              attemptKey: JourneyKeys.attempt,
+            ),
+        ],
+      ),
     );
   }
 }

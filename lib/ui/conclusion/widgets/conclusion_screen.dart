@@ -372,7 +372,6 @@ class _Body extends StatelessWidget {
     final opponent = state.opponent;
     final comment = state.comment;
     final run = conclusion.run;
-    final feedback = state.feedback;
     final celebrate =
         conclusion.result == ConclusionResult.won &&
         (conclusion.kind == ConclusionKind.speedrunEnd ||
@@ -385,114 +384,33 @@ class _Body extends StatelessWidget {
     final rating = conclusion.before != null && conclusion.after != null
         ? _Rating(conclusion: conclusion)
         : null;
-    final numbers = <Widget>[
-      _Mode(state: state, conclusion: conclusion),
-      // O tempo só quando há tempo a mostrar (perder a primeira etapa logo
-      // de cara não tem tempo nenhum).
-      if (run != null && _Run.spentOf(run) > Duration.zero)
-        _Run(
-          run: run,
-          kind: conclusion.kind,
-          speedrun: state.speedrun,
-          characters: state.characters,
-        ),
-      if (conclusion.blindMoves case final moves?)
-        Text(
-          context.l10n.conclusionBlindMoves(moves),
-          key: ConclusionKeys.blindMoves,
-          textAlign: TextAlign.center,
-        ),
-    ];
+    final numbers = _numberBlocks(context, state, conclusion);
     // A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
     // cartão. Depois de pronta, ela entra na imagem de compartilhar.
     final quick =
         state.review != null ||
             (conclusion.gameId != null &&
                 (conclusion.game?.moves.isNotEmpty ?? false))
-        ? Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              KeyedSubtree(
-                key: ConclusionKeys.analysisShared,
-                child: RepaintBoundary(
-                  key: analysis,
-                  child: _Analysis(state: state, conclusion: conclusion),
-                ),
-              ),
-              // Abaixo do cartão, fora do RepaintBoundary: a imagem de
-              // compartilhar nunca mostra botão.
-              if (state.review != null)
-                if (conclusion.gameId case final gameId?) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  DetailedReviewButton(gameId: gameId),
-                ],
-            ],
+        ? _QuickAnalysis(
+            state: state,
+            conclusion: conclusion,
+            analysis: analysis,
           )
         : null;
     final speech = opponent != null && comment != null
-        ? TeacherSpeech(
-            key: ConclusionKeys.comment,
-            // O mesmo componente de fala do professor, com a ponta para cima
-            // ligada ao avatar (S3b).
-            speechContext: SpeechContext.teaching,
-            teacher: opponent,
-            text: comment,
+        ? _OpponentComment(
+            opponent: opponent,
+            comment: comment,
             emotion: state.emotion,
-            // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
-            avatarSize: CharacterAvatar.speech,
           )
         : null;
-    final sections = <Widget>[
-      if (feedback.isNotEmpty)
-        ReportPanel(
-          report: GameReport(
-            feedback: feedback,
-            achievements: conclusion.achievements,
-            unlocked: conclusion.unlocked,
-            characters: state.characters,
-          ),
-        ),
-      // O convite da conta logo abaixo das conquistas
-      // (PropV2UxConclusaoConta): "Salve suas conquistas" quando houve
-      // conquista nova; sem ela, "Salve seu progresso".
-      if (onAccountInviteClose case final onClose?)
-        AccountInviteCard(
-          key: ConclusionKeys.accountInvite,
-          title: conclusion.achievements.isNotEmpty
-              ? context.l10n.conCartaoTitleWin
-              : context.l10n.conCartaoTitleProgress,
-          onClose: onClose,
-        ),
-      // A partida de novo com o Stockfish no lugar do jogador. Fora da imagem
-      // de compartilhar.
-      if (context.read<ConclusionCubit>().canPlayBestLine)
-        _BestLine(state: state, conclusion: conclusion),
-      // Perdeu desistindo: rever a partida e treinar o final (P9 B).
-      if (conclusion.end?.reason == GameEndReason.resign &&
-          conclusion.result == ConclusionResult.lost &&
-          conclusion.run == null)
-        ?ResignLearnList.maybe(
-          gameId: (conclusion.game?.moves.isNotEmpty ?? false)
-              ? conclusion.gameId
-              : null,
-          lesson: state.finalLesson,
-        ),
-      if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
-      // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
-      // curta, no toque na longa.
-      ?quick,
-    ];
-    final cardKey = card;
-    Widget spaced(Iterable<Widget> blocks) => Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final (index, block) in blocks.indexed)
-          Padding(
-            padding: EdgeInsets.only(top: index == 0 ? 0 : AppSpacing.lg),
-            child: block,
-          ),
-      ],
+    final sections = _sectionBlocks(
+      context,
+      state,
+      conclusion,
+      links,
+      onAccountInviteClose,
+      quick,
     );
     // As ações, fixas embaixo: fora da imagem de compartilhar.
     final actionsBar = main.isEmpty
@@ -507,12 +425,12 @@ class _Body extends StatelessWidget {
       FaixaDeEntrada('titulo', _Header(state: state, conclusion: conclusion)),
       if (outcome != null) FaixaDeEntrada('subtitulo', outcome),
       if (rating != null) FaixaDeEntrada('placar', rating, conta: true),
-      FaixaDeEntrada('ritmo', spaced(numbers)),
+      FaixaDeEntrada('ritmo', _Spaced(numbers)),
     ];
     final sharedCount = faixas.length;
     faixas.addAll([
       if (speech != null) FaixaDeEntrada('viktor', speech),
-      if (sections.isNotEmpty) FaixaDeEntrada('conquista', spaced(sections)),
+      if (sections.isNotEmpty) FaixaDeEntrada('conquista', _Spaced(sections)),
       if (actionsBar != null) FaixaDeEntrada('botoes', actionsBar),
     ]);
     return Stack(
@@ -523,43 +441,233 @@ class _Body extends StatelessWidget {
         EntradaEmFaixas(
           id: 'conclusao-${conclusion.kind.name}-${conclusion.gameId}',
           faixas: faixas,
-          montar: (parts) {
-            final shared = parts.take(sharedCount);
-            final rest = parts.skip(sharedCount).toList();
-            final bottom = actionsBar == null ? null : rest.removeLast();
-            return Column(
-              children: [
-                Expanded(
-                  // Rolagem simples, não lista preguiçosa: todos os blocos
-                  // ficam montados, e compartilhar acha o cartão e a análise
-                  // mesmo com a tela rolada para longe deles.
-                  child: SingleChildScrollView(
-                    padding: scrollPadding(
-                      context,
-                      left: AppSpacing.screen,
-                      top: AppSpacing.sm,
-                      right: AppSpacing.screen,
-                      bottom: AppSpacing.xl,
-                    ),
-                    child: spaced([
-                      RepaintBoundary(
-                        key: cardKey,
-                        child: ColoredBox(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          child: spaced(shared),
-                        ),
-                      ),
-                      ...rest,
-                    ]),
-                  ),
-                ),
-                ?bottom,
-              ],
-            );
-          },
+          montar: (parts) => _Layout(
+            parts: parts,
+            sharedCount: sharedCount,
+            hasActionsBar: actionsBar != null,
+            card: card,
+          ),
         ),
         if (celebrate && !motion.disabled)
           const Positioned.fill(child: IgnorePointer(child: Celebration())),
+      ],
+    );
+  }
+}
+
+/// Os números da partida: o modo, o tempo (quando há) e os lances às cegas.
+List<Widget> _numberBlocks(
+  BuildContext context,
+  ConclusionState state,
+  Conclusion conclusion,
+) {
+  final run = conclusion.run;
+  return <Widget>[
+    _Mode(state: state, conclusion: conclusion),
+    // O tempo só quando há tempo a mostrar (perder a primeira etapa logo
+    // de cara não tem tempo nenhum).
+    if (run != null && _Run.spentOf(run) > Duration.zero)
+      _Run(
+        run: run,
+        kind: conclusion.kind,
+        speedrun: state.speedrun,
+        characters: state.characters,
+      ),
+    if (conclusion.blindMoves case final moves?)
+      Text(
+        context.l10n.conclusionBlindMoves(moves),
+        key: ConclusionKeys.blindMoves,
+        textAlign: TextAlign.center,
+      ),
+  ];
+}
+
+/// Os blocos sob a fala: relatório, convite da conta, melhor linha, links e,
+/// no fim, a análise rápida.
+List<Widget> _sectionBlocks(
+  BuildContext context,
+  ConclusionState state,
+  Conclusion conclusion,
+  List<ConclusionAction> links,
+  VoidCallback? onAccountInviteClose,
+  Widget? quick,
+) {
+  return <Widget>[
+    if (state.feedback.isNotEmpty)
+      ReportPanel(
+        report: GameReport(
+          feedback: state.feedback,
+          achievements: conclusion.achievements,
+          unlocked: conclusion.unlocked,
+          characters: state.characters,
+        ),
+      ),
+    // O convite da conta logo abaixo das conquistas
+    // (PropV2UxConclusaoConta): "Salve suas conquistas" quando houve
+    // conquista nova; sem ela, "Salve seu progresso".
+    if (onAccountInviteClose case final onClose?)
+      AccountInviteCard(
+        key: ConclusionKeys.accountInvite,
+        title: conclusion.achievements.isNotEmpty
+            ? context.l10n.conCartaoTitleWin
+            : context.l10n.conCartaoTitleProgress,
+        onClose: onClose,
+      ),
+    // A partida de novo com o Stockfish no lugar do jogador. Fora da imagem
+    // de compartilhar.
+    if (context.read<ConclusionCubit>().canPlayBestLine)
+      _BestLine(state: state, conclusion: conclusion),
+    // Perdeu desistindo: rever a partida e treinar o final (P9 B).
+    if (conclusion.end?.reason == GameEndReason.resign &&
+        conclusion.result == ConclusionResult.lost &&
+        conclusion.run == null)
+      ?ResignLearnList.maybe(
+        gameId: (conclusion.game?.moves.isNotEmpty ?? false)
+            ? conclusion.gameId
+            : null,
+        lesson: state.finalLesson,
+      ),
+    if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
+    // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
+    // curta, no toque na longa.
+    ?quick,
+  ];
+}
+
+/// A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
+/// cartão. Depois de pronta, ela entra na imagem de compartilhar.
+class _QuickAnalysis extends StatelessWidget {
+  const _QuickAnalysis({
+    required this.state,
+    required this.conclusion,
+    required this.analysis,
+  });
+
+  final ConclusionState state;
+  final Conclusion conclusion;
+  final GlobalKey analysis;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        KeyedSubtree(
+          key: ConclusionKeys.analysisShared,
+          child: RepaintBoundary(
+            key: analysis,
+            child: _Analysis(state: state, conclusion: conclusion),
+          ),
+        ),
+        // Abaixo do cartão, fora do RepaintBoundary: a imagem de
+        // compartilhar nunca mostra botão.
+        if (state.review != null)
+          if (conclusion.gameId case final gameId?) ...[
+            const SizedBox(height: AppSpacing.sm),
+            DetailedReviewButton(gameId: gameId),
+          ],
+      ],
+    );
+  }
+}
+
+/// A fala do adversário sobre a partida.
+class _OpponentComment extends StatelessWidget {
+  const _OpponentComment({
+    required this.opponent,
+    required this.comment,
+    required this.emotion,
+  });
+
+  final Character opponent;
+  final String comment;
+  final Emotion emotion;
+
+  @override
+  Widget build(BuildContext context) {
+    return TeacherSpeech(
+      key: ConclusionKeys.comment,
+      // O mesmo componente de fala do professor, com a ponta para cima
+      // ligada ao avatar (S3b).
+      speechContext: SpeechContext.teaching,
+      teacher: opponent,
+      text: comment,
+      emotion: emotion,
+      // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
+      avatarSize: CharacterAvatar.speech,
+    );
+  }
+}
+
+/// Os blocos em coluna, com o espaço entre eles.
+class _Spaced extends StatelessWidget {
+  const _Spaced(this.blocks);
+
+  final Iterable<Widget> blocks;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (index, block) in blocks.indexed)
+          Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 0 : AppSpacing.lg),
+            child: block,
+          ),
+      ],
+    );
+  }
+}
+
+/// A tela rolável: a imagem de compartilhar (cartão), os outros blocos e as
+/// ações fixas embaixo.
+class _Layout extends StatelessWidget {
+  const _Layout({
+    required this.parts,
+    required this.sharedCount,
+    required this.hasActionsBar,
+    required this.card,
+  });
+
+  final List<Widget> parts;
+  final int sharedCount;
+  final bool hasActionsBar;
+  final GlobalKey card;
+
+  @override
+  Widget build(BuildContext context) {
+    final shared = parts.take(sharedCount);
+    final rest = parts.skip(sharedCount).toList();
+    final bottom = hasActionsBar ? rest.removeLast() : null;
+    return Column(
+      children: [
+        Expanded(
+          // Rolagem simples, não lista preguiçosa: todos os blocos
+          // ficam montados, e compartilhar acha o cartão e a análise
+          // mesmo com a tela rolada para longe deles.
+          child: SingleChildScrollView(
+            padding: scrollPadding(
+              context,
+              left: AppSpacing.screen,
+              top: AppSpacing.sm,
+              right: AppSpacing.screen,
+              bottom: AppSpacing.xl,
+            ),
+            child: _Spaced([
+              RepaintBoundary(
+                key: card,
+                child: ColoredBox(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: _Spaced(shared),
+                ),
+              ),
+              ...rest,
+            ]),
+          ),
+        ),
+        ?bottom,
       ],
     );
   }
@@ -603,23 +711,7 @@ class _Header extends StatelessWidget {
       child: Stack(
         children: [
           // A posição final, desfocada, no tema do tabuleiro do jogador.
-          if (fen != null)
-            Positioned.fill(
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: LayoutBuilder(
-                  builder: (context, box) => OverflowBox(
-                    maxHeight: box.maxWidth,
-                    child: PositionBoard(
-                      fen: fen,
-                      size: box.maxWidth,
-                      orientation: userSide,
-                      radius: AppShape.none,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          if (fen != null) _BlurredBoard(fen: fen, userSide: userSide),
           Positioned.fill(
             child: ColoredBox(color: colors.surface.withValues(alpha: 0.72)),
           ),
@@ -699,6 +791,34 @@ class _Header extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A posição final, desfocada, no tema do tabuleiro do jogador.
+class _BlurredBoard extends StatelessWidget {
+  const _BlurredBoard({required this.fen, required this.userSide});
+
+  final String fen;
+  final Side userSide;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+        child: LayoutBuilder(
+          builder: (context, box) => OverflowBox(
+            maxHeight: box.maxWidth,
+            child: PositionBoard(
+              fen: fen,
+              size: box.maxWidth,
+              orientation: userSide,
+              radius: AppShape.none,
+            ),
+          ),
+        ),
       ),
     );
   }

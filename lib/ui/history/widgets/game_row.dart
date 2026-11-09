@@ -58,26 +58,6 @@ class HistoryGameRow extends StatelessWidget {
       OpponentKind.maia => characters.forLevel(attempt.opponentLevel),
       OpponentKind.twoPlayers => null,
     };
-    final level = attempt.opponent == OpponentKind.maia
-        ? attempt.opponentLevel
-        : null;
-    final (resultColor, resultIcon, resultLabel) = switch (attempt.outcome) {
-      AttemptOutcome.win => (
-        ChangeColors.of(context, up: true),
-        Icons.add_rounded,
-        l10n.attemptWin,
-      ),
-      AttemptOutcome.draw => (
-        colors.outline,
-        Icons.drag_handle_rounded,
-        l10n.attemptDraw,
-      ),
-      AttemptOutcome.loss => (
-        ChangeColors.of(context, up: false),
-        Icons.remove_rounded,
-        l10n.attemptLoss,
-      ),
-    };
     final change = game.change;
     void reload() {
       if (context.mounted) context.read<HistoryCubit>().load();
@@ -125,114 +105,24 @@ class HistoryGameRow extends StatelessWidget {
               ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text:
-                          character?.name ??
-                          attempt.opponent.label(l10n, level: level),
-                      style: const TextStyle(fontWeight: AppWeight.strong),
-                    ),
-                    if (level != null && character != null)
-                      TextSpan(
-                        text: ' ($level)',
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                  ],
-                ),
-                key: RatingKeys.entryOpponent(index),
-                style: theme.textTheme.titleMedium,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: _OpponentName(
+                index: index,
+                attempt: attempt,
+                character: character,
               ),
             ),
             // A precisão do jogador, nas partidas já revisadas (como no
             // histórico do chess.com).
             if (game.accuracy case final accuracy?) ...[
               const SizedBox(width: AppSpacing.sm),
-              Tooltip(
-                message: l10n.reviewAccuracy,
-                child: Container(
-                  key: RatingKeys.entryAccuracy(index),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
-                    vertical: AppSpacing.xs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(AppShape.small),
-                  ),
-                  child: Text(
-                    formatAccuracy(
-                      accuracy,
-                      Localizations.localeOf(context).toString(),
-                    ),
-                    semanticsLabel:
-                        '${l10n.reviewAccuracy} ${formatAccuracy(accuracy, Localizations.localeOf(context).toString())}',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                ),
-              ),
+              _AccuracyChip(index: index, accuracy: accuracy),
             ],
             const SizedBox(width: AppSpacing.md),
-            Container(
-              key: RatingKeys.entryResult(index),
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: resultColor,
-                borderRadius: BorderRadius.circular(AppShape.small),
-              ),
-              child: Icon(
-                resultIcon,
-                size: AppIconSize.button,
-                color: colors.surface,
-                semanticLabel: resultLabel,
-              ),
-            ),
-            // Quanto a partida mudou o rating e como ele ficou. Largura mínima
-            // de 64; cresce com a fonte.
-            ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 64),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (change != null)
-                    Text(
-                      signedChange(change),
-                      key: RatingKeys.entryChange(index),
-                      textDirection: TextDirection.ltr,
-                      style: context.cardTitle?.copyWith(
-                        color: change == 0
-                            ? colors.onSurfaceVariant
-                            : ChangeColors.of(context, up: change > 0),
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                  Text(
-                    '${game.entry.rating.rounded}',
-                    key: RatingKeys.entryRating(index),
-                    style:
-                        (change == null
-                                ? context.cardTitle
-                                : theme.textTheme.labelMedium?.copyWith(
-                                    color: colors.onSurfaceVariant,
-                                  ))
-                            ?.copyWith(
-                              fontFeatures: const [
-                                FontFeature.tabularFigures(),
-                              ],
-                            ),
-                  ),
-                ],
-              ),
+            _ResultBadge(index: index, outcome: attempt.outcome),
+            _RatingChange(
+              index: index,
+              change: change,
+              rating: game.entry.rating.rounded,
             ),
           ],
         ),
@@ -258,6 +148,189 @@ class HistoryGameRow extends StatelessWidget {
       key: RatingKeys.entryHighlighted,
       color: colors.primaryContainer,
       child: row,
+    );
+  }
+}
+
+/// O nome do adversário e, entre parênteses, o nível dele (no Maia).
+class _OpponentName extends StatelessWidget {
+  const _OpponentName({
+    required this.index,
+    required this.attempt,
+    required this.character,
+  });
+
+  final int index;
+  final Attempt attempt;
+  final Character? character;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final level = attempt.opponent == OpponentKind.maia
+        ? attempt.opponentLevel
+        : null;
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: character?.name ?? attempt.opponent.label(l10n, level: level),
+            style: const TextStyle(fontWeight: AppWeight.strong),
+          ),
+          if (level != null && character != null)
+            TextSpan(
+              text: ' ($level)',
+              style: TextStyle(
+                color: colors.onSurfaceVariant,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+        ],
+      ),
+      key: RatingKeys.entryOpponent(index),
+      style: theme.textTheme.titleMedium,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+}
+
+/// A precisão do jogador numa pílula, nas partidas já revisadas.
+class _AccuracyChip extends StatelessWidget {
+  const _AccuracyChip({required this.index, required this.accuracy});
+
+  final int index;
+  final double accuracy;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    return Tooltip(
+      message: l10n.reviewAccuracy,
+      child: Container(
+        key: RatingKeys.entryAccuracy(index),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppShape.small),
+        ),
+        child: Text(
+          formatAccuracy(accuracy, Localizations.localeOf(context).toString()),
+          semanticsLabel:
+              '${l10n.reviewAccuracy} ${formatAccuracy(accuracy, Localizations.localeOf(context).toString())}',
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A marca do resultado: vitória, empate ou derrota.
+class _ResultBadge extends StatelessWidget {
+  const _ResultBadge({required this.index, required this.outcome});
+
+  final int index;
+  final AttemptOutcome outcome;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
+    final (resultColor, resultIcon, resultLabel) = switch (outcome) {
+      AttemptOutcome.win => (
+        ChangeColors.of(context, up: true),
+        Icons.add_rounded,
+        l10n.attemptWin,
+      ),
+      AttemptOutcome.draw => (
+        colors.outline,
+        Icons.drag_handle_rounded,
+        l10n.attemptDraw,
+      ),
+      AttemptOutcome.loss => (
+        ChangeColors.of(context, up: false),
+        Icons.remove_rounded,
+        l10n.attemptLoss,
+      ),
+    };
+    return Container(
+      key: RatingKeys.entryResult(index),
+      width: 22,
+      height: 22,
+      decoration: BoxDecoration(
+        color: resultColor,
+        borderRadius: BorderRadius.circular(AppShape.small),
+      ),
+      child: Icon(
+        resultIcon,
+        size: AppIconSize.button,
+        color: colors.surface,
+        semanticLabel: resultLabel,
+      ),
+    );
+  }
+}
+
+/// Quanto a partida mudou o rating e como ele ficou. Largura mínima de 64;
+/// cresce com a fonte.
+class _RatingChange extends StatelessWidget {
+  const _RatingChange({
+    required this.index,
+    required this.change,
+    required this.rating,
+  });
+
+  final int index;
+  final int? change;
+  final int rating;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final change = this.change;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 64),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (change != null)
+            Text(
+              signedChange(change),
+              key: RatingKeys.entryChange(index),
+              textDirection: TextDirection.ltr,
+              style: context.cardTitle?.copyWith(
+                color: change == 0
+                    ? colors.onSurfaceVariant
+                    : ChangeColors.of(context, up: change > 0),
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          Text(
+            '$rating',
+            key: RatingKeys.entryRating(index),
+            style:
+                (change == null
+                        ? context.cardTitle
+                        : theme.textTheme.labelMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ))
+                    ?.copyWith(
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+          ),
+        ],
+      ),
     );
   }
 }

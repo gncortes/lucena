@@ -187,8 +187,6 @@ class _Intro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final cubit = context.read<PlacementCubit>();
     final viktor = state.viktor;
@@ -237,42 +235,7 @@ class _Intro extends StatelessWidget {
                 // card abaixo dos selos.
                 if (state.resuming) ...[
                   const SizedBox(height: AppSpacing.xl),
-                  Card(
-                    key: PlacementKeys.stoppedCard,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.insideCard),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: AppSpacing.md,
-                        children: [
-                          Icon(Icons.history_rounded, color: colors.primary),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: AppSpacing.xs,
-                              children: [
-                                Text(
-                                  l10n.placementStoppedAt(
-                                    state.number,
-                                    PlacementState.questionCount,
-                                  ),
-                                  key: PlacementKeys.stoppedAt,
-                                  style: theme.textTheme.titleMedium,
-                                ),
-                                Text(
-                                  l10n.placementAnswersSaved,
-                                  key: PlacementKeys.answersSaved,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  _StoppedCard(state: state),
                 ],
               ],
             ),
@@ -310,6 +273,56 @@ class _Intro extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Na retomada, o card de onde o teste parou.
+class _StoppedCard extends StatelessWidget {
+  const _StoppedCard({required this.state});
+
+  final PlacementViewState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Card(
+      key: PlacementKeys.stoppedCard,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.insideCard),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.md,
+          children: [
+            Icon(Icons.history_rounded, color: colors.primary),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.xs,
+                children: [
+                  Text(
+                    l10n.placementStoppedAt(
+                      state.number,
+                      PlacementState.questionCount,
+                    ),
+                    key: PlacementKeys.stoppedAt,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  Text(
+                    l10n.placementAnswersSaved,
+                    key: PlacementKeys.answersSaved,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

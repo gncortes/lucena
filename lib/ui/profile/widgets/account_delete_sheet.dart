@@ -101,8 +101,6 @@ class _AccountDeleteSheetState extends State<AccountDeleteSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return BlocConsumer<AccountDeleteCubit, AccountDeleteState>(
       listenWhen: (before, now) => _endSteps.contains(now.step),
       listener: (context, state) => Navigator.of(context).pop(state.step),
@@ -122,71 +120,7 @@ class _AccountDeleteSheetState extends State<AccountDeleteSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SheetHeader(title: l10n.conApagarTitle, hint: l10n.conApagarHint),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl,
-                  0,
-                  AppSpacing.xl,
-                  AppSpacing.lg,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      l10n.conApagarLose,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: _gap),
-                    KeyedSubtree(
-                      key: AccountKeys.deleteLose,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _LoseItem(Icons.school, l10n.conApagarLoseLessons),
-                          const SizedBox(height: _gap),
-                          _LoseItem(
-                            Icons.trending_up,
-                            l10n.conApagarLoseRating,
-                          ),
-                          const SizedBox(height: _gap),
-                          _LoseItem(Icons.person, l10n.conApagarLoseProfile),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: _gap),
-                    _PlayWarning(text: l10n.conApagarPlay),
-                    const SizedBox(height: _gap),
-                    Text(
-                      l10n.conApagarDevice,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                    if (notice != null) ...[
-                      const SizedBox(height: _gap),
-                      Row(
-                        key: AccountKeys.deleteNotice,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.error, color: colors.error),
-                          const SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                            child: Text(
-                              notice,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colors.error,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+              _DeleteBody(notice: notice),
               ActionsFooter(
                 stacked: true,
                 margin: AppSpacing.xl,
@@ -218,6 +152,83 @@ class _AccountDeleteSheetState extends State<AccountDeleteSheet> {
           ),
         );
       },
+    );
+  }
+}
+
+/// O corpo da folha: o que se perde, o aviso do Play e o último aviso.
+class _DeleteBody extends StatelessWidget {
+  const _DeleteBody({required this.notice});
+
+  final String? notice;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final notice = this.notice;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        0,
+        AppSpacing.xl,
+        AppSpacing.lg,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.conApagarLose,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: _gap),
+          KeyedSubtree(
+            key: AccountKeys.deleteLose,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _LoseItem(Icons.school, l10n.conApagarLoseLessons),
+                const SizedBox(height: _gap),
+                _LoseItem(Icons.trending_up, l10n.conApagarLoseRating),
+                const SizedBox(height: _gap),
+                _LoseItem(Icons.person, l10n.conApagarLoseProfile),
+              ],
+            ),
+          ),
+          const SizedBox(height: _gap),
+          _PlayWarning(text: l10n.conApagarPlay),
+          const SizedBox(height: _gap),
+          Text(
+            l10n.conApagarDevice,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+          if (notice != null) ...[
+            const SizedBox(height: _gap),
+            Row(
+              key: AccountKeys.deleteNotice,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.error, color: colors.error),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    notice,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.error,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

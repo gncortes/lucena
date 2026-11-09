@@ -121,32 +121,7 @@ class _Body extends StatelessWidget {
           children: itens,
         ),
         itens: [
-          ItemDaCascata.titulo(
-            _Container(
-              children: [
-                Icon(
-                  Icons.explore,
-                  size: AppIconSize.large,
-                  color: colors.primary,
-                ),
-                Text(
-                  l10n.venPlanSaleTitle,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontSize: 24,
-                    height: 32 / 24,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  l10n.venPlanSaleText(sale.lessons),
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontSize: 16,
-                    height: 24 / 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ItemDaCascata.titulo(_PlanIntro(sale: sale)),
           ItemDaCascata.numero(
             Row(
               spacing: AppSpacing.sm,
@@ -166,40 +141,7 @@ class _Body extends StatelessWidget {
               ],
             ),
           ),
-          ItemDaCascata.texto(
-            PilaresBenefitSection(
-              compact: true,
-              label: l10n.venPlanSaleTake,
-              items: [
-                (Icons.quiz, l10n.venBenefitLevel, l10n.venPlanSaleLevelText),
-                (
-                  Icons.stadium,
-                  l10n.venBenefitTournament,
-                  l10n.venBenefitTournamentText,
-                ),
-                (
-                  Icons.task_alt,
-                  l10n.venBenefitGoals,
-                  l10n.venPlanSaleGoalsText,
-                ),
-                (
-                  Icons.event_repeat,
-                  l10n.venPlanSaleFollow,
-                  l10n.venPlanSaleFollowText,
-                ),
-                (
-                  Icons.insights,
-                  l10n.venBenefitProgress,
-                  l10n.venPlanSaleProgressText,
-                ),
-                (
-                  Icons.history,
-                  l10n.venPlanSaleReview,
-                  l10n.venPlanSaleReviewText,
-                ),
-              ],
-            ),
-          ),
+          ItemDaCascata.texto(const _PlanTake()),
           ItemDaCascata.texto(
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -221,47 +163,7 @@ class _Body extends StatelessWidget {
           ItemDaCascata.texto(
             SaleCostCompare(key: PurchaseKeys.planSaleCompare, sale: sale),
           ),
-          ItemDaCascata.texto(
-            _Container(
-              children: [
-                Row(
-                  spacing: AppSpacing.lg,
-                  children: [
-                    Icon(
-                      Icons.card_giftcard,
-                      size: AppIconSize.standard,
-                      color: colors.primary,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 2,
-                        children: [
-                          Text(
-                            l10n.venPlanSaleTry,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontSize: 16,
-                              height: 24 / 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            l10n.venPlanSaleTryText,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 14,
-                              height: 20 / 14,
-                              letterSpacing: 0,
-                              color: colors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          ItemDaCascata.texto(const _PlanTry()),
           ItemDaCascata.texto(
             Text(
               l10n.venPlanSaleClosing,
@@ -384,6 +286,121 @@ class _Chip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// O bloco de abertura: ícone, título e texto do plano.
+class _PlanIntro extends StatelessWidget {
+  const _PlanIntro({required this.sale});
+
+  final CourseSale sale;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return _Container(
+      children: [
+        Icon(Icons.explore, size: AppIconSize.large, color: colors.primary),
+        Text(
+          l10n.venPlanSaleTitle,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontSize: 24,
+            height: 32 / 24,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          l10n.venPlanSaleText(sale.lessons),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontSize: 16,
+            height: 24 / 16,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Os benefícios que o plano leva.
+class _PlanTake extends StatelessWidget {
+  const _PlanTake();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return PilaresBenefitSection(
+      compact: true,
+      label: l10n.venPlanSaleTake,
+      items: [
+        (Icons.quiz, l10n.venBenefitLevel, l10n.venPlanSaleLevelText),
+        (
+          Icons.stadium,
+          l10n.venBenefitTournament,
+          l10n.venBenefitTournamentText,
+        ),
+        (Icons.task_alt, l10n.venBenefitGoals, l10n.venPlanSaleGoalsText),
+        (
+          Icons.event_repeat,
+          l10n.venPlanSaleFollow,
+          l10n.venPlanSaleFollowText,
+        ),
+        (Icons.insights, l10n.venBenefitProgress, l10n.venPlanSaleProgressText),
+        (Icons.history, l10n.venPlanSaleReview, l10n.venPlanSaleReviewText),
+      ],
+    );
+  }
+}
+
+/// O bloco que convida a experimentar o Capítulo 1.
+class _PlanTry extends StatelessWidget {
+  const _PlanTry();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return _Container(
+      children: [
+        Row(
+          spacing: AppSpacing.lg,
+          children: [
+            Icon(
+              Icons.card_giftcard,
+              size: AppIconSize.standard,
+              color: colors.primary,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 2,
+                children: [
+                  Text(
+                    l10n.venPlanSaleTry,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontSize: 16,
+                      height: 24 / 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    l10n.venPlanSaleTryText,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      height: 20 / 14,
+                      letterSpacing: 0,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

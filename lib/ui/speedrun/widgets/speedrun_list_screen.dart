@@ -62,15 +62,6 @@ class SpeedrunListScreen extends StatelessWidget {
           category == state.category;
     }
 
-    Widget section(String title) => Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.sm,
-      ),
-      child: Text(title, style: context.sectionTitle),
-    );
     return Scaffold(
       key: SpeedrunKeys.listScreen,
       appBar: LucenaAppBar(
@@ -104,21 +95,7 @@ class SpeedrunListScreen extends StatelessWidget {
                   // O ritmo do modo, sempre à vista: a categoria e, dentro
                   // dela, o tempo. Cada ritmo tem os seus recordes, e o último
                   // de cada modo fica gravado.
-                  if (state.compactPace)
-                    _CompactPace(
-                      current: marathon ? state.marathonPace : state.pace,
-                      onChosen: marathon
-                          ? context.read<SpeedrunCubit>().chooseMarathonPace
-                          : context.read<SpeedrunCubit>().choosePace,
-                    )
-                  else
-                    _PacePicker(
-                      key: SpeedrunKeys.pace,
-                      current: marathon ? state.marathonPace : state.pace,
-                      onChosen: marathon
-                          ? context.read<SpeedrunCubit>().chooseMarathonPace
-                          : context.read<SpeedrunCubit>().choosePace,
-                    ),
+                  _PaceChooser(state: state, marathon: marathon),
                   // A dificuldade dos finais: abre na do nível do jogador; as
                   // outras ficam a um toque.
                   if (state.category != null &&
@@ -134,17 +111,9 @@ class SpeedrunListScreen extends StatelessWidget {
                             : summary.speedrun.kind != SpeedrunKind.marathon) &&
                         shown(summary),
                   ))
-                    Padding(
-                      key: SpeedrunKeys.empty,
-                      padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: Text(
-                        l10n.desafiosSpeedrunEmpty,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
+                    const _EmptyList(),
                   if (marathon) ...[
-                    section(l10n.speedrunEndingSection),
+                    _SectionTitle(l10n.speedrunEndingSection),
                     for (final summary in state.marathons)
                       if (shown(summary)) _Card(summary: summary),
                   ] else
@@ -154,7 +123,7 @@ class SpeedrunListScreen extends StatelessWidget {
                         (summary) =>
                             summary.speedrun.kind == kind && shown(summary),
                       )) ...[
-                        section(switch (kind) {
+                        _SectionTitle(switch (kind) {
                           SpeedrunKind.rung => l10n.speedrunRungSection,
                           SpeedrunKind.ending => l10n.speedrunEndingSection,
                           SpeedrunKind.exercises =>
@@ -644,4 +613,61 @@ class _PacePickerState extends State<_PacePicker> {
       ),
     );
   }
+}
+
+/// O título de uma seção da lista.
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle(this.title);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsetsDirectional.fromSTEB(
+      AppSpacing.lg,
+      AppSpacing.lg,
+      AppSpacing.lg,
+      AppSpacing.sm,
+    ),
+    child: Text(title, style: context.sectionTitle),
+  );
+}
+
+/// O ritmo do modo, sempre à vista: o compacto ou o seletor inteiro.
+class _PaceChooser extends StatelessWidget {
+  const _PaceChooser({required this.state, required this.marathon});
+
+  final SpeedrunState state;
+  final bool marathon;
+
+  @override
+  Widget build(BuildContext context) {
+    final current = marathon ? state.marathonPace : state.pace;
+    final onChosen = marathon
+        ? context.read<SpeedrunCubit>().chooseMarathonPace
+        : context.read<SpeedrunCubit>().choosePace;
+    return state.compactPace
+        ? _CompactPace(current: current, onChosen: onChosen)
+        : _PacePicker(
+            key: SpeedrunKeys.pace,
+            current: current,
+            onChosen: onChosen,
+          );
+  }
+}
+
+/// O aviso de que nenhum speedrun cabe na dificuldade escolhida.
+class _EmptyList extends StatelessWidget {
+  const _EmptyList();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    key: SpeedrunKeys.empty,
+    padding: const EdgeInsets.all(AppSpacing.xl),
+    child: Text(
+      context.l10n.desafiosSpeedrunEmpty,
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.bodyLarge,
+    ),
+  );
 }

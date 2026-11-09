@@ -340,94 +340,120 @@ class _Header extends StatelessWidget {
                 onPressed: () => context.push(Routes.settingsVoice),
               );
             }
-            final speaking = state.isSpeaking(text);
-            final l10n = context.l10n;
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // A velocidade da voz: cada toque passa para a próxima.
-                // Voz desligada: sem o chip de velocidade (CompFalaViktor, `voz`).
-                if (owner.showSpeedBadge &&
-                    soundEnabled &&
-                    state.settings.enabled)
-                  TextButton(
-                    key: VoiceKeys.speedButton,
-                    style: TextButton.styleFrom(
-                      visualDensity: owner.lessonV2
-                          ? VisualDensity.standard
-                          : VisualDensity.compact,
-                      minimumSize: Size(48, owner.lessonV2 ? 48 : 36),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                      ),
-                    ),
-                    onPressed: soundEnabled ? speech.nextSpeed : null,
-                    child: Tooltip(
-                      message: l10n.voiceSpeed,
-                      child: Text(l10n.voiceSpeedValue(state.settings.speed)),
-                    ),
-                  ),
-                // Onde ele fala sozinho, um botão só: ligado, um toque cala
-                // a voz dele (a escolha fica gravada); desligado, liga e já
-                // fala. Nos outros balões, ouvir e parar.
-                if (owner.speaks)
-                  IconButton(
-                    key: VoiceKeys.speakButton,
-                    visualDensity: owner.lessonV2
-                        ? VisualDensity.standard
-                        : VisualDensity.compact,
-                    tooltip: state.settings.enabled
-                        ? l10n.voiceAutoOff(owner.teacher.name)
-                        : l10n.voiceAutoOn(owner.teacher.name),
-                    isSelected: !state.settings.enabled,
-                    icon: const Icon(Icons.volume_up_outlined),
-                    selectedIcon: const SoundOffIcon(),
-                    onPressed: () async {
-                      if (owner._stackedIn(context) &&
-                          !(owner._settingsOf(context)?.state?.sound ?? true)) {
-                        return;
-                      }
-                      if (state.settings.enabled) {
-                        await speech.setEnabled(enabled: false);
-                        return;
-                      }
-                      await speech.setEnabled(enabled: true);
-                      if (!context.mounted ||
-                          !speech.state.settings.enabled ||
-                          (owner._stackedIn(context) &&
-                              !(owner._settingsOf(context)?.state?.sound ??
-                                  true))) {
-                        return;
-                      }
-                      await speech.say(
-                        text,
-                        speakerId: owner.teacher.id,
-                        language: language,
-                      );
-                    },
-                  )
-                else
-                  IconButton(
-                    key: VoiceKeys.speakButton,
-                    visualDensity: owner.lessonV2
-                        ? VisualDensity.standard
-                        : VisualDensity.compact,
-                    tooltip: speaking ? l10n.voiceStop : l10n.voiceListen,
-                    isSelected: speaking,
-                    icon: const Icon(Icons.volume_up_outlined),
-                    selectedIcon: const Icon(Icons.stop_circle_outlined),
-                    onPressed: soundEnabled
-                        ? () => speech.toggle(
-                            text,
-                            speakerId: owner.teacher.id,
-                            language: language,
-                          )
-                        : null,
-                  ),
-              ],
+            return _VoiceControls(
+              owner: owner,
+              speech: speech,
+              state: state,
+              text: text,
+              language: language,
+              soundEnabled: soundEnabled,
             );
           },
         ),
+      ],
+    );
+  }
+}
+
+/// Velocidade e ouvir/parar (ou ligar/desligar a voz) do balão.
+class _VoiceControls extends StatelessWidget {
+  const _VoiceControls({
+    required this.owner,
+    required this.speech,
+    required this.state,
+    required this.text,
+    required this.language,
+    required this.soundEnabled,
+  });
+
+  final TeacherSpeech owner;
+  final SpeechCubit speech;
+  final SpeechState state;
+  final String text;
+  final String language;
+  final bool soundEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final speaking = state.isSpeaking(text);
+    final l10n = context.l10n;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // A velocidade da voz: cada toque passa para a próxima.
+        // Voz desligada: sem o chip de velocidade (CompFalaViktor, `voz`).
+        if (owner.showSpeedBadge && soundEnabled && state.settings.enabled)
+          TextButton(
+            key: VoiceKeys.speedButton,
+            style: TextButton.styleFrom(
+              visualDensity: owner.lessonV2
+                  ? VisualDensity.standard
+                  : VisualDensity.compact,
+              minimumSize: Size(48, owner.lessonV2 ? 48 : 36),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            ),
+            onPressed: soundEnabled ? speech.nextSpeed : null,
+            child: Tooltip(
+              message: l10n.voiceSpeed,
+              child: Text(l10n.voiceSpeedValue(state.settings.speed)),
+            ),
+          ),
+        // Onde ele fala sozinho, um botão só: ligado, um toque cala
+        // a voz dele (a escolha fica gravada); desligado, liga e já
+        // fala. Nos outros balões, ouvir e parar.
+        if (owner.speaks)
+          IconButton(
+            key: VoiceKeys.speakButton,
+            visualDensity: owner.lessonV2
+                ? VisualDensity.standard
+                : VisualDensity.compact,
+            tooltip: state.settings.enabled
+                ? l10n.voiceAutoOff(owner.teacher.name)
+                : l10n.voiceAutoOn(owner.teacher.name),
+            isSelected: !state.settings.enabled,
+            icon: const Icon(Icons.volume_up_outlined),
+            selectedIcon: const SoundOffIcon(),
+            onPressed: () async {
+              if (owner._stackedIn(context) &&
+                  !(owner._settingsOf(context)?.state?.sound ?? true)) {
+                return;
+              }
+              if (state.settings.enabled) {
+                await speech.setEnabled(enabled: false);
+                return;
+              }
+              await speech.setEnabled(enabled: true);
+              if (!context.mounted ||
+                  !speech.state.settings.enabled ||
+                  (owner._stackedIn(context) &&
+                      !(owner._settingsOf(context)?.state?.sound ?? true))) {
+                return;
+              }
+              await speech.say(
+                text,
+                speakerId: owner.teacher.id,
+                language: language,
+              );
+            },
+          )
+        else
+          IconButton(
+            key: VoiceKeys.speakButton,
+            visualDensity: owner.lessonV2
+                ? VisualDensity.standard
+                : VisualDensity.compact,
+            tooltip: speaking ? l10n.voiceStop : l10n.voiceListen,
+            isSelected: speaking,
+            icon: const Icon(Icons.volume_up_outlined),
+            selectedIcon: const Icon(Icons.stop_circle_outlined),
+            onPressed: soundEnabled
+                ? () => speech.toggle(
+                    text,
+                    speakerId: owner.teacher.id,
+                    language: language,
+                  )
+                : null,
+          ),
       ],
     );
   }
@@ -628,107 +654,132 @@ class _Speech extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (owner.explanation case final payload?) {
-      var paragraphIndex = 0;
-      return ExplanationCards(
-        payload: payload,
-        lessonV2: owner.lessonV2,
-        onVariation: owner.onVariation,
-        activeCursor: owner.activeVariation,
-        hasInlineNavigation: (text, variation, origin) =>
-            owner.onVariation != null &&
-            // O rótulo real é "A"/"B": vale o primeiro lance da variação.
-            variation.movesSan.isNotEmpty &&
-            SpeechLinks.find(
-              variation.movesSan.first,
-              SpeechLinks.lettersFor(
-                Localizations.localeOf(context).languageCode,
-              ),
-            ).any(
-              (link) => link.isMove && link.text == variation.movesSan.first,
-            ) &&
-            SpeechLinks.find(
-              WikiMarkup.plain(text),
-              SpeechLinks.lettersFor(
-                Localizations.localeOf(context).languageCode,
-              ),
-            ).any(
-              (link) =>
-                  link.isMove &&
-                  payload
-                          .cursorForNotation(
-                            link.text,
-                            preferred: origin,
-                            strictPreferred: origin != null,
-                          )
-                          ?.variation
-                          .id ==
-                      variation.id,
-            ),
-        groupedParagraph: (paragraphs) {
-          final text = paragraphs.map((p) => p.text).join('\n\n');
-          ExplanationVariation? originOf(SpeechLink link) {
-            var start = 0;
-            for (final paragraph in paragraphs) {
-              final end = start + WikiMarkup.plain(paragraph.text).length;
-              if (link.start >= start && link.start < end) {
-                return paragraph.variation;
-              }
-              start = end + 2;
-            }
-            return null;
-          }
-
-          return _Bubble(
-            owner,
-            WikiMarkup.parse(text),
-            useBubbleKey: paragraphIndex++ == 0,
-            originOf: originOf,
-            onLinkOverride: (link) {
-              final origin = originOf(link);
-              final cursor = link.isMove
-                  ? payload.cursorForNotation(
-                      link.text,
-                      preferred: origin,
-                      strictPreferred: origin != null,
-                    )
-                  : null;
-              if (cursor != null && owner.onVariation != null) {
-                owner.onVariation!(cursor);
-              } else {
-                owner.onLink?.call(link);
-              }
-            },
-          );
-        },
-        paragraph: (text) => _Bubble(
-          owner,
-          WikiMarkup.parse(text),
-          useBubbleKey: paragraphIndex++ == 0,
-        ),
-        variationParagraph: (text, variation) => _Bubble(
-          owner,
-          WikiMarkup.parse(text),
-          useBubbleKey: paragraphIndex++ == 0,
-          originOf: (_) => variation,
-          onLinkOverride: variation == null
-              ? null
-              : (link) {
-                  final cursor = link.isMove
-                      ? payload.cursorForNotation(
-                          link.text,
-                          preferred: variation,
-                          strictPreferred: true,
-                        )
-                      : null;
-                  if (cursor != null && owner.onVariation != null) {
-                    owner.onVariation!(cursor);
-                  } else {
-                    owner.onLink?.call(link);
-                  }
-                },
-        ),
-      );
+      return _ExplanationSpeech(owner, payload);
     }
+    return _SwitchingBubble(owner);
+  }
+}
+
+/// A explicação em parágrafos, um balão por parágrafo.
+class _ExplanationSpeech extends StatelessWidget {
+  const _ExplanationSpeech(this.owner, this.payload);
+
+  final TeacherSpeech owner;
+  final ExplanationPayload payload;
+
+  @override
+  Widget build(BuildContext context) {
+    var paragraphIndex = 0;
+    return ExplanationCards(
+      payload: payload,
+      lessonV2: owner.lessonV2,
+      onVariation: owner.onVariation,
+      activeCursor: owner.activeVariation,
+      hasInlineNavigation: (text, variation, origin) =>
+          owner.onVariation != null &&
+          // O rótulo real é "A"/"B": vale o primeiro lance da variação.
+          variation.movesSan.isNotEmpty &&
+          SpeechLinks.find(
+            variation.movesSan.first,
+            SpeechLinks.lettersFor(
+              Localizations.localeOf(context).languageCode,
+            ),
+          ).any(
+            (link) => link.isMove && link.text == variation.movesSan.first,
+          ) &&
+          SpeechLinks.find(
+            WikiMarkup.plain(text),
+            SpeechLinks.lettersFor(
+              Localizations.localeOf(context).languageCode,
+            ),
+          ).any(
+            (link) =>
+                link.isMove &&
+                payload
+                        .cursorForNotation(
+                          link.text,
+                          preferred: origin,
+                          strictPreferred: origin != null,
+                        )
+                        ?.variation
+                        .id ==
+                    variation.id,
+          ),
+      groupedParagraph: (paragraphs) {
+        final text = paragraphs.map((p) => p.text).join('\n\n');
+        ExplanationVariation? originOf(SpeechLink link) {
+          var start = 0;
+          for (final paragraph in paragraphs) {
+            final end = start + WikiMarkup.plain(paragraph.text).length;
+            if (link.start >= start && link.start < end) {
+              return paragraph.variation;
+            }
+            start = end + 2;
+          }
+          return null;
+        }
+
+        return _Bubble(
+          owner,
+          WikiMarkup.parse(text),
+          useBubbleKey: paragraphIndex++ == 0,
+          originOf: originOf,
+          onLinkOverride: (link) {
+            final origin = originOf(link);
+            final cursor = link.isMove
+                ? payload.cursorForNotation(
+                    link.text,
+                    preferred: origin,
+                    strictPreferred: origin != null,
+                  )
+                : null;
+            if (cursor != null && owner.onVariation != null) {
+              owner.onVariation!(cursor);
+            } else {
+              owner.onLink?.call(link);
+            }
+          },
+        );
+      },
+      paragraph: (text) => _Bubble(
+        owner,
+        WikiMarkup.parse(text),
+        useBubbleKey: paragraphIndex++ == 0,
+      ),
+      variationParagraph: (text, variation) => _Bubble(
+        owner,
+        WikiMarkup.parse(text),
+        useBubbleKey: paragraphIndex++ == 0,
+        originOf: (_) => variation,
+        onLinkOverride: variation == null
+            ? null
+            : (link) {
+                final cursor = link.isMove
+                    ? payload.cursorForNotation(
+                        link.text,
+                        preferred: variation,
+                        strictPreferred: true,
+                      )
+                    : null;
+                if (cursor != null && owner.onVariation != null) {
+                  owner.onVariation!(cursor);
+                } else {
+                  owner.onLink?.call(link);
+                }
+              },
+      ),
+    );
+  }
+}
+
+/// O balão de uma fala só, que troca de texto com uma transição suave.
+class _SwitchingBubble extends StatelessWidget {
+  const _SwitchingBubble(this.owner);
+
+  final TeacherSpeech owner;
+
+  @override
+  Widget build(BuildContext context) {
     final text = owner.text;
     final plain = owner._plain;
     return AnimatedSize(
@@ -901,29 +952,6 @@ class _Bubble extends StatelessWidget {
       decoration: TextDecoration.underline,
       decorationColor: colors.primary,
     );
-    bool isActiveMove(SpeechLink link) {
-      final active = owner.activeVariation;
-      if (!owner.lessonV2 || !link.isMove || active == null) return false;
-      final origin = originOf?.call(link);
-      final cursor = owner.explanation?.cursorForNotation(
-        link.text,
-        preferred: origin,
-        strictPreferred: origin != null,
-      );
-      return cursor != null &&
-          cursor.variation.id == active.variation.id &&
-          cursor.fen == active.fen &&
-          cursor.ply == active.ply;
-    }
-
-    // Parágrafos da mesma ideia viram um só fluxo (0 dp entre eles): o par de
-    // quebras vira espaço, de mesmo tamanho para não mexer nos deslocamentos.
-    Iterable<InlineSpan> plainSpans(String value, int offset) sync* {
-      yield TextSpan(
-        text: owner.lessonV2 ? value.replaceAll('\n\n', ' \u200B') : value,
-      );
-    }
-
     final spans = [
       for (final link in links)
         (
@@ -955,41 +983,12 @@ class _Bubble extends StatelessWidget {
             ]
           : const [],
     );
-    InlineSpan? styledSpans() {
-      if (spans.isEmpty && !owner.lessonV2) return null;
-      final breaks = <int>{
-        0,
-        text.length,
-        for (final (start, end, _) in spans) ...[start, end],
-        for (final (start, end) in offsets.ranges) ...[start, end],
-      }.toList()..sort();
-      return TextSpan(
-        children: [
-          for (var i = 0; i < breaks.length; i++) ...[
-            if (offsets.endsAt(breaks[i])) const TextSpan(text: _pdi),
-            if (offsets.startsAt(breaks[i])) const TextSpan(text: _lri),
-            if (i + 1 < breaks.length)
-              if (spans
-                      .where(
-                        (span) => span.$1 <= breaks[i] && span.$2 > breaks[i],
-                      )
-                      .firstOrNull
-                  case final span?)
-                TextSpan(
-                  text: text.substring(breaks[i], breaks[i + 1]),
-                  style: span.$3,
-                )
-              else
-                ...plainSpans(
-                  text.substring(breaks[i], breaks[i + 1]),
-                  breaks[i],
-                ),
-          ],
-        ],
-      );
-    }
-
-    final rich = styledSpans();
+    final rich = _styledSpans(
+      text: text,
+      spans: spans,
+      offsets: offsets,
+      lessonV2: owner.lessonV2,
+    );
     final words = rich == null
         ? Text(text, key: useBubbleKey ? owner.bubbleKey : null, style: style)
         : Text.rich(
@@ -998,6 +997,110 @@ class _Bubble extends StatelessWidget {
             style: style,
             textDirection: direction,
           );
+    return _BubbleBody(
+      owner: owner,
+      text: text,
+      words: words,
+      pages: pages,
+      links: links,
+      hasSpans: spans.isNotEmpty,
+      offsets: offsets,
+      originOf: originOf,
+      onLink: onLink,
+      section: section,
+    );
+  }
+}
+
+/// Os trechos do texto com o estilo de cada link, nome ou lance, e os
+/// isolamentos LTR das notações em parágrafo RTL; nulo se não há o que marcar.
+InlineSpan? _styledSpans({
+  required String text,
+  required List<(int, int, TextStyle)> spans,
+  required _BidiOffsets offsets,
+  required bool lessonV2,
+}) {
+  // Parágrafos da mesma ideia viram um só fluxo (0 dp entre eles): o par de
+  // quebras vira espaço, de mesmo tamanho para não mexer nos deslocamentos.
+  Iterable<InlineSpan> plainSpans(String value, int offset) sync* {
+    yield TextSpan(
+      text: lessonV2 ? value.replaceAll('\n\n', ' \u200B') : value,
+    );
+  }
+
+  if (spans.isEmpty && !lessonV2) return null;
+  final breaks = <int>{
+    0,
+    text.length,
+    for (final (start, end, _) in spans) ...[start, end],
+    for (final (start, end) in offsets.ranges) ...[start, end],
+  }.toList()..sort();
+  return TextSpan(
+    children: [
+      for (var i = 0; i < breaks.length; i++) ...[
+        if (offsets.endsAt(breaks[i])) const TextSpan(text: _pdi),
+        if (offsets.startsAt(breaks[i])) const TextSpan(text: _lri),
+        if (i + 1 < breaks.length)
+          if (spans
+                  .where((span) => span.$1 <= breaks[i] && span.$2 > breaks[i])
+                  .firstOrNull
+              case final span?)
+            TextSpan(
+              text: text.substring(breaks[i], breaks[i + 1]),
+              style: span.$3,
+            )
+          else
+            ...plainSpans(text.substring(breaks[i], breaks[i + 1]), breaks[i]),
+      ],
+    ],
+  );
+}
+
+/// O balão pronto: o texto com os toques nas casas, lances e nomes, a leitura
+/// para o leitor de tela e, fora da folha, o balão com a ponta.
+class _BubbleBody extends StatelessWidget {
+  const _BubbleBody({
+    required this.owner,
+    required this.text,
+    required this.words,
+    required this.pages,
+    required this.links,
+    required this.hasSpans,
+    required this.offsets,
+    required this.originOf,
+    required this.onLink,
+    required this.section,
+  });
+
+  final TeacherSpeech owner;
+  final String text;
+  final Text words;
+  final List<(WikiMark, Uri)> pages;
+  final List<SpeechLink> links;
+  final bool hasSpans;
+  final _BidiOffsets offsets;
+  final ExplanationVariation? Function(SpeechLink)? originOf;
+  final ValueChanged<SpeechLink>? onLink;
+  final bool section;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    bool isActiveMove(SpeechLink link) {
+      final active = owner.activeVariation;
+      if (!owner.lessonV2 || !link.isMove || active == null) return false;
+      final origin = originOf?.call(link);
+      final cursor = owner.explanation?.cursorForNotation(
+        link.text,
+        preferred: origin,
+        strictPreferred: origin != null,
+      );
+      return cursor != null &&
+          cursor.variation.id == active.variation.id &&
+          cursor.fen == active.fen &&
+          cursor.ply == active.ply;
+    }
+
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
     // se havia trecho ali.
     // Tocar numa casa abre o destaque dela e baixa o painel até a borda do
@@ -1024,7 +1127,7 @@ class _Bubble extends StatelessWidget {
       return false;
     }
 
-    final tappable = spans.isEmpty ? null : tapAt;
+    final tappable = hasSpans ? tapAt : null;
     // Alvo de toque de 48 dp (A6): o toque perto do glifo vale no link mais
     // próximo. Só na lição V2.
     final snap = owner.lessonV2
