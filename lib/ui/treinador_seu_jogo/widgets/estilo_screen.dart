@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/view_models/coach.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../../routing/frentes/treinador_seu_jogo_routes.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
@@ -12,7 +13,6 @@ import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_card.dart';
 import '../view_models/seu_jogo_cubit.dart';
-import 'seu_jogo_aba.dart';
 import 'seu_jogo_pecas.dart';
 import 'seu_jogo_textos.dart';
 
@@ -24,7 +24,7 @@ class SeuJogoEstiloScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (c) => criarSeuJogoCubit(c)..load(),
+      create: (c) => createYourGameCubit(c)..load(),
       child: Scaffold(
         key: SeuJogoKeys.estiloScreen,
         appBar: LucenaAppBar(

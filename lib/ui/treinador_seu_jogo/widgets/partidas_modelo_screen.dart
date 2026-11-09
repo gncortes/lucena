@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/treinador/treinador_repository.dart';
+import '../../../config/view_models/coach.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -28,10 +28,7 @@ class PartidasModeloScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     return BlocProvider(
-      create: (c) => PartidasModeloCubit(
-        repository: c.read<TreinadorRepository>(),
-        eco: eco,
-      )..load(),
+      create: (c) => createModelGamesCubit(c, eco: eco)..load(),
       child: Scaffold(
         key: SeuJogoKeys.modelosScreen,
         appBar: LucenaAppBar(title: Text(t.sjModelosTitulo), centerTitle: true),

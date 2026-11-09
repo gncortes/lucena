@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/treinador/seu_jogo_filtro_repository.dart';
-import '../../../data/repositories/treinador/treinador_repository.dart';
+import '../../../config/view_models/coach.dart';
 import '../../../domain/models/treinador/treinador.dart';
-import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/treinador/resumo_seu_jogo.dart';
 import '../../../routing/frentes/treinador_seu_jogo_routes.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
@@ -25,13 +23,6 @@ import '../view_models/seu_jogo_cubit.dart';
 import 'foco_card.dart';
 import 'seu_jogo_pecas.dart';
 import 'seu_jogo_textos.dart';
-
-/// Cria o view model da aba com o que o app já registrou.
-SeuJogoCubit criarSeuJogoCubit(BuildContext context) => SeuJogoCubit(
-  repository: context.read<TreinadorRepository>(),
-  filtro: context.read<SeuJogoFiltroRepository>(),
-  now: context.read<Now>(),
-)..load();
 
 /// A aba Seu jogo em tela própria (aberta de fora do casco do Treinador).
 class SeuJogoScreen extends StatelessWidget {
@@ -56,7 +47,10 @@ class SeuJogoAba extends StatelessWidget {
   Widget build(BuildContext context) {
     final temCubit = context.select<SeuJogoCubit?, bool>((c) => c != null);
     if (temCubit) return const _Corpo();
-    return const BlocProvider(create: criarSeuJogoCubit, child: _Corpo());
+    return BlocProvider(
+      create: (c) => createYourGameCubit(c)..load(),
+      child: const _Corpo(),
+    );
   }
 }
 

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/lesson_ad/course_access_repository.dart';
-import '../../../data/repositories/training/course_training_repository.dart';
+import '../../../config/view_models/coach.dart';
 import '../../../domain/use_cases/treinador/abertura_no_pilares.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
@@ -36,12 +35,8 @@ class PilaresAberturaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (c) => CursoDaAberturaCubit(
-        training: c.read<TrainingRepository>(),
-        access: c.read<CourseAccessRepository>(),
-        slot: slot,
-        parte: parte,
-      )..load(),
+      create: (c) =>
+          createOpeningCourseCubit(c, slot: slot, parte: parte)..load(),
       child: Scaffold(
         key: SeuJogoKeys.pilaresScreen,
         appBar: LucenaAppBar(

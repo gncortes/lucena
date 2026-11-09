@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/lesson_ad/course_access_repository.dart';
-import '../../../data/repositories/training/course_training_repository.dart';
+import '../../../config/view_models/coach.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/treinador/abertura_no_curso.dart';
 import '../../../domain/use_cases/treinador/resumo_seu_jogo.dart';
@@ -123,9 +122,8 @@ class FocoCard extends StatelessWidget {
                               case final slot?)
                             BlocProvider(
                               key: ValueKey(slot),
-                              create: (c) => CursoDaAberturaCubit(
-                                training: c.read<TrainingRepository>(),
-                                access: c.read<CourseAccessRepository>(),
+                              create: (c) => createOpeningCourseCubit(
+                                c,
                                 slot: slot,
                                 parte: abertura.curso?.parte,
                               )..load(),

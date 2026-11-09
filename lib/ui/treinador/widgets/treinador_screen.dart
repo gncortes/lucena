@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/treinador/treinador_repository.dart';
+import '../../../config/view_models/coach.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../routing/routes.dart';
@@ -617,10 +617,8 @@ class _LigarContaState extends State<_LigarConta> {
                 ] else
                   BlocProvider(
                     key: ValueKey(plataforma),
-                    create: (c) => LigarContaCubit(
-                      repository: c.read<TreinadorRepository>(),
-                      plataforma: plataforma,
-                    ),
+                    create: (c) =>
+                        createLinkAccountCubit(c, plataforma: plataforma),
                     child: _FormConta(
                       onTrocar: () => setState(() => _plataforma = null),
                     ),

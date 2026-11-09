@@ -1,32 +1,18 @@
 import '../../ui/treinador_seu_jogo/widgets/seu_jogo_aba.dart';
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../data/repositories/analysis/analysis_repository.dart';
-import '../../data/repositories/characters/character_repository.dart';
-import '../../data/repositories/lesson_ad/course_grants_repository.dart';
-import '../../data/repositories/settings/settings_repository.dart';
-import '../../data/repositories/treinador/curiosidades_repository.dart';
-import '../../data/repositories/treinador/treinador_preferencias.dart';
-import '../../data/repositories/treinador/treinador_repository.dart';
-import '../../domain/models/treinador/treinador.dart';
-import '../../domain/use_cases/now.dart';
 import '../../domain/use_cases/treinador/revisao_da_partida.dart';
+import '../../config/view_models/coach.dart';
 import '../../ui/core/keys/treinador_keys.dart';
+import '../../ui/treinador/view_models/coach_analysis_cubit.dart';
 import '../../ui/core/l10n/l10n.dart';
 import '../../ui/core/widgets/load_error.dart';
 import '../../ui/core/widgets/load_skeleton.dart';
 import '../../ui/game_details/view_models/game_details_cubit.dart';
 import '../../ui/game_details/widgets/game_details_screen.dart';
-import '../../ui/survey/view_models/viktor_thanks_cubit.dart';
-import '../../ui/treinador/view_models/curiosidades_cubit.dart';
-import '../../ui/treinador/view_models/treinador_cubit.dart';
-import '../../ui/treinador/view_models/treinador_exercicio_cubit.dart';
-import '../../ui/treinador/view_models/treinador_partida_cubit.dart';
 import '../../ui/treinador/widgets/treinador_exercicio_screen.dart';
 import '../../ui/treinador/widgets/treinador_partida_screen.dart';
 import '../../ui/treinador/widgets/treinador_screen.dart';
@@ -48,12 +34,7 @@ final List<RouteBase> treinadorRoutes = [
     name: RouteNames.treinador,
     path: TreinadorPaths.treinador,
     builder: (context, state) => BlocProvider(
-      create: (c) => TreinadorCubit(
-        repository: c.read<TreinadorRepository>(),
-        grants: c.read<CourseGrantsRepository>(),
-        preferencias: c.read<TreinadorPreferencias>(),
-        now: c.read<Now>(),
-      )..load(),
+      create: (c) => createCoachCubit(c)..load(),
       child: _VoltarDoSistema(
         destino: Routes.home,
         child: TreinadorScreen(
@@ -72,26 +53,9 @@ final List<RouteBase> treinadorRoutes = [
       final id = state.pathParameters['id']!;
       return MultiBlocProvider(
         providers: [
-          BlocProvider(
-            create: (c) => TreinadorPartidaCubit(
-              id: id,
-              repository: c.read<TreinadorRepository>(),
-              grants: c.read<CourseGrantsRepository>(),
-              preferencias: c.read<TreinadorPreferencias>(),
-              now: c.read<Now>(),
-            )..load(),
-          ),
-          BlocProvider(
-            create: (c) => CuriosidadesCubit(
-              repository: c.read<CuriosidadesRepository>(),
-              now: c.read<Now>(),
-            )..load(),
-          ),
-          BlocProvider(
-            create: (c) =>
-                ViktorThanksCubit(characters: c.read<CharacterRepository>())
-                  ..load(),
-          ),
+          BlocProvider(create: (c) => createCoachGameCubit(c, id: id)..load()),
+          BlocProvider(create: (c) => createTriviaCubit(c)..load()),
+          BlocProvider(create: (c) => createViktorThanksCubit(c)..load()),
         ],
         child: const _VoltarDoSistema(child: TreinadorPartidaScreen()),
       );
@@ -103,18 +67,13 @@ final List<RouteBase> treinadorRoutes = [
     builder: (context, state) => MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (c) => TreinadorExercicioCubit(
+          create: (c) => createCoachExerciseCubit(
+            c,
             id: state.pathParameters['id']!,
-            repository: c.read<TreinadorRepository>(),
-            preferencias: c.read<TreinadorPreferencias>(),
-            refazer: state.uri.queryParameters['refazer'] == '1',
+            redo: state.uri.queryParameters['refazer'] == '1',
           )..load(),
         ),
-        BlocProvider(
-          create: (c) =>
-              ViktorThanksCubit(characters: c.read<CharacterRepository>())
-                ..load(),
-        ),
+        BlocProvider(create: (c) => createViktorThanksCubit(c)..load()),
       ],
       child: const _VoltarDoSistema(child: TreinadorExercicioScreen()),
     ),
@@ -154,7 +113,7 @@ class _VoltarDoSistema extends StatelessWidget {
 /// A análise completa da partida, na mesma base da análise de partida do app
 /// ([GameDetailsScreen]): a linha do PGN, a qualidade de cada lance pela
 /// classe do servidor e os comentários do treinador.
-class _AnaliseDaPartida extends StatefulWidget {
+class _AnaliseDaPartida extends StatelessWidget {
   const _AnaliseDaPartida({required this.id, this.lance});
 
   final String id;
@@ -163,47 +122,29 @@ class _AnaliseDaPartida extends StatefulWidget {
   final int? lance;
 
   @override
-  State<_AnaliseDaPartida> createState() => _AnaliseDaPartidaState();
+  Widget build(BuildContext context) => BlocProvider(
+    create: (c) => createCoachAnalysisCubit(c, id: id)..load(),
+    child: _AnaliseCorpo(lance: lance),
+  );
 }
 
-class _AnaliseDaPartidaState extends State<_AnaliseDaPartida> {
-  late final Future<PartidaTreinador?> _partida = context
-      .read<TreinadorRepository>()
-      .partida(widget.id)
-      .first
-      .timeout(const Duration(seconds: 20));
+class _AnaliseCorpo extends StatelessWidget {
+  const _AnaliseCorpo({this.lance});
 
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_marcarVista());
-  }
-
-  /// `progresso.viuAnalise` (o funil do painel): uma vez por partida.
-  Future<void> _marcarVista() async {
-    final repository = context.read<TreinadorRepository>();
-    try {
-      final progresso = await repository.progresso(widget.id);
-      if (progresso.viuAnalise) return;
-      await repository.salvarProgresso(widget.id, progresso.comAnaliseVista());
-    } on Object catch (e) {
-      debugPrint('análise vista sem gravar: $e');
-    }
-  }
+  final int? lance;
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    return FutureBuilder<PartidaTreinador?>(
-      future: _partida,
-      builder: (context, snap) {
-        if (snap.connectionState != ConnectionState.done) {
+    return BlocBuilder<CoachAnalysisCubit, CoachAnalysisState>(
+      builder: (context, state) {
+        final partida = state.game;
+        if (state.status == CoachAnalysisStatus.loading) {
           return LoadSkeletonScreen(title: l.treinadorAnaliseTitulo);
         }
-        final partida = snap.data;
-        if (snap.hasError || partida == null) {
+        if (partida == null) {
           return LoadErrorScreen(
-            kind: snap.hasError
+            kind: state.status == CoachAnalysisStatus.offline
                 ? LoadErrorKind.offline
                 : LoadErrorKind.notFound,
             onAction: () => context.go(Routes.treinador()),
@@ -214,17 +155,13 @@ class _AnaliseDaPartidaState extends State<_AnaliseDaPartida> {
         }
         final jogo = RevisaoDaPartida.de(
           partida,
-          lance: widget.lance,
+          lance: lance,
           peso: GameDetailsCubit.importedWeight,
         );
         return KeyedSubtree(
           key: TreinadorKeys.analise,
           child: BlocProvider(
-            create: (c) => GameDetailsCubit.imported(
-              jogo,
-              analysis: c.read<AnalysisRepository>(),
-              settings: c.read<SettingsRepository>(),
-            )..load(),
+            create: (c) => createImportedGameDetailsCubit(c, jogo)..load(),
             child: GameDetailsScreen(
               title: l.treinadorAnaliseTitulo,
               onBack: () => Navigator.maybePop(context),

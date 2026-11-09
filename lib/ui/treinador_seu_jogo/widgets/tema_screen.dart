@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/view_models/coach.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/treinador/resumo_seu_jogo.dart';
@@ -22,7 +23,6 @@ import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/open_link.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/seu_jogo_cubit.dart';
-import 'seu_jogo_aba.dart';
 import 'seu_jogo_textos.dart';
 
 /// As posições de um tema em que ele errou, da mais recente.
@@ -35,7 +35,7 @@ class SeuJogoTemaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.l10n;
     return BlocProvider(
-      create: (c) => criarSeuJogoCubit(c)..load(),
+      create: (c) => createYourGameCubit(c)..load(),
       child: Scaffold(
         key: SeuJogoKeys.temaScreen,
         appBar: LucenaAppBar(title: Text(t.temaNome(tema)), centerTitle: true),

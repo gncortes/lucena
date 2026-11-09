@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../data/repositories/treinador/treinador_repository.dart';
+import '../../../config/view_models/coach.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/treinador_seu_jogo_keys.dart';
@@ -31,10 +31,7 @@ class SeuJogoTeoriaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (c) => TeoriaCubit(
-        repository: c.read<TreinadorRepository>(),
-        partidaId: partidaId,
-      )..load(),
+      create: (c) => createTheoryCubit(c, partidaId: partidaId)..load(),
       child: Scaffold(
         key: SeuJogoKeys.teoriaScreen,
         appBar: LucenaAppBar(
