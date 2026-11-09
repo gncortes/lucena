@@ -11,6 +11,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_chip.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
@@ -69,7 +70,7 @@ class _TreinadorScreenState extends State<TreinadorScreen> {
         if (state.carregando) {
           return LoadSkeletonScreen(title: l.treinadorTitle);
         }
-        if (state.falhou && state.partidas.isEmpty && state.conta == null) {
+        if (state.falhou && state.partidas.isEmpty) {
           return LoadErrorScreen(
             kind: LoadErrorKind.offline,
             onAction: context.read<TreinadorCubit>().tentarDeNovo,
@@ -100,30 +101,28 @@ class _TreinadorScreenState extends State<TreinadorScreen> {
                         ),
                   ),
                 },
-          bottomNavigationBar: semConta
-              ? null
-              : IconNavigationBar(
-                  selectedIndex: _aba.index,
-                  onDestinationSelected: (i) =>
-                      setState(() => _aba = AbaTreinador.values[i]),
-                  tabs: [
-                    (
-                      key: TreinadorKeys.tabHoje,
-                      label: l.treinadorTabHoje,
-                      icon: Icons.task_alt,
-                    ),
-                    (
-                      key: TreinadorKeys.tabPartidas,
-                      label: l.treinadorTabPartidas,
-                      icon: Icons.format_list_bulleted,
-                    ),
-                    (
-                      key: TreinadorKeys.tabSeuJogo,
-                      label: l.treinadorTabSeuJogo,
-                      icon: Icons.insights,
-                    ),
-                  ],
-                ),
+          bottomNavigationBar: IconNavigationBar(
+            selectedIndex: _aba.index,
+            onDestinationSelected: (i) =>
+                setState(() => _aba = AbaTreinador.values[i]),
+            tabs: [
+              (
+                key: TreinadorKeys.tabHoje,
+                label: l.treinadorTabHoje,
+                icon: Icons.task_alt,
+              ),
+              (
+                key: TreinadorKeys.tabPartidas,
+                label: l.treinadorTabPartidas,
+                icon: Icons.format_list_bulleted,
+              ),
+              (
+                key: TreinadorKeys.tabSeuJogo,
+                label: l.treinadorTabSeuJogo,
+                icon: Icons.insights,
+              ),
+            ],
+          ),
         );
       },
     );
@@ -132,6 +131,30 @@ class _TreinadorScreenState extends State<TreinadorScreen> {
 
 void _abrir(BuildContext context, PartidaTreinador p) =>
     unawaited(context.push(Routes.treinadorPartida(p.id)));
+
+/// Os exercícios ainda por fazer de uma partida pronta.
+List<ExercicioTreinador> _pendentes(PartidaTreinador p) {
+  if (!p.pronta) return const [];
+  final progresso = p.progresso ?? ProgressoPartida.vazio;
+  return [
+    for (final (i, ex) in p.exercicios.indexed)
+      if (progresso.resultados.isEmpty
+          ? i >= progresso.feitos
+          : !progresso.resultados.any((r) => r.n == ex.n))
+        ex,
+  ];
+}
+
+/// O nome do tema do exercício (`xeque_duplo` → "Xeque duplo"). Tema sem nome
+/// no app aparece com o texto do servidor sem os sublinhados.
+String? nomeTemaTreinador(AppLocalizations l, String? tema) {
+  if (tema == null || tema.isEmpty) return null;
+  final texto = tema.replaceAll('_', ' ');
+  return l.treinadorHojeTema(
+    tema,
+    '${texto[0].toUpperCase()}${texto.substring(1)}',
+  );
+}
 
 /// A aba Hoje: a última partida e os exercícios que faltam.
 class _Hoje extends StatelessWidget {
@@ -142,24 +165,19 @@ class _Hoje extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final agora = context.read<Now>()();
     final ultima = state.ultima;
     final paraFazer = [
       for (final p in state.partidas)
-        if (p.pronta &&
-            p.exercicios.isNotEmpty &&
-            !(p.progresso ?? ProgressoPartida.vazio).completo(
-              p.exercicios.length,
-            ))
-          p,
+        for (final ex in _pendentes(p)) (p, ex),
     ];
     return ListView(
       key: TreinadorKeys.hoje,
-      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.lg),
       children: [
         if (!state.acesso) const _SemPlano(),
-        SectionTitle(l.treinadorUltimaPartida),
         if (ultima == null)
           EmptyState(
             key: TreinadorKeys.hojeVazio,
@@ -182,10 +200,25 @@ class _Hoje extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.xs,
+                      ),
+                      child: Text(
+                        l.treinadorHojeUltima,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
                     LinhaPartida(
                       partida: ultima,
                       agora: agora,
                       acesso: state.acesso,
+                      mostrarResumo: true,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -203,35 +236,37 @@ class _Hoje extends StatelessWidget {
             ),
           ),
         if (ultima != null) ...[
-          const SizedBox(height: AppSpacing.md),
-          SectionTitle(l.treinadorParaFazer),
+          SectionTitle(l.treinadorHojeParaFazer),
           if (paraFazer.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: Text(
                 l.treinadorHojeEmDia,
-                style: Theme.of(context).textTheme.bodyMedium
-                    ?.copyWith(color: colors.onSurfaceVariant),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             )
           else
-            for (final p in paraFazer)
+            for (final (p, ex) in paraFazer)
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.md,
                   vertical: AppSpacing.xs,
                 ),
                 child: CourseItemTile(
-                  key: TreinadorKeys.paraFazer(p.id),
-                  state: (p.progresso?.feitos ?? 0) > 0
-                      ? CourseItemState.started
-                      : CourseItemState.next,
-                  title: p.adversario.nome,
-                  summary: l.treinadorEstadoExercicios(
-                    p.progresso?.feitos ?? 0,
-                    p.exercicios.length,
+                  key: TreinadorKeys.paraFazerExercicio(p.id, ex.n),
+                  state: CourseItemState.open,
+                  title:
+                      nomeTemaTreinador(l, ex.tema) ??
+                      l.treinadorLance(ex.lance),
+                  summary: l.treinadorHojeExercicio(
+                    p.adversario.nome,
+                    ex.lance,
                   ),
-                  onTap: () => _abrir(context, p),
+                  difficulty: ex.estrelas.clamp(1, 3),
+                  onTap: () =>
+                      unawaited(context.push(Routes.treinadorExercicios(p.id))),
                 ),
               ),
         ],
@@ -246,49 +281,61 @@ class _Partidas extends StatelessWidget {
 
   final TreinadorState state;
 
+  String _contagem(BuildContext context, int n) {
+    final l = context.l10n;
+    final filtro = state.filtro;
+    final nome = switch (filtro.resultado) {
+      null => l.treinadorListaPartidas(n),
+      Resultado.vitoria => l.treinadorListaVitorias(n),
+      Resultado.derrota => l.treinadorListaDerrotas(n),
+      Resultado.empate => l.treinadorListaEmpates(n),
+    };
+    final ritmo = filtro.ritmo;
+    if (ritmo != null) {
+      return l.treinadorListaContagemRitmo(
+        n,
+        nome,
+        context.ritmo(ritmo).toLowerCase(),
+      );
+    }
+    return l.treinadorListaContagemSite(
+      n,
+      nome,
+      context.plataforma(state.conta?.plataforma ?? Plataforma.lichess),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final theme = Theme.of(context);
     final cubit = context.read<TreinadorCubit>();
     final agora = context.read<Now>()();
     final filtro = state.filtro;
     final lista = state.filtradas;
     Widget chip(Key key, String label, bool selected, VoidCallback onTap) =>
-        Padding(
-          padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-          child: ChoiceChip(
-            key: key,
-            materialTapTargetSize: AppChip.tapTarget,
-            visualDensity: AppChip.density,
-            label: Text(label),
-            selected: selected,
-            onSelected: (_) => onTap(),
-          ),
+        ChoiceChip(
+          key: key,
+          materialTapTargetSize: AppChip.tapTarget,
+          visualDensity: AppChip.density,
+          label: Text(label),
+          selected: selected,
+          onSelected: (_) => onTap(),
         );
-    Widget linha(String titulo, List<Widget> chips) => Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.sm),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-              child: Text(
-                titulo,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-            ),
-            ...chips,
-          ],
-        ),
+    Widget fila(List<Widget> chips) => Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: chips,
       ),
     );
-    return Column(
+    return ListView(
       key: TreinadorKeys.partidas,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        linha(l.treinadorFiltroRitmo, [
+        // Canvas DPartidasFiltro: duas filas de chips sem rótulo.
+        fila([
           chip(
             TreinadorKeys.filtroRitmo('todos'),
             l.treinadorFiltroTodos,
@@ -303,10 +350,10 @@ class _Partidas extends StatelessWidget {
               () => unawaited(cubit.filtrar(filtro.comRitmo(r))),
             ),
         ]),
-        linha(l.treinadorFiltroResultado, [
+        fila([
           chip(
             TreinadorKeys.filtroResultado('todos'),
-            l.treinadorFiltroTodos,
+            l.treinadorListaTodas,
             filtro.resultado == null,
             () => unawaited(cubit.filtrar(filtro.comResultado(null))),
           ),
@@ -322,45 +369,60 @@ class _Partidas extends StatelessWidget {
               () => unawaited(cubit.filtrar(filtro.comResultado(r))),
             ),
         ]),
-        const SizedBox(height: AppSpacing.sm),
-        Expanded(
-          child: state.partidas.isEmpty
-              ? Center(
-                  child: EmptyState(
-                    key: TreinadorKeys.partidasVazio,
-                    icon: Icons.sports_esports_outlined,
-                    message: l.treinadorHojeVazio(
-                      context.plataforma(
-                        state.conta?.plataforma ?? Plataforma.lichess,
-                      ),
+        if (state.partidas.isEmpty)
+          EmptyState(
+            key: TreinadorKeys.partidasVazio,
+            icon: Icons.sports_esports_outlined,
+            message: l.treinadorHojeVazio(
+              context.plataforma(state.conta?.plataforma ?? Plataforma.lichess),
+            ),
+          )
+        else if (lista.isEmpty)
+          EmptyState(
+            key: TreinadorKeys.partidasVazio,
+            icon: Icons.filter_alt_off_outlined,
+            message: l.treinadorPartidasVazio,
+            actionLabel: l.treinadorLimparFiltros,
+            actionKey: TreinadorKeys.limparFiltros,
+            onAction: () => unawaited(cubit.limparFiltros()),
+          )
+        else ...[
+          Padding(
+            padding: const EdgeInsets.only(
+              top: AppSpacing.xs,
+              bottom: AppSpacing.md,
+            ),
+            child: Text(
+              _contagem(context, lista.length),
+              key: TreinadorKeys.partidasContagem,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          LucenaCard(
+            key: TreinadorKeys.partidasBase,
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                for (final (i, p) in lista.indexed) ...[
+                  if (i > 0)
+                    const Divider(
+                      height: 1,
+                      indent: AppSpacing.md,
+                      endIndent: AppSpacing.md,
                     ),
-                  ),
-                )
-              : lista.isEmpty
-              ? Center(
-                  child: EmptyState(
-                    key: TreinadorKeys.partidasVazio,
-                    icon: Icons.filter_alt_off_outlined,
-                    message: l.treinadorPartidasVazio,
-                    actionLabel: l.treinadorLimparFiltros,
-                    actionKey: TreinadorKeys.limparFiltros,
-                    onAction: () => unawaited(cubit.limparFiltros()),
-                  ),
-                )
-              : ListView.separated(
-                  key: TreinadorKeys.partidasBase,
-                  padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-                  itemCount: lista.length,
-                  separatorBuilder: (_, _) =>
-                      const Divider(height: 1, indent: AppSpacing.md),
-                  itemBuilder: (context, i) => LinhaPartida(
-                    partida: lista[i],
+                  LinhaPartida(
+                    partida: p,
                     agora: agora,
                     acesso: state.acesso,
-                    onTap: () => _abrir(context, lista[i]),
+                    onTap: () => _abrir(context, p),
                   ),
-                ),
-        ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -425,51 +487,87 @@ class _LigarContaState extends State<_LigarConta> {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final plataforma = _plataforma;
-    return ListView(
-      key: TreinadorKeys.ligarConta,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      children: [
-        Text(
-          l.treinadorLigarTitulo,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.headlineSmall,
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          l.treinadorLigarTexto,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+    const padding = EdgeInsets.all(AppSpacing.xl);
+    // Canvas DLigarConta: o bloco centrado na altura, com rolagem se não couber.
+    return LayoutBuilder(
+      builder: (context, box) => SingleChildScrollView(
+        key: TreinadorKeys.ligarConta,
+        padding: padding,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: box.maxHeight - padding.vertical,
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(
+                  Icons.link,
+                  size: AppIconSize.illustration,
+                  color: colors.primary,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  l.treinadorLigarTituloConta,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  l.treinadorLigarTextoConta,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                if (plataforma == null) ...[
+                  BusyButton(
+                    buttonKey: TreinadorKeys.ligarLichess,
+                    label: l.treinadorLigarBotao(
+                      context.plataforma(Plataforma.lichess),
+                    ),
+                    onPressed: () =>
+                        setState(() => _plataforma = Plataforma.lichess),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  BusyButton(
+                    buttonKey: TreinadorKeys.ligarChesscom,
+                    style: BusyButtonStyle.outlined,
+                    label: l.treinadorLigarBotao(
+                      context.plataforma(Plataforma.chesscom),
+                    ),
+                    onPressed: () =>
+                        setState(() => _plataforma = Plataforma.chesscom),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    l.treinadorLigarPrivacidade,
+                    key: TreinadorKeys.ligarPrivacidade,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ] else
+                  BlocProvider(
+                    key: ValueKey(plataforma),
+                    create: (c) => LigarContaCubit(
+                      repository: c.read<TreinadorRepository>(),
+                      plataforma: plataforma,
+                    ),
+                    child: _FormConta(
+                      onTrocar: () => setState(() => _plataforma = null),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: AppSpacing.lg),
-        if (plataforma == null)
-          for (final (p, key) in [
-            (Plataforma.lichess, TreinadorKeys.ligarLichess),
-            (Plataforma.chesscom, TreinadorKeys.ligarChesscom),
-          ])
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: BusyButton(
-                buttonKey: key,
-                style: BusyButtonStyle.outlined,
-                label: context.plataforma(p),
-                onPressed: () => setState(() => _plataforma = p),
-              ),
-            )
-        else
-          BlocProvider(
-            key: ValueKey(plataforma),
-            create: (c) => LigarContaCubit(
-              repository: c.read<TreinadorRepository>(),
-              plataforma: plataforma,
-            ),
-            child: _FormConta(
-              onTrocar: () => setState(() => _plataforma = null),
-            ),
-          ),
-      ],
+      ),
     );
   }
 }

@@ -33,6 +33,7 @@ final class TreinadorPartidaState {
     this.acesso = false,
     this.pedido = PedidoAnalise.nenhum,
     this.inicioAnalise,
+    this.exerciciosPrevistos,
   });
 
   final bool carregando;
@@ -46,6 +47,10 @@ final class TreinadorPartidaState {
   /// Quando a análise começou neste aparelho (para a porcentagem da espera).
   final DateTime? inicioAnalise;
 
+  /// Quantos exercícios a análise gera (`config.exerciciosPorPartida`); nulo
+  /// até a config chegar.
+  final int? exerciciosPrevistos;
+
   bool get naoEncontrada => !carregando && !falhou && partida == null;
 
   TreinadorPartidaState copyWith({
@@ -55,6 +60,7 @@ final class TreinadorPartidaState {
     bool? acesso,
     PedidoAnalise? pedido,
     DateTime? Function()? inicioAnalise,
+    int? exerciciosPrevistos,
   }) => TreinadorPartidaState(
     carregando: carregando ?? this.carregando,
     falhou: falhou ?? this.falhou,
@@ -62,6 +68,7 @@ final class TreinadorPartidaState {
     acesso: acesso ?? this.acesso,
     pedido: pedido ?? this.pedido,
     inicioAnalise: inicioAnalise == null ? this.inicioAnalise : inicioAnalise(),
+    exerciciosPrevistos: exerciciosPrevistos ?? this.exerciciosPrevistos,
   );
 }
 
@@ -98,6 +105,19 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
       }
     });
     _ouvir();
+    unawaited(_lerConfig());
+  }
+
+  /// Sem a config, a tela usa o padrão do modelo.
+  Future<void> _lerConfig() async {
+    try {
+      final config = await repository.config();
+      if (!isClosed) {
+        emit(state.copyWith(exerciciosPrevistos: config.exerciciosPorPartida));
+      }
+    } on Object {
+      // O cartão "Como funciona" mostra o número padrão.
+    }
   }
 
   void _ouvir() {
@@ -120,10 +140,14 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
     if (isClosed) return;
     var inicio = state.inicioAnalise;
     Future<void>? gravar;
-    if (p != null && p.status.emAndamento && inicio == null) {
+    // Só a análise rodando conta tempo: na fila a barra não anda (a fila do
+    // grátis pode durar horas) e a porcentagem não mente.
+    if (p != null && p.status == StatusPartida.analisando && inicio == null) {
       inicio = now();
       gravar = preferencias.marcarInicio(id, inicio);
-    } else if (p != null && !p.status.emAndamento && inicio != null) {
+    } else if (p != null &&
+        p.status != StatusPartida.analisando &&
+        inicio != null) {
       inicio = null;
       gravar = preferencias.esquecerInicio(id);
     }
@@ -167,14 +191,8 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
         emit(state.copyWith(pedido: PedidoAnalise.nenhum));
         return true;
       }
-      final inicio = state.inicioAnalise ?? now();
-      emit(
-        state.copyWith(
-          pedido: PedidoAnalise.nenhum,
-          inicioAnalise: () => inicio,
-        ),
-      );
-      await preferencias.marcarInicio(id, inicio);
+      // O início da contagem vem do status `analisando` (ver `_chegou`).
+      emit(state.copyWith(pedido: PedidoAnalise.nenhum));
       return true;
     } on TreinadorCallException catch (e) {
       if (isClosed) return false;

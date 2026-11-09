@@ -10,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/treinador_keys.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
+import 'package:lucena/ui/lesson_script/widgets/script_move_list.dart';
 import 'package:lucena/ui/core/widgets/load_error.dart';
 import 'package:lucena/ui/core/widgets/load_skeleton.dart';
 import 'package:lucena/ui/treinador/view_models/treinador_exercicio_cubit.dart';
@@ -112,11 +114,16 @@ void main() {
 
     expect(find.byType(LoadSkeletonScreen), findsOneWidget);
     // Não libera a partida (ao chegar, o tabuleiro cairia no BUG abaixo):
-    // passados 20 s, a tela vira não encontrado.
+    // passados 20 s, é falta de conexão (com "Tentar de novo"), não "não
+    // encontrada".
     await tester.pump(const Duration(seconds: 21));
     await tester.pump();
     expect(find.byType(LoadSkeletonScreen), findsNothing);
     expect(find.byType(LoadErrorScreen), findsOneWidget);
+    expect(
+      tester.widget<LoadErrorScreen>(find.byType(LoadErrorScreen)).kind,
+      LoadErrorKind.offline,
+    );
     await tester.pumpWidget(const SizedBox());
   });
 
@@ -152,10 +159,11 @@ void main() {
 
       expect(find.byKey(TreinadorKeys.fim), findsOneWidget);
       expect(find.byKey(TreinadorKeys.fimNota), findsOneWidget);
-      expect(find.text('Resumo da partida'), findsOneWidget);
-      expect(find.text('Perfeito!'), findsOneWidget);
-      expect(find.textContaining('4 de 4 certos'), findsOneWidget);
-      expect(find.textContaining('40 pontos'), findsOneWidget);
+      expect(find.text('4 de 4 certos'), findsOneWidget);
+      expect(find.text('Sua partida contra Tiago_Rook · 5+0'), findsOneWidget);
+      for (var n = 1; n <= 4; n++) {
+        expect(find.byKey(TreinadorKeys.fimBolinha(n)), findsOneWidget);
+      }
       expect(find.byKey(TreinadorKeys.fimAnalise), findsOneWidget);
       expect(find.byKey(TreinadorKeys.fimSeuJogo), findsOneWidget);
       expect(find.byKey(TreinadorKeys.fimFechar), findsOneWidget);
@@ -165,9 +173,24 @@ void main() {
     testWidgets('acertos pela metade: título e contagem mudam', (tester) async {
       await abrirFim(tester, acertos: 2);
 
-      expect(find.text('Perfeito!'), findsNothing);
-      expect(find.textContaining('2 de 4 certos'), findsOneWidget);
-      expect(find.textContaining('20 pontos'), findsOneWidget);
+      expect(find.text('4 de 4 certos'), findsNothing);
+      expect(find.text('2 de 4 certos'), findsOneWidget);
+      // Verde nos certos, vermelho nos errados.
+      Color? cor(int n) =>
+          ((tester
+                      .widget<Container>(
+                        find.descendant(
+                          of: find.byKey(TreinadorKeys.fimBolinha(n)),
+                          matching: find.byType(Container),
+                        ),
+                      )
+                      .decoration)!
+                  as BoxDecoration)
+              .color;
+      expect(cor(1), AppColors.successColor);
+      expect(cor(2), AppColors.successColor);
+      expect(cor(3), AppColors.errorColor);
+      expect(cor(4), AppColors.errorColor);
       expect(tester.takeException(), isNull);
     });
 
@@ -198,11 +221,11 @@ void main() {
       expect(find.text('stub.home'), findsOneWidget);
     });
 
-    testWidgets('a seta de voltar também fecha', (tester) async {
-      final bed = await abrirFim(tester);
-      await _tocar(tester, find.byKey(TreinadorKeys.back));
+    testWidgets('o X leva a fechar: sem a seta de voltar', (tester) async {
+      await abrirFim(tester);
 
-      expect(bed.caminho, Routes.home);
+      expect(find.byIcon(Icons.close), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.back), findsNothing);
     });
   });
 
@@ -233,6 +256,45 @@ void main() {
       await _tocar(tester, find.byKey(TreinadorKeys.tentarDeNovo));
       expect(_estado(tester).fen, fen);
       expect(_estado(tester).fase, FaseExercicio.jogando);
+    });
+
+    testWidgets('estrela cheia vale pontos; vazia depois do erro', (
+      tester,
+    ) async {
+      aparelho411x914(tester);
+      final bed = TreinadorBed(repo: _repo());
+      await bed.abrir(tester, Routes.treinadorExercicios(_idTiago));
+      IconData? estrela() =>
+          tester.widget<Icon>(find.byKey(TreinadorKeys.exercicioEstrelas)).icon;
+      expect(estrela(), Icons.star_rounded);
+      await _jogar(tester, _lanceErrado(tester));
+      expect(estrela(), Icons.star_outline_rounded);
+    });
+
+    testWidgets('notação: o lance errado leva "?"; a solução vem em SAN', (
+      tester,
+    ) async {
+      aparelho411x914(tester);
+      final bed = TreinadorBed(repo: _repo());
+      await bed.abrir(tester, Routes.treinadorExercicios(_idTiago));
+      expect(find.byType(ScriptMoveList), findsNothing);
+      await _jogar(tester, _lanceErrado(tester));
+      expect(find.byType(ScriptMoveList), findsOneWidget);
+      expect(
+        tester
+            .widget<ScriptMoveList>(find.byType(ScriptMoveList))
+            .moves
+            .single
+            .symbol,
+        '?',
+      );
+      await _tocar(tester, find.byKey(TreinadorKeys.verSolucao));
+      final lance = tester
+          .widget<ScriptMoveList>(find.byType(ScriptMoveList))
+          .moves
+          .single;
+      expect(lance.symbol, '!');
+      expect(lance.san, isNotEmpty);
     });
 
     testWidgets('lance certo: Próximo exercício avança o título', (

@@ -26,6 +26,21 @@ class _RepoComErro extends FakeTreinadorRepository {
       falhar ? Stream.error(StateError('sem rede')) : super.partidas();
 }
 
+/// As partidas falham na hora e a conta (do cache) chega depois.
+class _RepoContaDepois extends FakeTreinadorRepository {
+  _RepoContaDepois() : super(conta: TreinadorFixtures.conta);
+
+  @override
+  Stream<List<PartidaTreinador>> partidas() =>
+      Stream.error(StateError('sem rede'));
+
+  @override
+  Stream<TreinadorConta?> conta() async* {
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    yield TreinadorFixtures.conta;
+  }
+}
+
 void main() {
   late TreinadorBed bed;
   late TreinadorCubit cubit;
@@ -165,6 +180,19 @@ void main() {
       expect(cubit.state.falhou, isFalse);
       expect(cubit.state.carregando, isFalse);
       expect(cubit.state.partidas, hasLength(5));
+    });
+  });
+
+  group('falha só nas partidas', () {
+    test('a conta que chega depois não apaga o erro nem volta ao '
+        'esqueleto', () async {
+      bed = TreinadorBed(repo: _RepoContaDepois());
+      cubit = criar(bed);
+      await cubit.load();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(cubit.state.conta, isNotNull);
+      expect(cubit.state.falhou, isTrue);
+      expect(cubit.state.carregando, isFalse);
     });
   });
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/treinador/treinador_preferencias.dart';
 import '../../../data/repositories/treinador/treinador_repository.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -13,6 +14,9 @@ enum FaseExercicio {
 
   /// A partida não existe, não está pronta ou não tem exercícios.
   indisponivel,
+
+  /// Sem rede (ou o servidor demorou): dá para tentar de novo.
+  offline,
   jogando,
   acertou,
   errou,
@@ -79,22 +83,36 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
   TreinadorExercicioCubit({
     required this.id,
     required this.repository,
+    required this.preferencias,
     this.refazer = false,
   }) : super(const TreinadorExercicioState());
 
   final String id;
   final TreinadorRepository repository;
+  final TreinadorPreferencias preferencias;
 
   /// "Refazer os exercícios": começa do 1 e zera a rodada (o que foi de
   /// primeira e a análise vista ficam).
   final bool refazer;
 
+  /// "Tentar de novo" da tela sem conexão.
+  Future<void> recarregar() {
+    _emit(state.copyWith(fase: FaseExercicio.carregando));
+    return load();
+  }
+
   Future<void> load() async {
     try {
-      final partida = await repository
-          .partida(id)
-          .firstWhere((p) => p == null || p.pronta)
-          .timeout(const Duration(seconds: 20));
+      final PartidaTreinador? partida;
+      try {
+        partida = await repository
+            .partida(id)
+            .firstWhere((p) => p == null || p.pronta)
+            .timeout(const Duration(seconds: 20));
+      } on StateError {
+        // O fluxo terminou sem partida: ela não existe.
+        return _emit(state.copyWith(fase: FaseExercicio.indisponivel));
+      }
       if (partida == null || partida.exercicios.isEmpty) {
         return _emit(state.copyWith(fase: FaseExercicio.indisponivel));
       }
@@ -114,25 +132,34 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
           ),
         );
       }
+      final tentativas = await preferencias.tentativas(
+        id,
+        partida.exercicios[proximo - 1].n,
+      );
       _emit(
         _abrir(
           state.copyWith(partida: partida, progresso: progresso),
           proximo - 1,
+          tentativas: tentativas,
         ),
       );
     } on Object {
-      _emit(state.copyWith(fase: FaseExercicio.indisponivel));
+      // Timeout ou falha de leitura: sem conexão, não "não encontrada".
+      _emit(state.copyWith(fase: FaseExercicio.offline));
     }
   }
 
-  TreinadorExercicioState _abrir(TreinadorExercicioState base, int indice) =>
-      base.copyWith(
-        indice: indice,
-        tentativas: 1,
-        fen: base.exercicios[indice].fen,
-        ultimoLance: () => null,
-        fase: FaseExercicio.jogando,
-      );
+  TreinadorExercicioState _abrir(
+    TreinadorExercicioState base,
+    int indice, {
+    int tentativas = 1,
+  }) => base.copyWith(
+    indice: indice,
+    tentativas: tentativas,
+    fen: base.exercicios[indice].fen,
+    ultimoLance: () => null,
+    fase: FaseExercicio.jogando,
+  );
 
   void _emit(TreinadorExercicioState s) {
     if (!isClosed) emit(s);
@@ -145,6 +172,7 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
     final depois = _depois(exercicio.fen, uci);
     if (depois == null) return;
     if (exercicio.aceita(uci)) {
+      unawaited(preferencias.esquecerTentativas(id));
       _emit(
         state.copyWith(
           fase: FaseExercicio.acertou,
@@ -164,6 +192,10 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
         ),
       );
     } else {
+      // O erro já conta: fechar à força aqui reabre na tentativa seguinte.
+      unawaited(
+        preferencias.salvarTentativas(id, exercicio.n, state.tentativas + 1),
+      );
       _emit(
         state.copyWith(
           fase: FaseExercicio.errou,
@@ -196,6 +228,7 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
             state.fase != FaseExercicio.jogando)) {
       return;
     }
+    unawaited(preferencias.esquecerTentativas(id));
     _emit(
       state.copyWith(
         fase: FaseExercicio.solucao,

@@ -5,6 +5,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart' show NumberFormat;
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
@@ -22,6 +23,7 @@ import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/load_skeleton.dart';
@@ -29,6 +31,8 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../core/widgets/training_canvas_layout.dart';
 import '../../endgames/widgets/grade_widgets.dart';
+import '../../lesson_script/view_models/lesson_script_state.dart';
+import '../../lesson_script/widgets/script_move_list.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../survey/view_models/viktor_thanks_cubit.dart';
 import '../view_models/treinador_exercicio_cubit.dart';
@@ -116,6 +120,13 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
             onBack: _voltar,
           );
         }
+        if (s.fase == FaseExercicio.offline) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.offline,
+            onAction: context.read<TreinadorExercicioCubit>().recarregar,
+            onBack: _voltar,
+          );
+        }
         if (_board == null && s.fen != null && s.exercicio != null) {
           _board = ChessboardController(game: _dados(s));
           _anterior = s;
@@ -144,16 +155,17 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
                     child: Semantics(
                       label: l.treinadorEstrelas(ex.estrelas),
                       excludeSemantics: true,
-                      child: Row(
+                      // Neutra, na cor do texto (canvas DEx*): cheia enquanto o
+                      // exercício vale os pontos da primeira tentativa, vazia
+                      // depois do erro ou da solução vista (regra T85 da
+                      // exercise_screen). A dificuldade fica na semântica.
+                      child: Icon(
+                        _vale(s)
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
                         key: TreinadorKeys.exercicioEstrelas,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (var i = 0; i < ex.estrelas.clamp(1, 3); i++)
-                            const Icon(
-                              Icons.star_rounded,
-                              size: AppIconSize.large,
-                            ),
-                        ],
+                        size: AppIconSize.large,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -172,7 +184,7 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
                           text: _fala(l, s, ex),
                           boardBuilder: (size) =>
                               _tabuleiro(context, s, size, boardSettings),
-                          notation: const SizedBox(height: 40),
+                          notation: _notacao(s, ex),
                         ),
                       ),
                       _rodape(context, s),
@@ -184,6 +196,42 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
           },
         );
       },
+    );
+  }
+
+  static bool _vale(TreinadorExercicioState s) =>
+      s.tentativas <= 1 &&
+      (s.fase == FaseExercicio.jogando || s.fase == FaseExercicio.acertou);
+
+  /// O lance tentado (com "?" no erro) ou a solução, em SAN, como no Treino.
+  /// Na posição do exercício; vazia enquanto o aluno ainda não jogou.
+  static Widget _notacao(TreinadorExercicioState s, ExercicioTreinador ex) {
+    final posicao = GameRules.fromFen(ex.fen);
+    final uci = switch (s.fase) {
+      FaseExercicio.acertou || FaseExercicio.errou => s.ultimoLance,
+      FaseExercicio.solucao => ex.solucao,
+      _ => null,
+    };
+    if (posicao == null || uci == null) return const SizedBox.shrink();
+    final sans = GameRules.sanLine(posicao, [uci]);
+    if (sans.isEmpty) return const SizedBox.shrink();
+    return ScriptMoveList(
+      moves: [
+        ScriptMoveEntry(
+          id: '0',
+          san: sans.first,
+          number: posicao.fullmoves,
+          side: posicao.turn,
+          variant: false,
+          symbol: switch (s.fase) {
+            FaseExercicio.errou => '?',
+            FaseExercicio.solucao => '!',
+            _ => null,
+          },
+        ),
+      ],
+      currentId: '0',
+      onTap: (_) {},
     );
   }
 
@@ -307,7 +355,8 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
   }
 }
 
-/// A pontuação: a medalha, os certos, os pontos e a fala do Viktor.
+/// A pontuação (canvas DFim): a medalha, "x de N certos", a partida, uma
+/// bolinha por exercício, a fala do Viktor e os botões no pé.
 class _Fim extends StatelessWidget {
   const _Fim({
     required this.state,
@@ -319,18 +368,16 @@ class _Fim extends StatelessWidget {
   final Character viktor;
   final VoidCallback onFechar;
 
+  /// O diâmetro da bolinha (DFim: 40 dp).
+  static const _bolinha = 40.0;
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
     final p = state.progresso;
+    final partida = state.partida;
     final nota = TreinadorRegras.nota(p.acertos, state.total);
-    final titulo = switch (nota) {
-      ExerciseGrade.perfect => l.treinadorFimPerfeito,
-      ExerciseGrade.good || ExerciseGrade.excellent => l.treinadorFimBom,
-      ExerciseGrade.passed => l.treinadorFimAprovado,
-      ExerciseGrade.below => l.treinadorFimAbaixo,
-    };
     final fala = switch (nota) {
       ExerciseGrade.perfect => l.treinadorFimVikPerfeito,
       ExerciseGrade.good ||
@@ -338,66 +385,162 @@ class _Fim extends StatelessWidget {
       ExerciseGrade.passed => l.treinadorFimVikBom,
       ExerciseGrade.below => l.treinadorFimVikAbaixo,
     };
-    final id = state.partida?.id ?? '';
+    final id = partida?.id ?? '';
+    final adversario = partida?.adversario.nome ?? '';
+    final cadencia = partida?.cadencia;
     return Scaffold(
       key: TreinadorKeys.fim,
       appBar: LucenaAppBar(
-        leading: BackButton(key: TreinadorKeys.back, onPressed: onFechar),
-        title: Text(l.treinadorResumoTitulo),
+        leading: IconButton(
+          key: TreinadorKeys.fimFechar,
+          icon: const Icon(Icons.close),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+          onPressed: onFechar,
+        ),
       ),
       body: SafeArea(
-        top: false,
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.screen),
+        child: Column(
           children: [
-            const SizedBox(height: AppSpacing.lg),
-            Center(
-              child: GradeMedal(key: TreinadorKeys.fimNota, grade: nota),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              titulo,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              '${l.treinadorFimCertos(p.acertos, state.total)} · '
-              '${l.treinadorFimPontos(p.pontos)}',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(AppSpacing.screen),
+                children: [
+                  const SizedBox(height: AppSpacing.sm),
+                  Center(
+                    child: GradeMedal(key: TreinadorKeys.fimNota, grade: nota),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    l.treinadorFimCertos(p.acertos, state.total),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    cadencia == null || cadencia.isEmpty
+                        ? l.treinadorFimSubtituloSemCadencia(adversario)
+                        : l.treinadorFimSubtitulo(adversario, cadencia),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  _Bolinhas(state: state, diametro: _bolinha),
+                  const SizedBox(height: AppSpacing.lg),
+                  TeacherSpeech(
+                    speechContext: SpeechContext.teaching,
+                    teacher: viktor,
+                    text: fala,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: AppSpacing.xl),
-            TeacherSpeech(
-              speechContext: SpeechContext.teaching,
-              teacher: viktor,
-              text: fala,
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            BusyButton(
-              buttonKey: TreinadorKeys.fimAnalise,
-              label: l.treinadorVerAnalise,
-              onPressed: () =>
-                  unawaited(context.push(Routes.treinadorAnalise(id))),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            BusyButton(
-              buttonKey: TreinadorKeys.fimSeuJogo,
-              style: BusyButtonStyle.outlined,
-              label: l.treinadorOndeErra,
-              onPressed: () =>
-                  context.go(Routes.treinador(aba: AbaTreinador.seuJogo.name)),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            BusyButton(
-              buttonKey: TreinadorKeys.fimFechar,
-              style: BusyButtonStyle.text,
-              label: l.licaoAdClose,
-              onPressed: onFechar,
+            ActionsFooter(
+              stacked: true,
+              children: [
+                BusyButton(
+                  buttonKey: TreinadorKeys.fimAnalise,
+                  icon: Icons.analytics,
+                  label: l.treinadorVerAnalise,
+                  onPressed: () =>
+                      unawaited(context.push(Routes.treinadorAnalise(id))),
+                ),
+                BusyButton(
+                  buttonKey: TreinadorKeys.fimSeuJogo,
+                  icon: Icons.insights,
+                  style: BusyButtonStyle.outlined,
+                  label: l.treinadorOndeErra,
+                  onPressed: () => context.go(
+                    Routes.treinador(aba: AbaTreinador.seuJogo.name),
+                  ),
+                ),
+              ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Uma bolinha por exercício: verde certo, vermelha errado (de
+/// `progresso.resultados`); o que não foi feito fica só com o contorno.
+class _Bolinhas extends StatelessWidget {
+  const _Bolinhas({required this.state, required this.diametro});
+
+  final TreinadorExercicioState state;
+  final double diametro;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    final porN = {for (final r in state.progresso.resultados) r.n: r};
+    return Wrap(
+      key: TreinadorKeys.fimBolinhas,
+      alignment: WrapAlignment.center,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: [
+        for (final (i, ex) in state.exercicios.indexed)
+          _Bolinha(
+            key: TreinadorKeys.fimBolinha(i + 1),
+            numero: i + 1,
+            diametro: diametro,
+            certo: porN[ex.n]?.acertou,
+            semantica: porN[ex.n]?.acertou == true
+                ? l.treinadorFimBolinhaCerta(i + 1)
+                : l.treinadorFimBolinhaErrada(i + 1),
+            texto: theme.textTheme.titleMedium,
+          ),
+      ],
+    );
+  }
+}
+
+class _Bolinha extends StatelessWidget {
+  const _Bolinha({
+    required this.numero,
+    required this.diametro,
+    required this.certo,
+    required this.semantica,
+    required this.texto,
+    super.key,
+  });
+
+  final int numero;
+  final double diametro;
+
+  /// Nulo: ainda sem resultado.
+  final bool? certo;
+  final String semantica;
+  final TextStyle? texto;
+
+  @override
+  Widget build(BuildContext context) {
+    final cor = switch (certo) {
+      true => AppColors.successColor,
+      false => AppColors.errorColor,
+      null => Theme.of(context).colorScheme.outlineVariant,
+    };
+    return Semantics(
+      label: semantica,
+      excludeSemantics: true,
+      child: Container(
+        width: diametro,
+        height: diametro,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(color: cor, shape: BoxShape.circle),
+        child: Text(
+          NumberFormat.decimalPattern(
+            Localizations.localeOf(context).toString(),
+          ).format(numero),
+          style: texto?.copyWith(
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
       ),
     );

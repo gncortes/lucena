@@ -71,6 +71,8 @@ final class TreinadorCubit extends Cubit<TreinadorState> {
   StreamSubscription<Object?>? _grants;
   bool _contaChegou = false;
   bool _partidasChegaram = false;
+  bool _contaFalhou = false;
+  bool _partidasFalharam = false;
 
   Future<void> load() async {
     final filtro = await preferencias.filtro();
@@ -94,25 +96,45 @@ final class TreinadorCubit extends Cubit<TreinadorState> {
     _partidas?.cancel();
     _contaChegou = false;
     _partidasChegaram = false;
+    _contaFalhou = false;
+    _partidasFalharam = false;
     _conta = repository.conta().listen((conta) {
       _contaChegou = true;
+      _contaFalhou = false;
       if (isClosed) return;
       emit(
-        state.copyWith(conta: () => conta, carregando: !_pronto, falhou: false),
+        state.copyWith(
+          conta: () => conta,
+          carregando: !_pronto && !_falhou,
+          falhou: _falhou,
+        ),
       );
-    }, onError: (_) => _falhar());
+    }, onError: (_) => _falhar(conta: true));
     _partidas = repository.partidas().listen((lista) {
       _partidasChegaram = true;
+      _partidasFalharam = false;
       if (isClosed) return;
       emit(
-        state.copyWith(partidas: lista, carregando: !_pronto, falhou: false),
+        state.copyWith(
+          partidas: lista,
+          carregando: !_pronto && !_falhou,
+          falhou: _falhou,
+        ),
       );
-    }, onError: (_) => _falhar());
+    }, onError: (_) => _falhar(conta: false));
   }
 
   bool get _pronto => _contaChegou && _partidasChegaram;
 
-  void _falhar() {
+  /// Uma das leituras falhou; a outra, vinda do cache, não apaga o erro.
+  bool get _falhou => _contaFalhou || _partidasFalharam;
+
+  void _falhar({required bool conta}) {
+    if (conta) {
+      _contaFalhou = true;
+    } else {
+      _partidasFalharam = true;
+    }
     if (!isClosed) emit(state.copyWith(carregando: false, falhou: true));
   }
 

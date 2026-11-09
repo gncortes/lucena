@@ -193,19 +193,31 @@ void main() {
       },
     );
 
-    test('na fila do servidor: também conta como em andamento', () async {
+    test('na fila do servidor: não conta tempo (a barra não anda)', () async {
       final c = criar(idNova);
       await c.load();
       await pumpEventQueue();
-      bed.repo.porPartida(
-        comStatus(
-          TreinadorFixtures.lista().firstWhere((p) => p.id == idNova),
-          StatusPartida.naFila,
-        ),
-      );
+      final nova = TreinadorFixtures.lista().firstWhere((p) => p.id == idNova);
+      bed.repo.porPartida(comStatus(nova, StatusPartida.naFila));
       await pumpEventQueue();
       expect(c.state.partida?.status, StatusPartida.naFila);
-      expect(c.state.inicioAnalise, isNotNull);
+      expect(c.state.inicioAnalise, isNull);
+      expect(await bed.preferencias.inicioDaAnalise(idNova), isNull);
+
+      // O início só vale quando a análise começa de verdade.
+      bed.repo.porPartida(comStatus(nova, StatusPartida.analisando));
+      await pumpEventQueue();
+      expect(c.state.inicioAnalise, bed.now());
+    });
+
+    test('lê quantos exercícios a análise gera', () async {
+      final c = criar(idNova);
+      await c.load();
+      await pumpEventQueue();
+      expect(
+        c.state.exerciciosPrevistos,
+        TreinadorConfig.padrao.exerciciosPorPartida,
+      );
     });
 
     test('reabrir a tela em análise mantém o início de onde estava', () async {

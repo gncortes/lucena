@@ -51,6 +51,15 @@ class _RepoSemRede extends FakeTreinadorRepository {
       falhar ? Stream.error(StateError('sem rede')) : super.conta();
 }
 
+/// A conta vem do cache e só a leitura das partidas falha.
+class _RepoSoPartidasFalham extends FakeTreinadorRepository {
+  _RepoSoPartidasFalham() : super(conta: TreinadorFixtures.conta);
+
+  @override
+  Stream<List<PartidaTreinador>> partidas() =>
+      Stream.error(StateError('sem rede'));
+}
+
 FakeTreinadorRepository _comDados() => FakeTreinadorRepository(
   conta: TreinadorFixtures.conta,
   partidas: TreinadorFixtures.lista(),
@@ -120,6 +129,24 @@ void main() {
     });
   });
 
+  group('conta em cache, partidas sem rede', () {
+    testWidgets('mostra o erro de rede, não o vazio "Jogue uma partida"', (
+      tester,
+    ) async {
+      aparelho411x914(tester);
+      final bed = TreinadorBed(
+        repo: _RepoSoPartidasFalham(),
+        grants: comPlano(),
+      );
+      await bed.abrir(tester, Routes.treinador());
+
+      expect(find.byType(LoadErrorScreen), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.hojeVazio), findsNothing);
+      expect(find.textContaining('Jogue uma partida'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('sem conta ligada', () {
     late TreinadorBed bed;
 
@@ -127,30 +154,46 @@ void main() {
       bed = TreinadorBed(repo: FakeTreinadorRepository(), grants: comPlano());
     });
 
-    testWidgets('mostra "Onde você joga?", os dois sites e nenhuma aba', (
-      tester,
-    ) async {
-      aparelho411x914(tester);
-      await bed.abrir(tester, Routes.treinador());
+    testWidgets(
+      'mostra "Conecte sua conta", os dois sites e a barra das abas',
+      (tester) async {
+        aparelho411x914(tester);
+        await bed.abrir(tester, Routes.treinador());
 
-      expect(find.byKey(TreinadorKeys.ligarConta), findsOneWidget);
-      expect(find.text('Onde você joga?'), findsOneWidget);
-      expect(
-        find.text(
-          'Ligue sua conta e seus erros viram exercícios. '
-          'A primeira análise é grátis.',
-        ),
-        findsOneWidget,
-      );
-      expect(_textoEm(TreinadorKeys.ligarLichess, 'Lichess'), findsOneWidget);
-      expect(
-        _textoEm(TreinadorKeys.ligarChesscom, 'chess.com'),
-        findsOneWidget,
-      );
-      expect(find.byKey(TreinadorKeys.tabHoje), findsNothing);
-      expect(find.byKey(TreinadorKeys.hoje), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
+        expect(find.byKey(TreinadorKeys.ligarConta), findsOneWidget);
+        expect(find.text('Conecte sua conta'), findsOneWidget);
+        expect(find.byIcon(Icons.link), findsOneWidget);
+        expect(
+          _textoEm(TreinadorKeys.ligarLichess, 'Conectar o Lichess'),
+          findsOneWidget,
+        );
+        expect(
+          _textoEm(TreinadorKeys.ligarChesscom, 'Conectar o chess.com'),
+          findsOneWidget,
+        );
+        // Canvas DLigarConta: o Lichess é o primário (cheio); o chess.com, contornado.
+        expect(
+          tester.widget(find.byKey(TreinadorKeys.ligarLichess)),
+          isA<FilledButton>(),
+        );
+        expect(
+          tester.widget(find.byKey(TreinadorKeys.ligarChesscom)),
+          isA<OutlinedButton>(),
+        );
+        expect(
+          find.text(
+            'Só lemos partidas públicas. Você pode desconectar quando quiser.',
+          ),
+          findsOneWidget,
+        );
+        // O bloco fica no meio da altura e a barra das abas aparece.
+        final bloco = tester.getCenter(find.byIcon(Icons.link)).dy;
+        expect(bloco, inInclusiveRange(250, 450));
+        expect(find.byKey(TreinadorKeys.tabHoje), findsOneWidget);
+        expect(find.byKey(TreinadorKeys.hoje), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('escolher o Lichess mostra o campo do usuário; ligar leva '
         'às abas', (tester) async {
@@ -163,7 +206,7 @@ void main() {
       expect(find.text('Seu usuário no Lichess'), findsOneWidget);
       expect(find.byKey(TreinadorKeys.ligarLichess), findsNothing);
       expect(
-        _textoEm(TreinadorKeys.confirmarConta, 'Ligar a conta'),
+        _textoEm(TreinadorKeys.confirmarConta, 'Conectar a conta'),
         findsOneWidget,
       );
       expect(
@@ -227,7 +270,7 @@ void main() {
       ),
       (
         FalhaLigarConta.semLogin,
-        'Entre na sua conta do Lucena para ligar a conta de xadrez.',
+        'Entre na sua conta do Lucena para conectar a conta de xadrez.',
       ),
     ]) {
       testWidgets('falha $falha mostra o texto do erro e não liga', (
@@ -271,7 +314,7 @@ void main() {
 
       expect(
         tester.widget<Text>(find.byKey(TreinadorKeys.contaErro)).data,
-        'Para ligar a conta, você precisa do plano de análise.',
+        'Para conectar a conta, você precisa do plano de análise.',
       );
       expect(
         _textoEm(TreinadorKeys.conhecerPlano, 'Conhecer o plano de análise'),
@@ -318,15 +361,39 @@ void main() {
         );
       }
       expect(find.byKey(TreinadorKeys.semPlano), findsNothing);
-      expect(find.text('Sua última partida'), findsOneWidget);
+      expect(find.text('Última partida'), findsOneWidget);
       expect(find.byKey(TreinadorKeys.ultimaPartida), findsOneWidget);
       expect(
         _textoEm(TreinadorKeys.verUltimaPartida, 'Ver a partida'),
         findsOneWidget,
       );
-      expect(find.text('Exercícios para fazer'), findsOneWidget);
-      // A Tiago_Rook está pronta, com 0 de 4 exercícios feitos.
-      expect(find.text('0 de 4 exercícios feitos'), findsWidgets);
+      expect(find.text('Para fazer agora'), findsOneWidget);
+      // O cartão traz o resumo da partida (Tiago_Rook, pronta).
+      expect(
+        _textoEm(
+          TreinadorKeys.ultimaPartida,
+          'Você perdeu no lance 51, num final de torres que empatava.',
+        ),
+        findsOneWidget,
+      );
+      // Um item por exercício pendente: o tema e a posição, no CourseItemTile.
+      final item = TreinadorKeys.paraFazerExercicio(
+        TreinadorFixtures.idTiago,
+        1,
+      );
+      expect(find.byKey(item), findsOneWidget);
+      expect(_textoEm(item, 'Sacrificio h7'), findsOneWidget);
+      expect(
+        _textoEm(item, 'Posição da sua partida contra Tiago_Rook, lance 8.'),
+        findsOneWidget,
+      );
+      expect(_textoEm(item, 'Xeque duplo'), findsNothing);
+      expect(
+        find.byKey(
+          TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, 3),
+        ),
+        findsOneWidget,
+      );
       expect(tester.takeException(), isNull);
     });
 
@@ -340,18 +407,60 @@ void main() {
 
       expect(bed.caminho, '/treinador/partida/${TreinadorFixtures.idTiago}');
       expect(find.byKey(TreinadorKeys.inicio), findsOneWidget);
-      expect(find.text('Sua partida'), findsOneWidget);
     });
 
-    testWidgets('tocar numa partida para fazer abre essa partida', (
-      tester,
-    ) async {
+    testWidgets(
+      'tocar num exercício para fazer abre os exercícios da partida',
+      (tester) async {
+        aparelho411x914(tester);
+        final bed = TreinadorBed(repo: _comDados(), grants: comPlano());
+        await bed.abrir(tester, Routes.treinador());
+
+        await _tocar(
+          tester,
+          find.byKey(
+            TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, 2),
+          ),
+        );
+        expect(
+          bed.caminho,
+          startsWith(
+            '/treinador/partida/${TreinadorFixtures.idTiago}/exercicios',
+          ),
+        );
+      },
+    );
+
+    testWidgets('só os exercícios que faltam aparecem', (tester) async {
       aparelho411x914(tester);
-      final bed = TreinadorBed(repo: _comDados(), grants: comPlano());
+      final parcial = TreinadorFixtures.tiago().copyWith(
+        progresso: _progresso(2, acertos: 1),
+      );
+      final bed = TreinadorBed(
+        repo: FakeTreinadorRepository(
+          conta: TreinadorFixtures.conta,
+          partidas: [parcial],
+        ),
+        grants: comPlano(),
+      );
       await bed.abrir(tester, Routes.treinador());
 
-      await _tocar(tester, find.text('0 de 4 exercícios feitos').last);
-      expect(bed.caminho, '/treinador/partida/${TreinadorFixtures.idTiago}');
+      for (final n in [1, 2]) {
+        expect(
+          find.byKey(
+            TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, n),
+          ),
+          findsNothing,
+        );
+      }
+      for (final n in [3, 4]) {
+        expect(
+          find.byKey(
+            TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, n),
+          ),
+          findsOneWidget,
+        );
+      }
     });
 
     testWidgets('sem plano: mostra a caixa e conhecer o plano abre a venda', (
@@ -421,8 +530,17 @@ void main() {
         find.text('Você fez os exercícios de todas as partidas analisadas.'),
         findsOneWidget,
       );
-      expect(find.text('3 de 4 certos'), findsOneWidget);
+      // O cartão da última partida mostra o resumo, não o estado.
+      expect(find.text('3 de 4 certos'), findsNothing);
       expect(tester.takeException(), isNull);
+
+      await tester.tap(find.byKey(TreinadorKeys.tabPartidas));
+      await assentar(tester);
+      expect(
+        find.text('Precisão 78% · 3 de 4 exercícios certos'),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.check_circle_outline), findsOneWidget);
     });
   });
 
@@ -445,16 +563,21 @@ void main() {
       await abrirPartidas(tester);
 
       expect(find.byKey(TreinadorKeys.partidas), findsOneWidget);
-      expect(find.byKey(TreinadorKeys.partidasBase), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.partidasBase), findsWidgets);
       expect(find.byType(LinhaPartida), findsNWidgets(5));
-      expect(find.text('Ritmo'), findsOneWidget);
-      expect(find.text('Resultado'), findsOneWidget);
+      // Canvas DPartidasFiltro: sem rótulos, "Todas" no resultado e a contagem.
+      expect(find.text('Ritmo'), findsNothing);
+      expect(find.text('Resultado'), findsNothing);
+      expect(
+        find.text('5 partidas do Lichess, da mais recente'),
+        findsOneWidget,
+      );
       for (final (key, texto) in [
         (TreinadorKeys.filtroRitmo('todos'), 'Todos'),
         (TreinadorKeys.filtroRitmo('bullet'), 'Bullet'),
         (TreinadorKeys.filtroRitmo('blitz'), 'Blitz'),
         (TreinadorKeys.filtroRitmo('rapida'), 'Rápida'),
-        (TreinadorKeys.filtroResultado('todos'), 'Todos'),
+        (TreinadorKeys.filtroResultado('todos'), 'Todas as partidas'),
         (TreinadorKeys.filtroResultado('vitoria'), 'Vitórias'),
         (TreinadorKeys.filtroResultado('derrota'), 'Derrotas'),
         (TreinadorKeys.filtroResultado('empate'), 'Empates'),
@@ -520,7 +643,6 @@ void main() {
 
       expect(bed.caminho, '/treinador/partida/lichess_DeF67890');
       expect(find.byKey(TreinadorKeys.inicio), findsOneWidget);
-      expect(find.text('Analisar a partida'), findsOneWidget);
     });
 
     testWidgets('sem partidas, mostra o aviso e não os filtros vazios', (

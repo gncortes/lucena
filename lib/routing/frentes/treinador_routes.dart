@@ -85,6 +85,11 @@ final List<RouteBase> treinadorRoutes = [
               now: c.read<Now>(),
             )..load(),
           ),
+          BlocProvider(
+            create: (c) =>
+                ViktorThanksCubit(characters: c.read<CharacterRepository>())
+                  ..load(),
+          ),
         ],
         child: const _VoltarDoSistema(child: TreinadorPartidaScreen()),
       );
@@ -99,6 +104,7 @@ final List<RouteBase> treinadorRoutes = [
           create: (c) => TreinadorExercicioCubit(
             id: state.pathParameters['id']!,
             repository: c.read<TreinadorRepository>(),
+            preferencias: c.read<TreinadorPreferencias>(),
             refazer: state.uri.queryParameters['refazer'] == '1',
           )..load(),
         ),

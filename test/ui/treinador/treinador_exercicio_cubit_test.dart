@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:dartchess/dartchess.dart';
+import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/data/repositories/treinador/treinador_preferencias.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
 import 'package:lucena/ui/treinador/view_models/treinador_exercicio_cubit.dart';
 
 import '../../../testing/fakes/fake_treinador_repository.dart';
 import '../../../testing/treinador_fixtures.dart';
+import 'treinador_harness.dart';
 
 /// O salvar progresso falha (o espelho do servidor fora do ar).
 class _RepoSemSalvar extends FakeTreinadorRepository {
@@ -46,6 +50,7 @@ void main() {
     final c = TreinadorExercicioCubit(
       id: partida,
       repository: r ?? repo,
+      preferencias: TreinadorPreferencias(MemoriaPreferencias()),
       refazer: refazer,
     );
     addTearDown(c.close);
@@ -98,7 +103,7 @@ void main() {
       expect(c.state.fase, FaseExercicio.jogando);
     });
 
-    testWidgets('partida que nunca fica pronta: indisponível em 20 s', (
+    testWidgets('partida que nunca fica pronta: offline em 20 s', (
       tester,
     ) async {
       repo = novoRepo(
@@ -109,7 +114,39 @@ void main() {
       await tester.pump(const Duration(seconds: 19));
       expect(c.state.fase, FaseExercicio.carregando);
       await tester.pump(const Duration(seconds: 2));
-      expect(c.state.fase, FaseExercicio.indisponivel);
+      expect(c.state.fase, FaseExercicio.offline);
+    });
+
+    test('fechar à força depois de errar guarda a tentativa', () async {
+      final prefs = TreinadorPreferencias(MemoriaPreferencias());
+      TreinadorExercicioCubit novo() {
+        final c = TreinadorExercicioCubit(
+          id: id,
+          repository: repo,
+          preferencias: prefs,
+        );
+        addTearDown(c.close);
+        return c;
+      }
+
+      final c = novo();
+      await c.load();
+      final pos = GameRules.fromFen(c.state.exercicio!.fen)!;
+      // O primeiro lance legal que não é a solução.
+      final uci = [
+        for (final e in GameRules.legalMoves(pos).entries)
+          for (final to in e.value) NormalMove(from: e.key, to: to).uci,
+      ].firstWhere((u) => !c.state.exercicio!.aceita(u));
+      await c.jogar(uci);
+      expect(c.state.fase, FaseExercicio.errou);
+
+      // Fechou à força: abre de novo, e o acerto já vale a tentativa 2.
+      final reaberto = novo();
+      await reaberto.load();
+      expect(reaberto.state.tentativas, 2);
+      await reaberto.jogar(certos[0]);
+      expect(reaberto.state.progresso.resultados.single.pontos, 1);
+      expect(await prefs.tentativas(id, 1), 1);
     });
 
     test('retoma do exercício seguinte ao último feito', () async {

@@ -29,6 +29,13 @@ abstract final class TreinadorKeys {
   /// A partida pronta com exercícios a fazer, na aba Hoje.
   static Key paraFazer(String id) => Key('treinador.paraFazer.$id');
 
+  /// Um exercício pendente de uma partida, na aba Hoje.
+  static Key paraFazerExercicio(String id, int n) =>
+      Key('treinador.paraFazer.$id.$n');
+
+  /// A linha "3 derrotas de blitz, da mais recente" da aba Partidas.
+  static const partidasContagem = Key('treinador.partidas.contagem');
+
   // Sem plano.
   static const semPlano = Key('treinador.semPlano');
   static const conhecerPlano = Key('treinador.semPlano.conhecer');
@@ -37,6 +44,7 @@ abstract final class TreinadorKeys {
   static const ligarConta = Key('treinador.conta');
   static const ligarLichess = Key('treinador.conta.lichess');
   static const ligarChesscom = Key('treinador.conta.chesscom');
+  static const ligarPrivacidade = Key('treinador.conta.privacidade');
   static const usuario = Key('treinador.conta.usuario');
   static const confirmarConta = Key('treinador.conta.confirmar');
   static const contaErro = Key('treinador.conta.erro');
@@ -56,6 +64,14 @@ abstract final class TreinadorKeys {
   static const curiosidade = Key('treinador.carregando.curiosidade');
   static const outraCuriosidade = Key('treinador.carregando.outra');
   static const meAvise = Key('treinador.carregando.meAvise');
+  static const carregandoSubtitulo = Key('treinador.carregando.subtitulo');
+  static const carregandoNota = Key('treinador.carregando.nota');
+  static const carregandoBarra = Key('treinador.carregando.barra');
+  static const carregandoFila = Key('treinador.carregando.fila');
+  static const curiosidadePontos = Key('treinador.carregando.pontos');
+  static const comoFunciona = Key('treinador.inicio.comoFunciona');
+  static const resumoCartaoPartida = Key('treinador.resumo.partida');
+  static const resumoPosicoes = Key('treinador.resumo.posicoes');
 
   // Erros da análise.
   static const erro = Key('treinador.erro');
@@ -78,6 +94,8 @@ abstract final class TreinadorKeys {
   static const fimAnalise = Key('treinador.fim.analise');
   static const fimSeuJogo = Key('treinador.fim.seuJogo');
   static const fimFechar = Key('treinador.fim.fechar');
+  static const fimBolinhas = Key('treinador.fim.bolinhas');
+  static Key fimBolinha(int n) => Key('treinador.fim.bolinha.$n');
 
   // Resumo da partida.
   static const resumo = Key('treinador.resumo');

@@ -18,6 +18,7 @@ class LinhaPartida extends StatelessWidget {
     required this.agora,
     required this.acesso,
     this.onTap,
+    this.mostrarResumo = false,
     super.key,
   });
 
@@ -26,8 +27,15 @@ class LinhaPartida extends StatelessWidget {
   final bool acesso;
   final VoidCallback? onTap;
 
+  /// Na terceira linha, a frase do resumo da partida (cartão da aba Hoje)
+  /// no lugar do estado, quando a análise está pronta e aberta.
+  final bool mostrarResumo;
+
   static const minHeight = 64.0;
   static const quadrado = 36.0;
+
+  /// O máximo de linhas do detalhe (ritmo, cor, abertura e quando).
+  static const detalheMaxLinhas = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +46,14 @@ class LinhaPartida extends StatelessWidget {
     final adversario = p.adversario.rating == null
         ? p.adversario.nome
         : '${p.adversario.nome} (${p.adversario.rating})';
-    final detalhe = [
+    final ritmoCor = [
       if (p.ritmo != null)
         [?p.cadencia, context.ritmo(p.ritmo!)].join(' ')
       else
         ?p.cadencia,
       context.cor(p.cor),
-      ?p.abertura?.nome,
-      context.quando(p.jogadaEm, agora),
-    ].join(' · ');
+    ];
+    final quando = context.quando(p.jogadaEm, agora);
     final muted = theme.textTheme.bodySmall?.copyWith(
       fontSize: 12,
       height: 16 / 12,
@@ -77,8 +84,6 @@ class LinhaPartida extends StatelessWidget {
                         Flexible(
                           child: Text(
                             adversario,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                               height: 20 / 14,
@@ -100,13 +105,20 @@ class LinhaPartida extends StatelessWidget {
                         ],
                       ],
                     ),
-                    Text(
-                      detalhe,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    _Detalhe(
+                      ritmoCor: ritmoCor,
+                      abertura: p.abertura?.nome,
+                      quando: quando,
                       style: muted,
                     ),
-                    _Estado(partida: p, aberta: aberta, style: muted),
+                    if (mostrarResumo &&
+                        aberta &&
+                        p.pronta &&
+                        (p.resumo ?? '').isNotEmpty)
+                      // Canvas DHoje: o resumo em 14/400 na cor do texto.
+                      Text(p.resumo!, style: theme.textTheme.bodyMedium)
+                    else
+                      _Estado(partida: p, aberta: aberta, style: muted),
                   ],
                 ),
               ),
@@ -115,6 +127,64 @@ class LinhaPartida extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// "5+0 Blitz · Pretas · Caro-Kann · Hoje". Se a abertura não cabe na linha,
+/// ela vai para uma linha própria (até [LinhaPartida.detalheMaxLinhas]), sem
+/// reticências (cobertura 5 do QA: nome longo do Lichess a 411 dp).
+class _Detalhe extends StatelessWidget {
+  const _Detalhe({
+    required this.ritmoCor,
+    required this.abertura,
+    required this.quando,
+    required this.style,
+  });
+
+  final List<String> ritmoCor;
+  final String? abertura;
+  final String quando;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final separador = context.l10n.treinadorListaSeparador;
+    final abertura = this.abertura;
+    final completo = [...ritmoCor, ?abertura, quando].join(separador);
+    return LayoutBuilder(
+      builder: (context, box) {
+        final medida = TextPainter(
+          text: TextSpan(text: completo, style: style),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: 1,
+        )..layout(maxWidth: box.maxWidth);
+        final cabe = !medida.didExceedMaxLines;
+        medida.dispose();
+        if (cabe || abertura == null) {
+          return Text(
+            completo,
+            maxLines: LinhaPartida.detalheMaxLinhas,
+            style: style,
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              [...ritmoCor, quando].join(separador),
+              maxLines: LinhaPartida.detalheMaxLinhas,
+              style: style,
+            ),
+            Text(
+              abertura,
+              maxLines: LinhaPartida.detalheMaxLinhas,
+              style: style,
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -176,6 +246,15 @@ class _Estado extends StatelessWidget {
   final bool aberta;
   final TextStyle? style;
 
+  // Canvas DPartidasFiltro: o visto verde antes da precisão.
+  bool get _completaComPrecisao {
+    final p = partida;
+    return aberta &&
+        p.pronta &&
+        p.precisao != null &&
+        (p.progresso ?? ProgressoPartida.vazio).completo(p.exercicios.length);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -196,6 +275,16 @@ class _Estado extends StatelessWidget {
               l.treinadorEstadoSemExercicios,
               colors.onSurfaceVariant,
             ),
+            StatusPartida.pronta
+                when progresso.completo(total) && p.precisao != null =>
+              (
+                l.treinadorListaPrecisao(
+                  p.precisao!.round(),
+                  progresso.acertos,
+                  total,
+                ),
+                colors.onSurface,
+              ),
             StatusPartida.pronta when progresso.completo(total) => (
               l.treinadorEstadoCompleta(progresso.acertos, total),
               colors.onSurfaceVariant,
@@ -205,16 +294,19 @@ class _Estado extends StatelessWidget {
               colors.primary,
             ),
           };
-    final linha = Text(
-      texto,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: style?.copyWith(color: cor),
-    );
-    if (aberta) return linha;
+    final linha = Text(texto, style: style?.copyWith(color: cor));
+    if (aberta && !_completaComPrecisao) return linha;
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.lock_outline, size: AppIconSize.small, color: cor),
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Icon(
+            aberta ? Icons.check_circle_outline : Icons.lock_outline,
+            size: AppIconSize.small,
+            color: aberta ? AppColors.record : cor,
+          ),
+        ),
         const SizedBox(width: AppSpacing.xs),
         Flexible(child: linha),
       ],

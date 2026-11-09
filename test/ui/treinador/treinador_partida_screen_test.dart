@@ -7,9 +7,13 @@ import 'package:lucena/domain/models/treinador/treinador.dart';
 import 'package:lucena/domain/use_cases/treinador/treinador_regras.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/treinador_keys.dart';
+import 'package:lucena/ui/core/widgets/animated_progress.dart';
+import 'package:lucena/ui/core/widgets/busy_button.dart';
 import 'package:lucena/ui/core/widgets/load_error.dart';
 import 'package:lucena/ui/core/widgets/load_skeleton.dart';
+import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 
+import '../../../testing/fakes/fake_curiosidades_repository.dart';
 import '../../../testing/fakes/fake_treinador_repository.dart';
 import '../../../testing/treinador_fixtures.dart';
 import 'treinador_harness.dart';
@@ -31,6 +35,20 @@ class _RepoLento extends FakeTreinadorRepository {
   Stream<PartidaTreinador?> partida(String id) async* {
     await liberar.future;
     yield* super.partida(id);
+  }
+}
+
+/// O pedido de análise só responde quando o teste deixa.
+class _RepoAnalisarLento extends FakeTreinadorRepository {
+  _RepoAnalisarLento(List<PartidaTreinador> partidas)
+    : super(conta: TreinadorFixtures.conta, partidas: partidas);
+
+  final liberar = Completer<void>();
+
+  @override
+  Future<void> analisar(String id, {bool avisar = true}) async {
+    await liberar.future;
+    await super.analisar(id, avisar: avisar);
   }
 }
 
@@ -83,6 +101,19 @@ void _descartarBugDoTabuleiro(WidgetTester tester) => tester.takeException();
 
 Finder _textoEm(Key key, String texto) =>
     find.descendant(of: find.byKey(key), matching: find.text(texto));
+
+/// O cartão "Como funciona" do canvas: os três itens, com [n] exercícios.
+void _confereComoFunciona(int n) {
+  expect(find.byKey(TreinadorKeys.comoFunciona), findsWidgets);
+  expect(find.text('Como funciona'), findsOneWidget);
+  expect(find.text('$n exercícios'), findsOneWidget);
+  expect(find.text('Posições-chave que decidiram a partida.'), findsOneWidget);
+  expect(find.text('Pense antes de jogar'), findsOneWidget);
+  expect(find.text('Depois, a partida inteira'), findsOneWidget);
+  expect(find.byIcon(Icons.extension), findsOneWidget);
+  expect(find.byIcon(Icons.timer), findsOneWidget);
+  expect(find.byIcon(Icons.analytics), findsOneWidget);
+}
 
 Future<TreinadorBed> _abrir(
   WidgetTester tester,
@@ -155,33 +186,22 @@ void main() {
       await _abrir(tester, _nova());
 
       expect(find.byKey(TreinadorKeys.inicio), findsOneWidget);
-      expect(find.text('Sua partida'), findsOneWidget);
+      expect(find.text('Análise da partida'), findsOneWidget);
       expect(find.byKey(TreinadorKeys.cartaoPartida), findsWidgets);
       expect(find.text('Pronta para analisar'), findsOneWidget);
-      expect(find.text('Como funciona'), findsOneWidget);
-      expect(find.text('Revemos cada lance da partida.'), findsOneWidget);
+      _confereComoFunciona(4);
       expect(
-        find.text(
-          'Separamos os momentos em que você poderia ter jogado melhor.',
-        ),
+        _textoEm(TreinadorKeys.comecar, 'Começar a análise'),
         findsOneWidget,
       );
       expect(
-        find.text('Você treina esses lances como exercícios.'),
-        findsOneWidget,
-      );
-      expect(
-        _textoEm(TreinadorKeys.comecar, 'Analisar a partida'),
-        findsOneWidget,
-      );
-      expect(
-        _textoEm(TreinadorKeys.verPartidas, 'Ver todas as partidas'),
+        _textoEm(TreinadorKeys.verPartidas, 'Ver minhas partidas'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('"Ver todas as partidas" abre a aba Partidas', (tester) async {
+    testWidgets('"Ver minhas partidas" abre a aba Partidas', (tester) async {
       final bed = await _abrir(tester, _nova());
 
       await _tocar(tester, find.byKey(TreinadorKeys.verPartidas));
@@ -206,7 +226,7 @@ void main() {
       expect(bed.repo.pedidosAnalise.map((e) => e.$1), [_idNova]);
       expect(find.byKey(TreinadorKeys.carregando), findsOneWidget);
       expect(find.byKey(TreinadorKeys.inicio), findsNothing);
-      expect(find.text('Analisando sua partida'), findsOneWidget);
+      expect(find.text('Análise da partida'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     });
@@ -226,7 +246,7 @@ void main() {
         _textoEm(TreinadorKeys.comecar, 'Começar os exercícios'),
         findsOneWidget,
       );
-      expect(find.text('Como funciona'), findsNothing);
+      expect(find.byKey(TreinadorKeys.comoFunciona), findsWidgets);
       await tester.pumpWidget(const SizedBox());
     });
   });
@@ -295,7 +315,7 @@ void main() {
       await abrirAnalisando(tester);
 
       expect(find.byKey(TreinadorKeys.carregando), findsOneWidget);
-      expect(find.text('Analisando sua partida'), findsOneWidget);
+      expect(find.text('Análise da partida'), findsOneWidget);
       expect(
         tester.widget<Text>(find.byKey(TreinadorKeys.carregandoFrase)).data,
         'Buscando sua partida no Lichess',
@@ -306,11 +326,34 @@ void main() {
             .data,
         matches(RegExp(r'^\d+%$')),
       );
-      expect(find.byKey(TreinadorKeys.curiosidade), findsWidgets);
+      expect(find.byKey(TreinadorKeys.curiosidade), findsOneWidget);
       expect(find.text('Você sabia?'), findsOneWidget);
+      expect(
+        find.text(
+          'Estamos olhando sua partida lance a lance. Pode levar alguns '
+          'minutos.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Pode sair do app: avisamos quando os exercícios estiverem prontos.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(TreinadorKeys.carregandoBarra), findsOneWidget);
+      expect(find.byType(AnimatedProgress), findsOneWidget);
       expect(
         _textoEm(TreinadorKeys.outraCuriosidade, 'Outra curiosidade'),
         findsOneWidget,
+      );
+      expect(
+        tester.widget(find.byKey(TreinadorKeys.outraCuriosidade)),
+        isA<OutlinedButton>(),
+      );
+      expect(
+        tester.widget(find.byKey(TreinadorKeys.meAvise)),
+        isA<OutlinedButton>(),
       );
       expect(
         _textoEm(TreinadorKeys.meAvise, 'Me avise quando terminar'),
@@ -324,15 +367,8 @@ void main() {
       tester,
     ) async {
       await abrirAnalisando(tester);
-      String texto() => tester
-          .widgetList<Text>(
-            find.descendant(
-              of: find.byKey(TreinadorKeys.curiosidade).first,
-              matching: find.byType(Text),
-            ),
-          )
-          .map((t) => t.data)
-          .join('|');
+      String texto() =>
+          tester.widget<TeacherSpeech>(find.byType(TeacherSpeech)).text!;
 
       final antes = texto();
       await tester.tap(find.byKey(TreinadorKeys.outraCuriosidade));
@@ -442,7 +478,7 @@ void main() {
         _textoEm(TreinadorKeys.comecar, 'Começar os exercícios'),
         findsOneWidget,
       );
-      expect(find.text('Como funciona'), findsNothing);
+      _confereComoFunciona(4);
 
       await tester.tap(find.byKey(TreinadorKeys.comecar));
       await assentar(tester);
@@ -482,14 +518,22 @@ void main() {
       await _abrir(tester, completa());
 
       expect(find.byKey(TreinadorKeys.resumo), findsOneWidget);
-      expect(find.text('Resumo da partida'), findsOneWidget);
+      expect(find.text('Contra Tiago_Rook'), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.resumoCartaoPartida), findsWidgets);
       expect(find.byKey(TreinadorKeys.resumoPrecisao), findsWidgets);
-      expect(find.text('Precisão'), findsOneWidget);
+      expect(find.text('Sua precisão'), findsOneWidget);
       expect(find.byKey(TreinadorKeys.resumoExercicios), findsWidgets);
-      expect(find.text('3 de 4 certos'), findsOneWidget);
+      expect(find.text('3 de 4'), findsOneWidget);
+      expect(find.text('certos na análise'), findsOneWidget);
       expect(find.text('Precisão por fase'), findsOneWidget);
-      expect(find.byKey(TreinadorKeys.resumoFases), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.resumoFases), findsWidgets);
       expect(find.text('Posições-chave'), findsOneWidget);
+      await tester.ensureVisible(find.byKey(TreinadorKeys.posicaoChave(4)));
+      await tester.pump();
+      expect(find.text('Lance 8 · Sacrificio h7'), findsOneWidget);
+      expect(find.text('Lance 8 · Profilaxia'), findsOneWidget);
+      expect(find.text('Recurso do adversário'), findsOneWidget);
+      expect(find.text('Impedir a ameaça'), findsOneWidget);
       for (var n = 1; n <= 4; n++) {
         await tester.ensureVisible(find.byKey(TreinadorKeys.posicaoChave(n)));
         await tester.pump();
@@ -562,6 +606,280 @@ void main() {
       expect(find.text('Posições-chave'), findsNothing);
       expect(find.byKey(TreinadorKeys.resumoAnalise), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('espera: o Viktor e o pé fixo', () {
+    PartidaTreinador analisando() =>
+        TreinadorFixtures.lista().firstWhere((p) => p.id == _idAnalisando);
+
+    testWidgets('a curiosidade é dita pelo Viktor, com os pontos', (
+      tester,
+    ) async {
+      await _abrir(tester, analisando());
+
+      final fala = tester.widget<TeacherSpeech>(find.byType(TeacherSpeech));
+      expect(fala.speechContext, SpeechContext.teaching);
+      expect(fala.teacher.id, 'master');
+      expect(fala.text, contains('primeiro campeão do mundo'));
+      expect(find.byKey(TreinadorKeys.curiosidadePontos), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(TreinadorKeys.curiosidadePontos),
+          matching: find.byType(AnimatedContainer),
+        ),
+        findsNWidgets(FakeCuriosidadesRepository.padrao.length),
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('frase à esquerda e % à direita, barra animada embaixo', (
+      tester,
+    ) async {
+      await _abrir(tester, analisando());
+
+      final frase = tester.getRect(find.byKey(TreinadorKeys.carregandoFrase));
+      final pct = tester.getRect(
+        find.byKey(TreinadorKeys.carregandoPorcentagem),
+      );
+      final barra = tester.getRect(find.byKey(TreinadorKeys.carregandoBarra));
+      expect(frase.left, lessThan(pct.left));
+      expect((frase.center.dy - pct.center.dy).abs(), lessThan(8));
+      expect(barra.top, greaterThan(frase.bottom));
+      expect(barra.height, AnimatedProgress.height);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('"Me avise" e a nota ficam presos no pé, 48 dp ou mais', (
+      tester,
+    ) async {
+      await _abrir(tester, analisando());
+
+      final tela = tester.getRect(find.byKey(TreinadorKeys.screen));
+      final botao = tester.getRect(find.byKey(TreinadorKeys.meAvise));
+      final nota = tester.getRect(find.byKey(TreinadorKeys.carregandoNota));
+      expect(botao.bottom, closeTo(tela.bottom - 16, 1));
+      expect(botao.height, greaterThanOrEqualTo(48));
+      expect(botao.width, closeTo(tela.width - 32, 1));
+      expect(nota.bottom, lessThan(botao.top));
+      expect(
+        tester.getSize(find.byKey(TreinadorKeys.outraCuriosidade)).height,
+        greaterThanOrEqualTo(48),
+      );
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
+  group('na fila do grátis', () {
+    PartidaTreinador naFila() => comStatus(_nova(), StatusPartida.naFila);
+
+    testWidgets('frase da fila, barra sem número e "Me avise"', (tester) async {
+      await _abrir(tester, naFila());
+
+      expect(find.byKey(TreinadorKeys.carregando), findsOneWidget);
+      expect(
+        tester.widget<Text>(find.byKey(TreinadorKeys.carregandoFrase)).data,
+        'Sua partida está na fila',
+      );
+      expect(find.byKey(TreinadorKeys.carregandoPorcentagem), findsNothing);
+      expect(find.text('Buscando sua partida no Lichess'), findsNothing);
+      expect(find.byKey(TreinadorKeys.carregandoFila), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.carregandoSubtitulo), findsNothing);
+      expect(
+        tester
+            .widget<AnimatedProgress>(find.byKey(TreinadorKeys.carregandoBarra))
+            .value,
+        isNull,
+      );
+      expect(
+        _textoEm(TreinadorKeys.meAvise, 'Me avise quando terminar'),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('a fila não marca o início; ao virar analisando, marca', (
+      tester,
+    ) async {
+      final bed = await _abrir(tester, naFila());
+      expect(await bed.preferencias.inicioDaAnalise(_idNova), isNull);
+
+      bed.repo.porPartida(comStatus(_nova(), StatusPartida.analisando));
+      await assentar(tester);
+      expect(
+        tester
+            .widget<AnimatedProgress>(find.byKey(TreinadorKeys.carregandoBarra))
+            .value,
+        isNotNull,
+      );
+      expect(find.byKey(TreinadorKeys.carregandoPorcentagem), findsOneWidget);
+      expect(find.byKey(TreinadorKeys.carregandoFila), findsNothing);
+      expect(await bed.preferencias.inicioDaAnalise(_idNova), isNotNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
+  group('início: pé fixo e cartão', () {
+    testWidgets('os botões ficam presos no pé, nos dois estados', (
+      tester,
+    ) async {
+      for (final partida in [_nova(), TreinadorFixtures.tiago()]) {
+        await _abrir(tester, partida);
+        final tela = tester.getRect(find.byKey(TreinadorKeys.screen));
+        final primario = tester.getRect(find.byKey(TreinadorKeys.comecar));
+        final texto = tester.getRect(find.byKey(TreinadorKeys.verPartidas));
+        final cartao = tester.getRect(
+          find.byKey(TreinadorKeys.comoFunciona).first,
+        );
+        expect(texto.bottom, closeTo(tela.bottom - 16, 1));
+        expect(primario.bottom, lessThan(texto.top));
+        expect(texto.top - primario.bottom, closeTo(12, 1));
+        expect(cartao.bottom, lessThan(primario.top));
+        expect(primario.height, greaterThanOrEqualTo(48));
+        expect(texto.height, greaterThanOrEqualTo(48));
+        expect(
+          tester.widget(find.byKey(TreinadorKeys.verPartidas)),
+          isA<OutlinedButton>(),
+        );
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      }
+    });
+
+    testWidgets('o número de exercícios vem da config', (tester) async {
+      final repo = _repo()
+        ..configAtual = const TreinadorConfig(exerciciosPorPartida: 6);
+      await _abrir(tester, _nova(), repo: repo);
+      expect(find.text('6 exercícios'), findsOneWidget);
+    });
+  });
+
+  group('erro: tentar de novo', () {
+    testWidgets('o botão mostra o envio enquanto o pedido não responde', (
+      tester,
+    ) async {
+      final erro = comStatus(_nova(), StatusPartida.erro);
+      final repo = _RepoAnalisarLento([erro]);
+      await _abrir(tester, erro, repo: repo);
+
+      await tester.tap(find.byKey(TreinadorKeys.erroTentar));
+      await tester.pump();
+      expect(find.byType(BusyButton), findsOneWidget);
+      expect(tester.widget<BusyButton>(find.byType(BusyButton)).busy, isTrue);
+      repo.liberar.complete();
+      await assentar(tester);
+      expect(repo.pedidosAnalise, hasLength(1));
+      await tester.pumpWidget(const SizedBox());
+    });
+  });
+
+  group('resumo: cartões e estados', () {
+    PartidaTreinador completa({String? adversario}) {
+      final base = TreinadorFixtures.tiagoJson();
+      final json = adversario == null
+          ? base
+          : {
+              ...base,
+              'adversario': {'nome': adversario, 'rating': 1500},
+            };
+      return PartidaTreinador.fromJson(
+        TreinadorFixtures.idTiago,
+        json,
+      )!.copyWith(progresso: _progresso(4, acertos: 3));
+    }
+
+    testWidgets('título com nome longo quebra a linha, sem reticências', (
+      tester,
+    ) async {
+      const nome = 'Fulano_De_Tal_Com_Nome_Bem_Longo_2026';
+      await _abrir(tester, completa(adversario: nome));
+
+      final titulo = find.text('Contra $nome');
+      expect(titulo, findsOneWidget);
+      final text = tester.widget<Text>(titulo);
+      expect(text.overflow, TextOverflow.visible);
+      expect(text.maxLines, 2);
+      expect(tester.getRect(titulo).height, greaterThan(24));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('cartão da partida no topo, depois os números e as fases', (
+      tester,
+    ) async {
+      await _abrir(tester, completa());
+
+      final topo = tester.getRect(
+        find.byKey(TreinadorKeys.resumoCartaoPartida).first,
+      );
+      final precisao = tester.getRect(
+        find.byKey(TreinadorKeys.resumoPrecisao).first,
+      );
+      final fases = tester.getRect(find.byKey(TreinadorKeys.resumoFases).first);
+      expect(topo.bottom, lessThan(precisao.top));
+      expect(precisao.bottom, lessThan(fases.top));
+      expect(
+        find.descendant(
+          of: find.byKey(TreinadorKeys.resumoFases),
+          matching: find.byType(AnimatedProgress),
+        ),
+        findsNWidgets(3),
+      );
+      expect(find.text('62%'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+      '"Refazer" é o primário e "Ver a análise" o contornado, no pé',
+      (tester) async {
+        await _abrir(tester, completa());
+
+        final tela = tester.getRect(find.byKey(TreinadorKeys.screen));
+        final refazer = tester.getRect(find.byKey(TreinadorKeys.refazer));
+        final analise = tester.getRect(find.byKey(TreinadorKeys.resumoAnalise));
+        expect(refazer.bottom, lessThan(analise.top));
+        expect(analise.bottom, closeTo(tela.bottom - 16, 1));
+        expect(
+          tester.widget(find.byKey(TreinadorKeys.refazer)),
+          isA<FilledButton>(),
+        );
+        expect(
+          tester.widget(find.byKey(TreinadorKeys.resumoAnalise)),
+          isA<OutlinedButton>(),
+        );
+      },
+    );
+
+    testWidgets('✓ e ✗ vêm dos resultados do aparelho', (tester) async {
+      await _abrir(tester, completa());
+      await tester.ensureVisible(find.byKey(TreinadorKeys.posicaoChave(4)));
+      await tester.pump();
+
+      Finder icone(int n, IconData i) => find.descendant(
+        of: find.byKey(TreinadorKeys.posicaoChave(n)),
+        matching: find.byIcon(i),
+      );
+      expect(icone(1, Icons.check_circle), findsOneWidget);
+      expect(icone(3, Icons.check_circle), findsOneWidget);
+      expect(icone(4, Icons.cancel), findsOneWidget);
+    });
+
+    testWidgets('sem resultados no aparelho, a posição fica neutra', (
+      tester,
+    ) async {
+      final remoto = TreinadorFixtures.tiago().copyWith(
+        progresso: const ProgressoPartida(feitosRemoto: 4, acertosRemoto: 3),
+      );
+      await _abrir(tester, remoto);
+
+      expect(find.byKey(TreinadorKeys.resumo), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle), findsNothing);
+      expect(find.byIcon(Icons.cancel), findsNothing);
+      await tester.ensureVisible(find.byKey(TreinadorKeys.posicaoChave(4)));
+      await tester.pump();
+      expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(4));
+      expect(find.text('3 de 4'), findsOneWidget);
     });
   });
 }
