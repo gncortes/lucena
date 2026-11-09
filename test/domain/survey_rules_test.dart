@@ -50,7 +50,7 @@ void main() {
       difficultyText: 'travo no relógio',
     );
     expect(SurveyAnswers.fromJson(answers.toJson()), answers);
-    final draft = SurveyDraft(
+    final draft = const SurveyDraft(
       kind: SurveyKind.school,
       step: 2,
       answers: answers,

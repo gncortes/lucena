@@ -64,22 +64,44 @@ class ScriptMoveList extends StatelessWidget {
           ),
           child: SizedBox(
             width: double.infinity,
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              runSpacing: AppSpacing.xs,
-              children: _items(context),
+            child: _Notation(
+              moves: moves,
+              currentId: currentId,
+              onTap: onTap,
+              covered: covered,
+              onReveal: onReveal,
+              highlight: highlight,
             ),
           ),
         ),
       ),
     );
   }
+}
 
-  /// Os itens da notação: número, lance e parênteses das variantes. O lance
-  /// das pretas leva "N..." no começo, depois de uma variante e logo depois
-  /// dela, como no Lichess. O resultado fecha a linha em que a partida
-  /// acabou.
-  List<Widget> _items(BuildContext context) {
+/// A notação corrida: número, lance e parênteses das variantes. O lance
+/// das pretas leva "N..." no começo, depois de uma variante e logo depois
+/// dela, como no Lichess. O resultado fecha a linha em que a partida
+/// acabou.
+class _Notation extends StatelessWidget {
+  const _Notation({
+    required this.moves,
+    required this.currentId,
+    required this.onTap,
+    required this.covered,
+    required this.onReveal,
+    required this.highlight,
+  });
+
+  final List<ScriptMoveEntry> moves;
+  final String? currentId;
+  final ValueChanged<String> onTap;
+  final Set<String> covered;
+  final ValueChanged<String>? onReveal;
+  final MoveHighlight highlight;
+
+  @override
+  Widget build(BuildContext context) {
     final items = <Widget>[];
     var depth = 0;
     var needsNumber = true;
@@ -87,7 +109,8 @@ class ScriptMoveList extends StatelessWidget {
     for (final entry in moves) {
       // O parêntese que fecha segue o último lance da variante; o que abre,
       // o primeiro.
-      Widget close() => _paren(context, ')', cover: previous);
+      Widget close() =>
+          _Paren(')', cover: previous, covered: covered, onReveal: onReveal);
       while (depth > entry.depth) {
         items.add(close());
         depth--;
@@ -98,7 +121,9 @@ class ScriptMoveList extends StatelessWidget {
         depth--;
       }
       while (depth < entry.depth) {
-        items.add(_paren(context, '(', cover: entry));
+        items.add(
+          _Paren('(', cover: entry, covered: covered, onReveal: onReveal),
+        );
         depth++;
         needsNumber = true;
       }
@@ -107,18 +132,52 @@ class ScriptMoveList extends StatelessWidget {
       final number = white
           ? '${entry.number}.'
           : (needsNumber ? '${entry.number}...' : null);
-      items.add(_move(context, entry, number: number));
-      if (entry.result != null) items.add(_result(context, entry));
+      items.add(
+        _Move(
+          entry: entry,
+          number: number,
+          selected: entry.id == currentId,
+          highlight: highlight,
+          covered: covered,
+          onTap: onTap,
+          onReveal: onReveal,
+        ),
+      );
+      if (entry.result != null) {
+        items.add(_Result(entry: entry, covered: covered, onReveal: onReveal));
+      }
       needsNumber = false;
     }
     for (; depth > 0; depth--) {
-      items.add(_paren(context, ')', cover: previous));
+      items.add(
+        _Paren(')', cover: previous, covered: covered, onReveal: onReveal),
+      );
     }
-    return items;
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      runSpacing: AppSpacing.xs,
+      children: items,
+    );
   }
+}
 
-  /// Cobre [child] com o bloco granulado se o lance [entry] não foi visto.
-  Widget _cover(Widget child, ScriptMoveEntry? entry) {
+/// Cobre [child] com o bloco granulado se o lance [entry] não foi visto.
+class _Cover extends StatelessWidget {
+  const _Cover({
+    required this.child,
+    required this.entry,
+    required this.covered,
+    required this.onReveal,
+  });
+
+  final Widget child;
+  final ScriptMoveEntry? entry;
+  final Set<String> covered;
+  final ValueChanged<String>? onReveal;
+
+  @override
+  Widget build(BuildContext context) {
+    final entry = this.entry;
     if (entry == null || !covered.contains(entry.id)) return child;
     return Builder(
       builder: (context) => Semantics(
@@ -136,9 +195,25 @@ class ScriptMoveList extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _result(BuildContext context, ScriptMoveEntry entry) => _cover(
-    Padding(
+class _Result extends StatelessWidget {
+  const _Result({
+    required this.entry,
+    required this.covered,
+    required this.onReveal,
+  });
+
+  final ScriptMoveEntry entry;
+  final Set<String> covered;
+  final ValueChanged<String>? onReveal;
+
+  @override
+  Widget build(BuildContext context) => _Cover(
+    entry: entry,
+    covered: covered,
+    onReveal: onReveal,
+    child: Padding(
       padding: const EdgeInsets.only(left: AppSpacing.sm, right: AppSpacing.sm),
       child: Text(
         entry.result!,
@@ -150,26 +225,62 @@ class ScriptMoveList extends StatelessWidget {
         ),
       ),
     ),
-    entry,
   );
+}
 
-  Widget _paren(BuildContext context, String text, {ScriptMoveEntry? cover}) {
+class _Paren extends StatelessWidget {
+  const _Paren(
+    this.text, {
+    required this.cover,
+    required this.covered,
+    required this.onReveal,
+  });
+
+  final String text;
+  final ScriptMoveEntry? cover;
+  final Set<String> covered;
+  final ValueChanged<String>? onReveal;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return _cover(
-      Padding(
+    return _Cover(
+      entry: cover,
+      covered: covered,
+      onReveal: onReveal,
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
         child: Text(
           text,
           style: TextStyle(fontSize: 15, height: 2, color: colors.outline),
         ),
       ),
-      cover,
     );
   }
+}
 
-  Widget _move(BuildContext context, ScriptMoveEntry entry, {String? number}) {
+class _Move extends StatelessWidget {
+  const _Move({
+    required this.entry,
+    required this.number,
+    required this.selected,
+    required this.highlight,
+    required this.covered,
+    required this.onTap,
+    required this.onReveal,
+  });
+
+  final ScriptMoveEntry entry;
+  final String? number;
+  final bool selected;
+  final MoveHighlight highlight;
+  final Set<String> covered;
+  final ValueChanged<String> onTap;
+  final ValueChanged<String>? onReveal;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final selected = entry.id == currentId;
     // No destaque da análise, o texto fica como os outros lances.
     final filled = selected && highlight == MoveHighlight.filled;
     final variant = entry.depth > 0;
@@ -184,8 +295,11 @@ class ScriptMoveList extends StatelessWidget {
           : (variant ? colors.onSurfaceVariant : colors.onSurface),
       fontFeatures: const [FontFeature.tabularFigures()],
     );
-    return _cover(
-      Row(
+    return _Cover(
+      entry: entry,
+      covered: covered,
+      onReveal: onReveal,
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (number != null)
@@ -195,7 +309,7 @@ class ScriptMoveList extends StatelessWidget {
                 right: AppSpacing.xs,
               ),
               child: Text(
-                number,
+                number!,
                 style: TextStyle(
                   fontSize: variant ? 13 : 14,
                   color: colors.onSurfaceVariant,
@@ -238,7 +352,6 @@ class ScriptMoveList extends StatelessWidget {
           ),
         ],
       ),
-      entry,
     );
   }
 

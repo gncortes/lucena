@@ -189,9 +189,9 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      TestApp(
-        locale: const Locale('pt'),
-        child: const Scaffold(
+      const TestApp(
+        locale: Locale('pt'),
+        child: Scaffold(
           body: SpeechText(
             text: 'Clique em {linhaPrincipal}. Depois siga.',
             style: TextStyle(fontSize: 15),

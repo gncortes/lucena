@@ -17,6 +17,7 @@ class FaixaDeEntrada {
   final bool conta;
 }
 
+// B1: callback de montar (valor padrão const do parâmetro)
 Widget _coluna(List<Widget> faixas) =>
     Column(mainAxisSize: MainAxisSize.min, children: faixas);
 

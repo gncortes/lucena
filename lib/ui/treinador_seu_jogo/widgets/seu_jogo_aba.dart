@@ -56,7 +56,7 @@ class SeuJogoAba extends StatelessWidget {
   Widget build(BuildContext context) {
     final temCubit = context.select<SeuJogoCubit?, bool>((c) => c != null);
     if (temCubit) return const _Corpo();
-    return BlocProvider(create: criarSeuJogoCubit, child: const _Corpo());
+    return const BlocProvider(create: criarSeuJogoCubit, child: _Corpo());
   }
 }
 

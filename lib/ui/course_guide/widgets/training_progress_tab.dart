@@ -72,8 +72,7 @@ class TrainingProgressTab extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           children: [
-            _card(
-              context,
+            _Card(
               children: [
                 Row(
                   children: [
@@ -150,8 +149,7 @@ class TrainingProgressTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            _card(
-              context,
+            _Card(
               children: [
                 Text(
                   t.trainingProgressPieceStars,
@@ -247,12 +245,11 @@ class TrainingProgressTab extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           children: [
             if (lessonsToday > 0) ...[
-              _todayCard(context, lessonsToday),
+              _TodayCard(lessons: lessonsToday),
               const SizedBox(height: 12),
             ],
             if (themes.isNotEmpty)
-              _card(
-                context,
+              _Card(
                 children: [
                   Text(
                     t.trainingMasteryTitle,
@@ -359,8 +356,7 @@ class TrainingProgressTab extends StatelessWidget {
               ),
             if (tracks.isNotEmpty) ...[
               if (themes.isNotEmpty) const SizedBox(height: 12),
-              _card(
-                context,
+              _Card(
                 children: [
                   Text(
                     t.trainingOpeningsTitle,
@@ -560,7 +556,16 @@ class TrainingProgressTab extends StatelessWidget {
       );
     },
   );
-  static Widget _todayCard(BuildContext context, int lessons) {
+}
+
+/// A lição de hoje já feita: o ✓ e quantas lições saíram no dia.
+class _TodayCard extends StatelessWidget {
+  const _TodayCard({required this.lessons});
+
+  final int lessons;
+
+  @override
+  Widget build(BuildContext context) {
     final t = context.l10n, text = Theme.of(context).textTheme;
     return Material(
       key: TrainingKeys.progressToday,
@@ -603,24 +608,30 @@ class TrainingProgressTab extends StatelessWidget {
       ),
     );
   }
+}
 
-  static Widget _card(BuildContext context, {required List<Widget> children}) =>
-      Material(
-        // Cartão do canvas: #FAFBF9 com contorno, não o branco puro.
-        color: AppColors.cardSurface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppShape.card),
-          side: const BorderSide(color: AppColors.cardOutline),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 10,
-            children: children,
-          ),
-        ),
-      );
+/// O cartão do canvas: #FAFBF9 com contorno, não o branco puro.
+class _Card extends StatelessWidget {
+  const _Card({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: AppColors.cardSurface,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppShape.card),
+      side: const BorderSide(color: AppColors.cardOutline),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 10,
+        children: children,
+      ),
+    ),
+  );
 }
 
 class _ProgressLegend extends StatelessWidget {
@@ -670,8 +681,7 @@ class _ProgressLegend extends StatelessWidget {
         border: outlined ? Border.all(color: colors.outlineVariant) : null,
       ),
     );
-    return TrainingProgressTab._card(
-      context,
+    return _Card(
       children: [
         Text(t.reviewLegend, style: theme.textTheme.titleMedium),
         heading(t.trainingProgressLegendThemes),

@@ -118,12 +118,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
   late final ChessboardController _board;
   bool _boardTouch = false;
-  Widget _boardTouchRegion(Widget child) => Listener(
-    onPointerDown: (_) => _boardTouch = true,
-    onPointerUp: (_) => scheduleMicrotask(() => _boardTouch = false),
-    onPointerCancel: (_) => scheduleMicrotask(() => _boardTouch = false),
-    child: child,
-  );
 
   // O relógio não conta tiques: a tela só pede, várias vezes por segundo, que
   // os tempos sejam refeitos pelo instante atual.
@@ -340,6 +334,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     context.read<FreeBoardCubit>().play(premove);
   }
 
+  // O personagem tem nome: avisa como ajustar a fala.
+  void _showSpeechHint(BuildContext context, TalkState state) {
+    final name = state.character?.name;
+    if (name == null) return;
+    showLucenaSnackBar(
+      context,
+      context.l10n.gameSpeechHint(name),
+      key: FreeBoardKeys.speechHint,
+      action: SnackBarAction(
+        key: FreeBoardKeys.speechHintAdjust,
+        label: context.l10n.gameSpeechAdjust,
+        onPressed: () => showGameSoundDialog(context),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<FreeBoardCubit>();
@@ -350,24 +360,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       (SettingsCubit cubit) =>
           (cubit.state?.clock ?? const ClockSettings()).position,
     );
-    final talk = context.watch<TalkCubit>().state;
     return BlocListener<TalkCubit, TalkState>(
       listenWhen: (previous, current) =>
           previous.speechHintVersion != current.speechHintVersion,
-      listener: (context, state) {
-        final name = state.character?.name;
-        if (name == null) return;
-        showLucenaSnackBar(
-          context,
-          context.l10n.gameSpeechHint(name),
-          key: FreeBoardKeys.speechHint,
-          action: SnackBarAction(
-            key: FreeBoardKeys.speechHintAdjust,
-            label: context.l10n.gameSpeechAdjust,
-            onPressed: () => showGameSoundDialog(context),
-          ),
-        );
-      },
+      listener: _showSpeechHint,
       child: BlocListener<FreeBoardCubit, FreeBoardState>(
         // H-PAR-18: depois da 3ª falha seguida do adversário, a folha sem ✕.
         listenWhen: (previous, current) =>
@@ -432,41 +428,31 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                         previous.machineThinking != current.machineThinking,
                     listener: (context, state) => _onStateChanged(state),
                     builder: (context, state) {
-                      // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-                      // guarda a partida. No meio de um speedrun, sair encerra a
-                      // tentativa: antes, a confirmação.
-                      final speedrunOpen =
-                          state.mode.isSpeedrun &&
-                          state.end == null &&
-                          !_quitting;
-                      // No meio de qualquer outra partida, pergunta antes de
-                      // sair (a partida fica salva para retomar; achado A2,
-                      // estendido a todas as partidas pelo Gabriel em 08/11).
-                      final gameOpen =
-                          !state.mode.isSpeedrun &&
-                          state.ready &&
-                          state.end == null &&
-                          !_quitting;
-                      return PopScope(
-                        canPop: !speedrunOpen && !gameOpen,
-                        onPopInvokedWithResult: (didPop, _) {
-                          if (didPop) {
-                            if (!state.mode.isSpeedrun) {
-                              unawaited(cubit.leave());
-                            }
-                          } else if (speedrunOpen) {
-                            unawaited(_confirmQuitSpeedrun(cubit));
-                          } else {
-                            unawaited(_confirmLeave(cubit));
-                          }
-                        },
-                        child: _scaffold(
-                          context,
-                          cubit,
-                          state,
-                          boardSettings,
-                          clockPosition,
-                          talk,
+                      return _LeaveGuard(
+                        state: state,
+                        quitting: _quitting,
+                        onLeave: cubit.leave,
+                        onQuitSpeedrun: () => _confirmQuitSpeedrun(cubit),
+                        onConfirmLeave: () => _confirmLeave(cubit),
+                        child: _FreeBoardScaffold(
+                          cubit: cubit,
+                          state: state,
+                          boardSettings: boardSettings,
+                          clockPosition: clockPosition,
+                          board: _board,
+                          shareBoundary: _shareBoundary,
+                          boardTouch: () => _boardTouch,
+                          onBoardTouch: (touch) => _boardTouch = touch,
+                          onRetryRecord: (context) =>
+                              _retryRecord(context, cubit),
+                          onLinkOffer: _onLinkOffer,
+                          onOpenLead: _openLead,
+                          onShareLinkResult: _shareLinkResult,
+                          onMeetApp: _meetApp,
+                          onConclude: _conclude,
+                          onConfirmResign: _confirmResign,
+                          onConfirmDraw: _confirmDraw,
+                          onPickClock: _pickClock,
                         ),
                       );
                     },
@@ -480,458 +466,28 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
-  Widget _scaffold(
-    BuildContext context,
-    FreeBoardCubit cubit,
+  /// Na partida do link com aula: a folha da aula gratuita abre sozinha uma
+  /// vez por fim; o "Ver a aula" do rodapé a reabre.
+  void _onLinkOffer(
     FreeBoardState state,
-    BoardSettings boardSettings,
-    ClockPosition clockPosition,
-    TalkState talk,
+    LinkLessonCubit? linkLesson,
+    LinkLessonOffer offer,
   ) {
-    // O shimmer acompanha a leitura sem exibir o tabuleiro na posição errada.
-    // H-PAR-19: a tentativa não coube no aparelho ao gravar o fim da partida.
-    if (state.recordFailed) {
-      return LoadErrorScreen(
-        kind: LoadErrorKind.noSpace,
-        onAction: () => unawaited(_retryRecord(context, cubit)),
-        onBack: cubit.dismissRecordError,
-        onFreeSpace: freeSpaceAction(context),
-      );
+    if (state.end == null) _leadShown = false;
+    if (offer != LinkLessonOffer.none && !_leadShown) {
+      _leadShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        unawaited(_openLead(context, linkLesson!, offer));
+      });
     }
-    if (state.failed) {
-      return LoadErrorScreen(
-        kind: LoadErrorKind.generic,
-        onAction: cubit.open,
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
-      );
-    }
-    if (!state.ready) {
-      return Scaffold(
-        key: FreeBoardKeys.screen,
-        appBar: LucenaAppBar(title: Text(context.l10n.freeBoardTitle)),
-        body: const ShimmerConteudo(
-          carregando: true,
-          esqueleto: SafeArea(child: SkeletonList()),
-          child: SizedBox.shrink(),
-        ),
-      );
-    }
-    final training = state.mode.userSide != null;
-    final featured = state.mode.featuredId != null;
-    return Scaffold(
-      key: FreeBoardKeys.screen,
-      appBar: LucenaAppBar(
-        actions: state.mode.dailyDate != null
-            ? const [DailyGameActions()]
-            : featured
-            ? [
-                FeaturedGameActions(
-                  boundary: _shareBoundary,
-                  ended: state.end != null && state.mode.opponent.isMachine,
-                ),
-              ]
-            : null,
-        // Os lances numa faixa, logo abaixo da barra: tocar num deles mostra a
-        // posição daquele momento.
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(MoveList.height),
-          child: MoveList(
-            moves: state.moves,
-            firstMoveNumber: state.start.fullmoves,
-            firstSide: state.start.turn,
-            selected: state.shownPly - 1,
-            onSelected: (index) => cubit.view(index + 1),
-            pieceLetters: boardSettings.notation.pieceLetters(context.l10n),
-          ),
-        ),
-        title: state.mode.fromLink
-            ? Text(context.l10n.journeyChallengeTitle, key: FreeBoardKeys.title)
-            : Text(_title(context, state, talk), key: FreeBoardKeys.title),
-      ),
-      body: ShimmerConteudo(
-        carregando: false,
-        esqueleto: const SafeArea(child: SkeletonList()),
-        child: RepaintBoundary(
-          key: featured ? _shareBoundary : null,
-          child: BoardViewport(
-            usefulHeight: BoardViewport.usefulHeightOf(context),
-            child: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  // Sem relógio na partida, cada lado tem a sua linha (o peão e o
-                  // nome), com a vez de quem joga; com relógio, onde o jogador
-                  // escolheu.
-                  final clocks = state.clock == null
-                      ? ClockPosition.sides
-                      : clockPosition;
-                  final character = talk.character;
-                  // Acabou a partida contra a máquina: o selo fica no tabuleiro e
-                  // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
-                  final machineEnded =
-                      state.end != null &&
-                      state.mode.opponent.isMachine &&
-                      !_marathonAdvance(state);
-                  final barTalk = machineEnded
-                      ? talk.copyWith(clearLine: true)
-                      : talk;
-                  final nickname = context.select(
-                    (ProfileCubit cubit) => cubit.state?.nickname ?? '',
-                  );
-                  // A8: o centro da tela útil (entre a barra de status e a de
-                  // navegação) como referência.
-                  final clocksAbove =
-                      clocks == ClockPosition.top ||
-                          clocks == ClockPosition.sides
-                      ? ClockRow.height
-                      : 0.0;
-                  final clocksBelow =
-                      clocks == ClockPosition.bottom ||
-                          clocks == ClockPosition.sides
-                      ? ClockRow.height
-                      : 0.0;
-                  final reserveTop = clocksAbove;
-                  final screenCenter = BoardViewport.centerYOf(context)!;
-                  final footerHeight = machineEnded && state.mode.fromLink
-                      ? _LinkEndBar.height
-                      : GameActionsBar.height +
-                            (machineEnded &&
-                                    featured &&
-                                    featuredAlertShown(context)
-                                ? FeaturedEndBar.alertHeight
-                                : 0);
-                  // A aula do link de campanha (T84), no fim do desafio.
-                  final linkLesson = state.mode.fromLink
-                      ? _linkLessonOf(context)
-                      : null;
-                  // A aula que não abre não é oferecida: o fim de sempre.
-                  final offer =
-                      machineEnded &&
-                          linkLesson != null &&
-                          linkLesson.state.available == true
-                      ? LinkLessonRules.offer(
-                          state.challengeLink,
-                          fulfilled: state.fulfilled,
-                        )
-                      : LinkLessonOffer.none;
-                  // A folha da aula gratuita abre sozinha uma vez por fim; o
-                  // "Ver a aula" do rodapé a reabre.
-                  if (state.end == null) _leadShown = false;
-                  if (offer != LinkLessonOffer.none && !_leadShown) {
-                    _leadShown = true;
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (!mounted) return;
-                      unawaited(_openLead(this.context, linkLesson!, offer));
-                    });
-                  }
-                  // A8 (Gabriel, 08/11): de ponta a ponta e no centro da tela
-                  // em toda partida; a fala do adversário flutua por cima
-                  // (overlay da CharacterBar) e não reserva espaço.
-                  final boardSide = constraints.maxWidth;
-                  final topExtent = reserveTop > 0
-                      ? reserveTop + _boardGap
-                      : 0.0;
-                  final bottomExtent = clocksBelow > 0
-                      ? clocksBelow + _boardGap
-                      : 0.0;
-                  final boardCenter = math.max(
-                    screenCenter,
-                    topExtent + boardSide / 2,
-                  );
-                  final layoutHeight = math.max(
-                    constraints.maxHeight,
-                    boardCenter + boardSide / 2 + bottomExtent + footerHeight,
-                  );
-                  final centering = BoardCentering(
-                    Size(constraints.maxWidth, layoutHeight),
-                    centerY: boardCenter,
-                    gap: _boardGap,
-                    reserveTop: reserveTop,
-                    reserveBottom: clocksBelow,
-                    footer: footerHeight,
-                    minFraction: 1,
-                    maxBoard: boardSide,
-                  );
-                  const both = [Side.white, Side.black];
-                  final end = state.end;
-                  return Stack(
-                    // A tela toda: o fundo escuro do resultado cobre até embaixo,
-                    // mesmo com pouco conteúdo.
-                    fit: StackFit.expand,
-                    children: [
-                      CenteredBoardLayout(
-                        key: FreeBoardKeys.scrollArea,
-                        gap: _boardGap,
-                        centerY: centering.centerY,
-                        minFraction: centering.minFraction,
-                        minBoardSide: boardSide,
-                        maxBoard: boardSide,
-                        scrollPhysics: _GameScrollPhysics(() => _boardTouch),
-                        reserveTop: reserveTop,
-                        reserveBottom: clocksBelow,
-                        footer: machineEnded
-                            // H-ANI-25: o resultado aparece no tabuleiro e o
-                            // rodapé do fim desliza por último.
-                            ? EntradaDeResultado(
-                                id: 'fim-${state.startedAt?.microsecondsSinceEpoch}',
-                                botoes: featured
-                                    ? FeaturedEndBar(onAgain: cubit.newGame)
-                                    : state.mode.fromLink
-                                    ? _LinkEndBar(
-                                        onLesson: offer == LinkLessonOffer.none
-                                            ? null
-                                            : () => unawaited(
-                                                _openLead(
-                                                  context,
-                                                  linkLesson!,
-                                                  offer,
-                                                ),
-                                              ),
-                                        onAgain: () => _playLinkAgain(cubit),
-                                        onShare: () =>
-                                            _shareLinkResult(context, state),
-                                        onMeetApp: () => _meetApp(context),
-                                      )
-                                    : _SeeResultBar(
-                                        onPressed: () => unawaited(
-                                          _conclude(
-                                            context,
-                                            cubit,
-                                            cubit.state,
-                                          ),
-                                        ),
-                                      ),
-                              )
-                            : GameActionsBar(
-                                training: training,
-                                onResign:
-                                    state.end == null &&
-                                        state.mode.opponent.isMachine
-                                    ? _confirmResign
-                                    : null,
-                                onDraw: state.canOfferDraw
-                                    ? _confirmDraw
-                                    : null,
-                                onFlip: cubit.flip,
-                                onClock: _pickClock,
-                                onNewGame: cubit.newGame,
-                                showSound: true,
-                              ),
-                        // Enquanto o tabuleiro termina o voo, a barra do
-                        // adversário desce do alto e a do jogador sobe de baixo.
-                        top: GameEntrance(
-                          part: GameEntrancePart.top,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              if (character != null &&
-                                  clocks != ClockPosition.bottom)
-                                CharacterBar(
-                                  talk: barTalk,
-                                  dismissOn: _playerMoves(state),
-                                  avatarSize: CharacterAvatar.player,
-                                  showName: false,
-                                  playerRow: ClockRow(
-                                    sides: clocks == ClockPosition.top
-                                        ? both
-                                        : [state.orientation.opposite],
-                                    state: state,
-                                    board: boardSettings,
-                                    talk: talk,
-                                  ),
-                                  // A ponta do balão a 4 dp do retrato (que começa 12 dp abaixo
-                                  // do alto da linha de 68).
-                                  speechTop: -72,
-                                ),
-                              if (character == null &&
-                                  clocks == ClockPosition.top)
-                                ClockRow(
-                                  sides: both,
-                                  state: state,
-                                  board: boardSettings,
-                                  talk: talk,
-                                ),
-                              if (character == null &&
-                                  clocks == ClockPosition.sides)
-                                ClockRow(
-                                  sides: [state.orientation.opposite],
-                                  state: state,
-                                  board: boardSettings,
-                                  talk: talk,
-                                ),
-                            ],
-                          ),
-                        ),
-                        // O tabuleiro não espelha em idiomas da direita para a
-                        // esquerda.
-                        board: LayoutBuilder(
-                          builder: (context, box) => Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // No começo da partida, o tabuleiro da tela de
-                              // antes (no alto) desliza e cresce até aqui.
-                              GameBoardHero(
-                                orientation: state.orientation,
-                                child: Directionality(
-                                  textDirection: TextDirection.ltr,
-                                  child: _boardTouchRegion(
-                                    // H-ANI-10: deslize do kit, captura e
-                                    // halo do xeque.
-                                    TabuleiroAnimado(
-                                      controlador: _board,
-                                      orientacao: state.orientation,
-                                      tamanho: box.maxWidth,
-                                      pecas:
-                                          boardSettings.chessground.pieceAssets,
-                                      child: Chessboard(
-                                        key: FreeBoardKeys.board,
-                                        size: box.maxWidth,
-                                        controller: _board,
-                                        // No ultra bullet o pré-lance fica
-                                        // sempre ligado: sem ele, não dá
-                                        // tempo de jogar no celular.
-                                        settings: TabuleiroAnimado.ajustes(
-                                          context,
-                                          _ultraBullet(state)
-                                              ? boardSettings
-                                                    .copyWith(premoves: true)
-                                                    .chessground
-                                              : boardSettings.chessground,
-                                        ),
-                                        orientation: state.orientation,
-                                        onMove: (move, {viaDragAndDrop}) =>
-                                            cubit.play(move),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              // Toda partida nova contra a máquina abre com o
-                              // versus (na Maratona, com a contagem); só então
-                              // o relógio corre.
-                              // O selo do resultado sobre o tabuleiro, até o jogador seguir.
-                              if (end != null && state.mode.opponent.isMachine)
-                                Positioned.fill(
-                                  child: IgnorePointer(
-                                    child: _EndFlash(
-                                      key: ValueKey(end),
-                                      end: end,
-                                      userSide: state.mode.userSide,
-                                      comparison:
-                                          state.challengeComparison == null
-                                          ? null
-                                          : context.l10n.challengeCompare(
-                                              state.challengeComparison!.sender,
-                                              state.challengeComparison!.you,
-                                            ),
-                                      // Só o autoavanço encerra o selo sozinho.
-                                      short: state.mode.isUnratedFinal,
-                                      persistent: !_marathonAdvance(state),
-                                    ),
-                                  ),
-                                ),
-                              if (state.held)
-                                Positioned.fill(
-                                  child: VersusIntro(
-                                    playerName: nickname.isEmpty
-                                        ? context.l10n.profileNicknameDefault
-                                        : nickname,
-                                    opponentName:
-                                        character?.name ??
-                                        state.mode.opponent.label(
-                                          context.l10n,
-                                          level: state.mode.level,
-                                        ),
-                                    opponentRating: talk.isEngine
-                                        ? null
-                                        : state.mode.level,
-                                    opponentAvatar: character == null
-                                        ? ColoredBox(
-                                            color: AppColors.chessBlackColor,
-                                            child: const Icon(
-                                              Icons.smart_toy_outlined,
-                                              color: AppColors.chessWhiteColor,
-                                              size: AppIconSize.large,
-                                            ),
-                                          )
-                                        : CharacterAvatar(
-                                            character: character,
-                                            size: CharacterAvatar.versus,
-                                          ),
-                                    countdown: state.mode.isMarathon,
-                                    stage: state.mode.isMarathon
-                                        ? (state.mode.speedrunStage ?? 0) + 1
-                                        : null,
-                                    playerSide:
-                                        state.playerSide ?? state.orientation,
-                                    onDone: cubit.release,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        bottom: GameEntrance(
-                          part: GameEntrancePart.bottom,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              if (clocks == ClockPosition.sides)
-                                ClockRow(
-                                  sides: [state.orientation],
-                                  state: state,
-                                  board: boardSettings,
-                                  talk: talk,
-                                ),
-                              if (clocks == ClockPosition.bottom &&
-                                  character != null)
-                                CharacterBar(
-                                  talk: barTalk,
-                                  dismissOn: _playerMoves(state),
-                                  avatarSize: CharacterAvatar.player,
-                                  showName: false,
-                                  playerRow: ClockRow(
-                                    sides: both,
-                                    state: state,
-                                    board: boardSettings,
-                                    talk: talk,
-                                  ),
-                                  // Mesmo com os relógios embaixo, a fala ocupa
-                                  // apenas a região acima do tabuleiro.
-                                  speechTop:
-                                      -(centering.side + 2 * _boardGap + 80),
-                                ),
-                              if (clocks == ClockPosition.bottom &&
-                                  character == null)
-                                ClockRow(
-                                  sides: both,
-                                  state: state,
-                                  board: boardSettings,
-                                  talk: talk,
-                                ),
-                              // Embaixo do tabuleiro: o fim da partida de dois.
-                              if (end != null && !state.mode.opponent.isMachine)
-                                _TwoPlayersEnd(
-                                  end: end,
-                                  onNewGame: cubit.newGame,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
-  String _title(BuildContext context, FreeBoardState state, TalkState talk) {
+  static String _title(
+    BuildContext context,
+    FreeBoardState state,
+    TalkState talk,
+  ) {
     final l10n = context.l10n;
     if (state.mode.isMarathon) return l10n.marathonSection;
     if (state.mode.isSpeedrun) return l10n.speedrunModeClassic;
@@ -952,7 +508,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   // Só a etapa vencida da Maratona segue sozinha; nas demais partidas contra
   // a máquina o fim para no tabuleiro até o jogador tocar em "Ver o resultado".
-  bool _marathonAdvance(FreeBoardState state) =>
+  static bool _marathonAdvance(FreeBoardState state) =>
       state.end != null &&
       state.mode.opponent.isMachine &&
       state.mode.isMarathon &&
@@ -965,7 +521,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   bool _sharingResult = false;
 
   /// "Jogar de novo": o mesmo desafio, com o mesmo relógio.
-  void _playLinkAgain(FreeBoardCubit cubit) => cubit.newGame();
+  static void _playLinkAgain(FreeBoardCubit cubit) => cubit.newGame();
 
   /// "Compartilhar": a folha do sistema com a imagem do resultado e o link.
   void _shareLinkResult(BuildContext context, FreeBoardState state) {
@@ -1150,6 +706,51 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   }
 
   /// O menor tabuleiro com o espaço fixo da fala, em fração da largura.
+}
+
+/// Sair da tela pela seta ou pelo botão de voltar para o relógio e guarda a
+/// partida. No meio de um speedrun, sair encerra a tentativa e, em qualquer
+/// outra partida, pergunta antes (a partida fica salva para retomar; achado
+/// A2, estendido a todas as partidas pelo Gabriel em 08/11).
+class _LeaveGuard extends StatelessWidget {
+  const _LeaveGuard({
+    required this.state,
+    required this.quitting,
+    required this.onLeave,
+    required this.onQuitSpeedrun,
+    required this.onConfirmLeave,
+    required this.child,
+  });
+
+  final FreeBoardState state;
+  final bool quitting;
+  final Future<void> Function() onLeave;
+  final Future<void> Function() onQuitSpeedrun;
+  final Future<void> Function() onConfirmLeave;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final speedrunOpen =
+        state.mode.isSpeedrun && state.end == null && !quitting;
+    final gameOpen =
+        !state.mode.isSpeedrun && state.ready && state.end == null && !quitting;
+    return PopScope(
+      canPop: !speedrunOpen && !gameOpen,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          if (!state.mode.isSpeedrun) {
+            unawaited(onLeave());
+          }
+        } else if (speedrunOpen) {
+          unawaited(onQuitSpeedrun());
+        } else {
+          unawaited(onConfirmLeave());
+        }
+      },
+      child: child,
+    );
+  }
 }
 
 /// O rodapé da partida terminada contra a máquina: só "Ver o resultado"
@@ -1596,4 +1197,707 @@ Future<bool?> _showGameConfirmation(
   );
   // Fechar de qualquer jeito que não seja a ação devolve falso.
   return confirmed ?? false;
+}
+
+/// A tela da partida conforme o estado: erro de gravação, erro de leitura,
+/// carregando ou o tabuleiro com as barras e o rodapé.
+class _FreeBoardScaffold extends StatelessWidget {
+  const _FreeBoardScaffold({
+    required this.cubit,
+    required this.state,
+    required this.boardSettings,
+    required this.clockPosition,
+    required this.board,
+    required this.shareBoundary,
+    required this.boardTouch,
+    required this.onBoardTouch,
+    required this.onRetryRecord,
+    required this.onLinkOffer,
+    required this.onOpenLead,
+    required this.onShareLinkResult,
+    required this.onMeetApp,
+    required this.onConclude,
+    required this.onConfirmResign,
+    required this.onConfirmDraw,
+    required this.onPickClock,
+  });
+
+  final FreeBoardCubit cubit;
+  final FreeBoardState state;
+  final BoardSettings boardSettings;
+  final ClockPosition clockPosition;
+  final ChessboardController board;
+
+  /// O que o "compartilhar" de um final em destaque captura.
+  final GlobalKey shareBoundary;
+
+  /// O dedo está no tabuleiro? (A rolagem externa não compete com ele.)
+  final bool Function() boardTouch;
+  final ValueChanged<bool> onBoardTouch;
+  final Future<void> Function(BuildContext context) onRetryRecord;
+  final void Function(
+    FreeBoardState state,
+    LinkLessonCubit? linkLesson,
+    LinkLessonOffer offer,
+  )
+  onLinkOffer;
+  final Future<void> Function(
+    BuildContext context,
+    LinkLessonCubit linkLesson,
+    LinkLessonOffer offer,
+  )
+  onOpenLead;
+  final void Function(BuildContext context, FreeBoardState state)
+  onShareLinkResult;
+  final void Function(BuildContext context) onMeetApp;
+  final Future<void> Function(
+    BuildContext context,
+    FreeBoardCubit cubit,
+    FreeBoardState state,
+  )
+  onConclude;
+  final VoidCallback onConfirmResign;
+  final VoidCallback onConfirmDraw;
+  final VoidCallback onPickClock;
+
+  @override
+  Widget build(BuildContext context) {
+    // O shimmer acompanha a leitura sem exibir o tabuleiro na posição errada.
+    // H-PAR-19: a tentativa não coube no aparelho ao gravar o fim da partida.
+    if (state.recordFailed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.noSpace,
+        onAction: () => unawaited(onRetryRecord(context)),
+        onBack: cubit.dismissRecordError,
+        onFreeSpace: freeSpaceAction(context),
+      );
+    }
+    if (state.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: cubit.open,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
+    if (!state.ready) {
+      return Scaffold(
+        key: FreeBoardKeys.screen,
+        appBar: LucenaAppBar(title: Text(context.l10n.freeBoardTitle)),
+        body: const ShimmerConteudo(
+          carregando: true,
+          esqueleto: SafeArea(child: SkeletonList()),
+          child: SizedBox.shrink(),
+        ),
+      );
+    }
+    final featured = state.mode.featuredId != null;
+    return Scaffold(
+      key: FreeBoardKeys.screen,
+      appBar: LucenaAppBar(
+        actions: state.mode.dailyDate != null
+            ? const [DailyGameActions()]
+            : featured
+            ? [
+                FeaturedGameActions(
+                  boundary: shareBoundary,
+                  ended: state.end != null && state.mode.opponent.isMachine,
+                ),
+              ]
+            : null,
+        // Os lances numa faixa, logo abaixo da barra: tocar num deles mostra a
+        // posição daquele momento.
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(MoveList.height),
+          child: MoveList(
+            moves: state.moves,
+            firstMoveNumber: state.start.fullmoves,
+            firstSide: state.start.turn,
+            selected: state.shownPly - 1,
+            onSelected: (index) => cubit.view(index + 1),
+            pieceLetters: boardSettings.notation.pieceLetters(context.l10n),
+          ),
+        ),
+        title: _FreeBoardTitle(state: state),
+      ),
+      body: _FreeBoardBody(
+        screen: this,
+        usefulHeight: BoardViewport.usefulHeightOf(context),
+      ),
+    );
+  }
+}
+
+/// O título da partida: o do desafio do link ou o do adversário da vez.
+class _FreeBoardTitle extends StatelessWidget {
+  const _FreeBoardTitle({required this.state});
+
+  final FreeBoardState state;
+
+  @override
+  Widget build(BuildContext context) => state.mode.fromLink
+      ? Text(context.l10n.journeyChallengeTitle, key: FreeBoardKeys.title)
+      : BlocBuilder<TalkCubit, TalkState>(
+          buildWhen: (previous, current) =>
+              previous.character != current.character,
+          builder: (context, talk) => Text(
+            _FreeBoardScreenState._title(context, state, talk),
+            key: FreeBoardKeys.title,
+          ),
+        );
+}
+
+/// O corpo da partida pronta: mede a área útil, decide o rodapé e a oferta da
+/// aula do link e entrega o resto ao [_FreeBoardStage].
+class _FreeBoardBody extends StatelessWidget {
+  const _FreeBoardBody({required this.screen, required this.usefulHeight});
+
+  final _FreeBoardScaffold screen;
+
+  /// A altura útil, medida no contexto de fora do Scaffold.
+  final double usefulHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = screen.state;
+    final cubit = screen.cubit;
+    final featured = state.mode.featuredId != null;
+    return ShimmerConteudo(
+      carregando: false,
+      esqueleto: const SafeArea(child: SkeletonList()),
+      child: RepaintBoundary(
+        key: featured ? screen.shareBoundary : null,
+        child: BoardViewport(
+          usefulHeight: usefulHeight,
+          child: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Sem relógio na partida, cada lado tem a sua linha (o peão e o
+                // nome), com a vez de quem joga; com relógio, onde o jogador
+                // escolheu.
+                final clocks = state.clock == null
+                    ? ClockPosition.sides
+                    : screen.clockPosition;
+                // Acabou a partida contra a máquina: o selo fica no tabuleiro e
+                // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
+                final machineEnded =
+                    state.end != null &&
+                    state.mode.opponent.isMachine &&
+                    !_FreeBoardScreenState._marathonAdvance(state);
+                final nickname = context.select(
+                  (ProfileCubit cubit) => cubit.state?.nickname ?? '',
+                );
+                // A8: o centro da tela útil (entre a barra de status e a de
+                // navegação) como referência.
+                final screenCenter = BoardViewport.centerYOf(context)!;
+                final footerHeight = machineEnded && state.mode.fromLink
+                    ? _LinkEndBar.height
+                    : GameActionsBar.height +
+                          (machineEnded &&
+                                  featured &&
+                                  featuredAlertShown(context)
+                              ? FeaturedEndBar.alertHeight
+                              : 0);
+                // A aula do link de campanha (T84), no fim do desafio.
+                final linkLesson = state.mode.fromLink
+                    ? _FreeBoardScreenState._linkLessonOf(context)
+                    : null;
+                // A aula que não abre não é oferecida: o fim de sempre.
+                final offer =
+                    machineEnded &&
+                        linkLesson != null &&
+                        linkLesson.state.available == true
+                    ? LinkLessonRules.offer(
+                        state.challengeLink,
+                        fulfilled: state.fulfilled,
+                      )
+                    : LinkLessonOffer.none;
+                // A folha da aula gratuita abre sozinha uma vez por fim; o
+                // "Ver a aula" do rodapé a reabre.
+                screen.onLinkOffer(state, linkLesson, offer);
+                return _FreeBoardStage(
+                  screen: screen,
+                  constraints: constraints,
+                  clocks: clocks,
+                  machineEnded: machineEnded,
+                  screenCenter: screenCenter,
+                  footerHeight: footerHeight,
+                  nickname: nickname,
+                  // Os atalhos do rodapé do fim usam o contexto daqui.
+                  onLesson: offer == LinkLessonOffer.none
+                      ? null
+                      : () => unawaited(
+                          screen.onOpenLead(context, linkLesson!, offer),
+                        ),
+                  onShare: () => screen.onShareLinkResult(context, state),
+                  onMeetApp: () => screen.onMeetApp(context),
+                  onSeeResult: () =>
+                      unawaited(screen.onConclude(context, cubit, cubit.state)),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O tabuleiro centrado na área, com as barras em cima e embaixo e o rodapé.
+class _FreeBoardStage extends StatelessWidget {
+  const _FreeBoardStage({
+    required this.screen,
+    required this.constraints,
+    required this.clocks,
+    required this.machineEnded,
+    required this.screenCenter,
+    required this.footerHeight,
+    required this.nickname,
+    required this.onLesson,
+    required this.onShare,
+    required this.onMeetApp,
+    required this.onSeeResult,
+  });
+
+  final _FreeBoardScaffold screen;
+  final BoxConstraints constraints;
+  final ClockPosition clocks;
+  final bool machineEnded;
+  final double screenCenter;
+  final double footerHeight;
+  final String nickname;
+  final VoidCallback? onLesson;
+  final VoidCallback onShare;
+  final VoidCallback onMeetApp;
+  final VoidCallback onSeeResult;
+
+  @override
+  Widget build(BuildContext context) {
+    final clocksAbove =
+        clocks == ClockPosition.top || clocks == ClockPosition.sides
+        ? ClockRow.height
+        : 0.0;
+    final clocksBelow =
+        clocks == ClockPosition.bottom || clocks == ClockPosition.sides
+        ? ClockRow.height
+        : 0.0;
+    final reserveTop = clocksAbove;
+    // A8 (Gabriel, 08/11): de ponta a ponta e no centro da tela
+    // em toda partida; a fala do adversário flutua por cima
+    // (overlay da CharacterBar) e não reserva espaço.
+    final boardSide = constraints.maxWidth;
+    final topExtent = reserveTop > 0
+        ? reserveTop + _FreeBoardScreenState._boardGap
+        : 0.0;
+    final bottomExtent = clocksBelow > 0
+        ? clocksBelow + _FreeBoardScreenState._boardGap
+        : 0.0;
+    final boardCenter = math.max(screenCenter, topExtent + boardSide / 2);
+    final layoutHeight = math.max(
+      constraints.maxHeight,
+      boardCenter + boardSide / 2 + bottomExtent + footerHeight,
+    );
+    final centering = BoardCentering(
+      Size(constraints.maxWidth, layoutHeight),
+      centerY: boardCenter,
+      gap: _FreeBoardScreenState._boardGap,
+      reserveTop: reserveTop,
+      reserveBottom: clocksBelow,
+      footer: footerHeight,
+      minFraction: 1,
+      maxBoard: boardSide,
+    );
+    return Stack(
+      // A tela toda: o fundo escuro do resultado cobre até embaixo,
+      // mesmo com pouco conteúdo.
+      fit: StackFit.expand,
+      children: [
+        CenteredBoardLayout(
+          key: FreeBoardKeys.scrollArea,
+          gap: _FreeBoardScreenState._boardGap,
+          centerY: centering.centerY,
+          minFraction: centering.minFraction,
+          minBoardSide: boardSide,
+          maxBoard: boardSide,
+          scrollPhysics: _GameScrollPhysics(screen.boardTouch),
+          reserveTop: reserveTop,
+          reserveBottom: clocksBelow,
+          footer: _FreeBoardActions(
+            screen: screen,
+            machineEnded: machineEnded,
+            onLesson: onLesson,
+            onShare: onShare,
+            onMeetApp: onMeetApp,
+            onSeeResult: onSeeResult,
+          ),
+          // Enquanto o tabuleiro termina o voo, a barra do
+          // adversário desce do alto e a do jogador sobe de baixo.
+          top: GameEntrance(
+            part: GameEntrancePart.top,
+            child: _FreeBoardTopBars(
+              screen: screen,
+              clocks: clocks,
+              machineEnded: machineEnded,
+            ),
+          ),
+          // O tabuleiro não espelha em idiomas da direita para a
+          // esquerda.
+          board: _FreeBoardBoardArea(screen: screen, nickname: nickname),
+          bottom: GameEntrance(
+            part: GameEntrancePart.bottom,
+            child: _FreeBoardBottomBars(
+              screen: screen,
+              clocks: clocks,
+              machineEnded: machineEnded,
+              boardSide: centering.side,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// O rodapé: no fim contra a máquina, o do resultado (que desliza por
+/// último); antes, a barra de ações da partida.
+class _FreeBoardActions extends StatelessWidget {
+  const _FreeBoardActions({
+    required this.screen,
+    required this.machineEnded,
+    required this.onLesson,
+    required this.onShare,
+    required this.onMeetApp,
+    required this.onSeeResult,
+  });
+
+  final _FreeBoardScaffold screen;
+  final bool machineEnded;
+  final VoidCallback? onLesson;
+  final VoidCallback onShare;
+  final VoidCallback onMeetApp;
+  final VoidCallback onSeeResult;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = screen.state;
+    final cubit = screen.cubit;
+    final featured = state.mode.featuredId != null;
+    return machineEnded
+        // H-ANI-25: o resultado aparece no tabuleiro e o
+        // rodapé do fim desliza por último.
+        ? EntradaDeResultado(
+            id: 'fim-${state.startedAt?.microsecondsSinceEpoch}',
+            botoes: featured
+                ? FeaturedEndBar(onAgain: cubit.newGame)
+                : state.mode.fromLink
+                ? _LinkEndBar(
+                    onLesson: onLesson,
+                    onAgain: () => _FreeBoardScreenState._playLinkAgain(cubit),
+                    onShare: onShare,
+                    onMeetApp: onMeetApp,
+                  )
+                : _SeeResultBar(onPressed: onSeeResult),
+          )
+        : GameActionsBar(
+            training: state.mode.userSide != null,
+            onResign: state.end == null && state.mode.opponent.isMachine
+                ? screen.onConfirmResign
+                : null,
+            onDraw: state.canOfferDraw ? screen.onConfirmDraw : null,
+            onFlip: cubit.flip,
+            onClock: screen.onPickClock,
+            onNewGame: cubit.newGame,
+            showSound: true,
+          );
+  }
+}
+
+/// As barras de cima: o adversário (com os relógios ao lado) ou só os
+/// relógios.
+class _FreeBoardTopBars extends StatelessWidget {
+  const _FreeBoardTopBars({
+    required this.screen,
+    required this.clocks,
+    required this.machineEnded,
+  });
+
+  final _FreeBoardScaffold screen;
+  final ClockPosition clocks;
+  final bool machineEnded;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = screen.state;
+    final boardSettings = screen.boardSettings;
+    const both = [Side.white, Side.black];
+    return BlocBuilder<TalkCubit, TalkState>(
+      builder: (context, talk) {
+        final character = talk.character;
+        final barTalk = machineEnded ? talk.copyWith(clearLine: true) : talk;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (character != null && clocks != ClockPosition.bottom)
+              CharacterBar(
+                talk: barTalk,
+                dismissOn: _FreeBoardScreenState._playerMoves(state),
+                avatarSize: CharacterAvatar.player,
+                showName: false,
+                playerRow: ClockRow(
+                  sides: clocks == ClockPosition.top
+                      ? both
+                      : [state.orientation.opposite],
+                  state: state,
+                  board: boardSettings,
+                  talk: talk,
+                ),
+                // A ponta do balão a 4 dp do retrato (que começa 12 dp abaixo
+                // do alto da linha de 68).
+                speechTop: -72,
+              ),
+            if (character == null && clocks == ClockPosition.top)
+              ClockRow(
+                sides: both,
+                state: state,
+                board: boardSettings,
+                talk: talk,
+              ),
+            if (character == null && clocks == ClockPosition.sides)
+              ClockRow(
+                sides: [state.orientation.opposite],
+                state: state,
+                board: boardSettings,
+                talk: talk,
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// O tabuleiro no tamanho exato da casa, com o selo do resultado e o versus
+/// por cima.
+class _FreeBoardBoardArea extends StatelessWidget {
+  const _FreeBoardBoardArea({required this.screen, required this.nickname});
+
+  final _FreeBoardScaffold screen;
+  final String nickname;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = screen.state;
+    final boardSettings = screen.boardSettings;
+    final end = state.end;
+    return LayoutBuilder(
+      builder: (context, box) => Stack(
+        alignment: Alignment.center,
+        children: [
+          // No começo da partida, o tabuleiro da tela de
+          // antes (no alto) desliza e cresce até aqui.
+          GameBoardHero(
+            orientation: state.orientation,
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: _BoardTouchRegion(
+                onTouch: screen.onBoardTouch,
+                child:
+                    // H-ANI-10: deslize do kit, captura e
+                    // halo do xeque.
+                    TabuleiroAnimado(
+                      controlador: screen.board,
+                      orientacao: state.orientation,
+                      tamanho: box.maxWidth,
+                      pecas: boardSettings.chessground.pieceAssets,
+                      child: Chessboard(
+                        key: FreeBoardKeys.board,
+                        size: box.maxWidth,
+                        controller: screen.board,
+                        // No ultra bullet o pré-lance fica
+                        // sempre ligado: sem ele, não dá
+                        // tempo de jogar no celular.
+                        settings: TabuleiroAnimado.ajustes(
+                          context,
+                          _FreeBoardScreenState._ultraBullet(state)
+                              ? boardSettings
+                                    .copyWith(premoves: true)
+                                    .chessground
+                              : boardSettings.chessground,
+                        ),
+                        orientation: state.orientation,
+                        onMove: (move, {viaDragAndDrop}) =>
+                            screen.cubit.play(move),
+                      ),
+                    ),
+              ),
+            ),
+          ),
+          // Toda partida nova contra a máquina abre com o
+          // versus (na Maratona, com a contagem); só então
+          // o relógio corre.
+          // O selo do resultado sobre o tabuleiro, até o jogador seguir.
+          if (end != null && state.mode.opponent.isMachine)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: _EndFlash(
+                  key: ValueKey(end),
+                  end: end,
+                  userSide: state.mode.userSide,
+                  comparison: state.challengeComparison == null
+                      ? null
+                      : context.l10n.challengeCompare(
+                          state.challengeComparison!.sender,
+                          state.challengeComparison!.you,
+                        ),
+                  // Só o autoavanço encerra o selo sozinho.
+                  short: state.mode.isUnratedFinal,
+                  persistent: !_FreeBoardScreenState._marathonAdvance(state),
+                ),
+              ),
+            ),
+          if (state.held)
+            Positioned.fill(
+              child: _FreeBoardVersus(screen: screen, nickname: nickname),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O versus do começo da partida contra a máquina (na Maratona, com a
+/// contagem).
+class _FreeBoardVersus extends StatelessWidget {
+  const _FreeBoardVersus({required this.screen, required this.nickname});
+
+  final _FreeBoardScaffold screen;
+  final String nickname;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = screen.state;
+    return BlocBuilder<TalkCubit, TalkState>(
+      builder: (context, talk) {
+        final character = talk.character;
+        return VersusIntro(
+          playerName: nickname.isEmpty
+              ? context.l10n.profileNicknameDefault
+              : nickname,
+          opponentName:
+              character?.name ??
+              state.mode.opponent.label(context.l10n, level: state.mode.level),
+          opponentRating: talk.isEngine ? null : state.mode.level,
+          opponentAvatar: character == null
+              ? const ColoredBox(
+                  color: AppColors.chessBlackColor,
+                  child: Icon(
+                    Icons.smart_toy_outlined,
+                    color: AppColors.chessWhiteColor,
+                    size: AppIconSize.large,
+                  ),
+                )
+              : CharacterAvatar(
+                  character: character,
+                  size: CharacterAvatar.versus,
+                ),
+          countdown: state.mode.isMarathon,
+          stage: state.mode.isMarathon
+              ? (state.mode.speedrunStage ?? 0) + 1
+              : null,
+          playerSide: state.playerSide ?? state.orientation,
+          onDone: screen.cubit.release,
+        );
+      },
+    );
+  }
+}
+
+/// As barras de baixo: o lado do jogador, o adversário com os relógios
+/// embaixo e o fim da partida de dois.
+class _FreeBoardBottomBars extends StatelessWidget {
+  const _FreeBoardBottomBars({
+    required this.screen,
+    required this.clocks,
+    required this.machineEnded,
+    required this.boardSide,
+  });
+
+  final _FreeBoardScaffold screen;
+  final ClockPosition clocks;
+  final bool machineEnded;
+
+  /// O lado do tabuleiro centrado (a fala sobe acima dele).
+  final double boardSide;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = screen.state;
+    final boardSettings = screen.boardSettings;
+    final end = state.end;
+    const both = [Side.white, Side.black];
+    return BlocBuilder<TalkCubit, TalkState>(
+      builder: (context, talk) {
+        final character = talk.character;
+        final barTalk = machineEnded ? talk.copyWith(clearLine: true) : talk;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (clocks == ClockPosition.sides)
+              ClockRow(
+                sides: [state.orientation],
+                state: state,
+                board: boardSettings,
+                talk: talk,
+              ),
+            if (clocks == ClockPosition.bottom && character != null)
+              CharacterBar(
+                talk: barTalk,
+                dismissOn: _FreeBoardScreenState._playerMoves(state),
+                avatarSize: CharacterAvatar.player,
+                showName: false,
+                playerRow: ClockRow(
+                  sides: both,
+                  state: state,
+                  board: boardSettings,
+                  talk: talk,
+                ),
+                // Mesmo com os relógios embaixo, a fala ocupa
+                // apenas a região acima do tabuleiro.
+                speechTop:
+                    -(boardSide + 2 * _FreeBoardScreenState._boardGap + 80),
+              ),
+            if (clocks == ClockPosition.bottom && character == null)
+              ClockRow(
+                sides: both,
+                state: state,
+                board: boardSettings,
+                talk: talk,
+              ),
+            // Embaixo do tabuleiro: o fim da partida de dois.
+            if (end != null && !state.mode.opponent.isMachine)
+              _TwoPlayersEnd(end: end, onNewGame: screen.cubit.newGame),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Marca quando o dedo está no tabuleiro: enquanto isso a rolagem externa
+/// não compete com o arraste da peça.
+class _BoardTouchRegion extends StatelessWidget {
+  const _BoardTouchRegion({required this.onTouch, required this.child});
+
+  final ValueChanged<bool> onTouch;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Listener(
+    onPointerDown: (_) => onTouch(true),
+    onPointerUp: (_) => scheduleMicrotask(() => onTouch(false)),
+    onPointerCancel: (_) => scheduleMicrotask(() => onTouch(false)),
+    child: child,
+  );
 }

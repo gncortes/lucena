@@ -1,4 +1,4 @@
-import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../config/failure_report.dart';
 import '../../../domain/models/load_failure.dart';
 import '../../../routing/routes.dart';
 import '../../core/motion/shimmer_conteudo.dart';
@@ -12,6 +12,7 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/clock.dart';
 import '../../../domain/models/journey.dart';
 import '../../free_board/widgets/saved_game_sheet.dart';
 import 'journey_resume.dart';
@@ -199,39 +200,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
             bottomNavigationBar: challenge == null
                 ? null
                 : training.data == true
-                ? ActionsFooter(
-                    children: [
-                      FilledButton(
-                        key: TrainingKeys.nextGoal,
-                        onPressed: widget.onNextGoal,
-                        child: Text(l10n.trainingNextGoal),
-                      ),
-                    ],
-                  )
-                : ActionsFooter(
-                    stacked: true,
-                    children: [
-                      FilledButton.icon(
-                        key: saved.data == null
-                            ? JourneyKeys.play
-                            : JourneyKeys.resume,
-                        icon: const Icon(Icons.play_arrow_rounded),
-                        label: Text(
-                          saved.data == null
-                              ? l10n.journeyPlay
-                              : l10n.journeyResume,
-                        ),
-                        onPressed: saved.connectionState == ConnectionState.done
-                            ? () => _play(challenge)
-                            : null,
-                      ),
-                      if (saved.data != null)
-                        TextButton(
-                          key: JourneyKeys.restart,
-                          onPressed: () => _play(challenge, restart: true),
-                          child: Text(l10n.journeyRestart),
-                        ),
-                    ],
+                ? _NextGoalFooter(onNextGoal: widget.onNextGoal)
+                : _PlayFooter(
+                    saved: saved.data,
+                    ready: saved.connectionState == ConnectionState.done,
+                    onPlay: () => _play(challenge),
+                    onRestart: () => _play(challenge, restart: true),
                   ),
             // O tabuleiro e os selos no centro do espaço entre a barra do app
             // e o painel do adversário e das partidas (T64), que rola; o botão
@@ -241,135 +215,15 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               esqueleto: const SkeletonList(),
               child: challenge == null
                   ? const SizedBox.shrink()
-                  : LayoutBuilder(
-                      builder: (context, box) {
-                        // A8: o tabuleiro no centro útil, o painel com o
-                        // espaço de baixo (rola). Se o painel não cabe nem
-                        // com uma linha, volta ao centro acima dele (T64).
-                        final centered = BoardOptionsPanel.centeredAreaFor(
-                          box.maxHeight,
-                          centerY: centerY,
-                          below:
-                              box.maxWidth / 2 +
-                              2 * AppSpacing.md +
-                              _chipsHeight,
-                          minPanel: kMinInteractiveDimension,
-                          // Sem subir: o painel de uma linha não deixa ver o
-                          // histórico; em tela baixa vale o centro do espaço.
-                          minTop: centerY,
-                        );
-                        return Column(
-                          children: [
-                            SizedBox(
-                              height:
-                                  centered?.area ??
-                                  BoardOptionsPanel.boardAreaFor(
-                                    box.maxHeight,
-                                    boardRoom:
-                                        box.maxWidth +
-                                        2 * (_chipsHeight + AppSpacing.md) +
-                                        AppSpacing.md,
-                                    minPanel: 0.3,
-                                  ),
-                              child: CenteredBoardLayout(
-                                gap: AppSpacing.md,
-                                reserveBottom: _chipsHeight,
-                                centerY: centered?.centerY,
-                                board: _BigBoard(
-                                  homeHero: widget.homeHero,
-                                  challenge: challenge,
-                                  launching: _launching,
-                                  saved: _preview,
-                                ),
-                                bottom: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.lg,
-                                  ),
-                                  child: Wrap(
-                                    spacing: AppSpacing.sm,
-                                    runSpacing: AppSpacing.sm,
-                                    alignment: WrapAlignment.center,
-                                    children: [
-                                      _GoalChip(challenge: challenge),
-                                      InfoChip(
-                                        icon: switch (shownTime) {
-                                          final time? => paceIcon(
-                                            PaceCategory.of(time),
-                                          ),
-                                          null => Icons.timer_off_outlined,
-                                        },
-                                        label: switch (shownTime) {
-                                          final time? =>
-                                            l10n.speedrunTimeControl(
-                                              time.initial.inMinutes,
-                                              time.increment.inSeconds,
-                                            ),
-                                          null => l10n.challengeNoClock,
-                                        },
-                                      ),
-                                      if (_preview == null)
-                                        TextButton(
-                                          key: JourneyKeys.changePace,
-                                          onPressed: () async {
-                                            final settings = context
-                                                .read<SettingsCubit>();
-                                            final clock = settings.state?.clock;
-                                            if (clock == null) return;
-                                            final choice = await showPaceSheet(
-                                              context,
-                                              current: clock.journeyTime,
-                                              allowNoClock: true,
-                                            );
-                                            if (choice != null &&
-                                                context.mounted) {
-                                              await settings.setClock(
-                                                clock.copyWith(
-                                                  journeyTime: choice.time,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          child: Text(l10n.journeyChangePace),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: BoardOptionsPanel(
-                                key: JourneyKeys.challengePanel,
-                                child: ListView(
-                                  padding: const EdgeInsets.only(
-                                    bottom: AppSpacing.xl,
-                                  ),
-                                  children: [
-                                    _journeyOpponent(
-                                      context,
-                                      challenge.opponent,
-                                      rungId,
-                                    ),
-                                    SectionTitle(l10n.setupHistory),
-                                    if (state.attempts.isEmpty)
-                                      EmptyState(
-                                        style: EmptyStateStyle.filters,
-                                        icon: Icons.sports_esports_outlined,
-                                        message: l10n.challengeHistoryInvite,
-                                        messageKey: JourneyKeys.emptyHistory,
-                                      )
-                                    else
-                                      AttemptHistory(
-                                        attempts: state.attempts,
-                                        monthKey: JourneyKeys.month,
-                                        attemptKey: JourneyKeys.attempt,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                  : _ChallengeBody(
+                      challenge: challenge,
+                      state: state,
+                      shownTime: shownTime,
+                      centerY: centerY,
+                      homeHero: widget.homeHero,
+                      launching: _launching,
+                      preview: _preview,
+                      rungId: rungId,
                     ),
             ),
           );
@@ -456,25 +310,265 @@ class _GoalChip extends StatelessWidget {
 }
 
 /// Contra quem: o retrato (que chega voando), o nome, o nível e a frase.
-Widget _journeyOpponent(
-  BuildContext context,
-  OpponentRef opponent,
-  String rungId,
-) {
-  final l10n = context.l10n;
-  final characters = context.select(
-    (JourneyCubit cubit) => cubit.state.characters,
-  );
-  final character = opponentCharacter(characters, opponent);
-  final language = Localizations.localeOf(context).languageCode;
-  return OpponentCard(
-    key: JourneyKeys.opponentCard,
-    character: character,
-    heroTag: opponentHeroTag(rungId),
-    name: [
-      opponentName(l10n, characters, opponent),
-      if (opponent.level case final level?) '$level',
-    ].join(' · '),
-    tagline: character?.taglineIn(language) ?? '',
-  );
+class _JourneyOpponent extends StatelessWidget {
+  const _JourneyOpponent({
+    required this.opponent,
+    required this.rungId,
+    super.key,
+  });
+
+  final OpponentRef opponent;
+  final String rungId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final characters = context.select(
+      (JourneyCubit cubit) => cubit.state.characters,
+    );
+    final character = opponentCharacter(characters, opponent);
+    final language = Localizations.localeOf(context).languageCode;
+    return OpponentCard(
+      character: character,
+      heroTag: opponentHeroTag(rungId),
+      name: [
+        opponentName(l10n, characters, opponent),
+        if (opponent.level case final level?) '$level',
+      ].join(' · '),
+      tagline: character?.taglineIn(language) ?? '',
+    );
+  }
+}
+
+/// O tabuleiro e os selos no centro do espaço entre a barra do app e o painel
+/// do adversário e das partidas (T64), que rola.
+class _ChallengeBody extends StatelessWidget {
+  const _ChallengeBody({
+    required this.challenge,
+    required this.state,
+    required this.shownTime,
+    required this.centerY,
+    required this.homeHero,
+    required this.launching,
+    required this.preview,
+    required this.rungId,
+  });
+
+  final Challenge challenge;
+  final JourneyState state;
+  final TimeControl? shownTime;
+  final double centerY;
+  final bool homeHero;
+  final bool launching;
+  final SavedGame? preview;
+  final String rungId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return LayoutBuilder(
+      builder: (context, box) {
+        // A8: o tabuleiro no centro útil, o painel com o
+        // espaço de baixo (rola). Se o painel não cabe nem
+        // com uma linha, volta ao centro acima dele (T64).
+        final centered = BoardOptionsPanel.centeredAreaFor(
+          box.maxHeight,
+          centerY: centerY,
+          below:
+              box.maxWidth / 2 +
+              2 * AppSpacing.md +
+              _ChallengeScreenState._chipsHeight,
+          minPanel: kMinInteractiveDimension,
+          // Sem subir: o painel de uma linha não deixa ver o
+          // histórico; em tela baixa vale o centro do espaço.
+          minTop: centerY,
+        );
+        return Column(
+          children: [
+            SizedBox(
+              height:
+                  centered?.area ??
+                  BoardOptionsPanel.boardAreaFor(
+                    box.maxHeight,
+                    boardRoom:
+                        box.maxWidth +
+                        2 *
+                            (_ChallengeScreenState._chipsHeight +
+                                AppSpacing.md) +
+                        AppSpacing.md,
+                    minPanel: 0.3,
+                  ),
+              child: CenteredBoardLayout(
+                gap: AppSpacing.md,
+                reserveBottom: _ChallengeScreenState._chipsHeight,
+                centerY: centered?.centerY,
+                board: _BigBoard(
+                  homeHero: homeHero,
+                  challenge: challenge,
+                  launching: launching,
+                  saved: preview,
+                ),
+                bottom: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  child: Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      _GoalChip(challenge: challenge),
+                      InfoChip(
+                        icon: switch (shownTime) {
+                          final time? => paceIcon(PaceCategory.of(time)),
+                          null => Icons.timer_off_outlined,
+                        },
+                        label: switch (shownTime) {
+                          final time? => l10n.speedrunTimeControl(
+                            time.initial.inMinutes,
+                            time.increment.inSeconds,
+                          ),
+                          null => l10n.challengeNoClock,
+                        },
+                      ),
+                      if (preview == null)
+                        TextButton(
+                          key: JourneyKeys.changePace,
+                          onPressed: () async {
+                            final settings = context.read<SettingsCubit>();
+                            final clock = settings.state?.clock;
+                            if (clock == null) return;
+                            final choice = await showPaceSheet(
+                              context,
+                              current: clock.journeyTime,
+                              allowNoClock: true,
+                            );
+                            if (choice != null && context.mounted) {
+                              await settings.setClock(
+                                clock.copyWith(journeyTime: choice.time),
+                              );
+                            }
+                          },
+                          child: Text(l10n.journeyChangePace),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: _ChallengePanel(
+                challenge: challenge,
+                state: state,
+                rungId: rungId,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// O painel de baixo: o adversário do desafio e o histórico de partidas.
+class _ChallengePanel extends StatelessWidget {
+  const _ChallengePanel({
+    required this.challenge,
+    required this.state,
+    required this.rungId,
+  });
+
+  final Challenge challenge;
+  final JourneyState state;
+  final String rungId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return BoardOptionsPanel(
+      key: JourneyKeys.challengePanel,
+      child: ListView(
+        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+        children: [
+          _JourneyOpponent(
+            key: JourneyKeys.opponentCard,
+            opponent: challenge.opponent,
+            rungId: rungId,
+          ),
+          SectionTitle(l10n.setupHistory),
+          if (state.attempts.isEmpty)
+            EmptyState(
+              style: EmptyStateStyle.filters,
+              icon: Icons.sports_esports_outlined,
+              message: l10n.challengeHistoryInvite,
+              messageKey: JourneyKeys.emptyHistory,
+            )
+          else
+            AttemptHistory(
+              attempts: state.attempts,
+              monthKey: JourneyKeys.month,
+              attemptKey: JourneyKeys.attempt,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O botão do fim do desafio de uma meta de treino.
+class _NextGoalFooter extends StatelessWidget {
+  const _NextGoalFooter({required this.onNextGoal});
+
+  final VoidCallback? onNextGoal;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ActionsFooter(
+      children: [
+        FilledButton(
+          key: TrainingKeys.nextGoal,
+          onPressed: onNextGoal,
+          child: Text(l10n.trainingNextGoal),
+        ),
+      ],
+    );
+  }
+}
+
+/// Jogar, ou continuar a partida salva (com a opção de recomeçar).
+class _PlayFooter extends StatelessWidget {
+  const _PlayFooter({
+    required this.saved,
+    required this.ready,
+    required this.onPlay,
+    required this.onRestart,
+  });
+
+  final SavedGame? saved;
+  final bool ready;
+  final VoidCallback onPlay;
+  final VoidCallback onRestart;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        FilledButton.icon(
+          key: saved == null ? JourneyKeys.play : JourneyKeys.resume,
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: Text(saved == null ? l10n.journeyPlay : l10n.journeyResume),
+          onPressed: ready ? onPlay : null,
+        ),
+        if (saved != null)
+          TextButton(
+            key: JourneyKeys.restart,
+            onPressed: onRestart,
+            child: Text(l10n.journeyRestart),
+          ),
+      ],
+    );
+  }
 }

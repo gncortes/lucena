@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/characters/character_repository.dart';
-import '../../../data/repositories/featured/featured_progress_repository.dart';
+import '../../../config/view_models/featured.dart';
+import '../../../domain/models/character_lookup.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/featured.dart';
 import '../../../domain/models/game_setup.dart';
@@ -30,7 +30,6 @@ import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../view_models/featured_endgame_cubit.dart';
-import '../view_models/find_move_cubit.dart';
 import 'featured_game_bar.dart';
 import 'featured_labels.dart';
 import 'find_move_screen.dart';
@@ -51,8 +50,12 @@ class _FeaturedEndgameScreenState extends State<FeaturedEndgameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loadState = context.watch<FeaturedEndgameCubit>().state;
-    if (!loadState.ready && loadState.failure == null) {
+    // Só a fase da carga decide a casca; o resto muda no BlocBuilder abaixo.
+    final (ready, missing, failure) = context.select(
+      (FeaturedEndgameCubit cubit) =>
+          (cubit.state.ready, cubit.state.endgame == null, cubit.state.failure),
+    );
+    if (!ready && failure == null) {
       return KeyedSubtree(
         key: FeaturedKeys.endgameLoading,
         child: LoadSkeletonScreen(
@@ -66,7 +69,7 @@ class _FeaturedEndgameScreenState extends State<FeaturedEndgameScreen> {
         ),
       );
     }
-    if (loadState.ready && loadState.endgame == null) {
+    if (ready && missing) {
       return KeyedSubtree(
         key: FeaturedKeys.endgameMissing,
         child: LoadErrorScreen(
@@ -75,7 +78,7 @@ class _FeaturedEndgameScreenState extends State<FeaturedEndgameScreen> {
         ),
       );
     }
-    if (loadState.failure case final failure?) {
+    if (failure != null) {
       return KeyedSubtree(
         key: FeaturedKeys.endgameError,
         child: LoadErrorScreen(
@@ -92,10 +95,10 @@ class _FeaturedEndgameScreenState extends State<FeaturedEndgameScreen> {
         final endgame = state.endgame;
         if (state.ready && endgame != null && endgame.isFindMove) {
           return BlocProvider(
-            create: (context) => FindMoveCubit(
+            create: (context) => createFindMoveCubit(
+              context,
               endgame: endgame,
               initial: state.findMove,
-              progress: context.read<FeaturedProgressRepository>(),
             ),
             child: FindMoveScreen(
               endgame: endgame,
@@ -421,17 +424,6 @@ class _ChoiceSheetState extends State<_ChoiceSheet> {
   /// O nível do Maia ao voltar do Stockfish: o que o final traz.
   late final int _level = widget.initial.level ?? MaiaLevels.all.first;
 
-  /// O retrato do nível; no escolhido, o ✓.
-  Widget? _levelAvatar(int level) {
-    if (_choice.level == level) {
-      return const Icon(Icons.check, size: AppIconSize.small);
-    }
-    final character = widget.characters.forLevel(level);
-    return character == null
-        ? null
-        : CharacterAvatar(character: character, size: CharacterAvatar.mini);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -477,7 +469,17 @@ class _ChoiceSheetState extends State<_ChoiceSheet> {
                               materialTapTargetSize: AppChip.tapTarget,
                               visualDensity: AppChip.density,
                               showCheckmark: false,
-                              avatar: _levelAvatar(level),
+                              // O retrato do nível; no escolhido, o ✓.
+                              avatar:
+                                  _choice.level == level ||
+                                      widget.characters.forLevel(level) != null
+                                  ? _LevelAvatar(
+                                      selected: _choice.level == level,
+                                      character: widget.characters.forLevel(
+                                        level,
+                                      ),
+                                    )
+                                  : null,
                               label: Text(switch (widget.characters.forLevel(
                                 level,
                               )) {
@@ -513,29 +515,9 @@ class _ChoiceSheetState extends State<_ChoiceSheet> {
                 const SizedBox(height: AppSpacing.lg),
                 Text(l10n.featuredClock, style: context.sectionTitle),
                 const SizedBox(height: AppSpacing.sm),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: [
-                    for (final clock in FeaturedLabels.clocks)
-                      ChoiceChip(
-                        key: FeaturedKeys.choiceClock(clock ?? 'none'),
-                        materialTapTargetSize: AppChip.tapTarget,
-                        visualDensity: AppChip.density,
-                        label: Text(
-                          clock == null
-                              ? l10n.featuredNoClock
-                              : FeaturedLabels.clockCode(clock),
-                        ),
-                        selected: _choice.clock == clock,
-                        onSelected: (_) => setState(
-                          () => _choice = _choice.copyWith(
-                            clock: clock,
-                            noClock: clock == null,
-                          ),
-                        ),
-                      ),
-                  ],
+                _ClockChips(
+                  choice: _choice,
+                  onChanged: (choice) => setState(() => _choice = choice),
                 ),
                 const SizedBox(height: AppSpacing.lg),
               ],
@@ -552,6 +534,40 @@ class _ChoiceSheetState extends State<_ChoiceSheet> {
             ),
           ],
         ),
+      ],
+    );
+  }
+}
+
+/// Os relógios da folha, um chip para cada.
+class _ClockChips extends StatelessWidget {
+  const _ClockChips({required this.choice, required this.onChanged});
+
+  final FeaturedChoice choice;
+  final ValueChanged<FeaturedChoice> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: [
+        for (final clock in FeaturedLabels.clocks)
+          ChoiceChip(
+            key: FeaturedKeys.choiceClock(clock ?? 'none'),
+            materialTapTargetSize: AppChip.tapTarget,
+            visualDensity: AppChip.density,
+            label: Text(
+              clock == null
+                  ? l10n.featuredNoClock
+                  : FeaturedLabels.clockCode(clock),
+            ),
+            selected: choice.clock == clock,
+            onSelected: (_) => onChanged(
+              choice.copyWith(clock: clock, noClock: clock == null),
+            ),
+          ),
       ],
     );
   }
@@ -589,5 +605,21 @@ class _OpponentTile extends StatelessWidget {
         onTap: onTap,
       ),
     );
+  }
+}
+
+/// O retrato do nível no chip; no escolhido, o ✓.
+class _LevelAvatar extends StatelessWidget {
+  const _LevelAvatar({required this.selected, required this.character});
+
+  final bool selected;
+
+  /// O personagem do nível (sempre presente quando não está escolhido).
+  final Character? character;
+
+  @override
+  Widget build(BuildContext context) {
+    if (selected) return const Icon(Icons.check, size: AppIconSize.small);
+    return CharacterAvatar(character: character!, size: CharacterAvatar.mini);
   }
 }

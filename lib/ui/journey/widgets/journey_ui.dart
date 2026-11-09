@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/characters/character_repository.dart';
+import '../../../domain/models/character_lookup.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/clock_settings.dart';
 import '../../../domain/models/game_setup.dart';

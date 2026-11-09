@@ -548,7 +548,7 @@ void main() {
     expect(cubit.state.view, BlindView.board);
     expect(cubit.state.canListen, isFalse);
 
-    await cubit.playTouch(NormalMove(from: Square.a1, to: Square.a7));
+    await cubit.playTouch(const NormalMove(from: Square.a1, to: Square.a7));
     expect(cubit.state.lastUser, 'Ra7');
   });
 

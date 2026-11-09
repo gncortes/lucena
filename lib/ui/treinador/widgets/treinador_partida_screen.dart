@@ -516,7 +516,7 @@ class _CarregandoState extends State<_Carregando> {
                 // entram em cascata (H-ANI-16).
                 EntradaEmCascata(
                   itens: [
-                    ItemDaCascata.texto(const _Curiosidade()),
+                    const ItemDaCascata.texto(_Curiosidade()),
                     ItemDaCascata.texto(
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.lg),

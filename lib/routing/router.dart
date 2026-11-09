@@ -118,7 +118,6 @@ import '../ui/free_board/view_models/link_lesson_cubit.dart';
 import '../ui/campaign/widgets/linked_lesson_gate.dart';
 import '../ui/free_board/view_models/talk_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
-import '../data/repositories/account/account_invite_repository.dart';
 import '../data/repositories/activity/activity_repository.dart';
 import '../ui/streak/view_models/streak_cubit.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
@@ -922,7 +921,6 @@ GoRouter buildRouter({
                   fresh: state.uri.queryParameters['fresh'] == '1',
                   child: ConclusionScreen(
                     fresh: state.uri.queryParameters['fresh'] == '1',
-                    invite: context.read<AccountInviteRepository>(),
                   ),
                 ),
               );

@@ -51,44 +51,8 @@ class WeekScreen extends StatelessWidget {
             ),
           );
         }
-        return _build(context);
+        return const _WeekScaffold();
       },
-    );
-  }
-
-  Widget _build(BuildContext context) {
-    final l10n = context.l10n;
-    final week = context.watch<WeekCubit>().state;
-    return EntradaDaTela(
-      id: WeekScreen.weekEntranceId,
-      child: Scaffold(
-        key: WeekKeys.screen,
-        appBar: LucenaAppBar(title: Text(l10n.weekTitle)),
-        body: ShimmerConteudo(
-          carregando: week == null,
-          esqueleto: const KeyedSubtree(
-            key: WeekKeys.loading,
-            child: _Skeleton(),
-          ),
-          child: week == null ? const SizedBox.shrink() : _Body(week: week),
-        ),
-        bottomNavigationBar: ActionsFooter(
-          stacked: true,
-          children: [
-            FilledButton.icon(
-              key: WeekKeys.play,
-              onPressed: () => context.push(Routes.daily),
-              icon: const Icon(Icons.today),
-              label: Text(l10n.weekPlay),
-            ),
-            TextButton(
-              key: WeekKeys.seeStreak,
-              onPressed: () => context.push(Routes.streak),
-              child: Text(l10n.weekSeeStreak),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -226,31 +190,6 @@ class _Number extends StatelessWidget {
   /// Pontos: positivo leva "+".
   final bool signed;
 
-  Widget _count(TextStyle? style) {
-    if (!signed) {
-      return NumeroQueConta(
-        valor: value,
-        estilo: style,
-        alinhamento: AlignmentDirectional.centerStart,
-      );
-    }
-    return ValorQueAnima(
-      valor: value.toDouble(),
-      duracao: LucenaMotion.numeroConta,
-      builder: (context, agora) {
-        final n = agora.round();
-        return Text(
-          n > 0 ? '+$n' : '$n',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: style?.copyWith(
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -285,8 +224,10 @@ class _Number extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _count(
-                      theme.textTheme.titleLarge?.copyWith(
+                    _Count(
+                      value: value,
+                      signed: signed,
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -456,6 +397,85 @@ class _Rating extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _WeekScaffold extends StatelessWidget {
+  const _WeekScaffold();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final week = context.watch<WeekCubit>().state;
+    return EntradaDaTela(
+      id: WeekScreen.weekEntranceId,
+      child: Scaffold(
+        key: WeekKeys.screen,
+        appBar: LucenaAppBar(title: Text(l10n.weekTitle)),
+        body: ShimmerConteudo(
+          carregando: week == null,
+          esqueleto: const KeyedSubtree(
+            key: WeekKeys.loading,
+            child: _Skeleton(),
+          ),
+          child: week == null ? const SizedBox.shrink() : _Body(week: week),
+        ),
+        bottomNavigationBar: ActionsFooter(
+          stacked: true,
+          children: [
+            FilledButton.icon(
+              key: WeekKeys.play,
+              onPressed: () => context.push(Routes.daily),
+              icon: const Icon(Icons.today),
+              label: Text(l10n.weekPlay),
+            ),
+            TextButton(
+              key: WeekKeys.seeStreak,
+              onPressed: () => context.push(Routes.streak),
+              child: Text(l10n.weekSeeStreak),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Count extends StatelessWidget {
+  const _Count({
+    required this.style,
+    required this.value,
+    required this.signed,
+  });
+
+  final TextStyle? style;
+  final int value;
+  final bool signed;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!signed) {
+      return NumeroQueConta(
+        valor: value,
+        estilo: style,
+        alinhamento: AlignmentDirectional.centerStart,
+      );
+    }
+    return ValorQueAnima(
+      valor: value.toDouble(),
+      duracao: LucenaMotion.numeroConta,
+      builder: (context, agora) {
+        final n = agora.round();
+        return Text(
+          n > 0 ? '+$n' : '$n',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        );
+      },
     );
   }
 }

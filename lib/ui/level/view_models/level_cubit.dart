@@ -265,7 +265,7 @@ class LevelCubit extends Cubit<LevelState> {
       _onboardingSaved = Future<void>.value();
       debugPrint('level load failed: $error');
       reportHandledError(error, stack);
-      if (!isClosed) emit(LevelState(failure: LoadFailure.generic));
+      if (!isClosed) emit(const LevelState(failure: LoadFailure.generic));
     }
   }
 

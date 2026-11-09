@@ -6,17 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/characters/character_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
-import '../../../data/repositories/training/course_download_repository.dart';
+import '../../../config/view_models/account.dart';
+import '../../../config/view_models/course_entry.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/models/lesson_content.dart';
 import '../../../routing/routes.dart';
 import '../../account/view_models/account_cubit.dart';
 import '../../account/widgets/account_flow.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_entry_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/shimmer_conteudo.dart';
@@ -29,10 +26,18 @@ import '../../course_guide/widgets/course_guide_copy.dart';
 import '../view_models/course_entry_cubit.dart';
 import 'course_content_states.dart';
 
-Widget _backButton(BuildContext context, {Key? key}) => BackButton(
-  key: key ?? TrainingEntryKeys.back,
-  onPressed: () => context.canPop() ? context.pop() : context.go(Routes.home),
-);
+/// Voltar da entrada do curso: a tela de antes ou, sem ela, a inicial.
+class _BackButton extends StatelessWidget {
+  const _BackButton({this.buttonKey = TrainingEntryKeys.back});
+
+  final Key buttonKey;
+
+  @override
+  Widget build(BuildContext context) => BackButton(
+    key: buttonKey,
+    onPressed: () => context.canPop() ? context.pop() : context.go(Routes.home),
+  );
+}
 
 /// Creates the course subtree only after authentication and a complete package.
 class CourseEntryGate extends StatelessWidget {
@@ -48,13 +53,9 @@ class CourseEntryGate extends StatelessWidget {
   final String? chapterId, title;
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => CourseEntryCubit(
-      accounts: context.read<AccountRepository>(),
-      downloads: context.read<CourseDownloadRepository>(),
-      characters: context.read<CharacterRepository>(),
-      config: config,
-      chapterId: chapterId,
-    )..start(),
+    create: (context) =>
+        createCourseEntryCubit(context, config: config, chapterId: chapterId)
+          ..start(),
     child: BlocBuilder<CourseEntryCubit, CourseEntryState>(
       builder: (context, state) {
         final courseTitle = title ?? courseGuideCopy(context, config.titleKey);
@@ -81,12 +82,7 @@ class CourseEntryGate extends StatelessWidget {
         }
         if (state.phase == CourseEntryPhase.account) {
           return BlocProvider(
-            create: (context) => AccountCubit(
-              context.read<AccountRepository>(),
-              sync: context.read<SyncScheduler>(),
-              analytics: context.analytics,
-              campaigns: context.campaigns,
-            ),
+            create: createAccountCubit,
             child: _AccountEntry(
               title: courseTitle,
               entry: state,
@@ -135,7 +131,7 @@ class _CourseScaffold extends StatelessWidget {
       key: TrainingEntryKeys.skeletonAppBar,
       centerTitle: chapter,
       titleSpacing: chapter ? null : 0,
-      leading: _backButton(context),
+      leading: const _BackButton(),
       title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
     ),
     body: SafeArea(child: body),
@@ -167,7 +163,7 @@ class _AccountEntry extends StatelessWidget {
       child: Scaffold(
         key: TrainingEntryKeys.account,
         appBar: LucenaAppBar(
-          leading: _backButton(context, key: TrainingEntryKeys.accountBack),
+          leading: const _BackButton(buttonKey: TrainingEntryKeys.accountBack),
           title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
         ),
         body: SingleChildScrollView(
@@ -207,25 +203,7 @@ class _AccountEntry extends StatelessWidget {
                 t.trainingEntrySaved,
                 if (!school) t.trainingEntryOffline,
               ])
-                Padding(
-                  key: text == t.trainingEntrySaved
-                      ? TrainingEntryKeys.saved
-                      : null,
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: AppColors.trainingDayCorrect,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(text, style: theme.textTheme.bodyMedium),
-                      ),
-                    ],
-                  ),
-                ),
+                _EntryCheck(text: text, saved: text == t.trainingEntrySaved),
             ],
           ),
         ),
@@ -271,6 +249,34 @@ class _AccountEntry extends StatelessWidget {
                   ),
                 ],
         ),
+      ),
+    );
+  }
+}
+
+/// Uma linha de garantia da tela de entrada: o visto e o texto.
+class _EntryCheck extends StatelessWidget {
+  const _EntryCheck({required this.text, required this.saved});
+
+  final String text;
+  final bool saved;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      key: saved ? TrainingEntryKeys.saved : null,
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.check_circle,
+            color: AppColors.trainingDayCorrect,
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
+        ],
       ),
     );
   }

@@ -1,4 +1,7 @@
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+
 import 'dart:math';
 
 import '../../../domain/models/race.dart';
@@ -43,12 +46,12 @@ class LocalRaceRepository implements RaceRepository {
   Future<List<RaceProblem>> problems() async {
     final cached = _problems;
     if (cached != null) return cached;
-    final json =
-        jsonDecode(await _assets.loadString(path)) as Map<String, dynamic>;
-    return _problems = [
-      for (final item in (json['problems'] as List))
-        RaceProblem.fromJson(item as Map<String, dynamic>),
-    ];
+    // ~800 KB: decodifica fora da linha da interface.
+    final problems = await compute(
+      _parseProblems,
+      await _assets.loadString(path),
+    );
+    return _problems = problems;
   }
 
   Future<Map<String, dynamic>?> _readMap(String key) async {
@@ -182,4 +185,12 @@ class LocalRaceRepository implements RaceRepository {
   @override
   Future<void> setOffersWarmUp({required bool value}) =>
       _preferences.setBool(_warmUpKey, value: value);
+}
+
+List<RaceProblem> _parseProblems(String text) {
+  final json = jsonDecode(text) as Map<String, dynamic>;
+  return [
+    for (final item in (json['problems'] as List))
+      RaceProblem.fromJson(item as Map<String, dynamic>),
+  ];
 }

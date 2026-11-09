@@ -24,6 +24,7 @@ import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
 import 'package:lucena/config/dependencies.dart';
+import 'package:lucena/data/repositories/course_preview/course_preview_repository.dart';
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
@@ -180,6 +181,7 @@ Dependencies testDependencies({
   EndgameProgressRepository? endgameProgressRepository,
   DrawOfferRepository? drawOfferRepository,
   FeaturedRepository? featuredRepository,
+  CoursePreviewRepository? coursePreviewRepository,
   FeaturedProgressRepository? featuredProgressRepository,
   FeaturedAlertsRepository? featuredAlertsRepository,
   RegionPromptRepository? regionPromptRepository,
@@ -270,7 +272,8 @@ Dependencies testDependencies({
     blindLogRepository: FakeBlindLogRepository(),
     wikiLinksRepository: FakeWikiLinksRepository(),
     featuredRepository: featuredRepository ?? FakeFeaturedRepository(),
-    coursePreviewRepository: FakeCoursePreviewRepository(),
+    coursePreviewRepository:
+        coursePreviewRepository ?? FakeCoursePreviewRepository(),
     featuredProgressRepository:
         featuredProgressRepository ?? FakeFeaturedProgressRepository(),
     featuredAlertsRepository:

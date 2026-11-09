@@ -45,9 +45,9 @@ void main() {
   test(
     'ao abrir, estrela e exercício aberto de id cortado são apagados',
     () async {
-      progress.saved = EndgameProgress(
+      progress.saved = const EndgameProgress(
         lessons: {
-          'rook.lucena': const EndgameLessonProgress(
+          'rook.lucena': EndgameLessonProgress(
             stars: {'e01': 1, 'e09': 3},
             exercise: ExerciseCheckpoint(exerciseId: 'e09'),
           ),

@@ -72,6 +72,15 @@ class _TrainingTourState extends State<TrainingTour> {
       t.courseGuideTour3Body,
       t.courseGuideTour4Body,
     ];
+    void next() {
+      if (_step == 3 || _failed) {
+        _finish();
+        return;
+      }
+      setState(() => _step++);
+      widget.onTab(_tourTabs[_step]);
+    }
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -107,91 +116,14 @@ class _TrainingTourState extends State<TrainingTour> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Material(
-                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(AppShape.large),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight:
-                          MediaQuery.sizeOf(context).height -
-                          MediaQuery.paddingOf(context).vertical -
-                          250,
-                    ),
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: 8,
-                        children: [
-                          Text(
-                            t.courseGuideTourOf(_step + 1, 4),
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
-                          Semantics(
-                            header: true,
-                            liveRegion: true,
-                            child: Text(
-                              titles[_step],
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(
-                                    fontSize: 20,
-                                    height: 1.2,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                            ),
-                          ),
-                          Text(
-                            bodies[_step],
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(letterSpacing: 0),
-                          ),
-                          if (_failed)
-                            Text(
-                              t.trainingExerciseSaveError,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.error,
-                              ),
-                            ),
-                          Row(
-                            children: [
-                              if (_step < 3)
-                                TextButton(
-                                  key: TrainingKeys.tourSkip,
-                                  onPressed: _saving ? null : _finish,
-                                  child: Text(t.courseGuideTourSkip),
-                                ),
-                              const Spacer(),
-                              FilledButton(
-                                key: TrainingKeys.tourNext,
-                                style: FilledButton.styleFrom(
-                                  fixedSize: const Size(140, kButtonHeight),
-                                ),
-                                onPressed: _saving
-                                    ? null
-                                    : () {
-                                        if (_step == 3 || _failed) {
-                                          _finish();
-                                          return;
-                                        }
-                                        setState(() => _step++);
-                                        widget.onTab(_tourTabs[_step]);
-                                      },
-                                child: Text(
-                                  _step == 3
-                                      ? t.courseGuideTourDone
-                                      : t.courseGuideTourNext,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                _TourCard(
+                  step: _step,
+                  title: titles[_step],
+                  body: bodies[_step],
+                  failed: _failed,
+                  saving: _saving,
+                  onFinish: _finish,
+                  onNext: next,
                 ),
               ],
             ),
@@ -260,3 +192,99 @@ const _tourTabs = [
   CourseGuideTab.stats,
   CourseGuideTab.catalog,
 ];
+
+/// O cartão do passo do tour: título, texto e botões.
+class _TourCard extends StatelessWidget {
+  const _TourCard({
+    required this.step,
+    required this.title,
+    required this.body,
+    required this.failed,
+    required this.saving,
+    required this.onFinish,
+    required this.onNext,
+  });
+
+  final int step;
+  final String title;
+  final String body;
+  final bool failed;
+  final bool saving;
+  final VoidCallback onFinish;
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Material(
+      color: Theme.of(context).colorScheme.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight:
+              MediaQuery.sizeOf(context).height -
+              MediaQuery.paddingOf(context).vertical -
+              250,
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 8,
+            children: [
+              Text(
+                t.courseGuideTourOf(step + 1, 4),
+                style: Theme.of(context).textTheme.labelMedium
+                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
+              ),
+              Semantics(
+                header: true,
+                liveRegion: true,
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 20,
+                    height: 1.2,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Text(
+                body,
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(letterSpacing: 0),
+              ),
+              if (failed)
+                Text(
+                  t.trainingExerciseSaveError,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              Row(
+                children: [
+                  if (step < 3)
+                    TextButton(
+                      key: TrainingKeys.tourSkip,
+                      onPressed: saving ? null : onFinish,
+                      child: Text(t.courseGuideTourSkip),
+                    ),
+                  const Spacer(),
+                  FilledButton(
+                    key: TrainingKeys.tourNext,
+                    style: FilledButton.styleFrom(
+                      fixedSize: const Size(140, kButtonHeight),
+                    ),
+                    onPressed: saving ? null : onNext,
+                    child: Text(
+                      step == 3 ? t.courseGuideTourDone : t.courseGuideTourNext,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -76,28 +76,7 @@ class _CardBody extends StatelessWidget {
           if (place == TrainingGoalCardPlace.goals) {
             return const SizedBox.shrink();
           }
-          return Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.md),
-            child: LucenaCard(
-              key: TrainingGoalKeys.goalCard,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(t.treinoNoGoalTitle, style: theme.textTheme.titleMedium),
-                  Text(t.treinoNoGoalHomeBody),
-                  const SizedBox(height: AppSpacing.md),
-                  BusyButton(
-                    buttonKey: TrainingGoalKeys.goalCardDefine,
-                    label: t.treinoDefineGoal,
-                    onPressed: () => context.pushNamed(
-                      RouteNames.trainingGoal,
-                      pathParameters: {'course': course.name},
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
+          return _NoGoalCard(course: course);
         }
         final title = view.hasTournament
             ? switch (view.phase!) {
@@ -281,6 +260,41 @@ class _MissedSheetState extends State<_MissedSheet> {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// O cartão "sem objetivo" da Home, com o botão para definir o objetivo.
+class _NoGoalCard extends StatelessWidget {
+  const _NoGoalCard({required this.course});
+
+  final TrainingCourse course;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: LucenaCard(
+        key: TrainingGoalKeys.goalCard,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(t.treinoNoGoalTitle, style: theme.textTheme.titleMedium),
+            Text(t.treinoNoGoalHomeBody),
+            const SizedBox(height: AppSpacing.md),
+            BusyButton(
+              buttonKey: TrainingGoalKeys.goalCardDefine,
+              label: t.treinoDefineGoal,
+              onPressed: () => context.pushNamed(
+                RouteNames.trainingGoal,
+                pathParameters: {'course': course.name},
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/keys/level_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -75,7 +73,6 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
           );
         }
         final noRating = chess != null && rating == null;
-        final success = AppColors.of(context).success;
         return Scaffold(
           key: LevelKeys.chessScreen,
           appBar: LucenaAppBar(title: Text(l10n.levelChessAppBar)),
@@ -124,41 +121,10 @@ class _LevelChessScreenState extends State<LevelChessScreen> {
               ],
               if (chess != null && rating != null) ...[
                 const SizedBox(height: AppSpacing.lg),
-                Card(
-                  margin: EdgeInsets.zero,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              size: AppIconSize.button,
-                              color: success,
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Text(
-                                l10n.levelFoundUser(chess.user),
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: success,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        PlatformRatingsGrid(rating: chess),
-                        const SizedBox(height: AppSpacing.md),
-                        Text(
-                          levelStartsAt(context, state, chess, rating),
-                          style: theme.textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ),
+                PlatformFoundCard(
+                  title: l10n.levelFoundUser(chess.user),
+                  rating: chess,
+                  text: levelStartsAt(context, state, chess, rating),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 TipBox(text: l10n.levelChessTip),

@@ -87,7 +87,10 @@ class _HistoryScreenState extends State<HistoryScreen>
               ? BackButton(onPressed: () => ContainerNavigation.close(context))
               : null,
           title: Text(l10n.historyTitle),
-          actions: [if (_hasFilter(state)) _filterIcon(context, state)],
+          actions: [
+            if (_hasFilter(state))
+              _FilterIcon(state: state, tab: _controller.index),
+          ],
         ),
         body: ShimmerConteudo(
           carregando: !state.loaded,
@@ -133,29 +136,6 @@ class _HistoryScreenState extends State<HistoryScreen>
       1 => state.classic.isNotEmpty,
       _ => state.marathons.isNotEmpty,
     };
-  }
-
-  // O filtro da aba aberta; o ponto avisa que há um filtro valendo.
-  Widget _filterIcon(BuildContext context, HistoryState state) {
-    final active = switch (_controller.index) {
-      0 => !state.gamesFilter.isEmpty,
-      1 => !state.classicFilter.isEmpty,
-      _ => !state.marathonFilter.isEmpty,
-    };
-    return IconButton(
-      key: HistoryKeys.filterIcon,
-      tooltip: context.l10n.historyFiltersAll,
-      onPressed: () => switch (_controller.index) {
-        0 => const HistoryGamesTab().openFilter(context),
-        1 => const HistorySpeedrunsTab(marathon: false).openFilter(context),
-        _ => const HistorySpeedrunsTab(marathon: true).openFilter(context),
-      },
-      icon: Badge(
-        isLabelVisible: active,
-        smallSize: 8,
-        child: const Icon(Icons.tune),
-      ),
-    );
   }
 }
 
@@ -338,4 +318,35 @@ class _IndicatorPainter extends CustomPainter {
   @override
   bool shouldRepaint(_IndicatorPainter old) =>
       old.position != position || old.color != color || old.rtl != rtl;
+}
+
+// O filtro da aba aberta; o ponto avisa que há um filtro valendo.
+class _FilterIcon extends StatelessWidget {
+  const _FilterIcon({required this.state, required this.tab});
+
+  final HistoryState state;
+  final int tab;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = switch (tab) {
+      0 => !state.gamesFilter.isEmpty,
+      1 => !state.classicFilter.isEmpty,
+      _ => !state.marathonFilter.isEmpty,
+    };
+    return IconButton(
+      key: HistoryKeys.filterIcon,
+      tooltip: context.l10n.historyFiltersAll,
+      onPressed: () => switch (tab) {
+        0 => const HistoryGamesTab().openFilter(context),
+        1 => const HistorySpeedrunsTab(marathon: false).openFilter(context),
+        _ => const HistorySpeedrunsTab(marathon: true).openFilter(context),
+      },
+      icon: Badge(
+        isLabelVisible: active,
+        smallSize: 8,
+        child: const Icon(Icons.tune),
+      ),
+    );
+  }
 }

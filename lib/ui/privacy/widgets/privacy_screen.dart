@@ -79,70 +79,11 @@ class PrivacyScreen extends StatelessWidget {
             ],
           ),
           SectionTitle(l10n.conPrivSectionPermissions, inset: AppSpacing.xs),
-          ProfileRowGroup(
-            children: [
-              ProfileRow(
-                key: PrivacyKeys.notifications,
-                icon: Icons.notifications_outlined,
-                title: l10n.conPrivNotifications,
-                value: l10n.conPrivNotificationsText,
-                external: true,
-                onTap: cubit.openNotifications,
-              ),
-              ProfileRow(
-                key: PrivacyKeys.microphone,
-                icon: Icons.mic_none,
-                title: l10n.conPrivMicrophone,
-                value: l10n.conPrivMicrophoneText,
-                external: true,
-                onTap: cubit.openMicrophone,
-              ),
-            ],
-          ),
+          const _PermissionsGroup(),
           SectionTitle(l10n.conPrivSectionData, inset: AppSpacing.xs),
-          ProfileRowGroup(
-            children: [
-              if (state.account case final account?)
-                ProfileRow(
-                  key: PrivacyKeys.download,
-                  icon: Icons.download,
-                  title: l10n.conPrivDownload,
-                  value: l10n.conPrivDownloadText,
-                  onTap: () => showDataExportSheet(context, uid: account.uid),
-                ),
-              ProfileRow(
-                key: PrivacyKeys.talk,
-                icon: Icons.mail_outline,
-                title: l10n.conPrivTalk,
-                value: l10n.conPrivTalkText,
-                external: true,
-                onTap: () => openLink(context, dataOfficer),
-              ),
-            ],
-          ),
+          _DataGroup(state: state),
           SectionTitle(l10n.conPrivSectionDocuments, inset: AppSpacing.xs),
-          ProfileRowGroup(
-            children: [
-              ProfileRow(
-                key: PrivacyKeys.terms,
-                icon: Icons.gavel,
-                title: l10n.aboutTerms,
-                value: shownAddress(terms),
-                external: true,
-                onTap: () =>
-                    openLegal(context, LegalKind.terms, website: terms),
-              ),
-              ProfileRow(
-                key: PrivacyKeys.policy,
-                icon: Icons.policy_outlined,
-                title: l10n.aboutPrivacy,
-                value: shownAddress(policy),
-                external: true,
-                onTap: () =>
-                    openLegal(context, LegalKind.privacy, website: policy),
-              ),
-            ],
-          ),
+          _DocumentsGroup(terms: terms, policy: policy),
           if (state.hasAccount) ...[
             SectionTitle(l10n.conPrivSectionAccount, inset: AppSpacing.xs),
             ProfileRowGroup(
@@ -163,6 +104,102 @@ class PrivacyScreen extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// As permissões do aparelho, que abrem os ajustes do sistema.
+class _PermissionsGroup extends StatelessWidget {
+  const _PermissionsGroup();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<PrivacyCubit>();
+    return ProfileRowGroup(
+      children: [
+        ProfileRow(
+          key: PrivacyKeys.notifications,
+          icon: Icons.notifications_outlined,
+          title: l10n.conPrivNotifications,
+          value: l10n.conPrivNotificationsText,
+          external: true,
+          onTap: cubit.openNotifications,
+        ),
+        ProfileRow(
+          key: PrivacyKeys.microphone,
+          icon: Icons.mic_none,
+          title: l10n.conPrivMicrophone,
+          value: l10n.conPrivMicrophoneText,
+          external: true,
+          onTap: cubit.openMicrophone,
+        ),
+      ],
+    );
+  }
+}
+
+/// Os dados: baixar o que o app guarda e falar com o encarregado.
+class _DataGroup extends StatelessWidget {
+  const _DataGroup({required this.state});
+
+  final PrivacyState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ProfileRowGroup(
+      children: [
+        if (state.account case final account?)
+          ProfileRow(
+            key: PrivacyKeys.download,
+            icon: Icons.download,
+            title: l10n.conPrivDownload,
+            value: l10n.conPrivDownloadText,
+            onTap: () => showDataExportSheet(context, uid: account.uid),
+          ),
+        ProfileRow(
+          key: PrivacyKeys.talk,
+          icon: Icons.mail_outline,
+          title: l10n.conPrivTalk,
+          value: l10n.conPrivTalkText,
+          external: true,
+          onTap: () => openLink(context, PrivacyScreen.dataOfficer),
+        ),
+      ],
+    );
+  }
+}
+
+/// Os documentos: os termos e a política de privacidade.
+class _DocumentsGroup extends StatelessWidget {
+  const _DocumentsGroup({required this.terms, required this.policy});
+
+  final Uri terms;
+  final Uri policy;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ProfileRowGroup(
+      children: [
+        ProfileRow(
+          key: PrivacyKeys.terms,
+          icon: Icons.gavel,
+          title: l10n.aboutTerms,
+          value: shownAddress(terms),
+          external: true,
+          onTap: () => openLegal(context, LegalKind.terms, website: terms),
+        ),
+        ProfileRow(
+          key: PrivacyKeys.policy,
+          icon: Icons.policy_outlined,
+          title: l10n.aboutPrivacy,
+          value: shownAddress(policy),
+          external: true,
+          onTap: () => openLegal(context, LegalKind.privacy, website: policy),
+        ),
+      ],
     );
   }
 }

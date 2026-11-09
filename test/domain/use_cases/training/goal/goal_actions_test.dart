@@ -184,15 +184,15 @@ void main() {
     test('sem pontos não grava', () {
       final r = registerTournament(
         base(),
-        TournamentDraft(rounds: '7', date: '2026-12-15'),
+        const TournamentDraft(rounds: '7', date: '2026-12-15'),
         'x',
       );
       expect(r, isNull);
-      expect(draftError(TournamentDraft(rounds: '7')), DraftError.points);
+      expect(draftError(const TournamentDraft(rounds: '7')), DraftError.points);
     });
     test('pontos acima das rodadas não gravam', () {
       expect(
-        draftError(TournamentDraft(points: '8', rounds: '7')),
+        draftError(const TournamentDraft(points: '8', rounds: '7')),
         DraftError.pointsTooHigh,
       );
     });
@@ -202,7 +202,7 @@ void main() {
       );
       s = saveTournamentDraft(
         s,
-        TournamentDraft(
+        const TournamentDraft(
           name: 'A',
           points: '3,5',
           rounds: '5',
@@ -213,7 +213,7 @@ void main() {
       s = registerTournament(s, s.tournamentDraft!, 'a')!;
       s = registerTournament(
         s,
-        TournamentDraft(
+        const TournamentDraft(
           name: 'B',
           points: '4,5',
           rounds: '7',

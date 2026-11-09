@@ -292,7 +292,7 @@ void main() {
         TestApp(
           settingsCubit: settings,
           speechCubit: speech,
-          child: Scaffold(
+          child: const Scaffold(
             body: TeacherSpeech(
               teacher: FakeCharacterRepository.viktor,
               text: 'The teacher must stay muted.',
@@ -1004,7 +1004,7 @@ void main() {
     'folha compacta: avatar e texto juntos, controles completos no modal',
     (tester) async {
       await tester.pumpWidget(
-        TestApp(
+        const TestApp(
           child: Scaffold(
             body: ViktorSheet(
               top: 400,
@@ -1015,7 +1015,7 @@ void main() {
                   speechContext: SpeechContext.teaching,
                   compactInSheet: true,
                   bubbleKey: speech,
-                  headerAction: const Icon(Icons.layers, key: Key('marks')),
+                  headerAction: Icon(Icons.layers, key: Key('marks')),
                 ),
               ],
             ),
@@ -1212,7 +1212,7 @@ void main() {
       await tester.pumpWidget(
         TestApp(
           speechCubit: speech,
-          child: Scaffold(
+          child: const Scaffold(
             body: TeacherSpeech(
               teacher: FakeCharacterRepository.viktor,
               text: long,

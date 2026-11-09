@@ -52,7 +52,9 @@ class GameEntrance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final route = ModalRoute.of(context)?.animation;
-    if (route == null || AppMotion.of(context).disabled) return _still(child);
+    if (route == null || AppMotion.of(context).disabled) {
+      return _Still(part: part, child: child);
+    }
     return AnimatedBuilder(
       animation: route,
       child: child,
@@ -60,31 +62,48 @@ class GameEntrance extends StatelessWidget {
         // Na saída da tela (a rota volta), as partes não refazem o caminho.
         final t = route.status == AnimationStatus.reverse ? 1.0 : route.value;
         return switch (part) {
-          GameEntrancePart.top => _slide(t, topInterval, topFrom, child!),
-          GameEntrancePart.bottom => _slide(
-            t,
-            bottomInterval,
-            bottomFrom,
-            child!,
+          GameEntrancePart.top => _Slide(
+            t: t,
+            interval: topInterval,
+            from: topFrom,
+            child: child!,
           ),
-          GameEntrancePart.speech => _slide(
-            t,
-            speechInterval,
-            speechFrom,
-            child!,
+          GameEntrancePart.bottom => _Slide(
+            t: t,
+            interval: bottomInterval,
+            from: bottomFrom,
+            child: child!,
           ),
-          GameEntrancePart.clock => _pop(t, child!),
+          GameEntrancePart.speech => _Slide(
+            t: t,
+            interval: speechInterval,
+            from: speechFrom,
+            child: child!,
+          ),
+          GameEntrancePart.clock => _Pop(t: t, child: child!),
         };
       },
     );
   }
+}
 
-  /// Parado no lugar, com a mesma árvore dos quadros da entrada.
-  Widget _still(Widget child) => part == GameEntrancePart.clock
-      ? _pop(1, child)
-      : _slide(1, topInterval, Offset.zero, child);
+/// Uma barra (ou o balão) no ponto [t] da entrada: aparece e desliza de
+/// [from] até o lugar.
+class _Slide extends StatelessWidget {
+  const _Slide({
+    required this.t,
+    required this.interval,
+    required this.from,
+    required this.child,
+  });
 
-  static Widget _slide(double t, Curve interval, Offset from, Widget child) {
+  final double t;
+  final Curve interval;
+  final Offset from;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
     final v = interval.transform(t);
     return Opacity(
       opacity: v,
@@ -94,12 +113,43 @@ class GameEntrance extends StatelessWidget {
       ),
     );
   }
+}
 
-  static Widget _pop(double t, Widget child) => Opacity(
-    opacity: clockFade.transform(t),
+/// O relógio no ponto [t] da entrada: aparece e cresce até o tamanho dele.
+class _Pop extends StatelessWidget {
+  const _Pop({required this.t, required this.child});
+
+  final double t;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Opacity(
+    opacity: GameEntrance.clockFade.transform(t),
     child: Transform.scale(
-      scale: clockFrom + (1 - clockFrom) * clockPop.transform(t),
+      scale:
+          GameEntrance.clockFrom +
+          (1 - GameEntrance.clockFrom) * GameEntrance.clockPop.transform(t),
       child: child,
     ),
   );
+}
+
+/// Parado no lugar, com a mesma árvore dos quadros da entrada.
+class _Still extends StatelessWidget {
+  const _Still({required this.part, required this.child});
+
+  final GameEntrancePart part;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return part == GameEntrancePart.clock
+        ? _Pop(t: 1, child: child)
+        : _Slide(
+            t: 1,
+            interval: GameEntrance.topInterval,
+            from: Offset.zero,
+            child: child,
+          );
+  }
 }

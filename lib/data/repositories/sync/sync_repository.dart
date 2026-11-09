@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/progress_summary.dart';
 import '../../../domain/models/star_challenge.dart';
+import '../../../domain/models/sync_result.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/progress_merge.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
@@ -23,22 +24,12 @@ import '../school/school_progress_repository.dart';
 import '../school/star_challenge_repository.dart';
 import '../speedrun/speedrun_repository.dart';
 
+export '../../../domain/models/sync_result.dart';
+
 /// A conta não respondeu: sem rede na hora de entrar (regra 13). Nada foi
 /// apagado nem mudado.
 class SyncException implements Exception {
   const SyncException();
-}
-
-/// O que a junção encontrou.
-class SyncResult {
-  const SyncResult({required this.summary, required this.hadRemote});
-
-  /// O progresso junto, que agora vale no aparelho e na conta.
-  final ProgressSummary summary;
-
-  /// A conta já tinha progresso de outro aparelho (a tela "Bem-vindo de
-  /// volta").
-  final bool hadRemote;
 }
 
 /// Leva o progresso do aparelho para a conta e traz o da conta (E1.13,

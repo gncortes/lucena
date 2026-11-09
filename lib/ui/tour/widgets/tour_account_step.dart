@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/account.dart';
 import '../../../domain/models/account.dart';
 import '../../../routing/routes.dart';
 import '../../account/view_models/account_cubit.dart';
 import '../../account/widgets/account_flow.dart';
 import '../../account/widgets/account_invite.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/entrada_em_cascata.dart';
@@ -59,13 +57,7 @@ class _TourAccountScopeState extends State<TourAccountScope> {
   Widget build(BuildContext context) => RepositoryProvider.value(
     value: _offline,
     child: BlocProvider(
-      create: (_) => AccountCubit(
-        context.read<AccountRepository>(),
-        sync: context.read<SyncScheduler>(),
-        analytics: context.analytics,
-        moment: _moment,
-        campaigns: context.campaigns,
-      ),
+      create: (_) => createAccountCubit(context, moment: _moment),
       child: widget.child,
     ),
   );
@@ -88,7 +80,7 @@ class _TourAccountStepState extends State<TourAccountStep> {
   void initState() {
     super.initState();
     // Ao refazer o tour com conta, não há o que convidar: vai ao Início.
-    if (context.read<AccountRepository>().current != null) {
+    if (context.read<AccountCubit>().signedIn) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) unawaited(context.read<TourCubit>().finish());
       });

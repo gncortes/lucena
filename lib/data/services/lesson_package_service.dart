@@ -3,14 +3,17 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 
+import '../../domain/models/content_session.dart';
+
 import 'lesson_content_service.dart';
 import 'lesson_package_index.dart';
 
-class LessonPackageLease {
+class LessonPackageLease implements ContentSession {
   LessonPackageLease._(this._service, this._user);
   final LessonPackageService _service;
   final String _user;
   bool _closed = false;
+  @override
   Future<void> close() async {
     if (_closed) return;
     _closed = true;

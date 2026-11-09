@@ -56,8 +56,6 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final language = Localizations.localeOf(context).languageCode;
     return EntradaDaTela(
       id: 'PropV1LegalSobre',
@@ -67,61 +65,7 @@ class AboutScreen extends StatelessWidget {
         body: ListView(
           padding: scrollPadding(context),
           children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: EntradaEmCascata(
-                montar: (itens) => Column(children: itens),
-                itens: [
-                  // O mascote do app: o ícone B2, com o fundo escuro (a figura
-                  // clara sumiria no fundo da tela).
-                  ItemDaCascata.selo(
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppShape.large),
-                      child: Image.asset(
-                        'assets/branding/mascote.png',
-                        width: 96,
-                        height: 96,
-                      ),
-                    ),
-                  ),
-                  ItemDaCascata.titulo(
-                    Padding(
-                      padding: const EdgeInsets.only(top: AppSpacing.md),
-                      child: Text(
-                        l10n.appTitle,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.headlineSmall,
-                      ),
-                    ),
-                  ),
-                  ItemDaCascata.texto(
-                    Padding(
-                      padding: const EdgeInsets.only(top: AppSpacing.xs),
-                      child: Text(
-                        l10n.aboutTagline,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (version.isNotEmpty)
-                    ItemDaCascata.texto(
-                      Padding(
-                        padding: const EdgeInsets.only(top: AppSpacing.sm),
-                        child: Text(
-                          l10n.homeVersion(version),
-                          key: SettingsKeys.aboutVersion,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            _AboutHeader(version: version),
             ListTile(
               key: SettingsKeys.aboutWebsite,
               leading: const Icon(Icons.public),
@@ -173,6 +117,75 @@ class AboutScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// O mascote, o nome, o lema e a versão do app.
+class _AboutHeader extends StatelessWidget {
+  const _AboutHeader({required this.version});
+
+  final String version;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      child: EntradaEmCascata(
+        montar: (itens) => Column(children: itens),
+        itens: [
+          // O mascote do app: o ícone B2, com o fundo escuro (a figura
+          // clara sumiria no fundo da tela).
+          ItemDaCascata.selo(
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppShape.large),
+              child: Image.asset(
+                'assets/branding/mascote.png',
+                width: 96,
+                height: 96,
+              ),
+            ),
+          ),
+          ItemDaCascata.titulo(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: Text(
+                l10n.appTitle,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall,
+              ),
+            ),
+          ),
+          ItemDaCascata.texto(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xs),
+              child: Text(
+                l10n.aboutTagline,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+          if (version.isNotEmpty)
+            ItemDaCascata.texto(
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.sm),
+                child: Text(
+                  l10n.homeVersion(version),
+                  key: SettingsKeys.aboutVersion,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

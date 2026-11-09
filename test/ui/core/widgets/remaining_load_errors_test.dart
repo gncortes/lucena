@@ -15,6 +15,7 @@ import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/fakes/fake_course_preview_repository.dart';
 import '../../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_dependencies.dart';
@@ -118,6 +119,9 @@ void main() {
             ),
             characterRepository: characters,
             featuredRepository: featured,
+            coursePreviewRepository: FakeCoursePreviewRepository(
+              preview: FakeCoursePreviewRepository.example(),
+            ),
           ),
         ),
       );

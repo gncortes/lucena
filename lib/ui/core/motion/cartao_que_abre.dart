@@ -53,18 +53,16 @@ class CartaoQueAbre extends StatelessWidget {
   final Color corFechado;
   final VoidCallback? aoFechar;
 
-  Widget _aberto(BuildContext context, VoidCallback fechar) => KeyedSubtree(
-    key: MotionKeys.cartaoQueAbre,
-    child: aberto(context, fechar),
-  );
-
   Future<void> _abrirSemMovimento(BuildContext context) async {
     await Navigator.of(context).push(
       PageRouteBuilder<void>(
         transitionDuration: LucenaMotion.fadeReduzido,
         reverseTransitionDuration: LucenaMotion.fadeReduzido,
-        pageBuilder: (context, _, _) =>
-            _aberto(context, () => Navigator.of(context).pop()),
+        pageBuilder: (context, _, _) => _Aberto(
+          key: MotionKeys.cartaoQueAbre,
+          aberto: aberto,
+          fechar: () => Navigator.of(context).pop(),
+        ),
         transitionsBuilder: (context, animacao, _, filho) =>
             FadeTransition(opacity: animacao, child: filho),
       ),
@@ -96,7 +94,22 @@ class CartaoQueAbre extends StatelessWidget {
             ? _abrirSemMovimento(context)
             : abrir(),
       ),
-      openBuilder: (context, fechar) => _aberto(context, () => fechar()),
+      openBuilder: (context, fechar) => _Aberto(
+        key: MotionKeys.cartaoQueAbre,
+        aberto: aberto,
+        fechar: () => fechar(),
+      ),
     );
   }
+}
+
+/// A tela aberta do [CartaoQueAbre].
+class _Aberto extends StatelessWidget {
+  const _Aberto({required this.aberto, required this.fechar, super.key});
+
+  final CartaoAbertoBuilder aberto;
+  final VoidCallback fechar;
+
+  @override
+  Widget build(BuildContext context) => aberto(context, fechar);
 }

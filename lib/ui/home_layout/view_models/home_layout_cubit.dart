@@ -46,7 +46,7 @@ class HomeLayoutCubit extends Cubit<HomeLayoutState> {
     } on Object catch (error, stack) {
       debugPrint('home_layout load failed: $error');
       reportHandledError(error, stack);
-      if (!isClosed) emit(HomeLayoutState(failure: LoadFailure.generic));
+      if (!isClosed) emit(const HomeLayoutState(failure: LoadFailure.generic));
     }
   }
 

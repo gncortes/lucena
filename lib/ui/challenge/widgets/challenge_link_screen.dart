@@ -45,8 +45,6 @@ class ChallengeLinkScreen extends StatelessWidget {
       );
     }
     final link = state.link;
-    final theme = Theme.of(context);
-    final goal = GoalStyle.of(context, link.goal);
     return Scaffold(
       key: ChallengeKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.journeyChallengeTitle)),
@@ -71,52 +69,7 @@ class ChallengeLinkScreen extends StatelessWidget {
             : LayoutBuilder(
                 builder: (context, box) => Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.lg,
-                        AppSpacing.md,
-                        AppSpacing.lg,
-                        0,
-                      ),
-                      child: Column(
-                        spacing: AppSpacing.md,
-                        children: [
-                          // Colado no topo, como no quadro; encolhe se a tela
-                          // for baixa, para sobrar espaço aos cartões.
-                          SizedBox.square(
-                            dimension: math.min(
-                              box.maxWidth - 2 * AppSpacing.lg,
-                              box.maxHeight * _maxBoardShare,
-                            ),
-                            child: LayoutBuilder(
-                              builder: (context, constraints) => PositionBoard(
-                                boardKey: ChallengeKeys.board,
-                                fen: link.fen,
-                                size: constraints.maxWidth,
-                                orientation: link.userSide,
-                                coordinates: true,
-                              ),
-                            ),
-                          ),
-                          Wrap(
-                            spacing: AppSpacing.sm,
-                            runSpacing: AppSpacing.sm,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              InfoChip(
-                                icon: goal.icon,
-                                label: goalLabel(l10n, link.goal),
-                              ),
-                              InfoChip(
-                                label: link.userSide.name == 'white'
-                                    ? l10n.freeBoardWhiteToMove
-                                    : l10n.freeBoardBlackToMove,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    _ChallengeHeader(state: state, box: box),
                     Expanded(
                       child: ListView(
                         padding: const EdgeInsets.only(bottom: AppSpacing.xl),
@@ -137,61 +90,145 @@ class ChallengeLinkScreen extends StatelessWidget {
                                 ) ??
                                 '',
                           ),
-                          Card(
-                            margin: const EdgeInsets.fromLTRB(
-                              AppSpacing.lg,
-                              AppSpacing.md,
-                              AppSpacing.lg,
-                              0,
-                            ),
-                            child: Column(
-                              children: [
-                                _LockedRow(
-                                  key: ChallengeKeys.clockRow,
-                                  icon: Icons.av_timer_outlined,
-                                  label: l10n.freeBoardClock,
-                                  value: link.clock == null
-                                      ? l10n.challengeNoClock
-                                      : paceShort(l10n, link.clock!),
-                                ),
-                                _LockedRow(
-                                  key: ChallengeKeys.modeRow,
-                                  icon: Icons.grid_on,
-                                  label: l10n.setupMode,
-                                  value: l10n.setupModeNormal,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            key: ChallengeKeys.lockedNote,
-                            padding: const EdgeInsets.all(AppSpacing.lg),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              spacing: AppSpacing.md,
-                              children: [
-                                Icon(
-                                  Icons.lock,
-                                  size: AppIconSize.button,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    l10n.challengeLockedNote,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          _LockedCard(state: state),
+                          const _LockedNote(),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
+      ),
+    );
+  }
+}
+
+/// O tabuleiro colado no topo, com o objetivo e a vez.
+class _ChallengeHeader extends StatelessWidget {
+  const _ChallengeHeader({required this.state, required this.box});
+
+  final ChallengeLinkState state;
+  final BoxConstraints box;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final link = state.link;
+    final goal = GoalStyle.of(context, link.goal);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Column(
+        spacing: AppSpacing.md,
+        children: [
+          // Colado no topo, como no quadro; encolhe se a tela
+          // for baixa, para sobrar espaço aos cartões.
+          SizedBox.square(
+            dimension: math.min(
+              box.maxWidth - 2 * AppSpacing.lg,
+              box.maxHeight * ChallengeLinkScreen._maxBoardShare,
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) => PositionBoard(
+                boardKey: ChallengeKeys.board,
+                fen: link.fen,
+                size: constraints.maxWidth,
+                orientation: link.userSide,
+                coordinates: true,
+              ),
+            ),
+          ),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            alignment: WrapAlignment.center,
+            children: [
+              InfoChip(icon: goal.icon, label: goalLabel(l10n, link.goal)),
+              InfoChip(
+                label: link.userSide.name == 'white'
+                    ? l10n.freeBoardWhiteToMove
+                    : l10n.freeBoardBlackToMove,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O cartão com o relógio e o modo, que não mudam.
+class _LockedCard extends StatelessWidget {
+  const _LockedCard({required this.state});
+
+  final ChallengeLinkState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final link = state.link;
+    return Card(
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Column(
+        children: [
+          _LockedRow(
+            key: ChallengeKeys.clockRow,
+            icon: Icons.av_timer_outlined,
+            label: l10n.freeBoardClock,
+            value: link.clock == null
+                ? l10n.challengeNoClock
+                : paceShort(l10n, link.clock!),
+          ),
+          _LockedRow(
+            key: ChallengeKeys.modeRow,
+            icon: Icons.grid_on,
+            label: l10n.setupMode,
+            value: l10n.setupModeNormal,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O aviso de que o desafio vem fechado.
+class _LockedNote extends StatelessWidget {
+  const _LockedNote();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    return Padding(
+      key: ChallengeKeys.lockedNote,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.md,
+        children: [
+          Icon(
+            Icons.lock,
+            size: AppIconSize.button,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          Expanded(
+            child: Text(
+              l10n.challengeLockedNote,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

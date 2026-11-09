@@ -5,10 +5,7 @@ import '../../core/motion/botao_carregando.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/account/avatar_repository.dart';
-import '../../../data/repositories/photo/photo_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/account.dart';
 import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
@@ -51,18 +48,9 @@ class AccountDataScreen extends StatelessWidget {
   Widget build(BuildContext context) => MultiBlocProvider(
     providers: [
       BlocProvider(
-        create: (context) => AccountCubit(
-          context.read<AccountRepository>(),
-          sync: context.read<SyncScheduler>(),
-        ),
+        create: (context) => createAccountCubit(context, tracked: false),
       ),
-      BlocProvider(
-        create: (context) => AccountPhotoCubit(
-          accounts: context.read<AccountRepository>(),
-          photos: context.read<PhotoRepository>(),
-          avatars: context.read<AvatarRepository>(),
-        ),
-      ),
+      const BlocProvider(create: createAccountPhotoCubit),
     ],
     child: _DataView(from: from, welcome: welcome),
   );
@@ -98,11 +86,11 @@ class _DataViewState extends State<_DataView> {
   void _fill(UserProfile? profile) {
     if (_filled || profile == null) return;
     _filled = true;
-    final account = context.read<AccountRepository>().current;
+    final photo = context.read<AccountPhotoCubit>();
     _nickname.text = profile.nickname.isEmpty
-        ? account?.name ?? ''
+        ? photo.accountName ?? ''
         : profile.nickname;
-    context.read<AccountPhotoCubit>().load(profile);
+    photo.load(profile);
   }
 
   Future<void> _save() async {
@@ -199,50 +187,13 @@ class _DataViewState extends State<_DataView> {
               helper: l10n.accountNicknameHelp,
             ),
             const SizedBox(height: AppSpacing.lg),
-            ProfileRowGroup(
-              children: [
-                ProfileRow(
-                  key: ProfileKeys.rowCountry,
-                  icon: Icons.public,
-                  title: l10n.profileCountry,
-                  value: profileCountryValue(
-                    l10n,
-                    profile?.country,
-                    phone: context.read<ProfileCubit>().phoneCountry,
-                  ),
-                  onTap: () => context.push(Routes.country),
-                ),
-                if (edit)
-                  ProfileRow(
-                    key: ProfileKeys.rowLanguage,
-                    icon: Icons.language,
-                    title: l10n.settingsLanguage,
-                    value: profileLanguageName(context),
-                    onTap: () => context.push(Routes.settingsLanguage),
-                  )
-                else
-                  ProfileRow(
-                    key: ProfileKeys.rowRegion,
-                    icon: Icons.location_on,
-                    title: l10n.profileRegion,
-                    value:
-                        regionLabel(
-                          l10n,
-                          country: profile?.country,
-                          state: profile?.state,
-                          city: profile?.city,
-                        ) ??
-                        l10n.profileRegionNone,
-                    onTap: () => showRegionSheet(context),
-                  ),
-              ],
-            ),
+            _DataRows(edit: edit, profile: profile),
             if (widget.welcome)
               _SavedNote(
                 key: AccountKeys.savedBanner,
                 text: l10n.conPerfilSaved,
               )
-            else if (context.read<AccountRepository>().current != null)
+            else if (context.read<AccountPhotoCubit>().signedIn)
               _SavedNote(
                 key: AccountKeys.editSavedNote,
                 text: l10n.conPerfilEditSaved,
@@ -381,6 +332,57 @@ class _SavedNote extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// As linhas de país e idioma (ou região) do perfil.
+class _DataRows extends StatelessWidget {
+  const _DataRows({required this.edit, required this.profile});
+
+  final bool edit;
+  final UserProfile? profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ProfileRowGroup(
+      children: [
+        ProfileRow(
+          key: ProfileKeys.rowCountry,
+          icon: Icons.public,
+          title: l10n.profileCountry,
+          value: profileCountryValue(
+            l10n,
+            profile?.country,
+            phone: context.read<ProfileCubit>().phoneCountry,
+          ),
+          onTap: () => context.push(Routes.country),
+        ),
+        if (edit)
+          ProfileRow(
+            key: ProfileKeys.rowLanguage,
+            icon: Icons.language,
+            title: l10n.settingsLanguage,
+            value: profileLanguageName(context),
+            onTap: () => context.push(Routes.settingsLanguage),
+          )
+        else
+          ProfileRow(
+            key: ProfileKeys.rowRegion,
+            icon: Icons.location_on,
+            title: l10n.profileRegion,
+            value:
+                regionLabel(
+                  l10n,
+                  country: profile?.country,
+                  state: profile?.state,
+                  city: profile?.city,
+                ) ??
+                l10n.profileRegionNone,
+            onTap: () => showRegionSheet(context),
+          ),
+      ],
     );
   }
 }

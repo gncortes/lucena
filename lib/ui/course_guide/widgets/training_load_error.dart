@@ -4,7 +4,7 @@ import 'package:android_intent_plus/android_intent.dart';
 
 import '../../../domain/models/load_failure.dart';
 import '../../../routing/routes.dart';
-import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../config/failure_report.dart';
 import '../../core/widgets/load_error.dart';
 
 Widget trainingLoadError(

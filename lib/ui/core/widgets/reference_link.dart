@@ -33,7 +33,7 @@ class ReferenceLink extends StatelessWidget {
         queryParameters: {...uri.queryParameters, 'color': 'black'},
       );
     }
-    final game = RegExp(r'^[A-Za-z0-9]{8,12}$');
+    final game = _lichessGameId;
     if (game.hasMatch(path.first) &&
         (path.length == 1 ||
             (path.length == 2 && (path[1] == 'white' || path[1] == 'black')))) {
@@ -101,3 +101,5 @@ class ReferenceLink extends StatelessWidget {
     );
   }
 }
+
+final _lichessGameId = RegExp(r'^[A-Za-z0-9]{8,12}$');

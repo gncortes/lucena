@@ -45,15 +45,34 @@ class TrainingHelpScreen extends StatelessWidget {
     // cascata e as perguntas em ordem; voltar mostra tudo pronto.
     return EntradaDaTela(
       id: 'PropV1TreinoAjuda',
-      child: _scaffold(context, questions, answers),
+      child: _HelpScaffold(
+        questions: questions,
+        answers: answers,
+        onBack: onBack,
+        onTour: onTour,
+        footer: footer,
+      ),
     );
   }
+}
 
-  Widget _scaffold(
-    BuildContext context,
-    List<String> questions,
-    List<String> answers,
-  ) {
+class _HelpScaffold extends StatelessWidget {
+  const _HelpScaffold({
+    required this.questions,
+    required this.answers,
+    required this.onBack,
+    required this.onTour,
+    required this.footer,
+  });
+
+  final List<String> questions;
+  final List<String> answers;
+  final VoidCallback onBack;
+  final VoidCallback onTour;
+  final Widget? footer;
+
+  @override
+  Widget build(BuildContext context) {
     final t = context.l10n;
     return Scaffold(
       key: TrainingKeys.helpScreen,
@@ -77,123 +96,145 @@ class TrainingHelpScreen extends StatelessWidget {
           ],
         ),
         itens: [
+          ItemDaCascata.texto(_HelpTourCard(onTour: onTour)),
           ItemDaCascata.texto(
-            Material(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(AppShape.large),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: 10,
-                  children: [
-                    Text(
-                      t.courseGuideHelpTourTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      t.courseGuideHelpTourBody,
-                      style: Theme.of(context).textTheme.bodyMedium
-                          ?.copyWith(letterSpacing: 0),
-                    ),
-                    FilledButton.icon(
-                      key: TrainingKeys.helpTour,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
-                      ),
-                      onPressed: onTour,
-                      icon: const Icon(CanvasSymbols.playArrow, fill: 1),
-                      label: Text(t.courseGuideHelpTourAction),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          ItemDaCascata.texto(
-            Material(
-              color: Theme.of(context).colorScheme.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(AppShape.large),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: 4,
-                  children: [
-                    Text(
-                      t.courseGuideFaqTitle,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    ListaEmOrdem.feitos(
-                      montar: (linhas) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: 4,
-                        children: linhas,
-                      ),
-                      itens: [
-                        for (var i = 0; i < questions.length; i++)
-                          Container(
-                            decoration: i == 0
-                                ? null
-                                : BoxDecoration(
-                                    border: Border(
-                                      top: BorderSide(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .outlineVariant,
-                                      ),
-                                    ),
-                                  ),
-                            child: ExpansionTile(
-                              key: TrainingKeys.faq(i + 1),
-                              initiallyExpanded: i == 0,
-                              maintainState: true,
-                              minTileHeight: 48,
-                              visualDensity: VisualDensity.standard,
-                              tilePadding: EdgeInsets.zero,
-                              childrenPadding: const EdgeInsets.only(bottom: 6),
-                              shape: const Border(),
-                              collapsedShape: const Border(),
-                              title: Text(
-                                questions[i],
-                                style: Theme.of(context).textTheme.titleSmall
-                                    ?.copyWith(
-                                      fontSize: 14,
-                                      height: 20 / 14,
-                                      letterSpacing: 0,
-                                    ),
-                              ),
-                              children: [
-                                // Canvas summary margin-bottom -12 plus answer top 6.
-                                Transform.translate(
-                                  offset: const Offset(0, -6),
-                                  child: Align(
-                                    alignment: AlignmentDirectional.centerStart,
-                                    child: Text(
-                                      answers[i],
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            fontSize: 14,
-                                            height: 20 / 14,
-                                            letterSpacing: 0,
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _HelpFaqCard(questions: questions, answers: answers),
           ),
           if (footer case final footer?) ItemDaCascata.texto(footer),
         ],
+      ),
+    );
+  }
+}
+
+/// O cartão que convida a rever o tour.
+class _HelpTourCard extends StatelessWidget {
+  const _HelpTourCard({required this.onTour});
+
+  final VoidCallback onTour;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Material(
+      color: Theme.of(context).colorScheme.primaryContainer,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 10,
+          children: [
+            Text(
+              t.courseGuideHelpTourTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              t.courseGuideHelpTourBody,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(letterSpacing: 0),
+            ),
+            FilledButton.icon(
+              key: TrainingKeys.helpTour,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(kButtonHeight),
+              ),
+              onPressed: onTour,
+              icon: const Icon(CanvasSymbols.playArrow, fill: 1),
+              label: Text(t.courseGuideHelpTourAction),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// As perguntas frequentes, a primeira aberta.
+class _HelpFaqCard extends StatelessWidget {
+  const _HelpFaqCard({required this.questions, required this.answers});
+
+  final List<String> questions;
+  final List<String> answers;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Material(
+      color: Theme.of(context).colorScheme.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 4,
+          children: [
+            Text(
+              t.courseGuideFaqTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            ListaEmOrdem.feitos(
+              montar: (linhas) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: 4,
+                children: linhas,
+              ),
+              itens: [
+                for (var i = 0; i < questions.length; i++)
+                  Container(
+                    decoration: i == 0
+                        ? null
+                        : BoxDecoration(
+                            border: Border(
+                              top: BorderSide(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outlineVariant,
+                              ),
+                            ),
+                          ),
+                    child: ExpansionTile(
+                      key: TrainingKeys.faq(i + 1),
+                      initiallyExpanded: i == 0,
+                      maintainState: true,
+                      minTileHeight: 48,
+                      visualDensity: VisualDensity.standard,
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: const EdgeInsets.only(bottom: 6),
+                      shape: const Border(),
+                      collapsedShape: const Border(),
+                      title: Text(
+                        questions[i],
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontSize: 14,
+                          height: 20 / 14,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                      children: [
+                        // Canvas summary margin-bottom -12 plus answer top 6.
+                        Transform.translate(
+                          offset: const Offset(0, -6),
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Text(
+                              answers[i],
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    fontSize: 14,
+                                    height: 20 / 14,
+                                    letterSpacing: 0,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

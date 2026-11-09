@@ -2,7 +2,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../config/failure_report.dart';
 import '../../../domain/models/training/goal/training_objective.dart';
 import '../../../domain/use_cases/training/goal/tournament_rules.dart';
 import '../../core/keys/training_goal_keys.dart';

@@ -128,32 +128,7 @@ class _CategoryCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 64,
-                    height: 64,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(AppShape.large),
-                    ),
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: ExcludeSemantics(
-                      // Duas peças (♖♙) cabem lado a lado, menores.
-                      child: FittedBox(
-                        child: Text(
-                          categoryFigurines(category.key),
-                          textDirection: TextDirection.ltr,
-                          softWrap: false,
-                          style: TextStyle(
-                            fontFamily: Figurine.fontFamily,
-                            fontSize: 34,
-                            height: 1,
-                            color: colors.onPrimaryContainer,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  _CategoryIcon(category: category),
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: Column(
@@ -226,6 +201,44 @@ class _CategoryCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O quadrado com as peças da categoria.
+class _CategoryIcon extends StatelessWidget {
+  const _CategoryIcon({required this.category});
+
+  final CatalogCategory category;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      width: 64,
+      height: 64,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.large),
+      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: ExcludeSemantics(
+        // Duas peças (♖♙) cabem lado a lado, menores.
+        child: FittedBox(
+          child: Text(
+            categoryFigurines(category.key),
+            textDirection: TextDirection.ltr,
+            softWrap: false,
+            style: TextStyle(
+              fontFamily: Figurine.fontFamily,
+              fontSize: 34,
+              height: 1,
+              color: colors.onPrimaryContainer,
+            ),
           ),
         ),
       ),

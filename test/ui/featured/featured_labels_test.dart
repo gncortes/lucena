@@ -11,7 +11,7 @@ void main() {
   final endgame = sampleFeaturedCatalog().finals.first;
 
   test('o ano entra depois do nome do evento', () {
-    final tournament = FeaturedTournament(
+    final tournament = const FeaturedTournament(
       id: 't',
       name: 'Torneio Antigo',
       year: 1959,
@@ -23,7 +23,7 @@ void main() {
   });
 
   test('o ano não se repete quando o nome já o traz', () {
-    final tournament = FeaturedTournament(
+    final tournament = const FeaturedTournament(
       id: 't',
       name: 'Norway Chess 2017',
       year: 2017,

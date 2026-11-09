@@ -39,144 +39,19 @@ class RaceResultView extends StatelessWidget {
   Widget build(BuildContext context) {
     final outcome = state.outcome;
     if (outcome == null) return const SizedBox.shrink();
-    final l10n = context.l10n;
-    final cubit = context.read<RaceCubit>();
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final result = outcome.result;
     final run = result.run;
     final mistakes = state.mistakes;
-    final diagnosis = state.diagnosis;
     // H-ANI-25: o título sobe, os acertos contam, o resto do resultado entra
     // e os botões deslizam por último. Cada Corrida é um resultado novo.
     return KeyedSubtree(
       key: RaceKeys.resultView,
       child: EntradaDeResultado(
         id: 'corrida-${run.startedAt.microsecondsSinceEpoch}',
-        titulo: Text(
-          switch (result.end) {
-            RaceEnd.time => l10n.raceEndTime,
-            RaceEnd.errors => l10n.raceEndErrors,
-            RaceEnd.quit => l10n.raceEndQuit,
-          },
-          key: RaceKeys.resultTitle,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: colors.onSurfaceVariant,
-          ),
-        ),
-        placar: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            NumeroQueConta(
-              key: RaceKeys.resultCorrects,
-              valor: run.corrects,
-              estilo: theme.textTheme.displayLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            Text(
-              l10n.raceCorrectsCount(run.corrects),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            if (outcome.isRecord && outcome.previous.corrects > 0)
-              Padding(
-                padding: const EdgeInsets.only(top: AppSpacing.md),
-                child: Center(
-                  child: InfoChip(
-                    key: RaceKeys.newRecord,
-                    icon: Icons.emoji_events,
-                    label: l10n.desafiosRaceNewRecord(
-                      run.duration.minutes,
-                      outcome.previous.corrects,
-                    ),
-                    background: ChangeColors.of(
-                      context,
-                      up: true,
-                    ).withValues(alpha: 0.16),
-                    foreground: ChangeColors.of(context, up: true),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        viktor: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: AppSpacing.lg),
-            // O que contou (canvas SugP2CorridaFimA): os acertos e o recorde,
-            // o nível alcançado e o desempenho por final. Sem ponto fraco no
-            // resultado: pronto, a linha abre o desempenho por final.
-            _CountedCard(
-              key: RaceKeys.counted,
-              minutes: run.duration.minutes,
-              corrects: run.corrects,
-              record: math.max(outcome.previous.corrects, run.corrects),
-              hardest: run.hardestSolved,
-              diagnosis: diagnosis,
-              onPerformance: () => context.push(Routes.racePerformance),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            // O título sem o recuo próprio: alinhado aos cartões de cima.
-            SectionTitle(
-              l10n.raceProblemsTitle,
-              inset: 0,
-              action: run.answers.length > shownProblems
-                  ? SectionAction(
-                      key: RaceKeys.seeAllProblems,
-                      label: l10n.desafiosRaceSeeAll(run.answers.length),
-                      onPressed: () => unawaited(
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => RaceProblemsScreen(
-                              answers: run.answers,
-                              problems: state.problems,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : null,
-            ),
-            RaceProblemGrid(
-              tiles: (size) => [
-                for (final (index, answer)
-                    in run.answers.take(shownProblems).indexed)
-                  RaceProblemTile(
-                    key: RaceKeys.problemTile(index),
-                    size: size,
-                    answer: answer,
-                    problem: state.problems
-                        .where((p) => p.id == answer.problemId)
-                        .firstOrNull,
-                  ),
-              ],
-            ),
-          ],
-        ),
-        botoes: ActionsFooter(
-          stacked: true,
-          children: [
-            FilledButton.icon(
-              key: RaceKeys.again,
-              icon: const Icon(Icons.replay),
-              label: Text(l10n.raceAgain),
-              onPressed: cubit.start,
-            ),
-            if (mistakes.isNotEmpty)
-              OutlinedButton.icon(
-                key: RaceKeys.reviewMistakes,
-                icon: const Icon(Icons.visibility),
-                label: Text(l10n.raceReviewMistakes(mistakes.length)),
-                onPressed: cubit.review,
-              ),
-          ],
-        ),
+        titulo: _ResultTitle(end: result.end),
+        placar: _ResultScore(outcome: outcome),
+        viktor: _ResultBody(state: state, outcome: outcome),
+        botoes: _ResultButtons(mistakes: mistakes.length),
         montar: (partes) => Column(
           children: [
             Expanded(
@@ -194,6 +69,186 @@ class RaceResultView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Por que a Corrida acabou.
+class _ResultTitle extends StatelessWidget {
+  const _ResultTitle({required this.end});
+
+  final RaceEnd end;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Text(
+      switch (end) {
+        RaceEnd.time => l10n.raceEndTime,
+        RaceEnd.errors => l10n.raceEndErrors,
+        RaceEnd.quit => l10n.raceEndQuit,
+      },
+      key: RaceKeys.resultTitle,
+      textAlign: TextAlign.center,
+      style: theme.textTheme.titleMedium?.copyWith(
+        color: colors.onSurfaceVariant,
+      ),
+    );
+  }
+}
+
+/// Os acertos (contando) e, se bateu o recorde, a etiqueta do recorde.
+class _ResultScore extends StatelessWidget {
+  const _ResultScore({required this.outcome});
+
+  final RaceOutcome outcome;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final run = outcome.result.run;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        NumeroQueConta(
+          key: RaceKeys.resultCorrects,
+          valor: run.corrects,
+          estilo: theme.textTheme.displayLarge?.copyWith(
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        Text(
+          l10n.raceCorrectsCount(run.corrects),
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+        if (outcome.isRecord && outcome.previous.corrects > 0)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: Center(
+              child: InfoChip(
+                key: RaceKeys.newRecord,
+                icon: Icons.emoji_events,
+                label: l10n.desafiosRaceNewRecord(
+                  run.duration.minutes,
+                  outcome.previous.corrects,
+                ),
+                background: ChangeColors.of(
+                  context,
+                  up: true,
+                ).withValues(alpha: 0.16),
+                foreground: ChangeColors.of(context, up: true),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// O cartão "O que contou" e os problemas que apareceram.
+class _ResultBody extends StatelessWidget {
+  const _ResultBody({required this.state, required this.outcome});
+
+  final RaceState state;
+  final RaceOutcome outcome;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final run = outcome.result.run;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: AppSpacing.lg),
+        // O que contou (canvas SugP2CorridaFimA): os acertos e o recorde,
+        // o nível alcançado e o desempenho por final. Sem ponto fraco no
+        // resultado: pronto, a linha abre o desempenho por final.
+        _CountedCard(
+          key: RaceKeys.counted,
+          minutes: run.duration.minutes,
+          corrects: run.corrects,
+          record: math.max(outcome.previous.corrects, run.corrects),
+          hardest: run.hardestSolved,
+          diagnosis: state.diagnosis,
+          onPerformance: () => context.push(Routes.racePerformance),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        // O título sem o recuo próprio: alinhado aos cartões de cima.
+        SectionTitle(
+          l10n.raceProblemsTitle,
+          inset: 0,
+          action: run.answers.length > RaceResultView.shownProblems
+              ? SectionAction(
+                  key: RaceKeys.seeAllProblems,
+                  label: l10n.desafiosRaceSeeAll(run.answers.length),
+                  onPressed: () => unawaited(
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => RaceProblemsScreen(
+                          answers: run.answers,
+                          problems: state.problems,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : null,
+        ),
+        RaceProblemGrid(
+          tiles: (size) => [
+            for (final (index, answer)
+                in run.answers.take(RaceResultView.shownProblems).indexed)
+              RaceProblemTile(
+                key: RaceKeys.problemTile(index),
+                size: size,
+                answer: answer,
+                problem: state.problems
+                    .where((p) => p.id == answer.problemId)
+                    .firstOrNull,
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Jogar de novo e, havendo erros, revê-los.
+class _ResultButtons extends StatelessWidget {
+  const _ResultButtons({required this.mistakes});
+
+  final int mistakes;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<RaceCubit>();
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        FilledButton.icon(
+          key: RaceKeys.again,
+          icon: const Icon(Icons.replay),
+          label: Text(l10n.raceAgain),
+          onPressed: cubit.start,
+        ),
+        if (mistakes > 0)
+          OutlinedButton.icon(
+            key: RaceKeys.reviewMistakes,
+            icon: const Icon(Icons.visibility),
+            label: Text(l10n.raceReviewMistakes(mistakes)),
+            onPressed: cubit.review,
+          ),
+      ],
     );
   }
 }

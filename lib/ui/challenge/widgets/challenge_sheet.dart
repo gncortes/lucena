@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/characters/character_repository.dart';
-import '../../../data/repositories/share/share_repository.dart';
+import '../../../config/view_models/share.dart';
+import '../../../domain/models/character_lookup.dart';
 import '../../../domain/models/challenge_link.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../catalog/widgets/catalog_ui.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
@@ -33,14 +32,12 @@ Future<void> showChallengeSheet(
   required ChallengeLink link,
   List<Character> characters = const [],
 }) {
-  final share = context.read<ShareRepository>();
-  final analytics = context.analytics;
+  final cubit = createChallengeSheetCubit(context, link: link);
   return showLucenaSheet<void>(
     context,
     sheetKey: ChallengeKeys.sheet,
     builder: (context) => BlocProvider(
-      create: (_) =>
-          ChallengeSheetCubit(share, link: link, analytics: analytics)..load(),
+      create: (_) => cubit..load(),
       child: ChallengeSheet(characters: characters),
     ),
   );

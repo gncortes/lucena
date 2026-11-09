@@ -68,10 +68,8 @@ void main() {
         ),
         GoRoute(
           path: '${Routes.training('pilares')}/help',
-          builder: (context, _) => Scaffold(
-            body: Column(
-              children: [const Text('como funciona'), const CourseAboutTile()],
-            ),
+          builder: (context, _) => const Scaffold(
+            body: Column(children: [Text('como funciona'), CourseAboutTile()]),
           ),
         ),
         ...d2Routes,

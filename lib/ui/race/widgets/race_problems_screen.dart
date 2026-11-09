@@ -20,34 +20,36 @@ class RaceProblemsScreen extends StatelessWidget {
   final List<RaceProblem> problems;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    key: RaceKeys.problemsScreen,
-    appBar: LucenaAppBar(title: Text(context.l10n.raceProblemsTitle)),
-    body: SafeArea(
-      bottom: false,
-      child: ListView(
-        padding: scrollPadding(
-          context,
-          left: AppSpacing.lg,
-          right: AppSpacing.lg,
-          top: AppSpacing.md,
-        ),
-        children: [
-          RaceProblemGrid(
-            tiles: (size) => [
-              for (final (index, answer) in answers.indexed)
-                RaceProblemTile(
-                  key: RaceKeys.problemTile(index),
-                  size: size,
-                  answer: answer,
-                  problem: problems
-                      .where((p) => p.id == answer.problemId)
-                      .firstOrNull,
-                ),
-            ],
+  Widget build(BuildContext context) {
+    // ~2.100 problemas: busca por id num mapa, não varrendo a lista por tile.
+    final byId = {for (final p in problems) p.id: p};
+    return Scaffold(
+      key: RaceKeys.problemsScreen,
+      appBar: LucenaAppBar(title: Text(context.l10n.raceProblemsTitle)),
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: scrollPadding(
+            context,
+            left: AppSpacing.lg,
+            right: AppSpacing.lg,
+            top: AppSpacing.md,
           ),
-        ],
+          children: [
+            RaceProblemGrid(
+              tiles: (size) => [
+                for (final (index, answer) in answers.indexed)
+                  RaceProblemTile(
+                    key: RaceKeys.problemTile(index),
+                    size: size,
+                    answer: answer,
+                    problem: byId[answer.problemId],
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

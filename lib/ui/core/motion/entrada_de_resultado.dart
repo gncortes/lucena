@@ -6,9 +6,11 @@ import 'lucena_motion.dart';
 import 'relogio_de_entrada.dart';
 import 'selo_na_peca.dart';
 
+// B1: callback de montar (valor padrão const do parâmetro)
 Widget _coluna(List<Widget> partes) =>
     Column(mainAxisSize: MainAxisSize.min, children: partes);
 
+// B1: callback de montarBolinhas (valor padrão const do parâmetro)
 Widget _fileira(List<Widget> bolinhas) => Wrap(
   alignment: WrapAlignment.center,
   spacing: 8,

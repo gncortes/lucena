@@ -133,18 +133,7 @@ class _OpeningViewState extends State<_OpeningView> {
                   state.reviewing ? state.shown : state.cursor,
                 )
               : [for (var i = 0; i < state.cursor; i++) i];
-          final speechText = state.phase == TrainingOpeningPhase.complete
-              ? state.allPartsDone
-                    ? l.trainingOpeningFinished(
-                        state.trecho!.title,
-                        bank.length,
-                      )
-                    : l.trainingOpeningPartComplete(number)
-              : state.wrong
-              ? l.trainingOpeningWrong
-              : state.firstTry.isNotEmpty
-              ? l.trainingFixedCorrect
-              : l.trainingOpeningPrompt;
+          final speechText = _openingSpeech(l, state, number, bank.length);
           final lesson = state.resources?.lessons
               .where((l) => l.id == state.lessonId)
               .firstOrNull;
@@ -170,97 +159,23 @@ class _OpeningViewState extends State<_OpeningView> {
               ),
             );
           }
-          final footer = SafeArea(
-            child: IgnorePointer(
-              ignoring: loading,
-              child: TrainingCanvasFooter(
-                leading: state.phase == TrainingOpeningPhase.complete
-                    ? null
-                    : TrainingCanvasFooter.hint(
-                        key: TrainingKeys.exerciseHint,
-                        label: l.exerciseHintFree,
-                        onPressed:
-                            state.phase == TrainingOpeningPhase.playing &&
-                                !state.reviewing
-                            ? cubit.hint
-                            : null,
-                      ),
-                navigation: state.phase == TrainingOpeningPhase.complete
-                    ? []
-                    : [
-                        TrainingCanvasFooter.round(
-                          key: TrainingKeys.prevMove,
-                          icon: CanvasSymbols.chevronLeft,
-                          label: l.trainingPrevMove,
-                          navigation: true,
-                          onPressed: state.shown == 0
-                              ? null
-                              : () => cubit.review(state.shown - 1),
-                        ),
-                        TrainingCanvasFooter.round(
-                          key: TrainingKeys.nextMove,
-                          icon: CanvasSymbols.chevronRight,
-                          label: l.trainingNextMove,
-                          navigation: true,
-                          onPressed: state.reviewing
-                              ? () => cubit.review(state.shown + 1)
-                              : null,
-                        ),
-                      ],
-                secondary: state.phase != TrainingOpeningPhase.complete
-                    ? null
-                    : TrainingCanvasFooter.button(
-                        key: state.allPartsDone
-                            ? TrainingKeys.openingProgress
-                            : TrainingKeys.openingNextPart,
-                        label: state.allPartsDone
-                            ? l.trainingViewProgress
-                            : l.trainingNextPart,
-                        onPressed: state.allPartsDone
-                            ? widget.screen.onProgress
-                            : cubit.nextPart,
-                      ),
-                primary: state.error
-                    ? TrainingCanvasFooter.button(
-                        key: TrainingKeys.openingSaveRetry,
-                        label: l.lessonRetry,
-                        primary: true,
-                        onPressed: cubit.retry,
-                      )
-                    : state.phase != TrainingOpeningPhase.complete
-                    ? null
-                    : TrainingCanvasFooter.button(
-                        key: TrainingKeys.nextGoal,
-                        label: l.trainingNextGoal,
-                        primary: true,
-                        onPressed: widget.screen.onNextGoal,
-                      ),
-              ),
-            ),
+          final footer = _OpeningFooter(
+            state: state,
+            loading: loading,
+            onProgress: widget.screen.onProgress,
+            onNextGoal: widget.screen.onNextGoal,
           );
           return Scaffold(
             key: TrainingKeys.openingScreen,
             appBar: LucenaAppBar(
               centerTitle: true,
-              leading: IconButton(
-                key: TrainingKeys.openingBack,
-                icon: const Icon(CanvasSymbols.arrowBack),
-                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
-              title: Text(
-                key: TrainingKeys.openingTitle(state.lessonId ?? ''),
-                ready
-                    ? l.trainingOpeningTitle(
-                        state.trecho!.lines.isNotEmpty
-                            ? state.trecho!.title
-                            : lesson?.title ?? state.trecho!.title,
-                        number,
-                        bank.length,
-                      )
-                    : l.trainingOpeningsTitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              leading: const _OpeningBack(),
+              title: _OpeningTitle(
+                state: state,
+                ready: ready,
+                lessonTitle: lesson?.title,
+                number: number,
+                total: bank.length,
               ),
             ),
             body: BoardViewport(
@@ -271,34 +186,46 @@ class _OpeningViewState extends State<_OpeningView> {
                   SafeArea(
                     child: !ready
                         ? const SkeletonList()
-                        : IgnorePointer(
+                        : _OpeningPage(
                             ignoring: loading || _replayFen != null,
-                            child: TrainingCanvasPage(
-                              pageKey: TrainingKeys.openingPage,
-                              teacher: widget.screen.teacher,
-                              text: speechText,
-                              onOpen: () => _fullSpeech(context, speechText),
-                              boardBuilder: (size) => Builder(
-                                builder: (context) =>
-                                    _board(context, state, size),
-                              ),
-                              notation: ScriptMoveList(
-                                moves: [
-                                  for (final i in notation)
-                                    if (state.line!.moveAt(i) != null)
-                                      ScriptMoveEntry(
-                                        id: '${i + 1}',
-                                        san: state.line!.san[i],
-                                        number: state.line!.moveNumberAt(i),
-                                        side: state.line!.sideAt(i),
-                                        variant: false,
-                                      ),
-                                ],
-                                currentId: state.shown == 0
-                                    ? null
-                                    : '${state.shown}',
-                                onTap: (id) => cubit.notationTap(int.parse(id)),
-                              ),
+                            teacher: widget.screen.teacher,
+                            text: speechText,
+                            state: state,
+                            moves: notation,
+                            onOpen: () => _fullSpeech(context, speechText),
+                            boardBuilder: (size) => Builder(
+                              builder: (context) {
+                                final view = _boardView(context, state);
+                                return _OpeningBoard(
+                                  controller: view.controller,
+                                  size: size,
+                                  side: state.trecho!.black
+                                      ? Side.black
+                                      : Side.white,
+                                  hint: view.hint,
+                                  retorno: view.retorno,
+                                  played: view.played,
+                                  attempt: _attempt,
+                                  boardKey: _boardKey,
+                                  heroTag: widget.screen.heroTag,
+                                  heroId: view.heroId,
+                                  onMove: (move) {
+                                    setState(() {
+                                      _played = move is NormalMove
+                                          ? move
+                                          : null;
+                                      _attempt++;
+                                      _returned = false;
+                                    });
+                                    cubit.play(move.uci);
+                                  },
+                                  onReturned: () {
+                                    if (mounted) {
+                                      setState(() => _returned = true);
+                                    }
+                                  },
+                                );
+                              },
                             ),
                           ),
                   ),
@@ -307,15 +234,7 @@ class _OpeningViewState extends State<_OpeningView> {
                   if (ready &&
                       state.phase == TrainingOpeningPhase.complete &&
                       state.allPartsDone)
-                    const Positioned.fill(
-                      child: IgnorePointer(
-                        child: Celebracao(
-                          tamanho: TamanhoDaCelebracao.pequena,
-                          escalar: false,
-                          child: SizedBox.expand(),
-                        ),
-                      ),
-                    ),
+                    const Positioned.fill(child: _OpeningCelebration()),
                 ],
               ),
             ),
@@ -350,8 +269,16 @@ class _OpeningViewState extends State<_OpeningView> {
     );
   }
 
-  Widget _board(BuildContext context, TrainingOpeningState state, double size) {
-    final cubit = context.read<TrainingOpeningCubit>();
+  /// Acerta o tabuleiro para o estado: o controlador, a repetição dos lances
+  /// da transição e o lance errado que fica na casa até a peça voltar.
+  ({
+    ChessboardController controller,
+    NormalMove? played,
+    Move? hint,
+    TipoDeRetorno? retorno,
+    String? heroId,
+  })
+  _boardView(BuildContext context, TrainingOpeningState state) {
     final lineId = '${state.lessonId}:${state.trecho!.id}';
     final changedLine = _boardLine != lineId;
     final animation = AppMotion.of(context).component;
@@ -424,46 +351,9 @@ class _OpeningViewState extends State<_OpeningView> {
       );
     }
     _boardLine = lineId;
-    final settings = context.select(
-      (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
-    );
     final hint = playing && state.hint
         ? Move.parse(state.line!.acceptedAt(state.cursor).first)
         : null;
-    Widget board = Directionality(
-      textDirection: TextDirection.ltr,
-      // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
-      child: TabuleiroAnimado(
-        controlador: _controller!,
-        orientacao: state.trecho!.black ? Side.black : Side.white,
-        tamanho: size,
-        pecas: settings.chessground.pieceAssets,
-        child: Chessboard(
-          key: TrainingKeys.openingBoard,
-          size: size,
-          controller: _controller!,
-          orientation: state.trecho!.black ? Side.black : Side.white,
-          settings: TabuleiroAnimado.ajustes(context, settings.chessground),
-          shapes: {
-            if (hint is NormalMove)
-              Arrow(
-                color: Theme.of(context).colorScheme.primary,
-                orig: hint.from,
-                dest: hint.to,
-              ),
-          },
-          onMove: (move, {viaDragAndDrop}) {
-            setState(() {
-              _played = move is NormalMove ? move : null;
-              _attempt++;
-              _returned = false;
-            });
-            cubit.play(move.uci);
-          },
-        ),
-      ),
-    );
-    board = KeyedSubtree(key: _boardKey, child: board);
     final side = state.trecho!.black ? Side.black : Side.white;
     final retorno = played == null || state.reviewing
         ? null
@@ -474,32 +364,340 @@ class _OpeningViewState extends State<_OpeningView> {
               position.board.pieceAt(played.to)?.color == side
         ? TipoDeRetorno.acerto
         : null;
+    // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id (o FEN com
+    // que a tela abre).
+    final heroId = widget.screen.heroTag == null
+        ? _heroId ??= state.line!.fens[state.shown]
+        : null;
+    return (
+      controller: _controller!,
+      played: played,
+      hint: hint,
+      retorno: retorno,
+      heroId: heroId,
+    );
+  }
+}
+
+/// O tabuleiro do trecho: a seta da dica, o retorno do lance do aluno e o
+/// voo da tela de antes.
+class _OpeningBoard extends StatelessWidget {
+  const _OpeningBoard({
+    required this.controller,
+    required this.size,
+    required this.side,
+    required this.hint,
+    required this.retorno,
+    required this.played,
+    required this.attempt,
+    required this.boardKey,
+    required this.heroTag,
+    required this.heroId,
+    required this.onMove,
+    required this.onReturned,
+  });
+
+  final ChessboardController controller;
+  final double size;
+  final Side side;
+  final Move? hint;
+  final TipoDeRetorno? retorno;
+  final NormalMove? played;
+  final int attempt;
+  final GlobalKey boardKey;
+  final Object? heroTag;
+  final String? heroId;
+  final ValueChanged<Move> onMove;
+  final VoidCallback onReturned;
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.select(
+      (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
+    );
+    final hint = this.hint;
+    Widget board = Directionality(
+      textDirection: TextDirection.ltr,
+      // H-ANI-10: deslize do kit, captura que encolhe e halo do xeque.
+      child: TabuleiroAnimado(
+        controlador: controller,
+        orientacao: side,
+        tamanho: size,
+        pecas: settings.chessground.pieceAssets,
+        child: Chessboard(
+          key: TrainingKeys.openingBoard,
+          size: size,
+          controller: controller,
+          orientation: side,
+          settings: TabuleiroAnimado.ajustes(context, settings.chessground),
+          shapes: {
+            if (hint is NormalMove)
+              Arrow(
+                color: Theme.of(context).colorScheme.primary,
+                orig: hint.from,
+                dest: hint.to,
+              ),
+          },
+          onMove: (move, {viaDragAndDrop}) => onMove(move),
+        ),
+      ),
+    );
+    board = KeyedSubtree(key: boardKey, child: board);
+    final retorno = this.retorno;
     if (retorno != null) {
       board = RetornoDoLance(
-        key: ValueKey('opening $_attempt'),
+        key: ValueKey('opening $attempt'),
         tipo: retorno,
         casa: played!.to,
         orientacao: side,
         tamanho: size,
         vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
-        aoVoltar: retorno == TipoDeRetorno.erro
-            ? () {
-                if (mounted) setState(() => _returned = true);
-              }
-            : null,
+        aoVoltar: retorno == TipoDeRetorno.erro ? onReturned : null,
         child: board,
       );
     }
-    if (widget.screen.heroTag case final tag?) {
+    if (heroTag case final tag?) {
       board = Hero(tag: tag, child: board);
     } else {
-      // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id (o FEN
-      // com que a tela abre).
-      board = TabuleiroHero(
-        id: _heroId ??= state.line!.fens[state.shown],
-        child: board,
-      );
+      // H-ANI-02: o tabuleiro voa da tela de antes com o mesmo id.
+      board = TabuleiroHero(id: heroId!, child: board);
     }
     return board;
+  }
+}
+
+/// A fala do professor conforme o momento do trecho.
+String _openingSpeech(
+  AppLocalizations l,
+  TrainingOpeningState state,
+  int number,
+  int bankLength,
+) {
+  return state.phase == TrainingOpeningPhase.complete
+      ? state.allPartsDone
+            ? l.trainingOpeningFinished(state.trecho!.title, bankLength)
+            : l.trainingOpeningPartComplete(number)
+      : state.wrong
+      ? l.trainingOpeningWrong
+      : state.firstTry.isNotEmpty
+      ? l.trainingFixedCorrect
+      : l.trainingOpeningPrompt;
+}
+
+/// O rodapé do trecho: dica, navegação pelos lances e os botões do fim.
+class _OpeningFooter extends StatelessWidget {
+  const _OpeningFooter({
+    required this.state,
+    required this.loading,
+    required this.onProgress,
+    required this.onNextGoal,
+  });
+
+  final TrainingOpeningState state;
+  final bool loading;
+  final VoidCallback? onProgress;
+  final VoidCallback onNextGoal;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final cubit = context.read<TrainingOpeningCubit>();
+    return SafeArea(
+      child: IgnorePointer(
+        ignoring: loading,
+        child: TrainingCanvasFooter(
+          leading: state.phase == TrainingOpeningPhase.complete
+              ? null
+              : TrainingCanvasFooter.hint(
+                  key: TrainingKeys.exerciseHint,
+                  label: l.exerciseHintFree,
+                  onPressed:
+                      state.phase == TrainingOpeningPhase.playing &&
+                          !state.reviewing
+                      ? cubit.hint
+                      : null,
+                ),
+          navigation: state.phase == TrainingOpeningPhase.complete
+              ? []
+              : [
+                  TrainingCanvasFooter.round(
+                    key: TrainingKeys.prevMove,
+                    icon: CanvasSymbols.chevronLeft,
+                    label: l.trainingPrevMove,
+                    navigation: true,
+                    onPressed: state.shown == 0
+                        ? null
+                        : () => cubit.review(state.shown - 1),
+                  ),
+                  TrainingCanvasFooter.round(
+                    key: TrainingKeys.nextMove,
+                    icon: CanvasSymbols.chevronRight,
+                    label: l.trainingNextMove,
+                    navigation: true,
+                    onPressed: state.reviewing
+                        ? () => cubit.review(state.shown + 1)
+                        : null,
+                  ),
+                ],
+          secondary: state.phase != TrainingOpeningPhase.complete
+              ? null
+              : TrainingCanvasFooter.button(
+                  key: state.allPartsDone
+                      ? TrainingKeys.openingProgress
+                      : TrainingKeys.openingNextPart,
+                  label: state.allPartsDone
+                      ? l.trainingViewProgress
+                      : l.trainingNextPart,
+                  onPressed: state.allPartsDone ? onProgress : cubit.nextPart,
+                ),
+          primary: state.error
+              ? TrainingCanvasFooter.button(
+                  key: TrainingKeys.openingSaveRetry,
+                  label: l.lessonRetry,
+                  primary: true,
+                  onPressed: cubit.retry,
+                )
+              : state.phase != TrainingOpeningPhase.complete
+              ? null
+              : TrainingCanvasFooter.button(
+                  key: TrainingKeys.nextGoal,
+                  label: l.trainingNextGoal,
+                  primary: true,
+                  onPressed: onNextGoal,
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A lista de lances do trecho, tocável para revisar.
+class _OpeningNotation extends StatelessWidget {
+  const _OpeningNotation({required this.state, required this.moves});
+
+  final TrainingOpeningState state;
+  final List<int> moves;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<TrainingOpeningCubit>();
+    return ScriptMoveList(
+      moves: [
+        for (final i in moves)
+          if (state.line!.moveAt(i) != null)
+            ScriptMoveEntry(
+              id: '${i + 1}',
+              san: state.line!.san[i],
+              number: state.line!.moveNumberAt(i),
+              side: state.line!.sideAt(i),
+              variant: false,
+            ),
+      ],
+      currentId: state.shown == 0 ? null : '${state.shown}',
+      onTap: (id) => cubit.notationTap(int.parse(id)),
+    );
+  }
+}
+
+/// A página do trecho: fala do professor, tabuleiro e lista de lances.
+class _OpeningPage extends StatelessWidget {
+  const _OpeningPage({
+    required this.ignoring,
+    required this.teacher,
+    required this.text,
+    required this.state,
+    required this.moves,
+    required this.onOpen,
+    required this.boardBuilder,
+  });
+
+  final bool ignoring;
+  final Character teacher;
+  final String text;
+  final TrainingOpeningState state;
+  final List<int> moves;
+  final VoidCallback onOpen;
+  final Widget Function(double size) boardBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      ignoring: ignoring,
+      child: TrainingCanvasPage(
+        pageKey: TrainingKeys.openingPage,
+        teacher: teacher,
+        text: text,
+        onOpen: onOpen,
+        boardBuilder: boardBuilder,
+        notation: _OpeningNotation(state: state, moves: moves),
+      ),
+    );
+  }
+}
+
+/// O voltar do topo: fecha a tela.
+class _OpeningBack extends StatelessWidget {
+  const _OpeningBack();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      key: TrainingKeys.openingBack,
+      icon: const Icon(CanvasSymbols.arrowBack),
+      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+      onPressed: () => Navigator.of(context).maybePop(),
+    );
+  }
+}
+
+/// O título do topo: o trecho e a parte, ou "Aberturas" enquanto carrega.
+class _OpeningTitle extends StatelessWidget {
+  const _OpeningTitle({
+    required this.state,
+    required this.ready,
+    required this.lessonTitle,
+    required this.number,
+    required this.total,
+  });
+
+  final TrainingOpeningState state;
+  final bool ready;
+  final String? lessonTitle;
+  final int number;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Text(
+      key: TrainingKeys.openingTitle(state.lessonId ?? ''),
+      ready
+          ? l.trainingOpeningTitle(
+              state.trecho!.lines.isNotEmpty
+                  ? state.trecho!.title
+                  : lessonTitle ?? state.trecho!.title,
+              number,
+              total,
+            )
+          : l.trainingOpeningsTitle,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+}
+
+/// A celebração pequena do fim da abertura, por cima da tela parada.
+class _OpeningCelebration extends StatelessWidget {
+  const _OpeningCelebration();
+
+  @override
+  Widget build(BuildContext context) {
+    return const IgnorePointer(
+      child: Celebracao(
+        tamanho: TamanhoDaCelebracao.pequena,
+        escalar: false,
+        child: SizedBox.expand(),
+      ),
+    );
   }
 }

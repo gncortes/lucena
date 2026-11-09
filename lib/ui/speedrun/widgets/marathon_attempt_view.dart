@@ -22,6 +22,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/status_circle_icon.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
 import '../../journey/widgets/journey_ui.dart';
@@ -86,24 +87,7 @@ class MarathonAttemptView extends StatelessWidget {
           if (completed) ...[
             // H-ANI-18: o tempo que sobrou conta até o valor; o leitor de
             // tela lê só o final. O valor animado é a fração do tempo final.
-            ValorQueAnima(
-              valor: 1,
-              duracao: LucenaMotion.numeroConta,
-              builder: (context, fracao) => TimeDisplay(
-                value: runTime(
-                  context,
-                  recordTime(speedrun, run.total) * fracao,
-                ),
-                semanticsLabel: l10n.marathonLeftValue(
-                  runTime(context, recordTime(speedrun, run.total)),
-                ),
-                type: TimeDisplayType.record,
-                size: TimeDisplaySize.block,
-                state: TimeDisplayState.highlight,
-                label: l10n.marathonLeft,
-                textKey: SpeedrunKeys.total,
-              ),
-            ),
+            _MarathonLeft(speedrun: speedrun, run: run),
             if (bonus != null && bonus.points > 0)
               SpeedrunRatingBonusCard.earned(bonus: bonus),
           ] else ...[
@@ -128,47 +112,12 @@ class MarathonAttemptView extends StatelessWidget {
           ],
           RunChips(speedrun: speedrun, run: run, marathon: true),
         ]),
-        viktor: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.sm,
-              ),
-              child: Text(l10n.speedrunStages, style: context.cardTitle),
-            ),
-            for (final (index, stage) in run.stages.indexed)
-              SpeedrunStageRow(
-                key: SpeedrunKeys.stage(index),
-                index: index,
-                stage: speedrun.stages[index],
-                speedrun: speedrun,
-                last: index == total - 1,
-                note: !completed && index == stopped ? _note(l10n, end) : null,
-                noteKey: SpeedrunKeys.stageNote(index),
-                status: stage.done
-                    ? SpeedrunStageStatus.done
-                    : !completed && index == stopped
-                    // A etapa em que a tentativa parou.
-                    ? SpeedrunStageStatus.current
-                    : SpeedrunStageStatus.ahead,
-                trailing: stage.done || stage.losses > 0
-                    ? TimeDisplay(
-                        value: runTime(context, stage.time),
-                        semanticsLabel: l10n.speedrunStageTimeValue(
-                          index + 1,
-                          total,
-                          runTime(context, stage.time),
-                        ),
-                        size: TimeDisplaySize.inline,
-                        textKey: SpeedrunKeys.stageTime(index),
-                      )
-                    : null,
-              ),
-          ],
+        viktor: _AttemptStages(
+          speedrun: speedrun,
+          run: run,
+          completed: completed,
+          end: end,
+          stopped: stopped,
         ),
         botoes: retry,
         montar: (partes) => Column(
@@ -218,6 +167,101 @@ class MarathonAttemptView extends StatelessWidget {
 
 /// Como a tentativa acabou: ícone, "Perdeu na etapa N de 10", contra quem e o
 /// tempo que sobrou (no "sem tempo" não há o que mostrar: sobrou zero).
+/// O tempo que sobrou, em destaque, contando até o valor final.
+class _MarathonLeft extends StatelessWidget {
+  const _MarathonLeft({required this.speedrun, required this.run});
+
+  final Speedrun speedrun;
+  final SpeedrunRun run;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ValorQueAnima(
+      valor: 1,
+      duracao: LucenaMotion.numeroConta,
+      builder: (context, fracao) => TimeDisplay(
+        value: runTime(context, recordTime(speedrun, run.total) * fracao),
+        semanticsLabel: l10n.marathonLeftValue(
+          runTime(context, recordTime(speedrun, run.total)),
+        ),
+        type: TimeDisplayType.record,
+        size: TimeDisplaySize.block,
+        state: TimeDisplayState.highlight,
+        label: l10n.marathonLeft,
+        textKey: SpeedrunKeys.total,
+      ),
+    );
+  }
+}
+
+/// A lista das etapas, com a que parou marcada.
+class _AttemptStages extends StatelessWidget {
+  const _AttemptStages({
+    required this.speedrun,
+    required this.run,
+    required this.completed,
+    required this.end,
+    required this.stopped,
+  });
+
+  final Speedrun speedrun;
+  final SpeedrunRun run;
+  final bool completed;
+  final SpeedrunRunEnd end;
+  final int stopped;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final total = speedrun.stages.length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.sm,
+          ),
+          child: Text(l10n.speedrunStages, style: context.cardTitle),
+        ),
+        for (final (index, stage) in run.stages.indexed)
+          SpeedrunStageRow(
+            key: SpeedrunKeys.stage(index),
+            index: index,
+            stage: speedrun.stages[index],
+            speedrun: speedrun,
+            last: index == total - 1,
+            note: !completed && index == stopped
+                ? MarathonAttemptView._note(l10n, end)
+                : null,
+            noteKey: SpeedrunKeys.stageNote(index),
+            status: stage.done
+                ? SpeedrunStageStatus.done
+                : !completed && index == stopped
+                // A etapa em que a tentativa parou.
+                ? SpeedrunStageStatus.current
+                : SpeedrunStageStatus.ahead,
+            trailing: stage.done || stage.losses > 0
+                ? TimeDisplay(
+                    value: runTime(context, stage.time),
+                    semanticsLabel: l10n.speedrunStageTimeValue(
+                      index + 1,
+                      total,
+                      runTime(context, stage.time),
+                    ),
+                    size: TimeDisplaySize.inline,
+                    textKey: SpeedrunKeys.stageTime(index),
+                  )
+                : null,
+          ),
+      ],
+    );
+  }
+}
+
 class _EndCard extends StatelessWidget {
   const _EndCard({
     required this.end,
@@ -272,21 +316,7 @@ class _EndCard extends StatelessWidget {
         child: Column(
           spacing: AppSpacing.sm,
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHigh,
-                shape: BoxShape.circle,
-              ),
-              child: ExcludeSemantics(
-                child: Icon(
-                  icon,
-                  size: AppIconSize.large,
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ),
+            StatusCircleIcon(icon: icon),
             Semantics(
               header: true,
               child: Text(

@@ -8,7 +8,7 @@ import 'package:lucena/domain/use_cases/link_lesson_rules.dart';
 const _fen = '8/8/8/4k3/8/8/4K3/4Q3 w - - 0 1';
 
 void main() {
-  final plain = ChallengeLink(fen: _fen, userSide: Side.white);
+  final plain = const ChallengeLink(fen: _fen, userSide: Side.white);
   final withLesson = plain.copyWith(
     lesson: const LinkedLesson.endgame('rook.lucena'),
   );

@@ -96,8 +96,6 @@ class _VersusIntroState extends State<VersusIntro>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
     final still = AppMotion.of(context).disabled;
     return AnimatedBuilder(
       animation: _controller,
@@ -141,48 +139,20 @@ class _VersusIntroState extends State<VersusIntro>
                   color: AppColors.black.withValues(alpha: 0.3 * dim),
                 ),
               ),
-              Opacity(
+              _VersusOpponentCard(
                 opacity: cardsOpacity,
-                child: Transform.translate(
-                  offset: Offset(0, shift),
-                  child: Align(
-                    alignment: const Alignment(0, -0.3),
-                    child: VersusCard(
-                      avatar: widget.opponentAvatar,
-                      name: widget.opponentName,
-                      detail: [
-                        if (widget.opponentRating != null)
-                          '${widget.opponentRating}',
-                        if (stage != null) l10n.marathonStage(stage),
-                      ].join(' · '),
-                      side: widget.playerSide.opposite,
-                    ),
-                  ),
-                ),
+                shift: shift,
+                avatar: widget.opponentAvatar,
+                name: widget.opponentName,
+                rating: widget.opponentRating,
+                stage: stage,
+                side: widget.playerSide.opposite,
               ),
-              Opacity(
+              _VersusPlayerCard(
                 opacity: cardsOpacity,
-                child: Transform.translate(
-                  offset: Offset(0, -shift),
-                  child: Align(
-                    alignment: const Alignment(0, 0.3),
-                    child: VersusCard(
-                      avatar: ColoredBox(
-                        color: theme.colorScheme.primary,
-                        child: Icon(
-                          Icons.person,
-                          color: theme.colorScheme.onPrimary,
-                          size: AppIconSize.large,
-                        ),
-                      ),
-                      name: widget.playerName,
-                      detail: widget.playerSide == Side.white
-                          ? l10n.sideWhite
-                          : l10n.sideBlack,
-                      side: widget.playerSide,
-                    ),
-                  ),
-                ),
+                shift: shift,
+                name: widget.playerName,
+                side: widget.playerSide,
               ),
               // O selo do "VS", entre os dois cartões.
               Opacity(
@@ -190,36 +160,133 @@ class _VersusIntroState extends State<VersusIntro>
                 child: Transform.scale(scale: vsPop, child: const VersusSeal()),
               ),
               // A contagem: cada número entra grande, assenta e apaga.
-              if (count != null)
-                Opacity(
-                  opacity: tick < 0.75 ? 1 : 1 - (tick - 0.75) / 0.25,
-                  child: Transform.scale(
-                    scale:
-                        1.35 -
-                        0.35 *
-                            AppMotion.enter.transform((tick * 4).clamp(0, 1)),
-                    child: Text(
-                      count,
-                      key: FreeBoardKeys.versusCount,
-                      style: theme.textTheme.displayLarge?.copyWith(
-                        fontSize: 144,
-                        height: 1,
-                        color: AppColors.white,
-                        shadows: const [
-                          Shadow(
-                            blurRadius: 18,
-                            offset: Offset(0, 4),
-                            color: AppColors.black45,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              if (count != null) _VersusCount(count: count, tick: tick),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+/// O cartão do adversário, na metade de cima, que sai para cima.
+class _VersusOpponentCard extends StatelessWidget {
+  const _VersusOpponentCard({
+    required this.opacity,
+    required this.shift,
+    required this.avatar,
+    required this.name,
+    required this.rating,
+    required this.stage,
+    required this.side,
+  });
+
+  final double opacity;
+  final double shift;
+  final Widget avatar;
+  final String name;
+  final int? rating;
+  final int? stage;
+  final Side side;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Opacity(
+      opacity: opacity,
+      child: Transform.translate(
+        offset: Offset(0, shift),
+        child: Align(
+          alignment: const Alignment(0, -0.3),
+          child: VersusCard(
+            avatar: avatar,
+            name: name,
+            detail: [
+              if (rating != null) '$rating',
+              if (stage != null) l10n.marathonStage(stage!),
+            ].join(' · '),
+            side: side,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O cartão do jogador, na metade de baixo, que sai para baixo.
+class _VersusPlayerCard extends StatelessWidget {
+  const _VersusPlayerCard({
+    required this.opacity,
+    required this.shift,
+    required this.name,
+    required this.side,
+  });
+
+  final double opacity;
+  final double shift;
+  final String name;
+  final Side side;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    return Opacity(
+      opacity: opacity,
+      child: Transform.translate(
+        offset: Offset(0, -shift),
+        child: Align(
+          alignment: const Alignment(0, 0.3),
+          child: VersusCard(
+            avatar: ColoredBox(
+              color: theme.colorScheme.primary,
+              child: Icon(
+                Icons.person,
+                color: theme.colorScheme.onPrimary,
+                size: AppIconSize.large,
+              ),
+            ),
+            name: name,
+            detail: side == Side.white ? l10n.sideWhite : l10n.sideBlack,
+            side: side,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A contagem: o número entra grande, assenta e apaga.
+class _VersusCount extends StatelessWidget {
+  const _VersusCount({required this.count, required this.tick});
+
+  final String count;
+  final double tick;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Opacity(
+      opacity: tick < 0.75 ? 1 : 1 - (tick - 0.75) / 0.25,
+      child: Transform.scale(
+        scale: 1.35 - 0.35 * AppMotion.enter.transform((tick * 4).clamp(0, 1)),
+        child: Text(
+          count,
+          key: FreeBoardKeys.versusCount,
+          style: theme.textTheme.displayLarge?.copyWith(
+            fontSize: 144,
+            height: 1,
+            color: AppColors.white,
+            shadows: const [
+              Shadow(
+                blurRadius: 18,
+                offset: Offset(0, 4),
+                color: AppColors.black45,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

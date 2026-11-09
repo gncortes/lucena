@@ -276,9 +276,9 @@ class _HeroLayout extends StatelessWidget {
                       ),
                     ),
                     if (fen != null)
-                      _comHero(
-                        data.boardHeroId,
-                        PositionBoard(
+                      _ComHero(
+                        id: data.boardHeroId,
+                        child: PositionBoard(
                           key: HomeKeys.heroBoard,
                           fen: fen,
                           orientation: orientation,
@@ -287,66 +287,7 @@ class _HeroLayout extends StatelessWidget {
                       ),
                   ],
                 ),
-                Row(
-                  children: [
-                    // Com a barra, ela ocupa o meio (o rótulo vai até a metade
-                    // do espaço antes do botão); sem, o rótulo vai até o botão.
-                    // O botão fica sempre encostado à direita.
-                    Expanded(
-                      child: data.progress > 0
-                          ? LayoutBuilder(
-                              builder: (context, constraints) => Row(
-                                children: [
-                                  ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      maxWidth: constraints.maxWidth / 2,
-                                    ),
-                                    child: label,
-                                  ),
-                                  const SizedBox(width: AppSpacing.sm),
-                                  Expanded(
-                                    // A barra branca sobre o azul; enche até
-                                    // o ponto em que a pessoa está (H-ANI-13).
-                                    child: BarraQueEnche(
-                                      key: HomeKeys.heroProgress,
-                                      valor: data.progress,
-                                      cor: on,
-                                      corDoTrilho: on.withValues(alpha: 0.3),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : label,
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    FilledButton.icon(
-                      key: HomeKeys.goalAction,
-                      style: FilledButton.styleFrom(
-                        backgroundColor: on,
-                        foregroundColor: colors.primary,
-                        minimumSize: const Size(0, kButtonHeightPill),
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                          AppSpacing.md,
-                          0,
-                          AppSpacing.lg,
-                          0,
-                        ),
-                        // O desenho tem 36; o toque, os 48 do Material (D6).
-                        tapTargetSize: MaterialTapTargetSize.padded,
-                        visualDensity: VisualDensity.standard,
-                        shape: const StadiumBorder(),
-                      ),
-                      onPressed: data.onPressed,
-                      icon: const Icon(
-                        CanvasSymbols.playArrow,
-                        fill: 1,
-                        size: AppIconSize.button,
-                      ),
-                      label: Text(data.action),
-                    ),
-                  ],
-                ),
+                _HeroActionRow(data: data, label: label),
               ],
             ),
           ),
@@ -356,5 +297,90 @@ class _HeroLayout extends StatelessWidget {
   }
 }
 
-Widget _comHero(String? id, Widget board) =>
-    id == null ? board : TabuleiroHero(id: id, child: board);
+/// A linha de baixo do cartão: o rótulo (com a barra) e o botão.
+class _HeroActionRow extends StatelessWidget {
+  const _HeroActionRow({required this.data, required this.label});
+
+  final _HeroData data;
+  final Widget label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final on = colors.onPrimary;
+    return Row(
+      children: [
+        // Com a barra, ela ocupa o meio (o rótulo vai até a metade
+        // do espaço antes do botão); sem, o rótulo vai até o botão.
+        // O botão fica sempre encostado à direita.
+        Expanded(
+          child: data.progress > 0
+              ? LayoutBuilder(
+                  builder: (context, constraints) => Row(
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth / 2,
+                        ),
+                        child: label,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        // A barra branca sobre o azul; enche até
+                        // o ponto em que a pessoa está (H-ANI-13).
+                        child: BarraQueEnche(
+                          key: HomeKeys.heroProgress,
+                          valor: data.progress,
+                          cor: on,
+                          corDoTrilho: on.withValues(alpha: 0.3),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : label,
+        ),
+        const SizedBox(width: AppSpacing.md),
+        FilledButton.icon(
+          key: HomeKeys.goalAction,
+          style: FilledButton.styleFrom(
+            backgroundColor: on,
+            foregroundColor: colors.primary,
+            minimumSize: const Size(0, kButtonHeightPill),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              0,
+              AppSpacing.lg,
+              0,
+            ),
+            // O desenho tem 36; o toque, os 48 do Material (D6).
+            tapTargetSize: MaterialTapTargetSize.padded,
+            visualDensity: VisualDensity.standard,
+            shape: const StadiumBorder(),
+          ),
+          onPressed: data.onPressed,
+          icon: const Icon(
+            CanvasSymbols.playArrow,
+            fill: 1,
+            size: AppIconSize.button,
+          ),
+          label: Text(data.action),
+        ),
+      ],
+    );
+  }
+}
+
+/// O tabuleiro do cartão; com [id], dentro do herói que voa até a partida.
+class _ComHero extends StatelessWidget {
+  const _ComHero({required this.id, required this.child});
+
+  final String? id;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => switch (id) {
+    final id? => TabuleiroHero(id: id, child: child),
+    null => child,
+  };
+}

@@ -7,16 +7,18 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
 import '../../core/widgets/load_error.dart';
 
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
-import '../../../data/repositories/characters/character_repository.dart';
+import '../../../domain/models/character_lookup.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../domain/models/game_review.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/game_details_keys.dart';
@@ -66,9 +68,18 @@ class GameDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final state = context.watch<GameDetailsCubit>().state;
-    final attempt = state.attempt;
-    if (state.failed) {
+    // Só o que decide o layout de cima; cada seção assina o que lê.
+    final (failed, ready, attempt, imported, user, characters) = context.select(
+      (GameDetailsCubit cubit) => (
+        cubit.state.failed,
+        cubit.state.ready,
+        cubit.state.attempt,
+        cubit.state.imported,
+        cubit.state.userSide,
+        cubit.state.characters,
+      ),
+    );
+    if (failed) {
       return LoadErrorScreen(
         kind: LoadErrorKind.generic,
         onAction: () => context.read<GameDetailsCubit>().load(
@@ -88,7 +99,7 @@ class GameDetailsScreen extends StatelessWidget {
             : null,
         title: Text(
           title ??
-              (state.ready && attempt == null
+              (ready && attempt == null
                   ? l10n.partidaAnaliseTitulo
                   : l10n.gameDetailsTitle),
         ),
@@ -96,11 +107,11 @@ class GameDetailsScreen extends StatelessWidget {
       body: BoardViewport(
         usefulHeight: BoardViewport.usefulHeightOf(context),
         child: ShimmerConteudo(
-          carregando: !state.ready,
+          carregando: !ready,
           esqueleto: const _DetailsLoading(),
-          child: !state.ready
+          child: !ready
               ? const SizedBox.shrink()
-              : attempt == null && state.imported == null
+              : attempt == null && imported == null
               ? Center(
                   child: ErrorState(
                     message: l10n.gameDetailsNotFound,
@@ -108,11 +119,11 @@ class GameDetailsScreen extends StatelessWidget {
                   ),
                 )
               : _ReviewBody(
-                  state: state,
                   attempt: attempt,
+                  user: user,
                   opponent: attempt == null
-                      ? state.imported!.opponentName
-                      : _opponentName(context, state, attempt),
+                      ? imported!.opponentName
+                      : _opponentName(context, characters, attempt),
                 ),
         ),
       ),
@@ -121,7 +132,7 @@ class GameDetailsScreen extends StatelessWidget {
 
   static String _opponentName(
     BuildContext context,
-    GameDetailsState state,
+    List<Character> characters,
     Attempt attempt,
   ) {
     final level = attempt.opponent == OpponentKind.maia
@@ -129,7 +140,7 @@ class GameDetailsScreen extends StatelessWidget {
         : null;
     final character = switch (attempt.opponent) {
       OpponentKind.stockfish => Character.stockfish,
-      OpponentKind.maia => state.characters.forLevel(attempt.opponentLevel),
+      OpponentKind.maia => characters.forLevel(attempt.opponentLevel),
       OpponentKind.twoPlayers => null,
     };
     return character?.name ??
@@ -142,16 +153,72 @@ class GameDetailsScreen extends StatelessWidget {
 /// de andar pelos lances com a engine e o menu.
 class _ReviewBody extends StatelessWidget {
   const _ReviewBody({
-    required this.state,
     required this.attempt,
+    required this.user,
     required this.opponent,
   });
 
-  final GameDetailsState state;
-
   /// A partida do app. Nula na partida de fora ([GameDetailsState.imported]).
   final Attempt? attempt;
+
+  /// O lado de quem jogou, da partida do app ou da de fora.
+  final Side? user;
   final String opponent;
+
+  @override
+  Widget build(BuildContext context) {
+    final sections = _ReviewSections(
+      l10n: context.l10n,
+      attempt: attempt,
+      user: user,
+      opponent: opponent,
+    );
+    final hasPosition = context.select(
+      (GameDetailsCubit cubit) => cubit.state.shownPosition != null,
+    );
+    if (!hasPosition) {
+      return ColoredBox(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: ListView(
+          key: GameDetailsKeys.panel,
+          padding: scrollPadding(context),
+          children: [...sections.summary, ...sections.moves],
+        ),
+      );
+    }
+    return DefaultTabController(
+      length: 3,
+      child: Column(
+        children: [
+          Expanded(
+            child: _BoardAndTabs(
+              sections: sections,
+              orientation: user ?? Side.white,
+            ),
+          ),
+          _Section(
+            key: const ValueKey('navigation'),
+            when: (a, b) =>
+                _changed(a.shownPosition, b.shownPosition) ||
+                a.atStart != b.atStart ||
+                a.atEnd != b.atEnd ||
+                a.engine != b.engine ||
+                _changed(a.start, b.start) ||
+                _changed(a.moves, b.moves),
+            builder: (state) => ReviewNavigation(state: state),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O tabuleiro no centro útil da tela e, embaixo dele, as abas com a lista.
+class _BoardAndTabs extends StatelessWidget {
+  const _BoardAndTabs({required this.sections, required this.orientation});
+
+  final _ReviewSections sections;
+  final Side orientation;
 
   /// O maior tabuleiro da revisão, e a altura mínima das abas com a lista
   /// embaixo dele (o tabuleiro encolhe antes de tirá-la).
@@ -161,149 +228,302 @@ class _ReviewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final user = state.userSide;
-    final attempt = this.attempt;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // A8: o tabuleiro no centro útil da tela; as abas e a lista
+        // ficam com a sobra de baixo e a lista rola.
+        final height = constraints.maxHeight;
+        final centerY = (BoardViewport.centerYOf(context) ?? height / 2)
+            .clamp(0.0, height)
+            .toDouble();
+        final below = height - _minBelow - centerY;
+        final full = math.min(constraints.maxWidth, _maxBoard);
+        final centered = math.min(full, 2 * math.min(centerY, below));
+        // Tela deitada ou baixa, em que o tabuleiro inteiro não cabe
+        // no centro: ele sobe ao alto com metade da altura, e a lista
+        // fica com o resto.
+        final fits = centered >= full - 0.5;
+        final double board = fits
+            ? full
+            : math.max(0.0, math.min(full, _maxBoardFraction * height));
+        final boardTop = fits ? centerY - board / 2 : 0.0;
+        final controller = DefaultTabController.of(context);
+        return Stack(
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              top: boardTop,
+              height: board,
+              child: Center(
+                child: _Section(
+                  key: const ValueKey('board'),
+                  when: _boardChanged,
+                  builder: (state) => ReviewBoard(
+                    state: state,
+                    size: board,
+                    orientation: orientation,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              top: boardTop + board,
+              bottom: 0,
+              child: _TabPanel(
+                controller: controller,
+                summary: sections.summary,
+                moves: sections.moves,
+                engine: sections.engine,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// As seções da revisão, cada uma assinando só os campos que lê.
+class _ReviewSections {
+  _ReviewSections({
+    required AppLocalizations l10n,
+    required this.attempt,
+    required this.user,
+    required String opponent,
+  }) {
     final you = l10n.reviewYou;
-    final (whiteName, blackName) = switch (user) {
+    final (white, black) = switch (user) {
       Side.white => (you, opponent),
       Side.black => (opponent, you),
       null => (l10n.sideWhite, l10n.sideBlack),
     };
-    final summary = [
-      ReviewSummary(
+    whiteName = white;
+    blackName = black;
+  }
+
+  /// Nula na partida de fora: sem o cartão da partida.
+  final Attempt? attempt;
+  final Side? user;
+  late final String whiteName;
+  late final String blackName;
+
+  // Cada seção assina só os campos que lê: um tique da revisão não refaz o
+  // tabuleiro nem as listas que não o mostram.
+  late final List<Widget> summary = [
+    _Section(
+      key: const ValueKey('summary'),
+      when: (a, b) =>
+          _changed(a.review, b.review) ||
+          a.reviewing != b.reviewing ||
+          _changed(a.viktor, b.viktor) ||
+          _changed(a.stories, b.stories) ||
+          _changed(a.attempt, b.attempt) ||
+          _changed(a.imported, b.imported) ||
+          a.reviewProgress != b.reviewProgress ||
+          a.reviewWeight != b.reviewWeight ||
+          _changed(a.moves, b.moves),
+      builder: (state) => ReviewSummary(
         state: state,
         whiteName: whiteName,
         blackName: blackName,
         userIsWhite: user == null ? null : user == Side.white,
       ),
-      KeyMomentsSection(
+    ),
+    _Section(
+      key: const ValueKey('keyMoments'),
+      when: (a, b) =>
+          _changed(a.review, b.review) ||
+          _changed(a.start, b.start) ||
+          a.reviewing != b.reviewing ||
+          _changed(a.attempt, b.attempt) ||
+          _changed(a.moves, b.moves),
+      builder: (state) => KeyMomentsSection(
         state: state,
         userIsWhite: user == null ? null : user == Side.white,
       ),
-      if ((state.review?.depth ?? 0) >=
-          GameDetailsCubit.reviewWeights[ReviewSpeed.medium]!)
-        QualityTable(
-          state: state,
-          leftName: whiteName,
-          rightName: blackName,
-          leftIsWhite: true,
-        ),
-      if (attempt != null) _Header(state: state, attempt: attempt),
-      ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
-    ];
-    final moves = [
-      MoveExplanation(state: state),
-      if (state.variation.isEmpty) const _VariationHint(),
-      _MoveTable(state: state, score: _score(state)),
-    ];
-    final engine = [if (state.engine) EngineLinesPanel(state: state)];
-    if (state.shownPosition == null) {
-      return ColoredBox(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: ListView(
-          key: GameDetailsKeys.panel,
-          padding: scrollPadding(context),
-          children: [...summary, ...moves],
-        ),
+    ),
+    _Section(
+      key: const ValueKey('qualityTable'),
+      when: (a, b) =>
+          _changed(a.review, b.review) ||
+          _changed(a.start, b.start) ||
+          a.reviewing != b.reviewing,
+      builder: (state) =>
+          (state.review?.depth ?? 0) >=
+              GameDetailsCubit.reviewWeights[ReviewSpeed.medium]!
+          ? QualityTable(
+              state: state,
+              leftName: whiteName,
+              rightName: blackName,
+              leftIsWhite: true,
+            )
+          : const SizedBox.shrink(),
+    ),
+    if (attempt case final attempt?)
+      _Section(
+        key: const ValueKey('header'),
+        when: (a, b) =>
+            _changed(a.characters, b.characters) ||
+            _changed(a.attempt, b.attempt) ||
+            a.ratingAfter != b.ratingAfter ||
+            a.ratingChange != b.ratingChange,
+        builder: (state) => _Header(state: state, attempt: attempt),
+      ),
+    _Section(
+      key: const ValueKey('legend'),
+      when: (a, b) =>
+          _changed(a.review, b.review) || _changed(a.start, b.start),
+      builder: (state) => ReviewLegend(
+        state: state,
+        whiteName: whiteName,
+        blackName: blackName,
+      ),
+    ),
+  ];
+  late final List<Widget> moves = [
+    _Section(
+      key: const ValueKey('explanation'),
+      when: (a, b) =>
+          a.shownIndex != b.shownIndex ||
+          _changed(a.shownReview, b.shownReview) ||
+          a.variationPly != b.variationPly ||
+          _changed(a.variation, b.variation) ||
+          _changed(a.shownBefore, b.shownBefore) ||
+          !_sameScore(a.shownScore, b.shownScore) ||
+          a.annotating.contains(a.shownIndex) !=
+              b.annotating.contains(b.shownIndex) ||
+          _changed(a.moves, b.moves) ||
+          _changed(a.start, b.start),
+      builder: (state) => MoveExplanation(state: state),
+    ),
+    _Section(
+      key: const ValueKey('variationHint'),
+      when: (a, b) => a.variation.isEmpty != b.variation.isEmpty,
+      builder: (state) => state.variation.isEmpty
+          ? const _VariationHint()
+          : const SizedBox.shrink(),
+    ),
+    _Section(
+      key: const ValueKey('moveTable'),
+      when: (a, b) =>
+          _changed(a.moves, b.moves) ||
+          _changed(a.live, b.live) ||
+          _changed(a.start, b.start) ||
+          a.variationFrom != b.variationFrom ||
+          _changed(a.variation, b.variation) ||
+          a.variationPly != b.variationPly ||
+          a.selected != b.selected,
+      builder: (state) => _MoveTable(state: state, score: _score(state)),
+    ),
+  ];
+  late final List<Widget> engine = [
+    _Section(
+      key: const ValueKey('engineLines'),
+      when: (a, b) =>
+          a.engine != b.engine ||
+          _changed(a.shownLines, b.shownLines) ||
+          _changed(a.shownPosition, b.shownPosition) ||
+          a.shownDepth != b.shownDepth,
+      builder: (state) => state.engine
+          ? EngineLinesPanel(state: state)
+          : const SizedBox.shrink(),
+    ),
+  ];
+}
+
+bool _changed(Object? a, Object? b) => !identical(a, b);
+
+/// As duas avaliações são a mesma (o objeto pode ser outro, o valor não).
+bool _sameScore(EngineScore? a, EngineScore? b) =>
+    identical(a, b) ||
+    (a != null &&
+        b != null &&
+        a.centipawns == b.centipawns &&
+        a.mate == b.mate &&
+        a.mated == b.mated);
+
+/// O que o tabuleiro e o que está sobre ele leem do estado: a posição, o
+/// lance, a barra de avaliação, a seta e o selo do lance. Os tiques da
+/// revisão (progresso, lances sendo avaliados, profundidades, histórias) não
+/// entram.
+bool _boardChanged(GameDetailsState a, GameDetailsState b) =>
+    _changed(a.shownPosition, b.shownPosition) ||
+    _changed(a.shownMove, b.shownMove) ||
+    _changed(a.shownBefore, b.shownBefore) ||
+    _changed(a.shownReview, b.shownReview) ||
+    a.engine != b.engine ||
+    a.reviewing != b.reviewing ||
+    !_sameScore(a.shownScore, b.shownScore) ||
+    (a.engine &&
+        a.shownLines?.firstOrNull?.moves.firstOrNull !=
+            b.shownLines?.firstOrNull?.moves.firstOrNull);
+
+/// Uma seção da tela que se refaz só quando [when] diz que algo que ela lê
+/// mudou.
+class _Section extends StatelessWidget {
+  const _Section({required this.when, required this.builder, super.key});
+
+  final bool Function(GameDetailsState before, GameDetailsState after) when;
+  final Widget Function(GameDetailsState state) builder;
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<GameDetailsCubit, GameDetailsState>(
+        buildWhen: when,
+        builder: (context, state) => builder(state),
       );
-    }
-    return DefaultTabController(
-      length: 3,
-      child: Column(
-        children: [
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                // A8: o tabuleiro no centro útil da tela; as abas e a lista
-                // ficam com a sobra de baixo e a lista rola.
-                final height = constraints.maxHeight;
-                final centerY = (BoardViewport.centerYOf(context) ?? height / 2)
-                    .clamp(0.0, height)
-                    .toDouble();
-                final below = height - _minBelow - centerY;
-                final full = math.min(constraints.maxWidth, _maxBoard);
-                final centered = math.min(full, 2 * math.min(centerY, below));
-                // Tela deitada ou baixa, em que o tabuleiro inteiro não cabe
-                // no centro: ele sobe ao alto com metade da altura, e a lista
-                // fica com o resto.
-                final fits = centered >= full - 0.5;
-                final double board = fits
-                    ? full
-                    : math.max(0.0, math.min(full, _maxBoardFraction * height));
-                final boardTop = fits ? centerY - board / 2 : 0.0;
-                final controller = DefaultTabController.of(context);
-                return Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      top: boardTop,
-                      height: board,
-                      child: Center(
-                        child: ReviewBoard(
-                          state: state,
-                          size: board,
-                          orientation: user ?? Side.white,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      top: boardTop + board,
-                      bottom: 0,
-                      child: Column(
-                        children: [
-                          TabBar(
-                            onTap: (index) {
-                              // A aba Motor liga a engine; as outras mantêm a escolha.
-                              if (index == 2 && !state.engine) {
-                                context.read<GameDetailsCubit>().setEngine(
-                                  on: true,
-                                );
-                              }
-                            },
-                            tabs: [
-                              Tab(
-                                key: GameDetailsKeys.tabSummary,
-                                text: l10n.partidaAbaResumo,
-                              ),
-                              Tab(
-                                key: GameDetailsKeys.tabMoves,
-                                text: l10n.partidaAbaLances,
-                              ),
-                              Tab(
-                                key: GameDetailsKeys.tabEngine,
-                                text: l10n.reviewEngine,
-                              ),
-                            ],
-                          ),
-                          Expanded(
-                            child: AnimatedBuilder(
-                              animation: controller,
-                              builder: (context, _) => ListView(
-                                key: GameDetailsKeys.panel,
-                                padding: scrollPadding(context),
-                                children: switch (controller.index) {
-                                  0 => summary,
-                                  1 => moves,
-                                  _ => engine,
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
+}
+
+/// As abas Resumo, Lances e Motor e, embaixo, a lista da aba escolhida.
+class _TabPanel extends StatelessWidget {
+  const _TabPanel({
+    required this.controller,
+    required this.summary,
+    required this.moves,
+    required this.engine,
+  });
+
+  final TabController controller;
+  final List<Widget> summary;
+  final List<Widget> moves;
+  final List<Widget> engine;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      children: [
+        TabBar(
+          onTap: (index) {
+            // A aba Motor liga a engine; as outras mantêm a escolha.
+            if (index == 2 && !context.read<GameDetailsCubit>().state.engine) {
+              context.read<GameDetailsCubit>().setEngine(on: true);
+            }
+          },
+          tabs: [
+            Tab(key: GameDetailsKeys.tabSummary, text: l10n.partidaAbaResumo),
+            Tab(key: GameDetailsKeys.tabMoves, text: l10n.partidaAbaLances),
+            Tab(key: GameDetailsKeys.tabEngine, text: l10n.reviewEngine),
+          ],
+        ),
+        Expanded(
+          child: AnimatedBuilder(
+            animation: controller,
+            builder: (context, _) => ListView(
+              key: GameDetailsKeys.panel,
+              padding: scrollPadding(context),
+              children: switch (controller.index) {
+                0 => summary,
+                1 => moves,
+                _ => engine,
               },
             ),
           ),
-          ReviewNavigation(state: state),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -355,19 +575,7 @@ class _Header extends StatelessWidget {
         l10n.attemptLoss,
       ),
     };
-    final reason = switch (attempt.endReason) {
-      GameEndReason.checkmate => l10n.freeBoardCheckmate,
-      GameEndReason.stalemate => l10n.freeBoardStalemate,
-      GameEndReason.insufficientMaterial => l10n.freeBoardInsufficientMaterial,
-      GameEndReason.repetition => l10n.freeBoardRepetition,
-      GameEndReason.fiftyMoves => l10n.freeBoardFiftyMoves,
-      GameEndReason.timeout => l10n.freeBoardTimeout,
-      GameEndReason.timeoutVsInsufficientMaterial =>
-        l10n.freeBoardTimeoutVsInsufficientMaterial,
-      GameEndReason.resign => l10n.gameResigned,
-      GameEndReason.drawAgreed => l10n.freeBoardDrawAgreed,
-      null => null,
-    };
+    final reason = _endReasonLabel(l10n, attempt.endReason);
     final after = state.ratingAfter;
     final icon = switch (attempt.outcome) {
       AttemptOutcome.win => Icons.emoji_events,
@@ -379,37 +587,6 @@ class _Header extends StatelessWidget {
     final when = DateFormat.yMMMd(locale)
         .add_Hm()
         .format(attempt.playedAt.toLocal());
-    Widget chip(IconData chipIcon, String text, {Key? key}) => DecoratedBox(
-      key: key,
-      decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(AppShape.small),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.xs,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              chipIcon,
-              size: AppIconSize.small,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Text(
-              text,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
     // O cartão da partida do canvas (CompCartaoPartida): o adversário e o
     // resultado, o rating à direita e os dados da partida em etiquetas.
     return Padding(
@@ -439,49 +616,13 @@ class _Header extends StatelessWidget {
                   ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(icon, color: color, size: AppIconSize.small),
-                          const SizedBox(width: AppSpacing.sm),
-                          Flexible(
-                            child: Text(
-                              [label, ?reason].join(' · '),
-                              key: GameDetailsKeys.result,
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: color,
-                                fontWeight: AppWeight.heavy,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: l10n.partidaContra(opponentName),
-                              style: const TextStyle(
-                                fontWeight: AppWeight.heavy,
-                              ),
-                            ),
-                            if (level != null && character != null)
-                              TextSpan(
-                                text: ' ($level)',
-                                style: TextStyle(
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                          ],
-                        ),
-                        key: GameDetailsKeys.opponent,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ],
+                  child: _OpponentTitle(
+                    icon: icon,
+                    color: color,
+                    title: [label, ?reason].join(' · '),
+                    opponentName: opponentName,
+                    level: level,
+                    character: character,
                   ),
                 ),
                 if (after != null) ...[
@@ -495,17 +636,142 @@ class _Header extends StatelessWidget {
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: [
-                if (endgame != null) chip(Icons.extension_outlined, endgame),
-                chip(
-                  Icons.timer_outlined,
-                  time != null ? paceLabel(l10n, time) : l10n.challengeNoClock,
+                if (endgame != null)
+                  _InfoChip(icon: Icons.extension_outlined, text: endgame),
+                _InfoChip(
+                  icon: Icons.timer_outlined,
+                  text: time != null
+                      ? paceLabel(l10n, time)
+                      : l10n.challengeNoClock,
                 ),
-                chip(Icons.event, when),
+                _InfoChip(icon: Icons.event, text: when),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// O texto de como a partida acabou; sem motivo, nulo.
+String? _endReasonLabel(AppLocalizations l10n, GameEndReason? reason) =>
+    switch (reason) {
+      GameEndReason.checkmate => l10n.freeBoardCheckmate,
+      GameEndReason.stalemate => l10n.freeBoardStalemate,
+      GameEndReason.insufficientMaterial => l10n.freeBoardInsufficientMaterial,
+      GameEndReason.repetition => l10n.freeBoardRepetition,
+      GameEndReason.fiftyMoves => l10n.freeBoardFiftyMoves,
+      GameEndReason.timeout => l10n.freeBoardTimeout,
+      GameEndReason.timeoutVsInsufficientMaterial =>
+        l10n.freeBoardTimeoutVsInsufficientMaterial,
+      GameEndReason.resign => l10n.gameResigned,
+      GameEndReason.drawAgreed => l10n.freeBoardDrawAgreed,
+      null => null,
+    };
+
+/// Uma etiqueta do cartão da partida: ícone e texto.
+class _InfoChip extends StatelessWidget {
+  const _InfoChip({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(AppShape.small),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: AppIconSize.small, color: colors.onSurfaceVariant),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              text,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O resultado e o adversário (com o nível), ao lado do avatar.
+class _OpponentTitle extends StatelessWidget {
+  const _OpponentTitle({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.opponentName,
+    required this.level,
+    required this.character,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String opponentName;
+  final int? level;
+  final Character? character;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: color, size: AppIconSize.small),
+            const SizedBox(width: AppSpacing.sm),
+            Flexible(
+              child: Text(
+                title,
+                key: GameDetailsKeys.result,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: color,
+                  fontWeight: AppWeight.heavy,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: l10n.partidaContra(opponentName),
+                style: const TextStyle(fontWeight: AppWeight.heavy),
+              ),
+              if (level != null && character != null)
+                TextSpan(
+                  text: ' ($level)',
+                  style: TextStyle(color: colors.onSurfaceVariant),
+                ),
+            ],
+          ),
+          key: GameDetailsKeys.opponent,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.titleMedium,
+        ),
+      ],
     );
   }
 }
@@ -624,92 +890,21 @@ class _MoveTable extends StatelessWidget {
               children: [
                 if (variationRow != null && rows == 0) variation,
                 for (var row = 0; row < rows; row++) ...[
-                  Container(
-                    color: row.isOdd
-                        ? colors.onSurface.withValues(alpha: 0.04)
-                        : null,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: numberWidth,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: AppSpacing.lg),
-                            child: Text(
-                              '${start.fullmoves + row}.',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (singleColumn)
-                          Expanded(
-                            child: Column(
-                              children: [
-                                _cell(
-                                  context,
-                                  row * 2 - offset,
-                                  timeWidth,
-                                  timeStyle,
-                                  moveWidths,
-                                ),
-                                _cell(
-                                  context,
-                                  row * 2 + 1 - offset,
-                                  timeWidth,
-                                  timeStyle,
-                                  moveWidths,
-                                ),
-                              ],
-                            ),
-                          )
-                        else ...[
-                          Expanded(
-                            child: _cell(
-                              context,
-                              row * 2 - offset,
-                              timeWidth,
-                              timeStyle,
-                              moveWidths,
-                            ),
-                          ),
-                          Expanded(
-                            child: _cell(
-                              context,
-                              row * 2 + 1 - offset,
-                              timeWidth,
-                              timeStyle,
-                              moveWidths,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
+                  _MoveTableRow(
+                    table: this,
+                    row: row,
+                    offset: offset,
+                    firstNumber: start.fullmoves,
+                    numberWidth: numberWidth,
+                    singleColumn: singleColumn,
+                    timeWidth: timeWidth,
+                    timeStyle: timeStyle,
+                    moveWidths: moveWidths,
                   ),
                   if (row == variationRow) variation,
                 ],
                 if (score case final score?)
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      16 + numberWidth,
-                      AppSpacing.sm,
-                      AppSpacing.sm,
-                      AppSpacing.md,
-                    ),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        score,
-                        key: GameDetailsKeys.score,
-                        style: theme.textTheme.titleSmall,
-                      ),
-                    ),
-                  ),
+                  _ScoreLine(score: score, numberWidth: numberWidth),
               ],
             );
           },
@@ -718,124 +913,117 @@ class _MoveTable extends StatelessWidget {
     );
   }
 
-  Widget _cell(
-    BuildContext context,
-    int index,
-    double timeWidth,
-    TextStyle timeStyle,
-    List<double> moveWidths,
-  ) {
-    if (index < 0 || index >= state.moves.length) {
-      return const SizedBox(height: 44);
-    }
-    final colors = Theme.of(context).colorScheme;
-    final move = state.moves[index];
-    final quality = state.reviewOf(index)?.quality;
-    final selected = index == state.shownIndex;
-    final time = move.time;
-    final style = _moveStyle(context, index);
-    final label = [
-      move.san,
-      if (quality != null) quality.label(context.l10n),
-      if (time != null) _seconds(context, time),
-    ].join(', ');
-    void select() => context.read<GameDetailsCubit>().select(index);
-    return Semantics(
-      label: label,
-      button: true,
-      selected: selected,
-      onTap: select,
-      excludeSemantics: true,
-      child: Tooltip(
-        message: label,
-        excludeFromSemantics: true,
-        child: InkWell(
-          key: GameDetailsKeys.move(index),
-          borderRadius: BorderRadius.circular(AppShape.small),
-          onTap: select,
-          child: AnimatedContainer(
-            duration: AppMotion.of(context).state,
-            constraints: const BoxConstraints(minHeight: 44),
-            margin: const EdgeInsets.symmetric(
-              vertical: AppSpacing.xs,
-              horizontal: AppSpacing.xs,
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: MoveHighlight.outlinedDecoration(
-              colors,
-              selected: selected,
-            ),
-            child: LayoutBuilder(
-              builder: (context, box) {
-                final notation = Text.rich(
-                  _notation(index),
-                  key: quality == null
-                      ? null
-                      : GameDetailsKeys.moveQuality(index),
-                  style: style,
-                  strutStyle: StrutStyle.fromTextStyle(
-                    style,
-                    forceStrutHeight: true,
-                  ),
-                  softWrap: false,
-                );
-                final clock = SizedBox(
-                  width: timeWidth,
-                  child: time == null
-                      ? null
-                      : Text(
-                          _seconds(context, time),
-                          key: GameDetailsKeys.moveTime(index),
-                          textAlign: TextAlign.right,
-                          style: timeStyle,
-                          softWrap: false,
-                        ),
-                );
-                if (box.maxWidth < moveWidths[index] + timeWidth + 12) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      notation,
-                      if (time != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: AppSpacing.xs),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: clock,
-                          ),
-                        ),
-                    ],
-                  );
-                }
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Expanded(child: notation),
-                    const SizedBox(width: AppSpacing.md),
-                    clock,
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   // `3,4 s` ou `1:05` acima de um minuto.
   static String _seconds(BuildContext context, Duration time) {
     if (time.inSeconds >= 60) {
-      final seconds = time.inSeconds.remainder(60).toString().padLeft(2, '0');
-      return '${time.inMinutes}:$seconds';
+      return ClockFormat.minutesSeconds(time.inSeconds);
     }
     final locale = Localizations.localeOf(context).toString();
     final format = NumberFormat('0.0', locale);
     return '${format.format(time.inMilliseconds / 1000)} s';
+  }
+}
+
+/// Uma linha da tabela de lances: o número e os lances das brancas e das
+/// pretas (lado a lado, ou um sob o outro quando não cabem).
+class _MoveTableRow extends StatelessWidget {
+  const _MoveTableRow({
+    required this.table,
+    required this.row,
+    required this.offset,
+    required this.firstNumber,
+    required this.numberWidth,
+    required this.singleColumn,
+    required this.timeWidth,
+    required this.timeStyle,
+    required this.moveWidths,
+  });
+
+  final _MoveTable table;
+  final int row;
+  final int offset;
+  final int firstNumber;
+  final double numberWidth;
+  final bool singleColumn;
+  final double timeWidth;
+  final TextStyle timeStyle;
+  final List<double> moveWidths;
+
+  _MoveCell _cell(int index) => _MoveCell(
+    table: table,
+    index: index,
+    timeWidth: timeWidth,
+    timeStyle: timeStyle,
+    moveWidths: moveWidths,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Container(
+      color: row.isOdd ? colors.onSurface.withValues(alpha: 0.04) : null,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: numberWidth,
+            child: Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.lg),
+              child: Text(
+                '${firstNumber + row}.',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          if (singleColumn)
+            Expanded(
+              child: Column(
+                children: [
+                  _cell(row * 2 - offset),
+                  _cell(row * 2 + 1 - offset),
+                ],
+              ),
+            )
+          else ...[
+            Expanded(child: _cell(row * 2 - offset)),
+            Expanded(child: _cell(row * 2 + 1 - offset)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// O placar no fim da tabela de lances.
+class _ScoreLine extends StatelessWidget {
+  const _ScoreLine({required this.score, required this.numberWidth});
+
+  final String score;
+  final double numberWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        16 + numberWidth,
+        AppSpacing.sm,
+        AppSpacing.sm,
+        AppSpacing.md,
+      ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          score,
+          key: GameDetailsKeys.score,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+      ),
+    );
   }
 }
 
@@ -1057,4 +1245,124 @@ class _DetailsLoading extends StatelessWidget {
       SkeletonList(rows: 3),
     ],
   );
+}
+
+class _MoveCell extends StatelessWidget {
+  const _MoveCell({
+    required this.table,
+    required this.index,
+    required this.timeWidth,
+    required this.timeStyle,
+    required this.moveWidths,
+  });
+
+  final _MoveTable table;
+  final int index;
+  final double timeWidth;
+  final TextStyle timeStyle;
+  final List<double> moveWidths;
+
+  @override
+  Widget build(BuildContext context) {
+    if (index < 0 || index >= table.state.moves.length) {
+      return const SizedBox(height: 44);
+    }
+    final colors = Theme.of(context).colorScheme;
+    final move = table.state.moves[index];
+    final quality = table.state.reviewOf(index)?.quality;
+    final selected = index == table.state.shownIndex;
+    final time = move.time;
+    final style = table._moveStyle(context, index);
+    final label = [
+      move.san,
+      if (quality != null) quality.label(context.l10n),
+      if (time != null) _MoveTable._seconds(context, time),
+    ].join(', ');
+    void select() => context.read<GameDetailsCubit>().select(index);
+    return Semantics(
+      label: label,
+      button: true,
+      selected: selected,
+      onTap: select,
+      excludeSemantics: true,
+      child: Tooltip(
+        message: label,
+        excludeFromSemantics: true,
+        child: InkWell(
+          key: GameDetailsKeys.move(index),
+          borderRadius: BorderRadius.circular(AppShape.small),
+          onTap: select,
+          child: AnimatedContainer(
+            duration: AppMotion.of(context).state,
+            constraints: const BoxConstraints(minHeight: 44),
+            margin: const EdgeInsets.symmetric(
+              vertical: AppSpacing.xs,
+              horizontal: AppSpacing.xs,
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: MoveHighlight.outlinedDecoration(
+              colors,
+              selected: selected,
+            ),
+            child: LayoutBuilder(
+              builder: (context, box) {
+                final notation = Text.rich(
+                  table._notation(index),
+                  key: quality == null
+                      ? null
+                      : GameDetailsKeys.moveQuality(index),
+                  style: style,
+                  strutStyle: StrutStyle.fromTextStyle(
+                    style,
+                    forceStrutHeight: true,
+                  ),
+                  softWrap: false,
+                );
+                final clock = SizedBox(
+                  width: timeWidth,
+                  child: time == null
+                      ? null
+                      : Text(
+                          _MoveTable._seconds(context, time),
+                          key: GameDetailsKeys.moveTime(index),
+                          textAlign: TextAlign.right,
+                          style: timeStyle,
+                          softWrap: false,
+                        ),
+                );
+                if (box.maxWidth < moveWidths[index] + timeWidth + 12) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      notation,
+                      if (time != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: clock,
+                          ),
+                        ),
+                    ],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Expanded(child: notation),
+                    const SizedBox(width: AppSpacing.md),
+                    clock,
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

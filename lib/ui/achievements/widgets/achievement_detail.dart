@@ -115,7 +115,6 @@ class _AchievementDetailState extends State<AchievementDetail>
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final locale = Localizations.localeOf(context).toString();
     final achievement = widget.achievement;
     final unlocked = widget.unlocked;
     final progress = widget.progress;
@@ -154,27 +153,11 @@ class _AchievementDetailState extends State<AchievementDetail>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Center(
-            child: FadeTransition(
-              opacity: settle.drive(Tween(begin: 0.0, end: 1.0)),
-              child: ScaleTransition(
-                scale: settle.drive(Tween(begin: 0.4, end: 1.0)),
-                child: RotationTransition(
-                  // Um quarto de volta até assentar; a que falta só cresce.
-                  turns: unlocked == null
-                      ? const AlwaysStoppedAnimation(0)
-                      : settle.drive(Tween(begin: -0.25, end: 0.0)),
-                  child: AchievementMedal(
-                    key: AchievementsKeys.detailMedal,
-                    icon: achievement.iconData,
-                    unlocked: unlocked != null,
-                    size: 96,
-                    shine: shine,
-                    lockLabel: l10n.achievementsLockedLabel,
-                  ),
-                ),
-              ),
-            ),
+          _DetailMedal(
+            achievement: achievement,
+            unlocked: unlocked != null,
+            settle: settle,
+            shine: shine,
           ),
           const SizedBox(height: AppSpacing.lg),
           Text(
@@ -202,26 +185,7 @@ class _AchievementDetailState extends State<AchievementDetail>
           ),
           if (unlocked != null) ...[
             const SizedBox(height: AppSpacing.lg),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.event_available,
-                  size: AppIconSize.button,
-                  color: colors.primary,
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Flexible(
-                  child: Text(
-                    l10n.achievementsUnlockedOn(
-                      fullDateTime(l10n, locale, unlocked.at),
-                    ),
-                    key: AchievementsKeys.detailDate,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-              ],
-            ),
+            _UnlockedOn(unlocked: unlocked),
           ],
           if (unlocked == null && progress != null) ...[
             const SizedBox(height: AppSpacing.lg),
@@ -237,21 +201,10 @@ class _AchievementDetailState extends State<AchievementDetail>
           ],
           if (source case (final route, final speedrun)) ...[
             const SizedBox(height: AppSpacing.xl),
-            FilledButton.tonalIcon(
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-                textStyle: AppButtonText.footer(context),
-              ),
-              key: speedrun
-                  ? AchievementsKeys.detailOpenSpeedrun
-                  : AchievementsKeys.detailOpenGame,
-              onPressed: () => widget.onOpen(route),
-              icon: Icon(speedrun ? Icons.timer_outlined : Icons.visibility),
-              label: Text(
-                speedrun
-                    ? l10n.achievementOpenSpeedrun
-                    : l10n.achievementOpenGame,
-              ),
+            _SourceButton(
+              speedrun: speedrun,
+              route: route,
+              onOpen: widget.onOpen,
             ),
           ],
           if (shortcut != null) ...[
@@ -268,6 +221,115 @@ class _AchievementDetailState extends State<AchievementDetail>
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// A medalha que gira um quarto e assenta, com o brilho passando.
+class _DetailMedal extends StatelessWidget {
+  const _DetailMedal({
+    required this.achievement,
+    required this.unlocked,
+    required this.settle,
+    required this.shine,
+  });
+
+  final Achievement achievement;
+  final bool unlocked;
+  final Animation<double> settle;
+  final Animation<double> shine;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Center(
+      child: FadeTransition(
+        opacity: settle.drive(Tween(begin: 0.0, end: 1.0)),
+        child: ScaleTransition(
+          scale: settle.drive(Tween(begin: 0.4, end: 1.0)),
+          child: RotationTransition(
+            // Um quarto de volta até assentar; a que falta só cresce.
+            turns: !unlocked
+                ? const AlwaysStoppedAnimation(0)
+                : settle.drive(Tween(begin: -0.25, end: 0.0)),
+            child: AchievementMedal(
+              key: AchievementsKeys.detailMedal,
+              icon: achievement.iconData,
+              unlocked: unlocked,
+              size: 96,
+              shine: shine,
+              lockLabel: l10n.achievementsLockedLabel,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A data e a hora em que a conquista foi obtida.
+class _UnlockedOn extends StatelessWidget {
+  const _UnlockedOn({required this.unlocked});
+
+  final UnlockedAchievement unlocked;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final locale = Localizations.localeOf(context).toString();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.event_available,
+          size: AppIconSize.button,
+          color: colors.primary,
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(
+          child: Text(
+            l10n.achievementsUnlockedOn(
+              fullDateTime(l10n, locale, unlocked.at),
+            ),
+            key: AchievementsKeys.detailDate,
+            style: theme.textTheme.bodyMedium,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// O botão para a partida ou para a tentativa de speedrun de origem.
+class _SourceButton extends StatelessWidget {
+  const _SourceButton({
+    required this.speedrun,
+    required this.route,
+    required this.onOpen,
+  });
+
+  final bool speedrun;
+  final String route;
+  final ValueChanged<String> onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return FilledButton.tonalIcon(
+      style: FilledButton.styleFrom(
+        minimumSize: const Size.fromHeight(kButtonHeight),
+        textStyle: AppButtonText.footer(context),
+      ),
+      key: speedrun
+          ? AchievementsKeys.detailOpenSpeedrun
+          : AchievementsKeys.detailOpenGame,
+      onPressed: () => onOpen(route),
+      icon: Icon(speedrun ? Icons.timer_outlined : Icons.visibility),
+      label: Text(
+        speedrun ? l10n.achievementOpenSpeedrun : l10n.achievementOpenGame,
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/use_cases/training/opening_parts.dart';
 import '../../services/lesson_content_service.dart';
+import '../../../domain/models/content_session.dart';
 import '../../services/lesson_package_service.dart';
 import '../../services/lesson_package_index.dart';
 
@@ -71,7 +72,7 @@ class CourseDownloadRepository {
 
   /// Call close() on the returned lease after leaving a lesson/exercise/test.
   /// One account-wide lease conservatively protects shared indexes/dictionaries.
-  LessonPackageLease? beginSession() => packages?.beginSession();
+  ContentSession? beginSession() => packages?.beginSession();
 
   /// A server index can select another immutable, published release.
   /// Failures do not alter installed content; prepare() runs this silently.

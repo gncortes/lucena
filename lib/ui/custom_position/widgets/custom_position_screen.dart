@@ -187,15 +187,35 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
                     children: [
                       // O tabuleiro fica parado no alto: arrastar nele move as
                       // peças, nunca rola a tela.
-                      _editor(state, board),
+                      _BoardEditor(
+                        state: state,
+                        board: board,
+                        tool: _tool,
+                        erasing: _erasing,
+                        onEditedSquare: _onEditedSquare,
+                        onEdit: _edit,
+                      ),
                       Expanded(
                         child: ListView(
                           padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                           children: [
-                            _palette(board),
+                            _ToolPalette(
+                              board: board,
+                              activeTool: _tool,
+                              erasing: _erasing,
+                              onTool: (tool, {required erasing}) =>
+                                  setState(() {
+                                    _tool = tool;
+                                    _erasing = erasing;
+                                  }),
+                            ),
                             const SizedBox(height: AppSpacing.md),
-                            _turnAndGoal(state),
-                            _fenField(state),
+                            _TurnAndGoal(state: state),
+                            _FenField(
+                              state: state,
+                              controller: _fen,
+                              onPaste: _paste,
+                            ),
                           ],
                         ),
                       ),
@@ -222,8 +242,203 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
       },
     );
   }
+}
 
-  Widget _editor(CustomPositionState state, BoardSettings board) {
+String _roleName(AppLocalizations l10n, Role role) => switch (role) {
+  Role.king => l10n.pieceKing,
+  Role.queen => l10n.pieceQueen,
+  Role.rook => l10n.pieceRook,
+  Role.bishop => l10n.pieceBishop,
+  Role.knight => l10n.pieceKnight,
+  Role.pawn => l10n.piecePawn,
+};
+
+/// O problema da posição, em palavras.
+String problemMessage(AppLocalizations l10n, PositionProblem problem) =>
+    switch (problem) {
+      PositionProblem.invalidFen => l10n.positionErrorInvalidFen,
+      PositionProblem.empty => l10n.positionErrorEmpty,
+      PositionProblem.missingWhiteKing => l10n.positionErrorMissingWhiteKing,
+      PositionProblem.missingBlackKing => l10n.positionErrorMissingBlackKing,
+      PositionProblem.tooManyKings => l10n.positionErrorTooManyKings,
+      PositionProblem.oppositeCheck => l10n.positionErrorOppositeCheck,
+      PositionProblem.impossibleCheck => l10n.positionErrorImpossibleCheck,
+      PositionProblem.pawnsOnBackrank => l10n.positionErrorPawnsOnBackrank,
+      PositionProblem.alreadyOver => l10n.positionErrorAlreadyOver,
+    };
+
+class _TurnAndGoal extends StatelessWidget {
+  const _TurnAndGoal({required this.state});
+
+  final CustomPositionState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final cubit = context.read<CustomPositionCubit>();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: Column(
+        spacing: AppSpacing.md,
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<Side>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: Side.white,
+                  label: Text(
+                    l10n.freeBoardWhiteToMove,
+                    key: CustomPositionKeys.turn(Side.white),
+                  ),
+                ),
+                ButtonSegment(
+                  value: Side.black,
+                  label: Text(
+                    l10n.freeBoardBlackToMove,
+                    key: CustomPositionKeys.turn(Side.black),
+                  ),
+                ),
+              ],
+              selected: {state.turn},
+              onSelectionChanged: (selected) => cubit.setTurn(selected.single),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<PositionGoal>(
+              showSelectedIcon: false,
+              segments: [
+                for (final goal in PositionGoal.values)
+                  ButtonSegment(
+                    value: goal,
+                    icon: Icon(
+                      goal == PositionGoal.win
+                          ? Icons.emoji_events_outlined
+                          : Icons.shield_outlined,
+                    ),
+                    label: Text(
+                      goalLabel(l10n, goal),
+                      key: CustomPositionKeys.goal(goal),
+                    ),
+                  ),
+              ],
+              selected: {state.goal},
+              onSelectionChanged: (selected) => cubit.setGoal(selected.single),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FenField extends StatelessWidget {
+  const _FenField({
+    required this.state,
+    required this.controller,
+    required this.onPaste,
+  });
+
+  final CustomPositionState state;
+  final TextEditingController controller;
+  final VoidCallback onPaste;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final problem = state.problem;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // O FEN é sempre da esquerda para a direita.
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: TextField(
+              key: CustomPositionKeys.fenField,
+              controller: controller,
+              autocorrect: false,
+              enableSuggestions: false,
+              maxLines: 2,
+              minLines: 1,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontFamily: 'monospace',
+              ),
+              decoration: InputDecoration(
+                labelText: l10n.customFen,
+                helperText: l10n.customFenHint,
+                suffixIcon: IconButton(
+                  key: CustomPositionKeys.pasteButton,
+                  icon: const Icon(Icons.content_paste),
+                  tooltip: l10n.customPaste,
+                  onPressed: onPaste,
+                ),
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: AppMotion.state,
+            alignment: Alignment.topCenter,
+            child: problem == null
+                ? const SizedBox(width: double.infinity)
+                : Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.md),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: theme.colorScheme.error,
+                          size: AppIconSize.button,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            problemMessage(l10n, problem),
+                            key: CustomPositionKeys.error,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BoardEditor extends StatelessWidget {
+  const _BoardEditor({
+    required this.state,
+    required this.board,
+    required this.tool,
+    required this.erasing,
+    required this.onEditedSquare,
+    required this.onEdit,
+  });
+
+  final CustomPositionState state;
+  final BoardSettings board;
+  final Piece? tool;
+  final bool erasing;
+  final ValueChanged<Square> onEditedSquare;
+  final void Function(Pieces Function(Pieces)) onEdit;
+
+  @override
+  Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screen = MediaQuery.sizeOf(context);
@@ -239,27 +454,42 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
               key: CustomPositionKeys.editor,
               size: size,
               orientation: Side.white,
-              pieces: _pieces(state),
+              pieces: readFen(state.board),
               settings: board.chessground,
-              pointerMode: _tool != null || _erasing
+              pointerMode: tool != null || erasing
                   ? EditorPointerMode.edit
                   : EditorPointerMode.drag,
-              onEditedSquare: _onEditedSquare,
-              onDroppedPiece: (origin, destination, piece) => _edit((pieces) {
+              onEditedSquare: onEditedSquare,
+              onDroppedPiece: (origin, destination, piece) => onEdit((pieces) {
                 if (origin != null) pieces.remove(origin);
                 pieces[destination] = piece;
                 return pieces;
               }),
               onDiscardedPiece: (square) =>
-                  _edit((pieces) => pieces..remove(square)),
+                  onEdit((pieces) => pieces..remove(square)),
             ),
           ),
         );
       },
     );
   }
+}
 
-  Widget _palette(BoardSettings board) {
+class _ToolPalette extends StatelessWidget {
+  const _ToolPalette({
+    required this.board,
+    required this.activeTool,
+    required this.erasing,
+    required this.onTool,
+  });
+
+  final BoardSettings board;
+  final Piece? activeTool;
+  final bool erasing;
+  final void Function(Piece? tool, {required bool erasing}) onTool;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = Theme.of(context).colorScheme;
     const roles = [
@@ -319,16 +549,13 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
             final piece = Piece(color: side, role: role);
             return tool(
               key: CustomPositionKeys.palette(piece),
-              selected: _tool == piece,
+              selected: activeTool == piece,
               tooltip: l10n.pieceOfSide(
                 _roleName(l10n, role),
                 side == Side.white ? l10n.sideWhite : l10n.sideBlack,
               ),
               child: Image(image: board.pieces.assets[piece.kind]!),
-              onTap: () => setState(() {
-                _tool = piece;
-                _erasing = false;
-              }),
+              onTap: () => onTool(piece, erasing: false),
             );
           }(),
       ],
@@ -358,23 +585,17 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
             children: [
               tool(
                 key: CustomPositionKeys.moveTool,
-                selected: _tool == null && !_erasing,
+                selected: activeTool == null && !erasing,
                 tooltip: l10n.customToolMove,
                 child: const Icon(Icons.pan_tool_alt_outlined),
-                onTap: () => setState(() {
-                  _tool = null;
-                  _erasing = false;
-                }),
+                onTap: () => onTool(null, erasing: false),
               ),
               tool(
                 key: CustomPositionKeys.eraseTool,
-                selected: _erasing,
+                selected: erasing,
                 tooltip: l10n.customToolErase,
                 child: const Icon(Icons.backspace_outlined),
-                onTap: () => setState(() {
-                  _tool = null;
-                  _erasing = true;
-                }),
+                onTap: () => onTool(null, erasing: true),
               ),
             ],
           ),
@@ -382,160 +603,4 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
       ),
     );
   }
-
-  Widget _turnAndGoal(CustomPositionState state) {
-    final l10n = context.l10n;
-    final cubit = context.read<CustomPositionCubit>();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-      child: Column(
-        spacing: AppSpacing.md,
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<Side>(
-              showSelectedIcon: false,
-              segments: [
-                ButtonSegment(
-                  value: Side.white,
-                  label: Text(
-                    l10n.freeBoardWhiteToMove,
-                    key: CustomPositionKeys.turn(Side.white),
-                  ),
-                ),
-                ButtonSegment(
-                  value: Side.black,
-                  label: Text(
-                    l10n.freeBoardBlackToMove,
-                    key: CustomPositionKeys.turn(Side.black),
-                  ),
-                ),
-              ],
-              selected: {state.turn},
-              onSelectionChanged: (selected) => cubit.setTurn(selected.single),
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: SegmentedButton<PositionGoal>(
-              showSelectedIcon: false,
-              segments: [
-                for (final goal in PositionGoal.values)
-                  ButtonSegment(
-                    value: goal,
-                    icon: Icon(
-                      goal == PositionGoal.win
-                          ? Icons.emoji_events_outlined
-                          : Icons.shield_outlined,
-                    ),
-                    label: Text(
-                      goalLabel(l10n, goal),
-                      key: CustomPositionKeys.goal(goal),
-                    ),
-                  ),
-              ],
-              selected: {state.goal},
-              onSelectionChanged: (selected) => cubit.setGoal(selected.single),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _fenField(CustomPositionState state) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final problem = state.problem;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.lg,
-        0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // O FEN é sempre da esquerda para a direita.
-          Directionality(
-            textDirection: TextDirection.ltr,
-            child: TextField(
-              key: CustomPositionKeys.fenField,
-              controller: _fen,
-              autocorrect: false,
-              enableSuggestions: false,
-              maxLines: 2,
-              minLines: 1,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontFamily: 'monospace',
-              ),
-              decoration: InputDecoration(
-                labelText: l10n.customFen,
-                helperText: l10n.customFenHint,
-                suffixIcon: IconButton(
-                  key: CustomPositionKeys.pasteButton,
-                  icon: const Icon(Icons.content_paste),
-                  tooltip: l10n.customPaste,
-                  onPressed: _paste,
-                ),
-              ),
-            ),
-          ),
-          AnimatedSize(
-            duration: AppMotion.state,
-            alignment: Alignment.topCenter,
-            child: problem == null
-                ? const SizedBox(width: double.infinity)
-                : Padding(
-                    padding: const EdgeInsets.only(top: AppSpacing.md),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: theme.colorScheme.error,
-                          size: AppIconSize.button,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            problemMessage(l10n, problem),
-                            key: CustomPositionKeys.error,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.error,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
 }
-
-String _roleName(AppLocalizations l10n, Role role) => switch (role) {
-  Role.king => l10n.pieceKing,
-  Role.queen => l10n.pieceQueen,
-  Role.rook => l10n.pieceRook,
-  Role.bishop => l10n.pieceBishop,
-  Role.knight => l10n.pieceKnight,
-  Role.pawn => l10n.piecePawn,
-};
-
-/// O problema da posição, em palavras.
-String problemMessage(AppLocalizations l10n, PositionProblem problem) =>
-    switch (problem) {
-      PositionProblem.invalidFen => l10n.positionErrorInvalidFen,
-      PositionProblem.empty => l10n.positionErrorEmpty,
-      PositionProblem.missingWhiteKing => l10n.positionErrorMissingWhiteKing,
-      PositionProblem.missingBlackKing => l10n.positionErrorMissingBlackKing,
-      PositionProblem.tooManyKings => l10n.positionErrorTooManyKings,
-      PositionProblem.oppositeCheck => l10n.positionErrorOppositeCheck,
-      PositionProblem.impossibleCheck => l10n.positionErrorImpossibleCheck,
-      PositionProblem.pawnsOnBackrank => l10n.positionErrorPawnsOnBackrank,
-      PositionProblem.alreadyOver => l10n.positionErrorAlreadyOver,
-    };

@@ -99,7 +99,7 @@ class SucessoDaCompra extends StatelessWidget {
                   horizontal: AppSpacing.xl,
                   vertical: AppSpacing.lg,
                 ),
-                child: _corpo(),
+                child: _Corpo(this),
               ),
             ),
           ),
@@ -129,99 +129,118 @@ class SucessoDaCompra extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _corpo() => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      // O anel cresce para fora do círculo sem reservar espaço: a lista do
-      // Curso liberado cabe em 360×740.
-      SizedBox.square(
-        dimension: tamanho,
-        child: Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            NoTempo(
-              inicio: Duration.zero,
-              duracao: LucenaMotion.anelDaCompra,
-              curva: LucenaMotion.linear,
-              builder: (context, v, _) => v >= 1
-                  ? const SizedBox.shrink()
-                  : Opacity(
-                      key: MotionKeys.anelDaCompra,
-                      opacity: 1 - v,
-                      child: Transform.scale(
-                        scale:
-                            1 +
-                            (LucenaMotion.escalaDoAnel - 1) *
-                                LucenaMotion.emphasizedDecelerate.transform(v),
-                        child: Container(
-                          width: tamanho,
-                          height: tamanho,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: cor, width: 2),
+/// O corpo da tela: o círculo com ✓, o título, o texto e os itens.
+class _Corpo extends StatelessWidget {
+  const _Corpo(this.owner);
+
+  final SucessoDaCompra owner;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // O anel cresce para fora do círculo sem reservar espaço: a lista do
+        // Curso liberado cabe em 360×740.
+        SizedBox.square(
+          dimension: owner.tamanho,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              NoTempo(
+                inicio: Duration.zero,
+                duracao: LucenaMotion.anelDaCompra,
+                curva: LucenaMotion.linear,
+                builder: (context, v, _) => v >= 1
+                    ? const SizedBox.shrink()
+                    : Opacity(
+                        key: MotionKeys.anelDaCompra,
+                        opacity: 1 - v,
+                        child: Transform.scale(
+                          scale:
+                              1 +
+                              (LucenaMotion.escalaDoAnel - 1) *
+                                  LucenaMotion.emphasizedDecelerate.transform(
+                                    v,
+                                  ),
+                          child: Container(
+                            width: owner.tamanho,
+                            height: owner.tamanho,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: owner.cor, width: 2),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-            ),
-            NoTempo(
-              inicio: Duration.zero,
-              duracao: LucenaMotion.circuloDaCompra,
-              builder: (context, v, filho) => Transform.scale(
-                key: MotionKeys.circuloDaCompra,
-                scale:
-                    LucenaMotion.escalaDoCirculo +
-                    (1 - LucenaMotion.escalaDoCirculo) * v,
-                child: filho,
               ),
-              child: Container(
-                width: tamanho,
-                height: tamanho,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: fundo),
-                alignment: Alignment.center,
-                child: NoTempo(
-                  inicio: Duration.zero,
-                  duracao: LucenaMotion.circuloDaCompra,
-                  curva: LucenaMotion.linear,
-                  builder: (context, v, filho) => Transform.scale(
-                    key: MotionKeys.checkDaCompra,
-                    scale: _check.transform(v),
-                    child: filho,
+              NoTempo(
+                inicio: Duration.zero,
+                duracao: LucenaMotion.circuloDaCompra,
+                builder: (context, v, filho) => Transform.scale(
+                  key: MotionKeys.circuloDaCompra,
+                  scale:
+                      LucenaMotion.escalaDoCirculo +
+                      (1 - LucenaMotion.escalaDoCirculo) * v,
+                  child: filho,
+                ),
+                child: Container(
+                  width: owner.tamanho,
+                  height: owner.tamanho,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: owner.fundo,
                   ),
-                  child: Icon(icone, color: cor, size: tamanho * .58),
+                  alignment: Alignment.center,
+                  child: NoTempo(
+                    inicio: Duration.zero,
+                    duracao: LucenaMotion.circuloDaCompra,
+                    curva: LucenaMotion.linear,
+                    builder: (context, v, filho) => Transform.scale(
+                      key: MotionKeys.checkDaCompra,
+                      scale: SucessoDaCompra._check.transform(v),
+                      child: filho,
+                    ),
+                    child: Icon(
+                      owner.icone,
+                      color: owner.cor,
+                      size: owner.tamanho * .58,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      const SizedBox(height: AppSpacing.lg),
-      EntradaNoTempo(
-        inicio: LucenaMotion.tituloDaCompra,
-        duracao: LucenaMotion.sobeDaCompra,
-        subida: LucenaMotion.subidaDoTitulo,
-        child: titulo,
-      ),
-      const SizedBox(height: AppSpacing.sm),
-      EntradaNoTempo(
-        inicio: LucenaMotion.textoDaCompra,
-        duracao: LucenaMotion.sobeDaCompra,
-        subida: LucenaMotion.subidaDoTitulo,
-        child: texto,
-      ),
-      for (final (i, item) in itens.indexed) ...[
-        SizedBox(height: i == 0 ? AppSpacing.lg : AppSpacing.sm),
+        const SizedBox(height: AppSpacing.lg),
         EntradaNoTempo(
-          inicio: _inicioDoItem(i),
-          duracao: LucenaMotion.textoEntra,
-          subida: LucenaMotion.subidaDoTexto,
-          alinhamento: AlignmentDirectional.centerStart,
-          child: item,
+          inicio: LucenaMotion.tituloDaCompra,
+          duracao: LucenaMotion.sobeDaCompra,
+          subida: LucenaMotion.subidaDoTitulo,
+          child: owner.titulo,
         ),
+        const SizedBox(height: AppSpacing.sm),
+        EntradaNoTempo(
+          inicio: LucenaMotion.textoDaCompra,
+          duracao: LucenaMotion.sobeDaCompra,
+          subida: LucenaMotion.subidaDoTitulo,
+          child: owner.texto,
+        ),
+        for (final (i, item) in owner.itens.indexed) ...[
+          SizedBox(height: i == 0 ? AppSpacing.lg : AppSpacing.sm),
+          EntradaNoTempo(
+            inicio: SucessoDaCompra._inicioDoItem(i),
+            duracao: LucenaMotion.textoEntra,
+            subida: LucenaMotion.subidaDoTexto,
+            alinhamento: AlignmentDirectional.centerStart,
+            child: item,
+          ),
+        ],
       ],
-    ],
-  );
+    );
+  }
 }

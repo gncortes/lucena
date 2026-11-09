@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/character.dart';
 import '../../../domain/models/history_filter.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/speedrun_pace.dart';
@@ -78,67 +79,24 @@ class HistorySpeedrunsTab extends StatelessWidget {
               (score.newRecords, l10n.historyStatNewRecords(score.newRecords)),
             ],
           ),
-          ..._groups(context, state, rows),
+          for (final (group, level) in SpeedrunCategory.values.indexed)
+            if (_inLevel(rows, level) case final inLevel
+                when inLevel.isNotEmpty) ...[
+              _GroupHeader(
+                key: HistoryKeys.group(group),
+                level: level,
+                count: inLevel.length,
+                marathon: marathon,
+              ),
+              _GroupCard(
+                rows: inLevel,
+                characters: state.characters,
+                onOpen: (row) => _open(context, row),
+              ),
+            ],
         ],
       ],
     );
-  }
-
-  List<Widget> _groups(
-    BuildContext context,
-    HistoryState state,
-    List<SpeedrunHistoryRow> rows,
-  ) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final children = <Widget>[];
-    for (final (group, level) in SpeedrunCategory.values.indexed) {
-      final inLevel = [
-        for (final (index, row) in rows.indexed)
-          if (row.category == level) (index, row),
-      ];
-      if (inLevel.isEmpty) continue;
-      final title = HistoryLabels.level(l10n, level);
-      children.add(
-        Padding(
-          key: HistoryKeys.group(group),
-          // Cabeçalho de grupo: 16 16 8 16 (artboard).
-          padding: const EdgeInsetsDirectional.fromSTEB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.sm,
-          ),
-          child: Text(
-            marathon
-                ? l10n.historyGroupMarathons(title, inLevel.length)
-                : l10n.historyGroupSpeedruns(title, inLevel.length),
-            style: theme.textTheme.titleSmall?.copyWith(color: colors.primary),
-          ),
-        ),
-      );
-      children.add(
-        Card(
-          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              for (final (position, (index, row)) in inLevel.indexed) ...[
-                if (position > 0) Divider(),
-                SpeedrunHistoryRowTile(
-                  row: row,
-                  index: index,
-                  characters: state.characters,
-                  onTap: () => _open(context, row),
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
-    }
-    return children;
   }
 
   // O histórico do speedrun (a Maratona usa o mesmo até a T67f); ao voltar,
@@ -194,5 +152,88 @@ class HistorySpeedrunsTab extends StatelessWidget {
     if (chosen != null && context.mounted) {
       await _apply(context, SpeedrunHistoryFilter.fromSelection(chosen));
     }
+  }
+}
+
+/// As linhas de um nível, com a posição de cada uma na lista toda.
+List<(int, SpeedrunHistoryRow)> _inLevel(
+  List<SpeedrunHistoryRow> rows,
+  SpeedrunCategory level,
+) => [
+  for (final (index, row) in rows.indexed)
+    if (row.category == level) (index, row),
+];
+
+/// O cabeçalho de um nível: o nome e quantos speedruns (ou maratonas) há nele.
+// reuso: SectionTitle não serve porque o cabeçalho de grupo do Histórico é
+// primary com 16 16 8 16 (artboard), não cinza.
+class _GroupHeader extends StatelessWidget {
+  const _GroupHeader({
+    required this.level,
+    required this.count,
+    required this.marathon,
+    super.key,
+  });
+
+  final SpeedrunCategory level;
+  final int count;
+  final bool marathon;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final title = HistoryLabels.level(l10n, level);
+    return Padding(
+      // Cabeçalho de grupo: 16 16 8 16 (artboard).
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
+      child: Text(
+        marathon
+            ? l10n.historyGroupMarathons(title, count)
+            : l10n.historyGroupSpeedruns(title, count),
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
+/// O cartão com as linhas de um nível.
+class _GroupCard extends StatelessWidget {
+  const _GroupCard({
+    required this.rows,
+    required this.characters,
+    required this.onOpen,
+  });
+
+  final List<(int, SpeedrunHistoryRow)> rows;
+  final List<Character> characters;
+  final ValueChanged<SpeedrunHistoryRow> onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          for (final (position, (index, row)) in rows.indexed) ...[
+            if (position > 0) const Divider(),
+            SpeedrunHistoryRowTile(
+              row: row,
+              index: index,
+              characters: characters,
+              onTap: () => onOpen(row),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }

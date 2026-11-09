@@ -4,7 +4,7 @@ import '../../core/motion/botao_carregando.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/account/mail_app_repository.dart';
+import '../../../config/view_models/account.dart';
 import '../../../domain/models/account.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -33,20 +33,19 @@ Future<void> showPasswordResetSheet(
     ),
   );
   if (sent == null || !context.mounted) return;
-  final mail = context.read<MailAppRepository>();
-  final canOpen = await mail.available();
+  final openMail = await mailAppOpener(context);
   if (!context.mounted) return;
   await showLucenaSheet<void>(
     context,
     sheetKey: AccountKeys.resetSentSheet,
     builder: (sheet) => _SentSheet(
       email: sent,
-      onOpenMail: canOpen
-          ? () {
+      onOpenMail: openMail == null
+          ? null
+          : () {
               Navigator.of(sheet).pop();
-              mail.open();
-            }
-          : null,
+              openMail();
+            },
     ),
   );
 }

@@ -20,7 +20,7 @@ import '../../../domain/use_cases/training/future_training_reminders.dart';
 import '../../../domain/use_cases/training/training_reminder.dart';
 import '../../../domain/use_cases/training/goal/tournament_rules.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
-import '../../../data/services/notification_service.dart';
+import '../../../domain/models/notification.dart';
 import '../../../domain/models/alert_settings.dart';
 import '../../../domain/models/reminder.dart';
 import '../../../domain/use_cases/now.dart';

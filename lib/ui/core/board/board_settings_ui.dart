@@ -158,7 +158,9 @@ extension BoardSettingsUi on BoardSettings {
 String localizedSan(AppLocalizations l10n, String san) {
   final letters = MoveNotation.letters.pieceLetters(l10n)!;
   return san.replaceAllMapped(
-    RegExp('[KQRBN]'),
+    _pieceLetter,
     (match) => letters[match[0]] ?? match[0]!,
   );
 }
+
+final _pieceLetter = RegExp('[KQRBN]');

@@ -64,20 +64,37 @@ class CourseNavigationBar extends StatelessWidget {
             icon: _icon(tab),
           ),
       ],
-      wrap: (i, icon) => _wrap(tabs[i], icon, l),
+      wrap: (i, icon) =>
+          _TabIcon(tab: tabs[i], remaining: remaining, l: l, icon: icon),
     );
   }
+}
 
-  Widget _wrap(CourseGuideTab tab, Widget icon, AppLocalizations l) {
+/// O ícone da aba; o das metas leva a bolinha com o que falta.
+class _TabIcon extends StatelessWidget {
+  const _TabIcon({
+    required this.tab,
+    required this.icon,
+    required this.remaining,
+    required this.l,
+  });
+
+  final CourseGuideTab tab;
+  final Widget icon;
+  final int remaining;
+  final AppLocalizations l;
+
+  @override
+  Widget build(BuildContext context) {
     if (tab != CourseGuideTab.goals) return icon;
     return Badge(
       key: CourseGuideKeys.goalsBadge,
       isLabelVisible: remaining > 0,
-      backgroundColor: badgeColor,
+      backgroundColor: CourseNavigationBar.badgeColor,
       textColor: AppColors.white,
       label: Text(
-        remaining > badgeMax
-            ? l.treinoTabBadgeMany(badgeMax)
+        remaining > CourseNavigationBar.badgeMax
+            ? l.treinoTabBadgeMany(CourseNavigationBar.badgeMax)
             : remaining.toString(),
       ),
       child: icon,

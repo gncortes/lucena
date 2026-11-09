@@ -1,6 +1,10 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../domain/models/file_store_exception.dart';
+
+export '../../../domain/models/file_store_exception.dart';
+
 /// Os arquivos de cada conta no Firebase Storage. As regras estão em
 /// `firebase/storage.rules`: só `users/{uid}/avatar.jpg`, só o dono, imagem
 /// até 1 MB.
@@ -13,16 +17,6 @@ abstract class FileStoreService {
 
   /// Apaga [path]. Arquivo que não existe não é erro.
   Future<void> delete(String path);
-}
-
-/// O Storage não respondeu (sem rede, sem permissão, arquivo grande demais).
-class FileStoreException implements Exception {
-  const FileStoreException(this.code);
-
-  final String code;
-
-  @override
-  String toString() => 'FileStoreException($code)';
 }
 
 /// Sem Firebase: nada a guardar na nuvem.

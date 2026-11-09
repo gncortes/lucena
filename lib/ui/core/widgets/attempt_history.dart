@@ -28,7 +28,6 @@ class AttemptHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final month = DateFormat.yMMMM(locale);
     final date = DateFormat.MMMd(locale).add_Hm();
@@ -58,97 +57,121 @@ class AttemptHistory extends StatelessWidget {
           ),
         );
       }
-      final (color, icon, result) = switch (attempt.outcome) {
-        AttemptOutcome.win => (
-          ChangeColors.of(context, up: true),
-          Icons.emoji_events_rounded,
-          l10n.attemptWin,
-        ),
-        AttemptOutcome.draw => (
-          colors.onSurfaceVariant,
-          Icons.handshake_rounded,
-          l10n.attemptDraw,
-        ),
-        AttemptOutcome.loss => (
-          ChangeColors.of(context, up: false),
-          Icons.sentiment_dissatisfied_rounded,
-          l10n.attemptLoss,
-        ),
-      };
-      final clock = attempt.userClock;
       children.add(
-        Card(
-          key: attemptKey(index),
-          margin: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.xs,
-            AppSpacing.lg,
-            AppSpacing.xs,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              children: [
-                // O resultado em destaque, na cor dele.
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: color, size: AppIconSize.standard),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        result,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: color,
-                        ),
-                      ),
-                      Text(
-                        l10n.attemptDetails(
-                          attempt.opponent.label(
-                            l10n,
-                            level: attempt.opponentLevel,
-                          ),
-                          date.format(playedAt),
-                        ),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (clock != null)
-                  Text(
-                    l10n.attemptClock(ClockFormat.format(clock)),
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                const SizedBox(width: AppSpacing.xs),
-                Icon(
-                  attempt.fulfilled
-                      ? Icons.check_circle
-                      : Icons.cancel_outlined,
-                  size: AppIconSize.button,
-                  color: ChangeColors.of(context, up: attempt.fulfilled),
-                ),
-              ],
-            ),
-          ),
+        _AttemptCard(
+          cardKey: attemptKey(index),
+          attempt: attempt,
+          playedAt: playedAt,
+          date: date,
         ),
       );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: children,
+    );
+  }
+}
+
+/// Um cartão de partida: o resultado, o adversário, a data e o relógio.
+class _AttemptCard extends StatelessWidget {
+  const _AttemptCard({
+    required this.cardKey,
+    required this.attempt,
+    required this.playedAt,
+    required this.date,
+  });
+
+  final Key cardKey;
+  final Attempt attempt;
+  final DateTime playedAt;
+  final DateFormat date;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final (color, icon, result) = switch (attempt.outcome) {
+      AttemptOutcome.win => (
+        ChangeColors.of(context, up: true),
+        Icons.emoji_events_rounded,
+        l10n.attemptWin,
+      ),
+      AttemptOutcome.draw => (
+        colors.onSurfaceVariant,
+        Icons.handshake_rounded,
+        l10n.attemptDraw,
+      ),
+      AttemptOutcome.loss => (
+        ChangeColors.of(context, up: false),
+        Icons.sentiment_dissatisfied_rounded,
+        l10n.attemptLoss,
+      ),
+    };
+    final clock = attempt.userClock;
+    return Card(
+      key: cardKey,
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.xs,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          children: [
+            // O resultado em destaque, na cor dele.
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: AppIconSize.standard),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    result,
+                    style: theme.textTheme.titleSmall?.copyWith(color: color),
+                  ),
+                  Text(
+                    l10n.attemptDetails(
+                      attempt.opponent.label(
+                        l10n,
+                        level: attempt.opponentLevel,
+                      ),
+                      date.format(playedAt),
+                    ),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (clock != null)
+              Text(
+                l10n.attemptClock(ClockFormat.format(clock)),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            const SizedBox(width: AppSpacing.xs),
+            Icon(
+              attempt.fulfilled ? Icons.check_circle : Icons.cancel_outlined,
+              size: AppIconSize.button,
+              color: ChangeColors.of(context, up: attempt.fulfilled),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -143,7 +143,7 @@ void main() {
     expect(play.boughtOffers.single?.id, 'link-20');
     expect(play.boughtAccounts.single, 'u1');
     play.send(
-      StorePurchase(
+      const StorePurchase(
         productId: pilaresLifetimeProductId,
         status: StorePurchaseStatus.purchased,
         token: 'teste:compra:link-20:u1',

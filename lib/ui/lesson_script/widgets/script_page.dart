@@ -101,7 +101,9 @@ class ScriptPage extends StatelessWidget {
     final metrics = ScriptSpeechMetrics.of(context);
     return LayoutBuilder(
       builder: (context, box) {
-        if (centerBoard) return _centered(context, metrics, box);
+        if (centerBoard) {
+          return _CenteredPage(page: this, metrics: metrics, box: box);
+        }
         if (canvasLayout) {
           // medidas_lance/tela_lance: centre the complete teaching block,
           // reserving notation before reducing the board.
@@ -181,12 +183,22 @@ class ScriptPage extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _centered(
-    BuildContext context,
-    ScriptSpeechMetrics metrics,
-    BoxConstraints box,
-  ) {
+/// A8: o tabuleiro de ponta a ponta com o centro no centro útil da tela.
+class _CenteredPage extends StatelessWidget {
+  const _CenteredPage({
+    required this.page,
+    required this.metrics,
+    required this.box,
+  });
+
+  final ScriptPage page;
+  final ScriptSpeechMetrics metrics;
+  final BoxConstraints box;
+
+  @override
+  Widget build(BuildContext context) {
     final height = box.maxHeight;
     final width = box.maxWidth;
     final centerY = (BoardViewport.centerYOf(context) ?? height / 2)
@@ -201,26 +213,26 @@ class ScriptPage extends StatelessWidget {
     // As linhas que cabem na sobra de cima, de [minLines] até 4.
     final ScriptSpeechMetrics speech;
     final double header;
-    if (canvasLayout) {
+    if (page.canvasLayout) {
       var lines = ScriptSpeechMetrics.minLines;
       for (final candidate in [4, 3]) {
-        if (42 + 22.5 * candidate + canvasStripHeight <= boardTop) {
+        if (42 + 22.5 * candidate + ScriptPage.canvasStripHeight <= boardTop) {
           lines = candidate;
           break;
         }
       }
       speech = ScriptSpeechMetrics.canvas(lines);
-      header = speech.areaHeight(context) + canvasStripHeight;
+      header = speech.areaHeight(context) + ScriptPage.canvasStripHeight;
     } else {
       final base = metrics.withLines(ScriptSpeechMetrics.minLines);
       final line = base.lineExtent(context);
-      final room = boardTop - base.areaHeight(context) - stripHeight;
+      final room = boardTop - base.areaHeight(context) - ScriptPage.stripHeight;
       final extra = line <= 0 || room <= 0 ? 0 : (room / line).floor();
       speech = metrics.withLines(ScriptSpeechMetrics.minLines + extra);
-      header = speech.areaHeight(context) + stripHeight;
+      header = speech.areaHeight(context) + ScriptPage.stripHeight;
     }
     return Stack(
-      key: pageKey,
+      key: page.pageKey,
       clipBehavior: Clip.none,
       children: [
         Positioned(
@@ -231,8 +243,8 @@ class ScriptPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(child: speechBuilder(speech)),
-              strip,
+              Expanded(child: page.speechBuilder(speech)),
+              page.strip,
             ],
           ),
         ),
@@ -243,24 +255,24 @@ class ScriptPage extends StatelessWidget {
           top: boardTop,
           width: side,
           height: side,
-          child: boardBuilder(side),
+          child: page.boardBuilder(side),
         ),
         Positioned(
           left: 0,
           right: 0,
           top: boardBottom,
           bottom: 0,
-          child: actionsBelowBoard
+          child: page.actionsBelowBoard
               ? OverflowBox(
                   alignment: Alignment.topCenter,
                   minHeight: 0,
                   maxHeight: double.infinity,
-                  child: list,
+                  child: page.list,
                 )
               : ClipRect(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: SingleChildScrollView(child: list),
+                    child: SingleChildScrollView(child: page.list),
                   ),
                 ),
         ),

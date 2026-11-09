@@ -94,7 +94,7 @@ void main() {
   });
 
   test('o link criado no app leva utm_source=app e a geração', () {
-    final link = ChallengeLink(
+    final link = const ChallengeLink(
       fen: _fen,
       userSide: Side.white,
     ).sharedFrom('fim_partida', generation: 3);
@@ -108,18 +108,21 @@ void main() {
     expect(back.generation, 3);
     expect(back.utm['utm_source'], 'app');
     // A geração e as utm não mudam o desafio.
-    expect(back.code, ChallengeLink(fen: _fen, userSide: Side.white).code);
+    expect(
+      back.code,
+      const ChallengeLink(fen: _fen, userSide: Side.white).code,
+    );
   });
 
   test('sem geração, o link não leva g', () {
-    final link = ChallengeLink(fen: _fen, userSide: Side.white);
+    final link = const ChallengeLink(fen: _fen, userSide: Side.white);
     expect(link.uri.queryParameters.containsKey('g'), isFalse);
     expect(ChallengeLink.tryParse(link.uri)!.generation, 0);
   });
 
   group('o resultado de quem mandou (mv)', () {
     test('link novo: lê os lances e leva mv de volta', () {
-      final link = ChallengeLink(
+      final link = const ChallengeLink(
         fen: _fen,
         userSide: Side.white,
         senderMoves: 7,
@@ -127,7 +130,10 @@ void main() {
       expect(link.uri.queryParameters['mv'], '7');
       expect(ChallengeLink.tryParse(link.uri)!.senderMoves, 7);
       // Não muda o desafio: mesmo código do link sem resultado.
-      expect(link.code, ChallengeLink(fen: _fen, userSide: Side.white).code);
+      expect(
+        link.code,
+        const ChallengeLink(fen: _fen, userSide: Side.white).code,
+      );
     });
 
     test('link antigo (só fen): sem resultado e continua abrindo', () {

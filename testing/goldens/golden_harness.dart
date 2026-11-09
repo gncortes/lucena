@@ -44,7 +44,7 @@ abstract final class Goldens {
 
   static final variants = [
     for (final theme in [ThemeMode.light, ThemeMode.dark])
-      for (final locale in [Locale('pt'), Locale('ar')])
+      for (final locale in [const Locale('pt'), const Locale('ar')])
         for (final width in [360.0, 412.0])
           GoldenVariant(theme: theme, locale: locale, width: width),
   ];
@@ -52,7 +52,11 @@ abstract final class Goldens {
   /// Só o português no tema claro, em 360 e 412 (o escopo validado hoje).
   static final ptLight = [
     for (final width in [360.0, 412.0])
-      GoldenVariant(theme: ThemeMode.light, locale: Locale('pt'), width: width),
+      GoldenVariant(
+        theme: ThemeMode.light,
+        locale: const Locale('pt'),
+        width: width,
+      ),
   ];
 
   /// Um teste por variante, com o golden em `goldens/<name>/<variante>.png`.

@@ -63,7 +63,7 @@ class ExternalPageSheet extends StatefulWidget {
 
   /// O domínio, sem `www.` nem `m.`: `pt.wikipedia.org`, `lichess.org`.
   static String domainOf(Uri url) =>
-      url.host.replaceFirst(RegExp(r'^(www|m)\.'), '');
+      url.host.replaceFirst(_wwwOrMobilePrefix, '');
 
   @override
   State<ExternalPageSheet> createState() => _ExternalPageSheetState();
@@ -93,14 +93,36 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final domain = ExternalPageSheet.domainOf(widget.url);
     final title = _title;
     final hasTitle = title != null && title.isNotEmpty && title != domain;
-    return _content(theme, domain, hasTitle ? title : null);
+    return _Content(
+      phase: _phase,
+      page: _page,
+      domain: domain,
+      title: hasTitle ? title : null,
+    );
   }
+}
 
-  Widget _content(ThemeData theme, String domain, String? title) {
+/// O cabeçalho (título e domínio) e, embaixo, a página, o carregando ou o
+/// aviso de sem conexão.
+class _Content extends StatelessWidget {
+  const _Content({
+    required this.phase,
+    required this.page,
+    required this.domain,
+    required this.title,
+  });
+
+  final _Phase phase;
+  final Widget page;
+  final String domain;
+  final String? title;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         // O título da página (quando abriu) e o domínio embaixo; antes, só o
@@ -115,17 +137,17 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
         ),
         const Divider(),
         Expanded(
-          child: _phase == _Phase.failed
+          child: phase == _Phase.failed
               ? _Offline(theme: theme)
               : Stack(
                   children: [
                     Positioned.fill(
                       child: KeyedSubtree(
                         key: ExternalPageKeys.page,
-                        child: _page,
+                        child: page,
                       ),
                     ),
-                    if (_phase == _Phase.loading)
+                    if (phase == _Phase.loading)
                       const Align(
                         alignment: AlignmentDirectional.topCenter,
                         child: AnimatedProgress(
@@ -181,3 +203,5 @@ class _Offline extends StatelessWidget {
     );
   }
 }
+
+final _wwwOrMobilePrefix = RegExp(r'^(www|m)\.');

@@ -8,6 +8,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_text.dart';
 import 'treinador_textos.dart';
 
 /// Uma partida nas listas do Treinador (Hoje, Partidas e o início): o
@@ -235,7 +236,7 @@ class _Resultado extends StatelessWidget {
           context.letraDoResultado(resultado),
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             color: frente,
-            fontWeight: FontWeight.w700,
+            fontWeight: AppWeight.strong,
             letterSpacing: 0,
           ),
         ),

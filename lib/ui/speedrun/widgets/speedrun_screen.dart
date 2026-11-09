@@ -1,4 +1,4 @@
-import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../config/failure_report.dart';
 import '../../../domain/models/load_failure.dart';
 import '../../journey/widgets/challenge_load_error.dart';
 
@@ -7,6 +7,7 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/journey.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
@@ -92,46 +93,12 @@ class SpeedrunScreen extends StatelessWidget {
       ),
       bottomNavigationBar: summary == null
           ? null
-          : FutureBuilder<bool>(
-              future: trainingGoalDone == null
-                  ? null
-                  : Future<bool>.sync(trainingGoalDone!)
-                        .onError<Object>((error, stack) {
-                          reportHandledError(error, stack);
-                          return false;
-                        }),
-              builder: (context, training) => training.data == true
-                  ? SpeedrunActionBar(
-                      buttonKey: TrainingKeys.nextGoal,
-                      icon: Icons.arrow_forward_rounded,
-                      label: l10n.trainingNextGoal,
-                      onPressed: onNextGoal!,
-                    )
-                  : ongoing == null
-                  ? SpeedrunActionBar(
-                      buttonKey: SpeedrunKeys.start,
-                      icon: Icons.play_arrow_rounded,
-                      label: l10n.speedrunStartStages(total),
-                      onPressed: () => startSpeedrun(context, speedrun),
-                    )
-                  // O app fechou no meio de uma etapa: ela continua de onde parou.
-                  : SpeedrunActionBar(
-                      buttonKey: SpeedrunKeys.resume,
-                      icon: Icons.play_arrow_rounded,
-                      label: l10n.speedrunContinueStage(
-                        ongoing.currentStage + 1,
-                        total,
-                      ),
-                      onPressed: () async {
-                        final cubit = context.read<SpeedrunCubit>();
-                        final route = await cubit.resume();
-                        if (route == null || !context.mounted) return;
-                        await context.push(route);
-                        if (context.mounted) {
-                          await cubit.load(speedrunId: speedrun.id);
-                        }
-                      },
-                    ),
+          : _StartBar(
+              speedrun: speedrun,
+              ongoing: ongoing,
+              total: total,
+              trainingGoalDone: trainingGoalDone,
+              onNextGoal: onNextGoal,
             ),
       body: ShimmerConteudo(
         carregando: false,
@@ -169,36 +136,130 @@ class SpeedrunScreen extends StatelessWidget {
             // e o tempo das etapas feitas.
             if (summary != null)
               for (final (index, stage) in speedrun.stages.indexed)
-                SpeedrunStageRow(
-                  key: SpeedrunKeys.stageCard(index),
+                _StageItem(
                   index: index,
                   stage: stage,
                   speedrun: speedrun,
-                  last: index == total - 1,
-                  status: ongoing == null
-                      ? SpeedrunStageStatus.idle
-                      : index < ongoing.currentStage
-                      ? SpeedrunStageStatus.done
-                      : index == ongoing.currentStage
-                      ? SpeedrunStageStatus.current
-                      : SpeedrunStageStatus.ahead,
-                  trailing: ongoing != null && index < ongoing.currentStage
-                      ? TimeDisplay(
-                          value: runTime(context, ongoing.stages[index].time),
-                          semanticsLabel: l10n.speedrunStageTimeValue(
-                            index + 1,
-                            total,
-                            runTime(context, ongoing.stages[index].time),
-                          ),
-                          type: TimeDisplayType.duration,
-                          size: TimeDisplaySize.inline,
-                          textKey: SpeedrunKeys.stageTime(index),
-                        )
-                      : null,
+                  total: total,
+                  ongoing: ongoing,
                 ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// O botão fixo de baixo: próxima meta, "Começar" ou "Continuar".
+class _StartBar extends StatelessWidget {
+  const _StartBar({
+    required this.speedrun,
+    required this.ongoing,
+    required this.total,
+    required this.trainingGoalDone,
+    required this.onNextGoal,
+  });
+
+  final Speedrun speedrun;
+  final SpeedrunRun? ongoing;
+  final int total;
+  final Future<bool> Function()? trainingGoalDone;
+  final VoidCallback? onNextGoal;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final ongoing = this.ongoing;
+    return FutureBuilder<bool>(
+      future: trainingGoalDone == null
+          ? null
+          : Future<bool>.sync(trainingGoalDone!)
+                .onError<Object>((error, stack) {
+                  reportHandledError(error, stack);
+                  return false;
+                }),
+      builder: (context, training) => training.data == true
+          ? SpeedrunActionBar(
+              buttonKey: TrainingKeys.nextGoal,
+              icon: Icons.arrow_forward_rounded,
+              label: l10n.trainingNextGoal,
+              onPressed: onNextGoal!,
+            )
+          : ongoing == null
+          ? SpeedrunActionBar(
+              buttonKey: SpeedrunKeys.start,
+              icon: Icons.play_arrow_rounded,
+              label: l10n.speedrunStartStages(total),
+              onPressed: () => startSpeedrun(context, speedrun),
+            )
+          // O app fechou no meio de uma etapa: ela continua de onde parou.
+          : SpeedrunActionBar(
+              buttonKey: SpeedrunKeys.resume,
+              icon: Icons.play_arrow_rounded,
+              label: l10n.speedrunContinueStage(
+                ongoing.currentStage + 1,
+                total,
+              ),
+              onPressed: () async {
+                final cubit = context.read<SpeedrunCubit>();
+                final route = await cubit.resume();
+                if (route == null || !context.mounted) return;
+                await context.push(route);
+                if (context.mounted) {
+                  await cubit.load(speedrunId: speedrun.id);
+                }
+              },
+            ),
+    );
+  }
+}
+
+/// Uma etapa da trilha, com o tempo dela se a tentativa já passou por ali.
+class _StageItem extends StatelessWidget {
+  const _StageItem({
+    required this.index,
+    required this.stage,
+    required this.speedrun,
+    required this.total,
+    required this.ongoing,
+  });
+
+  final int index;
+  final Challenge stage;
+  final Speedrun speedrun;
+  final int total;
+  final SpeedrunRun? ongoing;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final ongoing = this.ongoing;
+    return SpeedrunStageRow(
+      key: SpeedrunKeys.stageCard(index),
+      index: index,
+      stage: stage,
+      speedrun: speedrun,
+      last: index == total - 1,
+      status: ongoing == null
+          ? SpeedrunStageStatus.idle
+          : index < ongoing.currentStage
+          ? SpeedrunStageStatus.done
+          : index == ongoing.currentStage
+          ? SpeedrunStageStatus.current
+          : SpeedrunStageStatus.ahead,
+      trailing: ongoing != null && index < ongoing.currentStage
+          ? TimeDisplay(
+              value: runTime(context, ongoing.stages[index].time),
+              semanticsLabel: l10n.speedrunStageTimeValue(
+                index + 1,
+                total,
+                runTime(context, ongoing.stages[index].time),
+              ),
+              type: TimeDisplayType.duration,
+              size: TimeDisplaySize.inline,
+              textKey: SpeedrunKeys.stageTime(index),
+            )
+          : null,
     );
   }
 }
@@ -306,7 +367,7 @@ class _RecordCard extends StatelessWidget {
         ),
       ],
     );
-    final link = _HistoryLink(withChevron: true);
+    final link = const _HistoryLink(withChevron: true);
     // Com a fonte grande, o link vai para baixo do recorde.
     final large = MediaQuery.textScalerOf(context).scale(14) > 21;
     return Card(

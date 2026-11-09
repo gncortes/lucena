@@ -9,7 +9,7 @@ import '../../core/widgets/skeleton.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/ads/ads_repository.dart';
+import '../../../config/view_models/goal.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/goal_keys.dart';
@@ -37,7 +37,7 @@ class GoalScreen extends StatelessWidget {
           current.exit != null && previous.exit == null,
       listener: (context, state) {
         // Respondeu a pergunta: é a hora do consentimento do Google (E1.25).
-        unawaited(context.read<AdsRepository>().requestConsent());
+        unawaited(requestAdsConsent(context));
         // O objetivo (e a faixa de iniciante) já estão no perfil.
         context.read<ProfileCubit>().load();
         context.go(Routes.tour);

@@ -24,7 +24,7 @@ void main() {
     'o nível do link vale, e a rota da partida leva o relógio dele',
     () async {
       final c = cubit(
-        ChallengeLink(
+        const ChallengeLink(
           fen: fen,
           userSide: Side.white,
           opponent: OpponentKind.maia,
@@ -43,7 +43,7 @@ void main() {
   test(
     'a rota da partida leva o link de origem inteiro (código, trava, cego)',
     () {
-      final link = ChallengeLink(
+      final link = const ChallengeLink(
         fen: fen,
         userSide: Side.white,
         opponent: OpponentKind.maia,
@@ -67,7 +67,7 @@ void main() {
     'contra o Stockfish, o adversário é o do Stockfish e não leva nível',
     () async {
       final c = cubit(
-        ChallengeLink(
+        const ChallengeLink(
           fen: fen,
           userSide: Side.black,
           opponent: OpponentKind.stockfish,

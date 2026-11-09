@@ -77,10 +77,45 @@ class CharacterBar extends StatelessWidget {
   final Object? dismissOn;
 
   @override
-  Widget build(BuildContext context) =>
-      LayoutBuilder(builder: (context, box) => _build(context, box.maxWidth));
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) => _CharacterBarContent(
+      talk: talk,
+      avatarSize: avatarSize,
+      showName: showName,
+      speechTop: speechTop,
+      playerRow: playerRow,
+      onSpeechVisibilityChanged: onSpeechVisibilityChanged,
+      dismissOn: dismissOn,
+      width: box.maxWidth,
+    ),
+  );
+}
 
-  Widget _build(BuildContext context, double width) {
+/// O conteúdo da faixa do personagem numa largura [width]: o balão flutuante
+/// (com [speechTop]) ou o balão ao lado do retrato.
+class _CharacterBarContent extends StatelessWidget {
+  const _CharacterBarContent({
+    required this.talk,
+    required this.avatarSize,
+    required this.showName,
+    required this.speechTop,
+    required this.playerRow,
+    required this.onSpeechVisibilityChanged,
+    required this.dismissOn,
+    required this.width,
+  });
+
+  final TalkState talk;
+  final double avatarSize;
+  final bool showName;
+  final double? speechTop;
+  final Widget? playerRow;
+  final ValueChanged<bool>? onSpeechVisibilityChanged;
+  final Object? dismissOn;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) {
     final character = talk.character!;
     final line = talk.enabled ? talk.line : null;
     if (speechTop case final top?) {
@@ -89,7 +124,7 @@ class CharacterBar extends StatelessWidget {
           : SpeechFit.measure(
               context,
               text: line.text,
-              width: speechTextWidth(width),
+              width: CharacterBar.speechTextWidth(width),
               base: SpeechBalloon.style(context),
             );
       return _SpeechOverlay(
@@ -106,19 +141,22 @@ class CharacterBar extends StatelessWidget {
                 builder: (context, close) => GameEntrance(
                   part: GameEntrancePart.speech,
                   // O balão fica no lugar; só o texto troca (crossfade).
-                  child: _balloon(
-                    context,
-                    character,
-                    line,
-                    BalloonTail.down,
-                    fit,
-                    speechTextWidth(width),
+                  child: _CharacterBalloon(
+                    talk: talk,
+                    avatarSize: avatarSize,
+                    character: character,
+                    line: line,
+                    tail: BalloonTail.down,
+                    fit: fit,
+                    width: CharacterBar.speechTextWidth(width),
                     onClose: fit.open ? close : null,
                   ),
                 ),
               ),
         child: SizedBox(
-          height: playerRow == null ? heightFor(avatarSize) : ClockRow.height,
+          height: playerRow == null
+              ? CharacterBar.heightFor(avatarSize)
+              : ClockRow.height,
           child: playerRow != null
               ? KeyedSubtree(key: FreeBoardKeys.characterBar, child: playerRow!)
               : CharacterBar(
@@ -129,6 +167,38 @@ class CharacterBar extends StatelessWidget {
         ),
       );
     }
+    return _BesideCharacter(
+      talk: talk,
+      avatarSize: avatarSize,
+      showName: showName,
+      width: width,
+      character: character,
+      line: line,
+    );
+  }
+}
+
+/// O retrato com o balão ao lado, numa faixa de altura fixa.
+class _BesideCharacter extends StatelessWidget {
+  const _BesideCharacter({
+    required this.talk,
+    required this.avatarSize,
+    required this.showName,
+    required this.width,
+    required this.character,
+    required this.line,
+  });
+
+  final TalkState talk;
+  final double avatarSize;
+  final bool showName;
+  final double width;
+  final Character character;
+  final CharacterLine? line;
+
+  @override
+  Widget build(BuildContext context) {
+    final line = this.line;
     // Ao lado do retrato, numa faixa de altura fixa: as linhas do espaço
     // fixo e, além delas, "… Ver mais" (sem abrir por cima).
     final besideWidth = math.max(
@@ -142,13 +212,13 @@ class CharacterBar extends StatelessWidget {
     );
     return SizedBox(
       key: FreeBoardKeys.characterBar,
-      height: heightFor(avatarSize),
+      height: CharacterBar.heightFor(avatarSize),
       child: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(
           AppSpacing.md,
-          topGap,
+          CharacterBar.topGap,
           AppSpacing.md,
-          bottomGap,
+          CharacterBar.bottomGap,
         ),
         child: Row(
           // O balão alinhado pela base do retrato.
@@ -190,19 +260,20 @@ class CharacterBar extends StatelessWidget {
                     ? const SizedBox.shrink()
                     : Align(
                         alignment: AlignmentDirectional.bottomStart,
-                        child: _balloon(
-                          context,
-                          character,
-                          line,
-                          BalloonTail.start,
-                          SpeechFit.measure(
+                        child: _CharacterBalloon(
+                          talk: talk,
+                          avatarSize: avatarSize,
+                          character: character,
+                          line: line,
+                          tail: BalloonTail.start,
+                          fit: SpeechFit.measure(
                             context,
                             text: line.text,
                             width: besideWidth,
                             base: SpeechBalloon.style(context),
                             opened: SpeechFit.fixedLines,
                           ),
-                          besideWidth,
+                          width: besideWidth,
                         ),
                       ),
               ),
@@ -212,41 +283,60 @@ class CharacterBar extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// A folha com a fala inteira: retrato, nome, a fala direto na superfície
-  /// e o botão de som.
-  void _openSheet(BuildContext context, Character character, String text) {
-    final speech = context.read<SpeechCubit?>()?.state;
-    final sound = context.read<SettingsCubit?>()?.state?.sound ?? true;
-    unawaited(
-      showScriptSpeechSheet(
-        context,
-        viktor: character,
-        title: character.name,
-        texts: [text],
-        // O mesmo painel de som e voz da partida.
-        action: LessonVoiceButton(
-          audible: sound && (speech?.charactersHeard ?? false),
-          speed: speech?.settings.speed ?? 1,
-          onPressed: () => showGameSoundDialog(context),
-        ),
+/// A folha com a fala inteira: retrato, nome, a fala direto na superfície
+/// e o botão de som.
+void _openCharacterSheet(
+  BuildContext context,
+  Character character,
+  String text,
+) {
+  final speech = context.read<SpeechCubit?>()?.state;
+  final sound = context.read<SettingsCubit?>()?.state?.sound ?? true;
+  unawaited(
+    showScriptSpeechSheet(
+      context,
+      viktor: character,
+      title: character.name,
+      texts: [text],
+      // O mesmo painel de som e voz da partida.
+      action: LessonVoiceButton(
+        audible: sound && (speech?.charactersHeard ?? false),
+        speed: speech?.settings.speed ?? 1,
+        onPressed: () => showGameSoundDialog(context),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  /// O balão único do app com a fala do personagem (T84): cabe no espaço
-  /// fixo de 2 linhas (letra de 15 a 13); passou disso, se abre por cima com
-  /// o X ([onClose]); nem assim cabe, corta em "… Ver mais". O clique no
-  /// balão abre a folha com a fala inteira.
-  Widget _balloon(
-    BuildContext context,
-    Character character,
-    CharacterLine line,
-    BalloonTail tail,
-    SpeechFit fit,
-    double width, {
-    VoidCallback? onClose,
-  }) {
+/// O balão único do app com a fala do personagem (T84): cabe no espaço
+/// fixo de 2 linhas (letra de 15 a 13); passou disso, se abre por cima com
+/// o X ([onClose]); nem assim cabe, corta em "… Ver mais". O clique no
+/// balão abre a folha com a fala inteira.
+class _CharacterBalloon extends StatelessWidget {
+  const _CharacterBalloon({
+    required this.talk,
+    required this.avatarSize,
+    required this.character,
+    required this.line,
+    required this.tail,
+    required this.fit,
+    required this.width,
+    this.onClose,
+  });
+
+  final TalkState talk;
+  final double avatarSize;
+  final Character character;
+  final CharacterLine line;
+  final BalloonTail tail;
+  final SpeechFit fit;
+  final double width;
+  final VoidCallback? onClose;
+
+  @override
+  Widget build(BuildContext context) {
     final style = fit.style;
     var text = line.text;
     InlineSpan? more;
@@ -274,13 +364,15 @@ class CharacterBar extends StatelessWidget {
       fitContent: true,
       semanticsLabel: context.l10n.characterSays(character.name, line.text),
       tapHint: context.l10n.lessonFullSpeech,
-      onTap: () => _openSheet(context, character, line.text),
+      onTap: () => _openCharacterSheet(context, character, line.text),
       onClose: onClose,
-      child: _spoken(
-        context,
-        line.id,
-        line.text,
-        KeyedSubtree(
+      child: _SpokenBubble(
+        key: ValueKey(line.id),
+        id: line.id,
+        text: line.text,
+        isEngine: talk.isEngine,
+        speakerId: talk.character!.id,
+        bubble: KeyedSubtree(
           key: more == null ? null : SpeechKeys.cut,
           child: TypewriterText(
             text,
@@ -294,12 +386,30 @@ class CharacterBar extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// A fala sai na voz do personagem, com a voz ligada. O Stockfish não
-  /// fala.
-  Widget _spoken(BuildContext context, String id, String text, Widget bubble) {
+/// A fala sai na voz do personagem, com a voz ligada. O Stockfish não
+/// fala.
+class _SpokenBubble extends StatelessWidget {
+  const _SpokenBubble({
+    required this.id,
+    required this.text,
+    required this.isEngine,
+    required this.speakerId,
+    required this.bubble,
+    super.key,
+  });
+
+  final String id;
+  final String text;
+  final bool isEngine;
+  final String speakerId;
+  final Widget bubble;
+
+  @override
+  Widget build(BuildContext context) {
     final speech = TeacherSpeech.speechOf(context);
-    if (speech == null || talk.isEngine) {
+    if (speech == null || isEngine) {
       return KeyedSubtree(key: ValueKey(id), child: bubble);
     }
     return AutoSpeak(
@@ -310,7 +420,7 @@ class CharacterBar extends StatelessWidget {
       auto:
           (context.watch<SettingsCubit?>()?.state?.sound ?? true) &&
           !speech.state.settings.charactersMuted,
-      speakerId: talk.character!.id,
+      speakerId: speakerId,
       child: bubble,
     );
   }

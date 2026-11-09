@@ -11,9 +11,9 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
-import '../../../data/repositories/account/account_invite_repository.dart';
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/characters/character_repository.dart';
+import '../../../config/view_models/conclusion.dart';
+import '../../../domain/models/character_lookup.dart';
+import '../view_models/conclusion_invite_cubit.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/clock_format.dart';
@@ -72,16 +72,13 @@ import '../../core/motion/barra_que_enche.dart';
 /// partida". Ela substitui a partida na pilha: fechar volta para onde o
 /// jogador estava antes de jogar.
 class ConclusionScreen extends StatefulWidget {
-  const ConclusionScreen({this.fresh = false, this.invite, super.key});
+  const ConclusionScreen({this.fresh = false, super.key});
 
   /// A partida acabou agora: as conquistas novas avisam por cima, como no
   /// fim da partida. Reaberta (o app fechado na conclusão), não avisam de
-  /// novo.
+  /// novo. Só ela convida para a conta (uma vez por instalação; sem o
+  /// repositório do convite acima, nunca).
   final bool fresh;
-
-  /// O convite da conta, uma vez por instalação, no fim de uma partida que
-  /// acabou agora (sem ele, nunca convida).
-  final AccountInviteRepository? invite;
 
   @override
   State<ConclusionScreen> createState() => _ConclusionScreenState();
@@ -93,36 +90,31 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
   final _card = GlobalKey();
   final _analysis = GlobalKey();
   bool _inviteChecked = false;
-  bool _inviteAvailable = false;
+  late final ConclusionInviteCubit _inviteCubit;
 
   // Sem conta e com a partida pronta, fora do meio de um speedrun.
   Future<void> _invite(ConclusionState state) async {
-    final invite = widget.invite;
     final conclusion = state.conclusion;
-    if (_inviteChecked || invite == null || !widget.fresh) return;
+    if (_inviteChecked || !widget.fresh) return;
     if (!state.ready || conclusion == null) return;
     if (conclusion.run?.nextChallenge != null) return;
     _inviteChecked = true;
-    if (context.read<AccountRepository>().current != null) return;
-    if (!await invite.pending()) return;
-    if (!mounted) return;
-    setState(() => _inviteAvailable = true);
-  }
-
-  // O X do cartão vale como "Agora não": some e suspende por 7 dias
-  // (H-CON-02).
-  Future<void> _closeInvite() async {
-    if (!_inviteAvailable) return;
-    setState(() => _inviteAvailable = false);
-    await widget.invite!.markShown();
+    await _inviteCubit.check();
   }
 
   @override
   void initState() {
     super.initState();
+    _inviteCubit = createConclusionInviteCubit(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _invite(context.read<ConclusionCubit>().state);
     });
+  }
+
+  @override
+  void dispose() {
+    _inviteCubit.close();
+    super.dispose();
   }
 
   @override
@@ -216,12 +208,16 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
             ? (state.ready
                   ? const SizedBox.shrink()
                   : const CascaComAtraso(child: SkeletonList()))
-            : _Body(
-                state: state,
-                conclusion: conclusion,
-                card: _card,
-                analysis: _analysis,
-                onAccountInviteClose: _inviteAvailable ? _closeInvite : null,
+            : BlocBuilder<ConclusionInviteCubit, bool>(
+                bloc: _inviteCubit,
+                builder: (context, invite) => _Body(
+                  state: state,
+                  conclusion: conclusion,
+                  card: _card,
+                  analysis: _analysis,
+                  // O X do cartão vale como "Agora não" (H-CON-02).
+                  onAccountInviteClose: invite ? _inviteCubit.dismiss : null,
+                ),
               ),
       ),
     );
@@ -372,7 +368,6 @@ class _Body extends StatelessWidget {
     final opponent = state.opponent;
     final comment = state.comment;
     final run = conclusion.run;
-    final feedback = state.feedback;
     final celebrate =
         conclusion.result == ConclusionResult.won &&
         (conclusion.kind == ConclusionKind.speedrunEnd ||
@@ -381,11 +376,106 @@ class _Body extends StatelessWidget {
             conclusion.achievements.isNotEmpty);
     // O que vai na imagem de compartilhar: o resultado e os números, sem
     // botões.
-    final outcome = _outcome(context, state, conclusion);
+    final outcome = _Outcome.shows(conclusion)
+        ? _Outcome(conclusion: conclusion)
+        : null;
     final rating = conclusion.before != null && conclusion.after != null
         ? _Rating(conclusion: conclusion)
         : null;
-    final numbers = <Widget>[
+    final numbers = _Numbers(state: state, conclusion: conclusion);
+    // A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
+    // cartão. Depois de pronta, ela entra na imagem de compartilhar.
+    final quick =
+        state.review != null ||
+            (conclusion.gameId != null &&
+                (conclusion.game?.moves.isNotEmpty ?? false))
+        ? _QuickAnalysis(
+            state: state,
+            conclusion: conclusion,
+            analysis: analysis,
+          )
+        : null;
+    final speech = opponent != null && comment != null
+        ? _OpponentComment(
+            opponent: opponent,
+            comment: comment,
+            emotion: state.emotion,
+          )
+        : null;
+    final sections = _Sections(
+      state: state,
+      conclusion: conclusion,
+      links: links,
+      onAccountInviteClose: onAccountInviteClose,
+      bestLine: context.read<ConclusionCubit>().canPlayBestLine,
+      // Perdeu desistindo: rever a partida e treinar o final (P9 B).
+      resign:
+          conclusion.end?.reason == GameEndReason.resign &&
+              conclusion.result == ConclusionResult.lost &&
+              conclusion.run == null
+          ? ResignLearnList.maybe(
+              gameId: (conclusion.game?.moves.isNotEmpty ?? false)
+                  ? conclusion.gameId
+                  : null,
+              lesson: state.finalLesson,
+            )
+          : null,
+      quick: quick,
+    );
+    // As ações, fixas embaixo: fora da imagem de compartilhar.
+    final actionsBar = main.isEmpty
+        ? null
+        : _ActionsBar(
+            state: state,
+            actions: main,
+            seeAnalysisId: winFooter ? conclusion.gameId : null,
+          );
+    // O cabeçalho, o resultado e os números vão na imagem de compartilhar.
+    final faixas = <FaixaDeEntrada>[
+      FaixaDeEntrada('titulo', _Header(state: state, conclusion: conclusion)),
+      if (outcome != null) FaixaDeEntrada('subtitulo', outcome),
+      if (rating != null) FaixaDeEntrada('placar', rating, conta: true),
+      FaixaDeEntrada('ritmo', numbers),
+    ];
+    final sharedCount = faixas.length;
+    faixas.addAll([
+      if (speech != null) FaixaDeEntrada('viktor', speech),
+      if (!sections.isEmpty) FaixaDeEntrada('conquista', sections),
+      if (actionsBar != null) FaixaDeEntrada('botoes', actionsBar),
+    ]);
+    return Stack(
+      children: [
+        // S3b: o cabeçalho, o objetivo, o rating (contando), o ritmo, a fala,
+        // a conquista e as ações entram em faixas escalonadas; reaberta,
+        // tudo já pronto. A AppBar fica fixa o tempo todo.
+        EntradaEmFaixas(
+          id: 'conclusao-${conclusion.kind.name}-${conclusion.gameId}',
+          faixas: faixas,
+          montar: (parts) => _Layout(
+            parts: parts,
+            sharedCount: sharedCount,
+            hasActionsBar: actionsBar != null,
+            card: card,
+          ),
+        ),
+        if (celebrate && !motion.disabled)
+          const Positioned.fill(child: IgnorePointer(child: Celebration())),
+      ],
+    );
+  }
+}
+
+/// Os números da partida: o modo, o tempo (quando há) e os lances às cegas.
+class _Numbers extends StatelessWidget {
+  const _Numbers({required this.state, required this.conclusion});
+
+  final ConclusionState state;
+  final Conclusion conclusion;
+
+  @override
+  Widget build(BuildContext context) {
+    final run = conclusion.run;
+    return _Spaced([
       _Mode(state: state, conclusion: conclusion),
       // O tempo só quando há tempo a mostrar (perder a primeira etapa logo
       // de cara não tem tempo nenhum).
@@ -402,51 +492,51 @@ class _Body extends StatelessWidget {
           key: ConclusionKeys.blindMoves,
           textAlign: TextAlign.center,
         ),
-    ];
-    // A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
-    // cartão. Depois de pronta, ela entra na imagem de compartilhar.
-    final quick =
-        state.review != null ||
-            (conclusion.gameId != null &&
-                (conclusion.game?.moves.isNotEmpty ?? false))
-        ? Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              KeyedSubtree(
-                key: ConclusionKeys.analysisShared,
-                child: RepaintBoundary(
-                  key: analysis,
-                  child: _Analysis(state: state, conclusion: conclusion),
-                ),
-              ),
-              // Abaixo do cartão, fora do RepaintBoundary: a imagem de
-              // compartilhar nunca mostra botão.
-              if (state.review != null)
-                if (conclusion.gameId case final gameId?) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  DetailedReviewButton(gameId: gameId),
-                ],
-            ],
-          )
-        : null;
-    final speech = opponent != null && comment != null
-        ? TeacherSpeech(
-            key: ConclusionKeys.comment,
-            // O mesmo componente de fala do professor, com a ponta para cima
-            // ligada ao avatar (S3b).
-            speechContext: SpeechContext.teaching,
-            teacher: opponent,
-            text: comment,
-            emotion: state.emotion,
-            // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
-            avatarSize: CharacterAvatar.speech,
-          )
-        : null;
-    final sections = <Widget>[
-      if (feedback.isNotEmpty)
+    ]);
+  }
+}
+
+/// Os blocos sob a fala: relatório, convite da conta, melhor linha, links e,
+/// no fim, a análise rápida.
+class _Sections extends StatelessWidget {
+  const _Sections({
+    required this.state,
+    required this.conclusion,
+    required this.links,
+    required this.onAccountInviteClose,
+    required this.bestLine,
+    required this.resign,
+    required this.quick,
+  });
+
+  final ConclusionState state;
+  final Conclusion conclusion;
+  final List<ConclusionAction> links;
+  final VoidCallback? onAccountInviteClose;
+
+  /// A partida de novo com o Stockfish no lugar do jogador.
+  final bool bestLine;
+
+  /// Perdeu desistindo: rever a partida e treinar o final (P9 B).
+  final Widget? resign;
+  final Widget? quick;
+
+  /// Sem nenhum bloco a mostrar.
+  bool get isEmpty =>
+      state.feedback.isEmpty &&
+      onAccountInviteClose == null &&
+      !bestLine &&
+      resign == null &&
+      links.isEmpty &&
+      quick == null;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Spaced([
+      if (state.feedback.isNotEmpty)
         ReportPanel(
           report: GameReport(
-            feedback: feedback,
+            feedback: state.feedback,
             achievements: conclusion.achievements,
             unlocked: conclusion.unlocked,
             characters: state.characters,
@@ -465,25 +555,90 @@ class _Body extends StatelessWidget {
         ),
       // A partida de novo com o Stockfish no lugar do jogador. Fora da imagem
       // de compartilhar.
-      if (context.read<ConclusionCubit>().canPlayBestLine)
-        _BestLine(state: state, conclusion: conclusion),
-      // Perdeu desistindo: rever a partida e treinar o final (P9 B).
-      if (conclusion.end?.reason == GameEndReason.resign &&
-          conclusion.result == ConclusionResult.lost &&
-          conclusion.run == null)
-        ?ResignLearnList.maybe(
-          gameId: (conclusion.game?.moves.isNotEmpty ?? false)
-              ? conclusion.gameId
-              : null,
-          lesson: state.finalLesson,
-        ),
+      if (bestLine) _BestLine(state: state, conclusion: conclusion),
+      ?resign,
       if (links.isNotEmpty) _Links(conclusion: conclusion, links: links),
       // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
       // curta, no toque na longa.
       ?quick,
-    ];
-    final cardKey = card;
-    Widget spaced(Iterable<Widget> blocks) => Column(
+    ]);
+  }
+}
+
+/// A análise rápida: o botão, o tabuleiro andando e o resumo, no mesmo
+/// cartão. Depois de pronta, ela entra na imagem de compartilhar.
+class _QuickAnalysis extends StatelessWidget {
+  const _QuickAnalysis({
+    required this.state,
+    required this.conclusion,
+    required this.analysis,
+  });
+
+  final ConclusionState state;
+  final Conclusion conclusion;
+  final GlobalKey analysis;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        KeyedSubtree(
+          key: ConclusionKeys.analysisShared,
+          child: RepaintBoundary(
+            key: analysis,
+            child: _Analysis(state: state, conclusion: conclusion),
+          ),
+        ),
+        // Abaixo do cartão, fora do RepaintBoundary: a imagem de
+        // compartilhar nunca mostra botão.
+        if (state.review != null)
+          if (conclusion.gameId case final gameId?) ...[
+            const SizedBox(height: AppSpacing.sm),
+            DetailedReviewButton(gameId: gameId),
+          ],
+      ],
+    );
+  }
+}
+
+/// A fala do adversário sobre a partida.
+class _OpponentComment extends StatelessWidget {
+  const _OpponentComment({
+    required this.opponent,
+    required this.comment,
+    required this.emotion,
+  });
+
+  final Character opponent;
+  final String comment;
+  final Emotion emotion;
+
+  @override
+  Widget build(BuildContext context) {
+    return TeacherSpeech(
+      key: ConclusionKeys.comment,
+      // O mesmo componente de fala do professor, com a ponta para cima
+      // ligada ao avatar (S3b).
+      speechContext: SpeechContext.teaching,
+      teacher: opponent,
+      text: comment,
+      emotion: emotion,
+      // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
+      avatarSize: CharacterAvatar.speech,
+    );
+  }
+}
+
+/// Os blocos em coluna, com o espaço entre eles.
+class _Spaced extends StatelessWidget {
+  const _Spaced(this.blocks);
+
+  final Iterable<Widget> blocks;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -494,72 +649,56 @@ class _Body extends StatelessWidget {
           ),
       ],
     );
-    // As ações, fixas embaixo: fora da imagem de compartilhar.
-    final actionsBar = main.isEmpty
-        ? null
-        : _ActionsBar(
-            state: state,
-            actions: main,
-            seeAnalysisId: winFooter ? conclusion.gameId : null,
-          );
-    // O cabeçalho, o resultado e os números vão na imagem de compartilhar.
-    final faixas = <FaixaDeEntrada>[
-      FaixaDeEntrada('titulo', _Header(state: state, conclusion: conclusion)),
-      if (outcome != null) FaixaDeEntrada('subtitulo', outcome),
-      if (rating != null) FaixaDeEntrada('placar', rating, conta: true),
-      FaixaDeEntrada('ritmo', spaced(numbers)),
-    ];
-    final sharedCount = faixas.length;
-    faixas.addAll([
-      if (speech != null) FaixaDeEntrada('viktor', speech),
-      if (sections.isNotEmpty) FaixaDeEntrada('conquista', spaced(sections)),
-      if (actionsBar != null) FaixaDeEntrada('botoes', actionsBar),
-    ]);
-    return Stack(
+  }
+}
+
+/// A tela rolável: a imagem de compartilhar (cartão), os outros blocos e as
+/// ações fixas embaixo.
+class _Layout extends StatelessWidget {
+  const _Layout({
+    required this.parts,
+    required this.sharedCount,
+    required this.hasActionsBar,
+    required this.card,
+  });
+
+  final List<Widget> parts;
+  final int sharedCount;
+  final bool hasActionsBar;
+  final GlobalKey card;
+
+  @override
+  Widget build(BuildContext context) {
+    final shared = parts.take(sharedCount);
+    final rest = parts.skip(sharedCount).toList();
+    final bottom = hasActionsBar ? rest.removeLast() : null;
+    return Column(
       children: [
-        // S3b: o cabeçalho, o objetivo, o rating (contando), o ritmo, a fala,
-        // a conquista e as ações entram em faixas escalonadas; reaberta,
-        // tudo já pronto. A AppBar fica fixa o tempo todo.
-        EntradaEmFaixas(
-          id: 'conclusao-${conclusion.kind.name}-${conclusion.gameId}',
-          faixas: faixas,
-          montar: (parts) {
-            final shared = parts.take(sharedCount);
-            final rest = parts.skip(sharedCount).toList();
-            final bottom = actionsBar == null ? null : rest.removeLast();
-            return Column(
-              children: [
-                Expanded(
-                  // Rolagem simples, não lista preguiçosa: todos os blocos
-                  // ficam montados, e compartilhar acha o cartão e a análise
-                  // mesmo com a tela rolada para longe deles.
-                  child: SingleChildScrollView(
-                    padding: scrollPadding(
-                      context,
-                      left: AppSpacing.screen,
-                      top: AppSpacing.sm,
-                      right: AppSpacing.screen,
-                      bottom: AppSpacing.xl,
-                    ),
-                    child: spaced([
-                      RepaintBoundary(
-                        key: cardKey,
-                        child: ColoredBox(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          child: spaced(shared),
-                        ),
-                      ),
-                      ...rest,
-                    ]),
-                  ),
+        Expanded(
+          // Rolagem simples, não lista preguiçosa: todos os blocos
+          // ficam montados, e compartilhar acha o cartão e a análise
+          // mesmo com a tela rolada para longe deles.
+          child: SingleChildScrollView(
+            padding: scrollPadding(
+              context,
+              left: AppSpacing.screen,
+              top: AppSpacing.sm,
+              right: AppSpacing.screen,
+              bottom: AppSpacing.xl,
+            ),
+            child: _Spaced([
+              RepaintBoundary(
+                key: card,
+                child: ColoredBox(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: _Spaced(shared),
                 ),
-                ?bottom,
-              ],
-            );
-          },
+              ),
+              ...rest,
+            ]),
+          ),
         ),
-        if (celebrate && !motion.disabled)
-          const Positioned.fill(child: IgnorePointer(child: Celebration())),
+        ?bottom,
       ],
     );
   }
@@ -603,23 +742,7 @@ class _Header extends StatelessWidget {
       child: Stack(
         children: [
           // A posição final, desfocada, no tema do tabuleiro do jogador.
-          if (fen != null)
-            Positioned.fill(
-              child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: LayoutBuilder(
-                  builder: (context, box) => OverflowBox(
-                    maxHeight: box.maxWidth,
-                    child: PositionBoard(
-                      fen: fen,
-                      size: box.maxWidth,
-                      orientation: userSide,
-                      radius: AppShape.none,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          if (fen != null) _BlurredBoard(fen: fen, userSide: userSide),
           Positioned.fill(
             child: ColoredBox(color: colors.surface.withValues(alpha: 0.72)),
           ),
@@ -676,9 +799,9 @@ class _Header extends StatelessWidget {
                       child: _Player(
                         key: ConclusionKeys.opponent,
                         avatar: opponent == null
-                            ? ColoredBox(
+                            ? const ColoredBox(
                                 color: AppColors.chessBlackColor,
-                                child: const Icon(
+                                child: Icon(
                                   Icons.smart_toy_outlined,
                                   color: AppColors.chessWhiteColor,
                                   size: AppIconSize.large,
@@ -699,6 +822,34 @@ class _Header extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A posição final, desfocada, no tema do tabuleiro do jogador.
+class _BlurredBoard extends StatelessWidget {
+  const _BlurredBoard({required this.fen, required this.userSide});
+
+  final String fen;
+  final Side userSide;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+        child: LayoutBuilder(
+          builder: (context, box) => OverflowBox(
+            maxHeight: box.maxWidth,
+            child: PositionBoard(
+              fen: fen,
+              size: box.maxWidth,
+              orientation: userSide,
+              radius: AppShape.none,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1362,21 +1513,13 @@ class _ReviewBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final game = state.conclusion!.game!;
-    Position position = Chess.fromSetup(Setup.parseFen(game.startFen!));
-    Move? last;
-    for (final uci in game.moves.take(state.reviewDone)) {
-      final move = Move.parse(uci);
-      if (move == null || !position.isLegal(move)) break;
-      position = position.play(move);
-      last = move;
-    }
+    final board = state.reviewBoard;
     return PositionBoard(
       key: ConclusionKeys.reviewBoard,
-      fen: position.fen,
+      fen: board.position.fen,
       size: size,
       orientation: state.conclusion!.userSide,
-      lastMove: last,
+      lastMove: board.last,
     );
   }
 }
@@ -1730,18 +1873,8 @@ class _BestLineState extends State<_BestLine> {
     final ply = state.bestPly;
     final running = state.bestLineRunning;
     final game = widget.conclusion.game!;
-    // A posição depois do lance mostrado e o nome dele (SAN).
-    Position position = Chess.fromSetup(Setup.parseFen(game.startFen!));
-    Move? last;
-    String? san;
-    for (final uci in line.take(ply + 1)) {
-      final move = Move.parse(uci);
-      if (move == null || !position.isLegal(move)) break;
-      final (next, name) = position.makeSan(move);
-      position = next;
-      last = move;
-      san = name;
-    }
+    // A posição depois do lance mostrado e o nome dele (SAN), do estado.
+    final (:position, :last, :san) = state.bestBoard;
     final opponentName =
         state.opponent?.name ??
         game.opponent.label(l10n, level: game.opponentLevel);
@@ -1846,41 +1979,47 @@ class _BestLineState extends State<_BestLine> {
 
 /// O resultado em destaque abaixo do cabeçalho: o objetivo cumprido (✓) ou
 /// não (✕); no fim do speedrun com recorde, o troféu e o tempo.
-Widget? _outcome(
-  BuildContext context,
-  ConclusionState state,
-  Conclusion conclusion,
-) {
-  final l10n = context.l10n;
-  final run = conclusion.run;
-  if (run != null && run.newRecord) {
-    return OutcomeStrip(
-      key: ConclusionKeys.newRecord,
-      mark: OutcomeMark.record,
-      color: AppColors.record,
-      title: l10n.speedrunNewRecord,
-    );
-  }
-  final fulfilled = conclusion.fulfilled;
-  if (fulfilled == null) return null;
-  // Desistir não é falha de sistema: faixa cinza com a bandeira, sem o
-  // vermelho (P9 B).
-  if (!fulfilled &&
-      conclusion.result == ConclusionResult.lost &&
-      conclusion.end?.reason == GameEndReason.resign) {
+class _Outcome extends StatelessWidget {
+  const _Outcome({required this.conclusion});
+
+  final Conclusion conclusion;
+
+  /// Há resultado a mostrar: recorde no speedrun ou objetivo com veredito.
+  static bool shows(Conclusion conclusion) =>
+      (conclusion.run?.newRecord ?? false) || conclusion.fulfilled != null;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final run = conclusion.run;
+    if (run != null && run.newRecord) {
+      return OutcomeStrip(
+        key: ConclusionKeys.newRecord,
+        mark: OutcomeMark.record,
+        color: AppColors.record,
+        title: l10n.speedrunNewRecord,
+      );
+    }
+    final fulfilled = conclusion.fulfilled!;
+    // Desistir não é falha de sistema: faixa cinza com a bandeira, sem o
+    // vermelho (P9 B).
+    if (!fulfilled &&
+        conclusion.result == ConclusionResult.lost &&
+        conclusion.end?.reason == GameEndReason.resign) {
+      return OutcomeStrip(
+        key: ConclusionKeys.goal,
+        mark: OutcomeMark.flag,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        title: l10n.resultNotFulfilled,
+      );
+    }
     return OutcomeStrip(
       key: ConclusionKeys.goal,
-      mark: OutcomeMark.flag,
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-      title: l10n.resultNotFulfilled,
+      mark: fulfilled ? OutcomeMark.check : OutcomeMark.cross,
+      color: ChangeColors.of(context, up: fulfilled),
+      title: fulfilled ? l10n.resultFulfilled : l10n.resultNotFulfilled,
     );
   }
-  return OutcomeStrip(
-    key: ConclusionKeys.goal,
-    mark: fulfilled ? OutcomeMark.check : OutcomeMark.cross,
-    color: ChangeColors.of(context, up: fulfilled),
-    title: fulfilled ? l10n.resultFulfilled : l10n.resultNotFulfilled,
-  );
 }
 
 /// "Ver a análise detalhada": a revisão completa da partida [gameId].

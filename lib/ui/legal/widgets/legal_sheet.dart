@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/legal/legal_repository.dart';
+import '../../../config/view_models/legal.dart';
 import '../../../domain/models/legal_document.dart';
 import '../../core/keys/legal_keys.dart';
 import '../../core/motion/entrada_em_cascata.dart';
@@ -23,7 +22,7 @@ Future<void> openLegal(
   required Uri website,
 }) async {
   final language = Localizations.localeOf(context).languageCode;
-  final document = await context.read<LegalRepository>().load(kind, language);
+  final document = await loadLegalDocument(context, kind, language);
   if (!context.mounted) return;
   if (document == null) return openLink(context, website);
   final l10n = context.l10n;

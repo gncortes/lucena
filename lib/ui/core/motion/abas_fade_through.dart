@@ -33,7 +33,8 @@ class AbasFadeThrough extends StatelessWidget {
             : venda
             ? LucenaMotion.abasDaVenda
             : LucenaMotion.abas,
-        layoutBuilder: _pilha,
+        layoutBuilder: (filhos) =>
+            Stack(alignment: Alignment.topCenter, children: filhos),
         transitionBuilder: (filho, primaria, secundaria) => reduzido
             ? FadeTransition(
                 opacity: primaria,
@@ -48,9 +49,6 @@ class AbasFadeThrough extends StatelessWidget {
     );
   }
 }
-
-Widget _pilha(List<Widget> filhos) =>
-    Stack(alignment: Alignment.topCenter, children: filhos);
 
 class _Cruzamento extends StatelessWidget {
   const _Cruzamento({

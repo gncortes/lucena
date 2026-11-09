@@ -392,6 +392,26 @@ void main() {
     expectTabuleiroAnimado(tester, FreeBoardKeys.board);
   });
 
+  testWidgets('mudar só o estado da fala não refaz o tabuleiro', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    final before = tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board));
+
+    talk.setEnabled(enabled: !talk.state.enabled);
+    // Um quadro entrega o evento do cubit; o seguinte reconstrói.
+    await tester.pump();
+    await tester.pump();
+
+    expect(
+      identical(
+        tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board)),
+        before,
+      ),
+      isTrue,
+    );
+  });
+
   testWidgets(
     'o tabuleiro usa as cores, as peças e as coordenadas escolhidas',
     (tester) async {
@@ -2851,12 +2871,12 @@ void main() {
 
     group('link de campanha com aula (T84)', () {
       const lessonFen = 'k7/8/1K6/8/8/8/7Q/8 w - - 0 1';
-      final link = ChallengeLink(
+      final link = const ChallengeLink(
         fen: lessonFen,
         userSide: Side.white,
         opponent: OpponentKind.stockfish,
-        lesson: const LinkedLesson.endgame('rook.lucena'),
-        utm: const {'utm_source': 'instagram', 'utm_campaign': 'torre-engana'},
+        lesson: LinkedLesson.endgame('rook.lucena'),
+        utm: {'utm_source': 'instagram', 'utm_campaign': 'torre-engana'},
       );
       late FakeAnalyticsRepository analytics;
       late MemoryCampaignRepository campaigns;

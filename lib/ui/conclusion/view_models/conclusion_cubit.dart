@@ -31,6 +31,7 @@ import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/beginner_home.dart';
 import '../../../domain/use_cases/conclusion_rules.dart';
 import '../../../domain/use_cases/game_feedback.dart';
+import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/mastery.dart';
 import '../../../domain/use_cases/review_rules.dart';
@@ -58,7 +59,7 @@ class ConclusionArgs {
 
 /// O que a tela de conclusão mostra.
 class ConclusionState {
-  const ConclusionState({
+  ConclusionState({
     this.ready = false,
     this.missing = false,
     this.failed = false,
@@ -138,6 +139,22 @@ class ConclusionState {
   /// Só vem preenchida na derrota por desistência ("Treinar este final").
   final RaceFinalLesson? finalLesson;
 
+  /// O tabuleiro da análise rápida: a posição depois do último lance avaliado.
+  /// Calculado uma vez por estado, não a cada desenho.
+  late final Replay reviewBoard = _replay(
+    conclusion?.game?.moves ?? const [],
+    reviewDone,
+  );
+
+  /// O tabuleiro da melhor linha: a posição depois do lance mostrado.
+  late final Replay bestBoard = _replay(bestLine, bestPly + 1);
+
+  Replay _replay(List<String> moves, int count) {
+    final fen = conclusion?.game?.startFen;
+    final start = fen == null ? null : GameRules.fromFen(fen);
+    return GameRules.replay(start ?? GameRules.initial, moves, max: count);
+  }
+
   ConclusionState copyWith({
     bool? failed,
     GameReview? review,
@@ -191,7 +208,7 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     this._reviews,
     this._opponent,
     this._profile,
-  }) : super(const ConclusionState());
+  }) : super(ConclusionState());
 
   final ProgressRepository _progress;
   final RatingRepository _rating;
@@ -249,7 +266,7 @@ class ConclusionCubit extends Cubit<ConclusionState> {
   Future<void> _load(int gameId, String language) async {
     final game = (await _progress.attemptsById([gameId]))[gameId];
     if (game == null) {
-      if (!isClosed) emit(const ConclusionState(ready: true, missing: true));
+      if (!isClosed) emit(ConclusionState(ready: true, missing: true));
       return;
     }
     await _pending?.open(gameId);

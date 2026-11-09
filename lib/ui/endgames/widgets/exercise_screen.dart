@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/motion/barra_que_enche.dart';
@@ -393,35 +394,33 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 // Regra da app bar (T85): a estrela já aparece no
                 // carregando, apagada.
                 if (!widget.trainingTest)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(
-                      end: AppSpacing.md,
-                    ),
-                    child: Semantics(
-                      label: state.exercise == null
-                          ? null
-                          : _starLabel(l10n, state, state.exercise!),
-                      excludeSemantics: true,
-                      // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
-                      // ainda vale pontos, vazia se não.
-                      child: Icon(
-                        state.exercise == null || state.worth > 0
-                            ? Icons.star_rounded
-                            : Icons.star_outline_rounded,
-                        key: ExerciseKeys.stars,
-                        size: AppIconSize.large,
-                        color: state.exercise == null
-                            ? Theme.of(context).colorScheme.onSurface
-                                  .withValues(alpha: 0.38)
-                            : Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
+                  _WorthStar(
+                    state: state,
+                    label: state.exercise == null
+                        ? null
+                        : _starLabel(l10n, state, state.exercise!),
                   ),
               ],
             ),
             body: BoardViewport(
               usefulHeight: BoardViewport.usefulHeightOf(context),
-              child: SafeArea(top: false, child: _body(context, state)),
+              child: SafeArea(
+                top: false,
+                child: _ExerciseBody(
+                  state: state,
+                  inputs: _BoardInputs(
+                    board: _board,
+                    previewFen: widget.previewFen,
+                    lessonId: widget.lessonId,
+                    exerciseId: widget.exerciseId,
+                    trainingTest: widget.trainingTest,
+                    boardKey: _boardKey,
+                    elapsed: _elapsed,
+                    flash: _flash,
+                    onTestMove: (move) => unawaited(_submitTestMove(move)),
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -442,14 +441,81 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     if (state.zeroed) return l10n.exerciseNoMorePoints;
     return l10n.exercisePoints(state.worth);
   }
+}
 
-  /// O tabuleiro fica com chave: o voo da miniatura só continua se o widget
-  /// for o mesmo entre o carregamento e o exercício aberto.
-  static const _boardAreaKey = ValueKey('exercise.boardArea');
+/// O tabuleiro fica com chave: o voo da miniatura só continua se o widget
+/// for o mesmo entre o carregamento e o exercício aberto.
+const _boardAreaKey = ValueKey('exercise.boardArea');
 
-  Widget _body(BuildContext context, ExerciseState state) {
+/// A estrela da app bar: o que o exercício vale agora.
+class _WorthStar extends StatelessWidget {
+  const _WorthStar({required this.state, required this.label});
+
+  final ExerciseState state;
+  final String? label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: AppSpacing.md),
+      child: Semantics(
+        label: label,
+        excludeSemantics: true,
+        // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
+        // ainda vale pontos, vazia se não.
+        child: Icon(
+          state.exercise == null || state.worth > 0
+              ? Icons.star_rounded
+              : Icons.star_outline_rounded,
+          key: ExerciseKeys.stars,
+          size: AppIconSize.large,
+          color: state.exercise == null
+              ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)
+              : Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
+    );
+  }
+}
+
+/// O que o tabuleiro e o rodapé leem da tela: o controlador, a posição da
+/// rota, o cronômetro, a casa realçada pela fala e a jogada do teste.
+class _BoardInputs {
+  const _BoardInputs({
+    required this.board,
+    required this.previewFen,
+    required this.lessonId,
+    required this.exerciseId,
+    required this.trainingTest,
+    required this.boardKey,
+    required this.elapsed,
+    required this.flash,
+    required this.onTestMove,
+  });
+
+  final ChessboardController? board;
+  final String? previewFen;
+  final String? lessonId;
+  final String? exerciseId;
+  final bool trainingTest;
+  final GlobalKey boardKey;
+  final ValueListenable<Duration> elapsed;
+  final SquareFlash flash;
+  final ValueChanged<Move> onTestMove;
+}
+
+/// O corpo da tela: o balão, a faixa do Viktor, o tabuleiro, a notação e o
+/// rodapé (ou, no teste do capítulo, a página do treino).
+class _ExerciseBody extends StatelessWidget {
+  const _ExerciseBody({required this.state, required this.inputs});
+
+  final ExerciseState state;
+  final _BoardInputs inputs;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    if (!state.ready) return _loading(context, state);
+    if (!state.ready) return _ExerciseLoading(state: state, inputs: inputs);
     final exercise = state.exercise;
     if (state.missing || exercise == null) {
       return Center(
@@ -459,7 +525,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final boardSettings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
-    if (widget.trainingTest && !state.locked && state.viktor != null) {
+    if (inputs.trainingTest && !state.locked && state.viktor != null) {
       return Column(
         children: [
           Expanded(
@@ -469,8 +535,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               text: state.side == Side.white
                   ? l10n.testCanvasWhite
                   : l10n.testCanvasBlack,
-              boardBuilder: (size) =>
-                  _boardArea(context, state, boardSettings, size: size),
+              boardBuilder: (size) => _BoardArea(
+                state: state,
+                settings: boardSettings,
+                size: size,
+                inputs: inputs,
+              ),
               notation: const SizedBox(height: 40),
             ),
           ),
@@ -499,80 +569,8 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final said = _speech(context, state, hide: hide && done);
     final texts = [...said.paragraphs, ?said.tip];
     final viktor = state.viktor;
-    final voice = TeacherSpeech.speechOf(context);
-    final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
     final spoken = SpeechText.plainOf(context, texts.join(' '));
-    // O cabeçalho da faixa e o da folha: o mesmo, com borrar e som.
-    Widget header(BuildContext c, Character teacher, double avatar) {
-      final headerHide = c.select(
-        (SettingsCubit cubit) => cubit.state?.exerciseHiddenMoves ?? false,
-      );
-      return TeacherSpeech(
-        part: TeacherSpeechPart.header,
-        lessonV2: true,
-        headerAvatar: avatar,
-        avatarHeroTag: scriptViktorHeroTag,
-        teacher: teacher,
-        text: spoken,
-        speechContext: SpeechContext.teaching,
-        onSoundSettings: () => showLessonSoundDialog(c),
-        // Ao lado do som, com a lista completa: cobrir ou mostrar
-        // os lances ainda não vistos (T69).
-        headerAction: done && nodes.isNotEmpty
-            ? HiddenMovesButton(
-                buttonKey: ExerciseKeys.hiddenMovesToggle,
-                hidden: headerHide,
-                onPressed: () => c.read<SettingsCubit>().setExerciseHiddenMoves(
-                  hidden: !headerHide,
-                ),
-              )
-            : null,
-      );
-    }
-
-    Widget speechOf(ScriptSpeechMetrics metrics) {
-      Widget speech = ScriptSpeech(
-        texts: [said.text],
-        footnote: said.tip,
-        metrics: metrics,
-        onSquareTap: _flash.show,
-        onOpen: viktor == null
-            ? null
-            : () => unawaited(
-                showScriptSpeechSheet(
-                  context,
-                  viktor: viktor,
-                  title: l10n.teacherName(viktor.name),
-                  texts: texts,
-                  onSquareTap: _flash.show,
-                  background: Theme.of(context).colorScheme.surfaceContainerLow,
-                  headerBuilder: (sheet) => header(sheet, viktor, 56),
-                  // Canvas `PropV2ExA7`: retrato de 56 e margem de 16.
-                  horizontalPadding: 16,
-                  headerHeight: 72,
-                ),
-              ),
-      );
-      if (voice != null) {
-        speech = AutoSpeak(
-          speech: voice,
-          text: spoken,
-          auto: sound,
-          speakerId: 'master',
-          child: speech,
-        );
-      }
-      return speech;
-    }
-
-    final strip = SizedBox(
-      key: LessonScriptKeys.characterBar,
-      height: ScriptPage.stripHeight,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        child: viktor == null ? null : header(context, viktor, 40),
-      ),
-    );
+    final toggle = done && nodes.isNotEmpty;
     return Column(
       children: [
         // Marcador invisível de qual exercício está aberto (os cenários
@@ -583,11 +581,38 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           child: ScriptPage(
             pageKey: ExerciseKeys.page,
             centerBoard: true,
-            speechBuilder: speechOf,
-            strip: strip,
+            speechBuilder: (metrics) => _ExerciseSpeech(
+              metrics: metrics,
+              said: said,
+              texts: texts,
+              spoken: spoken,
+              viktor: viktor,
+              toggle: toggle,
+              flash: inputs.flash,
+            ),
+            strip: SizedBox(
+              key: LessonScriptKeys.characterBar,
+              height: ScriptPage.stripHeight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: viktor == null
+                    ? null
+                    : _ExerciseTeacherBar(
+                        teacher: viktor,
+                        avatar: 40,
+                        spoken: spoken,
+                        toggle: toggle,
+                      ),
+              ),
+            ),
             boardBuilder: (size) => KeyedSubtree(
               key: _boardAreaKey,
-              child: _boardArea(context, state, boardSettings, size: size),
+              child: _BoardArea(
+                state: state,
+                settings: boardSettings,
+                size: size,
+                inputs: inputs,
+              ),
             ),
             list: ScriptMoveList(
               moves: [for (final node in nodes) _entry(node)],
@@ -600,7 +625,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             ),
           ),
         ),
-        _footer(context, state),
+        _ExerciseBottomBar(state: state, elapsed: inputs.elapsed),
       ],
     );
   }
@@ -621,7 +646,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   /// aula escreveu (ou, sem ele, a frase gerada do lance: nunca notação) e o
   /// que o aluno faz em seguida. A dica do borrar ([SpeechLine.tip]) vem à
   /// parte, para o corte do balão não a esconder.
-  SpeechLine _speech(
+  static SpeechLine _speech(
     BuildContext context,
     ExerciseState state, {
     required bool hide,
@@ -722,11 +747,129 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       what.length == 2 ? l10n.exerciseSolvedAnd(what[0], what[1]) : what.first,
     );
   }
+}
 
-  /// Enquanto o exercício carrega: o tabuleiro parado no centro (se a rota
-  /// trouxe a posição), para a miniatura pousar nele.
-  Widget _loading(BuildContext context, ExerciseState state) {
-    if (widget.previewFen == null) return const SkeletonList();
+/// O cabeçalho da faixa e o da folha: o mesmo, com borrar e som.
+class _ExerciseTeacherBar extends StatelessWidget {
+  const _ExerciseTeacherBar({
+    required this.teacher,
+    required this.avatar,
+    required this.spoken,
+    required this.toggle,
+  });
+
+  final Character teacher;
+  final double avatar;
+  final String spoken;
+
+  /// Com a lista completa: o botão de cobrir os lances ainda não vistos.
+  final bool toggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final headerHide = context.select(
+      (SettingsCubit cubit) => cubit.state?.exerciseHiddenMoves ?? false,
+    );
+    return TeacherSpeech(
+      part: TeacherSpeechPart.header,
+      lessonV2: true,
+      headerAvatar: avatar,
+      avatarHeroTag: scriptViktorHeroTag,
+      teacher: teacher,
+      text: spoken,
+      speechContext: SpeechContext.teaching,
+      onSoundSettings: () => showLessonSoundDialog(context),
+      // Ao lado do som, com a lista completa: cobrir ou mostrar
+      // os lances ainda não vistos (T69).
+      headerAction: toggle
+          ? HiddenMovesButton(
+              buttonKey: ExerciseKeys.hiddenMovesToggle,
+              hidden: headerHide,
+              onPressed: () => context
+                  .read<SettingsCubit>()
+                  .setExerciseHiddenMoves(hidden: !headerHide),
+            )
+          : null,
+    );
+  }
+}
+
+/// O balão do Viktor; o clique abre a fala inteira na folha.
+class _ExerciseSpeech extends StatelessWidget {
+  const _ExerciseSpeech({
+    required this.metrics,
+    required this.said,
+    required this.texts,
+    required this.spoken,
+    required this.viktor,
+    required this.toggle,
+    required this.flash,
+  });
+
+  final ScriptSpeechMetrics metrics;
+  final SpeechLine said;
+  final List<String> texts;
+  final String spoken;
+  final Character? viktor;
+  final bool toggle;
+  final SquareFlash flash;
+
+  @override
+  Widget build(BuildContext context) {
+    final viktor = this.viktor;
+    final voice = TeacherSpeech.speechOf(context);
+    final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
+    Widget speech = ScriptSpeech(
+      texts: [said.text],
+      footnote: said.tip,
+      metrics: metrics,
+      onSquareTap: flash.show,
+      onOpen: viktor == null
+          ? null
+          : () => unawaited(
+              showScriptSpeechSheet(
+                context,
+                viktor: viktor,
+                title: context.l10n.teacherName(viktor.name),
+                texts: texts,
+                onSquareTap: flash.show,
+                background: Theme.of(context).colorScheme.surfaceContainerLow,
+                headerBuilder: (sheet) => _ExerciseTeacherBar(
+                  teacher: viktor,
+                  avatar: 56,
+                  spoken: spoken,
+                  toggle: toggle,
+                ),
+                // Canvas `PropV2ExA7`: retrato de 56 e margem de 16.
+                horizontalPadding: 16,
+                headerHeight: 72,
+              ),
+            ),
+    );
+    if (voice != null) {
+      speech = AutoSpeak(
+        speech: voice,
+        text: spoken,
+        auto: sound,
+        speakerId: 'master',
+        child: speech,
+      );
+    }
+    return speech;
+  }
+}
+
+/// Enquanto o exercício carrega: o tabuleiro parado no centro (se a rota
+/// trouxe a posição), para a miniatura pousar nele.
+class _ExerciseLoading extends StatelessWidget {
+  const _ExerciseLoading({required this.state, required this.inputs});
+
+  final ExerciseState state;
+  final _BoardInputs inputs;
+
+  @override
+  Widget build(BuildContext context) {
+    if (inputs.previewFen == null) return const SkeletonList();
     return ScriptPage(
       pageKey: ExerciseKeys.page,
       centerBoard: true,
@@ -734,39 +877,51 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       strip: const SizedBox(height: ScriptPage.stripHeight),
       boardBuilder: (size) => KeyedSubtree(
         key: _boardAreaKey,
-        child: _boardArea(context, state, const BoardSettings(), size: size),
+        child: _BoardArea(
+          state: state,
+          settings: const BoardSettings(),
+          size: size,
+          inputs: inputs,
+        ),
       ),
       list: const SizedBox.shrink(),
     );
   }
+}
 
-  Widget _boardArea(
-    BuildContext context,
-    ExerciseState state,
-    BoardSettings boardSettings, {
-    required double size,
-  }) {
-    final board = _board;
-    final previewFen = widget.previewFen;
+/// O tabuleiro com o retorno do último lance (H-ANI-11/12) em volta.
+class _BoardArea extends StatelessWidget {
+  const _BoardArea({
+    required this.state,
+    required this.settings,
+    required this.size,
+    required this.inputs,
+  });
+
+  final ExerciseState state;
+  final BoardSettings settings;
+  final double size;
+  final _BoardInputs inputs;
+
+  @override
+  Widget build(BuildContext context) {
+    final board = inputs.board;
+    final previewFen = inputs.previewFen;
     if (board == null && previewFen == null) return const SizedBox.shrink();
-    final lessonId = state.lesson?.id ?? widget.lessonId ?? '';
-    final exerciseId = state.exercise?.id ?? widget.exerciseId ?? '';
-    final hint = state.hint;
-    final wrong = state.wrongMove;
-    final retorno = _retorno(state);
+    final retorno = _retorno();
     final child = KeyedSubtree(
-      key: _boardKey,
-      child: _boardStack(
-        context,
-        state,
-        boardSettings,
+      key: inputs.boardKey,
+      child: _BoardStack(
+        state: state,
+        settings: settings,
         size: size,
         board: board,
         previewFen: previewFen,
-        lessonId: lessonId,
-        exerciseId: exerciseId,
-        hint: hint,
-        wrong: wrong,
+        lessonId: state.lesson?.id ?? inputs.lessonId ?? '',
+        exerciseId: state.exercise?.id ?? inputs.exerciseId ?? '',
+        hint: state.hint,
+        wrong: state.wrongMove,
+        inputs: inputs,
       ),
     );
     if (retorno == null) return child;
@@ -785,10 +940,8 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 
   /// O retorno do último lance do aluno, se houver.
-  ({TipoDeRetorno tipo, Square casa, String id})? _retorno(
-    ExerciseState state,
-  ) {
-    if (widget.trainingTest) return null;
+  ({TipoDeRetorno tipo, Square casa, String id})? _retorno() {
+    if (inputs.trainingTest) return null;
     if (state.wrongMove case final NormalMove wrong) {
       return (
         tipo: TipoDeRetorno.erro,
@@ -809,19 +962,41 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     }
     return null;
   }
+}
 
-  Widget _boardStack(
-    BuildContext context,
-    ExerciseState state,
-    BoardSettings boardSettings, {
-    required double size,
-    required ChessboardController? board,
-    required String? previewFen,
-    required String lessonId,
-    required String exerciseId,
-    required Move? hint,
-    required Move? wrong,
-  }) {
+/// O tabuleiro de jogar (ou, carregando, a miniatura parada), destino do voo
+/// da miniatura da lista.
+class _BoardStack extends StatelessWidget {
+  const _BoardStack({
+    required this.state,
+    required this.settings,
+    required this.size,
+    required this.board,
+    required this.previewFen,
+    required this.lessonId,
+    required this.exerciseId,
+    required this.hint,
+    required this.wrong,
+    required this.inputs,
+  });
+
+  final ExerciseState state;
+  final BoardSettings settings;
+  final double size;
+  final ChessboardController? board;
+  final String? previewFen;
+  final String lessonId;
+  final String exerciseId;
+  final Move? hint;
+  final Move? wrong;
+  final _BoardInputs inputs;
+
+  @override
+  Widget build(BuildContext context) {
+    final board = this.board;
+    final hint = this.hint;
+    final wrong = this.wrong;
+    final flash = inputs.flash;
     return SizedBox.square(
       dimension: size,
       // A miniatura da lista voa até aqui e vira o tabuleiro.
@@ -839,25 +1014,25 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 // A seta vermelha do lance errado fica parada enquanto ele é
                 // comentado (canvas PropV2ExA3/A8).
                 child: ListenableBuilder(
-                  listenable: _flash,
+                  listenable: flash,
                   // H-ANI-10: deslize do kit, captura e halo do xeque.
                   builder: (context, _) => TabuleiroAnimado(
                     controlador: board,
                     orientacao: state.side,
                     tamanho: size,
-                    pecas: boardSettings.chessground.pieceAssets,
+                    pecas: settings.chessground.pieceAssets,
                     child: Chessboard(
                       key: ExerciseKeys.board,
                       size: size,
                       controller: board,
                       settings: TabuleiroAnimado.ajustes(
                         context,
-                        boardSettings.chessground,
+                        settings.chessground,
                       ),
                       orientation: state.side,
                       shapes: {
                         // A casa tocada na fala do professor.
-                        if (_flash.square case final flashed?)
+                        if (flash.square case final flashed?)
                           Circle(
                             color: ScriptShapes.arrow(
                               Theme.of(context).colorScheme,
@@ -883,8 +1058,8 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                           ),
                       },
                       onMove: (move, {viaDragAndDrop}) =>
-                          widget.trainingTest && !state.locked
-                          ? _submitTestMove(move)
+                          inputs.trainingTest && !state.locked
+                          ? inputs.onTestMove(move)
                           : context.read<ExerciseCubit>().play(move),
                     ),
                   ),
@@ -893,64 +1068,19 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       ),
     );
   }
+}
 
-  /// "Analisar no Lichess": a posição do exercício no tabuleiro de análise.
-  Widget _lichessButton(BuildContext context, ExerciseState state) =>
-      TextButton.icon(
-        key: ExerciseKeys.lichessButton,
-        // Dentro do app, na folha da página: a aula fica atrás.
-        onPressed: () =>
-            showExternalPage(context, GameExport.lichess(state.exercise!.fen)),
-        icon: const Icon(Icons.open_in_new_rounded),
-        label: Text(context.l10n.exerciseLichess),
-      );
+/// O rodapé fixo, com a margem de 16 e o mesmo componente da lição.
+/// Resolvendo: a dica à esquerda e o cronômetro à direita (sem pontos, só
+/// "Ver solução"); resolvido: só o próximo exercício, à direita.
+class _ExerciseBottomBar extends StatelessWidget {
+  const _ExerciseBottomBar({required this.state, required this.elapsed});
 
-  /// O botão principal do resolvido: o próximo exercício, a volta à aula
-  /// (treino avulso) ou o resultado (o último da série).
-  ExerciseAction _primaryAction(BuildContext context, ExerciseState state) {
-    final l10n = context.l10n;
-    final lesson = state.lesson!;
-    final next = state.nextExercise;
-    if (next != null) {
-      return ExerciseAction(
-        label: l10n.exerciseNext,
-        key: ExerciseKeys.nextButton,
-        primary: true,
-        onPressed: () =>
-            context.pushReplacement(Routes.endgameExercise(lesson.id, next)),
-      );
-    }
-    if (state.locked) {
-      // Treino avulso: a nota já está fechada, volta à aula.
-      return ExerciseAction(
-        label: l10n.exerciseBack,
-        key: ExerciseKeys.backButton,
-        primary: true,
-        onPressed: () => context.pop(),
-      );
-    }
-    // O último da série: a tela de resultado, que volta à aula.
-    return ExerciseAction(
-      label: l10n.exerciseSeeResult,
-      key: ExerciseKeys.resultButton,
-      primary: true,
-      onPressed: () =>
-          context.pushReplacement(Routes.endgameExercisesDone(lesson.id)),
-    );
-  }
+  final ExerciseState state;
+  final ValueListenable<Duration> elapsed;
 
-  /// O que a dica custa agora (tooltip e rótulo de acessibilidade).
-  String _hintLabel(AppLocalizations l10n, ExerciseState state) =>
-      switch (state.worth) {
-        0 => l10n.exerciseHintFree,
-        1 => l10n.exerciseHintLast,
-        _ => l10n.exerciseHint,
-      };
-
-  /// O rodapé fixo, com a margem de 16 e o mesmo componente da lição.
-  /// Resolvendo: a dica à esquerda e o cronômetro à direita (sem pontos, só
-  /// "Ver solução"); resolvido: só o próximo exercício, à direita.
-  Widget _footer(BuildContext context, ExerciseState state) {
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<ExerciseCubit>();
@@ -961,7 +1091,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final hide = context.select(
       (SettingsCubit c) => c.state?.exerciseHiddenMoves ?? false,
     );
-    final lichess = state.locked ? _lichessButton(context, state) : null;
+    final lichess = state.locked ? _LichessButton(state: state) : null;
     final Widget actions;
     if (state.phase == ExercisePhase.done) {
       actions = ExerciseActions(
@@ -969,7 +1099,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         color: color,
         hug: true,
         hint: lichess,
-        actions: [_primaryAction(context, state)],
+        actions: [_primaryAction(context)],
       );
     } else if (state.zeroed && state.interactive) {
       actions = ExerciseActions(
@@ -990,55 +1120,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       actions = ExerciseActions(
         key: ExerciseKeys.footer,
         color: color,
-        hint: Expanded(
-          child: Row(
-            children: [
-              if (state.interactive)
-                KeyedSubtree(
-                  key: ExerciseKeys.hintButton,
-                  child: ExerciseHintButton(
-                    label: _hintLabel(l10n, state),
-                    onPressed: cubit.askHint,
-                  ),
-                ),
-              // Com a nota fechada, a posição vai para a análise do Lichess.
-              if (lichess != null && state.interactive) ...[
-                const SizedBox(width: AppSpacing.sm),
-                Flexible(child: lichess),
-              ],
-              if (state.phase == ExercisePhase.waiting) ...[
-                const SizedBox.square(
-                  dimension: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Text(l10n.lessonThinking),
-              ],
-              const Spacer(),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(AppShape.small),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                  child: ValueListenableBuilder<Duration>(
-                    valueListenable: _elapsed,
-                    builder: (context, value, _) {
-                      final text = StepClock.format(value);
-                      return TimeDisplay(
-                        key: ExerciseKeys.timer,
-                        value: text,
-                        semanticsLabel: text,
-                        size: TimeDisplaySize.inline,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        hint: _SolvingBar(state: state, lichess: lichess, elapsed: elapsed),
       );
     }
     // Nota fechada: este é treino livre.
@@ -1069,8 +1151,138 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       ),
     );
   }
+
+  /// O botão principal do resolvido: o próximo exercício, a volta à aula
+  /// (treino avulso) ou o resultado (o último da série).
+  ExerciseAction _primaryAction(BuildContext context) {
+    final l10n = context.l10n;
+    final lesson = state.lesson!;
+    final next = state.nextExercise;
+    if (next != null) {
+      return ExerciseAction(
+        label: l10n.exerciseNext,
+        key: ExerciseKeys.nextButton,
+        primary: true,
+        onPressed: () =>
+            context.pushReplacement(Routes.endgameExercise(lesson.id, next)),
+      );
+    }
+    if (state.locked) {
+      // Treino avulso: a nota já está fechada, volta à aula.
+      return ExerciseAction(
+        label: l10n.exerciseBack,
+        key: ExerciseKeys.backButton,
+        primary: true,
+        onPressed: () => context.pop(),
+      );
+    }
+    // O último da série: a tela de resultado, que volta à aula.
+    return ExerciseAction(
+      label: l10n.exerciseSeeResult,
+      key: ExerciseKeys.resultButton,
+      primary: true,
+      onPressed: () =>
+          context.pushReplacement(Routes.endgameExercisesDone(lesson.id)),
+    );
+  }
+}
+
+/// Resolvendo: a dica (e o Lichess, com a nota fechada) à esquerda e o
+/// cronômetro à direita.
+class _SolvingBar extends StatelessWidget {
+  const _SolvingBar({
+    required this.state,
+    required this.lichess,
+    required this.elapsed,
+  });
+
+  final ExerciseState state;
+  final Widget? lichess;
+  final ValueListenable<Duration> elapsed;
+
+  /// O que a dica custa agora (tooltip e rótulo de acessibilidade).
+  static String _hintLabel(AppLocalizations l10n, ExerciseState state) =>
+      switch (state.worth) {
+        0 => l10n.exerciseHintFree,
+        1 => l10n.exerciseHintLast,
+        _ => l10n.exerciseHint,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final cubit = context.read<ExerciseCubit>();
+    final lichess = this.lichess;
+    return Expanded(
+      child: Row(
+        children: [
+          if (state.interactive)
+            KeyedSubtree(
+              key: ExerciseKeys.hintButton,
+              child: ExerciseHintButton(
+                label: _hintLabel(l10n, state),
+                onPressed: cubit.askHint,
+              ),
+            ),
+          // Com a nota fechada, a posição vai para a análise do Lichess.
+          if (lichess != null && state.interactive) ...[
+            const SizedBox(width: AppSpacing.sm),
+            Flexible(child: lichess),
+          ],
+          if (state.phase == ExercisePhase.waiting) ...[
+            const SizedBox.square(
+              dimension: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Text(l10n.lessonThinking),
+          ],
+          const Spacer(),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppShape.small),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+              child: ValueListenableBuilder<Duration>(
+                valueListenable: elapsed,
+                builder: (context, value, _) {
+                  final text = StepClock.format(value);
+                  return TimeDisplay(
+                    key: ExerciseKeys.timer,
+                    value: text,
+                    semanticsLabel: text,
+                    size: TimeDisplaySize.inline,
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// A fala do balão: o texto, os parágrafos da folha e, à parte, a dica do
 /// borrar.
 typedef SpeechLine = ({String text, List<String> paragraphs, String? tip});
+
+/// "Analisar no Lichess": a posição do exercício no tabuleiro de análise.
+class _LichessButton extends StatelessWidget {
+  const _LichessButton({required this.state});
+
+  final ExerciseState state;
+
+  @override
+  Widget build(BuildContext context) => TextButton.icon(
+    key: ExerciseKeys.lichessButton,
+    // Dentro do app, na folha da página: a aula fica atrás.
+    onPressed: () =>
+        showExternalPage(context, GameExport.lichess(state.exercise!.fen)),
+    icon: const Icon(Icons.open_in_new_rounded),
+    label: Text(context.l10n.exerciseLichess),
+  );
+}

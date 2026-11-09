@@ -269,16 +269,16 @@ void main() {
         tournaments: repository.value.tournaments,
         finals: [
           ...repository.value.finals,
-          FeaturedEndgame(
+          const FeaturedEndgame(
             id: 'd',
             kind: FeaturedKind.play,
             origin: FeaturedOrigin.tournament,
             fen: '8/8/5k1p/8/6PP/5K2/8/8 w - - 2 55',
             goal: PositionGoal.win,
-            white: const FeaturedPlayer(name: 'X'),
-            black: const FeaturedPlayer(name: 'Y'),
+            white: FeaturedPlayer(name: 'X'),
+            black: FeaturedPlayer(name: 'Y'),
             tournamentId: 'live',
-            suggested: const FeaturedChoice(opponent: OpponentKind.stockfish),
+            suggested: FeaturedChoice(opponent: OpponentKind.stockfish),
           ),
         ],
       );

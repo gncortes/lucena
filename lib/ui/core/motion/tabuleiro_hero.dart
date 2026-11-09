@@ -49,6 +49,7 @@ class TabuleiroHero extends StatelessWidget {
     );
   }
 
+  // B1: callback de Hero.flightShuttleBuilder (lê os contextos de origem e destino)
   static Widget _emVoo(
     BuildContext contextoDoVoo,
     Animation<double> voo,

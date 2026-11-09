@@ -64,8 +64,6 @@ class CourseItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final summary = this.summary;
-    final difficulty = this.difficulty;
     final medal = this.medal;
     final (background, foreground, icon) = switch (state) {
       CourseItemState.approved => (
@@ -113,72 +111,18 @@ class CourseItemTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.lg,
               children: [
-                Container(
-                  width: circleSize,
-                  height: circleSize,
-                  decoration: BoxDecoration(
-                    color: background,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    icon,
-                    color: foreground,
-                    fill: icon == CanvasSymbols.playArrow ? 1 : null,
-                  ),
+                _CourseItemCircle(
+                  background: background,
+                  foreground: foreground,
+                  icon: icon,
                 ),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    // CompAulaTile: gap 2 entre título e resumo.
-                    spacing: 2,
-                    children: [
-                      Text(
-                        title,
-                        // CompAulaTile v2: 16/20 em 700.
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          height: 20 / 16,
-                          fontWeight: AppWeight.strong,
-                          color: state == CourseItemState.locked
-                              ? colors.onSurface.withValues(alpha: 0.38)
-                              : null,
-                        ),
-                      ),
-                      if (summary != null &&
-                          summary.isNotEmpty &&
-                          difficulty == null)
-                        Text(
-                          summary,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      if (summary != null &&
-                          summary.isNotEmpty &&
-                          difficulty != null)
-                        Row(
-                          spacing: AppSpacing.xs,
-                          children: [
-                            TrainingBadge.difficultyIcon(
-                              context,
-                              difficulty,
-                              key: CourseGuideKeys.difficultyStar(title),
-                            ),
-                            Flexible(
-                              child: Text(
-                                summary,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      for (final tag in tags)
-                        Padding(
-                          padding: const EdgeInsets.only(top: AppSpacing.xs),
-                          child: tag,
-                        ),
-                    ],
+                  child: _CourseItemTexts(
+                    state: state,
+                    title: title,
+                    summary: summary,
+                    difficulty: difficulty,
+                    tags: tags,
                   ),
                 ),
                 if (medal != null) SizedBox(height: medalSize, child: medal),
@@ -187,6 +131,107 @@ class CourseItemTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// O círculo do estado: o visto, o play ou o cadeado.
+class _CourseItemCircle extends StatelessWidget {
+  const _CourseItemCircle({
+    required this.background,
+    required this.foreground,
+    required this.icon,
+  });
+
+  final Color background;
+  final Color foreground;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: CourseItemTile.circleSize,
+      height: CourseItemTile.circleSize,
+      decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+      child: Icon(
+        icon,
+        color: foreground,
+        fill: icon == CanvasSymbols.playArrow ? 1 : null,
+      ),
+    );
+  }
+}
+
+/// O título, o resumo (com a dificuldade, se houver) e os selos do item.
+class _CourseItemTexts extends StatelessWidget {
+  const _CourseItemTexts({
+    required this.state,
+    required this.title,
+    required this.summary,
+    required this.difficulty,
+    required this.tags,
+  });
+
+  final CourseItemState state;
+  final String title;
+  final String? summary;
+  final int? difficulty;
+  final List<Widget> tags;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final summary = this.summary;
+    final difficulty = this.difficulty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      // CompAulaTile: gap 2 entre título e resumo.
+      spacing: 2,
+      children: [
+        Text(
+          title,
+          // CompAulaTile v2: 16/20 em 700.
+          style: theme.textTheme.titleMedium?.copyWith(
+            height: 20 / 16,
+            fontWeight: AppWeight.strong,
+            color: state == CourseItemState.locked
+                ? colors.onSurface.withValues(alpha: 0.38)
+                : null,
+          ),
+        ),
+        if (summary != null && summary.isNotEmpty && difficulty == null)
+          Text(
+            summary,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+        if (summary != null && summary.isNotEmpty && difficulty != null)
+          Row(
+            spacing: AppSpacing.xs,
+            children: [
+              TrainingBadge.difficultyIcon(
+                context,
+                difficulty,
+                key: CourseGuideKeys.difficultyStar(title),
+              ),
+              Flexible(
+                child: Text(
+                  summary,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        for (final tag in tags)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
+            child: tag,
+          ),
+      ],
     );
   }
 }
