@@ -18,7 +18,7 @@ import '../../../testing/test_app.dart';
 void main() {
   final resources = TrainingResources(
     lessons: [
-      TrainingLesson(
+      const TrainingLesson(
         id: 'theme',
         kind: TrainingLessonKind.theme,
         title: 'Garfo de cavalo',

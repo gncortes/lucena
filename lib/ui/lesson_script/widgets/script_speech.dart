@@ -263,80 +263,13 @@ class ScriptSpeech extends StatelessWidget {
         vertical: metrics.verticalPadding,
       ),
       child: LayoutBuilder(
-        builder: (context, box) {
-          if (metrics.canvasLayout) {
-            final fitted = CanvasSpeechLayout.fit(
-              text: text,
-              width: box.maxWidth - 16,
-              lines: metrics.maxLines - (footnote == null ? 0 : 1),
-            );
-            return SizedBox(
-              width: double.infinity,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SpeechText(
-                    text: fitted.text,
-                    style: metrics
-                        .style(context)
-                        .copyWith(fontSize: fitted.fontSize, color: onColor),
-                    highlightLooseSquares: false,
-                    appendMore: fitted.truncated,
-                    onMore: onOpen,
-                    onMainLine: onMainLine,
-                    onShowAnswer: onShowAnswer,
-                    onSquareTap: onSquareTap,
-                  ),
-                  if (footnote != null)
-                    SpeechText(
-                      text: footnote!,
-                      style: metrics.style(context).copyWith(color: onColor),
-                      highlightLooseSquares: false,
-                      onSquareTap: onSquareTap,
-                    ),
-                ],
-              ),
-            );
-          }
-          final plain = SpeechText.noBreak(SpeechText.plainOf(context, whole));
-          final style = metrics.fittedStyle(context, box.maxWidth, plain);
-          final fits = metrics.textFits(
-            context,
-            box.maxWidth,
-            plain,
-            style,
-            metrics.maxLines,
-          );
-          // Nem em 13 cabe: corta numa palavra inteira e termina em
-          // "… Ver mais", que abre a folha com a fala inteira (T84). A nota
-          // de baixo fica com uma das linhas.
-          final speech = SpeechText(
-            text: text,
-            style: style.copyWith(color: onColor),
-            onMainLine: onMainLine,
-            onShowAnswer: onShowAnswer,
-            onSquareTap: onSquareTap,
-            maxLines: fits
-                ? null
-                : math.max(1, metrics.maxLines - (footnote == null ? 0 : 1)),
-            onMore: fits ? null : onOpen,
-          );
-          final body = footnote == null
-              ? speech
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    speech,
-                    SpeechText(
-                      text: footnote!,
-                      style: style.copyWith(color: onColor),
-                      onSquareTap: onSquareTap,
-                    ),
-                  ],
-                );
-          return SizedBox(width: double.infinity, child: body);
-        },
+        builder: (context, box) => _SpeechContent(
+          owner: this,
+          text: text,
+          whole: whole,
+          onColor: onColor,
+          box: box,
+        ),
       ),
     );
     final speech = metrics.canvasLayout
@@ -385,6 +318,102 @@ class ScriptSpeech extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// O miolo do balão da fala: o texto ajustado ao espaço, com a nota de baixo.
+class _SpeechContent extends StatelessWidget {
+  const _SpeechContent({
+    required this.owner,
+    required this.text,
+    required this.whole,
+    required this.onColor,
+    required this.box,
+  });
+
+  final ScriptSpeech owner;
+  final String text;
+  final String whole;
+  final Color onColor;
+  final BoxConstraints box;
+
+  @override
+  Widget build(BuildContext context) {
+    if (owner.metrics.canvasLayout) {
+      final fitted = CanvasSpeechLayout.fit(
+        text: text,
+        width: box.maxWidth - 16,
+        lines: owner.metrics.maxLines - (owner.footnote == null ? 0 : 1),
+      );
+      return SizedBox(
+        width: double.infinity,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SpeechText(
+              text: fitted.text,
+              style: owner.metrics
+                  .style(context)
+                  .copyWith(fontSize: fitted.fontSize, color: onColor),
+              highlightLooseSquares: false,
+              appendMore: fitted.truncated,
+              onMore: owner.onOpen,
+              onMainLine: owner.onMainLine,
+              onShowAnswer: owner.onShowAnswer,
+              onSquareTap: owner.onSquareTap,
+            ),
+            if (owner.footnote != null)
+              SpeechText(
+                text: owner.footnote!,
+                style: owner.metrics.style(context).copyWith(color: onColor),
+                highlightLooseSquares: false,
+                onSquareTap: owner.onSquareTap,
+              ),
+          ],
+        ),
+      );
+    }
+    final plain = SpeechText.noBreak(SpeechText.plainOf(context, whole));
+    final style = owner.metrics.fittedStyle(context, box.maxWidth, plain);
+    final fits = owner.metrics.textFits(
+      context,
+      box.maxWidth,
+      plain,
+      style,
+      owner.metrics.maxLines,
+    );
+    // Nem em 13 cabe: corta numa palavra inteira e termina em
+    // "… Ver mais", que abre a folha com a fala inteira (T84). A nota
+    // de baixo fica com uma das linhas.
+    final speech = SpeechText(
+      text: text,
+      style: style.copyWith(color: onColor),
+      onMainLine: owner.onMainLine,
+      onShowAnswer: owner.onShowAnswer,
+      onSquareTap: owner.onSquareTap,
+      maxLines: fits
+          ? null
+          : math.max(
+              1,
+              owner.metrics.maxLines - (owner.footnote == null ? 0 : 1),
+            ),
+      onMore: fits ? null : owner.onOpen,
+    );
+    final body = owner.footnote == null
+        ? speech
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              speech,
+              SpeechText(
+                text: owner.footnote!,
+                style: style.copyWith(color: onColor),
+                onSquareTap: owner.onSquareTap,
+              ),
+            ],
+          );
+    return SizedBox(width: double.infinity, child: body);
   }
 }
 
@@ -446,9 +475,9 @@ class CanvasSpeechLayout {
       if (accent >= 0) c = plain[accent];
       units +=
           _widths[c] ??
-          (RegExp('[A-Z]').hasMatch(c)
+          (_capitalLetter.hasMatch(c)
               ? 1330
-              : RegExp('[0-9]').hasMatch(c)
+              : _digit.hasMatch(c)
               ? 1150
               : 1100);
     }
@@ -460,7 +489,7 @@ class CanvasSpeechLayout {
     required double width,
     required int lines,
   }) {
-    final source = text.replaceAll(RegExp(r'\n\s*\n+'), '\n');
+    final source = text.replaceAll(_blankLines, '\n');
     final parts = <(String, String)>[];
     var at = 0;
     // Um nome marcado (`{{nome|chave}}`) mede só o nome e volta inteiro,
@@ -555,7 +584,7 @@ class CanvasSpeechLayout {
     }
     if (output.isNotEmpty) {
       final last = output.removeLast();
-      output.add((last.$1.replaceFirst(RegExp(r'[\s,;:.–-]+$'), ''), last.$2));
+      output.add((last.$1.replaceFirst(_trailingPunctuation, ''), last.$2));
     }
     return CanvasSpeechLayout(
       output
@@ -574,3 +603,11 @@ class CanvasSpeechLayout {
     );
   }
 }
+
+final _capitalLetter = RegExp('[A-Z]');
+
+final _digit = RegExp('[0-9]');
+
+final _blankLines = RegExp(r'\n\s*\n+');
+
+final _trailingPunctuation = RegExp(r'[\s,;:.–-]+$');

@@ -50,7 +50,7 @@ class PositionBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final board = _board(context, size, radius);
+    final board = _BoardFrame(owner: this, size: size, radius: radius);
     final tag = heroTag;
     if (tag == null) return board;
     return Hero(
@@ -74,7 +74,12 @@ class PositionBoard extends StatelessWidget {
                 color: Colors.transparent,
                 elevation: lift,
                 borderRadius: BorderRadius.circular(radius),
-                child: _board(context, box.maxWidth, radius, flying: true),
+                child: _BoardFrame(
+                  owner: this,
+                  size: box.maxWidth,
+                  radius: radius,
+                  flying: true,
+                ),
               ),
             );
           },
@@ -86,48 +91,51 @@ class PositionBoard extends StatelessWidget {
 
   static double _radiusOf(Hero hero) =>
       hero.child is _BoardFrame ? (hero.child as _BoardFrame).radius : 0;
+}
 
-  Widget _board(
-    BuildContext context,
-    double size,
-    double radius, {
-    bool flying = false,
-  }) {
+/// O tabuleiro da miniatura. Guarda o raio dos cantos, para o voo
+/// interpolar entre o de partida e o de chegada.
+class _BoardFrame extends StatelessWidget {
+  const _BoardFrame({
+    required this.owner,
+    required this.size,
+    required this.radius,
+    this.flying = false,
+  });
+
+  /// A miniatura de que este é o tabuleiro (a posição e as marcações).
+  final PositionBoard owner;
+  final double size;
+  final double radius;
+
+  /// Em voo: sem a chave dos testes e sem as coordenadas.
+  final bool flying;
+
+  @override
+  Widget build(BuildContext context) {
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
+    final fen = owner.fen;
     final turn = fen.split(' ')[1] == 'b' ? Side.black : Side.white;
-    final child = Directionality(
+    return Directionality(
       textDirection: TextDirection.ltr,
       child: StaticChessboard(
-        key: flying ? null : boardKey,
+        key: flying ? null : owner.boardKey,
         size: size,
-        orientation: orientation ?? turn,
+        orientation: owner.orientation ?? turn,
         fen: fen,
-        lastMove: lastMove,
-        shapes: shapes,
+        lastMove: owner.lastMove,
+        shapes: owner.shapes,
         settings: StaticChessboardSettings(
           colorScheme: board.colors.scheme,
           pieceAssets: board.pieces.assets,
           // As coordenadas só depois do pouso.
-          enableCoordinates: !flying && coordinates && board.coordinates,
+          enableCoordinates: !flying && owner.coordinates && board.coordinates,
           borderRadius: BorderRadius.all(Radius.circular(radius)),
           animationDuration: Duration.zero,
         ),
       ),
     );
-    return _BoardFrame(radius: radius, child: child);
   }
-}
-
-/// Guarda o raio dos cantos do tabuleiro, para o voo interpolar entre o de
-/// partida e o de chegada.
-class _BoardFrame extends StatelessWidget {
-  const _BoardFrame({required this.radius, required this.child});
-
-  final double radius;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => child;
 }

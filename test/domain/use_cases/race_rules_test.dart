@@ -169,7 +169,12 @@ void main() {
       }
       expect(buckets, [300, 350, 400, 450]);
       final missed = run.withAnswer(
-        RaceAnswer(problemId: 'b300.1', level: 300, move: 'x', correct: false),
+        const RaceAnswer(
+          problemId: 'b300.1',
+          level: 300,
+          move: 'x',
+          correct: false,
+        ),
       );
       expect(RaceRules.next(bank, missed)!.bucket, 300);
       expect(RaceRules.next(bank, missed)!.id, 'b300.2');

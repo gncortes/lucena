@@ -6,6 +6,7 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
@@ -44,7 +45,6 @@ class RungScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colors = Theme.of(context).colorScheme;
     final progress = context.select(
       (JourneyCubit cubit) => cubit.state.progress,
     );
@@ -66,7 +66,7 @@ class RungScreen extends StatelessWidget {
               if (!rung.completed.contains(challenge.id)) challenge,
           ].firstOrNull;
     final failure =
-        context.watch<JourneyCubit>().state.failure ??
+        context.select((JourneyCubit cubit) => cubit.state.failure) ??
         (progress != null && rung == null ? LoadFailure.notFound : null);
     if (failure != null) {
       return challengeLoadError(
@@ -95,79 +95,17 @@ class RungScreen extends StatelessWidget {
                   children: [
                     _Header(rung: rung),
                     if (teacher != null && reunion != null)
-                      Card(
-                        key: JourneyKeys.reunion,
-                        margin: const EdgeInsets.fromLTRB(
-                          AppSpacing.lg,
-                          AppSpacing.sm,
-                          AppSpacing.lg,
-                          AppSpacing.sm,
-                        ),
-                        color: colors.primaryContainer,
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.lg),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.rungReunionTitle(teacher.name),
-                                style: context.cardTitle?.copyWith(
-                                  color: colors.onPrimaryContainer,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.md),
-                              TeacherSpeech(
-                                speechContext: SpeechContext.teaching,
-                                teacher: teacher,
-                                text: reunion,
-                                avatarSize: CharacterAvatar.speech,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      _ReunionCard(teacher: teacher, reunion: reunion),
                     if (next != null) ...[
                       SectionTitle(l10n.journeyNextChallenge),
                       _NextChallenge(rungId: rungId, challenge: next),
                     ],
                     SectionTitle(l10n.journeyAllChallenges),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                      ),
-                      child: Builder(
-                        builder: (context) {
-                          // Duas colunas no celular, três em tela larga; cada
-                          // cartão com a altura do próprio conteúdo.
-                          final columns = constraints.maxWidth >= 600 ? 3 : 2;
-                          const gap = 12.0;
-                          final width =
-                              (constraints.maxWidth -
-                                  32 -
-                                  gap * (columns - 1)) /
-                              columns;
-                          return ListaEmOrdem(
-                            montar: (itens) => Wrap(
-                              spacing: gap,
-                              runSpacing: gap,
-                              children: itens,
-                            ),
-                            itens: [
-                              for (final challenge in rung.rung.challenges)
-                                SizedBox(
-                                  width: width,
-                                  child: _ChallengeCell(
-                                    rungId: rungId,
-                                    challenge: challenge,
-                                    done: rung.completed.contains(challenge.id),
-                                    // O do próximo voa do destaque.
-                                    flies: challenge.id != next?.id,
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),
+                    _ChallengeGrid(
+                      maxWidth: constraints.maxWidth,
+                      rungId: rungId,
+                      rung: rung,
+                      next: next,
                     ),
                     // O mesmo final de outro jeito: às cegas. Vale como extra.
                     if (rung.rung.specials.isNotEmpty) ...[
@@ -182,6 +120,99 @@ class RungScreen extends StatelessWidget {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+}
+
+/// O reencontro com o professor, quando o degrau o traz.
+class _ReunionCard extends StatelessWidget {
+  const _ReunionCard({required this.teacher, required this.reunion});
+
+  final Character teacher;
+  final String reunion;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      key: JourneyKeys.reunion,
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
+      color: colors.primaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.rungReunionTitle(teacher.name),
+              style: context.cardTitle?.copyWith(
+                color: colors.onPrimaryContainer,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TeacherSpeech(
+              speechContext: SpeechContext.teaching,
+              teacher: teacher,
+              text: reunion,
+              avatarSize: CharacterAvatar.speech,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Todos os desafios do degrau em grade, com o selo de feito.
+class _ChallengeGrid extends StatelessWidget {
+  const _ChallengeGrid({
+    required this.maxWidth,
+    required this.rungId,
+    required this.rung,
+    required this.next,
+  });
+
+  final double maxWidth;
+  final String rungId;
+  final RungProgress rung;
+  final Challenge? next;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: Builder(
+        builder: (context) {
+          // Duas colunas no celular, três em tela larga; cada
+          // cartão com a altura do próprio conteúdo.
+          final columns = maxWidth >= 600 ? 3 : 2;
+          const gap = 12.0;
+          final width = (maxWidth - 32 - gap * (columns - 1)) / columns;
+          return ListaEmOrdem(
+            montar: (itens) =>
+                Wrap(spacing: gap, runSpacing: gap, children: itens),
+            itens: [
+              for (final challenge in rung.rung.challenges)
+                SizedBox(
+                  width: width,
+                  child: _ChallengeCell(
+                    rungId: rungId,
+                    challenge: challenge,
+                    done: rung.completed.contains(challenge.id),
+                    // O do próximo voa do destaque.
+                    flies: challenge.id != next?.id,
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

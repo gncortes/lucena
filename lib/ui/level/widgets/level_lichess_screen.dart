@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/keys/level_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/motion/entradas_vistas.dart';
@@ -62,7 +60,6 @@ class LevelLichessScreen extends StatelessWidget {
           );
         }
         final provisional = lichess.main!.provisional;
-        final success = AppColors.of(context).success;
         return Scaffold(
           key: LevelKeys.lichessScreen,
           appBar: LucenaAppBar(title: Text(l10n.levelLichessConnectedTitle)),
@@ -84,43 +81,12 @@ class LevelLichessScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              Card(
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            size: AppIconSize.button,
-                            color: success,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                            child: Text(
-                              l10n.levelConnectedAs(lichess.user),
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: success,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      PlatformRatingsGrid(rating: lichess),
-                      const SizedBox(height: AppSpacing.md),
-                      Text(
-                        provisional
-                            ? l10n.levelProvisionalText
-                            : levelStartsAt(context, state, lichess, rating),
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                ),
+              PlatformFoundCard(
+                title: l10n.levelConnectedAs(lichess.user),
+                rating: lichess,
+                text: provisional
+                    ? l10n.levelProvisionalText
+                    : levelStartsAt(context, state, lichess, rating),
               ),
               const SizedBox(height: AppSpacing.lg),
               TipBox(

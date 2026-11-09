@@ -38,11 +38,11 @@ class _Catalog implements LinkedLessonCatalog {
 
 const _lesson = LinkedLesson.endgame('rook.lucena');
 
-final _link = ChallengeLink(
+final _link = const ChallengeLink(
   fen: '8/8/8/4k3/8/8/4K3/4Q3 w - - 0 1',
   userSide: Side.white,
   lesson: _lesson,
-  utm: const {'utm_source': 'instagram', 'utm_campaign': 'torre-engana'},
+  utm: {'utm_source': 'instagram', 'utm_campaign': 'torre-engana'},
 );
 
 void main() {

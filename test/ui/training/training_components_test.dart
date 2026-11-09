@@ -127,7 +127,7 @@ void main() {
         findsOneWidget,
       );
     }
-    await pump(tester, Builder(builder: TrainingBadge.withHint));
+    await pump(tester, const Builder(builder: TrainingBadge.withHint));
     expect(find.byKey(TrainingKeys.hintBadge), findsOneWidget);
     expect(find.bySemanticsLabel('Com dica'), findsOneWidget);
     expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);

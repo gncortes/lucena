@@ -72,7 +72,6 @@ class _AlertsScreenState extends State<AlertsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final state = context.watch<AlertsCubit>().state;
     final cubit = context.read<AlertsCubit>();
     if (state.failure case final failure?) {
@@ -165,22 +164,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                               : null,
                         ),
                 ),
-                ItemDaCascata.texto(
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.sm,
-                      AppSpacing.lg,
-                      AppSpacing.sm,
-                      AppSpacing.lg,
-                    ),
-                    child: Text(
-                      l10n.alertsIntro,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ),
+                const ItemDaCascata.texto(_AlertsIntro()),
                 // Sem a permissão, as chaves ficam esmaecidas, mas mudam.
                 ItemDaCascata.texto(
                   Opacity(
@@ -201,6 +185,31 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   static const _muted = 0.5;
+}
+
+/// O texto de abertura, entre a permissão e as chaves.
+class _AlertsIntro extends StatelessWidget {
+  const _AlertsIntro();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+      ),
+      child: Text(
+        l10n.alertsIntro,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
 }
 
 /// "Torneios da região: Brasil · Paraná" e "Mudar" (abre "Seu país").

@@ -66,7 +66,7 @@ void main() {
   );
 
   test('a partida de link volta com o desafio de origem', () async {
-    final link = ChallengeLink(
+    final link = const ChallengeLink(
       fen: startFen,
       userSide: Side.white,
       opponent: OpponentKind.maia,

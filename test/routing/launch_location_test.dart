@@ -242,7 +242,7 @@ void main() {
   });
 
   test('o link que abriu o app vale mais que a partida e a aula abertas', () {
-    final link = ChallengeLink(
+    final link = const ChallengeLink(
       fen: fen,
       userSide: Side.white,
       opponent: OpponentKind.stockfish,

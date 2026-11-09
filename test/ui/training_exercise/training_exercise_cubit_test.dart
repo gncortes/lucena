@@ -91,7 +91,7 @@ void main() {
   test(
     'legacy history has no invented duration; measured time round trips',
     () {
-      final day = ThemeDay(
+      final day = const ThemeDay(
         date: '2026-10-20',
         exerciseId: 'e',
         stars: 1,
@@ -119,7 +119,7 @@ void main() {
                 startedOn: '2026-10-20',
                 phase: ThemePhase.firm,
                 days: [
-                  ThemeDay(
+                  const ThemeDay(
                     date: '2026-10-20',
                     exerciseId: 'e',
                     stars: 1,

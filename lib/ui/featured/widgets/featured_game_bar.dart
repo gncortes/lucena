@@ -69,8 +69,10 @@ class FeaturedGameActions extends StatelessWidget {
 
 /// O cartão do aviso aparece agora? (para a partida reservar a altura dele)
 bool featuredAlertShown(BuildContext context) =>
-    context.watch<FeaturedEndgameCubit>().state.tournament != null &&
-    context.watch<FeaturedAlertCubit>().state.visible;
+    context.select(
+      (FeaturedEndgameCubit cubit) => cubit.state.tournament != null,
+    ) &&
+    context.select((FeaturedAlertCubit cubit) => cubit.state.visible);
 
 /// O rodapé da partida terminada: "Jogar de novo" e "Continuar" (que abre os
 /// próximos passos).

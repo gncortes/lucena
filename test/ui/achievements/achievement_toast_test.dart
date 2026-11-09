@@ -201,7 +201,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      TestApp(
+      const TestApp(
         child: Scaffold(
           body: Align(
             alignment: Alignment.topCenter,
@@ -209,8 +209,8 @@ void main() {
               width: 150,
               height: 64,
               child: AchievementToasts(
-                achievements: const [beat],
-                characters: const [
+                achievements: [beat],
+                characters: [
                   Character(
                     id: 'magician',
                     level: 1600,

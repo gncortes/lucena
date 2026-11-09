@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/characters/character_repository.dart';
-import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
+import '../../../config/view_models/saved_game.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/keys/journey_keys.dart';
@@ -18,15 +16,7 @@ Future<SavedGame?> savedJourneyGame(
   BuildContext context,
   Challenge challenge,
 ) async {
-  final OngoingGameRepository games;
-  final CharacterRepository characters;
-  try {
-    games = context.read<OngoingGameRepository>();
-    characters = context.read<CharacterRepository>();
-  } on ProviderNotFoundException {
-    return null;
-  }
-  final saved = await loadSavedGame(games, characters);
+  final saved = await readSavedGame(context);
   if (saved == null || GameRules.endOf(saved.position) != null) return null;
   final snapshot = saved.snapshot;
   final mode = snapshot.mode;

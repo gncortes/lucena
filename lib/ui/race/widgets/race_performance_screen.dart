@@ -31,7 +31,9 @@ class RacePerformanceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final failure = context.watch<RacePerformanceCubit>().state.failure;
+    final failure = context.select(
+      (RacePerformanceCubit cubit) => cubit.state.failure,
+    );
     if (failure != null) {
       return challengeLoadError(
         context,

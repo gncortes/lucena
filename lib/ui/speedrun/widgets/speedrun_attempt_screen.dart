@@ -25,6 +25,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/status_circle_icon.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
 import '../../journey/widgets/journey_ui.dart';
@@ -79,6 +80,10 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     final completed = end == SpeedrunRunEnd.completed;
     final total = speedrun.stages.length;
     final stopped = math.min(run.currentStage, total - 1);
+    final paid = state.paid;
+    final notice = paid == null
+        ? null
+        : _AlreadyEarned(paid: paid, speedrun: speedrun, state: state);
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
       appBar: LucenaAppBar(
@@ -100,24 +105,13 @@ class SpeedrunAttemptScreen extends StatelessWidget {
         child: ListView(
           padding: scrollPadding(context),
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.lg,
-                0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: AppSpacing.md,
-                children: [
-                  if (completed)
-                    ..._finish(context, state, summary, run)
-                  else
-                    ..._ended(context, state, summary, run, end, stopped),
-                  RunChips(speedrun: speedrun, run: run),
-                ],
-              ),
+            _AttemptSummary(
+              state: state,
+              summary: summary,
+              run: run,
+              end: end,
+              stopped: stopped,
+              notice: notice,
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
@@ -171,17 +165,102 @@ class SpeedrunAttemptScreen extends StatelessWidget {
         SpeedrunRunEnd.lost => l10n.speedrunLostHere,
         _ => l10n.speedrunAbandonedHere,
       };
+}
 
-  // Concluída: o tempo em destaque, a comparação com o recorde, o ganho de
-  // rating e o aviso de que o bônus já foi pago.
-  List<Widget> _finish(
-    BuildContext context,
-    SpeedrunState state,
-    SpeedrunSummary summary,
-    SpeedrunRun run,
-  ) {
-    final l10n = context.l10n;
+/// O alto do resumo: concluída (o tempo, a comparação, o bônus e o aviso) ou
+/// parada (como acabou, o recorde ou o que falta), com os chips da tentativa.
+class _AttemptSummary extends StatelessWidget {
+  const _AttemptSummary({
+    required this.state,
+    required this.summary,
+    required this.run,
+    required this.end,
+    required this.stopped,
+    required this.notice,
+  });
+
+  final SpeedrunState state;
+  final SpeedrunSummary summary;
+  final SpeedrunRun run;
+  final SpeedrunRunEnd end;
+  final int stopped;
+  final Widget? notice;
+
+  @override
+  Widget build(BuildContext context) {
     final speedrun = summary.speedrun;
+    final completed = end == SpeedrunRunEnd.completed;
+    final previous = state.previousBest;
+    final bonus = state.bonus;
+    final notice = this.notice;
+    final best = summary.records.best;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.md,
+        children: [
+          // Concluída: o tempo em destaque, a comparação com o
+          // recorde, o ganho de rating e o aviso de que o bônus já foi
+          // pago.
+          if (completed) ...[
+            _FinishHero(state: state, summary: summary, run: run),
+            if (previous != null)
+              _CompareCard(
+                total: run.total,
+                previous: previous,
+                footer: notice,
+              ),
+            if (bonus != null) SpeedrunRatingBonusCard.earned(bonus: bonus),
+            if (previous == null && notice != null) _SurfaceCard(child: notice),
+          ]
+          // Parada: como acabou, o aviso (ou o recorde) e as etapas.
+          else ...[
+            _EndCard(
+              end: end,
+              speedrun: speedrun,
+              run: run,
+              characters: state.characters,
+              stage: stopped,
+            ),
+            if (best != null)
+              _RecordCard(best: best)
+            else
+              _NotFinished(
+                speedrun: speedrun,
+                characters: state.characters,
+                reached: math.max(summary.furthestStage ?? 0, stopped),
+                offer: state.offer,
+              ),
+          ],
+          RunChips(speedrun: speedrun, run: run),
+        ],
+      ),
+    );
+  }
+}
+
+/// O tempo da tentativa concluída em destaque: recorde novo, o primeiro
+/// recorde ou o tempo total.
+class _FinishHero extends StatelessWidget {
+  const _FinishHero({
+    required this.state,
+    required this.summary,
+    required this.run,
+  });
+
+  final SpeedrunState state;
+  final SpeedrunSummary summary;
+  final SpeedrunRun run;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final previous = state.previousBest;
     // Em destaque só a tentativa que é o recorde de agora; uma que foi
     // recorde na época e já foi batida vira herói normal; empate com o
@@ -191,8 +270,6 @@ class SpeedrunAttemptScreen extends StatelessWidget {
         (previous == null || run.total < previous);
     final newRecord = current && previous != null && run.total < previous;
     final first = current && previous == null;
-    final bonus = state.bonus;
-    final paid = state.paid;
     final label = newRecord
         ? l10n.speedrunNewRecord
         : first
@@ -200,7 +277,7 @@ class SpeedrunAttemptScreen extends StatelessWidget {
         : l10n.speedrunTotalTime;
     final time = runTime(context, run.total);
     final spoken = '$label: $time';
-    Widget hero = TimeDisplay(
+    final hero = TimeDisplay(
       value: time,
       semanticsLabel: spoken,
       type: current ? TimeDisplayType.record : TimeDisplayType.stopwatch,
@@ -210,49 +287,9 @@ class SpeedrunAttemptScreen extends StatelessWidget {
       textKey: SpeedrunKeys.total,
     );
     if (newRecord) {
-      hero = KeyedSubtree(key: SpeedrunKeys.newRecord, child: hero);
+      return KeyedSubtree(key: SpeedrunKeys.newRecord, child: hero);
     }
-    final notice = paid == null
-        ? null
-        : _AlreadyEarned(paid: paid, speedrun: speedrun, state: state);
-    return [
-      hero,
-      if (previous != null)
-        _CompareCard(total: run.total, previous: previous, footer: notice),
-      if (bonus != null) SpeedrunRatingBonusCard.earned(bonus: bonus),
-      if (previous == null && notice != null) _SurfaceCard(child: notice),
-    ];
-  }
-
-  // Parada: como acabou, o aviso (ou o recorde) e as etapas.
-  List<Widget> _ended(
-    BuildContext context,
-    SpeedrunState state,
-    SpeedrunSummary summary,
-    SpeedrunRun run,
-    SpeedrunRunEnd end,
-    int stopped,
-  ) {
-    final speedrun = summary.speedrun;
-    final best = summary.records.best;
-    return [
-      _EndCard(
-        end: end,
-        speedrun: speedrun,
-        run: run,
-        characters: state.characters,
-        stage: stopped,
-      ),
-      if (best != null)
-        _RecordCard(best: best)
-      else
-        _NotFinished(
-          speedrun: speedrun,
-          characters: state.characters,
-          reached: math.max(summary.furthestStage ?? 0, stopped),
-          offer: state.offer,
-        ),
-    ];
+    return hero;
   }
 }
 
@@ -311,10 +348,7 @@ class _AlreadyEarned extends StatelessWidget {
           DateFormat.MMMMd(locale).format(paid.at.toLocal()),
         )
         // O "+N" fica LTR dentro do texto, também em árabe.
-        .replaceAllMapped(
-          RegExp(r'\+\d+'),
-          (match) => _ltr(context, match[0]!),
-        );
+        .replaceAllMapped(_plusNumber, (match) => _ltr(context, match[0]!));
     return Row(
       key: SpeedrunKeys.ratingAlreadyEarned,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,21 +648,7 @@ class _EndCard extends StatelessWidget {
       child: Column(
         spacing: AppSpacing.sm,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHigh,
-              shape: BoxShape.circle,
-            ),
-            child: ExcludeSemantics(
-              child: Icon(
-                icon,
-                size: AppIconSize.large,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ),
+          StatusCircleIcon(icon: icon),
           Semantics(
             header: true,
             child: Text(
@@ -780,3 +800,5 @@ class _RecordCard extends StatelessWidget {
     );
   }
 }
+
+final _plusNumber = RegExp(r'\+\d+');

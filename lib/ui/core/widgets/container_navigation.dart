@@ -63,6 +63,9 @@ class _ContainerNavigationState extends State<ContainerNavigation> {
     _closeAction?.call();
   }
 
+  // Guarda a mesma instância do destino durante a abertura, para o provider
+  // dele ter um Cubit só.
+  // B1: callback de openBuilder/pageBuilder
   Widget _buildDestination(BuildContext context) {
     _routeFinished ??= ModalRoute.of(context)?.completed.then<void>((_) {});
     return _destination ??= _ContainerExitScope(

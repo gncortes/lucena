@@ -27,6 +27,11 @@ abstract final class ClockFormat {
     return Duration(milliseconds: time.inMilliseconds ~/ unit * unit);
   }
 
+  /// [totalSeconds] como `m:ss`, com os minutos sem limite (`75` vira
+  /// `1:15`, `3725` vira `62:05`): nunca passa para horas e não tem décimos.
+  static String minutesSeconds(int totalSeconds) =>
+      '${totalSeconds ~/ 60}:${_twoDigits(totalSeconds % 60)}';
+
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }
 

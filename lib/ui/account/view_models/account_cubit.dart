@@ -101,6 +101,9 @@ class AccountCubit extends Cubit<AccountState> {
 
   final AccountRepository _accounts;
 
+  /// Há uma conta entrada neste aparelho.
+  bool get signedIn => _accounts.current != null;
+
   /// Sem ele (testes antigos), entrar não lê a conta.
   final SyncScheduler? _sync;
 

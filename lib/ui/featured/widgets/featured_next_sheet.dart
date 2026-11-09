@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
+import '../../../config/view_models/featured.dart';
 import '../../../domain/models/featured.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
@@ -27,8 +26,11 @@ Future<void> showFeaturedNext(
   final lessonId = endgame.lessonId;
   String? lessonTitle;
   if (lessonId != null) {
-    final texts = await context.read<EndgameLessonRepository>().texts(language);
-    lessonTitle = texts.lessonTitle(lessonId);
+    lessonTitle = await featuredLessonTitle(
+      context,
+      lessonId: lessonId,
+      language: language,
+    );
   }
   if (!context.mounted) return;
   return showLucenaSheet<void>(

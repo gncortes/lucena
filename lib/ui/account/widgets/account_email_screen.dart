@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import '../../../data/repositories/analytics/analytics_repository.dart';
-import '../../core/analytics/analytics_context.dart';
-
 import 'package:flutter/material.dart';
 
 import '../../core/motion/botao_carregando.dart';
@@ -10,9 +7,7 @@ import '../../core/motion/botao_carregando.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/legal/legal_consent_repository.dart';
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/account.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -43,15 +38,8 @@ class AccountEmailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => AccountCubit(
-      context.read<AccountRepository>(),
-      sync: reauth ? null : context.read<SyncScheduler>(),
-      analytics: reauth ? const NoAnalyticsRepository() : context.analytics,
-      campaigns: reauth ? null : context.campaigns,
-      consent: reauth
-          ? const NoLegalConsentRepository()
-          : context.read<LegalConsentRepository>(),
-    ),
+    create: (context) =>
+        createAccountCubit(context, reauth: reauth, consent: true),
     child: _EmailView(from: from, create: !signIn && !reauth, reauth: reauth),
   );
 }

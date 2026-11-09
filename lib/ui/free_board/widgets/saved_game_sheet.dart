@@ -1,13 +1,10 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/characters/character_repository.dart';
-import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
-import '../../../domain/models/character.dart';
+import '../../../config/view_models/saved_game.dart';
+import '../../../domain/models/saved_game.dart';
 import '../../../domain/models/game_setup.dart';
-import '../../../domain/models/game_snapshot.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
@@ -24,13 +21,7 @@ import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/sheet_header.dart';
 
-/// A partida guardada como o aviso a mostra: onde parou e contra quem.
-typedef SavedGame = ({
-  GameSnapshot snapshot,
-  Position position,
-  Move? lastMove,
-  Character? character,
-});
+export '../../../domain/models/saved_game.dart';
 
 /// O tabuleiro livre e a partida em andamento usam o mesmo lugar. Com uma
 /// partida guardada (lances ou relógio), pergunta antes se o jogador volta a
@@ -48,7 +39,7 @@ Future<void> openFreeBoard(
     }
   }
 
-  final saved = await _savedGame(context);
+  final saved = await readSavedGame(context);
   if (!context.mounted) return;
   if (saved == null) {
     await open(Routes.freeBoard);
@@ -59,51 +50,6 @@ Future<void> openFreeBoard(
   // A partida nova grava por cima da guardada.
   await open(
     keep ? Routes.freeBoard : Routes.freeBoardAt(GameRules.initial.fen),
-  );
-}
-
-// Sem os repositórios à mão (telas testadas sozinhas), não há partida.
-Future<SavedGame?> _savedGame(BuildContext context) async {
-  final OngoingGameRepository games;
-  final CharacterRepository characters;
-  try {
-    games = context.read<OngoingGameRepository>();
-    characters = context.read<CharacterRepository>();
-  } on ProviderNotFoundException {
-    return null;
-  }
-  return loadSavedGame(games, characters);
-}
-
-/// A partida guardada, se houver algo a perder nela; nulo se não houver.
-Future<SavedGame?> loadSavedGame(
-  OngoingGameRepository games,
-  CharacterRepository characters,
-) async {
-  final snapshot = await games.load();
-  if (snapshot == null) return null;
-  if (snapshot.moves.isEmpty && snapshot.clock == null) return null;
-  var position = GameRules.fromFen(snapshot.startFen);
-  if (position == null) return null;
-  Move? lastMove;
-  for (final uci in snapshot.moves) {
-    final move = Move.parse(uci);
-    final played = move == null ? null : GameRules.play(position!, move);
-    if (played == null) return null;
-    position = played.position;
-    lastMove = move;
-  }
-  final mode = snapshot.mode;
-  final character = switch (mode.opponent) {
-    OpponentKind.maia => (await characters.characters()).forLevel(mode.level),
-    OpponentKind.stockfish => Character.stockfish,
-    OpponentKind.twoPlayers => null,
-  };
-  return (
-    snapshot: snapshot,
-    position: position!,
-    lastMove: lastMove,
-    character: character,
   );
 }
 

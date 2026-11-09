@@ -46,7 +46,7 @@ class HistoryGamesTab extends StatelessWidget {
         key: RatingKeys.screen,
         // 32 acima do vazio, como no canvas.
         padding: padding + const EdgeInsets.only(top: AppSpacing.xxl),
-        children: [_empty(context)],
+        children: const [_FirstGameInvite()],
       );
     }
     final cubit = context.read<HistoryCubit>();
@@ -54,6 +54,7 @@ class HistoryGamesTab extends StatelessWidget {
     final games = state.filteredGames;
     final filteredOut = games.isEmpty && !filter.isEmpty;
     final score = HistoryGames.score(games);
+    final heads = _monthHeads(context, games);
     // As linhas entram em ordem só na primeira vez da aba na sessão
     // (H-ANI-17): filtrar, trocar de aba ou voltar mostra a lista pronta.
     return EntradaDaTela(
@@ -76,88 +77,27 @@ class HistoryGamesTab extends StatelessWidget {
                   (score.losses, l10n.historyStatLosses(score.losses)),
                 ],
               ),
-              ..._months(context, state, games),
+              // As partidas por mês, a mais recente primeiro.
+              for (final (index, game) in games.indexed) ...[
+                if (heads[index] case (final label, final month))
+                  _MonthHeader(key: HistoryKeys.month(month), label: label)
+                else
+                  const Divider(),
+                HistoryGameRow(
+                  key: ValueKey(game.id),
+                  destinationBuilder: gameDestinationBuilder,
+                  index: index,
+                  game: game,
+                  characters: state.characters,
+                  highlighted: game.id == state.highlighted,
+                ),
+              ],
             ] else
-              _empty(context),
+              const _FirstGameInvite(),
           ],
         ],
       ),
     );
-  }
-
-  // O convite para a primeira partida.
-  Widget _empty(BuildContext context) {
-    final l10n = context.l10n;
-    return KeyedSubtree(
-      key: HistoryKeys.empty,
-      child: EmptyState(
-        icon: Icons.history_rounded,
-        message: l10n.ratingHistoryEmpty,
-        messageKey: RatingKeys.emptyHistory,
-        actionLabel: l10n.emptyFirstEndgame,
-        style: EmptyStateStyle.primary,
-        actionIcon: Icons.play_arrow_rounded,
-        actionKey: RatingKeys.emptyHistoryAction,
-        onAction: () {
-          final router = GoRouter.of(context);
-          ContainerNavigation.leave(context, () => router.go(Routes.catalog));
-        },
-      ),
-    );
-  }
-
-  // As partidas por mês, a mais recente primeiro.
-  List<Widget> _months(
-    BuildContext context,
-    HistoryState state,
-    List<HistoryGame> games,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final locale = Localizations.localeOf(context).toString();
-    final format = DateFormat.yMMMM(locale);
-    final children = <Widget>[];
-    String? current;
-    var months = 0;
-    for (final (index, game) in games.indexed) {
-      final label = HistoryLabels.capitalize(
-        format.format(game.attempt.playedAt.toLocal()),
-      );
-      if (label != current) {
-        current = label;
-        children.add(
-          Padding(
-            key: HistoryKeys.month(months++),
-            // Cabeçalho de grupo: 16 16 8 16 (artboard).
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.sm,
-            ),
-            child: Text(
-              label,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: colors.primary,
-              ),
-            ),
-          ),
-        );
-      } else {
-        children.add(Divider());
-      }
-      children.add(
-        HistoryGameRow(
-          key: ValueKey(game.id),
-          destinationBuilder: gameDestinationBuilder,
-          index: index,
-          game: game,
-          characters: state.characters,
-          highlighted: game.id == state.highlighted,
-        ),
-      );
-    }
-    return children;
   }
 
   /// Abre a folha de filtros da aba (o ícone da barra de cima chama).
@@ -211,6 +151,60 @@ class HistoryGamesTab extends StatelessWidget {
   }
 }
 
+/// O cabeçalho de cada mês nas partidas: o rótulo e o número do mês na lista,
+/// ou nulo quando a partida segue no mesmo mês da anterior.
+List<(String, int)?> _monthHeads(
+  BuildContext context,
+  List<HistoryGame> games,
+) {
+  final locale = Localizations.localeOf(context).toString();
+  final format = DateFormat.yMMMM(locale);
+  final heads = <(String, int)?>[];
+  String? current;
+  var months = 0;
+  for (final game in games) {
+    final label = HistoryLabels.capitalize(
+      format.format(game.attempt.playedAt.toLocal()),
+    );
+    if (label != current) {
+      current = label;
+      heads.add((label, months++));
+    } else {
+      heads.add(null);
+    }
+  }
+  return heads;
+}
+
+/// O cabeçalho de um mês na lista de partidas.
+// reuso: SectionTitle não serve porque o cabeçalho de grupo do Histórico é
+// primary com 16 16 8 16 (artboard), não cinza.
+class _MonthHeader extends StatelessWidget {
+  const _MonthHeader({required this.label, super.key});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      // Cabeçalho de grupo: 16 16 8 16 (artboard).
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
 /// O esqueleto enquanto o Histórico é lido (PropV1ParHistoricoCarregando):
 /// as abas (48, raio 24), o cartão (120, raio 16) e cinco linhas (64, raio 12).
 class HistoryLoading extends StatelessWidget {
@@ -235,4 +229,30 @@ class HistoryLoading extends StatelessWidget {
       ],
     ],
   );
+}
+
+// O convite para a primeira partida.
+class _FirstGameInvite extends StatelessWidget {
+  const _FirstGameInvite();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return KeyedSubtree(
+      key: HistoryKeys.empty,
+      child: EmptyState(
+        icon: Icons.history_rounded,
+        message: l10n.ratingHistoryEmpty,
+        messageKey: RatingKeys.emptyHistory,
+        actionLabel: l10n.emptyFirstEndgame,
+        style: EmptyStateStyle.primary,
+        actionIcon: Icons.play_arrow_rounded,
+        actionKey: RatingKeys.emptyHistoryAction,
+        onAction: () {
+          final router = GoRouter.of(context);
+          ContainerNavigation.leave(context, () => router.go(Routes.catalog));
+        },
+      ),
+    );
+  }
 }

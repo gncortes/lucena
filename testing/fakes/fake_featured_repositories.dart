@@ -86,13 +86,13 @@ class FakeFeaturedAlertsRepository implements FeaturedAlertsRepository {
 /// Três finais em dois torneios: um em andamento em 1/1/2026 e outro passado.
 FeaturedCatalog sampleFeaturedCatalog() => FeaturedCatalog(
   tournaments: [
-    FeaturedTournament(
+    const FeaturedTournament(
       id: 'old',
       name: 'Torneio Antigo',
       nameEn: 'Old Tournament',
       year: 1959,
       country: 'US',
-      summary: const LocalizedText({'pt': 'Resumo antigo.', 'en': 'Old.'}),
+      summary: LocalizedText({'pt': 'Resumo antigo.', 'en': 'Old.'}),
     ),
     FeaturedTournament(
       id: 'live',
@@ -154,23 +154,23 @@ FeaturedCatalog sampleFeaturedCatalog() => FeaturedCatalog(
       hook: const LocalizedText({'pt': 'Gancho B', 'en': 'Hook B'}),
       hint: const LocalizedText({'pt': 'Dica B', 'en': 'Hint B'}),
     ),
-    FeaturedEndgame(
+    const FeaturedEndgame(
       id: 'c',
       kind: FeaturedKind.play,
       origin: FeaturedOrigin.video,
       theme: FeaturedTheme.perfectConversion,
       fen: '8/8/5k1p/8/6PP/5K2/8/8 w - - 2 55',
       goal: PositionGoal.win,
-      white: const FeaturedPlayer(name: 'Branco C'),
-      black: const FeaturedPlayer(name: 'Preto C'),
+      white: FeaturedPlayer(name: 'Branco C'),
+      black: FeaturedPlayer(name: 'Preto C'),
       playerCanChange: true,
-      suggested: const FeaturedChoice(
+      suggested: FeaturedChoice(
         opponent: OpponentKind.maia,
         level: 1400,
         clock: '180+0',
       ),
-      title: const LocalizedText({'pt': 'Final C', 'en': 'Final C'}),
-      hook: const LocalizedText({'pt': 'Gancho C', 'en': 'Hook C'}),
+      title: LocalizedText({'pt': 'Final C', 'en': 'Final C'}),
+      hook: LocalizedText({'pt': 'Gancho C', 'en': 'Hook C'}),
     ),
   ],
 );

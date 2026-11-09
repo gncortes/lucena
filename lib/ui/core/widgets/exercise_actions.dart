@@ -100,74 +100,17 @@ class ExerciseActions extends StatelessWidget {
   static const actionWidth = 124.0;
   static const gap = 8.0;
 
-  Widget _button(BuildContext context, ExerciseAction action) {
-    final style = ButtonStyle(
-      minimumSize: const WidgetStatePropertyAll(Size(0, kButtonHeightCompact)),
-      // Com [hug], o botão do canvas: folga de 22 e letra 16.
-      padding: WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: hug ? 22 : 8),
-      ),
-      // Botão de rodapé: 16/24 (CompBotao); o de cartão fica 14/20.
-      textStyle: WidgetStatePropertyAll(
-        AppButtonText.footer(context)
-            ?.copyWith(fontWeight: hug ? FontWeight.w500 : null),
-      ),
-    );
-    final label = Text(action.label, maxLines: 2, textAlign: TextAlign.center);
-    return action.primary
-        ? FilledButton(
-            key: action.key,
-            style: style,
-            onPressed: action.onPressed,
-            child: label,
-          )
-        : OutlinedButton(
-            key: action.key,
-            style: style,
-            onPressed: action.onPressed,
-            child: label,
-          );
-  }
-
-  /// Numa linha enquanto couber; numa tela estreita, o contorno quebra em duas
-  /// primeiro, e o principal só quebra se nem sozinho couber.
-  Widget _hugRow() => LayoutBuilder(
-    builder: (context, box) {
-      final others = actions.where((a) => !a.primary).length;
-      final primaryMax = (box.maxWidth - others * (actionWidth + gap)).clamp(
-        actionWidth,
-        double.infinity,
-      );
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < actions.length; i++) ...[
-            if (i > 0) const SizedBox(width: gap),
-            Flexible(
-              flex: actions[i].primary ? 0 : 1,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: actionWidth,
-                  maxWidth: actions[i].primary ? primaryMax : double.infinity,
-                ),
-                child: _button(context, actions[i]),
-              ),
-            ),
-          ],
-        ],
-      );
-    },
-  );
-
   @override
   Widget build(BuildContext context) {
     final buttons = <Widget>[
       for (var i = 0; i < actions.length; i++) ...[
         if (i > 0) const SizedBox(width: gap),
-        Expanded(child: _button(context, actions[i])),
+        Expanded(
+          child: _ActionButton(hug: hug, action: actions[i]),
+        ),
       ],
     ];
-    final row = hug && actions.isNotEmpty ? _hugRow() : null;
+    final row = hug && actions.isNotEmpty ? _HugRow(this) : null;
     final maxWidth =
         actions.length * actionWidth + (actions.length - 1).clamp(0, 1) * gap;
     final colors = Theme.of(context).colorScheme;
@@ -248,6 +191,89 @@ class ExerciseActions extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Um botão do rodapé: principal (cheio) ou de contorno.
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({required this.hug, required this.action});
+
+  final bool hug;
+  final ExerciseAction action;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll(Size(0, kButtonHeightCompact)),
+      // Com [hug], o botão do canvas: folga de 22 e letra 16.
+      padding: WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: hug ? 22 : 8),
+      ),
+      // Botão de rodapé: 16/24 (CompBotao); o de cartão fica 14/20.
+      textStyle: WidgetStatePropertyAll(
+        AppButtonText.footer(context)
+            ?.copyWith(fontWeight: hug ? FontWeight.w500 : null),
+      ),
+    );
+    final label = Text(action.label, maxLines: 2, textAlign: TextAlign.center);
+    return action.primary
+        ? FilledButton(
+            key: action.key,
+            style: style,
+            onPressed: action.onPressed,
+            child: label,
+          )
+        : OutlinedButton(
+            key: action.key,
+            style: style,
+            onPressed: action.onPressed,
+            child: label,
+          );
+  }
+}
+
+/// Numa linha enquanto couber; numa tela estreita, o contorno quebra em duas
+/// primeiro, e o principal só quebra se nem sozinho couber.
+class _HugRow extends StatelessWidget {
+  const _HugRow(this.owner);
+
+  final ExerciseActions owner;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, box) {
+        final others = owner.actions.where((a) => !a.primary).length;
+        final primaryMax =
+            (box.maxWidth -
+                    others *
+                        (ExerciseActions.actionWidth + ExerciseActions.gap))
+                .clamp(ExerciseActions.actionWidth, double.infinity);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < owner.actions.length; i++) ...[
+              if (i > 0) const SizedBox(width: ExerciseActions.gap),
+              Flexible(
+                flex: owner.actions[i].primary ? 0 : 1,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: ExerciseActions.actionWidth,
+                    maxWidth: owner.actions[i].primary
+                        ? primaryMax
+                        : double.infinity,
+                  ),
+                  child: _ActionButton(
+                    hug: owner.hug,
+                    action: owner.actions[i],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }

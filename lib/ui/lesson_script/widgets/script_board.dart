@@ -511,16 +511,34 @@ class _ScriptBoardState extends State<ScriptBoard> {
                 proportional: widget.canvasFeedback,
               ),
             ),
-          for (final name in widget.state.stars) _star(name),
+          for (final name in widget.state.stars)
+            _Star(
+              name: name,
+              white: _orientation == Side.white,
+              size: widget.size,
+            ),
         ],
       ),
     );
   }
+}
 
-  Widget _star(String name) {
+/// A estrela numa casa do tabuleiro ([name], `casa` ou `casa:extra`).
+class _Star extends StatelessWidget {
+  const _Star({required this.name, required this.white, required this.size});
+
+  final String name;
+
+  /// O tabuleiro visto pelas brancas.
+  final bool white;
+
+  /// O lado do tabuleiro.
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
     final square = Square.fromName(name.split(':').first);
-    final white = _orientation == Side.white;
-    final side = widget.size / 8;
+    final side = size / 8;
     return Positioned(
       left: (white ? square.file : 7 - square.file) * side,
       top: (white ? 7 - square.rank : square.rank) * side,
@@ -531,9 +549,9 @@ class _ScriptBoardState extends State<ScriptBoard> {
           child: Icon(
             CanvasSymbols.star,
             fill: 1,
-            opticalSize: widget.size * .09,
+            opticalSize: size * .09,
             key: LessonScriptKeys.star(name),
-            size: widget.size * .09,
+            size: size * .09,
             color: const Color(0xFFF2B705),
           ),
         ),

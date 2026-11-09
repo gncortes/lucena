@@ -1,5 +1,7 @@
-// Dart puro (o domínio usa o [Ambiente.siteHost]): o flavor vem do mesmo
-// define que o `appFlavor` do Flutter lê (services/flavor.dart).
+// Dart puro: o flavor vem do mesmo define que o `appFlavor` do Flutter lê
+// (services/flavor.dart). O domínio recebe o site por `AppLinks.configure`.
+import '../domain/models/app_links.dart';
+
 const String _flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
 
 /// O ambiente do build, pelo flavor do Android (`--flavor dev|prod`).
@@ -23,8 +25,8 @@ enum Ambiente {
   /// Links e as páginas do site (Sobre, privacidade, termos). A troca é aqui
   /// e no `appLinkHost` do `android/app/build.gradle.kts`.
   String get siteHost => switch (this) {
-    dev => 'dev.playlucenachess.com',
-    prod => 'playlucenachess.com',
+    dev => AppLinks.devHost,
+    prod => AppLinks.prodHost,
   };
 }
 

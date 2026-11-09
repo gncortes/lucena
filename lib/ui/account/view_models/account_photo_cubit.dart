@@ -6,8 +6,8 @@ import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/account/avatar_repository.dart';
 import '../../../data/repositories/photo/photo_repository.dart';
-import '../../../data/services/firebase/file_store_service.dart';
 import '../../../domain/models/avatar_photo.dart';
+import '../../../domain/models/file_store_exception.dart';
 import '../../../domain/models/user_profile.dart';
 
 /// O avatar escolhido em "Seu perfil", ainda sem salvar.
@@ -60,6 +60,12 @@ class AccountPhotoCubit extends Cubit<AccountPhotoState> {
 
   /// A foto da conta do Google, quando há.
   String? get googleUrl => _accounts.current?.photoUrl;
+
+  /// O nome da conta (o apelido sugerido quando o perfil não tem um).
+  String? get accountName => _accounts.current?.name;
+
+  /// Há uma conta entrada (editar os dados de quem já tinha conta).
+  bool get signedIn => _accounts.current != null;
 
   /// Começa pelo que está gravado.
   void load(UserProfile profile) {

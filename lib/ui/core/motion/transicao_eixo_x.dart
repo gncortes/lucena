@@ -39,7 +39,8 @@ class TransicaoEixoX extends StatelessWidget {
       layoutBuilder: (filhos) =>
           Stack(alignment: alinhamento, children: filhos),
       transitionBuilder: reduzido
-          ? _fade
+          ? (filho, primaria, secundaria) =>
+                _Fade(primaria: primaria, secundaria: secundaria, child: filho)
           : (filho, primaria, secundaria) => _Lado(
               animacao: primaria,
               lado: 1,
@@ -79,7 +80,7 @@ class PaginaEixoX<T> extends CustomTransitionPage<T> {
              ? LucenaMotion.fadeReduzido
              : LucenaMotion.eixoX,
          transitionsBuilder: (context, primaria, secundaria, filho) => reduzir
-             ? _fade(filho, primaria, secundaria)
+             ? _Fade(primaria: primaria, secundaria: secundaria, child: filho)
              : _Lado(
                  animacao: primaria,
                  lado: 1,
@@ -88,14 +89,24 @@ class PaginaEixoX<T> extends CustomTransitionPage<T> {
        );
 }
 
-Widget _fade(
-  Widget filho,
-  Animation<double> primaria,
-  Animation<double> secundaria,
-) => FadeTransition(
-  opacity: primaria,
-  child: FadeTransition(opacity: ReverseAnimation(secundaria), child: filho),
-);
+/// O fade de 100 ms do movimento reduzido.
+class _Fade extends StatelessWidget {
+  const _Fade({
+    required this.primaria,
+    required this.secundaria,
+    required this.child,
+  });
+
+  final Animation<double> primaria;
+  final Animation<double> secundaria;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => FadeTransition(
+    opacity: primaria,
+    child: FadeTransition(opacity: ReverseAnimation(secundaria), child: child),
+  );
+}
 
 /// Um dos dois movimentos de um passo, pelo sentido da [animacao]:
 /// - [lado] 1 (a primária): indo, entra da direita; voltando, sai por ela;

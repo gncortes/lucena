@@ -126,7 +126,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      TestApp(locale: const Locale('pt'), child: _Home(const HomeScreen())),
+      const TestApp(locale: Locale('pt'), child: _Home(HomeScreen())),
     );
     // Antes da carga terminar: o nome, a engrenagem e o esqueleto.
     expect(find.byKey(HomeKeys.title), findsOneWidget);
@@ -166,7 +166,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      TestApp(locale: Locale('pt'), child: _Home(HomeScreen())),
+      const TestApp(locale: Locale('pt'), child: _Home(HomeScreen())),
     );
     await tester.pumpAndSettle();
 
@@ -628,7 +628,7 @@ void main() {
   });
 
   testWidgets('entra em sequência: o nome, depois o painel', (tester) async {
-    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
+    await tester.pumpWidget(const TestApp(child: _Home(HomeScreen())));
 
     expect(opacityOf(tester, HomeKeys.title), 0);
 
@@ -647,7 +647,7 @@ void main() {
         const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
 
-    await tester.pumpWidget(TestApp(child: _Home(HomeScreen())));
+    await tester.pumpWidget(const TestApp(child: _Home(HomeScreen())));
     await tester.pump();
 
     expect(opacityOf(tester, HomeKeys.title), 1);

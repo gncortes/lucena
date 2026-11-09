@@ -125,7 +125,9 @@ class SpeedrunRatingBonusCard extends StatelessWidget {
 
   /// "+N" e "antes → depois" isolados como LTR dentro do texto.
   static String _isolate(String text) => text.replaceAllMapped(
-    RegExp(r'\d+ → \d+|\+\d+'),
+    _ratingOrBonus,
     (match) => HistoryLabels.ltr(match[0]!),
   );
 }
+
+final _ratingOrBonus = RegExp(r'\d+ → \d+|\+\d+');

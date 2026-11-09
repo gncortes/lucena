@@ -110,24 +110,12 @@ class SpeedrunHistoryRowTile extends StatelessWidget {
                     style: small?.copyWith(color: colors.onSurfaceVariant),
                   ),
                   if (statusText != null)
-                    Row(
-                      key: HistoryKeys.rowStatus(index),
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          statusIcon,
-                          size: AppIconSize.small,
-                          color: statusColor,
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Flexible(
-                          child: Text(
-                            statusText,
-                            key: statusKey,
-                            style: small?.copyWith(color: statusColor),
-                          ),
-                        ),
-                      ],
+                    _RowStatus(
+                      rowKey: HistoryKeys.rowStatus(index),
+                      icon: statusIcon,
+                      color: statusColor,
+                      text: statusText,
+                      textKey: statusKey,
                     ),
                 ],
               ),
@@ -158,6 +146,43 @@ class SpeedrunHistoryRowTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// A situação da linha: ícone e texto curto na mesma cor.
+class _RowStatus extends StatelessWidget {
+  const _RowStatus({
+    required this.rowKey,
+    required this.icon,
+    required this.color,
+    required this.text,
+    required this.textKey,
+  });
+
+  final Key rowKey;
+  final IconData? icon;
+  final Color color;
+  final String text;
+  final Key? textKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final small = Theme.of(context).textTheme.bodySmall;
+    return Row(
+      key: rowKey,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: AppIconSize.small, color: color),
+        const SizedBox(width: AppSpacing.xs),
+        Flexible(
+          child: Text(
+            text,
+            key: textKey,
+            style: small?.copyWith(color: color),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -34,27 +34,58 @@ class WeekReviewScreen extends StatelessWidget {
   final VoidCallback onBack;
 
   @override
-  Widget build(BuildContext context) =>
-      review.isTournamentDay ? _tournament(context) : _review(context);
+  Widget build(BuildContext context) => review.isTournamentDay
+      ? _TournamentPage(
+          review: review,
+          teacher: teacher,
+          onOpen: onOpen,
+          onStart: onStart,
+          onBack: onBack,
+        )
+      : _ReviewPage(
+          review: review,
+          teacher: teacher,
+          onOpen: onOpen,
+          onStart: onStart,
+          onBack: onBack,
+        );
 
-  AppBar _bar(BuildContext context, String title) => AppBar(
-    leading: IconButton(
-      icon: const Icon(CanvasSymbols.arrowBack),
-      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-      onPressed: onBack,
-    ),
-    title: Text(title),
-    centerTitle: false,
-  );
+  static AppBar _bar(BuildContext context, String title, VoidCallback onBack) =>
+      AppBar(
+        leading: IconButton(
+          icon: const Icon(CanvasSymbols.arrowBack),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          onPressed: onBack,
+        ),
+        title: Text(title),
+        centerTitle: false,
+      );
+}
 
-  Widget _review(BuildContext context) {
+class _ReviewPage extends StatelessWidget {
+  const _ReviewPage({
+    required this.review,
+    required this.teacher,
+    required this.onOpen,
+    required this.onStart,
+    required this.onBack,
+  });
+
+  final WeekReview review;
+  final Character teacher;
+  final void Function(String path) onOpen;
+  final VoidCallback onStart;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
     final onContainer = theme.colorScheme.onPrimaryContainer;
     final tournament = review.tournament;
     return Scaffold(
       key: LessonEndKeys.review,
-      appBar: _bar(context, l.licaoRevisaoTitle),
+      appBar: WeekReviewScreen._bar(context, l.licaoRevisaoTitle, onBack),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -151,14 +182,31 @@ class WeekReviewScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _tournament(BuildContext context) {
+class _TournamentPage extends StatelessWidget {
+  const _TournamentPage({
+    required this.review,
+    required this.teacher,
+    required this.onOpen,
+    required this.onStart,
+    required this.onBack,
+  });
+
+  final WeekReview review;
+  final Character teacher;
+  final void Function(String path) onOpen;
+  final VoidCallback onStart;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
     final tournament = review.tournament!;
     return Scaffold(
       key: LessonEndKeys.tournament,
-      appBar: _bar(context, l.licaoTorneioTitle),
+      appBar: WeekReviewScreen._bar(context, l.licaoTorneioTitle, onBack),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

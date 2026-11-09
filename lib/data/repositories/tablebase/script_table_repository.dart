@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../../../domain/models/script_table.dart';
 import '../../services/asset_service.dart';
 
@@ -37,7 +39,8 @@ class AssetScriptTableRepository implements ScriptTableRepository {
     ScriptTable table;
     try {
       final raw = await _assets.loadString(pathFor(scriptPath));
-      table = ScriptTable.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      // Até 3,4 MB: decodifica fora da linha da interface.
+      table = await compute(_parse, raw);
     } on Object {
       // Roteiro sem tabela (até 3 peças, ou só tarefa/mate).
       table = ScriptTable.empty;
@@ -45,3 +48,6 @@ class AssetScriptTableRepository implements ScriptTableRepository {
     return _cache[scriptPath] = table;
   }
 }
+
+ScriptTable _parse(String raw) =>
+    ScriptTable.fromJson(jsonDecode(raw) as Map<String, dynamic>);

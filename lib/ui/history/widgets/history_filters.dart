@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../core/motion/chip_lucena.dart';
-import '../../core/motion/opcoes_do_filtro.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/sheet_header.dart';
+import '../../core/widgets/filter_sheet.dart';
 import '../../core/widgets/empty_state.dart';
 
 /// Uma opção de um grupo da folha: o [value] (da key) e o [label].
@@ -94,87 +92,47 @@ class _FilterSheetState extends State<_FilterSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final shown = widget.count(_draft);
     return SafeArea(
       top: false,
-      child: Column(
+      child: FilterSheetScaffold(
         key: HistoryKeys.filterSheet,
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SheetHeader(
-            title: l10n.historyFilters,
-            trailing: TextButton(
-              key: HistoryKeys.filterClear,
-              onPressed: _dirty ? _clear : null,
-              child: Text(l10n.historyFiltersClear),
-            ),
-          ),
-          Flexible(
-            child: OpcoesDoFiltro(
-              id: 'historico',
-              montar: (itens) => ListView(
-                shrinkWrap: true,
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  AppSpacing.xl,
-                  0,
-                  AppSpacing.xl,
-                  AppSpacing.lg,
-                ),
-                children: itens,
-              ),
-              itens: [
-                for (final group in widget.groups) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: AppSpacing.md,
-                      bottom: AppSpacing.sm,
-                    ),
-                    child: Text(
-                      group.title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
+        title: l10n.historyFilters,
+        clearButton: TextButton(
+          key: HistoryKeys.filterClear,
+          onPressed: _dirty ? _clear : null,
+          child: Text(l10n.historyFiltersClear),
+        ),
+        filterId: 'historico',
+        listPadding: const EdgeInsetsDirectional.fromSTEB(
+          AppSpacing.xl,
+          0,
+          AppSpacing.xl,
+          AppSpacing.lg,
+        ),
+        items: [
+          for (final group in widget.groups) ...[
+            FilterSheetHeading(group.title),
+            FilterSheetOptions(
+              children: [
+                for (final option in group.options)
+                  ChipLucena(
+                    key: HistoryKeys.filterOption(group.name, option.value),
+                    label: Text(option.label),
+                    selecionado: _draft[group.name] == option.value,
+                    aoEscolher: (_) => _toggle(group, option.value),
                   ),
-                  Wrap(
-                    spacing: AppSpacing.sm,
-                    runSpacing: AppSpacing.sm,
-                    children: [
-                      for (final option in group.options)
-                        ChipLucena(
-                          key: HistoryKeys.filterOption(
-                            group.name,
-                            option.value,
-                          ),
-                          label: Text(option.label),
-                          selecionado: _draft[group.name] == option.value,
-                          aoEscolher: (_) => _toggle(group, option.value),
-                        ),
-                    ],
-                  ),
-                ],
               ],
             ),
-          ),
-          ActionsFooter(
-            margin: AppSpacing.xl,
-            children: [
-              FilledButton(
-                key: HistoryKeys.filterApply,
-                onPressed: shown == 0
-                    ? null
-                    : () => Navigator.of(context).pop(_draft),
-                child: Text(
-                  widget.applyLabel(shown),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
+          ],
         ],
+        applyButton: FilledButton(
+          key: HistoryKeys.filterApply,
+          onPressed: shown == 0
+              ? null
+              : () => Navigator.of(context).pop(_draft),
+          child: Text(widget.applyLabel(shown), textAlign: TextAlign.center),
+        ),
       ),
     );
   }

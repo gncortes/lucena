@@ -199,7 +199,7 @@ void main() {
         _Characters(failure),
         FakeProfileRepository(),
         FakeRatingRepository(),
-        link: ChallengeLink(
+        link: const ChallengeLink(
           fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
           userSide: Side.white,
           opponent: OpponentKind.maia,

@@ -118,12 +118,7 @@ class VariationStrip extends StatefulWidget {
   /// inteiro: cortar deixaria um pedaço começando em minúscula.
   @visibleForTesting
   static String withoutLeadingMove(String text) {
-    final rest = text.replaceFirst(
-      RegExp(
-        r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
-      ),
-      '',
-    );
+    final rest = text.replaceFirst(_leadingMove, '');
     if (rest == text || rest.isEmpty) return rest;
     final first = rest[0];
     return first.toLowerCase() == first && first.toUpperCase() != first
@@ -207,7 +202,7 @@ class _VariationStripState extends State<VariationStrip> {
     return found;
   }
 
-  Widget _row(int index, VariationRow row, TextStyle body, bool hasButton) =>
+  _StripRow _row(int index, VariationRow row, TextStyle body, bool hasButton) =>
       _StripRow(
         tree: widget.tree,
         row: row,
@@ -303,7 +298,7 @@ class _VariationStripState extends State<VariationStrip> {
             ),
             if (widget.typing) ...[
               const SizedBox(height: AppSpacing.xs),
-              Divider(),
+              const Divider(),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
                 child: Align(
@@ -313,7 +308,7 @@ class _VariationStripState extends State<VariationStrip> {
               ),
             ] else if (text.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.xs),
-              Divider(),
+              const Divider(),
               const SizedBox(height: AppSpacing.sm),
               _Comment(
                 text: text,
@@ -339,8 +334,8 @@ class _VariationStripState extends State<VariationStrip> {
     TreePosition focus,
   ) {
     String sanOf(String label) => label
-        .replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), '')
-        .replaceFirst(RegExp(r'[!?]+$'), '');
+        .replaceFirst(_moveNumberPrefix, '')
+        .replaceFirst(_moveAnnotationSuffix, '');
     final all = <String, bool>{};
     final line = <String, bool>{};
     final inLine = {
@@ -715,6 +710,9 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
       builder: (context, _) => LayoutBuilder(
         builder: (context, _) {
           _queueMeasure();
+          final row = widget.row;
+          final sliding = _reveal.isAnimating ? _revealIndex : null;
+          final slide = AppMotion.revealCurve.transform(_reveal.value);
           return Stack(
             key: _stack,
             clipBehavior: Clip.none,
@@ -723,10 +721,56 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
                 padding: EdgeInsetsDirectional.only(end: widget.reserveEnd),
                 child: Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
-                  children: _items(context, colors, l10n),
+                  children: [
+                    for (final (i, move) in row.moves.indexed)
+                      _MoveButton(
+                        key: branch == null
+                            ? LessonKeys.variationMove(move.position.ply)
+                            : LessonKeys.variationBranchMove(
+                                branch.id,
+                                move.position.ply,
+                              ),
+                        buttonKey: _buttonKeys[i],
+                        textKey: _textKeys[i],
+                        shown: move.shown,
+                        state: widget.tree.stateOf(
+                          move.position,
+                          widget.current,
+                        ),
+                        branch: branch != null,
+                        style: widget.style,
+                        covered: _unseen(i) && widget.hideUnseen,
+                        opacity: _unseen(i) ? _coveredOpacity() : 1,
+                        slide: sliding == i ? slideFrom * (1 - slide) : 0,
+                        onTap: () => widget.onSelect(move.position),
+                      ),
+                    if (row.result case final result?)
+                      _ResultItem(
+                        result: result,
+                        branchId: branch!.id,
+                        slide: sliding == row.moves.length - 1
+                            ? slideFrom * (1 - slide)
+                            : 0,
+                        itemKey: _resultKey,
+                        covered: _resultUnseen && widget.hideUnseen,
+                        opacity: _resultUnseen ? _coveredOpacity() : 1,
+                        style: widget.style,
+                      ),
+                  ],
                 ),
               ),
-              ..._blocks(context),
+              for (final block in _blockSpecs())
+                _HiddenBlock(
+                  left: block.left,
+                  top: block.top,
+                  width: block.width,
+                  opacity: block.opacity * _fade.value,
+                  interactive: widget.hideUnseen,
+                  boxKey: block.keyed
+                      ? LessonKeys.variationHiddenBlock(widget.index)
+                      : null,
+                  onTap: () => widget.onReveal?.call(widget.index),
+                ),
             ],
           );
         },
@@ -743,7 +787,7 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
     return Semantics(
       container: true,
       label: l10n.lessonVariationAlternative(
-        replaced.replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), ''),
+        replaced.replaceFirst(_moveNumberPrefix, ''),
       ),
       child: Container(
         key: LessonKeys.variationBranch(branch.id),
@@ -768,104 +812,13 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
   /// Opacidade de quem está coberto: some com o bloco que entra por cima.
   double _coveredOpacity() => 1 - _fade.value;
 
-  List<Widget> _items(
-    BuildContext context,
-    ColorScheme colors,
-    AppLocalizations l10n,
-  ) {
-    final row = widget.row;
-    final branch = row.branch;
-    final sliding = _reveal.isAnimating ? _revealIndex : null;
-    final slide = AppMotion.revealCurve.transform(_reveal.value);
-    return [
-      for (final (i, move) in row.moves.indexed)
-        _MoveButton(
-          key: branch == null
-              ? LessonKeys.variationMove(move.position.ply)
-              : LessonKeys.variationBranchMove(branch.id, move.position.ply),
-          buttonKey: _buttonKeys[i],
-          textKey: _textKeys[i],
-          shown: move.shown,
-          state: widget.tree.stateOf(move.position, widget.current),
-          branch: branch != null,
-          style: widget.style,
-          covered: _unseen(i) && widget.hideUnseen,
-          opacity: _unseen(i) ? _coveredOpacity() : 1,
-          slide: sliding == i ? slideFrom * (1 - slide) : 0,
-          onTap: () => widget.onSelect(move.position),
-        ),
-      if (row.result case final result?)
-        _resultItem(
-          context,
-          colors,
-          l10n,
-          result,
-          branch!.id,
-          sliding == row.moves.length - 1 ? slideFrom * (1 - slide) : 0,
-        ),
-    ];
-  }
-
-  /// O que desliza para fora junto com o lance revelado.
-  static Widget _slid(double slide, Widget child) => slide > 0
-      ? ClipRect(
-          child: FractionalTranslation(
-            translation: Offset(slide, 0),
-            child: child,
-          ),
-        )
-      : child;
-
   bool get _resultUnseen =>
       widget.row.moves.isNotEmpty && _unseen(widget.row.moves.length - 1);
 
-  Widget _resultItem(
-    BuildContext context,
-    ColorScheme colors,
-    AppLocalizations l10n,
-    VariationResult result,
-    String branchId,
-    double slide,
-  ) {
-    final covered = _resultUnseen && widget.hideUnseen;
-    return Opacity(
-      opacity: _resultUnseen ? _coveredOpacity() : 1,
-      child: ExcludeSemantics(
-        excluding: covered,
-        child: Semantics(
-          label: switch (result) {
-            VariationResult.draw => l10n.lessonLineResultDraw,
-          },
-          excludeSemantics: true,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
-            child: ConstrainedBox(
-              key: _resultKey,
-              constraints: const BoxConstraints(
-                minHeight: VariationStrip.tapSize,
-              ),
-              child: Center(
-                widthFactor: 1,
-                child: _slid(
-                  slide,
-                  Text(
-                    '\u2066${result.symbol}\u2069',
-                    key: LessonKeys.variationResult(branchId),
-                    style: widget.style.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Os blocos da linha: um por linha visual que tenha lance coberto.
-  List<Widget> _blocks(BuildContext context) {
+  /// Os blocos da linha: um por linha visual que tenha lance coberto. Só o
+  /// primeiro leva a key de teste ([keyed]).
+  List<({double left, double top, double width, double opacity, bool keyed})>
+  _blockSpecs() {
     final metrics = _metrics;
     final row = widget.row;
     final items = row.moves.length + (row.result == null ? 0 : 1);
@@ -897,8 +850,10 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
         lines.add([i]);
       }
     }
-    final blocks = <Widget>[];
-    var keyed = false;
+    final blocks =
+        <
+          ({double left, double top, double width, double opacity, bool keyed})
+        >[];
     for (final line in lines) {
       final hidden = [
         for (final i in line)
@@ -922,42 +877,148 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
       final width = math.max(0.0, right - left);
       if (width <= 0) continue;
       final center = metrics.buttons[first].center.dy;
-      final hit = math.max(width, VariationStrip.tapSize);
-      final block = Positioned(
+      blocks.add((
         left: left,
         top: center - VariationStrip.tapSize / 2,
-        width: hit,
-        height: VariationStrip.tapSize,
-        child: IgnorePointer(
-          ignoring: !widget.hideUnseen,
-          child: Opacity(
-            opacity: opacity * _fade.value,
-            child: Semantics(
-              button: true,
-              label: context.l10n.lessonHiddenMoves,
-              onTapHint: context.l10n.lessonRevealNextMove,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => widget.onReveal?.call(widget.index),
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: _Grain(
-                    boxKey: keyed
-                        ? null
-                        : LessonKeys.variationHiddenBlock(widget.index),
-                    width: width,
-                    height: blockHeight,
+        width: width,
+        opacity: opacity,
+        keyed: blocks.isEmpty,
+      ));
+    }
+    return blocks;
+  }
+}
+
+/// Um bloco de grão por cima dos lances ainda cobertos de uma linha visual;
+/// tocar revela o próximo lance.
+class _HiddenBlock extends StatelessWidget {
+  const _HiddenBlock({
+    required this.left,
+    required this.top,
+    required this.width,
+    required this.opacity,
+    required this.interactive,
+    required this.boxKey,
+    required this.onTap,
+  });
+
+  final double left;
+  final double top;
+  final double width;
+  final double opacity;
+  final bool interactive;
+  final Key? boxKey;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Positioned(
+      left: left,
+      top: top,
+      width: math.max(width, VariationStrip.tapSize),
+      height: VariationStrip.tapSize,
+      child: IgnorePointer(
+        ignoring: !interactive,
+        child: Opacity(
+          opacity: opacity,
+          child: Semantics(
+            button: true,
+            label: l10n.lessonHiddenMoves,
+            onTapHint: l10n.lessonRevealNextMove,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: _Grain(
+                  boxKey: boxKey,
+                  width: width,
+                  height: _StripRowState.blockHeight,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O que desliza para fora junto com o lance revelado.
+class _Slid extends StatelessWidget {
+  const _Slid({required this.slide, required this.child});
+
+  final double slide;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => slide > 0
+      ? ClipRect(
+          child: FractionalTranslation(
+            translation: Offset(slide, 0),
+            child: child,
+          ),
+        )
+      : child;
+}
+
+/// O resultado ("=") que fecha uma linha de alternativa.
+class _ResultItem extends StatelessWidget {
+  const _ResultItem({
+    required this.result,
+    required this.branchId,
+    required this.slide,
+    required this.itemKey,
+    required this.covered,
+    required this.opacity,
+    required this.style,
+  });
+
+  final VariationResult result;
+  final String branchId;
+  final double slide;
+  final GlobalKey itemKey;
+  final bool covered;
+  final double opacity;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
+    return Opacity(
+      opacity: opacity,
+      child: ExcludeSemantics(
+        excluding: covered,
+        child: Semantics(
+          label: switch (result) {
+            VariationResult.draw => l10n.lessonLineResultDraw,
+          },
+          excludeSemantics: true,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
+            child: ConstrainedBox(
+              key: itemKey,
+              constraints: const BoxConstraints(
+                minHeight: VariationStrip.tapSize,
+              ),
+              child: Center(
+                widthFactor: 1,
+                child: _Slid(
+                  slide: slide,
+                  child: Text(
+                    '\u2066${result.symbol}\u2069',
+                    key: LessonKeys.variationResult(branchId),
+                    style: style.copyWith(color: colors.onSurfaceVariant),
                   ),
                 ),
               ),
             ),
           ),
         ),
-      );
-      keyed = true;
-      blocks.add(block);
-    }
-    return blocks;
+      ),
+    );
   }
 }
 
@@ -1050,7 +1111,7 @@ class _MoveButton extends StatelessWidget {
           // no retângulo medido (localToGlobal aplica a transformação).
           child: SizedBox(
             width: _reservedWidth(context),
-            child: _StripRowState._slid(slide, label),
+            child: _Slid(slide: slide, child: label),
           ),
         ),
       ),
@@ -1083,3 +1144,11 @@ class _MoveButton extends StatelessWidget {
     );
   }
 }
+
+final _leadingMove = RegExp(
+  r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
+);
+
+final _moveNumberPrefix = RegExp(r'^\d+\.(?:\.\.)?');
+
+final _moveAnnotationSuffix = RegExp(r'[!?]+$');

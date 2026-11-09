@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/legal/legal_consent_repository.dart';
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/account.dart';
 import '../../../routing/routes.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -44,14 +41,8 @@ Future<bool> showAccountInviteSheet(
       context,
       sheetKey: AccountKeys.inviteSheet,
       builder: (_) => BlocProvider(
-        create: (_) => AccountCubit(
-          context.read<AccountRepository>(),
-          sync: context.read<SyncScheduler>(),
-          analytics: context.analytics,
-          moment: moment,
-          campaigns: context.campaigns,
-          consent: context.read<LegalConsentRepository>(),
-        ),
+        create: (_) =>
+            createAccountCubit(context, moment: moment, consent: true),
         child: SafeArea(
           top: false,
           child: _InviteSheet(screen: context, text: text, from: from),

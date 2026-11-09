@@ -8,18 +8,13 @@ import '../../../config/ambiente.dart';
 
 import 'package:intl/intl.dart';
 
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/lichess/lichess_repository.dart';
-import '../../../data/repositories/profile/profile_repository.dart';
-import '../../../data/repositories/rating/rating_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/profile.dart';
 import '../../../domain/models/account.dart';
 import '../../../domain/models/level_source.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../routing/routes.dart';
 import '../../alerts/view_models/alerts_cubit.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -64,29 +59,10 @@ class ProfileScreen extends StatelessWidget {
                 context.canPop() ? context.pop() : context.go(Routes.home),
           );
         }
-        return _build(context);
+        return const _ProfileProviders();
       },
     );
   }
-
-  Widget _build(BuildContext context) => MultiBlocProvider(
-    providers: [
-      BlocProvider(
-        create: (context) => ProfileAccountCubit(
-          accounts: context.read<AccountRepository>(),
-          sync: context.read<SyncScheduler>(),
-          lichess: context.read<LichessRepository>(),
-          profile: context.read<ProfileRepository>(),
-          analytics: context.analytics,
-        )..load(),
-      ),
-      BlocProvider(
-        create: (context) =>
-            CurrentRatingCubit(context.read<RatingRepository>())..load(),
-      ),
-    ],
-    child: const _ProfileView(),
-  );
 }
 
 class _ProfileView extends StatelessWidget {
@@ -644,4 +620,21 @@ class _AccountActions extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ProfileProviders extends StatelessWidget {
+  const _ProfileProviders();
+
+  @override
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => createProfileAccountCubit(context)..load(),
+      ),
+      BlocProvider(
+        create: (context) => createCurrentRatingCubit(context)..load(),
+      ),
+    ],
+    child: const _ProfileView(),
+  );
 }

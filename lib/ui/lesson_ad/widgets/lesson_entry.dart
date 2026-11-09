@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/lesson_ad/course_access_repository.dart';
-import '../../../data/repositories/lesson_ad/demo_ad_repository.dart';
-import '../../../data/repositories/review/review_repository.dart';
-import '../../../domain/models/course_access.dart';
+import '../../../config/view_models/lesson_ad.dart';
 import '../../../domain/use_cases/ad_policy.dart';
 import '../../../routing/frentes/d2_routes.dart' show pilaresSaleOrigin;
 import '../../../routing/route_names.dart';
@@ -21,7 +17,7 @@ import '../../core/widgets/lucena_sheet.dart';
 
 /// O único ponto que abre uma lição (H-LIC-08 a 15): o comprador entra direto;
 /// a demonstração vê o aviso uma vez e o anúncio em toda entrada. Substitui o
-/// `LessonGate` antigo. Sem [CourseAccessRepository] no contexto, o curso
+/// `LessonGate` antigo. Sem o acesso ao curso no contexto, o curso
 /// está aberto (V1).
 abstract final class LessonEntry {
   /// Abre a lição [lessonId] chamando [open] depois do aviso e do anúncio.
@@ -33,24 +29,21 @@ abstract final class LessonEntry {
     required VoidCallback open,
     DemoAdEntry entry = DemoAdEntry.lesson,
   }) async {
-    final access =
-        _read<CourseAccessRepository>(context)?.access ?? CourseAccess.owned;
-    final ads = _read<DemoAdRepository>(context);
-    final review = _read<ReviewRepository>(context);
-    final noticeSeen = ads == null ? true : await ads.noticeSeen();
+    final gate = createLessonEntryGate(context);
+    final noticeSeen = await gate.noticeSeen();
     if (!context.mounted) return;
     final step = DemoAdPolicy.stepFor(
-      access: access,
+      access: gate.access,
       entry: entry,
       noticeSeen: noticeSeen,
     );
-    if (step == DemoAdStep.none || ads == null) {
+    if (step == DemoAdStep.none || !gate.hasAds) {
       open();
       return;
     }
     if (step == DemoAdStep.notice) {
       // Aparece uma vez: marca ao mostrar, até se fechar à força.
-      await ads.markNoticeSeen();
+      await gate.markNoticeSeen();
       if (!context.mounted) return;
       final see = await showLucenaSheet<bool>(
         context,
@@ -65,14 +58,13 @@ abstract final class LessonEntry {
     );
     if (closed != true || !context.mounted) return;
     // Logo depois de um anúncio, a Play não pede avaliação (E1.26).
-    review?.noteSetback();
+    gate.noteSetback();
     open();
   }
 
   /// O capítulo [chapterId] está trancado para quem está no contexto?
   static bool isLocked(BuildContext context, String chapterId) {
-    final access =
-        _read<CourseAccessRepository>(context)?.access ?? CourseAccess.owned;
+    final access = createLessonEntryGate(context).access;
     final chapter = DemoAdPolicy.chapterOf(chapterId);
     return chapter != null && DemoAdPolicy.isChapterLocked(access, chapter);
   }
@@ -84,8 +76,7 @@ abstract final class LessonEntry {
     required String chapterId,
     required String chapterTitle,
   }) async {
-    final access =
-        _read<CourseAccessRepository>(context)?.access ?? CourseAccess.owned;
+    final access = createLessonEntryGate(context).access;
     final chapter = DemoAdPolicy.chapterOf(chapterId);
     if (chapter == null || !DemoAdPolicy.isChapterLocked(access, chapter)) {
       return true;
@@ -149,14 +140,6 @@ abstract final class LessonEntry {
         },
       ) ==
       true;
-
-  static T? _read<T>(BuildContext context) {
-    try {
-      return context.read<T>();
-    } on ProviderNotFoundException {
-      return null;
-    }
-  }
 }
 
 /// O que a rota do anúncio recebe.

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/use_cases/training/goal/goal_view.dart';
 import '../../core/keys/training_goal_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -31,9 +30,52 @@ class TrainingPlanPresentationScreen extends StatelessWidget {
       cascata: true,
       title: t.treinoPlanTitle,
       onBack: onBack,
-      builder: (context, view) => view.hasTournament
-          ? _tournament(context, view)
-          : _improve(context, view),
+      builder: (context, view) {
+        if (!view.hasTournament) {
+          final count = view.plan?.chapterIds.length ?? 0;
+          return [
+            Text(
+              t.treinoPlanOrderTitle,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Text(t.treinoPlanOrderBody(count)),
+          ];
+        }
+        final plan = view.plan;
+        if (plan == null) return const [];
+        final weeks = plan.weeks;
+        return [
+          Text(
+            t.treinoPlanInWeeks(weeks.length),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          Text(
+            t.treinoPlanRange(
+              weeks.isEmpty ? '' : civilShort(context, weeks.first.start),
+              civilShort(context, view.tournamentDate!),
+              plan.chapterIds.length,
+            ),
+          ),
+          Text(t.treinoPlanEachChapter),
+          const SizedBox(height: AppSpacing.md),
+          for (final (i, w) in weeks.indexed)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: WeekCard(
+                key: TrainingGoalKeys.presentationWeek(i),
+                view: view,
+                week: w,
+                index: i,
+                onTap: () => onWeek(i),
+              ),
+            ),
+          if (plan.deferredIds.isNotEmpty)
+            Text(
+              t.treinoPlanDeferred(plan.deferredIds.length),
+              key: TrainingGoalKeys.presentationDeferred,
+            ),
+        ];
+      },
       footer: (context, view) => Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -53,55 +95,5 @@ class TrainingPlanPresentationScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  List<Widget> _tournament(BuildContext context, GoalView view) {
-    final t = context.l10n;
-    final plan = view.plan;
-    if (plan == null) return const [];
-    final weeks = plan.weeks;
-    return [
-      Text(
-        t.treinoPlanInWeeks(weeks.length),
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      Text(
-        t.treinoPlanRange(
-          weeks.isEmpty ? '' : civilShort(context, weeks.first.start),
-          civilShort(context, view.tournamentDate!),
-          plan.chapterIds.length,
-        ),
-      ),
-      Text(t.treinoPlanEachChapter),
-      const SizedBox(height: AppSpacing.md),
-      for (final (i, w) in weeks.indexed)
-        Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-          child: WeekCard(
-            key: TrainingGoalKeys.presentationWeek(i),
-            view: view,
-            week: w,
-            index: i,
-            onTap: () => onWeek(i),
-          ),
-        ),
-      if (plan.deferredIds.isNotEmpty)
-        Text(
-          t.treinoPlanDeferred(plan.deferredIds.length),
-          key: TrainingGoalKeys.presentationDeferred,
-        ),
-    ];
-  }
-
-  List<Widget> _improve(BuildContext context, GoalView view) {
-    final t = context.l10n;
-    final count = view.plan?.chapterIds.length ?? 0;
-    return [
-      Text(
-        t.treinoPlanOrderTitle,
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      Text(t.treinoPlanOrderBody(count)),
-    ];
   }
 }

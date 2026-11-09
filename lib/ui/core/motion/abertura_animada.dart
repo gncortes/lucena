@@ -120,6 +120,10 @@ class _AberturaAnimadaState extends State<AberturaAnimada>
   Widget build(BuildContext context) {
     // A árvore não muda de forma quando a abertura sai: o app fica no mesmo
     // lugar do Stack e não monta de novo (só a camada de cima some).
+    final camada = _CamadaNoTempo(
+      quadroDe: (reduzir) => reduzir ? _quadroReduzido() : _quadro(),
+      aoTocar: _tocou,
+    );
     return Stack(
       textDirection: TextDirection.ltr,
       fit: StackFit.expand,
@@ -128,23 +132,12 @@ class _AberturaAnimadaState extends State<AberturaAnimada>
         if (!_acabou)
           Positioned.fill(
             child: MediaQuery.maybeOf(context) == null
-                ? MediaQuery.fromView(view: View.of(context), child: _camada())
-                : _camada(),
+                ? MediaQuery.fromView(view: View.of(context), child: camada)
+                : camada,
           ),
       ],
     );
   }
-
-  Widget _camada() => Builder(
-    builder: (context) {
-      final reduzir = MovimentoReduzido.of(context);
-      final quadro = reduzir ? _quadroReduzido() : _quadro();
-      return Directionality(
-        textDirection: TextDirection.ltr,
-        child: _Camada(quadro: quadro, aoTocar: _tocou),
-      );
-    },
-  );
 
   _Quadro _quadroReduzido() {
     final luz = _entre(_t, 0, _ms(LucenaMotion.nomeReduzido));
@@ -342,6 +335,24 @@ class _Quadro {
   final double conteudo;
   final double escala;
   final double fundo;
+}
+
+/// A camada do momento: o quadro sai do relógio do estado, com o movimento
+/// reduzido lido abaixo do `MediaQuery`.
+class _CamadaNoTempo extends StatelessWidget {
+  const _CamadaNoTempo({required this.quadroDe, required this.aoTocar});
+
+  final _Quadro Function(bool reduzir) quadroDe;
+  final VoidCallback aoTocar;
+
+  @override
+  Widget build(BuildContext context) => Directionality(
+    textDirection: TextDirection.ltr,
+    child: _Camada(
+      quadro: quadroDe(MovimentoReduzido.of(context)),
+      aoTocar: aoTocar,
+    ),
+  );
 }
 
 class _Camada extends StatelessWidget {
@@ -723,7 +734,7 @@ class MascotePainter extends CustomPainter {
       ..save()
       ..clipPath(Path()..addOval(cabeca))
       ..drawRect(
-        Rect.fromLTWH(512 - r, hy - r * .62, 2 * r, r * .24),
+        const Rect.fromLTWH(512 - r, hy - r * .62, 2 * r, r * .24),
         _cheio(MascoteColors.laranja),
       )
       ..restore();
@@ -734,7 +745,7 @@ class MascotePainter extends CustomPainter {
     canvas
       ..drawOval(
         Rect.fromCenter(
-          center: Offset(512 - r * .62, hy + r * .3),
+          center: const Offset(512 - r * .62, hy + r * .3),
           width: r * .34,
           height: r * .2,
         ),
@@ -742,7 +753,7 @@ class MascotePainter extends CustomPainter {
       )
       ..drawOval(
         Rect.fromCenter(
-          center: Offset(512 + r * .62, hy + r * .3),
+          center: const Offset(512 + r * .62, hy + r * .3),
           width: r * .34,
           height: r * .2,
         ),

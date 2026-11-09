@@ -55,7 +55,7 @@ void main() {
       TestApp(
         webPages: FakeWebPages(title: 't'),
         analytics: analytics,
-        child: Scaffold(body: ReferenceLink(reference: game)),
+        child: const Scaffold(body: ReferenceLink(reference: game)),
       ),
     );
     await tester.pumpAndSettle();
@@ -74,7 +74,7 @@ void main() {
       TestApp(
         webPages: FakeWebPages(title: 't'),
         analytics: analytics,
-        child: Scaffold(body: ReferenceLink(reference: wikipedia)),
+        child: const Scaffold(body: ReferenceLink(reference: wikipedia)),
       ),
     );
     await tester.pumpAndSettle();

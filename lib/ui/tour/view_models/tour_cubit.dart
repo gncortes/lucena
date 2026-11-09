@@ -183,7 +183,7 @@ class TourCubit extends Cubit<TourState> {
       _nicknameSaved = Future<void>.value();
       debugPrint('tour load failed: $error');
       reportHandledError(error, stack);
-      if (!isClosed) emit(TourState(failure: LoadFailure.generic));
+      if (!isClosed) emit(const TourState(failure: LoadFailure.generic));
     }
   }
 

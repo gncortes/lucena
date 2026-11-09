@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/legal/legal_consent_repository.dart';
+import '../../../config/view_models/account.dart';
 import '../../../routing/routes.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -34,11 +32,7 @@ class AccountConsentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => AccountConsentCubit(
-      uid: context.read<AccountRepository>().current?.uid,
-      consent: context.read<LegalConsentRepository>(),
-      analytics: context.analytics,
-    ),
+    create: createAccountConsentCubit,
     child: _ConsentView(from: from, offline: offline),
   );
 }

@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/account.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../../routing/routes.dart';
 import '../../account/view_models/account_cubit.dart';
 import '../../account/widgets/account_flow.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/gift_opening_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/busy_button.dart';
@@ -49,16 +47,11 @@ class GiftOpeningScreen extends StatelessWidget {
         },
         builder: (context, state) => switch (state.phase) {
           GiftOpeningPhase.signIn => BlocProvider(
-            create: (context) => AccountCubit(
-              context.read<AccountRepository>(),
-              sync: context.read<SyncScheduler>(),
-              analytics: context.analytics,
-              campaigns: context.campaigns,
-            ),
+            create: createAccountCubit,
             child: _SignIn(account: account, onBack: () => _close(context)),
           ),
-          GiftOpeningPhase.failed => _Waiting(failed: true),
-          _ => _Waiting(failed: false),
+          GiftOpeningPhase.failed => const _Waiting(failed: true),
+          _ => const _Waiting(failed: false),
         },
       );
 }

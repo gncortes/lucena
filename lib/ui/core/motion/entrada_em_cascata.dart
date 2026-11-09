@@ -57,6 +57,7 @@ class EntradaEmCascata extends StatelessWidget {
   /// Nulo: só na primeira entrada da tela.
   final bool? animar;
 
+  // B1: callback de montar (valor padrão const do parâmetro)
   static Widget _coluna(List<Widget> itens) => Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,

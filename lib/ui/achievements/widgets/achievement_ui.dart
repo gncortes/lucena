@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
-import '../../../data/repositories/characters/character_repository.dart';
+import '../../../domain/models/character_lookup.dart';
 import '../../../domain/models/achievement.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';

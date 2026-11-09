@@ -1138,7 +1138,7 @@ class BlindGameCubit extends Cubit<BlindState> {
     final move = option.move;
     if (move is! NormalMove) return option.san;
     final capture = option.san.contains('x') ? 'x' : '';
-    final piece = RegExp('^[KQRBN]').firstMatch(option.san)?.group(0);
+    final piece = _leadingPieceLetter.firstMatch(option.san)?.group(0);
     if (piece == null) return '${move.from.file.name}$capture${move.to.name}';
     return '$piece${move.from.name}$capture${move.to.name}';
   }
@@ -1760,3 +1760,5 @@ class BlindGameCubit extends Cubit<BlindState> {
     return super.close();
   }
 }
+
+final _leadingPieceLetter = RegExp('^[KQRBN]');

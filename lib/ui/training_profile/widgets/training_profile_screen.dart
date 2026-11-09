@@ -77,9 +77,23 @@ class _TrainingProfileScreenState extends State<TrainingProfileScreen> {
                           ?.copyWith(height: 20 / 14),
                     ),
                     const SizedBox(height: 12),
-                    _card(context, solid: true),
+                    _ProfileCard(
+                      solid: true,
+                      selected: _selected == 'solido',
+                      busy: _busy,
+                      onSelect: () => setState(() => _selected = 'solido'),
+                      onWhyLondon: widget.onWhyLondon,
+                      onWhyUnavailable: widget.onWhyUnavailable,
+                    ),
                     const SizedBox(height: 12),
-                    _card(context, solid: false),
+                    _ProfileCard(
+                      solid: false,
+                      selected: _selected == 'agressivo',
+                      busy: _busy,
+                      onSelect: () => setState(() => _selected = 'agressivo'),
+                      onWhyLondon: widget.onWhyLondon,
+                      onWhyUnavailable: widget.onWhyUnavailable,
+                    ),
                   ],
                 ),
               ),
@@ -106,12 +120,81 @@ class _TrainingProfileScreenState extends State<TrainingProfileScreen> {
       ),
     );
   }
+}
 
-  Widget _card(BuildContext context, {required bool solid}) {
+class _ProfileChip extends StatelessWidget {
+  const _ProfileChip({
+    required this.profile,
+    required this.index,
+    required this.label,
+    required this.onTap,
+    required this.busy,
+  });
+
+  final String profile;
+  final int index;
+  final String label;
+  final VoidCallback? onTap;
+  final bool busy;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return InkWell(
+      key: TrainingProfileKeys.chip(profile, index),
+      onTap: busy ? null : onTap,
+      borderRadius: BorderRadius.circular(AppShape.small),
+      child: Container(
+        height: 34,
+        padding: const EdgeInsets.only(left: 12, right: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: colors.outlineVariant),
+          borderRadius: BorderRadius.circular(AppShape.small),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 4,
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge
+                  ?.copyWith(color: colors.primary),
+            ),
+            if (onTap != null)
+              Icon(
+                CanvasSymbols.chevronRight,
+                size: AppIconSize.compact,
+                color: colors.primary,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileCard extends StatelessWidget {
+  const _ProfileCard({
+    required this.solid,
+    required this.selected,
+    required this.busy,
+    required this.onSelect,
+    required this.onWhyLondon,
+    required this.onWhyUnavailable,
+  });
+
+  final bool solid;
+  final bool selected;
+  final bool busy;
+  final VoidCallback onSelect;
+  final VoidCallback onWhyLondon;
+  final ValueChanged<String>? onWhyUnavailable;
+
+  @override
+  Widget build(BuildContext context) {
     final t = context.l10n;
     final colors = Theme.of(context).colorScheme;
     final profile = solid ? 'solido' : 'agressivo';
-    final selected = _selected == profile;
     final chips = solid
         ? [
             t.trainingOpeningChipLondon,
@@ -138,7 +221,7 @@ class _TrainingProfileScreenState extends State<TrainingProfileScreen> {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           key: TrainingProfileKeys.card(profile),
-          onTap: _busy ? null : () => setState(() => _selected = profile),
+          onTap: busy ? null : onSelect,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -202,60 +285,20 @@ class _TrainingProfileScreenState extends State<TrainingProfileScreen> {
                   runSpacing: 8,
                   children: [
                     for (final (index, label) in chips.indexed)
-                      _chip(
-                        context,
-                        profile,
-                        index,
-                        label,
-                        solid && index == 0
-                            ? widget.onWhyLondon
-                            : () => widget.onWhyUnavailable?.call(label),
+                      _ProfileChip(
+                        profile: profile,
+                        index: index,
+                        label: label,
+                        busy: busy,
+                        onTap: solid && index == 0
+                            ? onWhyLondon
+                            : () => onWhyUnavailable?.call(label),
                       ),
                   ],
                 ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _chip(
-    BuildContext context,
-    String profile,
-    int index,
-    String label,
-    VoidCallback? onTap,
-  ) {
-    final colors = Theme.of(context).colorScheme;
-    return InkWell(
-      key: TrainingProfileKeys.chip(profile, index),
-      onTap: _busy ? null : onTap,
-      borderRadius: BorderRadius.circular(AppShape.small),
-      child: Container(
-        height: 34,
-        padding: const EdgeInsets.only(left: 12, right: 10),
-        decoration: BoxDecoration(
-          border: Border.all(color: colors.outlineVariant),
-          borderRadius: BorderRadius.circular(AppShape.small),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 4,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: colors.primary),
-            ),
-            if (onTap != null)
-              Icon(
-                CanvasSymbols.chevronRight,
-                size: AppIconSize.compact,
-                color: colors.primary,
-              ),
-          ],
         ),
       ),
     );

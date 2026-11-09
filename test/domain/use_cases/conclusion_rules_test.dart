@@ -203,7 +203,9 @@ void main() {
 
     test('poucos lances: curta, qualquer que seja o tempo', () {
       expect(
-        ConclusionRules.isShortGame(game(12, played: Duration(minutes: 9))),
+        ConclusionRules.isShortGame(
+          game(12, played: const Duration(minutes: 9)),
+        ),
         isTrue,
       );
     });
@@ -214,22 +216,30 @@ void main() {
 
     test('mais lances: curta só abaixo de 30 s de jogo', () {
       expect(
-        ConclusionRules.isShortGame(game(20, played: Duration(seconds: 25))),
+        ConclusionRules.isShortGame(
+          game(20, played: const Duration(seconds: 25)),
+        ),
         isTrue,
       );
       expect(
-        ConclusionRules.isShortGame(game(20, played: Duration(seconds: 40))),
+        ConclusionRules.isShortGame(
+          game(20, played: const Duration(seconds: 40)),
+        ),
         isFalse,
       );
       // Sem a hora do começo, vale o relógio do jogador.
       expect(
-        ConclusionRules.isShortGame(game(20, clock: Duration(seconds: 20))),
+        ConclusionRules.isShortGame(
+          game(20, clock: const Duration(seconds: 20)),
+        ),
         isTrue,
       );
       expect(ConclusionRules.isShortGame(game(20)), isFalse);
       // Rápida, mas com lances demais para analisar num instante.
       expect(
-        ConclusionRules.isShortGame(game(40, played: Duration(seconds: 25))),
+        ConclusionRules.isShortGame(
+          game(40, played: const Duration(seconds: 25)),
+        ),
         isFalse,
       );
     });

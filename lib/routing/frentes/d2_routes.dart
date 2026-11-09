@@ -255,9 +255,9 @@ final List<RouteBase> d2Routes = [
   appRoute(
     name: RouteNames.pilaresForWhom,
     path: D2Paths.pilaresForWhom,
-    builder: (context, state) => BlocProvider(
+    builder: (context, state) => const BlocProvider(
       create: _previewCubit,
-      child: const CourseBandPreviewScreen(),
+      child: CourseBandPreviewScreen(),
     ),
   ),
   // A oferta (H-VEN-03): `plano=mensal` marca o mensal; `origem` vai ao
@@ -318,9 +318,9 @@ final List<RouteBase> d2Routes = [
         context.read<AccountRepository>().current == null
         ? Routes.accountEnterFrom(D2Paths.pilaresRestore)
         : null,
-    builder: (context, state) => BlocProvider(
+    builder: (context, state) => const BlocProvider(
       create: _restoreCubit,
-      child: const PilaresRestoreScreen(),
+      child: PilaresRestoreScreen(),
     ),
   ),
   // "Comprou pelo site?" usa o view model da Restaurar que a abriu; aberta
@@ -333,9 +333,9 @@ final List<RouteBase> d2Routes = [
         value: cubit,
         child: const PilaresRestoreSiteScreen(),
       ),
-      _ => BlocProvider(
+      _ => const BlocProvider(
         create: _restoreCubit,
-        child: const PilaresRestoreSiteScreen(),
+        child: PilaresRestoreSiteScreen(),
       ),
     },
   ),

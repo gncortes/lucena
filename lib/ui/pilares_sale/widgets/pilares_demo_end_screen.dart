@@ -31,7 +31,6 @@ class PilaresDemoEndScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final prices = context.watch<PilaresPricesCubit>().state;
     final monthly = prices[PilaresPlan.monthly] ?? l10n.venRefMonthly;
     final lifetime = prices[PilaresPlan.lifetime] ?? l10n.venRefLifetime;
@@ -95,40 +94,7 @@ class PilaresDemoEndScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.md),
-            DecoratedBox(
-              key: PurchaseKeys.demoEndPrice,
-              decoration: BoxDecoration(
-                color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(AppShape.card),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 2,
-                  children: [
-                    Text(
-                      l10n.venDemoEndPrice(monthly, lifetime),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontSize: 16,
-                        height: 24 / 16,
-                        fontWeight: FontWeight.w500,
-                        color: colors.onSurface,
-                      ),
-                    ),
-                    Text(
-                      l10n.venDemoEndPriceText,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 14,
-                        height: 20 / 14,
-                        letterSpacing: 0,
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _EndPrice(monthly: monthly, lifetime: lifetime),
           ],
         ),
         bottomNavigationBar: ActionsFooter(
@@ -147,6 +113,55 @@ class PilaresDemoEndScreen extends StatelessWidget {
               style: BusyButtonStyle.text,
               label: l10n.venDemoEndLater,
               onPressed: () => _later(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O cartão de preço do fim da demonstração.
+class _EndPrice extends StatelessWidget {
+  const _EndPrice({required this.monthly, required this.lifetime});
+
+  final String monthly;
+  final String lifetime;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return DecoratedBox(
+      key: PurchaseKeys.demoEndPrice,
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppShape.card),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 2,
+          children: [
+            Text(
+              l10n.venDemoEndPrice(monthly, lifetime),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontSize: 16,
+                height: 24 / 16,
+                fontWeight: FontWeight.w500,
+                color: colors.onSurface,
+              ),
+            ),
+            Text(
+              l10n.venDemoEndPriceText,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: 14,
+                height: 20 / 14,
+                letterSpacing: 0,
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),

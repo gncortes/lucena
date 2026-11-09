@@ -117,11 +117,11 @@ class _SeloNaPecaState extends State<SeloNaPeca>
                   decoration: BoxDecoration(
                     color: widget.cor,
                     shape: BoxShape.circle,
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: AppColors.trainingFabShadow,
                         blurRadius: 1,
-                        offset: const Offset(1, 1),
+                        offset: Offset(1, 1),
                       ),
                     ],
                   ),

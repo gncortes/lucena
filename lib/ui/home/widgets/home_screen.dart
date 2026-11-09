@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/goal_preference.dart';
+import '../../../domain/models/home_shortcut.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../../routing/frentes/d2_routes.dart';
@@ -128,6 +129,10 @@ class _HomeScreenState extends State<HomeScreen>
             unawaited(cubit.lostShown());
           },
           child: BlocBuilder<HomeCubit, HomeState>(
+            // Só `failed` e `ready` decidem entre o erro e a tela.
+            buildWhen: (previous, current) =>
+                previous.failed != current.failed ||
+                previous.ready != current.ready,
             builder: (context, state) => state.failed && !state.ready
                 // O Início é a raiz: o erro não tem "Voltar".
                 ? KeyedSubtree(
@@ -139,26 +144,140 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                   )
-                : _scaffold(context, theme),
+                : _HomeScaffold(title: _title, theme: theme),
           ),
         ),
       ),
     );
   }
 
-  Widget _scaffold(BuildContext context, ThemeData theme) {
-    return EntradaDaTela(
-      id: homeEntranceId,
-      child: Scaffold(
-        key: HomeKeys.screen,
-        body: SafeArea(child: _content(context, theme)),
+  /// O quadro do canvas da entrada do Início (H-ANI-01: uma vez por sessão).
+  static const homeEntranceId = 'PropV2Home';
+
+  /// A altura da barra de cima (canvas `PropV2UxHome`).
+  static const _topBar = 64.0;
+}
+
+/// O esqueleto do primeiro carregamento (canvas `PropV1InicioCarregando`): o
+/// cartão de cima, os títulos das duas seções, o destaque e os quatro
+/// atalhos. A rolagem fica parada.
+class _HomeSkeleton extends StatelessWidget {
+  const _HomeSkeleton();
+
+  /// Um atalho no esqueleto (metade da linha).
+  static const _tile = Expanded(
+    child: SkeletonBlock(height: 144, radius: AppShape.large),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      key: HomeKeys.loading,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
+      children: const [
+        SkeletonBlock(height: 148, radius: 24),
+        SizedBox(height: AppSpacing.xl),
+        _SkeletonSection(),
+        SizedBox(height: AppSpacing.md),
+        SkeletonBlock(height: 72, radius: AppShape.large),
+        SizedBox(height: AppSpacing.xl),
+        _SkeletonSection(),
+        SizedBox(height: AppSpacing.md),
+        Row(spacing: AppSpacing.md, children: [_tile, _tile]),
+        SizedBox(height: AppSpacing.md),
+        Row(spacing: AppSpacing.md, children: [_tile, _tile]),
+      ],
+    );
+  }
+}
+
+/// O título de uma seção no esqueleto: o nome e o "Ver mais".
+class _SkeletonSection extends StatelessWidget {
+  const _SkeletonSection();
+
+  @override
+  Widget build(BuildContext context) => const Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      SkeletonBlock(width: 140, height: 20, radius: 6),
+      SkeletonBlock(width: 64, height: 20, radius: 6),
+    ],
+  );
+}
+
+/// Surge subindo de leve.
+class _Entrance extends StatelessWidget {
+  const _Entrance({required this.animation, required this.child});
+
+  final Animation<double> animation;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween(
+          begin: const Offset(0, 0.12),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
       ),
     );
   }
+}
 
-  // O nome do app, o rating e a engrenagem ficam fixos no alto; embaixo
-  // rolam o cartão azul, os finais em destaque e os atalhos (T83).
-  Widget _content(BuildContext context, ThemeData theme) {
+// "Finais em destaque": o título, "Ver mais" (a lista) e o destaque.
+class _FeaturedSection extends StatelessWidget {
+  const _FeaturedSection({required this.item});
+
+  final FeaturedItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      key: FeaturedKeys.homeSection,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.md,
+      children: [
+        HomeSectionHeader(
+          title: l10n.featuredTitle,
+          titleKey: HomeKeys.featuredTitle,
+          seeMoreKey: FeaturedKeys.homeSeeAll,
+          onSeeMore: () => context.go(Routes.featured),
+        ),
+        // H-ANI-20: o destaque afunda no toque.
+        CartaoPressionavel(
+          child: FeaturedCard(
+            key: FeaturedKeys.homeCard,
+            item: item,
+            compact: true,
+            // Por cima da tela inicial: voltar cai nela, não na lista.
+            onTap: () => context.push(Routes.featuredEndgame(item.id)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// O nome do app, o rating e a engrenagem ficam fixos no alto; embaixo
+// rolam o cartão azul, os finais em destaque e os atalhos (T83).
+class _HomeContent extends StatelessWidget {
+  const _HomeContent({required this.title, required this.theme});
+
+  final Animation<double> title;
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Center(
       child: ConstrainedBox(
@@ -166,9 +285,9 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           children: [
             _Entrance(
-              animation: _title,
+              animation: title,
               child: SizedBox(
-                height: _topBar,
+                height: _HomeScreenState._topBar,
                 child: Padding(
                   padding: const EdgeInsetsDirectional.only(
                     start: AppSpacing.lg,
@@ -225,7 +344,49 @@ class _HomeScreenState extends State<HomeScreen>
                       top: AppSpacing.sm,
                       right: AppSpacing.lg,
                     ),
-                    children: [ListaEmOrdem(itens: _sections(context, state))],
+                    children: [
+                      // As partes da rolagem, na ordem em que entram: o
+                      // cartão, o destaque, o título dos atalhos e uma linha
+                      // da grade por vez.
+                      ListaEmOrdem(
+                        itens: [
+                          if (state.hero != null)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.xl,
+                              ),
+                              // Aprender a jogar: o cartão do objetivo (a aula
+                              // da Escola, ou a Jornada enquanto a Escola não
+                              // está no app) entra com pop (S6 do T85).
+                              child: HeroCard(
+                                state: state,
+                                pop: state.goal == GoalPreference.learn,
+                              ),
+                            ),
+                          if (state.showsFeatured && state.featured != null)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.xl,
+                              ),
+                              child: _FeaturedSection(item: state.featured!),
+                            ),
+                          // "Atalhos": todos os caminhos marcados numa grade
+                          // 2×N, todos da mesma altura; "Ver mais" abre Todos
+                          // os modos. Cada linha é uma parte da lista.
+                          const _ShortcutsHeader(),
+                          for (
+                            var row = 0;
+                            row < state.shortcuts.length;
+                            row += 2
+                          )
+                            _ShortcutRow(
+                              shortcuts: state.shortcuts,
+                              row: row,
+                              hasPlan: state.training != null,
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -235,160 +396,74 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
   }
-
-  // As partes da rolagem, na ordem em que entram: o cartão, o destaque, o
-  // título dos atalhos e uma linha da grade por vez.
-  List<Widget> _sections(BuildContext context, HomeState state) {
-    Widget gap(Widget child, double bottom) => Padding(
-      padding: EdgeInsets.only(bottom: bottom),
-      child: child,
-    );
-    return [
-      if (state.hero != null)
-        gap(
-          // Aprender a jogar: o cartão do objetivo (a aula da Escola, ou a Jornada
-          // enquanto a Escola não está no app) entra com pop (S6 do T85).
-          HeroCard(state: state, pop: state.goal == GoalPreference.learn),
-          AppSpacing.xl,
-        ),
-      if (state.showsFeatured && state.featured != null)
-        gap(_featured(context, state.featured!), AppSpacing.xl),
-      ..._shortcuts(context, state),
-    ];
-  }
-
-  /// O quadro do canvas da entrada do Início (H-ANI-01: uma vez por sessão).
-  static const homeEntranceId = 'PropV2Home';
-
-  /// A altura da barra de cima (canvas `PropV2UxHome`).
-  static const _topBar = 64.0;
-
-  // "Finais em destaque": o título, "Ver mais" (a lista) e o destaque.
-  Widget _featured(BuildContext context, FeaturedItem item) {
-    final l10n = context.l10n;
-    return Column(
-      key: FeaturedKeys.homeSection,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.md,
-      children: [
-        HomeSectionHeader(
-          title: l10n.featuredTitle,
-          titleKey: HomeKeys.featuredTitle,
-          seeMoreKey: FeaturedKeys.homeSeeAll,
-          onSeeMore: () => context.go(Routes.featured),
-        ),
-        // H-ANI-20: o destaque afunda no toque.
-        CartaoPressionavel(
-          child: FeaturedCard(
-            key: FeaturedKeys.homeCard,
-            item: item,
-            compact: true,
-            // Por cima da tela inicial: voltar cai nela, não na lista.
-            onTap: () => context.push(Routes.featuredEndgame(item.id)),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // "Atalhos": todos os caminhos marcados numa grade 2×N, todos da mesma
-  // altura; "Ver mais" abre Todos os modos. Cada linha é uma parte da lista.
-  List<Widget> _shortcuts(BuildContext context, HomeState state) {
-    final shortcuts = state.shortcuts;
-    return [
-      Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.md),
-        child: HomeSectionHeader(
-          title: context.l10n.homeShortcutsTitle,
-          titleKey: HomeKeys.shortcutsTitle,
-          seeMoreKey: HomeKeys.shortcutsSeeMore,
-          onSeeMore: () => context.go(Routes.allModes),
-        ),
-      ),
-      for (var row = 0; row < shortcuts.length; row += 2)
-        Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-          child: Row(
-            spacing: AppSpacing.md,
-            children: [
-              for (var column = row; column < row + 2; column++)
-                Expanded(
-                  child: column < shortcuts.length
-                      ? ModeTile(
-                          shortcut: shortcuts[column],
-                          hasPlan: state.training != null,
-                        )
-                      : const SizedBox.shrink(),
-                ),
-            ],
-          ),
-        ),
-    ];
-  }
 }
 
-/// O esqueleto do primeiro carregamento (canvas `PropV1InicioCarregando`): o
-/// cartão de cima, os títulos das duas seções, o destaque e os quatro
-/// atalhos. A rolagem fica parada.
-class _HomeSkeleton extends StatelessWidget {
-  const _HomeSkeleton();
-
-  static Widget _section() => const Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      SkeletonBlock(width: 140, height: 20, radius: 6),
-      SkeletonBlock(width: 64, height: 20, radius: 6),
-    ],
-  );
-
-  static Widget _tile() =>
-      const Expanded(child: SkeletonBlock(height: 144, radius: AppShape.large));
+/// O título "Atalhos" com o "Ver mais", que abre Todos os modos.
+// reuso: é o HomeSectionHeader com o espaço de baixo da lista do Início.
+class _ShortcutsHeader extends StatelessWidget {
+  const _ShortcutsHeader();
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      key: HomeKeys.loading,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.sm,
-        AppSpacing.lg,
-        0,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: HomeSectionHeader(
+        title: context.l10n.homeShortcutsTitle,
+        titleKey: HomeKeys.shortcutsTitle,
+        seeMoreKey: HomeKeys.shortcutsSeeMore,
+        onSeeMore: () => context.go(Routes.allModes),
       ),
-      children: [
-        const SkeletonBlock(height: 148, radius: 24),
-        const SizedBox(height: AppSpacing.xl),
-        _section(),
-        const SizedBox(height: AppSpacing.md),
-        const SkeletonBlock(height: 72, radius: AppShape.large),
-        const SizedBox(height: AppSpacing.xl),
-        _section(),
-        const SizedBox(height: AppSpacing.md),
-        Row(spacing: AppSpacing.md, children: [_tile(), _tile()]),
-        const SizedBox(height: AppSpacing.md),
-        Row(spacing: AppSpacing.md, children: [_tile(), _tile()]),
-      ],
     );
   }
 }
 
-/// Surge subindo de leve.
-class _Entrance extends StatelessWidget {
-  const _Entrance({required this.animation, required this.child});
+/// Uma linha da grade de atalhos: os dois a partir de [row] (o segundo
+/// vazio quando a conta é ímpar).
+class _ShortcutRow extends StatelessWidget {
+  const _ShortcutRow({
+    required this.shortcuts,
+    required this.row,
+    required this.hasPlan,
+  });
 
-  final Animation<double> animation;
-  final Widget child;
+  final List<HomeShortcut> shortcuts;
+  final int row;
+  final bool hasPlan;
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: animation,
-      child: SlideTransition(
-        position: Tween(
-          begin: const Offset(0, 0.12),
-          end: Offset.zero,
-        ).animate(animation),
-        child: child,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Row(
+        spacing: AppSpacing.md,
+        children: [
+          for (var column = row; column < row + 2; column++)
+            Expanded(
+              child: column < shortcuts.length
+                  ? ModeTile(shortcut: shortcuts[column], hasPlan: hasPlan)
+                  : const SizedBox.shrink(),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeScaffold extends StatelessWidget {
+  const _HomeScaffold({required this.title, required this.theme});
+
+  final Animation<double> title;
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return EntradaDaTela(
+      id: _HomeScreenState.homeEntranceId,
+      child: Scaffold(
+        key: HomeKeys.screen,
+        body: SafeArea(
+          child: _HomeContent(title: title, theme: theme),
+        ),
       ),
     );
   }

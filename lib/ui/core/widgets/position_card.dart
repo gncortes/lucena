@@ -50,9 +50,12 @@ class PositionCard extends StatelessWidget {
               LayoutBuilder(
                 builder: (context, constraints) => Stack(
                   children: [
-                    _comHero(
-                      heroId,
-                      PositionBoard(fen: fen, size: constraints.maxWidth),
+                    _ComHero(
+                      id: heroId,
+                      child: PositionBoard(
+                        fen: fen,
+                        size: constraints.maxWidth,
+                      ),
                     ),
                     if (doneLabel case final label?)
                       PositionedDirectional(
@@ -85,5 +88,16 @@ class PositionCard extends StatelessWidget {
   }
 }
 
-Widget _comHero(String? id, Widget board) =>
-    id == null ? board : TabuleiroHero(id: id, child: board);
+/// O tabuleiro do cartão; com o [id], ele voa até a tela seguinte.
+class _ComHero extends StatelessWidget {
+  const _ComHero({required this.id, required this.child});
+
+  final String? id;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final id = this.id;
+    return id == null ? child : TabuleiroHero(id: id, child: child);
+  }
+}

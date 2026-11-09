@@ -58,7 +58,7 @@ class StreakCubit extends Cubit<StreakState> {
     } on Object catch (error, stack) {
       debugPrint('streak load failed: $error');
       reportHandledError(error, stack);
-      if (!isClosed) emit(StreakState(failure: LoadFailure.generic));
+      if (!isClosed) emit(const StreakState(failure: LoadFailure.generic));
     }
   }
 

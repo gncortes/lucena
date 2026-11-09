@@ -260,7 +260,7 @@ abstract final class AppTheme {
       ),
       // Chip de escolha e de filtro com o check e raio 8 (D22). O de
       // informação (`InfoChip`) tira a borda no próprio widget.
-      chipTheme: ChipThemeData(
+      chipTheme: const ChipThemeData(
         showCheckmark: true,
         // A ficha não escolhida é transparente nos dois temas (CompChip): pega
         // o tom do que está embaixo, branca na folha e no painel e do fundo na
@@ -268,9 +268,9 @@ abstract final class AppTheme {
         backgroundColor: Colors.transparent,
         // Altura visual de 32 (CompChip): o Flutter soma o preenchimento
         // vertical ao mínimo de 32, então os dois ficam sem vertical.
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-        labelPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-        shape: const RoundedRectangleBorder(
+        padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+        labelPadding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AppShape.small)),
         ),
       ),

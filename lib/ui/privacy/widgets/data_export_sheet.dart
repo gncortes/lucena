@@ -4,8 +4,7 @@ import '../../core/motion/botao_carregando.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/data_export/data_export_repository.dart';
-import '../../core/analytics/analytics_context.dart';
+import '../../../config/view_models/privacy.dart';
 import '../../core/keys/privacy_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -17,11 +16,7 @@ import '../view_models/data_export_cubit.dart';
 /// "Baixar seus dados?" (H-CON-21; quadros PropV1ContaDadosBaixar,
 /// …Baixando, …Pronto e …Erro): a mesma folha troca de quadro.
 Future<void> showDataExportSheet(BuildContext context, {required String uid}) {
-  final cubit = DataExportCubit(
-    uid: uid,
-    exports: context.read<DataExportRepository>(),
-    analytics: context.analytics,
-  );
+  final cubit = createDataExportCubit(context, uid: uid);
   return showLucenaSheet<void>(
     context,
     sheetKey: PrivacyKeys.downloadSheet,

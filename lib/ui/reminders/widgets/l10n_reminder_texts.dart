@@ -1,4 +1,4 @@
-import '../../../data/services/notification_service.dart';
+import '../../../domain/models/notification.dart';
 import '../../../domain/models/reminder.dart';
 import '../../../domain/use_cases/training/reminder_text.dart';
 import '../../core/l10n/l10n.dart';

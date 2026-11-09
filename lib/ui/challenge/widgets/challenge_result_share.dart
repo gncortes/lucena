@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/share/share_repository.dart';
+import '../../../config/view_models/share.dart';
 import '../../../domain/models/challenge_result.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
@@ -21,7 +21,7 @@ Future<bool> shareChallengeResult(
   required ChallengeResult result,
   required String opponent,
 }) async {
-  final share = context.read<ShareRepository>();
+  final shareImage = shareImageAction(context);
   final settings = context.read<SettingsCubit>();
   final text = challengeResultShareText(context.l10n, result);
   final overlay = Overlay.of(context, rootOverlay: true);
@@ -54,7 +54,7 @@ Future<bool> shareChallengeResult(
     await SchedulerBinding.instance.endOfFrame;
     final png = await capturePng(boundary);
     if (png == null) return false;
-    return await share.shareImage(png, name: 'lucena-desafio.png', text: text);
+    return await shareImage(png, name: 'lucena-desafio.png', text: text);
   } finally {
     entry.remove();
     entry.dispose();

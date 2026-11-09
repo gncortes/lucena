@@ -1,4 +1,4 @@
-import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../config/failure_report.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -156,6 +156,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             _board = ChessboardController(game: _gameData(state));
           }
           final piece = state.piece;
+          if (!state.saving && !state.saveError) _salvandoDeNovo = false;
           return Scaffold(
             key: StarChallengeKeys.screen,
             appBar: LucenaAppBar(
@@ -177,16 +178,33 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                       builder: (context) => ShimmerConteudo(
                         carregando: !state.ready || _board == null,
                         esqueleto: const SkeletonList(),
-                        child: _body(context, state, boardSettings),
+                        child: _Body(
+                          state: state,
+                          boardSettings: boardSettings,
+                          board: _board,
+                        ),
                       ),
                     ),
                   ),
-                  if (_action(context, state) case final action?)
+                  if (_showsAction(state))
                     Positioned(
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      child: ActionsFooter(children: [action]),
+                      child: ActionsFooter(
+                        children: [
+                          _Action(
+                            state: state,
+                            retryingSave: _salvandoDeNovo,
+                            onRetrySave: () {
+                              setState(() => _salvandoDeNovo = true);
+                              return cubit.retryFinish();
+                            },
+                            trainingGoalDone: widget.trainingGoalDone,
+                            onNextGoal: widget.onNextGoal,
+                          ),
+                        ],
+                      ),
                     ),
                 ],
               ),
@@ -197,72 +215,14 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     );
   }
 
-  Widget? _action(BuildContext context, StarChallengeState state) {
-    final original = _normalAction(context, state);
-    if (state.phase != ChallengePhase.finished ||
-        state.saving ||
-        state.saveError ||
-        widget.trainingGoalDone == null) {
-      return original;
-    }
-    return FutureBuilder<bool>(
-      future: Future<bool>.sync(widget.trainingGoalDone!)
-          .onError<Object>((error, stack) {
-            reportHandledError(error, stack);
-            return false;
-          }),
-      builder: (context, snapshot) => snapshot.data == true
-          ? FilledButton(
-              key: TrainingKeys.nextGoal,
-              onPressed: widget.onNextGoal,
-              child: Text(context.l10n.trainingNextGoal),
-            )
-          : original ?? const SizedBox.shrink(),
-    );
-  }
-
-  Widget? _normalAction(BuildContext context, StarChallengeState state) {
-    if (!state.ready) return null;
-    final l10n = context.l10n;
-    final cubit = context.read<StarChallengeCubit>();
-    // Uma linha só: em fonte grande o rótulo diminui em vez de quebrar.
-    Widget label(String text) =>
-        FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
-    if (!state.saving && !state.saveError) _salvandoDeNovo = false;
-    if (state.saveError || (state.saving && _salvandoDeNovo)) {
-      return BotaoCarregando(
-        buttonKey: StarChallengeKeys.retrySave,
-        icon: Icons.refresh,
-        label: l10n.lessonRetry,
-        busy: state.saving,
-        onPressed: () {
-          setState(() => _salvandoDeNovo = true);
-          return cubit.retryFinish();
-        },
-      );
-    }
-    // O fim do tempo salva sozinho: sem botão tocado, o círculo no lugar.
-    if (state.saving) {
-      return const Center(
-        child: CircularProgressIndicator(key: StarChallengeKeys.saveProgress),
-      );
-    }
-    return switch (state.phase) {
-      ChallengePhase.ready => FilledButton.icon(
-        key: StarChallengeKeys.goButton,
-        icon: const Icon(Icons.play_arrow_rounded),
-        label: label(l10n.starChallengeGo),
-        onPressed: cubit.start,
-      ),
-      ChallengePhase.finished => FilledButton.icon(
-        key: StarChallengeKeys.retryButton,
-        icon: const Icon(Icons.replay_rounded),
-        label: label(l10n.starChallengePlayAgain),
-        onPressed: cubit.retry,
-      ),
-      ChallengePhase.running || ChallengePhase.paused => null,
-    };
-  }
+  /// Há ação fixa no rodapé? A ação normal (pronta e com botão na fase) ou,
+  /// no fim salvo de uma meta do treino, o "Próxima meta".
+  bool _showsAction(StarChallengeState state) =>
+      (state.ready && _hasAction(state)) ||
+      (state.phase == ChallengePhase.finished &&
+          !state.saving &&
+          !state.saveError &&
+          widget.trainingGoalDone != null);
 
   /// A menor altura do convite ou do resultado acima do tabuleiro no centro
   /// (duas linhas e as margens); abaixo dela, o tabuleiro desce.
@@ -277,12 +237,28 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
   static double _reserveBottom(TextScaler scaler) =>
       24 + scaler.scale(28).ceilToDouble() + scaler.scale(16).ceilToDouble();
 
-  Widget _body(
-    BuildContext context,
-    StarChallengeState state,
-    BoardSettings boardSettings,
-  ) {
-    final board = _board;
+  static bool _hasAction(StarChallengeState state) =>
+      state.saving ||
+      state.saveError ||
+      state.phase == ChallengePhase.ready ||
+      state.phase == ChallengePhase.finished;
+}
+
+/// O corpo pronto: o bloco central medido na altura que a tela tem.
+class _Body extends StatelessWidget {
+  const _Body({
+    required this.state,
+    required this.boardSettings,
+    required this.board,
+  });
+
+  final StarChallengeState state;
+  final BoardSettings boardSettings;
+  final ChessboardController? board;
+
+  @override
+  Widget build(BuildContext context) {
+    final board = this.board;
     if (!state.ready || board == null) return const SizedBox.shrink();
     final scaler = MediaQuery.textScalerOf(context);
     // Plain numbers occupy 24 dp at the default scale, plus 10/6 padding.
@@ -315,11 +291,13 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         // Fonte grande em tela baixa: o tabuleiro não passa de metade da
         // largura para baixo; o que vem em cima ganha só a altura que sobra e
         // rola.
-        final footer = _hasAction(state) ? _actionRoom : 0.0;
+        final footer = _StarChallengeScreenState._hasAction(state)
+            ? _StarChallengeScreenState._actionRoom
+            : 0.0;
         final room =
             box.maxHeight -
             footer -
-            _reserveBottom(scaler) -
+            _StarChallengeScreenState._reserveBottom(scaler) -
             2 * AppSpacing.sm -
             box.maxWidth / 2;
         // A8: o centro do tabuleiro no centro útil da tela, em todas as
@@ -335,7 +313,8 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         // convite: o tabuleiro desce o que falta (o cartão rola ali).
         final fitsAbove =
             wanted <= timerHeight ||
-            aboveCenter - timerHeight >= scaler.scale(_minAbove);
+            aboveCenter - timerHeight >=
+                scaler.scale(_StarChallengeScreenState._minAbove);
         final reserveTop = max(
           timerHeight,
           min(wanted, fitsAbove ? min(room, aboveCenter) : room),
@@ -344,13 +323,12 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         final lowest =
             box.maxHeight -
             footer -
-            _reserveBottom(scaler) -
+            _StarChallengeScreenState._reserveBottom(scaler) -
             AppSpacing.sm -
             box.maxWidth / 2;
-        return _layout(
-          context,
-          state,
-          boardSettings,
+        return _Layout(
+          state: state,
+          boardSettings: boardSettings,
           board: board,
           reserveTop: reserveTop,
           lowTime: lowTime,
@@ -361,37 +339,43 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       },
     );
   }
+}
 
-  static bool _hasAction(StarChallengeState state) =>
-      state.saving ||
-      state.saveError ||
-      state.phase == ChallengePhase.ready ||
-      state.phase == ChallengePhase.finished;
+/// O bloco central da tela: relógio, convite ou resultado, tabuleiro e placar.
+class _Layout extends StatelessWidget {
+  const _Layout({
+    required this.state,
+    required this.boardSettings,
+    required this.board,
+    required this.reserveTop,
+    required this.lowTime,
+    this.centerY,
+  });
 
-  Widget _layout(
-    BuildContext context,
-    StarChallengeState state,
-    BoardSettings boardSettings, {
-    required ChessboardController board,
-    required double reserveTop,
-    required bool lowTime,
-    double? centerY,
-  }) {
-    final colors = Theme.of(context).colorScheme;
-    final star = state.star;
+  final StarChallengeState state;
+  final BoardSettings boardSettings;
+  final ChessboardController board;
+  final double reserveTop;
+  final bool lowTime;
+  final double? centerY;
+
+  @override
+  Widget build(BuildContext context) {
     final scaler = MediaQuery.textScalerOf(context);
-    final withAction = _hasAction(state);
+    final withAction = _StarChallengeScreenState._hasAction(state);
     return CenteredBoardLayout(
       balanced: centerY == null,
       centerY: centerY,
       reserveTop: reserveTop,
       // O topo do bloco tem a altura da reserva, colado no tabuleiro.
       topAlignment: Alignment.bottomCenter,
-      reserveBottom: _reserveBottom(scaler),
+      reserveBottom: _StarChallengeScreenState._reserveBottom(scaler),
       bottomAlignment: Alignment.topCenter,
       // O lugar da ação fixa (o "Vai!" ou o "Jogar de novo", desenhados por
       // cima, fora da área segura): o bloco centra acima dela.
-      footer: withAction ? SizedBox(height: _actionRoom) : null,
+      footer: withAction
+          ? const SizedBox(height: _StarChallengeScreenState._actionRoom)
+          : null,
       // O relógio fica; o convite e o resultado rolam na fonte normal quando
       // falta altura (fonte grande em tela baixa), sem cortar o cartão.
       shrinkSides: false,
@@ -402,48 +386,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             // O relógio e a barra do tempo.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.sm,
-                AppSpacing.lg,
-                AppSpacing.sm,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.timer_outlined,
-                    size: AppIconSize.button,
-                    color: lowTime ? colors.error : colors.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  TimeDisplay(
-                    value: clockText(state.timeLeft),
-                    semanticsLabel:
-                        '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
-                        '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
-                    type: TimeDisplayType.countdown,
-                    size: TimeDisplaySize.inline,
-                    presentation: TimeDisplayPresentation.plain,
-                    state: lowTime
-                        ? TimeDisplayState.low
-                        : state.phase == ChallengePhase.running
-                        ? TimeDisplayState.active
-                        : state.phase == ChallengePhase.paused
-                        ? TimeDisplayState.paused
-                        : TimeDisplayState.normal,
-                    textKey: StarChallengeKeys.timer,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: AnimatedProgress(
-                      value: 1 - state.elapsedFraction,
-                      role: lowTime ? ProgressRole.error : ProgressRole.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _Clock(state: state, lowTime: lowTime),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -465,7 +408,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                             ? ChallengePhase.running
                             : state.phase,
                       ),
-                      child: _above(context, state),
+                      child: _Above(state: state),
                     ),
                   ),
                 ),
@@ -474,43 +417,128 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           ],
         ),
       ),
-      board: LayoutBuilder(
-        builder: (context, box) => Directionality(
-          textDirection: TextDirection.ltr,
-          child: Chessboard(
-            key: StarChallengeKeys.board,
-            size: box.maxWidth,
-            controller: board,
-            settings: (state.level?.announcesSquare ?? false)
-                ? boardSettings
-                      .copyWith(coordinates: false, highlightLastMove: false)
-                      .chessground
-                : boardSettings.chessground,
-            orientation: Side.white,
-            shapes: {
-              if (star != null && !(state.level?.announcesSquare ?? false))
-                CustomShape(
-                  orig: star,
-                  scale: 0.75,
-                  child: StarShape(
-                    key: StarChallengeKeys.star(star.name),
-                    color: starColor(state.starKind),
-                    blinking: state.starBlinking,
-                  ),
-                ),
-            },
-            onMove: (move, {viaDragAndDrop}) =>
-                context.read<StarChallengeCubit>().play(move),
-          ),
-        ),
+      board: _BoardView(
+        state: state,
+        boardSettings: boardSettings,
+        board: board,
       ),
-      bottom: _below(context, state),
+      bottom: _Below(state: state),
     );
   }
+}
 
-  /// Sob o relógio: o convite antes de começar; jogando às cegas, a casa da
-  /// estrela pelo nome; no fim, a nota e a melhor marca.
-  Widget _above(BuildContext context, StarChallengeState state) {
+/// O relógio e a barra do tempo.
+class _Clock extends StatelessWidget {
+  const _Clock({required this.state, required this.lowTime});
+
+  final StarChallengeState state;
+  final bool lowTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.timer_outlined,
+            size: AppIconSize.button,
+            color: lowTime ? colors.error : colors.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          TimeDisplay(
+            value: clockText(state.timeLeft),
+            semanticsLabel:
+                '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
+                '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
+            type: TimeDisplayType.countdown,
+            size: TimeDisplaySize.inline,
+            presentation: TimeDisplayPresentation.plain,
+            state: lowTime
+                ? TimeDisplayState.low
+                : state.phase == ChallengePhase.running
+                ? TimeDisplayState.active
+                : state.phase == ChallengePhase.paused
+                ? TimeDisplayState.paused
+                : TimeDisplayState.normal,
+            textKey: StarChallengeKeys.timer,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: AnimatedProgress(
+              value: 1 - state.elapsedFraction,
+              role: lowTime ? ProgressRole.error : ProgressRole.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O tabuleiro do desafio, com a estrela quando ela é desenhada.
+class _BoardView extends StatelessWidget {
+  const _BoardView({
+    required this.state,
+    required this.boardSettings,
+    required this.board,
+  });
+
+  final StarChallengeState state;
+  final BoardSettings boardSettings;
+  final ChessboardController board;
+
+  @override
+  Widget build(BuildContext context) {
+    final star = state.star;
+    return LayoutBuilder(
+      builder: (context, box) => Directionality(
+        textDirection: TextDirection.ltr,
+        child: Chessboard(
+          key: StarChallengeKeys.board,
+          size: box.maxWidth,
+          controller: board,
+          settings: (state.level?.announcesSquare ?? false)
+              ? boardSettings
+                    .copyWith(coordinates: false, highlightLastMove: false)
+                    .chessground
+              : boardSettings.chessground,
+          orientation: Side.white,
+          shapes: {
+            if (star != null && !(state.level?.announcesSquare ?? false))
+              CustomShape(
+                orig: star,
+                scale: 0.75,
+                child: StarShape(
+                  key: StarChallengeKeys.star(star.name),
+                  color: starColor(state.starKind),
+                  blinking: state.starBlinking,
+                ),
+              ),
+          },
+          onMove: (move, {viaDragAndDrop}) =>
+              context.read<StarChallengeCubit>().play(move),
+        ),
+      ),
+    );
+  }
+}
+
+/// Sob o relógio: o convite antes de começar; jogando às cegas, a casa da
+/// estrela pelo nome; no fim, a nota e a melhor marca.
+class _Above extends StatelessWidget {
+  const _Above({required this.state});
+
+  final StarChallengeState state;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -610,9 +638,16 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         );
     }
   }
+}
 
-  /// Sob o tabuleiro: o placar das estrelas, seguido do aviso quando em pausa.
-  Widget _below(BuildContext context, StarChallengeState state) {
+/// Sob o tabuleiro: o placar das estrelas, seguido do aviso quando em pausa.
+class _Below extends StatelessWidget {
+  const _Below({required this.state});
+
+  final StarChallengeState state;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     return Padding(
@@ -811,4 +846,114 @@ class _IntroCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A ação fixa do rodapé: no fim salvo de uma meta do treino, o "Próxima
+/// meta" quando a meta fechou; senão a ação normal da fase.
+class _Action extends StatelessWidget {
+  const _Action({
+    required this.state,
+    required this.retryingSave,
+    required this.onRetrySave,
+    required this.trainingGoalDone,
+    required this.onNextGoal,
+  });
+
+  final StarChallengeState state;
+  final bool retryingSave;
+  final Future<void> Function() onRetrySave;
+  final Future<bool> Function()? trainingGoalDone;
+  final VoidCallback? onNextGoal;
+
+  @override
+  Widget build(BuildContext context) {
+    final original = _NormalAction(
+      state: state,
+      retryingSave: retryingSave,
+      onRetrySave: onRetrySave,
+    );
+    final goalDone = trainingGoalDone;
+    if (state.phase != ChallengePhase.finished ||
+        state.saving ||
+        state.saveError ||
+        goalDone == null) {
+      return original;
+    }
+    return FutureBuilder<bool>(
+      future: Future<bool>.sync(goalDone).onError<Object>((error, stack) {
+        reportHandledError(error, stack);
+        return false;
+      }),
+      builder: (context, snapshot) => snapshot.data == true
+          ? FilledButton(
+              key: TrainingKeys.nextGoal,
+              onPressed: onNextGoal,
+              child: Text(context.l10n.trainingNextGoal),
+            )
+          : original,
+    );
+  }
+}
+
+/// A ação da fase: "Vai!", "Jogar de novo", o salvar que falhou ou o
+/// círculo do salvar sozinho; nada enquanto o relógio corre.
+class _NormalAction extends StatelessWidget {
+  const _NormalAction({
+    required this.state,
+    required this.retryingSave,
+    required this.onRetrySave,
+  });
+
+  final StarChallengeState state;
+  final bool retryingSave;
+  final Future<void> Function() onRetrySave;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!state.ready) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    final cubit = context.read<StarChallengeCubit>();
+    if (state.saveError || (state.saving && retryingSave)) {
+      return BotaoCarregando(
+        buttonKey: StarChallengeKeys.retrySave,
+        icon: Icons.refresh,
+        label: l10n.lessonRetry,
+        busy: state.saving,
+        onPressed: onRetrySave,
+      );
+    }
+    // O fim do tempo salva sozinho: sem botão tocado, o círculo no lugar.
+    if (state.saving) {
+      return const Center(
+        child: CircularProgressIndicator(key: StarChallengeKeys.saveProgress),
+      );
+    }
+    return switch (state.phase) {
+      ChallengePhase.ready => FilledButton.icon(
+        key: StarChallengeKeys.goButton,
+        icon: const Icon(Icons.play_arrow_rounded),
+        label: _OneLineLabel(l10n.starChallengeGo),
+        onPressed: cubit.start,
+      ),
+      ChallengePhase.finished => FilledButton.icon(
+        key: StarChallengeKeys.retryButton,
+        icon: const Icon(Icons.replay_rounded),
+        label: _OneLineLabel(l10n.starChallengePlayAgain),
+        onPressed: cubit.retry,
+      ),
+      ChallengePhase.running ||
+      ChallengePhase.paused => const SizedBox.shrink(),
+    };
+  }
+}
+
+/// Uma linha só: em fonte grande o rótulo diminui em vez de quebrar.
+class _OneLineLabel extends StatelessWidget {
+  const _OneLineLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) =>
+      FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
 }

@@ -134,13 +134,13 @@ void main() {
       EndgameLessonRules.next(trail, const EndgameProgress())?.id,
       'rook.lucena',
     );
-    final lessonOnly = EndgameProgress(
-      lessons: {'rook.lucena': const EndgameLessonProgress(lessonDone: true)},
+    final lessonOnly = const EndgameProgress(
+      lessons: {'rook.lucena': EndgameLessonProgress(lessonDone: true)},
     );
     expect(EndgameLessonRules.next(trail, lessonOnly)?.id, 'rook.lucena');
-    final passed = EndgameProgress(
+    final passed = const EndgameProgress(
       lessons: {
-        'rook.lucena': const EndgameLessonProgress(
+        'rook.lucena': EndgameLessonProgress(
           lessonDone: true,
           stars: {'e01': 1, 'e02': 2, 'e03': 3},
         ),

@@ -43,7 +43,7 @@ class CategoryScreen extends StatelessWidget {
     final sections = context.select(
       (CatalogCubit cubit) => cubit.state.sections,
     );
-    final failure = context.watch<CatalogCubit>().state.failure;
+    final failure = context.select((CatalogCubit cubit) => cubit.state.failure);
     if (failure != null) {
       return trainingLoadError(
         context,

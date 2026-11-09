@@ -51,7 +51,7 @@ void main() {
         course: TrainingCourse.pilares,
         installSeed: 'demo',
         onboardingDone: true,
-        plan: TrainingPlan(weekdays: 127),
+        plan: const TrainingPlan(weekdays: 127),
         completedLessons: const {
           'pilares.c1.tema': '2026-10-01',
           'pilares.c1.teste': '2026-10-01',
@@ -90,7 +90,7 @@ void main() {
       course: TrainingCourse.pilares,
       installSeed: 'demo',
       onboardingDone: true,
-      plan: TrainingPlan(weekdays: 127),
+      plan: const TrainingPlan(weekdays: 127),
       completedLessons: const {'pilares.c1.tema': '2026-10-01'},
     );
     final demo = DemoGoals.restrict(content);

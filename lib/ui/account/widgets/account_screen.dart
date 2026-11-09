@@ -1,15 +1,10 @@
 import 'dart:async';
 
-import '../../core/analytics/analytics_context.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/legal/legal_consent_repository.dart';
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/onboarding/onboarding_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/account.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -33,27 +28,16 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => AccountCubit(
-      context.read<AccountRepository>(),
-      sync: context.read<SyncScheduler>(),
-      analytics: context.analytics,
-      campaigns: context.campaigns,
-      consent: context.read<LegalConsentRepository>(),
+    create: (context) => createAccountCubit(
+      context,
+      consent: true,
       // Vinda do link (H-CON-04): o convite conta no `conta_convite`.
       moment: Routes.isRouteFrom(from) ? accountInviteAfterLink : null,
-      onboarding: _onboarding(context),
+      // O tour, quando o app o oferece (os testes antigos da conta não oferecem).
+      onboarding: true,
     ),
     child: _AccountView(from: from),
   );
-}
-
-/// O tour, quando o app o oferece (os testes antigos da conta não oferecem).
-OnboardingRepository? _onboarding(BuildContext context) {
-  try {
-    return context.read<OnboardingRepository>();
-  } on ProviderNotFoundException {
-    return null;
-  }
 }
 
 /// O convite do link abre antes da lição (`conta_convite`).
@@ -139,33 +123,7 @@ class _AccountView extends StatelessWidget {
                 horizontal: AppSpacing.xl,
                 vertical: AppSpacing.lg,
               ),
-              child: purchase
-                  ? AccountInviteHeader(
-                      icon: Icons.school,
-                      title: l10n.conCompraTitle,
-                      text: l10n.conCompraText,
-                      titleKey: AccountKeys.enterTitle,
-                      textKey: AccountKeys.enterText,
-                      benefits: [
-                        (Icons.devices, l10n.conCompraDevices),
-                        (Icons.cloud_done, l10n.conCompraSaved),
-                        (Icons.sync, l10n.conCompraSync),
-                      ],
-                    )
-                  : AccountInviteHeader(
-                      title: invite
-                          ? l10n.conConviteTitle
-                          : l10n.conEntradaTitle,
-                      text: invite
-                          ? l10n.conConviteLater
-                          : l10n.accountEntryText,
-                      titleKey: AccountKeys.enterTitle,
-                      textKey: AccountKeys.enterText,
-                      benefits: [
-                        (Icons.cloud_done, l10n.conEntradaSaved),
-                        (Icons.wifi_off, l10n.conEntradaOffline),
-                      ],
-                    ),
+              child: _AccountHeader(purchase: purchase, invite: invite),
             ),
             bottomNavigationBar: ActionsFooter(
               stacked: true,
@@ -189,5 +147,41 @@ class _AccountView extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// O cabeçalho da conta: compra, convite ou entrada.
+class _AccountHeader extends StatelessWidget {
+  const _AccountHeader({required this.purchase, required this.invite});
+
+  final bool purchase;
+  final bool invite;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return purchase
+        ? AccountInviteHeader(
+            icon: Icons.school,
+            title: l10n.conCompraTitle,
+            text: l10n.conCompraText,
+            titleKey: AccountKeys.enterTitle,
+            textKey: AccountKeys.enterText,
+            benefits: [
+              (Icons.devices, l10n.conCompraDevices),
+              (Icons.cloud_done, l10n.conCompraSaved),
+              (Icons.sync, l10n.conCompraSync),
+            ],
+          )
+        : AccountInviteHeader(
+            title: invite ? l10n.conConviteTitle : l10n.conEntradaTitle,
+            text: invite ? l10n.conConviteLater : l10n.accountEntryText,
+            titleKey: AccountKeys.enterTitle,
+            textKey: AccountKeys.enterText,
+            benefits: [
+              (Icons.cloud_done, l10n.conEntradaSaved),
+              (Icons.wifi_off, l10n.conEntradaOffline),
+            ],
+          );
   }
 }

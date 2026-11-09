@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/links/link_repository.dart';
+import '../../../config/view_models/links.dart';
 import '../keys/core_keys.dart';
 import '../l10n/l10n.dart';
 import 'lucena_snack_bar.dart';
@@ -10,7 +9,7 @@ import 'lucena_snack_bar.dart';
 /// (Gap 6 do Sobre).
 Future<void> openLink(BuildContext context, Uri url) async {
   final message = context.l10n.ajuLinkError;
-  final opened = await context.read<LinkRepository>().open(url);
+  final opened = await openExternalLink(context, url);
   if (opened || !context.mounted) return;
   showLucenaSnackBar(
     context,

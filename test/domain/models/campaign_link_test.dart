@@ -55,7 +55,7 @@ void main() {
     );
 
     test('o link repassado pelo app só entra no funil pela aula', () {
-      final link = ChallengeLink(fen: _fen, userSide: Side.white);
+      final link = const ChallengeLink(fen: _fen, userSide: Side.white);
       expect(link.sharedFrom('fim_partida', generation: 1).isCampaign, isFalse);
       expect(
         link
