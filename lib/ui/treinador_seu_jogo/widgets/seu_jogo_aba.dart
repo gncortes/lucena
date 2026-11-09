@@ -23,6 +23,7 @@ import '../view_models/seu_jogo_cubit.dart';
 import 'foco_card.dart';
 import 'seu_jogo_pecas.dart';
 import 'seu_jogo_textos.dart';
+import '../../core/theme/app_text.dart';
 
 /// A aba Seu jogo em tela própria (aberta de fora do casco do Treinador).
 class SeuJogoScreen extends StatelessWidget {
@@ -284,7 +285,7 @@ class _Numero extends StatelessWidget {
           Text(
             valor,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w500,
+              fontWeight: AppWeight.medium,
             ),
           ),
           _Pequeno(rotulo),
@@ -329,7 +330,7 @@ class _Variacao extends StatelessWidget {
           child: Text(
             context.l10n.sjNumVariacao(pontos.abs()),
             style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: cor, fontWeight: FontWeight.w500),
+                ?.copyWith(color: cor, fontWeight: AppWeight.medium),
           ),
         ),
       ],
@@ -470,7 +471,7 @@ class _EstiloCard extends StatelessWidget {
                   t.sjVerMeuEstilo,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: cores.primary,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: AppWeight.medium,
                   ),
                 ),
                 Icon(
@@ -508,7 +509,7 @@ class _PrecisaoMedia extends StatelessWidget {
                 ? t.sjSemValor
                 : t.sjPorcento(resumo.precisao!),
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w500,
+              fontWeight: AppWeight.medium,
             ),
           ),
           _Pequeno(t.sjPoucasPrecisaoTexto(resumo.partidas)),
@@ -630,13 +631,13 @@ class _Cores extends StatelessWidget {
               Text(
                 a.partidas == 0 ? t.sjSemValor : t.sjPorcento(a.porcento),
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: AppWeight.medium,
                 ),
               ),
               Text(
                 t.corNome(c),
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: AppWeight.medium,
                 ),
               ),
               _Pequeno(t.sjPartidas(a.partidas)),
@@ -702,7 +703,7 @@ class _Aberturas extends StatelessWidget {
                                 t.sjAberturaSaida(s.lance, s.vezes),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: erro,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: AppWeight.medium,
                                 ),
                               ),
                             ),
@@ -747,7 +748,7 @@ class LinhaDaAbertura extends StatelessWidget {
                   Text(
                     abertura.nome,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: AppWeight.medium,
                     ),
                   ),
                   _Pequeno(
@@ -762,7 +763,7 @@ class LinhaDaAbertura extends StatelessWidget {
             Text(
               t.sjPorcento(a.porcento),
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: AppWeight.medium,
               ),
             ),
           ],
@@ -807,7 +808,7 @@ class LinkModelos extends StatelessWidget {
                 child: Text(
                   context.l10n.sjModelosDe(nome),
                   style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: primaria, fontWeight: FontWeight.w500),
+                      ?.copyWith(color: primaria, fontWeight: AppWeight.medium),
                 ),
               ),
               Icon(

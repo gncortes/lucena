@@ -17,6 +17,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_card.dart';
 import '../view_models/curso_da_abertura_cubit.dart';
 import 'seu_jogo_textos.dart';
+import '../../core/theme/app_text.dart';
 
 /// "Onde focar agora": o ponto que mais pesa nas partidas, com a posição e,
 /// quando a abertura é do Pilares, a ligação ao curso.
@@ -84,7 +85,7 @@ class FocoCard extends StatelessWidget {
                                 t.sjFocoTitulo,
                                 style: theme.textTheme.labelMedium?.copyWith(
                                   color: primaria,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: AppWeight.medium,
                                 ),
                               ),
                             ),
@@ -95,7 +96,7 @@ class FocoCard extends StatelessWidget {
                           titulo,
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: AppWeight.medium,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
@@ -190,7 +191,7 @@ class _LigacaoAoCurso extends StatelessWidget {
               ? t.sjFocoFazerParte(abertura.destaque.numero)
               : t.sjFocoEstudar,
           textAlign: TextAlign.center,
-          style: TextStyle(color: primaria, fontWeight: FontWeight.w500),
+          style: TextStyle(color: primaria, fontWeight: AppWeight.medium),
         ),
       ),
     );

@@ -15,6 +15,7 @@ import '../../core/widgets/lucena_card.dart';
 import '../view_models/seu_jogo_cubit.dart';
 import 'seu_jogo_pecas.dart';
 import 'seu_jogo_textos.dart';
+import '../../core/theme/app_text.dart';
 
 /// A leitura do estilo que o servidor faz: o resumo, a confiança e os pontos
 /// fortes e a melhorar.
@@ -176,7 +177,7 @@ class _Ponto extends StatelessWidget {
         Text(
           ponto.texto,
           style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
+            fontWeight: AppWeight.medium,
           ),
         ),
         if (ponto.partidas case final n?)

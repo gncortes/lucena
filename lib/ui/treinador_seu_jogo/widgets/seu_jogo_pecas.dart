@@ -7,6 +7,7 @@ import '../../core/widgets/lucena_card.dart';
 import '../../../domain/models/treinador/treinador.dart';
 import '../../core/l10n/l10n.dart';
 import 'seu_jogo_textos.dart';
+import '../../core/theme/app_text.dart';
 
 /// Peças visuais comuns às telas do Seu jogo (cartão, barra, linha).
 
@@ -53,7 +54,7 @@ class SecaoSeuJogo extends StatelessWidget {
                 child: Text(
                   titulo,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: AppWeight.medium,
                   ),
                 ),
               ),
@@ -93,7 +94,7 @@ class LinhaComBarra extends StatelessWidget {
     final theme = Theme.of(context);
     final cores = theme.colorScheme;
     final forte = theme.textTheme.bodyMedium?.copyWith(
-      fontWeight: FontWeight.w500,
+      fontWeight: AppWeight.medium,
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
@@ -286,7 +287,7 @@ class MedidorConfianca extends StatelessWidget {
         Text(
           t.sjEstiloComPartidas(partidas, nivel.name),
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w500,
+            fontWeight: AppWeight.medium,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -315,7 +316,7 @@ class MedidorConfianca extends StatelessWidget {
                       t.nivelNome(n),
                       style: n == nivel
                           ? theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: AppWeight.medium,
                             )
                           : variante,
                     ),

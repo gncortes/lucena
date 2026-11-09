@@ -15,6 +15,7 @@ import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../view_models/curso_da_abertura_cubit.dart';
+import '../../core/theme/app_text.dart';
 
 /// A abertura do ponto fraco no Pilares, para quem não tem o curso: as partes
 /// com cadeado, a que trata do ponto fraco em destaque e a oferta.
@@ -91,7 +92,7 @@ class _Lista extends StatelessWidget {
           textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w500,
+            fontWeight: AppWeight.medium,
           ),
         ),
         const SizedBox(height: AppSpacing.md),

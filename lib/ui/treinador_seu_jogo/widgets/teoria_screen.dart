@@ -20,6 +20,7 @@ import '../view_models/teoria_cubit.dart';
 import 'seu_jogo_aba.dart' show LinkModelos;
 import 'seu_jogo_pecas.dart';
 import 'seu_jogo_textos.dart';
+import '../../core/theme/app_text.dart';
 
 /// Onde ele saiu da teoria numa partida e o que mais se joga ali (dados que
 /// o servidor guardou; o aparelho não consulta o Lichess).
@@ -252,7 +253,7 @@ class _Lance extends StatelessWidget {
               : (variante ? cores.onSurfaceVariant : null),
           fontWeight: marcado
               ? FontWeight.w600
-              : (variante ? FontWeight.w400 : FontWeight.w500),
+              : (variante ? AppWeight.regular : AppWeight.medium),
         ),
       ),
     );
@@ -351,7 +352,7 @@ class _Candidato extends StatelessWidget {
                       Text(
                         t.jogadaDoPly(ply, c.san),
                         style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: AppWeight.medium,
                         ),
                       ),
                       if (jogou)
@@ -360,7 +361,7 @@ class _Candidato extends StatelessWidget {
                           key: SeuJogoKeys.teoriaJogou,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.error,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: AppWeight.medium,
                           ),
                         ),
                     ],

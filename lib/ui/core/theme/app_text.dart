@@ -32,8 +32,12 @@ extension AppText on BuildContext {
 }
 
 /// Peso de fonte para o que não parte de um estilo do tema: trecho em
-/// destaque dentro de um texto corrido, número de selo e relógio.
+/// destaque dentro de um texto corrido, número de selo e relógio. `regular` e
+/// `medium` são os pesos 400 e 500 da tipografia M3 do design system
+/// (`design/CONVENCOES.md`).
 abstract final class AppWeight {
+  static const regular = FontWeight.w400;
+  static const medium = FontWeight.w500;
   static const strong = FontWeight.w700;
   static const heavy = FontWeight.w800;
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_icon_size.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 
 /// O cartão azul de destaque (canvas DSeuJogo "Seu estilo" e DPilaresEslava,
 /// oferta): fundo `secondaryContainer`, raio [AppShape.large], padding
@@ -41,7 +42,7 @@ class CartaoDestaque extends StatelessWidget {
                   child: Text(
                     title,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: AppWeight.medium,
                       color: cores.onSecondaryContainer,
                     ),
                   ),

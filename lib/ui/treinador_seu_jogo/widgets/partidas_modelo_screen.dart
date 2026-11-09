@@ -14,6 +14,7 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_card.dart';
 import '../../core/widgets/open_link.dart';
 import '../view_models/partidas_modelo_cubit.dart';
+import '../../core/theme/app_text.dart';
 
 /// As partidas-modelo de uma abertura e o aviso de partida nova.
 class PartidasModeloScreen extends StatelessWidget {
@@ -87,7 +88,7 @@ class _Lista extends StatelessWidget {
               title: Text(
                 t.sjModelosAviso,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: AppWeight.medium,
                 ),
               ),
               subtitle: Text(t.sjModelosAvisoTexto(abertura), style: variante),
@@ -104,7 +105,7 @@ class _Lista extends StatelessWidget {
               Text(
                 t.sjModelosSecao(abertura),
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: AppWeight.medium,
                 ),
               ),
               Text(t.sjModelosSecaoTexto, style: variante),
@@ -154,7 +155,7 @@ class _Modelo extends StatelessWidget {
           fonte,
           style: theme.textTheme.labelSmall?.copyWith(
             color: primaria,
-            fontWeight: FontWeight.w500,
+            fontWeight: AppWeight.medium,
             letterSpacing: 0.6,
           ),
         ),
@@ -162,7 +163,7 @@ class _Modelo extends StatelessWidget {
         Text(
           modelo.titulo,
           style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
+            fontWeight: AppWeight.medium,
           ),
         ),
         if (modelo.subtitulo case final s?)

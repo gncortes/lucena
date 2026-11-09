@@ -24,6 +24,7 @@ import '../../core/widgets/open_link.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/seu_jogo_cubit.dart';
 import 'seu_jogo_textos.dart';
+import '../../core/theme/app_text.dart';
 
 /// As posições de um tema em que ele errou, da mais recente.
 class SeuJogoTemaScreen extends StatelessWidget {
@@ -161,7 +162,7 @@ class _Posicao extends StatelessWidget {
                   Text(
                     t.sjTemaLance(pos.posicao.lance, partida.adversario.nome),
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: AppWeight.medium,
                     ),
                   ),
                   Text(
@@ -228,7 +229,7 @@ class _Folha extends StatelessWidget {
           Text(
             t.sjTemaLance(pos.posicao.lance, partida.adversario.nome),
             style: Theme.of(context).textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w500),
+                ?.copyWith(fontWeight: AppWeight.medium),
           ),
           const SizedBox(height: AppSpacing.md),
           LayoutBuilder(
