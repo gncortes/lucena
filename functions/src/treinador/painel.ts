@@ -64,16 +64,41 @@ export async function somarContaNova(db: Firestore, agora: Date): Promise<void> 
   );
 }
 
-/** Mudança no `progresso` espelhado pelo app: funil e exercícios feitos (só o que aumentou). */
+/** `progresso` espelhado pelo app (`resultados` e `viuAnalise` opcionais: sem eles só entram os totais). */
+export interface Progresso {
+  feitos: number;
+  acertos: number;
+  /** `{"<n do exercício>": acertou na 1ª tentativa}`. */
+  resultados?: Record<string, boolean>;
+  viuAnalise?: boolean;
+}
+
+export function lerProgresso(v: unknown): Progresso | null {
+  if (!v || typeof v !== 'object') return null;
+  const p = v as Record<string, unknown>;
+  const r = p.resultados && typeof p.resultados === 'object' ? (p.resultados as Record<string, unknown>) : undefined;
+  return {
+    feitos: Number(p.feitos) || 0,
+    acertos: Number(p.acertos) || 0,
+    ...(r ? { resultados: Object.fromEntries(Object.entries(r).filter(([, x]) => typeof x === 'boolean')) as Record<string, boolean> } : {}),
+    ...(p.viuAnalise === true ? { viuAnalise: true } : {}),
+  };
+}
+
+/**
+ * Mudança no `progresso`: funil, exercícios feitos e, com `resultados`, `porTipo`/`porTema` (só o que é novo;
+ * exercício já contado não conta de novo).
+ */
 export async function somarProgresso(
   db: Firestore,
   agora: Date,
-  antes: { feitos: number; acertos: number } | null,
-  depois: { feitos: number; acertos: number },
-  totalExercicios: number,
+  antes: Progresso | null,
+  depois: Progresso,
+  exercicios: Pick<Exercicio, 'n' | 'tipo' | 'tema'>[],
   paga: boolean,
 ): Promise<void> {
   const inc = FieldValue.increment;
+  const totalExercicios = exercicios.length;
   const dFeitos = Math.max(0, depois.feitos - (antes?.feitos ?? 0));
   const dAcertos = Math.max(0, depois.acertos - (antes?.acertos ?? 0));
   const funil: Record<string, unknown> = {};
@@ -83,14 +108,34 @@ export async function somarProgresso(
     if (totalExercicios > 0 && (antes?.feitos ?? 0) < totalExercicios && depois.feitos >= totalExercicios) {
       funil.terminaram = inc(1);
     }
+    if (depois.viuAnalise && !antes?.viuAnalise) funil.viramAnalise = inc(1);
   }
-  if (!dFeitos && !dAcertos && !Object.keys(funil).length) return;
+  const porTipo: Record<string, { feitos: number; acertos: number }> = {};
+  const porTema: Record<string, { feitos: number; acertos: number }> = {};
+  const porN = new Map(exercicios.map((e) => [String(e.n), e]));
+  for (const [n, acertou] of Object.entries(depois.resultados ?? {})) {
+    if (antes?.resultados && n in antes.resultados) continue;
+    const e = porN.get(n);
+    if (!e) continue;
+    for (const [mapa, chave] of [
+      [porTipo, e.tipo],
+      [porTema, e.tema ?? 'sem_tema'],
+    ] as const) {
+      const t = (mapa[chave] ??= { feitos: 0, acertos: 0 });
+      t.feitos++;
+      if (acertou) t.acertos++;
+    }
+  }
+  const comoInc = (m: Record<string, { feitos: number; acertos: number }>) =>
+    Object.fromEntries(Object.entries(m).map(([k, v]) => [k, { feitos: inc(v.feitos), acertos: inc(v.acertos) }]));
+  if (!dFeitos && !dAcertos && !Object.keys(funil).length && !Object.keys(porTipo).length) return;
   await refDia(db, agora).set(
     {
       data: diaBR(agora),
       atualizadoEm: Timestamp.fromDate(agora),
       exercicios: { feitos: inc(dFeitos), acertos: inc(dAcertos) },
       ...(Object.keys(funil).length ? { funil } : {}),
+      ...(Object.keys(porTipo).length ? { porTipo: comoInc(porTipo), porTema: comoInc(porTema) } : {}),
     },
     { merge: true },
   );

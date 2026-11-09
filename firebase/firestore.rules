@@ -149,10 +149,13 @@ service cloud.firestore {
         allow update: if canWrite(uid)
           && changed().hasOnly(['progresso'])
           && data().progresso is map
-          && data().progresso.keys().hasOnly(['feitos', 'acertos', 'pontos'])
+          && data().progresso.keys().hasOnly(['feitos', 'acertos', 'pontos', 'resultados', 'viuAnalise'])
           && optInt(data().progresso, 'feitos')
           && optInt(data().progresso, 'acertos')
-          && optInt(data().progresso, 'pontos');
+          && optInt(data().progresso, 'pontos')
+          && (!('resultados' in data().progresso)
+            || (data().progresso.resultados is map && data().progresso.resultados.size() <= 10))
+          && (!('viuAnalise' in data().progresso) || data().progresso.viuAnalise is bool);
         allow update: if isAdmin()
           && changed().hasOnly(['status'])
           && previous().status == 'erro' && data().status == 'na_fila';

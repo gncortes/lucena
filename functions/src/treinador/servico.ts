@@ -21,6 +21,7 @@ import {
   atualizarContas,
   atualizarEstado,
   gastoDoMes,
+  lerProgresso,
   registrarFalha,
   registrarLichess,
   somarAnalise,
@@ -29,7 +30,7 @@ import {
   type MotivoFalha,
 } from './painel';
 import { acharTeoria, type Explorador } from './teoria';
-import type { PartidaBruta, Plataforma, ResultadoAnalise } from './tipos';
+import type { Exercicio, PartidaBruta, Plataforma, ResultadoAnalise } from './tipos';
 
 export interface DepsTreinador {
   db: Firestore;
@@ -525,16 +526,16 @@ export async function partidaMudou(
     if (!(await refFila(deps.db, uid, partida).get()).exists) await refazer(deps, uid, partida);
     return;
   }
-  const p = depois.progresso as { feitos?: number; acertos?: number } | undefined;
+  const p = lerProgresso(depois.progresso);
   if (!p || depois.status !== 'pronta') return;
-  const a = antes?.progresso as { feitos?: number; acertos?: number } | undefined;
-  if (a && a.feitos === p.feitos && a.acertos === p.acertos) return;
+  const a = lerProgresso(antes?.progresso);
+  if (a && JSON.stringify(a) === JSON.stringify(p)) return;
   await somarProgresso(
     deps.db,
     deps.agora,
-    a ? { feitos: Number(a.feitos) || 0, acertos: Number(a.acertos) || 0 } : null,
-    { feitos: Number(p.feitos) || 0, acertos: Number(p.acertos) || 0 },
-    ((depois.exercicios as unknown[] | undefined) ?? []).length,
+    a,
+    p,
+    (depois.exercicios as Exercicio[] | undefined) ?? [],
     depois.plano === 'assinante',
   );
 }

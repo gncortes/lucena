@@ -484,12 +484,19 @@ describe('treinador (T87): servidor grava; dono espelha só o progresso', () => 
     await assertSucceeds(db('ana').doc(partida).get());
     await assertSucceeds(db('ana').doc('users/ana/treinador/conta').get());
     await assertSucceeds(db('ana').doc(partida).set({ progresso: { feitos: 2, acertos: 1, pontos: 30 } }, { merge: true }));
+    await assertSucceeds(
+      db('ana')
+        .doc(partida)
+        .update({ progresso: { feitos: 2, acertos: 1, pontos: 30, resultados: { 1: true, 2: false }, viuAnalise: true } }),
+    );
   });
 
   test('o dono não muda a análise, o status nem a conta; outro não lê', async () => {
     await assertFails(db('ana').doc(partida).update({ precisao: 100 }));
     await assertFails(db('ana').doc(partida).update({ status: 'na_fila' }));
     await assertFails(db('ana').doc(partida).set({ progresso: { feitos: 'dois' } }, { merge: true }));
+    await assertFails(db('ana').doc(partida).update({ progresso: { feitos: 1, viuAnalise: 'sim' } }));
+    await assertFails(db('ana').doc(partida).update({ progresso: { feitos: 1, resultados: 'tudo' } }));
     await assertFails(db('ana').doc('users/ana/partidas/lichess_novo0001').set({ status: 'pronta' }));
     await assertFails(db('ana').doc('users/ana/treinador/conta').set({ usuario: 'outro' }));
     await assertFails(db('bia').doc(partida).get());

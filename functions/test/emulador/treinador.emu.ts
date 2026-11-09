@@ -178,6 +178,25 @@ describe('treinador no emulador', () => {
     assert.equal(dia2.funil.comecaram, 1);
     assert.equal(dia2.funil.terminaram, total > 1 ? 1 : 1);
     assert.equal(dia2.exercicios.feitos, total);
+
+    // Com `resultados` e `viuAnalise`: porTipo/porTema e viramAnalise, sem contar duas vezes o mesmo exercício.
+    const exs = d.exercicios as { n: number; tipo: string; tema: string | null }[];
+    const resultados = Object.fromEntries(exs.map((e, i) => [String(e.n), i === 0]));
+    const p1 = { feitos: total, acertos: 2 };
+    const p2 = { ...p1, resultados, viuAnalise: true };
+    await partidaMudou(deps(), 'bia', partida, { ...d, progresso: p1 }, { ...d, progresso: p2 });
+    await partidaMudou(deps(), 'bia', partida, { ...d, progresso: p2 }, { ...d, progresso: { ...p2, pontos: 30 } });
+    const dia3 = (await db().doc(`treinador_painel/dia-${diaBR(new Date())}`).get()).data()!;
+    assert.equal(dia3.funil.viramAnalise, 1);
+    const somaTipo = Object.values(dia3.porTipo as Record<string, { feitos?: number; acertos?: number }>);
+    assert.equal(somaTipo.reduce((s, t) => s + (t.feitos ?? 0), 0), total);
+    assert.equal(somaTipo.reduce((s, t) => s + (t.acertos ?? 0), 0), total > 0 ? 1 : 0);
+    const tema0 = exs[0].tema ?? 'sem_tema';
+    assert.ok(dia3.porTema[tema0].acertos >= 1);
+    assert.equal(
+      Object.values(dia3.porTema as Record<string, { feitos: number }>).reduce((s, t) => s + t.feitos, 0),
+      total,
+    );
   });
 
   test('orçamento a 100%: grátis espera na fila sem tarefa; com verba de novo, a busca libera', async () => {
