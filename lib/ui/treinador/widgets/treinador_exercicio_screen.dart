@@ -155,12 +155,14 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
                       end: AppSpacing.md,
                     ),
                     child: Semantics(
-                      label: l.treinadorEstrelas(ex.estrelas),
+                      label: _vale(s)
+                          ? l.exercisePoints(s.vale)
+                          : l.exerciseNoMorePoints,
                       excludeSemantics: true,
-                      // Neutra, na cor do texto (canvas DEx*): cheia enquanto o
-                      // exercício vale os pontos da primeira tentativa, vazia
-                      // depois do erro, da dica ou da solução vista (regra T85 da
-                      // exercise_screen). A dificuldade fica na semântica.
+                      // Como nos exercícios de finais (exercise_screen): neutra,
+                      // na cor do texto, cheia enquanto ainda vale pontos; cada
+                      // erro ou dica desce um degrau (3 → 2 → 1), e só esvazia
+                      // quando não vale mais nada.
                       child: Icon(
                         _vale(s)
                             ? Icons.star_rounded
@@ -202,7 +204,7 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
   }
 
   static bool _vale(TreinadorExercicioState s) =>
-      s.vale >= TreinadorRegras.pontosMaximos &&
+      s.vale > 0 &&
       (s.fase == FaseExercicio.jogando || s.fase == FaseExercicio.acertou);
 
   /// O lance tentado (com "?" no erro) ou a solução, em SAN, como no Treino,

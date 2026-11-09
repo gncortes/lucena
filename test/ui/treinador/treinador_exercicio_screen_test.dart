@@ -272,7 +272,7 @@ void main() {
       expect(estrela(), Icons.star_outline_rounded);
     });
 
-    testWidgets('dica: marca a peça, depois o lance; a estrela esvazia', (
+    testWidgets('dica: marca a peça, depois o lance; a estrela segue cheia enquanto vale pontos', (
       tester,
     ) async {
       aparelho411x914(tester);
@@ -291,7 +291,7 @@ void main() {
       expect(marcas(), isEmpty);
 
       await _tocar(tester, dica);
-      expect(estrela(), Icons.star_outline_rounded);
+      expect(estrela(), Icons.star_rounded);
       expect(marcas().single, isA<Circle>());
       expect((marcas().single as Circle).orig, solucao.from);
 
