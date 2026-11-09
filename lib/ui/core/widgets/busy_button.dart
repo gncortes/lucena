@@ -131,28 +131,16 @@ class _BusyContent extends StatelessWidget {
   final Widget? leading;
   final bool busy;
 
-  Widget _content(Widget text, {required bool hidden}) =>
-      icon == null && leading == null
-      ? text
-      : Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (leading case final leading?)
-              Opacity(opacity: hidden ? 0 : 1, child: leading)
-            else
-              Icon(icon, color: hidden ? Colors.transparent : null),
-            const SizedBox(width: 8),
-            Flexible(child: text),
-          ],
-        );
-
   @override
   Widget build(BuildContext context) {
     final style = DefaultTextStyle.of(context).style;
     final color = style.color ?? IconTheme.of(context).color;
     // Invisível e fora do find.text: só guarda a largura.
-    final placeholder = _content(
-      RichText(
+    final placeholder = _Content(
+      icon: icon,
+      leading: leading,
+      hidden: true,
+      text: RichText(
         text: TextSpan(
           text: label,
           style: style.copyWith(color: Colors.transparent),
@@ -160,7 +148,6 @@ class _BusyContent extends StatelessWidget {
         textScaler: MediaQuery.textScalerOf(context),
         maxLines: 1,
       ),
-      hidden: true,
     );
     final reduced = MovimentoReduzido.of(context);
     final switcher = AnimatedSwitcher(
@@ -171,7 +158,12 @@ class _BusyContent extends StatelessWidget {
           ? CirculoCarregando(key: CoreKeys.busySpinner, cor: color)
           : KeyedSubtree(
               key: const ValueKey('busy.label'),
-              child: _content(Text(label), hidden: false),
+              child: _Content(
+                icon: icon,
+                leading: leading,
+                hidden: false,
+                text: Text(label),
+              ),
             ),
     );
     final stack = Stack(
@@ -187,5 +179,38 @@ class _BusyContent extends StatelessWidget {
       excludeSemantics: busy,
       child: stack,
     );
+  }
+}
+
+/// A linha do rótulo com o ícone (ou o [leading]) à esquerda; sem eles, só o
+/// texto. Escondida, o ícone fica transparente e só guarda a largura.
+class _Content extends StatelessWidget {
+  const _Content({
+    required this.text,
+    required this.icon,
+    required this.leading,
+    required this.hidden,
+  });
+
+  final Widget text;
+  final IconData? icon;
+  final Widget? leading;
+  final bool hidden;
+
+  @override
+  Widget build(BuildContext context) {
+    return icon == null && leading == null
+        ? text
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (leading case final leading?)
+                Opacity(opacity: hidden ? 0 : 1, child: leading)
+              else
+                Icon(icon, color: hidden ? Colors.transparent : null),
+              const SizedBox(width: 8),
+              Flexible(child: text),
+            ],
+          );
   }
 }

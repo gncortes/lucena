@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../data/repositories/links/link_repository.dart';
-import '../../../data/repositories/purchase/purchase_repository.dart';
+import '../../../config/view_models/pilares_sale.dart';
 import '../../../domain/models/pilares_access.dart';
 import '../../../routing/frentes/d2_routes.dart';
 import '../../core/keys/purchase_keys.dart';
@@ -24,12 +23,9 @@ class PilaresCourseCard extends StatelessWidget {
   const PilaresCourseCard({super.key});
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (context) => PilaresCourseCardCubit(
-      purchases: context.read<PurchaseRepository>(),
-      links: context.read<LinkRepository>(),
-    ),
-    child: const _CourseCard(),
+  Widget build(BuildContext context) => const BlocProvider(
+    create: createPilaresCourseCardCubit,
+    child: _CourseCard(),
   );
 }
 
@@ -154,10 +150,8 @@ class _CourseCard extends StatelessWidget {
     );
   }
 
-  static final _button = ButtonStyle(
-    minimumSize: const WidgetStatePropertyAll(
-      Size.fromHeight(kButtonHeightCompact),
-    ),
+  static final _button = const ButtonStyle(
+    minimumSize: WidgetStatePropertyAll(Size.fromHeight(kButtonHeightCompact)),
   );
 }
 

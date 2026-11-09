@@ -45,7 +45,7 @@ String placementPrompt(AppLocalizations l10n, PlacementItem item) {
 String _localSan(AppLocalizations l10n, String san) {
   final letters = MoveNotation.letters.pieceLetters(l10n)!;
   return san.replaceAllMapped(
-    RegExp('[KQRBN]'),
+    _pieceLetter,
     (match) => letters[match[0]] ?? match[0]!,
   );
 }
@@ -156,3 +156,5 @@ Map<String, String> skillNames(AppLocalizations l10n) => {
   'tactics.basic': l10n.skillTacticsBasic,
   'tactics.endgame': l10n.skillTacticsEndgame,
 };
+
+final _pieceLetter = RegExp('[KQRBN]');

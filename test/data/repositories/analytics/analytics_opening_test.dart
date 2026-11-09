@@ -16,7 +16,7 @@ import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_push_repository.dart';
 import '../../../../testing/fakes/fake_school_repositories.dart';
 
-final _link = ChallengeLink(
+final _link = const ChallengeLink(
   fen: '8/8/8/4k3/8/8/4K3/4Q3 w - - 0 1',
   userSide: Side.white,
 );

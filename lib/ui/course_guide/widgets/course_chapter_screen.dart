@@ -95,9 +95,10 @@ class CourseChapterScreen extends StatelessWidget {
                   list: ChapterLessonList(
                     rows: [
                       for (final (index, lesson) in rows.indexed)
-                        _origem(
-                          lesson,
-                          ChapterLessonRow(
+                        OrigemQueAbre(
+                          // H-ANI-04: a aula aberta pela linha cresce dela.
+                          id: AbreDoCartao.daAula(lesson.id),
+                          child: ChapterLessonRow(
                             key: CourseGuideKeys.chapterLesson(lesson.id),
                             kind: completed.containsKey(lesson.id)
                                 ? ChapterRowKind.done
@@ -113,9 +114,10 @@ class CourseChapterScreen extends StatelessWidget {
                     ],
                     exercises: exercises == null
                         ? null
-                        : _origem(
-                            exercises,
-                            ChapterLessonRow(
+                        : OrigemQueAbre(
+                            // H-ANI-04: a aula aberta pela linha cresce dela.
+                            id: AbreDoCartao.daAula(exercises.id),
+                            child: ChapterLessonRow(
                               key: CourseGuideKeys.chapterLesson(exercises.id),
                               kind: ChapterRowKind.exercises,
                               number: '$number.${rows.length + 1}',
@@ -135,7 +137,3 @@ class CourseChapterScreen extends StatelessWidget {
     },
   );
 }
-
-/// H-ANI-04: a aula aberta pela linha cresce dela.
-Widget _origem(TrainingLesson lesson, Widget row) =>
-    OrigemQueAbre(id: AbreDoCartao.daAula(lesson.id), child: row);

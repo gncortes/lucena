@@ -69,7 +69,7 @@ class EmptyState extends StatelessWidget {
     final label = actionLabel;
     final action = text || label == null || onAction == null
         ? null
-        : _action(label);
+        : _Action(this, label);
     return Padding(
       key: CoreKeys.emptyState,
       padding: text
@@ -90,7 +90,7 @@ class EmptyState extends StatelessWidget {
                           ? colors.onSurfaceVariant
                           : colors.outline,
                     )
-                  : _circle(colors)
+                  : _Circle(this)
             : null,
         texto: Column(
           mainAxisSize: MainAxisSize.min,
@@ -127,13 +127,22 @@ class EmptyState extends StatelessWidget {
       ),
     );
   }
+}
 
-  // O ícone de 48 num círculo suave de 72.
-  Widget _circle(ColorScheme colors) {
-    final error = style == EmptyStateStyle.error && !usePrimaryErrorColor;
+/// O ícone de 48 num círculo suave de 72.
+class _Circle extends StatelessWidget {
+  const _Circle(this.owner);
+
+  final EmptyState owner;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final error =
+        owner.style == EmptyStateStyle.error && !owner.usePrimaryErrorColor;
     return Container(
-      width: circle,
-      height: circle,
+      width: EmptyState.circle,
+      height: EmptyState.circle,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: (error ? colors.errorContainer : colors.primaryContainer)
@@ -141,28 +150,37 @@ class EmptyState extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Icon(
-        icon,
-        fill: iconFill,
+        owner.icon,
+        fill: owner.iconFill,
         size: AppIconSize.illustration,
         color: error ? colors.error : colors.primary,
       ),
     );
   }
+}
 
-  Widget _action(String label) {
+/// O botão da ação, de acordo com o estilo do estado.
+class _Action extends StatelessWidget {
+  const _Action(this.owner, this.label);
+
+  final EmptyState owner;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
     final text = Text(label);
-    switch (style) {
+    switch (owner.style) {
       case EmptyStateStyle.primary:
         return FilledButton.icon(
-          key: actionKey ?? CoreKeys.emptyAction,
-          onPressed: onAction,
-          icon: actionIcon == null ? null : Icon(actionIcon),
+          key: owner.actionKey ?? CoreKeys.emptyAction,
+          onPressed: owner.onAction,
+          icon: owner.actionIcon == null ? null : Icon(owner.actionIcon),
           label: text,
         );
       case EmptyStateStyle.filters:
         return OutlinedButton.icon(
-          key: actionKey ?? CoreKeys.emptyAction,
-          onPressed: onAction,
+          key: owner.actionKey ?? CoreKeys.emptyAction,
+          onPressed: owner.onAction,
           icon: const Icon(Icons.filter_list_off),
           label: text,
         );
@@ -170,8 +188,8 @@ class EmptyState extends StatelessWidget {
       case EmptyStateStyle.error:
       case EmptyStateStyle.text:
         return FilledButton.tonal(
-          key: actionKey ?? CoreKeys.emptyAction,
-          onPressed: onAction,
+          key: owner.actionKey ?? CoreKeys.emptyAction,
+          onPressed: owner.onAction,
           child: text,
         );
     }

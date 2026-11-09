@@ -31,16 +31,6 @@ class AnimatedSpeechSwitcher extends StatelessWidget {
   /// A mudança de altura.
   static const resize = AppMotion.panel;
 
-  static Widget _pilha(Widget? current, List<Widget> previous) => Stack(
-    alignment: AlignmentDirectional.topStart,
-    clipBehavior: Clip.none,
-    children: [
-      for (final old in previous)
-        PositionedDirectional(top: 0, start: 0, end: 0, child: old),
-      ?current,
-    ],
-  );
-
   @override
   Widget build(BuildContext context) {
     final keyed = KeyedSubtree(key: ValueKey(speech), child: child);
@@ -49,7 +39,8 @@ class AnimatedSpeechSwitcher extends StatelessWidget {
     if (MovimentoReduzido.of(context)) {
       return AnimatedSwitcher(
         duration: LucenaMotion.fadeReduzido,
-        layoutBuilder: _pilha,
+        layoutBuilder: (current, previous) =>
+            _Pilha(current: current, previous: previous),
         child: keyed,
       );
     }
@@ -67,12 +58,33 @@ class AnimatedSpeechSwitcher extends StatelessWidget {
           switchOutCurve: LucenaMotion.emphasizedAccelerate,
           // A altura é a da fala nova; a antiga sai por cima e é cortada
           // aos poucos, na borda do balão que encolhe.
-          layoutBuilder: _pilha,
+          layoutBuilder: (current, previous) =>
+              _Pilha(current: current, previous: previous),
           child: keyed,
         ),
       ),
     );
   }
+}
+
+/// As falas do [AnimatedSwitcher] empilhadas no topo: a altura é a da fala
+/// nova, e a antiga sai por cima.
+class _Pilha extends StatelessWidget {
+  const _Pilha({required this.current, required this.previous});
+
+  final Widget? current;
+  final List<Widget> previous;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    alignment: AlignmentDirectional.topStart,
+    clipBehavior: Clip.none,
+    children: [
+      for (final old in previous)
+        PositionedDirectional(top: 0, start: 0, end: 0, child: old),
+      ?current,
+    ],
+  );
 }
 
 /// A primeira aparição do balão (H-ANI-09): fade, escala de 0,92 a 1 a

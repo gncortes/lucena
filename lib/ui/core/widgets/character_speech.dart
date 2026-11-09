@@ -77,7 +77,16 @@ class _TypewriterTextState extends State<TypewriterText>
             : widget.style;
         return AnimatedBuilder(
           animation: _controller,
-          builder: (context, _) => _text(instant, style),
+          builder: (context, _) => _TypedText(
+            text: widget.text,
+            shown: instant
+                ? widget.text.length
+                : (widget.text.length * _controller.value).round(),
+            style: style,
+            maxLines: widget.maxLines,
+            prefix: widget.prefix,
+            suffix: widget.suffix,
+          ),
         );
       },
     );
@@ -107,27 +116,43 @@ class _TypewriterTextState extends State<TypewriterText>
     }
     return base.copyWith(fontSize: size * 0.6);
   }
+}
 
-  Widget _text(bool instant, TextStyle? style) {
-    final shown = instant
-        ? widget.text.length
-        : (widget.text.length * _controller.value).round();
-    return Text.rich(
-      TextSpan(
-        children: [
-          ?widget.prefix,
-          TextSpan(text: widget.text.substring(0, shown)),
-          // O resto, invisível, guarda o lugar das letras que faltam.
-          TextSpan(
-            text: widget.text.substring(shown),
-            style: const TextStyle(color: Colors.transparent),
-          ),
-          ?widget.suffix,
-        ],
-      ),
-      style: style,
-      maxLines: widget.maxLines,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
+/// O texto com as [shown] primeiras letras visíveis; o resto, invisível,
+/// guarda o lugar.
+class _TypedText extends StatelessWidget {
+  const _TypedText({
+    required this.text,
+    required this.shown,
+    required this.style,
+    required this.maxLines,
+    required this.prefix,
+    required this.suffix,
+  });
+
+  final String text;
+  final int shown;
+  final TextStyle? style;
+  final int? maxLines;
+  final InlineSpan? prefix;
+  final InlineSpan? suffix;
+
+  @override
+  Widget build(BuildContext context) => Text.rich(
+    TextSpan(
+      children: [
+        ?prefix,
+        TextSpan(text: text.substring(0, shown)),
+        // O resto, invisível, guarda o lugar das letras que faltam.
+        TextSpan(
+          text: text.substring(shown),
+          style: const TextStyle(color: Colors.transparent),
+        ),
+        ?suffix,
+      ],
+    ),
+    style: style,
+    maxLines: maxLines,
+    overflow: TextOverflow.ellipsis,
+  );
 }

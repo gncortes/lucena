@@ -5,6 +5,7 @@ import 'entradas_vistas.dart';
 import 'lucena_motion.dart';
 import 'relogio_de_entrada.dart';
 
+// B1: callback de montar (valor padrão const do parâmetro)
 Widget _coluna(List<Widget> itens) => Column(
   mainAxisSize: MainAxisSize.min,
   crossAxisAlignment: CrossAxisAlignment.stretch,

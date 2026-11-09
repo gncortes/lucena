@@ -46,8 +46,10 @@ abstract final class Countries {
   /// A bandeira em emoji, montada das duas letras do código.
   static String flag(String code) {
     final letters = code.toUpperCase();
-    if (!RegExp(r'^[A-Z]{2}$').hasMatch(letters)) return '';
+    if (!_twoCapitalLetters.hasMatch(letters)) return '';
     const base = 0x1F1E6 - 0x41;
     return String.fromCharCodes(letters.codeUnits.map((c) => base + c));
   }
 }
+
+final _twoCapitalLetters = RegExp(r'^[A-Z]{2}$');

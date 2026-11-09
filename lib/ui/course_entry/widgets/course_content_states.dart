@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
-import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../config/failure_report.dart';
 import '../../core/widgets/load_error.dart';
 
 import '../../core/theme/app_shape.dart';
@@ -56,7 +56,7 @@ class CourseDownloadSkeleton extends StatelessWidget {
       }
       return SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

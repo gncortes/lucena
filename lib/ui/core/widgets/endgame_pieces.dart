@@ -52,7 +52,7 @@ class EndgamePieces extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final fixed = mineSlots;
-    final mineRow = _side(mine, Side.white);
+    final mineRow = _Side(owner: this, roles: mine, side: Side.white);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -72,25 +72,57 @@ class EndgamePieces extends StatelessWidget {
             style: TextStyle(fontSize: 16, color: colors.onSurfaceVariant),
           ),
         ),
-        _side(theirs, Side.black),
+        _Side(owner: this, roles: theirs, side: Side.black),
       ],
     );
   }
+}
 
-  Widget _side(List<Role> roles, Side side) => Row(
-    mainAxisSize: MainAxisSize.min,
-    spacing: gap,
-    children: [
-      for (final (role, count) in _groups(roles)) ...[
-        if (count > 1) _Numeral(count: count, white: side == Side.white),
-        _piece(Piece(color: side, role: role)),
+/// As peças de um lado, com o número antes da repetida, e o rei no fim.
+class _Side extends StatelessWidget {
+  const _Side({required this.owner, required this.roles, required this.side});
+
+  final EndgamePieces owner;
+  final List<Role> roles;
+  final Side side;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: EndgamePieces.gap,
+      children: [
+        for (final (role, count) in EndgamePieces._groups(roles)) ...[
+          if (count > 1) _Numeral(count: count, white: side == Side.white),
+          _PieceImage(
+            owner: owner,
+            piece: Piece(color: side, role: role),
+          ),
+        ],
+        _PieceImage(
+          owner: owner,
+          piece: Piece(color: side, role: Role.king),
+        ),
       ],
-      _piece(Piece(color: side, role: Role.king)),
-    ],
-  );
+    );
+  }
+}
 
-  Widget _piece(Piece piece) =>
-      Image(image: pieces[piece.kind]!, width: slot, height: slot);
+/// A imagem de uma peça, numa casa de [EndgamePieces.slot].
+class _PieceImage extends StatelessWidget {
+  const _PieceImage({required this.owner, required this.piece});
+
+  final EndgamePieces owner;
+  final Piece piece;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image(
+      image: owner.pieces[piece.kind]!,
+      width: EndgamePieces.slot,
+      height: EndgamePieces.slot,
+    );
+  }
 }
 
 /// O número da peça repetida, no traço dela: branco com contorno ou preto

@@ -40,7 +40,6 @@ class _SchoolGraduationScreenState extends State<SchoolGraduationScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final state = context.watch<SchoolGraduationCubit>().state;
     final nickname = context.select(
       (ProfileCubit cubit) => cubit.state?.nickname ?? '',
@@ -119,85 +118,110 @@ class _SchoolGraduationScreenState extends State<SchoolGraduationScreen> {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.md),
-                        Column(
-                          key: TrainingKeys.diplomaSummary,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              l10n.schoolGraduationSummary,
-                              style: theme.textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            for (final module in state.modules)
-                              Padding(
-                                key: TrainingKeys.diplomaModule(module.id),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: AppSpacing.xs,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(child: Text(module.title)),
-                                    Text(
-                                      l10n.schoolGraduationModuleCount(
-                                        module.lessons,
-                                      ),
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: colors.onSurfaceVariant,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
+                        _ModuleSummary(modules: state.modules),
                         const SizedBox(height: AppSpacing.md),
-                        Card(
-                          key: TrainingKeys.surveyCard,
-                          margin: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppShape.large),
-                          ),
-                          child: ListTile(
-                            leading: const Icon(Icons.feedback_outlined),
-                            title: Text(l10n.schoolGraduationSurveyTitle),
-                            subtitle: Text(l10n.schoolGraduationSurveyBody),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () =>
-                                context.push(Routes.survey(SurveyKind.school)),
-                          ),
-                        ),
+                        const _SurveyCard(),
                       ],
                     ],
                   ),
                 ),
-                ActionsFooter(
-                  stacked: true,
-                  children: [
-                    FilledButton.icon(
-                      key: TrainingKeys.diplomaPilares,
-                      icon: const Icon(Icons.auto_stories),
-                      onPressed: () {
-                        unawaited(
-                          context.read<SchoolGraduationCubit>().pilaresOpened(),
-                        );
-                        unawaited(context.push(Routes.pilaresSale));
-                      },
-                      label: Text(l10n.schoolGraduationPilares),
-                    ),
-                    OutlinedButton(
-                      key: TrainingKeys.diplomaCatalog,
-                      onPressed: () =>
-                          context.go(Routes.trainingCatalog('escola')),
-                      child: Text(l10n.trainingViewCatalog),
-                    ),
-                  ],
-                ),
+                const _GraduationFooter(),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// O resumo por módulo: quantas lições cada um tem.
+class _ModuleSummary extends StatelessWidget {
+  const _ModuleSummary({required this.modules});
+
+  final List<GraduationModule> modules;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Column(
+      key: TrainingKeys.diplomaSummary,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(l10n.schoolGraduationSummary, style: theme.textTheme.titleMedium),
+        const SizedBox(height: AppSpacing.xs),
+        for (final module in modules)
+          Padding(
+            key: TrainingKeys.diplomaModule(module.id),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+            child: Row(
+              children: [
+                Expanded(child: Text(module.title)),
+                Text(
+                  l10n.schoolGraduationModuleCount(module.lessons),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// O cartão que leva à pesquisa de opinião.
+class _SurveyCard extends StatelessWidget {
+  const _SurveyCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Card(
+      key: TrainingKeys.surveyCard,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppShape.large),
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.feedback_outlined),
+        title: Text(l10n.schoolGraduationSurveyTitle),
+        subtitle: Text(l10n.schoolGraduationSurveyBody),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.push(Routes.survey(SurveyKind.school)),
+      ),
+    );
+  }
+}
+
+/// Os dois caminhos depois da formatura: Pilares e catálogo.
+class _GraduationFooter extends StatelessWidget {
+  const _GraduationFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        FilledButton.icon(
+          key: TrainingKeys.diplomaPilares,
+          icon: const Icon(Icons.auto_stories),
+          onPressed: () {
+            unawaited(context.read<SchoolGraduationCubit>().pilaresOpened());
+            unawaited(context.push(Routes.pilaresSale));
+          },
+          label: Text(l10n.schoolGraduationPilares),
+        ),
+        OutlinedButton(
+          key: TrainingKeys.diplomaCatalog,
+          onPressed: () => context.go(Routes.trainingCatalog('escola')),
+          child: Text(l10n.trainingViewCatalog),
+        ),
+      ],
     );
   }
 }

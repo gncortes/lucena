@@ -45,8 +45,6 @@ class RaceReviewView extends StatelessWidget {
     if (problem == null) return const SizedBox.shrink();
     final l10n = context.l10n;
     final cubit = context.read<RaceCubit>();
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final fen = answer.fen ?? problem.fen;
     final position = Chess.fromSetup(Setup.parseFen(fen));
     final bestUci = answer.best.isEmpty ? null : answer.best.first;
@@ -76,81 +74,28 @@ class RaceReviewView extends StatelessWidget {
             reserveTop: topRoom,
             reserveBottom: bottomRoom,
             footer: const SizedBox(height: GameActionsBar.height),
-            top: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: AppSpacing.sm,
-                    children: [
-                      Icon(
-                        Icons.close,
-                        size: AppIconSize.standard,
-                        color: colors.error,
-                      ),
-                      Flexible(
-                        child: Text(
-                          l10n.raceReviewPlayed(
-                            _san(l10n, position, played, answer.move),
-                          ),
-                          key: RaceKeys.reviewPlayed,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: colors.error,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    answer.slower
-                        ? l10n.raceReviewSlower(
-                            _san(l10n, position, right, bestUci ?? ''),
-                            answer.mateIn,
-                          )
-                        : problem.defend
-                        ? l10n.raceReviewDefend(
-                            _san(l10n, position, right, bestUci ?? ''),
-                          )
-                        : l10n.raceReviewRight(
-                            _san(l10n, position, right, bestUci ?? ''),
-                          ),
-                    key: RaceKeys.reviewRight,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+            top: _ReviewHeader(
+              playedText: l10n.raceReviewPlayed(
+                _san(l10n, position, played, answer.move),
               ),
+              rightText: answer.slower
+                  ? l10n.raceReviewSlower(
+                      _san(l10n, position, right, bestUci ?? ''),
+                      answer.mateIn,
+                    )
+                  : problem.defend
+                  ? l10n.raceReviewDefend(
+                      _san(l10n, position, right, bestUci ?? ''),
+                    )
+                  : l10n.raceReviewRight(
+                      _san(l10n, position, right, bestUci ?? ''),
+                    ),
             ),
-            board: LayoutBuilder(
-              builder: (context, box) => PositionBoard(
-                fen: fen,
-                size: box.maxWidth,
-                orientation: problem.side,
-                coordinates: true,
-                radius: AppShape.none,
-                shapes: {
-                  if (answer.slower && played is NormalMove)
-                    Arrow(
-                      color: colors.error.withValues(alpha: 0.85),
-                      orig: played.from,
-                      dest: played.to,
-                    ),
-                  if (right is NormalMove)
-                    Arrow(
-                      color: ChangeColors.of(
-                        context,
-                        up: true,
-                      ).withValues(alpha: 0.85),
-                      orig: right.from,
-                      dest: right.to,
-                    ),
-                },
-              ),
+            board: _MistakeBoard(
+              fen: fen,
+              orientation: problem.side,
+              played: answer.slower ? played : null,
+              right: right,
             ),
             bottom: PlayersRow(
               detailed: true,
@@ -178,20 +123,12 @@ class RaceReviewView extends StatelessWidget {
             top: false,
             // H-ANI-25: ao abrir a revisão, o botão desliza por último; os
             // erros seguintes trocam com ele parado (a mesma Corrida).
-            child: EntradaDeResultado(
-              id:
+            child: _NextButton(
+              entryId:
                   'revisao-'
                   '${state.outcome?.result.run.startedAt.microsecondsSinceEpoch}',
-              botoes: ActionsBar(
-                children: [
-                  GameActionButton(
-                    buttonKey: RaceKeys.reviewNext,
-                    icon: last ? Icons.check : Icons.arrow_forward,
-                    label: last ? l10n.raceReviewDone : l10n.raceReviewNext,
-                    onPressed: cubit.nextMistake,
-                  ),
-                ],
-              ),
+              last: last,
+              onNext: cubit.nextMistake,
             ),
           ),
         ),
@@ -208,5 +145,133 @@ class RaceReviewView extends StatelessWidget {
   ) {
     final san = move == null ? null : GameRules.play(position, move)?.san;
     return san == null ? fallback : localizedSan(l10n, san);
+  }
+}
+
+/// As duas linhas de cima do tabuleiro: o lance jogado e o lance certo.
+class _ReviewHeader extends StatelessWidget {
+  const _ReviewHeader({required this.playedText, required this.rightText});
+
+  final String playedText;
+  final String rightText;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: AppSpacing.sm,
+            children: [
+              Icon(
+                Icons.close,
+                size: AppIconSize.standard,
+                color: colors.error,
+              ),
+              Flexible(
+                child: Text(
+                  playedText,
+                  key: RaceKeys.reviewPlayed,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: colors.error,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            rightText,
+            key: RaceKeys.reviewRight,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A posição do erro, com a seta no lance certo (e no jogado, se perdeu
+/// tempo).
+class _MistakeBoard extends StatelessWidget {
+  const _MistakeBoard({
+    required this.fen,
+    required this.orientation,
+    required this.played,
+    required this.right,
+  });
+
+  final String fen;
+  final Side orientation;
+
+  /// O lance jogado, só quando ele ganha seta (o certo era mais rápido).
+  final Move? played;
+  final Move? right;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return LayoutBuilder(
+      builder: (context, box) => PositionBoard(
+        fen: fen,
+        size: box.maxWidth,
+        orientation: orientation,
+        coordinates: true,
+        radius: AppShape.none,
+        shapes: {
+          if (played case final NormalMove played)
+            Arrow(
+              color: colors.error.withValues(alpha: 0.85),
+              orig: played.from,
+              dest: played.to,
+            ),
+          if (right case final NormalMove right)
+            Arrow(
+              color: ChangeColors.of(context, up: true).withValues(alpha: 0.85),
+              orig: right.from,
+              dest: right.to,
+            ),
+        },
+      ),
+    );
+  }
+}
+
+/// O botão de seguir, que desliza por último na abertura da revisão.
+class _NextButton extends StatelessWidget {
+  const _NextButton({
+    required this.entryId,
+    required this.last,
+    required this.onNext,
+  });
+
+  final String entryId;
+  final bool last;
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return EntradaDeResultado(
+      id: entryId,
+      botoes: ActionsBar(
+        children: [
+          GameActionButton(
+            buttonKey: RaceKeys.reviewNext,
+            icon: last ? Icons.check : Icons.arrow_forward,
+            label: last ? l10n.raceReviewDone : l10n.raceReviewNext,
+            onPressed: onNext,
+          ),
+        ],
+      ),
+    );
   }
 }

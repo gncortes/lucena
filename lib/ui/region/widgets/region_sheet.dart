@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/alerts/region_prompt_repository.dart';
+import '../../../config/view_models/region.dart';
 import '../../../domain/models/brazil_states.dart';
 import '../../alerts/view_models/alerts_cubit.dart';
 import '../../core/keys/region_keys.dart';
@@ -17,7 +17,7 @@ import '../../profile/view_models/profile_cubit.dart';
 /// Mostra a folha uma vez só, e só depois da primeira tentativa de um final em
 /// destaque (nunca antes de jogar).
 Future<void> askRegionOnce(BuildContext context) async {
-  if (!await context.read<RegionPromptRepository>().pending()) return;
+  if (!await regionPromptPending(context)) return;
   if (!context.mounted) return;
   await showRegionSheet(context);
 }
@@ -29,7 +29,7 @@ Future<void> askRegionOnce(BuildContext context) async {
 Future<void> showRegionSheet(BuildContext context) {
   final profile = context.read<ProfileCubit>();
   final alerts = context.read<AlertsCubit>();
-  final prompt = context.read<RegionPromptRepository>();
+  final promptDone = regionPromptDoneAction(context);
   return showLucenaSheet<void>(
     context,
     sheetKey: RegionKeys.sheet,
@@ -44,14 +44,14 @@ Future<void> showRegionSheet(BuildContext context) {
           city: profile.state?.city,
           onSave: (state, city) async {
             Navigator.of(sheet).pop();
-            await prompt.done();
+            await promptDone();
             await profile.setRegion(state: state, city: city);
             await alerts.regionChanged();
           },
           onNotNow: () {
             Navigator.of(sheet).pop();
             profile.regionSkipped();
-            prompt.done();
+            promptDone();
           },
         ),
       ),
@@ -140,22 +140,9 @@ class _RegionSheetState extends State<_RegionSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer,
-                      borderRadius: BorderRadius.circular(AppShape.large),
-                    ),
-                    child: SizedBox.square(
-                      dimension: 56,
-                      child: Icon(
-                        Icons.location_on,
-                        size: AppIconSize.large,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
+                _RegionIcon(
+                  color: colors.primary,
+                  background: colors.primaryContainer,
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
@@ -248,6 +235,31 @@ class _RegionSheetState extends State<_RegionSheet> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// O ícone de local no alto da folha.
+class _RegionIcon extends StatelessWidget {
+  const _RegionIcon({required this.color, required this.background});
+
+  final Color color;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(AppShape.large),
+        ),
+        child: SizedBox.square(
+          dimension: 56,
+          child: Icon(Icons.location_on, size: AppIconSize.large, color: color),
+        ),
       ),
     );
   }

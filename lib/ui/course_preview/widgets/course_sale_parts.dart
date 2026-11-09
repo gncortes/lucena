@@ -222,7 +222,7 @@ class SaleSteps extends StatelessWidget {
 /// Um número da venda que conta até o valor (H-ANI-18). O texto vem do
 /// modelo ("105", "850+"): os algarismos contam e o que sobra fica como sufixo.
 Widget saleCount(String value, {TextStyle? style}) {
-  final match = RegExp(r'^(\d[\d.]*)(\D*)$').firstMatch(value.trim());
+  final match = _numberWithSuffix.firstMatch(value.trim());
   final number = int.tryParse(match?.group(1)?.replaceAll('.', '') ?? '');
   if (match == null || number == null) {
     return Text(value, textAlign: TextAlign.center, style: style);
@@ -343,7 +343,7 @@ class SalePartTile extends StatelessWidget {
         padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 8, 14),
         cabecalho: KeyedSubtree(
           key: CoursePreviewKeys.partHeader(part.number),
-          child: _header(context),
+          child: _PartHeader(part: part),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -354,25 +354,6 @@ class SalePartTile extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          context.l10n.coursePartLessons(part.number, part.lessons),
-          style: theme.textTheme.labelMedium?.copyWith(
-            fontSize: 13,
-            height: 18 / 13,
-            color: colors.primary,
-          ),
-        ),
-        Text(part.title, style: saleStrong(context, size: 17)),
-      ],
     );
   }
 }
@@ -821,7 +802,7 @@ class SaleSummary extends StatelessWidget {
 /// O maior valor em reais de um texto ("R$ 700 a R$ 1.080" → 1080).
 double? _largestReais(String text) {
   double? largest;
-  for (final match in RegExp(r'\d[\d.]*(,\d+)?').allMatches(text)) {
+  for (final match in _numberWithDecimals.allMatches(text)) {
     final value = double.tryParse(
       match.group(0)!.replaceAll('.', '').replaceAll(',', '.'),
     );
@@ -863,15 +844,6 @@ class SaleCostCompare extends StatelessWidget {
     )?.copyWith(fontWeight: FontWeight.w500);
     final noteStyle = saleBody(context)
         ?.copyWith(fontSize: 13, height: 18 / 13);
-    Widget row(CourseSaleCost cost) => Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      spacing: AppSpacing.sm,
-      children: [
-        Expanded(child: Text(cost.title, style: rowStyle)),
-        Text(cost.value, textAlign: TextAlign.end, style: rowStyle),
-      ],
-    );
     return DecoratedBox(
       key: CoursePreviewKeys.costCompare,
       decoration: BoxDecoration(
@@ -899,7 +871,7 @@ class SaleCostCompare extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: 2,
                   children: [
-                    row(cost),
+                    _CostRow(cost: cost, style: rowStyle),
                     if (cost.note case final note?)
                       Text(note, style: noteStyle),
                   ],
@@ -914,7 +886,7 @@ class SaleCostCompare extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: AppSpacing.xs,
                   children: [
-                    row(cost),
+                    _CostRow(cost: cost, style: rowStyle),
                     _Bar(
                       height: 10,
                       track: colors.primary.withValues(alpha: 0.1),
@@ -924,61 +896,97 @@ class SaleCostCompare extends StatelessWidget {
                   ],
                 ),
               ],
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: colors.primary,
-                borderRadius: BorderRadius.circular(AppShape.large),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: AppSpacing.sm,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      spacing: AppSpacing.sm,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            sale.ours.title,
-                            style: saleStrong(context)
-                                ?.copyWith(color: colors.onPrimary),
-                          ),
-                        ),
-                        Text(
-                          price,
-                          style: saleStrong(
-                            context,
-                            size: 18,
-                            line: 24,
-                          )?.copyWith(color: colors.onPrimary),
-                        ),
-                      ],
-                    ),
-                    _Bar(
-                      height: 14,
-                      track: colors.onPrimary.withValues(alpha: 0.22),
-                      fill: AppColors.goalWinBg,
-                      ratio: ratio,
-                    ),
-                    if (sale.ours.summary case final summary?)
-                      Text(
-                        summary,
-                        style: saleBody(
-                          context,
-                          color: AppColors.onPrimarySoft,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
+            _CostOurs(sale: sale, price: price, ratio: ratio),
             Text(
               sale.costSource,
               style: saleBody(context)?.copyWith(fontSize: 12, height: 16 / 12),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Uma linha de custo do comparativo: título e valor na mesma linha de base.
+class _CostRow extends StatelessWidget {
+  const _CostRow({required this.cost, required this.style});
+
+  final CourseSaleCost cost;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.baseline,
+    textBaseline: TextBaseline.alphabetic,
+    spacing: AppSpacing.sm,
+    children: [
+      Expanded(child: Text(cost.title, style: style)),
+      Text(cost.value, textAlign: TextAlign.end, style: style),
+    ],
+  );
+}
+
+/// O quadro azul do comparativo: o preço do Pilares com a barra do tamanho
+/// dele.
+class _CostOurs extends StatelessWidget {
+  const _CostOurs({
+    required this.sale,
+    required this.price,
+    required this.ratio,
+  });
+
+  final CourseSale sale;
+  final String price;
+  final double ratio;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.primary,
+        borderRadius: BorderRadius.circular(AppShape.large),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: AppSpacing.sm,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              spacing: AppSpacing.sm,
+              children: [
+                Expanded(
+                  child: Text(
+                    sale.ours.title,
+                    style: saleStrong(context)
+                        ?.copyWith(color: colors.onPrimary),
+                  ),
+                ),
+                Text(
+                  price,
+                  style: saleStrong(
+                    context,
+                    size: 18,
+                    line: 24,
+                  )?.copyWith(color: colors.onPrimary),
+                ),
+              ],
+            ),
+            _Bar(
+              height: 14,
+              track: colors.onPrimary.withValues(alpha: 0.22),
+              fill: AppColors.goalWinBg,
+              ratio: ratio,
+            ),
+            if (sale.ours.summary case final summary?)
+              Text(
+                summary,
+                style: saleBody(context, color: AppColors.onPrimarySoft),
+              ),
           ],
         ),
       ),
@@ -1008,4 +1016,34 @@ class _Bar extends StatelessWidget {
     corDoTrilho: track,
     altura: height,
   );
+}
+
+final _numberWithSuffix = RegExp(r'^(\d[\d.]*)(\D*)$');
+
+final _numberWithDecimals = RegExp(r'\d[\d.]*(,\d+)?');
+
+class _PartHeader extends StatelessWidget {
+  const _PartHeader({required this.part});
+
+  final CourseSalePart part;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.coursePartLessons(part.number, part.lessons),
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontSize: 13,
+            height: 18 / 13,
+            color: colors.primary,
+          ),
+        ),
+        Text(part.title, style: saleStrong(context, size: 17)),
+      ],
+    );
+  }
 }

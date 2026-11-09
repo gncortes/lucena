@@ -245,7 +245,7 @@ void main() {
 
     test('intervalo é de 7 dias exatos e persiste entre instâncias', () async {
       await dismissThree(cubit());
-      now.advance(const Duration(days: 7) - Duration(microseconds: 1));
+      now.advance(const Duration(days: 7) - const Duration(microseconds: 1));
       final early = cubit();
       await dismissThree(early, at: now.value);
       expect(early.state.speechHintVersion, 0);

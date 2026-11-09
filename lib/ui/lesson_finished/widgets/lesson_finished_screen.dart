@@ -113,7 +113,6 @@ class LessonFinishedScreen extends StatelessWidget {
             context.canPop() ? context.pop() : context.go(Routes.home),
       );
     }
-    final colors = Theme.of(context).colorScheme;
     return BlocBuilder<LessonFinishedCubit, LessonFinishedState>(
       builder: (context, state) => Scaffold(
         key: LessonFinishedKeys.screen,
@@ -148,19 +147,7 @@ class LessonFinishedScreen extends StatelessWidget {
                         // a mesma aula concluída de novo na sessão abre pronta.
                         ? EntradaDeResultado(
                             id: 'aula-${state.lessonId}',
-                            estrela: Container(
-                              width: 104,
-                              height: 104,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: colors.primaryContainer,
-                              ),
-                              child: Icon(
-                                Icons.check_circle,
-                                size: _iconSize,
-                                color: colors.onPrimaryContainer,
-                              ),
-                            ),
+                            estrela: const _FinishedBadge(),
                             titulo: Text(
                               l10n.lessonFinishedTitle(state.title),
                               textAlign: TextAlign.center,
@@ -184,41 +171,11 @@ class LessonFinishedScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            botoes: FooterButtonTheme(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                spacing: AppSpacing.md,
-                                children: [
-                                  if (state.nextId != null)
-                                    SizedBox(
-                                      height: kButtonHeight,
-                                      child: FilledButton.icon(
-                                        key: LessonFinishedKeys.next,
-                                        icon: const Icon(Icons.arrow_forward),
-                                        label: Text(
-                                          l10n.lessonNext(
-                                            state.nextTitle ?? '',
-                                          ),
-                                        ),
-                                        onPressed: () =>
-                                            _next(context, state.nextId!),
-                                      ),
-                                    ),
-                                  SizedBox(
-                                    height: kButtonHeight,
-                                    child: OutlinedButton(
-                                      key: LessonFinishedKeys.back,
-                                      onPressed: () =>
-                                          context.go(_backRoute(context)),
-                                      child: Text(
-                                        _school
-                                            ? l10n.surveyBackToSchool
-                                            : l10n.surveyBackToLessons,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            botoes: _FinishedButtons(
+                              state: state,
+                              school: _school,
+                              onNext: (id) => _next(context, id),
+                              onBack: () => context.go(_backRoute(context)),
                             ),
                             // O selo e o título juntos; o resto com o espaço
                             // do canvas entre os blocos.
@@ -240,6 +197,77 @@ class LessonFinishedScreen extends StatelessWidget {
                 ),
               ),
         ),
+      ),
+    );
+  }
+}
+
+/// O selo de aula concluída.
+class _FinishedBadge extends StatelessWidget {
+  const _FinishedBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      width: 104,
+      height: 104,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: colors.primaryContainer,
+      ),
+      child: Icon(
+        Icons.check_circle,
+        size: LessonFinishedScreen._iconSize,
+        color: colors.onPrimaryContainer,
+      ),
+    );
+  }
+}
+
+/// Os botões por último: a próxima aula e a volta.
+class _FinishedButtons extends StatelessWidget {
+  const _FinishedButtons({
+    required this.state,
+    required this.school,
+    required this.onNext,
+    required this.onBack,
+  });
+
+  final LessonFinishedState state;
+  final bool school;
+  final ValueChanged<String> onNext;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return FooterButtonTheme(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.md,
+        children: [
+          if (state.nextId != null)
+            SizedBox(
+              height: kButtonHeight,
+              child: FilledButton.icon(
+                key: LessonFinishedKeys.next,
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(l10n.lessonNext(state.nextTitle ?? '')),
+                onPressed: () => onNext(state.nextId!),
+              ),
+            ),
+          SizedBox(
+            height: kButtonHeight,
+            child: OutlinedButton(
+              key: LessonFinishedKeys.back,
+              onPressed: () => onBack(),
+              child: Text(
+                school ? l10n.surveyBackToSchool : l10n.surveyBackToLessons,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

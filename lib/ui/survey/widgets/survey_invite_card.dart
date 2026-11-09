@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/survey/survey_repository.dart';
+import '../../../config/view_models/survey.dart';
 import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/survey_keys.dart';
@@ -43,9 +43,7 @@ class SurveyInviteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) =>
-        SurveyInviteCubit(kind: kind, surveys: context.read<SurveyRepository>())
-          ..load(),
+    create: (context) => createSurveyInviteCubit(context, kind: kind)..load(),
     child: _InviteView(kind: kind, source: source),
   );
 }

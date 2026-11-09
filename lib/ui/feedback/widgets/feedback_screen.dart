@@ -89,11 +89,6 @@ class FeedbackScreen extends StatelessWidget {
         },
         builder: (context, state) {
           final l10n = context.l10n;
-          final theme = Theme.of(context);
-          final gray = theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          );
-          final type = state.type;
           return Scaffold(
             key: FeedbackKeys.screen,
             appBar: LucenaAppBar(
@@ -105,51 +100,7 @@ class FeedbackScreen extends StatelessWidget {
               ),
               title: Text(l10n.feedbackTitle),
             ),
-            body: ListView(
-              padding: const EdgeInsets.all(AppSpacing.screen),
-              children: [
-                Text(l10n.feedbackIntro, style: gray),
-                const SizedBox(height: AppSpacing.betweenCards),
-                QuestionCard(
-                  title: l10n.feedbackKindQuestion,
-                  children: [
-                    SurveyChips(
-                      ids: [for (final kind in FeedbackType.values) kind.code],
-                      selected: {?type?.code},
-                      label: (code) => switch (FeedbackType.byCode(code)) {
-                        FeedbackType.problem => l10n.feedbackKindProblem,
-                        FeedbackType.idea => l10n.feedbackKindIdea,
-                        _ => l10n.feedbackKindPraise,
-                      },
-                      chipKey: (code) =>
-                          FeedbackKeys.kindChip(FeedbackType.byCode(code)!),
-                      onToggle: (code) =>
-                          cubit.pickType(FeedbackType.byCode(code)!),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.betweenCards),
-                QuestionCard(
-                  title: l10n.feedbackTextTitle,
-                  hint: l10n.feedbackTextHelp,
-                  children: [
-                    SurveyTextBox(
-                      fieldKey: FeedbackKeys.text,
-                      hint: l10n.feedbackTextHint,
-                      initial: state.text,
-                      maxLength: FeedbackEntry.maxText,
-                      counterKey: FeedbackKeys.counter,
-                      // 120 de altura no canvas.
-                      minLines: 5,
-                      maxLines: 8,
-                      onChanged: cubit.setText,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.betweenCards),
-                Text(l10n.feedbackAttached, style: gray),
-              ],
-            ),
+            body: _FeedbackBody(state: state),
             bottomNavigationBar: ActionsFooter(
               children: [
                 SizedBox(
@@ -167,6 +118,68 @@ class FeedbackScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+/// O formulário: a introdução, o tipo, o texto e o aviso do anexo.
+class _FeedbackBody extends StatelessWidget {
+  const _FeedbackBody({required this.state});
+
+  final FeedbackState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<FeedbackCubit>();
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final gray = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final type = state.type;
+    return ListView(
+      padding: const EdgeInsets.all(AppSpacing.screen),
+      children: [
+        Text(l10n.feedbackIntro, style: gray),
+        const SizedBox(height: AppSpacing.betweenCards),
+        QuestionCard(
+          title: l10n.feedbackKindQuestion,
+          children: [
+            SurveyChips(
+              ids: [for (final kind in FeedbackType.values) kind.code],
+              selected: {?type?.code},
+              label: (code) => switch (FeedbackType.byCode(code)) {
+                FeedbackType.problem => l10n.feedbackKindProblem,
+                FeedbackType.idea => l10n.feedbackKindIdea,
+                _ => l10n.feedbackKindPraise,
+              },
+              chipKey: (code) =>
+                  FeedbackKeys.kindChip(FeedbackType.byCode(code)!),
+              onToggle: (code) => cubit.pickType(FeedbackType.byCode(code)!),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.betweenCards),
+        QuestionCard(
+          title: l10n.feedbackTextTitle,
+          hint: l10n.feedbackTextHelp,
+          children: [
+            SurveyTextBox(
+              fieldKey: FeedbackKeys.text,
+              hint: l10n.feedbackTextHint,
+              initial: state.text,
+              maxLength: FeedbackEntry.maxText,
+              counterKey: FeedbackKeys.counter,
+              // 120 de altura no canvas.
+              minLines: 5,
+              maxLines: 8,
+              onChanged: cubit.setText,
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.betweenCards),
+        Text(l10n.feedbackAttached, style: gray),
+      ],
     );
   }
 }

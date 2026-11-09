@@ -68,7 +68,6 @@ class LoadErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.l10n;
-    final theme = Theme.of(context);
     final (title, defaultMessage, icon) = switch (kind) {
       LoadErrorKind.generic => (
         t.loadErrorGenericTitle,
@@ -121,49 +120,7 @@ class LoadErrorScreen extends StatelessWidget {
       key: LoadErrorKeys.screen,
       body: SafeArea(
         bottom: false,
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-            child: EntradaDeEstado(
-              espaco: 24,
-              icone: Icon(
-                icon,
-                size: 64,
-                fill: 0,
-                weight: 300,
-                color: theme.colorScheme.primary,
-              ),
-              texto: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontSize: 22,
-                      height: 28 / 22,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                  if (message != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontSize: 16,
-                        height: 24 / 16,
-                        color: theme.colorScheme.onSurfaceVariant,
-                        letterSpacing: 0,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
+        child: _LoadErrorContent(icon: icon, title: title, message: message),
       ),
       bottomNavigationBar: !showAction
           ? null
@@ -191,6 +148,67 @@ class LoadErrorScreen extends StatelessWidget {
                   ),
               ],
             ),
+    );
+  }
+}
+
+/// O ícone, o título e a mensagem, centralizados na tela.
+class _LoadErrorContent extends StatelessWidget {
+  const _LoadErrorContent({
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String title;
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        child: EntradaDeEstado(
+          espaco: 24,
+          icone: Icon(
+            icon,
+            size: 64,
+            fill: 0,
+            weight: 300,
+            color: theme.colorScheme.primary,
+          ),
+          texto: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontSize: 22,
+                  height: 28 / 22,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0,
+                ),
+              ),
+              if (message != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  message!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 16,
+                    height: 24 / 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

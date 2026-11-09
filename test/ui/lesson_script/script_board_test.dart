@@ -90,7 +90,7 @@ void main() {
           body: Align(
             alignment: Alignment.topLeft,
             child: ScriptBoard(
-              state: LessonScriptState(
+              state: const LessonScriptState(
                 ready: true,
                 fen: '8/8/8/8/3R4/8/8/8 w - - 0 1',
                 movable: Side.white,
@@ -228,9 +228,9 @@ void main() {
         showMarks: false,
       );
       expect(board(tester).shapes, {
-        Circle(color: ScriptShapes.green, orig: Square.e4),
-        Circle(color: ScriptShapes.green, orig: Square.d5),
-        Circle(color: ScriptShapes.red, orig: Square.a1),
+        const Circle(color: ScriptShapes.green, orig: Square.e4),
+        const Circle(color: ScriptShapes.green, orig: Square.d5),
+        const Circle(color: ScriptShapes.red, orig: Square.a1),
       });
     });
 

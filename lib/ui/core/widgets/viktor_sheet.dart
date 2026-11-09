@@ -268,30 +268,87 @@ class _ViktorSheetState extends State<ViktorSheet> {
     super.dispose();
   }
 
+  // A geometria da folha para a área dada: a fração recolhida muda com ela.
+  void _syncGeometry(Size area) {
+    final height = area.height;
+    _maximum = (1 - ViktorSheet.openGap / height).clamp(.02, 1.0);
+    _minimum = ((height - widget.top) / height).clamp(.02, _maximum);
+    final geometryChanged =
+        _area != null && (_area != area || _top != widget.top);
+    _area = area;
+    _top = widget.top;
+    if (geometryChanged && !_expanded) {
+      // A fração recolhida muda com a viewport. Preservar a fração antiga
+      // deixava a folha subir sobre a última fileira do tabuleiro.
+      _extent = _minimum;
+      _adjustingMinimum = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (_sheet.isAttached) _sheet.jumpTo(_minimum);
+        _adjustingMinimum = false;
+        _changed();
+      });
+    }
+    widget.onMinimumChanged?.call(_minimum);
+  }
+
+  // O degradê que apaga o texto cortado no fim da folha recolhida.
+  Shader _fade(Rect rect, TextDirection direction) {
+    final visible = math.max(
+      1.0,
+      rect.height -
+          (widget.collapsedInset ?? widget.padding.resolve(direction).bottom),
+    );
+    // Sem 12 dp livres abaixo do cabeçalho (360×640),
+    // corte seco no fim dele: nem retrato clareado,
+    // nem rótulo cortado.
+    final header = _headerBottom();
+    final tight = header > visible - 12;
+    // O corte cai entre linhas: no topo da linha que
+    // não cabe (ou no fim da que cabe), nunca no meio.
+    final plain = visible - 4;
+    final line = _expanded || tight ? null : _lineCut(plain);
+    final cut = line == null ? plain : math.max(header, line);
+    // Corte numa fronteira de linha: o esmaecido
+    // fica antes dela (na folga da linha de cima) e
+    // abaixo do corte nada da linha seguinte
+    // aparece, nem o topo das letras.
+    final atLine = line != null;
+    final start = math.min(
+      rect.height,
+      tight ? header : (atLine ? cut - 2 : cut),
+    );
+    final end = math.min(
+      rect.height,
+      tight ? header : (atLine ? cut : cut + 4),
+    );
+    return LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: _expanded
+          ? [AppColors.white, AppColors.white]
+          : [
+              AppColors.white,
+              AppColors.white,
+              Colors.transparent,
+              Colors.transparent,
+            ],
+      stops: _expanded
+          ? null
+          : [
+              0,
+              math.max(0, start / rect.height),
+              math.max(0, end / rect.height),
+              1,
+            ],
+    ).createShader(rect);
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final height = box.maxHeight;
-      _maximum = (1 - ViktorSheet.openGap / height).clamp(.02, 1.0);
-      _minimum = ((height - widget.top) / height).clamp(.02, _maximum);
-      final area = Size(box.maxWidth, height);
-      final geometryChanged =
-          _area != null && (_area != area || _top != widget.top);
-      _area = area;
-      _top = widget.top;
-      if (geometryChanged && !_expanded) {
-        // A fração recolhida muda com a viewport. Preservar a fração antiga
-        // deixava a folha subir sobre a última fileira do tabuleiro.
-        _extent = _minimum;
-        _adjustingMinimum = true;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          if (_sheet.isAttached) _sheet.jumpTo(_minimum);
-          _adjustingMinimum = false;
-          _changed();
-        });
-      }
-      widget.onMinimumChanged?.call(_minimum);
+      _syncGeometry(Size(box.maxWidth, height));
       final extent = (_extent ?? _minimum).clamp(_minimum, _maximum);
       if (widget.onTop case final onTop?) {
         final top = height * (1 - extent);
@@ -344,87 +401,12 @@ class _ViktorSheetState extends State<ViktorSheet> {
                           // visível, sem o `padding` de baixo) some em 4 dp
                           // entre duas linhas, para nenhuma linha (nem o
                           // rótulo da seção seguinte) aparecer cortada.
-                          shaderCallback: (rect) {
-                            final visible = math.max(
-                              1.0,
-                              rect.height -
-                                  (widget.collapsedInset ??
-                                      widget.padding
-                                          .resolve(Directionality.of(context))
-                                          .bottom),
-                            );
-                            // Sem 12 dp livres abaixo do cabeçalho (360×640),
-                            // corte seco no fim dele: nem retrato clareado,
-                            // nem rótulo cortado.
-                            final header = _headerBottom();
-                            final tight = header > visible - 12;
-                            // O corte cai entre linhas: no topo da linha que
-                            // não cabe (ou no fim da que cabe), nunca no meio.
-                            final plain = visible - 4;
-                            final line = _expanded || tight
-                                ? null
-                                : _lineCut(plain);
-                            final cut = line == null
-                                ? plain
-                                : math.max(header, line);
-                            // Corte numa fronteira de linha: o esmaecido
-                            // fica antes dela (na folga da linha de cima) e
-                            // abaixo do corte nada da linha seguinte
-                            // aparece, nem o topo das letras.
-                            final atLine = line != null;
-                            final start = math.min(
-                              rect.height,
-                              tight ? header : (atLine ? cut - 2 : cut),
-                            );
-                            final end = math.min(
-                              rect.height,
-                              tight ? header : (atLine ? cut : cut + 4),
-                            );
-                            return LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: _expanded
-                                  ? [AppColors.white, AppColors.white]
-                                  : [
-                                      AppColors.white,
-                                      AppColors.white,
-                                      Colors.transparent,
-                                      Colors.transparent,
-                                    ],
-                              stops: _expanded
-                                  ? null
-                                  : [
-                                      0,
-                                      math.max(0, start / rect.height),
-                                      math.max(0, end / rect.height),
-                                      1,
-                                    ],
-                            ).createShader(rect);
-                          },
-                          child: ListView(
-                            key: widget.scrollKey,
-                            controller: scroll,
-                            padding: widget.padding,
-                            children: [
-                              Center(
-                                child: Padding(
-                                  // Alça do canvas: 32×4, 8 dp em cima e
-                                  // nada embaixo (o cabeçalho tem a folga).
-                                  padding: const EdgeInsets.only(
-                                    top: AppSpacing.sm,
-                                  ),
-                                  child: const SheetHandle(
-                                    key: ViktorSheetKeys.handle,
-                                  ),
-                                ),
-                              ),
-                              for (final child in widget.children)
-                                _ViktorSheetPresentation(
-                                  expanded: _expanded,
-                                  sheet: this,
-                                  child: child,
-                                ),
-                            ],
+                          shaderCallback: (rect) =>
+                              _fade(rect, Directionality.of(context)),
+                          child: _SheetList(
+                            sheet: this,
+                            scroll: scroll,
+                            expanded: _expanded,
                           ),
                         ),
                       ),
@@ -434,21 +416,12 @@ class _ViktorSheetState extends State<ViktorSheet> {
               );
             },
           ),
-          PositionedDirectional(
-            end: SheetCloseButton.margin,
+          _SheetCloseOverlay(
             top: math.max(0, height * (1 - extent) - SheetCloseButton.lift),
-            child: IgnorePointer(
-              ignoring: !_expanded,
-              child: AnimatedOpacity(
-                duration: AppMotion.of(context).component,
-                opacity: _expanded ? 1 : 0,
-                child: SheetCloseButton(
-                  key: widget.closeKey,
-                  tooltip: widget.closeTooltip,
-                  onPressed: _close,
-                ),
-              ),
-            ),
+            expanded: _expanded,
+            closeKey: widget.closeKey,
+            tooltip: widget.closeTooltip,
+            onPressed: _close,
           ),
           if (widget.modalKey case final key?)
             PositionedDirectional(
@@ -462,6 +435,82 @@ class _ViktorSheetState extends State<ViktorSheet> {
       );
     },
   );
+}
+
+/// A lista da folha: a alça e os filhos, cada um com a apresentação da folha.
+class _SheetList extends StatelessWidget {
+  const _SheetList({
+    required this.sheet,
+    required this.scroll,
+    required this.expanded,
+  });
+
+  final _ViktorSheetState sheet;
+  final ScrollController scroll;
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    final widget = sheet.widget;
+    return ListView(
+      key: widget.scrollKey,
+      controller: scroll,
+      padding: widget.padding,
+      children: [
+        const Center(
+          child: Padding(
+            // Alça do canvas: 32×4, 8 dp em cima e
+            // nada embaixo (o cabeçalho tem a folga).
+            padding: EdgeInsets.only(top: AppSpacing.sm),
+            child: SheetHandle(key: ViktorSheetKeys.handle),
+          ),
+        ),
+        for (final child in widget.children)
+          _ViktorSheetPresentation(
+            expanded: expanded,
+            sheet: sheet,
+            child: child,
+          ),
+      ],
+    );
+  }
+}
+
+/// O botão de fechar, que só aparece (e só recebe toque) com a folha aberta.
+class _SheetCloseOverlay extends StatelessWidget {
+  const _SheetCloseOverlay({
+    required this.top,
+    required this.expanded,
+    required this.closeKey,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final double top;
+  final bool expanded;
+  final Key closeKey;
+  final String? tooltip;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return PositionedDirectional(
+      end: SheetCloseButton.margin,
+      top: top,
+      child: IgnorePointer(
+        ignoring: !expanded,
+        child: AnimatedOpacity(
+          duration: AppMotion.of(context).component,
+          opacity: expanded ? 1 : 0,
+          child: SheetCloseButton(
+            key: closeKey,
+            tooltip: tooltip,
+            onPressed: onPressed,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _ViktorSheetPresentation extends InheritedWidget {

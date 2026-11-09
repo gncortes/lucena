@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/training/course_download_repository.dart';
-import '../../../data/services/lesson_package_service.dart';
+import '../../../config/view_models/course_entry.dart';
+import '../../../domain/models/content_session.dart';
 
 /// Pins installed content until the current lesson/exercise/test route closes.
 class CourseContentSession extends StatefulWidget {
@@ -15,15 +14,11 @@ class CourseContentSession extends StatefulWidget {
 }
 
 class _SessionState extends State<CourseContentSession> {
-  LessonPackageLease? _lease;
+  ContentSession? _lease;
   @override
   void initState() {
     super.initState();
-    try {
-      _lease = context.read<CourseDownloadRepository>().beginSession();
-    } on ProviderNotFoundException {
-      /* Compositions without remote content. */
-    }
+    _lease = beginCourseContentSession(context);
   }
 
   @override

@@ -11,6 +11,8 @@ import '../../../routing/routes.dart';
 import '../../core/keys/level_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
@@ -61,6 +63,58 @@ class PreferTestButton extends StatelessWidget {
     onPressed: () => takeLevelTest(context, finish: true),
     child: Text(context.l10n.levelPreferTest),
   );
+}
+
+/// O cartão do usuário achado no site: "encontrado/conectado como …", os
+/// três ratings e o [text] de onde a Jornada começa.
+class PlatformFoundCard extends StatelessWidget {
+  const PlatformFoundCard({
+    required this.title,
+    required this.rating,
+    required this.text,
+    super.key,
+  });
+
+  final String title;
+  final PlatformRating rating;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final success = AppColors.of(context).success;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  size: AppIconSize.button,
+                  color: success,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: theme.textTheme.labelLarge?.copyWith(color: success),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            PlatformRatingsGrid(rating: rating),
+            const SizedBox(height: AppSpacing.md),
+            Text(text, style: theme.textTheme.bodyLarge),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// Os três ratings de um site: bullet, blitz e rápidas, com "?" no

@@ -22,7 +22,7 @@ String voiceLanguage(BuildContext context) =>
 /// O nome de uma voz na lista: o do sistema, quando é um nome de gente
 /// ("Luciana"); "Voz 2", quando é um código ("pt-br-x-afs-local").
 String voiceLabel(BuildContext context, TtsVoice voice, int index) {
-  final technical = RegExp(r'[-_.#]|\d').hasMatch(voice.id);
+  final technical = _technicalIdMark.hasMatch(voice.id);
   return technical ? context.l10n.voiceNumber(index + 1) : voice.id;
 }
 
@@ -356,3 +356,5 @@ class VoiceTonePicker extends StatelessWidget {
     );
   }
 }
+
+final _technicalIdMark = RegExp(r'[-_.#]|\d');

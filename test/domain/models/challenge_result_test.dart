@@ -62,7 +62,7 @@ void main() {
 
     test('o link do resultado é o do desafio aberto: mesmo código, trava e '
         'cego', () {
-      final origin = ChallengeLink(
+      final origin = const ChallengeLink(
         fen: '7k/8/6K1/8/8/8/8/5Q2 w - - 0 1',
         userSide: Side.white,
         opponent: OpponentKind.maia,
@@ -84,7 +84,7 @@ void main() {
     });
 
     test('compara a vitória de quem mandou com a de quem jogou', () {
-      final origin = ChallengeLink(
+      final origin = const ChallengeLink(
         fen: '7k/8/6K1/8/8/8/8/5Q2 w - - 0 1',
         userSide: Side.white,
         senderMoves: 7,

@@ -1,0 +1,13 @@
+{
+  "lib/ui/course_guide/widgets/course_guide_screen.dart": 1,
+  "lib/ui/course_guide/widgets/training_progress_tab.dart": 1,
+  "lib/ui/course_preview/widgets/course_details_screen.dart": 1,
+  "lib/ui/course_preview/widgets/course_sale_parts.dart": 1,
+  "lib/ui/home/widgets/player_card.dart": 1,
+  "lib/ui/pilares_sale/widgets/pilares_course_card.dart": 1,
+  "lib/ui/pilares_sale/widgets/pilares_demo_tabs.dart": 1,
+  "lib/ui/pilares_sale/widgets/pilares_plan_sale_screen.dart": 1,
+  "lib/ui/pilares_sale/widgets/pilares_restore_screen.dart": 1,
+  "lib/ui/pilares_sale/widgets/pilares_sale_parts.dart": 1,
+  "lib/ui/survey/widgets/survey_parts.dart": 1
+}

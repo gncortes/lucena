@@ -2,6 +2,9 @@ import 'package:dartchess/dartchess.dart';
 
 import '../models/game_end.dart';
 
+/// Uma posição alcançada por uma sequência de lances, com o último jogado.
+typedef Replay = ({Position position, Move? last, String? san});
+
 /// Regras do xadrez. Tudo vem do `dartchess`: aqui nada é reimplementado.
 abstract final class GameRules {
   /// A posição inicial de uma partida.
@@ -50,6 +53,23 @@ abstract final class GameRules {
       current = played.position;
     }
     return out;
+  }
+
+  /// A posição depois dos lances [ucis] (no máximo [max]), parando no primeiro
+  /// ilegal, com o último lance jogado e o nome dele.
+  static Replay replay(Position start, List<String> ucis, {int max = 1 << 30}) {
+    var position = start;
+    Move? last;
+    String? san;
+    for (final uci in ucis.take(max)) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : play(position, move);
+      if (played == null) break;
+      position = played.position;
+      last = move;
+      san = played.san;
+    }
+    return (position: position, last: last, san: san);
   }
 
   static Map<Square, Set<Square>> legalMoves(Position position) =>

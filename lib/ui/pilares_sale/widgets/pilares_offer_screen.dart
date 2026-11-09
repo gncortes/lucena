@@ -103,107 +103,14 @@ class PilaresOfferScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               // Com aviso (PropV2CompraErro, PropV2CompraSemInternet), ele toma
               // o lugar da introdução: erro em vermelho, sem rede em amarelo.
-              if (state.banner case final banner?)
-                AvisoQueAbre(
-                  key: banner == OfferBanner.error
-                      ? PurchaseKeys.errorBanner
-                      : PurchaseKeys.offlineBanner,
-                  decoracao: BoxDecoration(
-                    color: banner == OfferBanner.error
-                        ? AppColors.errorSurface
-                        : AppColors.waitingSurface,
-                    borderRadius: BorderRadius.circular(AppShape.large),
-                  ),
-                  icone: Icon(
-                    banner == OfferBanner.error
-                        ? CanvasSymbols.error
-                        : CanvasSymbols.cloudOff,
-                    size: AppIconSize.standard,
-                    color: banner == OfferBanner.error
-                        ? colors.error
-                        : AppColors.waitingOnSurface,
-                  ),
-                  child: Text(
-                    banner == OfferBanner.error
-                        ? l10n.venErrorBanner
-                        : l10n.venOfflineBanner,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colors.onSurface,
-                    ),
-                  ),
-                )
-              else
-                Text(
-                  l10n.venOfferIntro,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
+              _OfferNotice(banner: state.banner),
               const SizedBox(height: AppSpacing.xl),
-              PilaresBenefitSection(
-                label: l10n.venOfferTake,
-                items: [
-                  (
-                    Icons.school,
-                    l10n.venBenefitChapters,
-                    l10n.venBenefitChaptersText,
-                  ),
-                  (
-                    Icons.extension,
-                    l10n.venBenefitExercises,
-                    l10n.venBenefitExercisesText,
-                  ),
-                  (Icons.quiz, l10n.venBenefitLevel, l10n.venBenefitLevelText),
-                  (
-                    Icons.edit_calendar,
-                    l10n.venBenefitTournament,
-                    l10n.venBenefitTournamentText,
-                  ),
-                  (
-                    Icons.task_alt,
-                    l10n.venBenefitGoals,
-                    l10n.venBenefitGoalsText,
-                  ),
-                  (
-                    Icons.insights,
-                    l10n.venBenefitProgress,
-                    l10n.venBenefitProgressText,
-                  ),
-                ],
-              ),
+              const _OfferBenefits(),
               const SizedBox(height: AppSpacing.xl),
               // O link guardado não vale mais (PropV2OfertaLinkSemValer): o
               // aviso acima das opções, uma vez, com o preço cheio.
               if (state.linkGone) ...[
-                Container(
-                  key: PurchaseKeys.linkGone,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.md,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(AppShape.large),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        CanvasSymbols.info,
-                        size: AppIconSize.standard,
-                        color: colors.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Text(
-                          l10n.venLinkGone,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurface,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                const _LinkGoneNotice(),
                 const SizedBox(height: AppSpacing.sm),
               ],
               Text(
@@ -245,52 +152,15 @@ class PilaresOfferScreen extends StatelessWidget {
               ),
               if (monthly) ...[
                 const SizedBox(height: AppSpacing.md),
-                PilaresInfoCard(
-                  key: PurchaseKeys.subscriptionInfo,
-                  title: l10n.venSubscriptionInfo,
-                  lines: [
-                    l10n.venSubscriptionRenew,
-                    l10n.venSubscriptionCancel,
-                    l10n.venSubscriptionEnd,
-                    l10n.venSubscriptionRefund,
-                  ],
-                ),
+                const _SubscriptionInfo(),
               ],
             ],
           ),
-          bottomNavigationBar: ActionsFooter(
-            stacked: true,
-            children: [
-              BusyButton(
-                buttonKey: PurchaseKeys.buy,
-                busy: locked,
-                icon: state.banner == null ? null : Icons.refresh,
-                label: locked
-                    ? l10n.venProcessing
-                    : state.banner != null
-                    ? l10n.loadErrorRetry
-                    : monthly
-                    ? l10n.venBuyMonthly(monthlyPrice)
-                    : l10n.venBuyLifetime(buyLifetimePrice),
-                onPressed: state.loadingPrices || state.pending
-                    ? null
-                    : () => _buy(context),
-              ),
-              TextButton.icon(
-                key: PurchaseKeys.restore,
-                onPressed: locked
-                    ? null
-                    : () => unawaited(
-                        context.push(
-                          context.read<PilaresOfferCubit>().needsAccount
-                              ? Routes.accountEnterFrom(D2Paths.pilaresRestore)
-                              : D2Paths.pilaresRestore,
-                        ),
-                      ),
-                icon: const Icon(Icons.history),
-                label: Text(l10n.venRestore),
-              ),
-            ],
+          bottomNavigationBar: _OfferFooter(
+            state: state,
+            monthlyPrice: monthlyPrice,
+            buyLifetimePrice: buyLifetimePrice,
+            onBuy: () => _buy(context),
           ),
         ),
       ),
@@ -326,33 +196,6 @@ class _PlanoDaOferta extends StatelessWidget {
   /// O desconto (PropV2OfertaPromocao, PropV2OfertaLink): o selo ao lado
   /// do "Melhor escolha", o prazo e o preço cheio riscado.
   final OfferDiscount? discount;
-
-  Widget _chip(
-    BuildContext context, {
-    required Key? key,
-    required String text,
-    required Color background,
-    required Color foreground,
-    FontWeight? weight,
-  }) => Container(
-    key: key,
-    height: 22,
-    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-    alignment: Alignment.center,
-    decoration: ShapeDecoration(
-      color: background,
-      shape: const StadiumBorder(),
-    ),
-    child: Text(
-      text,
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-        color: foreground,
-        fontSize: 12,
-        height: 1,
-        fontWeight: weight,
-      ),
-    ),
-  );
 
   String _deadline(BuildContext context, OfferDiscount discount) {
     final l10n = context.l10n;
@@ -390,17 +233,15 @@ class _PlanoDaOferta extends StatelessWidget {
                     runSpacing: AppSpacing.xs,
                     children: [
                       if (badge case final badge?)
-                        _chip(
-                          context,
-                          key: badgeKey,
+                        _OfferChip(
+                          chipKey: badgeKey,
                           text: badge,
                           background: colors.primaryContainer,
                           foreground: colors.primary,
                         ),
                       if (discount != null)
-                        _chip(
-                          context,
-                          key: PurchaseKeys.discountBadge,
+                        _OfferChip(
+                          chipKey: PurchaseKeys.discountBadge,
                           text: l10n.venDiscountPercent(discount.percent),
                           background: AppColors.successSurface,
                           foreground: AppColors.successOnSurface,
@@ -481,6 +322,239 @@ class _PlanoDaOferta extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _OfferChip extends StatelessWidget {
+  const _OfferChip({
+    required this.chipKey,
+    required this.text,
+    required this.background,
+    required this.foreground,
+    this.weight,
+  });
+
+  final Key? chipKey;
+  final String text;
+  final Color background;
+  final Color foreground;
+  final FontWeight? weight;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    key: chipKey,
+    height: 22,
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+    alignment: Alignment.center,
+    decoration: ShapeDecoration(
+      color: background,
+      shape: const StadiumBorder(),
+    ),
+    child: Text(
+      text,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: foreground,
+        fontSize: 12,
+        height: 1,
+        fontWeight: weight,
+      ),
+    ),
+  );
+}
+
+/// Com aviso (PropV2CompraErro, PropV2CompraSemInternet), ele toma o lugar da
+/// introdução: erro em vermelho, sem rede em amarelo.
+class _OfferNotice extends StatelessWidget {
+  const _OfferNotice({required this.banner});
+
+  final OfferBanner? banner;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final banner = this.banner;
+    return banner != null
+        ? AvisoQueAbre(
+            key: banner == OfferBanner.error
+                ? PurchaseKeys.errorBanner
+                : PurchaseKeys.offlineBanner,
+            decoracao: BoxDecoration(
+              color: banner == OfferBanner.error
+                  ? AppColors.errorSurface
+                  : AppColors.waitingSurface,
+              borderRadius: BorderRadius.circular(AppShape.large),
+            ),
+            icone: Icon(
+              banner == OfferBanner.error
+                  ? CanvasSymbols.error
+                  : CanvasSymbols.cloudOff,
+              size: AppIconSize.standard,
+              color: banner == OfferBanner.error
+                  ? colors.error
+                  : AppColors.waitingOnSurface,
+            ),
+            child: Text(
+              banner == OfferBanner.error
+                  ? l10n.venErrorBanner
+                  : l10n.venOfflineBanner,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurface,
+              ),
+            ),
+          )
+        : Text(
+            l10n.venOfferIntro,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          );
+  }
+}
+
+/// O que o Pilares traz: os seis benefícios.
+class _OfferBenefits extends StatelessWidget {
+  const _OfferBenefits();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return PilaresBenefitSection(
+      label: l10n.venOfferTake,
+      items: [
+        (Icons.school, l10n.venBenefitChapters, l10n.venBenefitChaptersText),
+        (
+          Icons.extension,
+          l10n.venBenefitExercises,
+          l10n.venBenefitExercisesText,
+        ),
+        (Icons.quiz, l10n.venBenefitLevel, l10n.venBenefitLevelText),
+        (
+          Icons.edit_calendar,
+          l10n.venBenefitTournament,
+          l10n.venBenefitTournamentText,
+        ),
+        (Icons.task_alt, l10n.venBenefitGoals, l10n.venBenefitGoalsText),
+        (Icons.insights, l10n.venBenefitProgress, l10n.venBenefitProgressText),
+      ],
+    );
+  }
+}
+
+/// O link guardado não vale mais (PropV2OfertaLinkSemValer): o aviso acima das
+/// opções, uma vez, com o preço cheio.
+class _LinkGoneNotice extends StatelessWidget {
+  const _LinkGoneNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Container(
+      key: PurchaseKeys.linkGone,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppShape.large),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            CanvasSymbols.info,
+            size: AppIconSize.standard,
+            color: colors.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              l10n.venLinkGone,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurface,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O botão que acompanha o plano marcado e o "Restaurar compra".
+class _OfferFooter extends StatelessWidget {
+  const _OfferFooter({
+    required this.state,
+    required this.monthlyPrice,
+    required this.buyLifetimePrice,
+    required this.onBuy,
+  });
+
+  final PilaresOfferState state;
+  final String monthlyPrice;
+  final String buyLifetimePrice;
+  final VoidCallback onBuy;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final locked = state.processing;
+    final monthly = state.plan == PilaresPlan.monthly;
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        BusyButton(
+          buttonKey: PurchaseKeys.buy,
+          busy: locked,
+          icon: state.banner == null ? null : Icons.refresh,
+          label: locked
+              ? l10n.venProcessing
+              : state.banner != null
+              ? l10n.loadErrorRetry
+              : monthly
+              ? l10n.venBuyMonthly(monthlyPrice)
+              : l10n.venBuyLifetime(buyLifetimePrice),
+          onPressed: state.loadingPrices || state.pending ? null : onBuy,
+        ),
+        TextButton.icon(
+          key: PurchaseKeys.restore,
+          onPressed: locked
+              ? null
+              : () => unawaited(
+                  context.push(
+                    context.read<PilaresOfferCubit>().needsAccount
+                        ? Routes.accountEnterFrom(D2Paths.pilaresRestore)
+                        : D2Paths.pilaresRestore,
+                  ),
+                ),
+          icon: const Icon(Icons.history),
+          label: Text(l10n.venRestore),
+        ),
+      ],
+    );
+  }
+}
+
+/// As regras da assinatura mensal, abaixo do plano marcado.
+class _SubscriptionInfo extends StatelessWidget {
+  const _SubscriptionInfo();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return PilaresInfoCard(
+      key: PurchaseKeys.subscriptionInfo,
+      title: l10n.venSubscriptionInfo,
+      lines: [
+        l10n.venSubscriptionRenew,
+        l10n.venSubscriptionCancel,
+        l10n.venSubscriptionEnd,
+        l10n.venSubscriptionRefund,
+      ],
     );
   }
 }

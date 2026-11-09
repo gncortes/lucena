@@ -121,6 +121,50 @@ class AnalysisLevelCard extends StatelessWidget {
       }
     }
 
+    return _LevelCardFrame(
+      background: background,
+      reviewing: state.reviewing,
+      icon: icon,
+      iconColor: iconColor,
+      title: title,
+      text: text,
+      oldAnalysis: review == null && !state.reviewing,
+      progress: progress,
+      action: action,
+    );
+  }
+}
+
+/// A moldura do cartão do nível: ícone, título, texto, progresso e botão.
+class _LevelCardFrame extends StatelessWidget {
+  const _LevelCardFrame({
+    required this.background,
+    required this.reviewing,
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.text,
+    required this.oldAnalysis,
+    required this.progress,
+    required this.action,
+  });
+
+  final Color background;
+  final bool reviewing;
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String text;
+  final bool oldAnalysis;
+  final Widget? progress;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final progress = this.progress;
+    final action = this.action;
     return DecoratedBox(
       key: GameDetailsKeys.levelCard,
       decoration: BoxDecoration(
@@ -130,7 +174,7 @@ class AnalysisLevelCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
-          key: state.reviewing ? GameDetailsKeys.reviewProgress : null,
+          key: reviewing ? GameDetailsKeys.reviewProgress : null,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
@@ -145,9 +189,7 @@ class AnalysisLevelCard extends StatelessWidget {
                       Text(title, style: theme.textTheme.titleSmall),
                       Text(
                         text,
-                        key: review == null && !state.reviewing
-                            ? GameDetailsKeys.oldAnalysis
-                            : null,
+                        key: oldAnalysis ? GameDetailsKeys.oldAnalysis : null,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),

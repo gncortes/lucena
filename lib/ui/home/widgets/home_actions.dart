@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/training/course_training_repository.dart'
-    as course_training;
+import '../../../config/view_models/course_training.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
@@ -97,15 +95,13 @@ Future<void> openTrainingCourse(
       await telemetry?.startGoal(training.state, card.goal!, origin: 'home');
     }
     if (!context.mounted) return;
-    await context.read<course_training.TrainingRepository>().update(
+    await saveCourseTab(
+      context,
       course,
-      (s) => s.copyWith(
-        tab:
-            card.destination == HomeCourseDestination.lesson ||
-                card.destination == HomeCourseDestination.lessonTab
-            ? CourseGuideTab.lesson
-            : CourseGuideTab.goals,
-      ),
+      card.destination == HomeCourseDestination.lesson ||
+              card.destination == HomeCourseDestination.lessonTab
+          ? CourseGuideTab.lesson
+          : CourseGuideTab.goals,
     );
     if (!context.mounted) return;
     unawaited(router.push('${Routes.training(course.name)}?origem=home'));

@@ -78,7 +78,7 @@ class GoalCubit extends Cubit<GoalState> {
     } on Object catch (error, stack) {
       debugPrint('goal load failed: $error');
       reportHandledError(error, stack);
-      if (!isClosed) emit(GoalState(failure: LoadFailure.generic));
+      if (!isClosed) emit(const GoalState(failure: LoadFailure.generic));
     }
   }
 
@@ -152,7 +152,7 @@ class GoalCubit extends Cubit<GoalState> {
     } on Object catch (error, stack) {
       debugPrint('goal finish failed: $error');
       reportHandledError(error, stack);
-      if (!isClosed) emit(GoalState(failure: LoadFailure.generic));
+      if (!isClosed) emit(const GoalState(failure: LoadFailure.generic));
     } finally {
       _finishing = false;
     }

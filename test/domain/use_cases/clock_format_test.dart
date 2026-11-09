@@ -43,4 +43,20 @@ void main() {
     );
     expect(ClockFormat.displayed(const Duration(seconds: -1)), Duration.zero);
   });
+
+  group('minutesSeconds', () {
+    test('minutos sem limite e segundos com dois dígitos', () {
+      expect(ClockFormat.minutesSeconds(0), '0:00');
+      expect(ClockFormat.minutesSeconds(5), '0:05');
+      expect(ClockFormat.minutesSeconds(59), '0:59');
+      expect(ClockFormat.minutesSeconds(60), '1:00');
+      expect(ClockFormat.minutesSeconds(75), '1:15');
+      expect(ClockFormat.minutesSeconds(3725), '62:05');
+    });
+
+    test('mantém o resultado de sempre para segundos negativos', () {
+      expect(ClockFormat.minutesSeconds(-5), '0:55');
+      expect(ClockFormat.minutesSeconds(-65), '-1:55');
+    });
+  });
 }

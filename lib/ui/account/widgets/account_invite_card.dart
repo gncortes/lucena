@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/legal/legal_consent_repository.dart';
-import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../config/view_models/account.dart';
 import '../../../routing/routes.dart';
-import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
@@ -50,14 +47,7 @@ class AccountInviteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) => AccountCubit(
-      context.read<AccountRepository>(),
-      sync: context.read<SyncScheduler>(),
-      analytics: context.analytics,
-      moment: moment,
-      campaigns: context.campaigns,
-      consent: _consent(context),
-    ),
+    create: (_) => createAccountCubit(context, moment: moment, consent: true),
     child: _Card(
       title: title,
       onClose: onClose,
@@ -66,14 +56,6 @@ class AccountInviteCard extends StatelessWidget {
       closeKey: closeKey,
     ),
   );
-}
-
-LegalConsentRepository _consent(BuildContext context) {
-  try {
-    return context.read<LegalConsentRepository>();
-  } on ProviderNotFoundException {
-    return const NoLegalConsentRepository();
-  }
 }
 
 class _Card extends StatelessWidget {

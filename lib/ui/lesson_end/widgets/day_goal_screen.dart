@@ -34,27 +34,6 @@ class DayGoalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
-    final rowStyle = theme.textTheme.bodyMedium?.copyWith(
-      fontSize: 14,
-      height: 20 / 14,
-      letterSpacing: 0,
-    );
-    Widget row(IconData icon, String text, {bool strong = false}) => Row(
-      children: [
-        Icon(icon, size: AppIconSize.button, color: strong ? primary : null),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            text,
-            style: rowStyle?.copyWith(
-              fontWeight: strong ? FontWeight.w700 : FontWeight.w500,
-            ),
-          ),
-        ),
-      ],
-    );
     return Scaffold(
       key: LessonEndKeys.dayGoal,
       appBar: LessonEndClose(
@@ -88,64 +67,7 @@ class DayGoalScreen extends StatelessWidget {
             style: endSubtitleStyle(context),
           ),
         ),
-        placar: Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: KeyedSubtree(
-            key: LessonEndKeys.dayGoalProgress,
-            child: LucenaCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  row(Icons.my_location, summary.currentChapter, strong: true),
-                  const SizedBox(height: 8),
-                  row(
-                    CanvasSymbols.radioButtonUnchecked,
-                    summary.testPending
-                        ? l.licaoMetaDiaLicoesTeste(
-                            summary.lessonsDone,
-                            summary.lessonsTotal,
-                          )
-                        : l.licaoMetaDiaLicoes(
-                            summary.lessonsDone,
-                            summary.lessonsTotal,
-                          ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      for (final (i, f) in summary.chapterProgress.indexed)
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
-                            // H-ANI-13: enche de 0 na entrada.
-                            child: BarraQueEnche(
-                              valor: f.clamp(0, 1).toDouble(),
-                              altura: 6,
-                              cor: f >= 1
-                                  ? AppColors.trainingDayCorrect
-                                  : primary,
-                              corDoTrilho: AppColors.cardOutline,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l.licaoMetaDiaCapitulos(
-                      summary.chaptersDone,
-                      summary.chapterProgress.length,
-                    ),
-                    style: rowStyle?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        placar: _DayGoalCard(summary: summary),
         botoes: ActionsFooter(
           stacked: true,
           children: [
@@ -166,6 +88,110 @@ class DayGoalScreen extends StatelessWidget {
         ),
         montar: montarFimComBotoes,
       ),
+    );
+  }
+}
+
+/// O cartão do plano: o capítulo, as lições e o avanço dos capítulos.
+class _DayGoalCard extends StatelessWidget {
+  const _DayGoalCard({required this.summary});
+
+  final DayGoalSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final primary = Theme.of(context).colorScheme.primary;
+    final rowStyle = _rowStyle(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: KeyedSubtree(
+        key: LessonEndKeys.dayGoalProgress,
+        child: LucenaCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _GoalRow(Icons.my_location, summary.currentChapter, strong: true),
+              const SizedBox(height: 8),
+              _GoalRow(
+                CanvasSymbols.radioButtonUnchecked,
+                summary.testPending
+                    ? l.licaoMetaDiaLicoesTeste(
+                        summary.lessonsDone,
+                        summary.lessonsTotal,
+                      )
+                    : l.licaoMetaDiaLicoes(
+                        summary.lessonsDone,
+                        summary.lessonsTotal,
+                      ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  for (final (i, f) in summary.chapterProgress.indexed)
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: i == 0 ? 0 : 4),
+                        // H-ANI-13: enche de 0 na entrada.
+                        child: BarraQueEnche(
+                          valor: f.clamp(0, 1).toDouble(),
+                          altura: 6,
+                          cor: f >= 1 ? AppColors.trainingDayCorrect : primary,
+                          corDoTrilho: AppColors.cardOutline,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l.licaoMetaDiaCapitulos(
+                  summary.chaptersDone,
+                  summary.chapterProgress.length,
+                ),
+                style: rowStyle?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// O estilo do texto das linhas do cartão.
+TextStyle? _rowStyle(BuildContext context) =>
+    Theme.of(context).textTheme.bodyMedium
+        ?.copyWith(fontSize: 14, height: 20 / 14, letterSpacing: 0);
+
+/// Uma linha do cartão: o ícone e o texto, em destaque quando [strong].
+class _GoalRow extends StatelessWidget {
+  const _GoalRow(this.icon, this.text, {this.strong = false});
+
+  final IconData icon;
+  final String text;
+  final bool strong;
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final rowStyle = _rowStyle(context);
+    return Row(
+      children: [
+        Icon(icon, size: AppIconSize.button, color: strong ? primary : null),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: rowStyle?.copyWith(
+              fontWeight: strong ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

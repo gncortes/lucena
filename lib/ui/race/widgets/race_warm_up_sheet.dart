@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../data/repositories/race/race_repository.dart';
+import '../../../config/view_models/race.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/race.dart';
-import '../../../domain/use_cases/race_rules.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -17,6 +16,7 @@ import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../../core/theme/app_button.dart';
+import '../view_models/warm_up_offer_cubit.dart';
 
 /// O que o jogador escolheu na folha "Aquecer antes?".
 enum RaceOfferChoice { warm, skip }
@@ -34,25 +34,35 @@ Future<RaceOfferChoice> offerRaceWarmUp(
   String? category,
   Character? character,
 }) async {
-  final repository = context.read<RaceRepository>();
-  if (!await repository.offersWarmUp()) return RaceOfferChoice.skip;
-  final problems = RaceRules.warmUp(
-    await repository.problems(),
-    subcategory: subcategory,
-    category: category,
-  );
-  if (problems.isEmpty || !context.mounted) return RaceOfferChoice.skip;
+  final offer = createWarmUpOfferCubit(context);
+  final List<RaceProblem> problems;
+  try {
+    problems = await offer.problemsToOffer(
+      subcategory: subcategory,
+      category: category,
+    );
+  } catch (_) {
+    await offer.close();
+    rethrow;
+  }
+  if (problems.isEmpty || !context.mounted) {
+    await offer.close();
+    return RaceOfferChoice.skip;
+  }
   final choice = await showLucenaSheet<RaceOfferChoice>(
     context,
     sheetKey: RaceKeys.offerSheet,
-    builder: (context) => _OfferSheet(
-      opponent: opponent,
-      endgame: endgame,
-      character: character,
-      problems: problems,
-      repository: repository,
+    builder: (context) => BlocProvider.value(
+      value: offer,
+      child: _OfferSheet(
+        opponent: opponent,
+        endgame: endgame,
+        character: character,
+        problems: problems,
+      ),
     ),
   );
+  await offer.close();
   // Fechar a folha sem escolher é pular; as outras saídas o `_choose` registra.
   if (choice == null && context.mounted) {
     unawaited(
@@ -68,14 +78,12 @@ class _OfferSheet extends StatefulWidget {
     required this.endgame,
     required this.character,
     required this.problems,
-    required this.repository,
   });
 
   final String opponent;
   final String endgame;
   final Character? character;
   final List<RaceProblem> problems;
-  final RaceRepository repository;
 
   @override
   State<_OfferSheet> createState() => _OfferSheetState();
@@ -87,7 +95,9 @@ class _OfferSheetState extends State<_OfferSheet> {
   bool _never = false;
 
   Future<void> _choose(RaceOfferChoice choice) async {
-    if (_never) await widget.repository.setOffersWarmUp(value: false);
+    if (_never) {
+      await context.read<WarmUpOfferCubit>().setOffers(value: false);
+    }
     if (!mounted) return;
     unawaited(
       context.analytics.log(

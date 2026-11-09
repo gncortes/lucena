@@ -343,7 +343,7 @@ class SpeechFit {
     // Nunca no meio de um nome marcado (`{{nome|chave}}`).
     final marks = SpeechText.wikiPattern.allMatches(text).toList();
     final ends = <int>[
-      for (final m in RegExp(r'\s+').allMatches(text))
+      for (final m in _whitespace.allMatches(text))
         if (!marks.any((w) => m.start > w.start && m.start < w.end)) m.start,
     ];
     String piece(int end) => text.substring(0, end).replaceFirst(_trailing, '');
@@ -753,7 +753,7 @@ class SpeechText extends StatefulWidget {
   /// botão (Gabriel, 16/10/2026).
   static String inline(String label, String before) {
     final prev = before.trimRight();
-    if (prev.isEmpty || RegExp(r'[.!?…:]$').hasMatch(prev)) return label;
+    if (prev.isEmpty || _endsWithPunctuation.hasMatch(prev)) return label;
     return label.substring(0, 1).toLowerCase() + label.substring(1);
   }
 
@@ -823,14 +823,6 @@ class _SpeechTextState extends State<SpeechText> {
       return WikiLinks.empty;
     }
   }
-
-  /// Há algo a desenhar além do texto simples?
-  bool _hasMarkup(String text) =>
-      SpeechText.wikiPattern.hasMatch(text) ||
-      SpeechText.markPattern.hasMatch(text) ||
-      SpeechText.squarePattern.hasMatch(text) ||
-      (widget.onSquareTap != null &&
-          SpeechText.looseSquarePattern.hasMatch(text));
 
   /// O texto com as marcas trocadas pelos links.
   List<InlineSpan> _spans(BuildContext context, String text) {
@@ -908,42 +900,6 @@ class _SpeechTextState extends State<SpeechText> {
     return spans;
   }
 
-  Widget _rich(
-    BuildContext context,
-    String text,
-    int? maxLines, {
-    InlineSpan? more,
-    Key? key,
-  }) {
-    final overflow = maxLines == null ? null : TextOverflow.ellipsis;
-    if (more == null && !_hasMarkup(text)) {
-      return Text(
-        text,
-        style: widget.style,
-        textHeightBehavior: widget.textHeightBehavior,
-        maxLines: maxLines,
-        overflow: overflow,
-      );
-    }
-    final rich = Text.rich(
-      key: key,
-      TextSpan(
-        style: widget.style,
-        children: [..._spans(context, text), ?more],
-      ),
-      maxLines: maxLines,
-      overflow: overflow,
-      textHeightBehavior: widget.textHeightBehavior,
-    );
-    final onSquare = widget.onSquareTap;
-    if (onSquare == null) return rich;
-    return _SquareSlop(
-      squares: {for (final e in _squares.entries) e.value: e.key},
-      onSquare: onSquare,
-      child: rich,
-    );
-  }
-
   TextPainter _painter(BuildContext context, String text, double width) =>
       TextPainter(
         text: TextSpan(
@@ -959,7 +915,7 @@ class _SpeechTextState extends State<SpeechText> {
   static int? _linkSentence(String text) {
     final link = SpeechText.markPattern.allMatches(text).last;
     final before = text.substring(0, link.start);
-    final end = RegExp(r'[.!?…]\s+').allMatches(before).lastOrNull?.end;
+    final end = _sentenceEnd.allMatches(before).lastOrNull?.end;
     return end == null || end == 0 ? null : end;
   }
 
@@ -967,13 +923,26 @@ class _SpeechTextState extends State<SpeechText> {
   Widget build(BuildContext context) {
     final maxLines = widget.maxLines;
     final text = SpeechText.noBreak(widget.text);
+    _RichSpeech rich(
+      String text,
+      int? lines, {
+      InlineSpan? more,
+      Key? textKey,
+    }) => _RichSpeech(
+      speech: widget,
+      text: text,
+      maxLines: lines,
+      spansOf: _spans,
+      squares: _squares,
+      more: more,
+      textKey: textKey,
+    );
     if (widget.appendMore) {
-      return _rich(
-        context,
+      return rich(
         text,
         null,
         more: SpeechFit.more(context, style: widget.style, recognizer: _more),
-        key: SpeechKeys.cut,
+        textKey: SpeechKeys.cut,
       );
     }
     if (maxLines != null && widget.onMore != null) {
@@ -982,7 +951,9 @@ class _SpeechTextState extends State<SpeechText> {
           final whole = _painter(context, text, box.maxWidth);
           final lines = whole.computeLineMetrics().length;
           whole.dispose();
-          if (lines <= maxLines) return _rich(context, text, null);
+          if (lines <= maxLines) {
+            return rich(text, null);
+          }
           final more = SpeechFit.more(
             context,
             style: widget.style,
@@ -997,14 +968,14 @@ class _SpeechTextState extends State<SpeechText> {
             more: more,
             spans: (piece) => _spans(context, piece),
           );
-          return _rich(context, cut, null, more: more, key: SpeechKeys.cut);
+          return rich(cut, null, more: more, textKey: SpeechKeys.cut);
         },
       );
     }
     if (maxLines == null ||
         maxLines < 2 ||
         !SpeechText.markPattern.hasMatch(text)) {
-      return _rich(context, text, maxLines);
+      return rich(text, maxLines);
     }
     // O corte nunca esconde o link (T71, opção C): se o trecho cortado tem
     // link, o corte vai para o meio, com "…", e as últimas linhas mostram
@@ -1013,13 +984,15 @@ class _SpeechTextState extends State<SpeechText> {
       builder: (context, box) {
         final split = _linkSentence(text);
         if (split == null || !box.hasBoundedWidth) {
-          return _rich(context, text, maxLines);
+          return rich(text, maxLines);
         }
         final width = box.maxWidth;
         final whole = _painter(context, text, width);
         final lines = whole.computeLineMetrics().length;
         whole.dispose();
-        if (lines <= maxLines) return _rich(context, text, maxLines);
+        if (lines <= maxLines) {
+          return rich(text, maxLines);
+        }
         final tail = text.substring(split);
         final tailPainter = _painter(context, tail, width);
         final tailLines = tailPainter.computeLineMetrics().length.clamp(
@@ -1031,15 +1004,82 @@ class _SpeechTextState extends State<SpeechText> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _rich(
-              context,
-              text.substring(0, split).trimRight(),
-              maxLines - tailLines,
-            ),
-            _rich(context, tail, tailLines),
+            rich(text.substring(0, split).trimRight(), maxLines - tailLines),
+            rich(tail, tailLines),
           ],
         );
       },
+    );
+  }
+}
+
+/// Um trecho da fala: texto simples, ou com as marcas trocadas pelos links
+/// ([spansOf]) e, com casas tocáveis, a folga do toque em volta delas.
+class _RichSpeech extends StatelessWidget {
+  const _RichSpeech({
+    required this.speech,
+    required this.text,
+    required this.maxLines,
+    required this.spansOf,
+    required this.squares,
+    this.more,
+    this.textKey,
+  });
+
+  /// A fala de que este trecho faz parte (estilo e toque nas casas).
+  final SpeechText speech;
+  final String text;
+  final int? maxLines;
+
+  /// O texto com as marcas trocadas pelos links (registra os toques das
+  /// casas em [squares]).
+  final List<InlineSpan> Function(BuildContext, String) spansOf;
+
+  /// O reconhecedor de toque de cada casa citada.
+  final Map<String, GestureRecognizer> squares;
+
+  /// O "… Ver mais" depois do texto.
+  final InlineSpan? more;
+
+  /// A chave do texto em si (a fala cortada, para os testes).
+  final Key? textKey;
+
+  /// Há algo a desenhar além do texto simples?
+  bool get _hasMarkup =>
+      SpeechText.wikiPattern.hasMatch(text) ||
+      SpeechText.markPattern.hasMatch(text) ||
+      SpeechText.squarePattern.hasMatch(text) ||
+      (speech.onSquareTap != null &&
+          SpeechText.looseSquarePattern.hasMatch(text));
+
+  @override
+  Widget build(BuildContext context) {
+    final overflow = maxLines == null ? null : TextOverflow.ellipsis;
+    if (more == null && !_hasMarkup) {
+      return Text(
+        text,
+        style: speech.style,
+        textHeightBehavior: speech.textHeightBehavior,
+        maxLines: maxLines,
+        overflow: overflow,
+      );
+    }
+    final rich = Text.rich(
+      key: textKey,
+      TextSpan(
+        style: speech.style,
+        children: [...spansOf(context, text), ?more],
+      ),
+      maxLines: maxLines,
+      overflow: overflow,
+      textHeightBehavior: speech.textHeightBehavior,
+    );
+    final onSquare = speech.onSquareTap;
+    if (onSquare == null) return rich;
+    return _SquareSlop(
+      squares: {for (final e in squares.entries) e.value: e.key},
+      onSquare: onSquare,
+      child: rich,
     );
   }
 }
@@ -1132,3 +1172,9 @@ class _NearSquareTap extends TapGestureRecognizer {
     return square != null && super.isPointerAllowed(event);
   }
 }
+
+final _whitespace = RegExp(r'\s+');
+
+final _endsWithPunctuation = RegExp(r'[.!?…:]$');
+
+final _sentenceEnd = RegExp(r'[.!?…]\s+');

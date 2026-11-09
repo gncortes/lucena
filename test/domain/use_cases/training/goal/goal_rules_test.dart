@@ -114,7 +114,7 @@ void main() {
 
   group('plano', () {
     final chapters = planChapters(course());
-    final objective = TrainingObjective(
+    final objective = const TrainingObjective(
       kind: ObjectiveKind.tournament,
       setOn: '2026-11-04',
       tournamentDate: '2026-11-25',
@@ -169,7 +169,7 @@ void main() {
         levels: const {},
         completedLessons: const {},
         time: time,
-        objective: TrainingObjective(
+        objective: const TrainingObjective(
           kind: ObjectiveKind.tournament,
           setOn: '2026-11-04',
           tournamentDate: '2026-11-05',
@@ -189,7 +189,7 @@ void main() {
           for (final id in chapters[3].allIds) id: '2026-11-01',
         },
         time: time,
-        objective: TrainingObjective(
+        objective: const TrainingObjective(
           kind: ObjectiveKind.improve,
           setOn: '2026-11-04',
         ),

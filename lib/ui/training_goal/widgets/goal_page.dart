@@ -55,19 +55,6 @@ class GoalPage extends StatelessWidget {
   /// `null`, vale a lista de [builder].
   final Widget? Function(BuildContext context, GoalView view)? fill;
 
-  List<Widget> _corpo(BuildContext context, GoalView view) {
-    final filhos = builder(context, view);
-    if (!cascata || filhos.isEmpty) return filhos;
-    return [
-      EntradaEmCascata(
-        itens: [
-          for (final (i, filho) in filhos.indexed)
-            i == 0 ? ItemDaCascata.titulo(filho) : ItemDaCascata.texto(filho),
-        ],
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<TrainingGoalCubit>();
@@ -108,10 +95,7 @@ class GoalPage extends StatelessWidget {
                   Expanded(
                     child:
                         fill?.call(context, view) ??
-                        ListView(
-                          padding: const EdgeInsets.all(AppSpacing.screen),
-                          children: _corpo(context, view),
-                        ),
+                        _Corpo(builder: builder, cascata: cascata, view: view),
                   ),
                   if (footer != null) GoalFooter(child: footer!(context, view)),
                 ],
@@ -154,4 +138,37 @@ class GoalFooter extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// A lista rolável do corpo; com [cascata], os filhos entram em sequência.
+class _Corpo extends StatelessWidget {
+  const _Corpo({
+    required this.builder,
+    required this.cascata,
+    required this.view,
+  });
+
+  final List<Widget> Function(BuildContext context, GoalView view) builder;
+  final bool cascata;
+  final GoalView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final filhos = builder(context, view);
+    return ListView(
+      padding: const EdgeInsets.all(AppSpacing.screen),
+      children: !cascata || filhos.isEmpty
+          ? filhos
+          : [
+              EntradaEmCascata(
+                itens: [
+                  for (final (i, filho) in filhos.indexed)
+                    i == 0
+                        ? ItemDaCascata.titulo(filho)
+                        : ItemDaCascata.texto(filho),
+                ],
+              ),
+            ],
+    );
+  }
 }

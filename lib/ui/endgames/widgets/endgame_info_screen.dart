@@ -17,6 +17,7 @@ import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/reference_link.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/section_title.dart';
 import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import '../../core/widgets/info_chip.dart';
@@ -50,13 +51,13 @@ class EndgameInfoScreen extends StatelessWidget {
               ),
               children: [
                 Text(texts.lessonTitle(lesson.id), style: context.screenTitle),
-                _header(context, l10n.endgameInfoHistory),
+                SectionTitle(l10n.endgameInfoHistory, inset: 0),
                 LinkedText(
                   texts.say('${lesson.id}.history') ?? '',
                   key: EndgameInfoKeys.history,
                   style: theme.textTheme.bodyMedium,
                 ),
-                _header(context, l10n.endgameInfoKeyPositions),
+                SectionTitle(l10n.endgameInfoKeyPositions, inset: 0),
                 for (final position in lesson.keyPositions)
                   Padding(
                     key: EndgameInfoKeys.keyPosition(position.id),
@@ -91,7 +92,7 @@ class EndgameInfoScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                _header(context, l10n.endgameInfoReferences),
+                SectionTitle(l10n.endgameInfoReferences, inset: 0),
                 for (final reference in lesson.references.where(
                   (reference) => reference.isLearnerFacing,
                 ))
@@ -100,16 +101,6 @@ class EndgameInfoScreen extends StatelessWidget {
             ),
     );
   }
-
-  Widget _header(BuildContext context, String text) => Padding(
-    padding: const EdgeInsetsDirectional.fromSTEB(
-      0,
-      AppSpacing.lg,
-      0,
-      AppSpacing.sm,
-    ),
-    child: Text(text, style: context.sectionTitle),
-  );
 }
 
 class _ReferenceTile extends StatelessWidget {

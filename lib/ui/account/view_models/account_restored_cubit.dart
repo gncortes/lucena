@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
@@ -29,12 +30,20 @@ class AccountRestoredState {
 /// "Bem-vindo de volta" (H-CON-10): a Jornada do progresso que voltou, no
 /// degrau atual ("Valdini, 4 de 9 desafios").
 class AccountRestoredCubit extends Cubit<AccountRestoredState> {
-  AccountRestoredCubit(this._summary, this._journey, this._characters)
-    : super(const AccountRestoredState());
+  AccountRestoredCubit(
+    this._summary,
+    this._journey,
+    this._characters, {
+    this._accounts,
+  }) : super(const AccountRestoredState());
 
   final ProgressSummary _summary;
   final JourneyRepository _journey;
   final CharacterRepository _characters;
+  final AccountRepository? _accounts;
+
+  /// O nome da conta que entrou, para quando o progresso não tem apelido.
+  String? get accountName => _accounts?.current?.name;
 
   Future<void> load() async {
     emit(const AccountRestoredState());

@@ -57,55 +57,69 @@ class AchievementsScreen extends StatelessWidget {
                   _Overall(done: state.unlockedCount, total: all.length),
                   _Filter(selected: state.filter),
                   // H-ANI-17: títulos e medalhas entram em ordem.
-                  ListaEmOrdem(itens: _items(context, state)),
+                  _Items(state: state),
                 ],
               ),
       ),
     );
   }
+}
 
-  List<Widget> _items(BuildContext context, AchievementsState state) {
+/// Os títulos e as medalhas visíveis, em ordem (H-ANI-17).
+class _Items extends StatelessWidget {
+  const _Items({required this.state});
+
+  final AchievementsState state;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final visible = state.visible;
     if (visible.isEmpty) {
-      return [
-        EmptyState(
-          key: AchievementsKeys.empty,
-          style: EmptyStateStyle.text,
-          message: state.filter == AchievementsFilter.locked
-              ? l10n.achievementsEmptyLocked
-              : l10n.achievementsEmptyUnlocked,
-        ),
-      ];
+      return ListaEmOrdem(
+        itens: [
+          EmptyState(
+            key: AchievementsKeys.empty,
+            style: EmptyStateStyle.text,
+            message: state.filter == AchievementsFilter.locked
+                ? l10n.achievementsEmptyLocked
+                : l10n.achievementsEmptyUnlocked,
+          ),
+        ],
+      );
     }
     Widget row(Achievement achievement) =>
         _AchievementRow(achievement: achievement, state: state);
     // O histórico é uma fileira só, pela data.
     if (state.filter == AchievementsFilter.history) {
-      return [for (final achievement in visible) row(achievement)];
+      return ListaEmOrdem(
+        itens: [for (final achievement in visible) row(achievement)],
+      );
     }
     final all = state.all!;
-    return [
-      for (final category in AchievementCategory.values)
-        if (visible.any((a) => a.category == category)) ...[
-          SectionTitle(
-            l10n.achievementsGroupHeader(
-              category.label(l10n),
-              all
-                  .where(
-                    (a) =>
-                        a.category == category &&
-                        state.unlocked.containsKey(a.id),
-                  )
-                  .length,
-              all.where((a) => a.category == category).length,
+    return ListaEmOrdem(
+      itens: [
+        for (final category in AchievementCategory.values)
+          if (visible.any((a) => a.category == category)) ...[
+            SectionTitle(
+              l10n.achievementsGroupHeader(
+                category.label(l10n),
+                all
+                    .where(
+                      (a) =>
+                          a.category == category &&
+                          state.unlocked.containsKey(a.id),
+                    )
+                    .length,
+                all.where((a) => a.category == category).length,
+              ),
+              textKey: AchievementsKeys.group(category.name),
             ),
-            textKey: AchievementsKeys.group(category.name),
-          ),
-          for (final achievement in visible)
-            if (achievement.category == category) row(achievement),
-        ],
-    ];
+            for (final achievement in visible)
+              if (achievement.category == category) row(achievement),
+          ],
+      ],
+    );
   }
 }
 

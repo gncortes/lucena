@@ -8,12 +8,10 @@ import '../../../domain/models/rating_level.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/chip_lucena.dart';
-import '../../core/motion/opcoes_do_filtro.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/endgames_cubit.dart';
-import '../../core/widgets/sheet_header.dart';
-import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/filter_sheet.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
 
@@ -93,136 +91,81 @@ class _FilterSheet extends StatelessWidget {
         final filter = state.filter;
         final levels = state.availableLevels;
         final shown = state.filteredLessons.length;
-        return Column(
+        return FilterSheetScaffold(
           key: EndgamesKeys.filtersSheet,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SheetHeader(
-              title: l10n.endgamesFilters,
-              trailing: filter.isEmpty
-                  ? null
-                  : TextButton(
-                      key: EndgamesKeys.filtersSheetClear,
-                      onPressed: cubit.clearFilter,
-                      child: Text(l10n.endgamesFiltersClear),
-                    ),
-            ),
-            Flexible(
-              child: OpcoesDoFiltro(
-                id: 'finais',
-                montar: (itens) => ListView(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xl,
-                  ),
-                  children: itens,
+          title: l10n.endgamesFilters,
+          clearButton: filter.isEmpty
+              ? null
+              : TextButton(
+                  key: EndgamesKeys.filtersSheetClear,
+                  onPressed: cubit.clearFilter,
+                  child: Text(l10n.endgamesFiltersClear),
                 ),
-                itens: [
-                  if (levels.isNotEmpty) ...[
-                    _Heading(l10n.endgamesFilterOrder),
-                    _Options(
-                      children: [
-                        for (final sort in EndgameSort.values)
-                          ChipLucena(
-                            key: EndgamesKeys.filterOption('sort.${sort.name}'),
-                            label: Text(switch (sort) {
-                              EndgameSort.trail => l10n.endgamesSortTrail,
-                              EndgameSort.easiest => l10n.endgamesSortEasiest,
-                            }),
-                            selecionado: filter.sort == sort,
-                            aoEscolher: (_) => cubit.setSort(sort),
-                          ),
-                      ],
+          filterId: 'finais',
+          items: [
+            if (levels.isNotEmpty) ...[
+              FilterSheetHeading(l10n.endgamesFilterOrder),
+              FilterSheetOptions(
+                children: [
+                  for (final sort in EndgameSort.values)
+                    ChipLucena(
+                      key: EndgamesKeys.filterOption('sort.${sort.name}'),
+                      label: Text(switch (sort) {
+                        EndgameSort.trail => l10n.endgamesSortTrail,
+                        EndgameSort.easiest => l10n.endgamesSortEasiest,
+                      }),
+                      selecionado: filter.sort == sort,
+                      aoEscolher: (_) => cubit.setSort(sort),
                     ),
-                    _Heading(l10n.endgamesFilterLevel),
-                    _Options(
-                      children: [
-                        for (final level in levels)
-                          ChipLucena(
-                            key: EndgamesKeys.filterOption(_levelCode(level)),
-                            label: Text(level.name(l10n)),
-                            selecionado: filter.levels.contains(level),
-                            aoEscolher: (_) => cubit.toggleLevel(level),
-                          ),
-                      ],
-                    ),
-                  ],
-                  _Heading(l10n.endgamesFilterKind),
-                  _Options(
-                    children: [
-                      for (final kind in state.availableKinds)
-                        ChipLucena(
-                          key: EndgamesKeys.filterOption(kind.code),
-                          label: Text(kind.label(l10n)),
-                          selecionado: filter.kinds.contains(kind),
-                          aoEscolher: (_) => cubit.toggleKind(kind),
-                        ),
-                    ],
-                  ),
-                  _Heading(l10n.endgamesFilterStatus),
-                  _Options(
-                    children: [
-                      for (final status in EndgameLessonStatus.values)
-                        ChipLucena(
-                          key: EndgamesKeys.filterOption(status.code),
-                          label: Text(status.label(l10n)),
-                          selecionado: filter.statuses.contains(status),
-                          aoEscolher: (_) => cubit.toggleStatus(status),
-                        ),
-                    ],
-                  ),
                 ],
               ),
-            ),
-            ActionsFooter(
-              margin: AppSpacing.xl,
+              FilterSheetHeading(l10n.endgamesFilterLevel),
+              FilterSheetOptions(
+                children: [
+                  for (final level in levels)
+                    ChipLucena(
+                      key: EndgamesKeys.filterOption(_levelCode(level)),
+                      label: Text(level.name(l10n)),
+                      selecionado: filter.levels.contains(level),
+                      aoEscolher: (_) => cubit.toggleLevel(level),
+                    ),
+                ],
+              ),
+            ],
+            FilterSheetHeading(l10n.endgamesFilterKind),
+            FilterSheetOptions(
               children: [
-                FilledButton(
-                  key: EndgamesKeys.filtersApply,
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l10n.endgamesFiltersShow(shown)),
-                ),
+                for (final kind in state.availableKinds)
+                  ChipLucena(
+                    key: EndgamesKeys.filterOption(kind.code),
+                    label: Text(kind.label(l10n)),
+                    selecionado: filter.kinds.contains(kind),
+                    aoEscolher: (_) => cubit.toggleKind(kind),
+                  ),
+              ],
+            ),
+            FilterSheetHeading(l10n.endgamesFilterStatus),
+            FilterSheetOptions(
+              children: [
+                for (final status in EndgameLessonStatus.values)
+                  ChipLucena(
+                    key: EndgamesKeys.filterOption(status.code),
+                    label: Text(status.label(l10n)),
+                    selecionado: filter.statuses.contains(status),
+                    aoEscolher: (_) => cubit.toggleStatus(status),
+                  ),
               ],
             ),
           ],
+          applyButton: FilledButton(
+            key: EndgamesKeys.filtersApply,
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.endgamesFiltersShow(shown)),
+          ),
         );
       },
     );
   }
-}
-
-class _Heading extends StatelessWidget {
-  const _Heading(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.sm),
-      child: Text(
-        text,
-        style: theme.textTheme.titleSmall?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
-}
-
-class _Options extends StatelessWidget {
-  const _Options({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: AppSpacing.sm,
-    runSpacing: AppSpacing.sm,
-    children: children,
-  );
 }
 
 /// Os filtros ativos, como chips com X, e o "Limpar".

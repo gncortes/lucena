@@ -40,9 +40,6 @@ class _ExplanationCardsState extends State<ExplanationCards> {
   VariationCursor? _cursor;
   String? _unavailable;
   final Set<String> _expanded = {};
-  Widget _paragraph(String text, [ExplanationVariation? variation]) =>
-      widget.variationParagraph?.call(text, variation) ??
-      widget.paragraph(text);
 
   List<ExplanationParagraph> _texts(ExplanationBlock block) {
     final roots = block.variations.where((v) => v.parentId == null).toList();
@@ -65,20 +62,8 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     return texts.where((p) => seen.add((p.text, p.variation?.id))).toList();
   }
 
-  Widget _body(ExplanationBlock block) {
-    final texts = _texts(block);
-    return widget.groupedParagraph?.call(texts) ??
-        _paragraph(
-          texts.map((p) => p.text).join('\n\n'),
-          texts.isNotEmpty &&
-                  texts.every((p) => p.variation == texts.first.variation)
-              ? texts.first.variation
-              : null,
-        );
-  }
-
   bool _showSelector(ExplanationBlock block, ExplanationVariation variation) {
-    if (RegExp(r'^[A-Z](?:\.\d+)*$').hasMatch(variation.label)) return true;
+    if (_branchLabel.hasMatch(variation.label)) return true;
     // Keep the fallback control unless a verified inline move actually opens
     // this same origin. A matching caption alone is insufficient.
     return !_texts(block).any(
@@ -241,198 +226,6 @@ class _ExplanationCardsState extends State<ExplanationCards> {
           )
           .toList();
 
-  /// O lance do cabeçalho da linha: `primary` peso 500, sem sublinhado, mesmo
-  /// com `?`/`!` (o símbolo carrega o resultado; LICOES-V2 §2). A letra só
-  /// aparece com 2+ escolhas do aluno no mesmo ponto ([letter]).
-  Widget _v2Title(
-    BuildContext context,
-    ExplanationVariation variation, {
-    required bool letter,
-  }) {
-    final colors = Theme.of(context).colorScheme;
-    final move = Text(
-      variation.movesSan.first,
-      style: TextStyle(fontWeight: FontWeight.w500, color: colors.primary),
-    );
-    if (!letter) return move;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '${variation.label}) ',
-          style: TextStyle(fontWeight: FontWeight.w500, color: colors.tertiary),
-        ),
-        Flexible(child: move),
-      ],
-    );
-  }
-
-  /// O chevron das respostas: 48×48, só expande/recolhe (A15). A margem
-  /// de −12 alinha o glifo à borda do texto, como no canvas (`tentativa`).
-  Widget _chevron(
-    BuildContext context,
-    String id,
-    bool expanded, {
-    bool shifted = true,
-  }) {
-    final colors = Theme.of(context).colorScheme;
-    final l10n = context.l10n;
-    final label = expanded ? l10n.explanationCollapse : l10n.explanationExpand;
-    final shift = !shifted
-        ? 0.0
-        : Directionality.of(context) == TextDirection.rtl
-        ? -12.0
-        : 12.0;
-    return Transform.translate(
-      offset: Offset(shift, 0),
-      child: MergeSemantics(
-        child: Semantics(
-          expanded: expanded,
-          child: IconButton(
-            key: ExplanationKeys.expand(id),
-            tooltip: label,
-            style: IconButton.styleFrom(
-              fixedSize: const Size(48, 48),
-              minimumSize: const Size(48, 48),
-            ),
-            color: colors.onSurfaceVariant,
-            onPressed: () => _toggle(id),
-            icon: Icon(expanded ? Icons.expand_less : Icons.expand_more),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _line(
-    BuildContext context,
-    ExplanationBlock block,
-    ExplanationVariation variation, {
-    bool principal = true,
-  }) {
-    final children = _children(block, variation.id);
-    final expandable = principal && children.isNotEmpty;
-    final expanded = _expanded.contains(variation.id);
-    final showText = !expandable || expanded;
-    final selected = _cursor?.variation.id == variation.id;
-    final texts = variation.texts
-        .where((text) => !block.texts.contains(text))
-        .toList();
-    final inline = _inlineMove(block, variation, texts);
-    final selector = !inline && _showSelector(block, variation);
-    final labelled =
-        variation.movesSan.isNotEmpty &&
-        RegExp(r'^[A-Z](?:\.\d+)*$').hasMatch(variation.label);
-    final letter =
-        principal &&
-        block.kind != ExplanationKind.failedAlternatives &&
-        block.variations.where((v) => v.parentId == null).length > 1;
-    // O lance fica destacado num lugar só: se o texto da linha já o cita, o
-    // título não se repete (a linha expansível mantém o título: leva o chevron).
-    final move = variation.movesSan.isEmpty
-        ? null
-        : variation.movesSan.first.replaceAll(RegExp(r'[?!+#]+$'), '');
-    final cited =
-        widget.lessonV2 &&
-        !expandable &&
-        move != null &&
-        texts.any((t) => t.contains(move));
-    final hasRow = !cited && (selector || (expandable && !inline));
-    final body = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (hasRow)
-          Row(
-            children: [
-              Expanded(
-                child: MergeSemantics(
-                  child: Semantics(
-                    selected: selected,
-                    // Variante única (V2): o leitor lê só o lance, sem "A, ...".
-                    label: widget.lessonV2 && principal && !letter
-                        ? null
-                        : '${variation.label}, ${variation.outcomeText ?? _outcome(context, variation.outcome)}',
-                    child: Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: TextButton(
-                        key: ExplanationKeys.variation(variation.id),
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size(48, 48),
-                          padding: EdgeInsets.zero,
-                          alignment: AlignmentDirectional.centerStart,
-                          tapTargetSize: MaterialTapTargetSize.padded,
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            height: 1.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        onPressed: widget.onVariation == null
-                            ? null
-                            : () => _select(variation),
-                        child: widget.lessonV2 && labelled
-                            ? _v2Title(context, variation, letter: letter)
-                            : Text(
-                                labelled
-                                    ? principal
-                                          ? '${variation.label}) ${variation.movesSan.first}'
-                                          : variation.movesSan.first
-                                    : variation.label,
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              if (expandable) _chevron(context, variation.id, expanded),
-            ],
-          ),
-        if (showText && texts.isNotEmpty)
-          Padding(
-            padding: EdgeInsets.zero,
-            child: _paragraph(texts.join('\n\n'), variation),
-          ),
-      ],
-    );
-    // Canvas D14: full-width principal lines, with each child and its replies
-    // grouped in one soft block. Ancestry stays in semantics, without a rail.
-    final line = Column(
-      key: expandable
-          ? _lineKeys.putIfAbsent(variation.id, GlobalKey.new)
-          : null,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        body,
-        if (showText)
-          for (final (i, child) in children.indexed)
-            if (principal)
-              Card(
-                margin: EdgeInsets.only(top: i == 0 ? 0 : AppSpacing.sm),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: _line(context, block, child, principal: false),
-                ),
-              )
-            else ...[
-              const Divider(),
-              _line(context, block, child, principal: false),
-            ],
-      ],
-    );
-    // Sem linha do lance e sem nada a mostrar: não ocupa espaço.
-    final empty =
-        inline && !(showText && (texts.isNotEmpty || children.isNotEmpty));
-    if (empty) return const SizedBox.shrink();
-    // Card da tentativa: colado ao parágrafo quando há linha de 48 dp (ela já
-    // traz 12 dp de ar); 8 dp em cima quando o texto vem direto.
-    return principal
-        ? Padding(
-            padding: EdgeInsets.only(top: hasRow ? 0 : AppSpacing.sm),
-            child: line,
-          )
-        : line;
-  }
-
   /// O contexto/história (citação): bloco de contexto com título que não é o
   /// "Lance certo" da folha do lance errado.
   bool _isQuote(BuildContext context, ExplanationBlock b) =>
@@ -516,7 +309,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.lessonV2) return _legacyBuild(context);
+    if (!widget.lessonV2) return _LegacyCards(this);
     final blocks = _ordered(context);
     final theme = Theme.of(context);
     final rtl = Directionality.of(context) == TextDirection.rtl;
@@ -532,7 +325,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
               children: [
                 // Entre ideias: 12 (o fim do bloco anterior) + linha + 12.
                 if (index > 0) ...[
-                  Divider(),
+                  const Divider(),
                   const SizedBox(height: AppSpacing.md),
                 ],
                 if (_isQuote(context, block))
@@ -557,10 +350,11 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                         ),
                       ),
                     ),
-                  if (_texts(block).isNotEmpty) _paragraphWithChevron(block),
+                  if (_texts(block).isNotEmpty)
+                    _ParagraphWithChevron(this, block),
                   for (final variation in block.variations)
                     if (variation.parentId == null)
-                      _line(context, block, variation),
+                      _Line(this, block, variation),
                   if (_unavailable != null &&
                       block.variations.any((v) => v.id == _unavailable))
                     Text(
@@ -571,35 +365,6 @@ class _ExplanationCardsState extends State<ExplanationCards> {
               ],
             ),
           ),
-      ],
-    );
-  }
-
-  Widget _paragraphWithChevron(ExplanationBlock block) {
-    final line = _chevronLine(block);
-    final body = Padding(
-      key: ExplanationKeys.paragraph(block.id, 0),
-      padding: line == null
-          ? EdgeInsets.zero
-          : const EdgeInsetsDirectional.only(end: 48),
-      child: _body(block),
-    );
-    if (line == null) return body;
-    // O chevron (48×48) fica na primeira linha, na coluna reservada à direita.
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        body,
-        PositionedDirectional(
-          end: 0,
-          top: 0,
-          child: _chevron(
-            context,
-            line.id,
-            _expanded.contains(line.id),
-            shifted: false,
-          ),
-        ),
       ],
     );
   }
@@ -623,24 +388,347 @@ class _ExplanationCardsState extends State<ExplanationCards> {
         : block.title;
     return rtl ? text : text.toUpperCase();
   }
+}
 
-  Widget _legacyBuild(BuildContext context) {
+final _branchLabel = RegExp(r'^[A-Z](?:\.\d+)*$');
+
+final _moveMarksSuffix = RegExp(r'[?!+#]+$');
+
+class _Paragraph extends StatelessWidget {
+  const _Paragraph(this.owner, this.text, [this.variation]);
+
+  final _ExplanationCardsState owner;
+  final String text;
+  final ExplanationVariation? variation;
+
+  @override
+  Widget build(BuildContext context) {
+    return owner.widget.variationParagraph?.call(text, variation) ??
+        owner.widget.paragraph(text);
+  }
+}
+
+class _Body extends StatelessWidget {
+  const _Body(this.owner, this.block);
+
+  final _ExplanationCardsState owner;
+  final ExplanationBlock block;
+
+  @override
+  Widget build(BuildContext context) {
+    final texts = owner._texts(block);
+    return owner.widget.groupedParagraph?.call(texts) ??
+        _Paragraph(
+          owner,
+          texts.map((p) => p.text).join('\n\n'),
+          texts.isNotEmpty &&
+                  texts.every((p) => p.variation == texts.first.variation)
+              ? texts.first.variation
+              : null,
+        );
+  }
+}
+
+/// O chevron das respostas: 48×48, só expande/recolhe (A15). A margem
+/// de −12 alinha o glifo à borda do texto, como no canvas (`tentativa`).
+class _Chevron extends StatelessWidget {
+  const _Chevron(this.owner, this.id, this.expanded, {this.shifted = true});
+
+  final _ExplanationCardsState owner;
+  final String id;
+  final bool expanded;
+  final bool shifted;
+
+  @override
+  Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final cursor = _cursor;
+    final l10n = context.l10n;
+    final label = expanded ? l10n.explanationCollapse : l10n.explanationExpand;
+    final shift = !shifted
+        ? 0.0
+        : Directionality.of(context) == TextDirection.rtl
+        ? -12.0
+        : 12.0;
+    return Transform.translate(
+      offset: Offset(shift, 0),
+      child: MergeSemantics(
+        child: Semantics(
+          expanded: expanded,
+          child: IconButton(
+            key: ExplanationKeys.expand(id),
+            tooltip: label,
+            style: IconButton.styleFrom(
+              fixedSize: const Size(48, 48),
+              minimumSize: const Size(48, 48),
+            ),
+            color: colors.onSurfaceVariant,
+            onPressed: () => owner._toggle(id),
+            icon: Icon(expanded ? Icons.expand_less : Icons.expand_more),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Line extends StatelessWidget {
+  const _Line(this.owner, this.block, this.variation, {this.principal = true});
+
+  final _ExplanationCardsState owner;
+  final ExplanationBlock block;
+  final ExplanationVariation variation;
+  final bool principal;
+
+  @override
+  Widget build(BuildContext context) {
+    final children = owner._children(block, variation.id);
+    final expandable = principal && children.isNotEmpty;
+    final expanded = owner._expanded.contains(variation.id);
+    final showText = !expandable || expanded;
+    final selected = owner._cursor?.variation.id == variation.id;
+    final texts = variation.texts
+        .where((text) => !block.texts.contains(text))
+        .toList();
+    final inline = owner._inlineMove(block, variation, texts);
+    final selector = !inline && owner._showSelector(block, variation);
+    final labelled =
+        variation.movesSan.isNotEmpty && _branchLabel.hasMatch(variation.label);
+    final letter =
+        principal &&
+        block.kind != ExplanationKind.failedAlternatives &&
+        block.variations.where((v) => v.parentId == null).length > 1;
+    // O lance fica destacado num lugar só: se o texto da linha já o cita, o
+    // título não se repete (a linha expansível mantém o título: leva o chevron).
+    final move = variation.movesSan.isEmpty
+        ? null
+        : variation.movesSan.first.replaceAll(_moveMarksSuffix, '');
+    final cited =
+        owner.widget.lessonV2 &&
+        !expandable &&
+        move != null &&
+        texts.any((t) => t.contains(move));
+    final hasRow = !cited && (selector || (expandable && !inline));
+    final body = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (hasRow)
+          _LineHeader(
+            owner,
+            variation,
+            principal: principal,
+            letter: letter,
+            labelled: labelled,
+            selected: selected,
+            expandable: expandable,
+            expanded: expanded,
+          ),
+        if (showText && texts.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.zero,
+            child: _Paragraph(owner, texts.join('\n\n'), variation),
+          ),
+      ],
+    );
+    // Canvas D14: full-width principal lines, with each child and its replies
+    // grouped in one soft block. Ancestry stays in semantics, without a rail.
+    final line = Column(
+      key: expandable
+          ? owner._lineKeys.putIfAbsent(variation.id, GlobalKey.new)
+          : null,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        body,
+        if (showText)
+          for (final (i, child) in children.indexed)
+            if (principal)
+              Card(
+                margin: EdgeInsets.only(top: i == 0 ? 0 : AppSpacing.sm),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: _Line(owner, block, child, principal: false),
+                ),
+              )
+            else ...[
+              const Divider(),
+              _Line(owner, block, child, principal: false),
+            ],
+      ],
+    );
+    // Sem linha do lance e sem nada a mostrar: não ocupa espaço.
+    final empty =
+        inline && !(showText && (texts.isNotEmpty || children.isNotEmpty));
+    if (empty) return const SizedBox.shrink();
+    // Card da tentativa: colado ao parágrafo quando há linha de 48 dp (ela já
+    // traz 12 dp de ar); 8 dp em cima quando o texto vem direto.
+    return principal
+        ? Padding(
+            padding: EdgeInsets.only(top: hasRow ? 0 : AppSpacing.sm),
+            child: line,
+          )
+        : line;
+  }
+}
+
+/// A linha do lance: o botão com o título e, se expansível, o chevron.
+class _LineHeader extends StatelessWidget {
+  const _LineHeader(
+    this.owner,
+    this.variation, {
+    required this.principal,
+    required this.letter,
+    required this.labelled,
+    required this.selected,
+    required this.expandable,
+    required this.expanded,
+  });
+
+  final _ExplanationCardsState owner;
+  final ExplanationVariation variation;
+  final bool principal;
+  final bool letter;
+  final bool labelled;
+  final bool selected;
+  final bool expandable;
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: MergeSemantics(
+            child: Semantics(
+              selected: selected,
+              // Variante única (V2): o leitor lê só o lance, sem "A, ...".
+              label: owner.widget.lessonV2 && principal && !letter
+                  ? null
+                  : '${variation.label}, ${variation.outcomeText ?? owner._outcome(context, variation.outcome)}',
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton(
+                  key: ExplanationKeys.variation(variation.id),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    padding: EdgeInsets.zero,
+                    alignment: AlignmentDirectional.centerStart,
+                    tapTargetSize: MaterialTapTargetSize.padded,
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  onPressed: owner.widget.onVariation == null
+                      ? null
+                      : () => owner._select(variation),
+                  child: owner.widget.lessonV2 && labelled
+                      ? _V2Title(variation: variation, letter: letter)
+                      : Text(
+                          labelled
+                              ? principal
+                                    ? '${variation.label}) ${variation.movesSan.first}'
+                                    : variation.movesSan.first
+                              : variation.label,
+                        ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (expandable) _Chevron(owner, variation.id, expanded),
+      ],
+    );
+  }
+}
+
+/// O lance do cabeçalho da linha: `primary` peso 500, sem sublinhado, mesmo
+/// com `?`/`!` (o símbolo carrega o resultado; LICOES-V2 §2). A letra só
+/// aparece com 2+ escolhas do aluno no mesmo ponto ([letter]).
+class _V2Title extends StatelessWidget {
+  const _V2Title({required this.variation, required this.letter});
+
+  final ExplanationVariation variation;
+  final bool letter;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final move = Text(
+      variation.movesSan.first,
+      style: TextStyle(fontWeight: FontWeight.w500, color: colors.primary),
+    );
+    if (!letter) return move;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '${variation.label}) ',
+          style: TextStyle(fontWeight: FontWeight.w500, color: colors.tertiary),
+        ),
+        Flexible(child: move),
+      ],
+    );
+  }
+}
+
+class _ParagraphWithChevron extends StatelessWidget {
+  const _ParagraphWithChevron(this.owner, this.block);
+
+  final _ExplanationCardsState owner;
+  final ExplanationBlock block;
+
+  @override
+  Widget build(BuildContext context) {
+    final line = owner._chevronLine(block);
+    final body = Padding(
+      key: ExplanationKeys.paragraph(block.id, 0),
+      padding: line == null
+          ? EdgeInsets.zero
+          : const EdgeInsetsDirectional.only(end: 48),
+      child: _Body(owner, block),
+    );
+    if (line == null) return body;
+    // O chevron (48×48) fica na primeira linha, na coluna reservada à direita.
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        body,
+        PositionedDirectional(
+          end: 0,
+          top: 0,
+          child: _Chevron(
+            owner,
+            line.id,
+            owner._expanded.contains(line.id),
+            shifted: false,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LegacyCards extends StatelessWidget {
+  const _LegacyCards(this.owner);
+
+  final _ExplanationCardsState owner;
+
+  @override
+  Widget build(BuildContext context) {
     // Old lessons supply only context, without authored sections. Preserve the
     // compact preview with one bubble per explanation.
-    if (widget.payload.positionId.isEmpty &&
-        widget.payload.explanations.every(
+    if (owner.widget.payload.positionId.isEmpty &&
+        owner.widget.payload.explanations.every(
           (b) => b.kind == ExplanationKind.context,
         )) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final block in widget.payload.explanations)
+          for (final block in owner.widget.payload.explanations)
             Padding(
               key: ExplanationKeys.paragraph(block.id, 0),
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: _body(block),
+              child: _Body(owner, block),
             ),
         ],
       );
@@ -648,137 +736,160 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final block in widget.payload.explanations)
-          Card(
-            key: ExplanationKeys.block(block.id),
-            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        for (final block in owner.widget.payload.explanations)
+          _LegacyBlockCard(owner, block),
+      ],
+    );
+  }
+}
+
+/// O cartão de um bloco das aulas antigas: seletores, texto e navegação.
+class _LegacyBlockCard extends StatelessWidget {
+  const _LegacyBlockCard(this.owner, this.block);
+
+  final _ExplanationCardsState owner;
+  final ExplanationBlock block;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final cursor = owner._cursor;
+    return Card(
+      key: ExplanationKeys.block(block.id),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              key: ExplanationKeys.header(block.id),
+              block.title.isEmpty
+                  ? owner._title(context, block.kind)
+                  : block.title,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            if (block.variations.isNotEmpty)
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [
-                  Text(
-                    key: ExplanationKeys.header(block.id),
-                    block.title.isEmpty
-                        ? _title(context, block.kind)
-                        : block.title,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  if (block.variations.isNotEmpty)
-                    Wrap(
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.sm,
-                      children: [
-                        for (final variation in block.variations)
-                          if ((variation.parentId == null ||
-                                  variation.parentId == cursor?.variation.id ||
-                                  variation.id == cursor?.variation.id) &&
-                              _showSelector(block, variation))
-                            Semantics(
-                              selected: cursor?.variation.id == variation.id,
-                              label:
-                                  '${variation.label}, ${variation.outcomeText ?? _outcome(context, variation.outcome)}',
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  minHeight: 44,
-                                  minWidth: 44,
-                                ),
-                                child: OutlinedButton(
-                                  key: ExplanationKeys.variation(variation.id),
-                                  style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size(44, 44),
-                                    backgroundColor:
-                                        cursor?.variation.id == variation.id
-                                        ? colors.primaryContainer
-                                        : null,
-                                  ),
-                                  onPressed: widget.onVariation == null
-                                      ? null
-                                      : () => _select(variation),
-                                  child: Text(variation.label),
-                                ),
-                              ),
+                  for (final variation in block.variations)
+                    if ((variation.parentId == null ||
+                            variation.parentId == cursor?.variation.id ||
+                            variation.id == cursor?.variation.id) &&
+                        owner._showSelector(block, variation))
+                      Semantics(
+                        selected: cursor?.variation.id == variation.id,
+                        label:
+                            '${variation.label}, ${variation.outcomeText ?? owner._outcome(context, variation.outcome)}',
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            minHeight: 44,
+                            minWidth: 44,
+                          ),
+                          child: OutlinedButton(
+                            key: ExplanationKeys.variation(variation.id),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(44, 44),
+                              backgroundColor:
+                                  cursor?.variation.id == variation.id
+                                  ? colors.primaryContainer
+                                  : null,
                             ),
-                      ],
-                    ),
-                  if (_texts(block).isNotEmpty)
-                    Padding(
-                      key: ExplanationKeys.paragraph(block.id, 0),
-                      padding: const EdgeInsets.only(top: AppSpacing.sm),
-                      child: _body(block),
-                    ),
-                  if (_unavailable != null &&
-                      block.variations.any((v) => v.id == _unavailable))
-                    Text(
-                      context.l10n.explanationUnavailable,
-                      key: ExplanationKeys.unavailable,
-                    ),
-                  if (cursor != null &&
-                      block.variations.any(
-                        (v) => v.id == cursor.variation.id,
-                      )) ...[
-                    if (cursor.variation.parentId != null)
-                      TextButton.icon(
-                        key: ExplanationKeys.parent,
-                        onPressed: () => _move(
-                          widget.payload.parentCursor(cursor.variation),
+                            onPressed: owner.widget.onVariation == null
+                                ? null
+                                : () => owner._select(variation),
+                            child: Text(variation.label),
+                          ),
                         ),
-                        icon: const Icon(Icons.chevron_left),
-                        label: Text(context.l10n.explanationParent),
                       ),
-                    Text(
-                      cursor.variation.outcomeText ??
-                          _outcome(context, cursor.variation.outcome),
-                    ),
-                    if (cursor.moves.length > 1)
-                      Wrap(
-                        spacing: AppSpacing.xs,
-                        children: [
-                          IconButton(
-                            key: ExplanationKeys.first,
-                            tooltip: context.l10n.explanationFirst,
-                            onPressed: cursor.canPrevious
-                                ? () => _move(cursor.at(0))
-                                : null,
-                            icon: const Icon(Icons.first_page),
-                          ),
-                          IconButton(
-                            key: ExplanationKeys.previous,
-                            tooltip: context.l10n.explanationPrevious,
-                            onPressed: cursor.canPrevious
-                                ? () => _move(cursor.previous())
-                                : null,
-                            icon: const Icon(Icons.chevron_left),
-                          ),
-                          IconButton(
-                            key: ExplanationKeys.next,
-                            tooltip: context.l10n.explanationNext,
-                            onPressed: cursor.canNext
-                                ? () => _move(cursor.next())
-                                : null,
-                            icon: const Icon(Icons.chevron_right),
-                          ),
-                          IconButton(
-                            key: ExplanationKeys.last,
-                            tooltip: context.l10n.explanationLast,
-                            onPressed: cursor.canNext
-                                ? () => _move(cursor.at(cursor.moves.length))
-                                : null,
-                            icon: const Icon(Icons.last_page),
-                          ),
-                        ],
-                      ),
-                    TextButton.icon(
-                      key: ExplanationKeys.restore,
-                      onPressed: () => _move(null),
-                      icon: const Icon(Icons.undo),
-                      label: Text(context.l10n.explanationReturn),
-                    ),
-                  ],
                 ],
               ),
-            ),
-          ),
+            if (owner._texts(block).isNotEmpty)
+              Padding(
+                key: ExplanationKeys.paragraph(block.id, 0),
+                padding: const EdgeInsets.only(top: AppSpacing.sm),
+                child: _Body(owner, block),
+              ),
+            if (owner._unavailable != null &&
+                block.variations.any((v) => v.id == owner._unavailable))
+              Text(
+                context.l10n.explanationUnavailable,
+                key: ExplanationKeys.unavailable,
+              ),
+            if (cursor != null &&
+                block.variations.any((v) => v.id == cursor.variation.id)) ...[
+              if (cursor.variation.parentId != null)
+                TextButton.icon(
+                  key: ExplanationKeys.parent,
+                  onPressed: () => owner._move(
+                    owner.widget.payload.parentCursor(cursor.variation),
+                  ),
+                  icon: const Icon(Icons.chevron_left),
+                  label: Text(context.l10n.explanationParent),
+                ),
+              Text(
+                cursor.variation.outcomeText ??
+                    owner._outcome(context, cursor.variation.outcome),
+              ),
+              if (cursor.moves.length > 1) _LegacyNav(owner, cursor),
+              TextButton.icon(
+                key: ExplanationKeys.restore,
+                onPressed: () => owner._move(null),
+                icon: const Icon(Icons.undo),
+                label: Text(context.l10n.explanationReturn),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Primeiro, anterior, próximo e último lance da variação aberta.
+class _LegacyNav extends StatelessWidget {
+  const _LegacyNav(this.owner, this.cursor);
+
+  final _ExplanationCardsState owner;
+  final VariationCursor cursor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: AppSpacing.xs,
+      children: [
+        IconButton(
+          key: ExplanationKeys.first,
+          tooltip: context.l10n.explanationFirst,
+          onPressed: cursor.canPrevious
+              ? () => owner._move(cursor.at(0))
+              : null,
+          icon: const Icon(Icons.first_page),
+        ),
+        IconButton(
+          key: ExplanationKeys.previous,
+          tooltip: context.l10n.explanationPrevious,
+          onPressed: cursor.canPrevious
+              ? () => owner._move(cursor.previous())
+              : null,
+          icon: const Icon(Icons.chevron_left),
+        ),
+        IconButton(
+          key: ExplanationKeys.next,
+          tooltip: context.l10n.explanationNext,
+          onPressed: cursor.canNext ? () => owner._move(cursor.next()) : null,
+          icon: const Icon(Icons.chevron_right),
+        ),
+        IconButton(
+          key: ExplanationKeys.last,
+          tooltip: context.l10n.explanationLast,
+          onPressed: cursor.canNext
+              ? () => owner._move(cursor.at(cursor.moves.length))
+              : null,
+          icon: const Icon(Icons.last_page),
+        ),
       ],
     );
   }

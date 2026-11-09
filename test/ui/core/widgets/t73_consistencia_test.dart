@@ -144,7 +144,7 @@ void main() {
 
   testWidgets('o nome do Viktor é w500', (tester) async {
     await tester.pumpWidget(
-      TestApp(
+      const TestApp(
         child: Scaffold(
           body: TeacherSpeech(
             teacher: FakeCharacterRepository.viktor,

@@ -1,11 +1,19 @@
-import '../../config/ambiente.dart';
-
-/// O endereço público do app. O domínio de cada ambiente vem do
-/// [Ambiente.siteHost] (único lugar de ambiente em Dart).
+/// O endereço público do app. O domínio do ambiente deste build é passado
+/// pela configuração na abertura (`AppLinks.configure`, em `config/`); sem
+/// ela (testes), vale o de dev.
 abstract final class AppLinks {
+  /// O site de produção e o de desenvolvimento (sem `https://`).
+  static const prodHost = 'playlucenachess.com';
+  static const devHost = 'dev.playlucenachess.com';
+
+  static String _host = devHost;
+
   /// O domínio dos links que o app gera (sem `https://`): o site do ambiente
   /// deste build (dev: dev.playlucenachess.com; prod: playlucenachess.com).
-  static String get host => Ambiente.atual().siteHost;
+  static String get host => _host;
+
+  /// Liga os links ao site do ambiente; chamado uma vez na abertura do app.
+  static void configure({required String siteHost}) => _host = siteHost;
 
   /// O começo do caminho de um desafio: `<host>/p/<código>`.
   static const challengeSegment = 'p';
@@ -20,7 +28,5 @@ abstract final class AppLinks {
   /// O link é do app? O site do ambiente e o de prod (com ou sem `www`).
   static bool isOwn(Uri uri) =>
       uri.scheme == 'https' &&
-      (uri.host == host ||
-          uri.host == Ambiente.prod.siteHost ||
-          uri.host == 'www.${Ambiente.prod.siteHost}');
+      (uri.host == host || uri.host == prodHost || uri.host == 'www.$prodHost');
 }

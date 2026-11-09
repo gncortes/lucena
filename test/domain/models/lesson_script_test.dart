@@ -92,7 +92,7 @@ void main() {
 
   test('a referência de jogador usa o nome como título', () {
     expect(
-      Reference(id: 'p', kind: 'player', fields: const {'name': 'X'}).title,
+      const Reference(id: 'p', kind: 'player', fields: {'name': 'X'}).title,
       'X',
     );
   });

@@ -53,7 +53,10 @@ void main() {
     await repository.update(course, (s) {
       var next = applyObjective(
         s,
-        TrainingObjective(kind: ObjectiveKind.improve, setOn: '2026-10-26'),
+        const TrainingObjective(
+          kind: ObjectiveKind.improve,
+          setOn: '2026-10-26',
+        ),
       );
       next = startDiagnosticTest(next, planChapters(resources), 5);
       for (var i = 0; i < 2; i++) {
@@ -83,7 +86,10 @@ void main() {
     await repository.update(course, (s) {
       var next = applyObjective(
         s,
-        TrainingObjective(kind: ObjectiveKind.improve, setOn: '2026-10-26'),
+        const TrainingObjective(
+          kind: ObjectiveKind.improve,
+          setOn: '2026-10-26',
+        ),
       );
       next = startQuestionnaire(next);
       next = answerQuestionnaire(next, parts.first, TopicLevel.practicing);

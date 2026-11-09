@@ -71,7 +71,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final failure = context.watch<SchoolCubit>().state.failure;
+    final failure = context.select((SchoolCubit cubit) => cubit.state.failure);
     if (failure != null) {
       return LoadErrorScreen(
         kind: LoadErrorKind.fromFailure(failure),

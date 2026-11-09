@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/share/share_repository.dart';
+import '../../../config/view_models/share.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/app_links.dart';
 import '../../../domain/models/daily_final.dart';
@@ -96,7 +96,7 @@ class _DailyShareSheetState extends State<_DailyShareSheet> {
 
   Future<void> _share(BuildContext context) async {
     final text = _text(context);
-    final repository = context.read<ShareRepository>();
+    final shareImage = shareImageAction(context);
     final analytics = context.analytics;
     final navigator = Navigator.of(context);
     final background = Theme.of(context).colorScheme.surface;
@@ -111,11 +111,7 @@ class _DailyShareSheetState extends State<_DailyShareSheet> {
         ),
       ),
     );
-    await repository.shareImage(
-      png,
-      name: 'lucena-final-do-dia.png',
-      text: text,
-    );
+    await shareImage(png, name: 'lucena-final-do-dia.png', text: text);
     // Ao voltar do menu do sistema, a folha fecha e a partida segue.
     if (navigator.mounted) navigator.pop();
   }

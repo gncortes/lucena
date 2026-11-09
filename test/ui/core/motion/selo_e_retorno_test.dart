@@ -211,7 +211,7 @@ void main() {
       'hero do tabuleiro (Gabriel, 04/11)', (tester) async {
     await tester.pumpWidget(
       tela(
-        TabuleiroHero(
+        const TabuleiroHero(
           id: 'x',
           child: TrocaComFade(
             chave: 1,
@@ -221,7 +221,7 @@ void main() {
               orientacao: Side.white,
               tamanho: tamanho,
               vibrar: false,
-              child: const ColoredBox(color: Colors.brown),
+              child: ColoredBox(color: Colors.brown),
             ),
           ),
         ),

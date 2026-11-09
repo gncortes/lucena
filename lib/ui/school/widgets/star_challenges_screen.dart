@@ -33,7 +33,9 @@ class StarChallengesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final failure = context.watch<StarChallengesCubit>().state.failure;
+    final failure = context.select(
+      (StarChallengesCubit cubit) => cubit.state.failure,
+    );
     if (failure != null) {
       return challengeLoadError(
         context,

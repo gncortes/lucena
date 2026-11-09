@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
-/// De onde vem a foto do perfil.
-enum PhotoSource { camera, gallery }
+import '../../domain/models/photo_source.dart';
+
+export '../../domain/models/photo_source.dart';
 
 /// A câmera e a galeria do aparelho (`image_picker`).
 class PhotoPickerService {

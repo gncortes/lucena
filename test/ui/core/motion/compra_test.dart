@@ -22,13 +22,13 @@ void main() {
     ],
   );
 
-  final falha = Column(
+  final falha = const Column(
     children: [
-      const AvisoQueAbre(
+      AvisoQueAbre(
         icone: Icon(Icons.error_outline),
         child: SizedBox(height: 80, child: Text('A compra não foi feita.')),
       ),
-      const Text('Abaixo'),
+      Text('Abaixo'),
     ],
   );
 

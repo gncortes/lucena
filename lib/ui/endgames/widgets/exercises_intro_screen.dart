@@ -43,8 +43,6 @@ class ExercisesIntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final state = context.watch<EndgameLessonCubit>().state;
     if (endgameLoadError(context, state) case final error?) return error;
     final lesson = state.lesson;
@@ -52,9 +50,7 @@ class ExercisesIntroScreen extends StatelessWidget {
     final next = state.nextExercise;
     if (lesson != null && lesson.id.startsWith('pilares.')) {
       final chapter =
-          int.tryParse(
-            RegExp(r'\.c(\d+)').firstMatch(lesson.id)?.group(1) ?? '',
-          ) ??
+          int.tryParse(_chapterNumber.firstMatch(lesson.id)?.group(1) ?? '') ??
           state.lessonNumber;
       return TestCanvasIntroPage(
         chapter: chapter,
@@ -132,146 +128,190 @@ class ExercisesIntroScreen extends StatelessWidget {
                           ],
                           const SizedBox(height: AppSpacing.lg),
                           // O que vale cada estrela, e o que erro e dica tiram.
-                          _InfoCard(
-                            child: Column(
-                              children: [
-                                // Quebra em duas linhas se faltar largura
-                                // (idioma longo, letra grande).
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: AppSpacing.lg,
-                                  runSpacing: AppSpacing.xs,
-                                  children: [
-                                    for (final points in [3, 2, 1])
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          ValueStar(points: points, size: 26),
-                                          const SizedBox(width: AppSpacing.xs),
-                                          Text(
-                                            l10n.exercisePoints(points),
-                                            style: theme.textTheme.labelLarge,
-                                          ),
-                                        ],
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(height: AppSpacing.sm),
-                                Text(
-                                  l10n.exercisesIntroStarLegend,
-                                  key: ExercisesIntroKeys.legend,
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          const _StarValueCard(),
                           const SizedBox(height: AppSpacing.md),
                           // As faixas da nota: o que cada uma pede.
-                          _InfoCard(
-                            child: Column(
-                              key: ExercisesIntroKeys.tiers,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                for (final entry in tiers)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: AppSpacing.xs,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 56,
-                                          child: GradeMedal(
-                                            grade: entry.key,
-                                            size: 22,
-                                          ),
-                                        ),
-                                        const SizedBox(width: AppSpacing.sm),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                gradeName(l10n, entry.key),
-                                                style: theme
-                                                    .textTheme
-                                                    .titleSmall
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          AppWeight.strong,
-                                                    ),
-                                              ),
-                                              Text(
-                                                l10n.exercisesDoneScore(
-                                                  entry.value,
-                                                  state.maxScore,
-                                                ),
-                                                style: theme.textTheme.bodySmall
-                                                    ?.copyWith(
-                                                      color: colors
-                                                          .onSurfaceVariant,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                              ],
-                            ),
+                          _GradeTiersCard(
+                            tiers: tiers,
+                            maxScore: state.maxScore,
                           ),
                           const SizedBox(height: AppSpacing.md),
                           // Depois: a lista fica aberta para rever e analisar.
-                          _InfoCard(
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.open_in_new_rounded,
-                                  color: colors.primary,
-                                ),
-                                const SizedBox(width: AppSpacing.md),
-                                Expanded(
-                                  child: Text(
-                                    l10n.exercisesIntroAfter,
-                                    key: ExercisesIntroKeys.after,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: colors.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          const _AfterCard(),
                         ],
                       ),
                     ),
                   ),
                   // Fixo embaixo, como o "Continuar" da aula.
-                  ActionsFooter(
-                    children: [
-                      FilledButton.icon(
-                        key: ExercisesIntroKeys.start,
-                        icon: const Icon(Icons.play_arrow_rounded),
-                        onPressed: next == null
-                            ? null
-                            : () => context.pushReplacement(
-                                Routes.endgameExercise(lesson.id, next.id),
-                              ),
-                        label: Text(
-                          state.solved == 0
-                              ? l10n.endgameExercisesStart
-                              : l10n.endgameExercisesContinue,
-                        ),
-                      ),
-                    ],
+                  _StartFooter(
+                    onStart: next == null
+                        ? null
+                        : () => context.pushReplacement(
+                            Routes.endgameExercise(lesson.id, next.id),
+                          ),
+                    starting: state.solved == 0,
                   ),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+/// Fixo embaixo, como o "Continuar" da aula: abre o primeiro (ou o próximo).
+class _StartFooter extends StatelessWidget {
+  const _StartFooter({required this.onStart, required this.starting});
+
+  final VoidCallback? onStart;
+  final bool starting;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ActionsFooter(
+      children: [
+        FilledButton.icon(
+          key: ExercisesIntroKeys.start,
+          icon: const Icon(Icons.play_arrow_rounded),
+          onPressed: onStart,
+          label: Text(
+            starting
+                ? l10n.endgameExercisesStart
+                : l10n.endgameExercisesContinue,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// O que vale cada estrela, e o que erro e dica tiram.
+class _StarValueCard extends StatelessWidget {
+  const _StarValueCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return _InfoCard(
+      child: Column(
+        children: [
+          // Quebra em duas linhas se faltar largura
+          // (idioma longo, letra grande).
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: AppSpacing.lg,
+            runSpacing: AppSpacing.xs,
+            children: [
+              for (final points in [3, 2, 1])
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ValueStar(points: points, size: 26),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      l10n.exercisePoints(points),
+                      style: theme.textTheme.labelLarge,
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.exercisesIntroStarLegend,
+            key: ExercisesIntroKeys.legend,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// As faixas da nota: o que cada uma pede.
+class _GradeTiersCard extends StatelessWidget {
+  const _GradeTiersCard({required this.tiers, required this.maxScore});
+
+  final List<MapEntry<ExerciseGrade, int>> tiers;
+  final int maxScore;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return _InfoCard(
+      child: Column(
+        key: ExercisesIntroKeys.tiers,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final entry in tiers)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 56,
+                    child: GradeMedal(grade: entry.key, size: 22),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          gradeName(l10n, entry.key),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: AppWeight.strong,
+                          ),
+                        ),
+                        Text(
+                          l10n.exercisesDoneScore(entry.value, maxScore),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Depois: a lista fica aberta para rever e analisar.
+class _AfterCard extends StatelessWidget {
+  const _AfterCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return _InfoCard(
+      child: Row(
+        children: [
+          Icon(Icons.open_in_new_rounded, color: colors.primary),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              l10n.exercisesIntroAfter,
+              key: ExercisesIntroKeys.after,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -326,22 +366,40 @@ class TestCanvasIntroPage extends StatelessWidget {
     ];
     return EntradaDaTela(
       id: 'PropV1TreinoTesteIntro',
-      child: _scaffold(context, t, facts, names, thresholds),
+      child: _IntroScaffold(
+        page: this,
+        t: t,
+        facts: facts,
+        names: names,
+        thresholds: thresholds,
+      ),
     );
   }
+}
 
-  Widget _scaffold(
-    BuildContext context,
-    AppLocalizations t,
-    List<(IconData, String, String)> facts,
-    List<String> names,
-    List<int> thresholds,
-  ) {
+/// A tela da introdução do teste: barra, os dois cartões e o rodapé.
+class _IntroScaffold extends StatelessWidget {
+  const _IntroScaffold({
+    required this.page,
+    required this.t,
+    required this.facts,
+    required this.names,
+    required this.thresholds,
+  });
+
+  final TestCanvasIntroPage page;
+  final AppLocalizations t;
+  final List<(IconData, String, String)> facts;
+  final List<String> names;
+  final List<int> thresholds;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       key: ExercisesIntroKeys.screen,
       appBar: LucenaAppBar(
         title: Text(
-          t.testCanvasTitle(chapter),
+          t.testCanvasTitle(page.chapter),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -361,114 +419,13 @@ class TestCanvasIntroPage extends StatelessWidget {
                     children: itens,
                   ),
                   itens: [
+                    ItemDaCascata.texto(_FactsCard(facts: facts)),
                     ItemDaCascata.texto(
-                      _TestCanvasCard(
-                        child: Column(
-                          key: TestCanvasKeys.facts,
-                          spacing: 14,
-                          children: [
-                            for (final (icon, title, body) in facts)
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                spacing: 12,
-                                children: [
-                                  Icon(
-                                    icon,
-                                    size: AppIconSize.standard,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          title,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            height: 20 / 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Text(
-                                          body,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            height: 16 / 12,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    ItemDaCascata.texto(
-                      _TestCanvasCard(
-                        child: Column(
-                          key: ExercisesIntroKeys.tiers,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          spacing: 6,
-                          children: [
-                            Text(
-                              t.testCanvasMedals,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 20 / 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            for (var i = 0; i < 5; i++)
-                              SizedBox(
-                                height: 28,
-                                child: Row(
-                                  spacing: 8,
-                                  children: [
-                                    SizedBox(
-                                      width: 56,
-                                      height: 24,
-                                      child: Center(
-                                        child: TestCanvasMedal(
-                                          grade: ExerciseGrade.values[4 - i],
-                                          size: 24,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        names[i],
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          height: 20 / 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      i == 4
-                                          ? t.testCanvasBelow(thresholds[i])
-                                          : t.testCanvasScore(
-                                              thresholds[i],
-                                              count,
-                                            ),
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        height: 20 / 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
+                      _TiersCard(
+                        t: t,
+                        count: page.count,
+                        names: names,
+                        thresholds: thresholds,
                       ),
                     ),
                   ],
@@ -480,18 +437,145 @@ class TestCanvasIntroPage extends StatelessWidget {
               children: [
                 FilledButton.icon(
                   key: ExercisesIntroKeys.start,
-                  onPressed: onStart,
+                  onPressed: page.onStart,
                   icon: Icon(
-                    finished
+                    page.finished
                         ? Icons.emoji_events_outlined
                         : CanvasSymbols.playArrow,
                   ),
-                  label: Text(finished ? t.gameSeeResult : t.endgamePartStart),
+                  label: Text(
+                    page.finished ? t.gameSeeResult : t.endgamePartStart,
+                  ),
                 ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// O cartão dos fatos do teste (quantas questões, sem dica, sem pressa).
+class _FactsCard extends StatelessWidget {
+  const _FactsCard({required this.facts});
+
+  final List<(IconData, String, String)> facts;
+
+  @override
+  Widget build(BuildContext context) {
+    return _TestCanvasCard(
+      child: Column(
+        key: TestCanvasKeys.facts,
+        spacing: 14,
+        children: [
+          for (final (icon, title, body) in facts)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 12,
+              children: [
+                Icon(
+                  icon,
+                  size: AppIconSize.standard,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          height: 20 / 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        body,
+                        style: TextStyle(
+                          fontSize: 12,
+                          height: 16 / 12,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O cartão das faixas de nota, da medalha perfeita à abaixo do mínimo.
+class _TiersCard extends StatelessWidget {
+  const _TiersCard({
+    required this.t,
+    required this.count,
+    required this.names,
+    required this.thresholds,
+  });
+
+  final AppLocalizations t;
+  final int count;
+  final List<String> names;
+  final List<int> thresholds;
+
+  @override
+  Widget build(BuildContext context) {
+    return _TestCanvasCard(
+      child: Column(
+        key: ExercisesIntroKeys.tiers,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 6,
+        children: [
+          Text(
+            t.testCanvasMedals,
+            style: const TextStyle(
+              fontSize: 14,
+              height: 20 / 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          for (var i = 0; i < 5; i++)
+            SizedBox(
+              height: 28,
+              child: Row(
+                spacing: 8,
+                children: [
+                  SizedBox(
+                    width: 56,
+                    height: 24,
+                    child: Center(
+                      child: TestCanvasMedal(
+                        grade: ExerciseGrade.values[4 - i],
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      names[i],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 20 / 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    i == 4
+                        ? t.testCanvasBelow(thresholds[i])
+                        : t.testCanvasScore(thresholds[i], count),
+                    style: const TextStyle(fontSize: 14, height: 20 / 14),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -614,3 +698,5 @@ class _FactCard extends StatelessWidget {
     );
   }
 }
+
+final _chapterNumber = RegExp(r'\.c(\d+)');

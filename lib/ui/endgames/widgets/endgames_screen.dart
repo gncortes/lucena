@@ -35,7 +35,9 @@ class EndgamesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final failure = context.watch<EndgamesCubit>().state.failure;
+    final failure = context.select(
+      (EndgamesCubit cubit) => cubit.state.failure,
+    );
     if (failure != null) {
       return LoadErrorScreen(
         kind: LoadErrorKind.fromFailure(failure),

@@ -65,84 +65,16 @@ class _PlacementResultViewState extends State<PlacementResultView> {
       id: levels.length > 1
           ? 'TelaTesteResultadoDuasFaixas'
           : 'TelaTesteResultado',
-      child: _content(context, result, chosen, levels),
-    );
-  }
-
-  Widget _content(
-    BuildContext context,
-    PlacementResult result,
-    RatingLevel chosen,
-    List<RatingLevel> levels,
-  ) {
-    final l10n = context.l10n;
-    return Column(
-      key: PlacementKeys.result,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          // Cabeçalho grande que recolhe ao rolar: o título ganha destaque
-          // sobre a faixa e some do caminho do mapa e do roteiro.
-          // Barra de rolagem sempre visível: a lista de temas passa por baixo
-          // do botão e a barra avisa que há mais.
-          child: Scrollbar(
-            controller: _scroll,
-            thumbVisibility: true,
-            child: CustomScrollView(
-              controller: _scroll,
-              slivers: [
-                SliverAppBar.large(
-                  key: PlacementKeys.resultHeader,
-                  pinned: true,
-                  title: Text(l10n.placementTitle),
-                ),
-                SliverPadding(
-                  padding: scrollPadding(
-                    context,
-                    left: AppSpacing.screen,
-                    top: AppSpacing.sm,
-                    right: AppSpacing.screen,
-                    bottom: AppSpacing.lg,
-                  ),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _LevelCard(result: result, shown: chosen),
-                        if (levels.length > 1) ...[
-                          const SizedBox(height: AppSpacing.betweenCards),
-                          _TwoLevels(
-                            levels: levels,
-                            chosen: chosen,
-                            onChoose: (level) =>
-                                setState(() => _chosen = level),
-                          ),
-                        ],
-                        const SizedBox(height: AppSpacing.xl),
-                        _SkillMapSection(state: widget.state),
-                        if (widget.state.roadmap?.steps.isNotEmpty ??
-                            false) ...[
-                          const SizedBox(height: AppSpacing.xl),
-                          _Roadmap(state: widget.state),
-                        ],
-                        const SizedBox(height: AppSpacing.lg),
-                        _Sources(text: l10n.placementSources),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        _Actions(
-          onUse: () async {
-            await context.read<PlacementCubit>().apply(level: chosen);
-            widget.onDone?.call();
-          },
-          onPreferRating: widget.onPreferRating,
-        ),
-      ],
+      child: _ResultContent(
+        result: result,
+        chosen: chosen,
+        levels: levels,
+        state: widget.state,
+        scroll: _scroll,
+        onChoose: (level) => setState(() => _chosen = level),
+        onDone: widget.onDone,
+        onPreferRating: widget.onPreferRating,
+      ),
     );
   }
 }
@@ -673,4 +605,97 @@ int? _rulerStart(PlacementResult result) {
   final first = RatingLevel.casual.min!;
   final start = result.low < result.theta ? result.low : result.theta;
   return start < first ? start : null;
+}
+
+class _ResultContent extends StatelessWidget {
+  const _ResultContent({
+    required this.result,
+    required this.chosen,
+    required this.levels,
+    required this.state,
+    required this.scroll,
+    required this.onChoose,
+    required this.onDone,
+    required this.onPreferRating,
+  });
+
+  final PlacementResult result;
+  final RatingLevel chosen;
+  final List<RatingLevel> levels;
+  final PlacementViewState state;
+  final ScrollController scroll;
+  final ValueChanged<RatingLevel> onChoose;
+  final VoidCallback? onDone;
+  final VoidCallback? onPreferRating;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      key: PlacementKeys.result,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          // Cabeçalho grande que recolhe ao rolar: o título ganha destaque
+          // sobre a faixa e some do caminho do mapa e do roteiro.
+          // Barra de rolagem sempre visível: a lista de temas passa por baixo
+          // do botão e a barra avisa que há mais.
+          child: Scrollbar(
+            controller: scroll,
+            thumbVisibility: true,
+            child: CustomScrollView(
+              controller: scroll,
+              slivers: [
+                SliverAppBar.large(
+                  key: PlacementKeys.resultHeader,
+                  pinned: true,
+                  title: Text(l10n.placementTitle),
+                ),
+                SliverPadding(
+                  padding: scrollPadding(
+                    context,
+                    left: AppSpacing.screen,
+                    top: AppSpacing.sm,
+                    right: AppSpacing.screen,
+                    bottom: AppSpacing.lg,
+                  ),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _LevelCard(result: result, shown: chosen),
+                        if (levels.length > 1) ...[
+                          const SizedBox(height: AppSpacing.betweenCards),
+                          _TwoLevels(
+                            levels: levels,
+                            chosen: chosen,
+                            onChoose: onChoose,
+                          ),
+                        ],
+                        const SizedBox(height: AppSpacing.xl),
+                        _SkillMapSection(state: state),
+                        if (state.roadmap?.steps.isNotEmpty ?? false) ...[
+                          const SizedBox(height: AppSpacing.xl),
+                          _Roadmap(state: state),
+                        ],
+                        const SizedBox(height: AppSpacing.lg),
+                        _Sources(text: l10n.placementSources),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        _Actions(
+          onUse: () async {
+            await context.read<PlacementCubit>().apply(level: chosen);
+            onDone?.call();
+          },
+          onPreferRating: onPreferRating,
+        ),
+      ],
+    );
+  }
 }

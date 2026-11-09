@@ -97,6 +97,63 @@ class TimeDisplay extends StatelessWidget {
     };
   }
 
+  // Caixa, número e acento do tipo e do estado (o relógio usa a paleta dele).
+  (Color background, Color foreground, Color accent) _palette(
+    BuildContext context,
+    ColorScheme colors,
+    (Color, Color, Color) clockPalette,
+  ) {
+    if (type == TimeDisplayType.clock) {
+      return (clockPalette.$1, clockPalette.$2, clockPalette.$2);
+    }
+    return switch (state) {
+      TimeDisplayState.normal => (
+        size == TimeDisplaySize.block
+            ? colors.surfaceContainerLow
+            : colors.surfaceContainerHighest,
+        colors.onSurface,
+        colors.onSurfaceVariant,
+      ),
+      TimeDisplayState.active => (
+        colors.surface,
+        colors.onSurface,
+        colors.onSurface,
+      ),
+      TimeDisplayState.low => (
+        colors.errorContainer,
+        colors.onErrorContainer,
+        colors.error,
+      ),
+      TimeDisplayState.paused => (
+        colors.surfaceContainerHighest,
+        colors.onSurfaceVariant,
+        colors.onSurfaceVariant,
+      ),
+      // Recorde: verde de sucesso do GoalStyle, sólido, com troféu e
+      // tempo em branco (T67d, variante B; 5,1:1 no claro).
+      TimeDisplayState.highlight => (
+        GoalStyle.of(context, PositionGoal.win).color,
+        AppColors.white,
+        AppColors.white,
+      ),
+    };
+  }
+
+  // O ícone do tipo, ou o que o chamador trocou.
+  IconData? _shownIcon(bool running) =>
+      icon ??
+      switch (type) {
+        TimeDisplayType.clock => running ? Icons.av_timer_outlined : null,
+        TimeDisplayType.stopwatch => Icons.timer_outlined,
+        TimeDisplayType.countdown => Icons.hourglass_top_rounded,
+        TimeDisplayType.record =>
+          state == TimeDisplayState.highlight
+              ? Icons.emoji_events_rounded
+              : Icons.emoji_events_outlined,
+        TimeDisplayType.duration => Icons.schedule_outlined,
+        TimeDisplayType.pace => Icons.bolt_rounded,
+      };
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -109,95 +166,33 @@ class TimeDisplay extends StatelessWidget {
     final running =
         state == TimeDisplayState.active || state == TimeDisplayState.low;
     final clockPalette = TimeDisplay.clockColors(colors, side, state);
-    final (background, foreground, accent) = clock
-        ? (clockPalette.$1, clockPalette.$2, clockPalette.$2)
-        : switch (state) {
-            TimeDisplayState.normal => (
-              block
-                  ? colors.surfaceContainerLow
-                  : colors.surfaceContainerHighest,
-              colors.onSurface,
-              colors.onSurfaceVariant,
-            ),
-            TimeDisplayState.active => (
-              colors.surface,
-              colors.onSurface,
-              colors.onSurface,
-            ),
-            TimeDisplayState.low => (
-              colors.errorContainer,
-              colors.onErrorContainer,
-              colors.error,
-            ),
-            TimeDisplayState.paused => (
-              colors.surfaceContainerHighest,
-              colors.onSurfaceVariant,
-              colors.onSurfaceVariant,
-            ),
-            // Recorde: verde de sucesso do GoalStyle, sólido, com troféu e
-            // tempo em branco (T67d, variante B; 5,1:1 no claro).
-            TimeDisplayState.highlight => (
-              GoalStyle.of(context, PositionGoal.win).color,
-              AppColors.white,
-              AppColors.white,
-            ),
-          };
-    final shownIcon =
-        icon ??
-        switch (type) {
-          TimeDisplayType.clock => running ? Icons.av_timer_outlined : null,
-          TimeDisplayType.stopwatch => Icons.timer_outlined,
-          TimeDisplayType.countdown => Icons.hourglass_top_rounded,
-          TimeDisplayType.record =>
-            state == TimeDisplayState.highlight
-                ? Icons.emoji_events_rounded
-                : Icons.emoji_events_outlined,
-          TimeDisplayType.duration => Icons.schedule_outlined,
-          TimeDisplayType.pace => Icons.bolt_rounded,
-        };
+    final (background, foreground, accent) = _palette(
+      context,
+      colors,
+      clockPalette,
+    );
+    final shownIcon = _shownIcon(running);
     final labelWidget = label == null || label!.isEmpty
         ? null
-        : Text(
-            label!,
-            maxLines: compact ? 1 : null,
-            overflow: compact ? TextOverflow.ellipsis : null,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: clock || state == TimeDisplayState.highlight
-                  ? foreground
-                  : colors.onSurfaceVariant,
-            ),
+        : _TimeLabel(
+            label: label!,
+            compact: compact,
+            color: clock || state == TimeDisplayState.highlight
+                ? foreground
+                : colors.onSurfaceVariant,
           );
-    final numbers = valueWidget == null
-        ? Text(
-            value,
-            key: textKey,
-            textDirection: TextDirection.ltr,
-            maxLines: compact ? 1 : null,
-            overflow: compact ? TextOverflow.ellipsis : null,
-            style:
-                (block
-                        ? theme.textTheme.displaySmall
-                        : inline
-                        ? theme.textTheme.labelLarge
-                        : theme.textTheme.titleLarge)
-                    ?.copyWith(
-                      color: plain
-                          ? state == TimeDisplayState.low
-                                ? colors.error
-                                : colors.onSurface
-                          : foreground,
-                      fontSize: plain
-                          ? 16
-                          : (block ? 44 : (inline ? 14 : (clock ? 22 : 20))),
-                      height: plain ? 1.5 : null,
-                      fontWeight: inline ? AppWeight.strong : AppWeight.heavy,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-          )
-        : Directionality(
-            textDirection: TextDirection.ltr,
-            child: KeyedSubtree(key: textKey, child: valueWidget!),
-          );
+    final numbers = _TimeNumbers(
+      value: value,
+      valueWidget: valueWidget,
+      textKey: textKey,
+      compact: compact,
+      block: block,
+      inline: inline,
+      clock: clock,
+      plain: plain,
+      state: state,
+      foreground: foreground,
+    );
     if (plain) {
       return Semantics(
         container: true,
@@ -225,26 +220,12 @@ class TimeDisplay extends StatelessWidget {
         if (compact) Flexible(child: labelWidget) else labelWidget,
       if (compact) Flexible(child: numbers) else numbers,
     ];
-    final content = compact
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: clock
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.center,
-            children: [
-              for (final (index, child) in children.indexed) ...[
-                if (index > 0) const SizedBox(width: AppSpacing.xs),
-                child,
-              ],
-            ],
-          )
-        : Wrap(
-            alignment: clock ? WrapAlignment.end : WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: inline ? 4 : 8,
-            runSpacing: AppSpacing.xs,
-            children: children,
-          );
+    final content = _TimeContent(
+      compact: compact,
+      clock: clock,
+      inline: inline,
+      children: children,
+    );
     return Semantics(
       container: true,
       label: semanticsLabel,
@@ -283,31 +264,167 @@ class TimeDisplay extends StatelessWidget {
                   if (type == TimeDisplayType.countdown &&
                       progress != null) ...[
                     const SizedBox(height: AppSpacing.sm),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppShape.full),
-                      child: SizedBox(
-                        height: 8,
-                        child: ColoredBox(
-                          color: colors.surfaceContainerHighest,
-                          child: Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: FractionallySizedBox(
-                              widthFactor: progress!.clamp(0.0, 1.0),
-                              heightFactor: 1,
-                              child: ColoredBox(
-                                color: state == TimeDisplayState.low
-                                    ? colors.error
-                                    : colors.primary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    _CountdownBar(progress: progress!, state: state),
                   ],
                 ],
               )
             : content,
+      ),
+    );
+  }
+}
+
+/// O rótulo do tempo (uma linha só quando o relógio é compacto).
+class _TimeLabel extends StatelessWidget {
+  const _TimeLabel({
+    required this.label,
+    required this.compact,
+    required this.color,
+  });
+
+  final String label;
+  final bool compact;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Text(
+    label,
+    maxLines: compact ? 1 : null,
+    overflow: compact ? TextOverflow.ellipsis : null,
+    style: Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
+  );
+}
+
+/// Os números do tempo, sempre da esquerda para a direita.
+class _TimeNumbers extends StatelessWidget {
+  const _TimeNumbers({
+    required this.value,
+    required this.valueWidget,
+    required this.textKey,
+    required this.compact,
+    required this.block,
+    required this.inline,
+    required this.clock,
+    required this.plain,
+    required this.state,
+    required this.foreground,
+  });
+
+  final String value;
+  final Widget? valueWidget;
+  final Key? textKey;
+  final bool compact;
+  final bool block;
+  final bool inline;
+  final bool clock;
+  final bool plain;
+  final TimeDisplayState state;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return valueWidget == null
+        ? Text(
+            value,
+            key: textKey,
+            textDirection: TextDirection.ltr,
+            maxLines: compact ? 1 : null,
+            overflow: compact ? TextOverflow.ellipsis : null,
+            style:
+                (block
+                        ? theme.textTheme.displaySmall
+                        : inline
+                        ? theme.textTheme.labelLarge
+                        : theme.textTheme.titleLarge)
+                    ?.copyWith(
+                      color: plain
+                          ? state == TimeDisplayState.low
+                                ? colors.error
+                                : colors.onSurface
+                          : foreground,
+                      fontSize: plain
+                          ? 16
+                          : (block ? 44 : (inline ? 14 : (clock ? 22 : 20))),
+                      height: plain ? 1.5 : null,
+                      fontWeight: inline ? AppWeight.strong : AppWeight.heavy,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+          )
+        : Directionality(
+            textDirection: TextDirection.ltr,
+            child: KeyedSubtree(key: textKey, child: valueWidget!),
+          );
+  }
+}
+
+/// Ícone, rótulo e números, em linha única (compacto) ou quebrando linha.
+class _TimeContent extends StatelessWidget {
+  const _TimeContent({
+    required this.compact,
+    required this.clock,
+    required this.inline,
+    required this.children,
+  });
+
+  final bool compact;
+  final bool clock;
+  final bool inline;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => compact
+      ? Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: clock
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.center,
+          children: [
+            for (final (index, child) in children.indexed) ...[
+              if (index > 0) const SizedBox(width: AppSpacing.xs),
+              child,
+            ],
+          ],
+        )
+      : Wrap(
+          alignment: clock ? WrapAlignment.end : WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: inline ? 4 : 8,
+          runSpacing: AppSpacing.xs,
+          children: children,
+        );
+}
+
+/// A barra de progresso da contagem regressiva em bloco.
+class _CountdownBar extends StatelessWidget {
+  const _CountdownBar({required this.progress, required this.state});
+
+  final double progress;
+  final TimeDisplayState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppShape.full),
+      child: SizedBox(
+        height: 8,
+        child: ColoredBox(
+          color: colors.surfaceContainerHighest,
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: FractionallySizedBox(
+              widthFactor: progress.clamp(0.0, 1.0),
+              heightFactor: 1,
+              child: ColoredBox(
+                color: state == TimeDisplayState.low
+                    ? colors.error
+                    : colors.primary,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

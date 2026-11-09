@@ -22,7 +22,10 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showLucenaSnackBar(
   Key? key,
 }) {
   final messenger = ScaffoldMessenger.of(context);
-  final media = MediaQuery.of(context);
+  final size = MediaQuery.sizeOf(context);
+  final padding = MediaQuery.paddingOf(context);
+  final viewInsets = MediaQuery.viewInsetsOf(context);
+  final textScaler = MediaQuery.textScalerOf(context);
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
   messenger.hideCurrentSnackBar();
@@ -32,25 +35,21 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showLucenaSnackBar(
     final style =
         theme.snackBarTheme.contentTextStyle ?? theme.textTheme.bodyMedium;
     final width =
-        media.size.width -
+        size.width -
         2 * AppSpacing.lg -
         2 * _snackPaddingH -
         (icon == null ? 0 : AppIconSize.button + AppSpacing.md);
     final painter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: Directionality.of(context),
-      textScaler: media.textScaler,
+      textScaler: textScaler,
     )..layout(maxWidth: math.max(0, width));
     final height =
         math.max(painter.height, icon == null ? 0 : AppIconSize.button) +
         2 * _snackPaddingV;
     painter.dispose();
     // O Scaffold já ergue o aviso acima da faixa de baixo do sistema.
-    return media.size.height -
-        y -
-        height -
-        media.viewInsets.bottom -
-        media.padding.bottom;
+    return size.height - y - height - viewInsets.bottom - padding.bottom;
   }
 
   return messenger.showSnackBar(
@@ -75,10 +74,10 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showLucenaSnackBar(
                 AppSpacing.lg,
                 topAt != null
                     ? bottomFor(topAt)
-                    : media.size.height -
-                          media.padding.top -
+                    : size.height -
+                          padding.top -
                           kToolbarHeight -
-                          media.viewInsets.bottom -
+                          viewInsets.bottom -
                           110,
               ),
             )
