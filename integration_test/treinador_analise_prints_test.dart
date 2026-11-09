@@ -204,6 +204,72 @@ void main() {
     await _rolando($, '09-resumo', TreinadorKeys.resumo);
   });
 
+  // MP4 único do fluxo: Home → Análise → histórico com filtro → partida
+  // nova → espera da análise → exercícios → fim → análise completa.
+  patrolTest('T87 vídeo: fluxo inteiro', ($) async {
+    final app = AppRobot($);
+    final t = TreinadorRobot($);
+    final shot = TrainingCaptureRobot($);
+    final fake = FakeTreinadorRepository.comDados();
+    await app.open(
+      systemLocale: const Locale('pt'),
+      treinador: fake,
+      courseGrants: _assinante(),
+    );
+    await TrainingCaptureRobot.semFaixaDoTeste($);
+    Future<void> pausa([int ms = 1200]) => $.pump(Duration(milliseconds: ms));
+    await shot.begin('fluxo-completo');
+    await pausa(1000);
+    await t.abrirPelaHome();
+    await pausa(2000);
+    await t.aba(TreinadorKeys.tabPartidas);
+    await pausa(1500);
+    await $(TreinadorKeys.filtroRitmo('blitz')).tap();
+    await $.pumpAndSettle();
+    await pausa(1500);
+    await $(TreinadorKeys.filtroTodas).tap();
+    await $.pumpAndSettle();
+    await pausa(1000);
+    await t.abrirPartida(_nova);
+    await pausa(1500);
+    await $(TreinadorKeys.comecar).tap();
+    await t.esperarCarregando();
+    await pausa(4000);
+    t.concluir(fake, _nova);
+    await $(TreinadorKeys.inicio).waitUntilVisible();
+    await $.pumpAndSettle();
+    await pausa(1500);
+    await $(TreinadorKeys.comecar).tap();
+    await t.esperarExercicio();
+    await pausa(1000);
+    await t.errar();
+    await $(TreinadorKeys.tentarDeNovo).waitUntilVisible();
+    await pausa(1200);
+    await $(TreinadorKeys.tentarDeNovo).tap();
+    await $.pumpAndSettle();
+    await t.acertar();
+    await $(TreinadorKeys.proximo).waitUntilVisible();
+    await pausa(1200);
+    await $(TreinadorKeys.proximo).tap();
+    await $.pumpAndSettle();
+    for (var i = 0; i < 3; i++) {
+      await t.acertarEAvancar();
+    }
+    await $(TreinadorKeys.fim).waitUntilVisible();
+    await pausa(2500);
+    await $(TreinadorKeys.fimAnalise).tap();
+    await $(TreinadorKeys.analise).waitUntilVisible();
+    await $.pumpAndSettle();
+    await pausa(1500);
+    await $(GameDetailsKeys.tabMoves).tap();
+    await $.pumpAndSettle();
+    await pausa(1500);
+    await $(GameDetailsKeys.tabEngine).tap();
+    await $.pumpAndSettle();
+    await pausa(1500);
+    await shot.end('fluxo-completo', ready: TreinadorKeys.analise);
+  });
+
   patrolTest('T87 prints: espera com frases e dica do exercício', ($) async {
     final app = AppRobot($);
     final t = TreinadorRobot($);
