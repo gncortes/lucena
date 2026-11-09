@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'data/repositories/analysis/learning_analysis_repository.dart';
+import 'data/services/asset_service.dart';
 import 'data/services/preferences_service.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -121,6 +122,8 @@ import 'domain/use_cases/now.dart';
 import 'routing/push_route.dart';
 import 'routing/frentes/d2_routes.dart';
 import 'data/repositories/lesson_ad/course_grants_repository.dart';
+import 'data/repositories/treinador/curiosidades_repository.dart';
+import 'data/repositories/treinador/treinador_preferencias.dart';
 import 'data/repositories/treinador/treinador_repository.dart';
 import 'routing/router.dart';
 import 'routing/screen_tracker.dart';
@@ -686,6 +689,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<TreinadorRepository>.value(
           value: dependencies.treinadorRepository,
+        ),
+        RepositoryProvider<TreinadorPreferencias>(
+          create: (_) => TreinadorPreferencias(PreferencesService()),
+        ),
+        RepositoryProvider<CuriosidadesRepository>(
+          create: (_) => AssetCuriosidadesRepository(const AssetService()),
         ),
         RepositoryProvider<AlertsRepository>.value(
           value: dependencies.alertsRepository,

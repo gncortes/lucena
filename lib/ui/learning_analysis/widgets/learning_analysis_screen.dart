@@ -30,8 +30,19 @@ const _background = AppColors.trainingCanvasSurface;
 const _primary = AppColors.trainingAnalysisPrimary;
 
 class LearningAnalysisScreen extends StatelessWidget {
-  const LearningAnalysisScreen({this.engineName = 'Stockfish', super.key});
+  const LearningAnalysisScreen({
+    this.engineName = 'Stockfish',
+    this.title,
+    this.annotations = const {},
+    super.key,
+  });
   final String engineName;
+
+  /// O título no lugar de "Análise" (Treinador: "Análise da partida").
+  final String? title;
+
+  /// As marcas por nó da linha principal (sufixo de erro e comentário).
+  final Map<int, AnalysisAnnotation> annotations;
 
   @override
   Widget build(
@@ -62,7 +73,7 @@ class LearningAnalysisScreen extends StatelessWidget {
             icon: const Icon(CanvasSymbols.arrowBack),
           ),
           title: Text(
-            l10n.learningAnalysisTitle,
+            title ?? l10n.learningAnalysisTitle,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w400),
           ),
           actions: [
@@ -383,14 +394,18 @@ class LearningAnalysisScreen extends StatelessWidget {
         ),
       );
     }
+    var afterComment = false;
     void chip(int index, {bool alternate = false}) {
       final node = session.nodes[index];
       final parent = GameRules.fromFen(session.nodes[node.parent!].fen)!;
       final number = parent.turn == Side.white
           ? '${parent.fullmoves}. '
-          : node.parent == 0 || alternate
+          : node.parent == 0 || alternate || afterComment
           ? '${parent.fullmoves}... '
           : '';
+      afterComment = false;
+      final note = alternate ? null : annotations[index];
+      final selected = session.selected == index;
       widgets.add(
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -414,18 +429,29 @@ class LearningAnalysisScreen extends StatelessWidget {
                 minimumSize: const Size(0, 30),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                foregroundColor: session.selected == index
+                foregroundColor: selected
                     ? AppColors.chessWhiteColor
                     : AppColors.trainingCanvasInk,
-                backgroundColor: session.selected == index
-                    ? _primary
-                    : Colors.transparent,
+                backgroundColor: selected ? _primary : Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppShape.small),
                 ),
               ),
-              child: Text(
-                localizedSan(context.l10n, node.san!),
+              child: Text.rich(
+                TextSpan(
+                  text: localizedSan(context.l10n, node.san!),
+                  children: [
+                    if (note?.suffix case final suffix?)
+                      TextSpan(
+                        text: suffix,
+                        style: TextStyle(
+                          color: selected
+                              ? AppColors.chessWhiteColor
+                              : AppColors.trainingDayWrong,
+                        ),
+                      ),
+                  ],
+                ),
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -435,6 +461,26 @@ class LearningAnalysisScreen extends StatelessWidget {
           ],
         ),
       );
+      if (note?.comment case final comment? when comment.isNotEmpty) {
+        widgets.add(
+          SizedBox(
+            key: LearningAnalysisKeys.comment(index),
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
+              child: Text(
+                comment,
+                style: const TextStyle(
+                  fontSize: 14,
+                  height: 20 / 14,
+                  color: AppColors.trainingCanvasInk,
+                ),
+              ),
+            ),
+          ),
+        );
+        afterComment = true;
+      }
     }
 
     void branch(int parent) {

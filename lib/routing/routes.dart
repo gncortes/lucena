@@ -618,6 +618,23 @@ abstract final class Routes {
   /// "Conhecer o Pilares" das outras telas abrem aqui.
   static const pilaresSale = '/pilares';
 
+  /// O Treinador de partidas (T87): a casca na aba [aba] (`hoje`, `partidas`
+  /// ou `seuJogo`; nula abre em Hoje).
+  static String treinador({String? aba}) =>
+      aba == null ? '/treinador' : '/treinador?aba=$aba';
+
+  /// A partida do Treinador: início, espera, erro ou resumo.
+  static String treinadorPartida(String id) =>
+      '/treinador/partida/${Uri.encodeComponent(id)}';
+
+  /// Os exercícios da partida; [refazer] começa do 1 e zera o progresso.
+  static String treinadorExercicios(String id, {bool refazer = false}) =>
+      '${treinadorPartida(id)}/exercicios${refazer ? '?refazer=1' : ''}';
+
+  /// A análise completa da partida, aberta no meio-lance [lance].
+  static String treinadorAnalise(String id, {int? lance}) =>
+      '${treinadorPartida(id)}/analise${lance == null ? '' : '?lance=$lance'}';
+
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';
 

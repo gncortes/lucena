@@ -429,6 +429,7 @@ final class PartidaTreinador {
     this.fases = const FasesPartida(),
     this.temas = const [],
     this.analisadaEm,
+    this.erroMotivo,
     this.progresso,
   });
 
@@ -460,6 +461,13 @@ final class PartidaTreinador {
   final FasesPartida fases;
   final List<String> temas;
   final DateTime? analisadaEm;
+
+  /// Por que a análise falhou (só com [StatusPartida.erro]): `variante`
+  /// (não dá para refazer), `tempo`, `pgn` ou `outro`.
+  final String? erroMotivo;
+
+  /// A análise falhou de um jeito que tentar de novo resolve.
+  bool get podeRefazer => erroMotivo != 'variante';
 
   /// O espelho do progresso gravado pelo app.
   final ProgressoPartida? progresso;
@@ -500,6 +508,7 @@ final class PartidaTreinador {
       fases: FasesPartida.fromJson(m['fases']),
       temas: textos(m['temas']),
       analisadaEm: data(m['analisadaEm']),
+      erroMotivo: texto(m['erroMotivo']),
       progresso: m['progresso'] == null
           ? null
           : ProgressoPartida.fromJson(m['progresso']),
@@ -526,6 +535,7 @@ final class PartidaTreinador {
     'fases': fases.toJson(),
     'temas': temas,
     'analisadaEm': analisadaEm?.toIso8601String(),
+    if (erroMotivo != null) 'erroMotivo': erroMotivo,
     if (progresso != null) 'progresso': progresso!.toJson(),
   };
 
@@ -553,6 +563,7 @@ final class PartidaTreinador {
     fases: fases,
     temas: temas,
     analisadaEm: analisadaEm,
+    erroMotivo: erroMotivo,
     progresso: progresso ?? this.progresso,
   );
 }

@@ -43,12 +43,19 @@ abstract interface class TreinadorService {
 /// A Function respondeu com erro (código do `HttpsError`: `not-found`,
 /// `unavailable`, `permission-denied`, `unauthenticated`...).
 final class TreinadorCallException implements Exception {
-  const TreinadorCallException(this.code);
+  const TreinadorCallException(this.code, {this.motivo});
 
   final String code;
 
+  /// `details.motivo` de um `permission-denied`: `cota` (o grátis passou da
+  /// semana), `teto` (o assinante passou do mês) ou `inativo`.
+  final String? motivo;
+
+  /// O grátis passou da cota da semana: a saída é o plano.
+  bool get cota => code == 'permission-denied' && motivo == 'cota';
+
   @override
-  String toString() => 'TreinadorCallException($code)';
+  String toString() => 'TreinadorCallException($code, $motivo)';
 }
 
 /// Nomes das callables (combinados com a frente servidor).
@@ -102,7 +109,10 @@ class FirebaseTreinadorService implements TreinadorService {
     FirebaseFirestore? firestore,
     FirebaseFunctions? functions,
   }) : _db = firestore ?? FirebaseFirestore.instance,
-       _functions = functions ?? FirebaseFunctions.instance;
+       _functions = functions ?? FirebaseFunctions.instanceFor(region: regiao);
+
+  /// As callables do Treinador ficam em São Paulo (frente servidor).
+  static const regiao = 'southamerica-east1';
 
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
@@ -172,7 +182,11 @@ class FirebaseTreinadorService implements TreinadorService {
       final result = await _functions.httpsCallable(nome).call<Object?>(dados);
       return result.data;
     } on FirebaseFunctionsException catch (error) {
-      throw TreinadorCallException(error.code);
+      final details = error.details;
+      throw TreinadorCallException(
+        error.code,
+        motivo: details is Map ? details['motivo']?.toString() : null,
+      );
     } on FirebaseException catch (error) {
       throw TreinadorCallException(error.code);
     }

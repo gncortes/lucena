@@ -71,7 +71,13 @@ class LearningAnalysisCubit extends Cubit<LearningAnalysisState> {
       if (isClosed) return;
       emit(
         state.copyWith(
-          session: saved ?? state.session,
+          session: switch ((saved, launch.selected)) {
+            (null, _) => state.session,
+            (final s?, final pick?) when pick < s.nodes.length => s.select(
+              pick,
+            ),
+            (final s?, _) => s,
+          },
           settings: settings,
           ready: true,
         ),

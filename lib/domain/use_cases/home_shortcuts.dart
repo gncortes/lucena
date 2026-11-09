@@ -39,6 +39,9 @@ abstract final class HomeShortcuts {
     }
     return [
       ...shortcuts,
+      // A análise das partidas (T87) não tem caminho próprio na tela
+      // inicial: vem sempre, antes dos Problemas e das Estrelas.
+      HomeShortcut.analysis,
       if (visible.contains(HomePath.race)) HomeShortcut.race,
       if (visible.contains(HomePath.stars)) HomeShortcut.stars,
     ];

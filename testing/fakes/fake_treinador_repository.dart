@@ -39,6 +39,9 @@ class FakeTreinadorRepository implements TreinadorRepository {
 
   FalhaLigarConta? falhaLigar;
   String? falhaAnalisar;
+
+  /// O `details.motivo` da falha de [analisar] (`cota`, `teto`).
+  String? motivoAnalisar;
   bool analisarConclui = false;
 
   final ligacoes = <(Plataforma, String)>[];
@@ -136,7 +139,9 @@ class FakeTreinadorRepository implements TreinadorRepository {
   @override
   Future<void> analisar(String id, {bool avisar = true}) async {
     pedidosAnalise.add((id, avisar));
-    if (falhaAnalisar case final code?) throw TreinadorCallException(code);
+    if (falhaAnalisar case final code?) {
+      throw TreinadorCallException(code, motivo: motivoAnalisar);
+    }
     final atual = _partidas.where((p) => p.id == id).firstOrNull;
     if (atual == null) throw const TreinadorCallException('not-found');
     porPartida(atual.copyWith(status: StatusPartida.analisando));

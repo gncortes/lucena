@@ -87,6 +87,7 @@ flutter:
     - assets/progression/time_controls.json
     - assets/race/race_problems.json
     - assets/achievements.json
+    - assets/treinador/curiosidades.json
     - assets/legal/
     - assets/featured/featured.json
     - assets/daily/queue.json

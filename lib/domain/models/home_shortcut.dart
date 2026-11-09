@@ -27,4 +27,7 @@ enum HomeShortcut {
 
   /// Montar uma posição para jogar.
   customPosition,
+
+  /// A análise das partidas do usuário no Lichess ou no chess.com (T87).
+  analysis,
 }

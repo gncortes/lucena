@@ -30,6 +30,7 @@ extension HomeShortcutUi on HomeShortcut {
     HomeShortcut.stars => HomePath.stars.icon,
     HomeShortcut.freeBoard => HomePath.board.icon,
     HomeShortcut.customPosition => HomePath.position.icon,
+    HomeShortcut.analysis => Icons.insights,
   };
 
   /// O fundo e a cor do ícone (canvas `CompModoTile`).
@@ -54,7 +55,8 @@ extension HomeShortcutUi on HomeShortcut {
         HomeShortcut.speedrun ||
         HomeShortcut.race ||
         HomeShortcut.freeBoard ||
-        HomeShortcut.customPosition => (
+        HomeShortcut.customPosition ||
+        HomeShortcut.analysis => (
           background: colors.surfaceContainerHighest,
           foreground: colors.onSurface,
         ),
@@ -70,6 +72,7 @@ extension HomeShortcutUi on HomeShortcut {
     HomeShortcut.stars => l10n.homeShortcutStars,
     HomeShortcut.freeBoard => HomePath.board.title(l10n),
     HomeShortcut.customPosition => HomePath.position.title(l10n),
+    HomeShortcut.analysis => l10n.treinadorTitle,
   };
 
   String body(AppLocalizations l10n) => switch (this) {
@@ -82,6 +85,7 @@ extension HomeShortcutUi on HomeShortcut {
     HomeShortcut.stars => l10n.homeShortcutStarsBody,
     HomeShortcut.freeBoard => l10n.homeShortcutBoardBody,
     HomeShortcut.customPosition => l10n.homeShortcutPositionBody,
+    HomeShortcut.analysis => l10n.treinadorHomeBody,
   };
 
   /// A tela que o atalho abre. [hasPlan]: os Pilares abrem o plano para quem
@@ -102,6 +106,7 @@ extension HomeShortcutUi on HomeShortcut {
     HomeShortcut.stars => HomePath.stars.route,
     HomeShortcut.freeBoard => HomePath.board.route,
     HomeShortcut.customPosition => HomePath.position.route,
+    HomeShortcut.analysis => Routes.treinador(),
   };
 
   /// A mesma key dos cartões de caminho de antes.
@@ -115,6 +120,7 @@ extension HomeShortcutUi on HomeShortcut {
     HomeShortcut.stars => HomeKeys.starsButton,
     HomeShortcut.freeBoard => HomeKeys.boardButton,
     HomeShortcut.customPosition => HomeKeys.positionButton,
+    HomeShortcut.analysis => HomeKeys.analysisButton,
   };
 }
 

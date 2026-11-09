@@ -15,6 +15,7 @@ abstract final class HomeKeys {
   static const pillarsButton = Key('home.pillars');
   static const boardButton = Key('home.board');
   static const positionButton = Key('home.position');
+  static const analysisButton = Key('home.analysis');
   static const forYouButton = Key('home.forYou');
 
   /// O esqueleto do primeiro carregamento e a tela de erro (H-INI-01).

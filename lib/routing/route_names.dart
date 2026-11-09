@@ -152,4 +152,10 @@ abstract final class RouteNames {
   static const trainingTournamentRegister = 'trainingTournamentRegister';
   static const trainingNextGoal = 'trainingNextGoal';
   static const dailyEmpty = 'dailyEmpty';
+
+  // T87 (Treinador de partidas): registra em `frentes/treinador_routes.dart`.
+  static const treinador = 'treinador';
+  static const treinadorPartida = 'treinadorPartida';
+  static const treinadorExercicios = 'treinadorExercicios';
+  static const treinadorAnalise = 'treinadorAnalise';
 }

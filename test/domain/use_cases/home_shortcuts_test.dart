@@ -7,7 +7,8 @@ import 'package:lucena/domain/use_cases/home_shortcuts.dart';
 import 'package:lucena/domain/use_cases/home_suggestion.dart';
 
 // Um caso por célula da prancha "Atalhos por usuário" v2 (T83): todos os
-// caminhos marcados, na ordem do nível, e os Problemas e as Estrelas no fim.
+// caminhos marcados, na ordem do nível, a Análise (T87) e os Problemas e as
+// Estrelas no fim.
 void main() {
   const school = HomeShortcut.school;
   const journey = HomeShortcut.journey;
@@ -18,6 +19,7 @@ void main() {
   const speedrun = HomeShortcut.speedrun;
   const race = HomeShortcut.race;
   const stars = HomeShortcut.stars;
+  const analysis = HomeShortcut.analysis;
 
   List<HomeShortcut> shortcuts(
     RatingLevel level, {
@@ -67,6 +69,7 @@ void main() {
       journey,
       train,
       speedrun,
+      analysis,
       race,
       stars,
     ]);
@@ -79,6 +82,7 @@ void main() {
       journey,
       pillars,
       speedrun,
+      analysis,
       race,
       stars,
     ]);
@@ -90,6 +94,7 @@ void main() {
       pillars,
       train,
       speedrun,
+      analysis,
       race,
       stars,
     ]);
@@ -102,7 +107,7 @@ void main() {
         goal: GoalPreference.improve,
         unchecked: {HomePath.speedrun, HomePath.stars},
       ),
-      [pillars, journey, train, race],
+      [pillars, journey, train, analysis, race],
     );
   });
 
@@ -113,6 +118,7 @@ void main() {
       position,
       train,
       journey,
+      analysis,
       race,
       stars,
     ]);

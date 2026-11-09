@@ -343,6 +343,7 @@ void main() {
       HomeKeys.journeyButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
+      HomeKeys.analysisButton,
       HomeKeys.raceButton,
       HomeKeys.starsButton,
     ]);
@@ -383,6 +384,7 @@ void main() {
       HomeKeys.journeyButton,
       HomeKeys.pillarsButton,
       HomeKeys.speedrunButton,
+      HomeKeys.analysisButton,
       HomeKeys.raceButton,
       HomeKeys.starsButton,
     ]);
@@ -399,12 +401,13 @@ void main() {
       HomeKeys.pillarsButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
+      HomeKeys.analysisButton,
       HomeKeys.raceButton,
       HomeKeys.starsButton,
     ]);
     double left(Key key) => tester.getTopLeft(find.byKey(key)).dx;
     double y(Key key) => tester.getTopLeft(find.byKey(key)).dy;
-    for (var i = 0; i < shown.length; i += 2) {
+    for (var i = 0; i + 1 < shown.length; i += 2) {
       expect(y(shown[i]), y(shown[i + 1]));
       expect(left(shown[i]), lessThan(left(shown[i + 1])));
     }

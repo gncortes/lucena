@@ -1,0 +1,342 @@
+[
+ {
+  "id": "cm-01",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia quem foi o primeiro campeão do mundo? Foi Wilhelm Steinitz, em 1886. Ele venceu Johannes Zukertort no primeiro match oficial pelo título, jogado em três cidades dos Estados Unidos: Nova York, St. Louis e Nova Orleans. Steinitz defendeu o título por oito anos."
+ },
+ {
+  "id": "cm-02",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Emanuel Lasker foi campeão do mundo por 27 anos? Ninguém ficou tanto tempo com o título. Ele o ganhou em 1894, contra Steinitz, e só o perdeu em 1921, para Capablanca, em Havana. Além de enxadrista, Lasker era matemático e amigo de Einstein."
+ },
+ {
+  "id": "cm-03",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Fischer começou mal o match de 1972 contra Spassky? Perdeu a primeira partida e não compareceu à segunda, que foi dada a Spassky. Muitos acharam que ele iria embora de Reykjavík. Ficou, venceu a terceira e terminou campeão: o primeiro nascido nos Estados Unidos."
+ },
+ {
+  "id": "cm-04",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Mikhail Tal foi campeão do mundo aos 23 anos? Em 1960 ele venceu Botvinnik com sacrifícios tão ousados que ganhou o apelido de Mágico de Riga. Um ano depois, Botvinnik pediu a revanche e recuperou o título."
+ },
+ {
+  "id": "cm-05",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Capablanca era tido como quase imbatível quando enfrentou Alekhine, em 1927? O match, em Buenos Aires, durou 34 partidas e mais de dois meses. Alekhine venceu e ficou com o título até 1935. Os dois nunca voltaram a disputar a coroa."
+ },
+ {
+  "id": "cm-06",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que o primeiro match entre Karpov e Kasparov terminou sem vencedor? Começou em setembro de 1984 e, depois de 48 partidas e cinco meses, a federação encerrou o match. No ano seguinte, em um novo match, Kasparov foi campeão aos 22 anos."
+ },
+ {
+  "id": "cm-07",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Alekhine é o único campeão do mundo que morreu com o título? Ele faleceu em 1946, em Portugal. Sem campeão, a FIDE organizou em 1948 um torneio com cinco grandes jogadores, disputado em Haia e em Moscou. Mikhail Botvinnik venceu com folga e se tornou o sexto campeão do mundo."
+ },
+ {
+  "id": "cm-08",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que um professor de matemática foi campeão do mundo? O holandês Max Euwe venceu Alekhine em 1935 e perdeu a revanche dois anos depois. Ele dava aulas em uma escola de Amsterdã e jogava como amador. Mais tarde, de 1970 a 1978, Euwe foi presidente da FIDE."
+ },
+ {
+  "id": "cm-09",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Capablanca passou oito anos sem perder uma partida de torneio ou de match? A série começou em 1916 e só terminou em 1924, quando ele perdeu para Richard Réti, em Nova York. O cubano tinha aprendido a jogar aos quatro anos, só de olhar o pai jogando."
+ },
+ {
+  "id": "cm-10",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Viswanathan Anand foi campeão do mundo em três formatos diferentes? Ganhou o título da FIDE em um torneio eliminatório, em 2000, depois em um torneio de oito jogadores no México, em 2007, e por fim em um match contra Kramnik, em 2008. Ele foi o primeiro indiano a chegar ao título."
+ },
+ {
+  "id": "cm-11",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Magnus Carlsen deixou o título sem perder? Campeão desde 2013, quando venceu Anand na Índia, ele defendeu a coroa quatro vezes. Em 2022, avisou que não jogaria o match seguinte. O título ficou com Ding Liren, que venceu Ian Nepomniachtchi em 2023."
+ },
+ {
+  "id": "cm-12",
+  "tema": "Campeões do mundo",
+  "texto": "Você sabia que Gukesh foi campeão do mundo aos 18 anos? Em dezembro de 2024, em Singapura, o indiano venceu Ding Liren na 14ª e última partida clássica do match. Ding errou em um final que parecia empatado. Com o título, Gukesh superou o recorde de Kasparov, campeão aos 22."
+ },
+ {
+  "id": "mh-01",
+  "tema": "Matches históricos",
+  "texto": "Você sabia que Capablanca tirou o título de Lasker sem perder uma única partida? O match foi em Havana, em 1921, cidade natal do desafiante. Depois de 14 partidas, com quatro vitórias de Capablanca e dez empates, Lasker abandonou o match. O cubano se tornou o terceiro campeão do mundo."
+ },
+ {
+  "id": "mh-02",
+  "tema": "Matches históricos",
+  "texto": "Você sabia que Lasker quase perdeu o título em 1910, para Carl Schlechter? O match teve só dez partidas, e Schlechter vencia por um ponto antes da última. Lasker ganhou a décima partida, igualou o placar em 5 a 5 e continuou campeão do mundo."
+ },
+ {
+  "id": "mh-03",
+  "tema": "Matches históricos",
+  "texto": "Você sabia que, no match de 1978 entre Karpov e Korchnoi, vencia quem ganhasse seis partidas primeiro? Em Baguio, nas Filipinas, Karpov abriu 5 a 2. Korchnoi reagiu e empatou em 5 a 5. Na 32ª partida, Karpov venceu e manteve o título."
+ },
+ {
+  "id": "mh-04",
+  "tema": "Matches históricos",
+  "texto": "Você sabia que Kramnik tirou o título de Kasparov sem perder uma partida? O match foi em Londres, em 2000. Com as pretas, Kramnik usou a Defesa Berlim, que neutralizou o jogo de Kasparov. Venceu duas partidas, empatou treze e encerrou quinze anos de reinado."
+ },
+ {
+  "id": "mh-05",
+  "tema": "Matches históricos",
+  "texto": "Você sabia que, em 2018, as doze partidas clássicas do match entre Carlsen e Caruana terminaram empatadas? Foi a primeira vez que isso aconteceu em um match pelo título. A decisão veio no desempate de partidas rápidas, em Londres. Carlsen venceu as três e manteve a coroa."
+ },
+ {
+  "id": "mh-06",
+  "tema": "Matches históricos",
+  "texto": "Você sabia que Ding Liren só se tornou campeão do mundo na última partida rápida? Em 2023, em Astana, ele e Ian Nepomniachtchi terminaram as 14 partidas clássicas em 7 a 7. No desempate, Ding venceu a quarta partida rápida com as pretas e virou o primeiro chinês campeão do mundo."
+ },
+ {
+  "id": "pf-01",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que a Partida Imortal foi um jogo amistoso? Em Londres, em 1851, Adolf Anderssen entregou um bispo, as duas torres e a dama, e ainda deu mate em Lionel Kieseritzky. Poucos anos depois, a partida ganhou o nome que carrega até hoje."
+ },
+ {
+  "id": "pf-02",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que Anderssen tem outra obra-prima com nome próprio? Em Berlim, em 1852, ele venceu Jean Dufresne com uma série de sacrifícios que termina em mate. Steinitz chamou a partida de sempre-viva na coroa de louros de Anderssen, e o nome Sempre-Viva ficou."
+ },
+ {
+  "id": "pf-03",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que Paul Morphy venceu uma partida famosa em um camarote de ópera? Em Paris, em 1858, ele jogou contra o Duque de Brunswick e o Conde Isouard, que decidiam os lances juntos. Morphy desenvolveu as peças rápido, entregou material e deu mate no 17º lance."
+ },
+ {
+  "id": "pf-04",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que Bobby Fischer jogou a Partida do Século aos 13 anos? Foi em Nova York, em 1956, contra Donald Byrne, um dos melhores do país. No 17º lance, Fischer deixou a dama ser capturada para lançar um ataque decisivo. O nome foi dado pelo jornalista Hans Kmoch."
+ },
+ {
+  "id": "pf-05",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que uma das partidas mais elogiadas de Kasparov foi jogada em 1999, em Wijk aan Zee? Contra Veselin Topalov, ele entregou uma torre no 24º lance e caçou o rei preto pelo tabuleiro inteiro. Muitos a chamam até hoje de Imortal de Kasparov."
+ },
+ {
+  "id": "pf-06",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que um rei já decidiu uma partida com as damas ainda no tabuleiro? Em Tilburg, em 1991, Nigel Short fez quatro lances seguidos de rei contra Jan Timman e o levou até g5. Dali, o rei ameaçava ir a h6 e apoiar um mate sem defesa, e Timman abandonou."
+ },
+ {
+  "id": "pf-07",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que um padre ficou famoso por uma promoção a torre? Em 1895, o espanhol Fernando Saavedra mostrou que, em certa posição, coroar dama só empata, porque a defesa arma um afogamento. Coroando torre, as brancas vencem. A posição de Saavedra é um dos estudos mais conhecidos do xadrez."
+ },
+ {
+  "id": "pf-08",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que a posição de Lucena talvez não seja de Lucena? Esse final de torre e peão leva o nome de Luis Ramírez de Lucena, autor de um livro de xadrez de 1497. Mas a posição não aparece na obra dele. O registro mais antigo conhecido está em um livro de Alessandro Salvio, de 1634."
+ },
+ {
+  "id": "pf-09",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que um rei pode alcançar um peão que parece longe demais? Em um estudo de 1921, Richard Réti pôs o rei branco em h8, atrás de um peão preto já adiantado. Andando na diagonal, o rei corre atrás do peão preto e, no caminho, chega perto do próprio peão para ajudá-lo a coroar. Com as duas ameaças, as brancas empatam."
+ },
+ {
+  "id": "pf-10",
+  "tema": "Partidas e posições famosas",
+  "texto": "Você sabia que Philidor, o melhor jogador do século XVIII, também compunha óperas? O francês escreveu, em 1749, um livro em que diz que os peões são a alma do xadrez. Seu nome ficou em uma abertura, a Defesa Philidor, e em uma posição clássica de final de torre."
+ },
+ {
+  "id": "br-01",
+  "tema": "Xadrez no Brasil",
+  "texto": "Você sabia que o Brasil teve um dos melhores jogadores do mundo nos anos 1970? Henrique Mecking, o Mequinho, foi campeão brasileiro ainda adolescente. Depois venceu dois torneios interzonais seguidos, em Petrópolis, em 1973, sem perder nenhuma partida, e em Manila, em 1976. Nas duas vezes, chegou à fase de candidatos ao título mundial."
+ },
+ {
+  "id": "br-02",
+  "tema": "Xadrez no Brasil",
+  "texto": "Você sabia que um brasileiro foi campeão mundial de base duas vezes? Rafael Leitão, do Maranhão, ganhou o mundial sub-12 em 1991 e o sub-18 em 1996. Em 1998, aos 18 anos, recebeu o título de grande mestre. Depois, foi sete vezes campeão brasileiro."
+ },
+ {
+  "id": "br-03",
+  "tema": "Xadrez no Brasil",
+  "texto": "Você sabia que um brasileiro venceu Magnus Carlsen com um sacrifício de dama? Em maio de 2020, Luis Paulo Supi enfrentou o campeão do mundo em uma partida de blitz pela internet e venceu em 18 lances. O último lance surpreendeu Carlsen durante a transmissão ao vivo. Em 2021, a partida ficou em primeiro lugar em um concurso do Chess.com que escolhia partidas imortais."
+ },
+ {
+  "id": "br-04",
+  "tema": "Xadrez no Brasil",
+  "texto": "Você sabia que Krikor Mekhitarian conseguiu as três normas de grande mestre em cerca de oito meses? A primeira veio no Campeonato Brasileiro de 2009, e o título saiu em 2010. Depois, Krikor foi duas vezes campeão brasileiro e jogou mais de uma vez a Copa do Mundo da FIDE."
+ },
+ {
+  "id": "br-05",
+  "tema": "Xadrez no Brasil",
+  "texto": "Você sabia que Machado de Assis era enxadrista? O escritor publicou problemas de xadrez em jornais e revistas da época. Em 1880, jogou um torneio na casa do pianista Arthur Napoleão e terminou em terceiro lugar. Estudiosos da obra dele mostram o xadrez em vários dos seus textos."
+ },
+ {
+  "id": "br-06",
+  "tema": "Xadrez no Brasil",
+  "texto": "Você sabia que a entidade que comanda o xadrez no Brasil é do mesmo ano que a FIDE? A atual Confederação Brasileira de Xadrez nasceu em 11 de novembro de 1924, com o nome de Federação Brasileira de Xadrez. A FIDE tinha sido fundada em julho daquele ano, em Paris."
+ },
+ {
+  "id": "br-07",
+  "tema": "Xadrez no Brasil",
+  "texto": "Você sabia que um recorde mundial de partidas às cegas foi feito em São Paulo? Em 1947, Miguel Najdorf jogou 45 partidas ao mesmo tempo sem ver nenhum tabuleiro, guardando todas as posições de cabeça. Ele venceu 39 partidas, empatou 4 e perdeu só 2."
+ },
+ {
+  "id": "mu-01",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia quem foi a primeira campeã do mundo? Foi Vera Menchik, em 1927, em Londres. Ela manteve o título até 1944 e também jogava torneios contra os melhores homens da época. Entre os mestres que ela venceu estavam Max Euwe, futuro campeão do mundo, e Samuel Reshevsky."
+ },
+ {
+  "id": "mu-02",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia quem foi a primeira mulher a receber o título de grande mestre? Foi a georgiana Nona Gaprindashvili, em 1978. Ela foi campeã do mundo de 1962 a 1978 e também se destacou em torneios abertos, contra homens. Em sua homenagem, a FIDE criou uma taça para as Olimpíadas."
+ },
+ {
+  "id": "mu-03",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia que Maia Chiburdanidze tirou o título de Nona Gaprindashvili aos 17 anos? Em 1978, a jovem georgiana venceu a compatriota e ficou com a coroa até 1991. Em 1984, ela se tornou a segunda mulher grande mestre da história."
+ },
+ {
+  "id": "mu-04",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia que, de 1962 a 1991, o título feminino ficou só com georgianas? Nona Gaprindashvili e Maia Chiburdanidze reinaram por quase trinta anos. A série terminou em 1991, quando a chinesa Xie Jun venceu Chiburdanidze e abriu uma longa fase de grandes campeãs da China."
+ },
+ {
+  "id": "mu-05",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia que Judit Polgár se tornou grande mestre aos 15 anos e quatro meses? Isso foi em 1991, e ela quebrou o recorde de Bobby Fischer, que durava mais de trinta anos. Judit nunca disputou o campeonato feminino: jogava contra os melhores do mundo, homens ou mulheres."
+ },
+ {
+  "id": "mu-06",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia que Judit Polgár chegou a ser a oitava do ranking mundial? Em 2005, ela alcançou 2735 pontos, o maior rating de uma mulher até hoje. Três anos antes, em um evento de partidas rápidas em Moscou, ela venceu Garry Kasparov."
+ },
+ {
+  "id": "mu-07",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia que as três irmãs Polgár aprenderam xadrez em casa, com o pai? O húngaro László Polgár acreditava que talento se constrói com estudo desde cedo. Susan foi campeã do mundo, Judit virou uma das melhores do planeta e Sofia também se tornou mestre internacional."
+ },
+ {
+  "id": "mu-08",
+  "tema": "Mulheres no xadrez",
+  "texto": "Você sabia que Hou Yifan foi campeã do mundo aos 16 anos? A chinesa ganhou o título em 2010 e se tornou a campeã mais jovem da história. Ela conquistou a coroa quatro vezes e, longe do tabuleiro, estudou na Universidade de Oxford com uma bolsa Rhodes."
+ },
+ {
+  "id": "rg-01",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que o en passant está ligado ao avanço duplo do peão? Quando o peão ganhou o direito de avançar duas casas no primeiro lance, passou a poder escapar do peão adversário que o capturaria. O en passant mantém essa captura possível. A regra só foi aceita em toda parte por volta de 1880, quando os italianos a adotaram."
+ },
+ {
+  "id": "rg-02",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que a dama já foi uma das peças mais fracas do tabuleiro? No xadrez medieval, ela andava só uma casa na diagonal. No fim do século XV, na Espanha, ganhou os movimentos que tem hoje, e o jogo ficou muito mais rápido. O livro de Lucena, de 1497, já ensina o xadrez com a dama nova."
+ },
+ {
+  "id": "rg-03",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que o roque é o único lance em que o mesmo jogador move duas peças? Em 1973, o holandês Tim Krabbé publicou um problema com uma brincadeira: rocar na vertical, com uma torre promovida em e8. Só que as regras da FIDE já pediam, desde 1930, que rei e torre estivessem na mesma fileira."
+ },
+ {
+  "id": "rg-04",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que a repetição de posição pode encerrar a partida mesmo sem ninguém pedir? Na tripla repetição, o jogador precisa reivindicar o empate. Desde 2014, as regras da FIDE mandam o árbitro declarar empate quando a mesma posição aparece cinco vezes, ou depois de 75 lances sem captura nem lance de peão."
+ },
+ {
+  "id": "rg-05",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que a regra dos 50 lances já teve exceções? Análises de computador mostraram que alguns finais raros precisam de mais lances para vencer. A FIDE chegou a permitir prazos maiores nesses casos, mas em 1992 voltou ao limite de 50 lances para todos os finais."
+ },
+ {
+  "id": "rg-06",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que o tempo de reflexão nem sempre teve limite? Em torneios do século XIX, chegaram a usar ampulhetas para controlar o tempo. O relógio mecânico, com dois mostradores, apareceu em um torneio em Londres, em 1883. No fim dos anos 1980, Bobby Fischer patenteou o relógio que soma segundos a cada lance."
+ },
+ {
+  "id": "rg-07",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que o afogamento já deu vitória a quem ficava sem lances? Na Inglaterra, mais ou menos de 1600 a 1800, quem afogava o adversário perdia a partida. Só no século XIX o empate virou regra em toda parte. Hoje, o afogamento salva muitos finais que pareciam perdidos."
+ },
+ {
+  "id": "rg-08",
+  "tema": "Regras e curiosidades",
+  "texto": "Você sabia que, em teoria, um jogador pode ter nove damas no tabuleiro? Bastaria promover os oito peões e manter a dama original. A promoção a outra peça, chamada subpromoção, é rara, mas às vezes é o único lance que vence, como no famoso estudo de Saavedra."
+ },
+ {
+  "id": "cp-01",
+  "tema": "Computadores",
+  "texto": "Você sabia que um robô enxadrista enganou a Europa por décadas? O Turco, criado em 1770 por Wolfgang von Kempelen, parecia uma máquina que jogava sozinha. Na verdade, um jogador forte se escondia dentro do móvel. O Turco fez exibições até ser destruído em um incêndio, em 1854."
+ },
+ {
+  "id": "cp-02",
+  "tema": "Computadores",
+  "texto": "Você sabia que Alan Turing escreveu um programa de xadrez antes de existir computador capaz de rodá-lo? Ele montou as regras no papel e fazia as contas à mão, levando cerca de meia hora por lance. Em 1952, o programa jogou assim uma partida contra o colega Alick Glennie, e perdeu."
+ },
+ {
+  "id": "cp-03",
+  "tema": "Computadores",
+  "texto": "Você sabia que Claude Shannon estimou quantas partidas de xadrez são possíveis? Em um artigo de 1950, ele chegou a um número com 120 zeros, muito maior que a quantidade de átomos do universo observável. Por isso, nenhum computador vê todas as partidas: ele precisa escolher o que analisar."
+ },
+ {
+  "id": "cp-04",
+  "tema": "Computadores",
+  "texto": "Você sabia que Kasparov venceu o primeiro match contra o Deep Blue? Em 1996, na Filadélfia, a máquina da IBM ganhou a primeira partida: foi a primeira vitória de um computador sobre um campeão do mundo em ritmo clássico. Mas Kasparov se recuperou e venceu o match por 4 a 2."
+ },
+ {
+  "id": "cp-05",
+  "tema": "Computadores",
+  "texto": "Você sabia que a revanche contra o Deep Blue entrou para a história? Em 1997, em Nova York, o computador da IBM venceu Kasparov por 3,5 a 2,5. Foi a primeira vez que uma máquina derrotou um campeão do mundo em um match com ritmo clássico. O Deep Blue analisava cerca de 200 milhões de posições por segundo."
+ },
+ {
+  "id": "cp-06",
+  "tema": "Computadores",
+  "texto": "Você sabia que o AlphaZero aprendeu xadrez sem estudar nenhuma partida humana? Em 2017, a DeepMind deu ao programa só as regras, e ele treinou jogando contra si mesmo. Em poucas horas, já jogava acima do Stockfish da época. Em um match de 100 partidas, venceu 28, empatou 72 e não perdeu nenhuma."
+ },
+ {
+  "id": "cp-07",
+  "tema": "Computadores",
+  "texto": "Você sabia que o Stockfish, um dos motores mais fortes do mundo, é gratuito e de código aberto? Ele nasceu em 2008, a partir de outro programa, o Glaurung, e é melhorado por voluntários do mundo todo. É o mesmo motor que você enfrenta no nível máximo deste app."
+ },
+ {
+  "id": "cp-08",
+  "tema": "Computadores",
+  "texto": "Você sabia que existe um motor treinado para jogar como gente? O Maia surgiu em 2020, em uma pesquisa da Universidade de Toronto, de Cornell e da Microsoft. Em vez de buscar o melhor lance, ele aprendeu com milhões de partidas do Lichess a prever o lance que um jogador de cada nível faria. É ele que joga os níveis humanos deste app."
+ },
+ {
+  "id": "cp-09",
+  "tema": "Computadores",
+  "texto": "Você sabia que todos os finais com até sete peças já estão resolvidos? Computadores calcularam o resultado exato de cada posição, contando os dois reis. Em algumas delas, o mate forçado leva mais de 500 lances, muito além da regra dos 50 lances. Essas tabelas se chamam bases de finais."
+ },
+ {
+  "id": "cp-10",
+  "tema": "Computadores",
+  "texto": "Você sabia que o Lichess é gratuito, sem anúncios e de código aberto? Ele foi criado em 2010 pelo francês Thibault Duplessis e se mantém com doações. Hoje é um dos maiores sites de xadrez do mundo, com milhões de partidas por dia. É de lá que vem a partida que o Lucena analisa agora."
+ },
+ {
+  "id": "rc-01",
+  "tema": "Recordes",
+  "texto": "Você sabia que uma partida de torneio já durou 269 lances e terminou empatada? Foi em Belgrado, em 1989, entre Ivan Nikolić e Goran Arsović, depois de mais de 20 horas de jogo. Por décadas, foi a partida mais longa da história. Em 2024, em Londres, uma partida chegou a 272 lances."
+ },
+ {
+  "id": "rc-02",
+  "tema": "Recordes",
+  "texto": "Você sabia que Abhimanyu Mishra virou grande mestre aos 12 anos? O americano conquistou o título em 2021, com 12 anos, quatro meses e 25 dias, e se tornou o mais jovem da história. Ele quebrou o recorde de Sergey Karjakin, que durava desde 2002."
+ },
+ {
+  "id": "rc-03",
+  "tema": "Recordes",
+  "texto": "Você sabia que o maior rating da história é de Magnus Carlsen? Em maio de 2014, ele chegou a 2882 pontos na lista da FIDE. Antes dele, o recorde era de Garry Kasparov, com 2851, uma marca que tinha durado mais de treze anos."
+ },
+ {
+  "id": "rc-04",
+  "tema": "Recordes",
+  "texto": "Você sabia que Bobby Fischer venceu 20 partidas seguidas contra grandes mestres? A série começou no fim do Interzonal de 1970 e passou por dois matches de candidatos vencidos por 6 a 0, contra Taimanov e Larsen. Ela só parou na segunda partida contra Petrosian, em 1971."
+ },
+ {
+  "id": "rc-05",
+  "tema": "Recordes",
+  "texto": "Você sabia que Garry Kasparov foi o número um do ranking mundial por mais de vinte anos? Ele chegou ao topo em 1984 e ficou lá até se aposentar, em 2005. Somando tudo, foram 255 meses na liderança da lista da FIDE."
+ },
+ {
+  "id": "rc-06",
+  "tema": "Recordes",
+  "texto": "Você sabia que o mate mais rápido possível acontece no segundo lance das pretas? É o mate do louco: as brancas jogam f3 e g4, abrindo a diagonal do próprio rei, e a dama preta dá mate em h4. Em partidas sérias, quase nunca acontece, mas mostra o perigo de enfraquecer as casas em volta do rei."
+ },
+ {
+  "id": "rc-07",
+  "tema": "Recordes",
+  "texto": "Você sabia que o número de partidas possíveis cresce muito rápido logo no começo? Depois do primeiro lance de cada lado, já existem 400 posições diferentes. Depois de três lances de cada um, há mais de 119 milhões de partidas possíveis. É por isso que quase toda partida sai da teoria cedo."
+ }
+]
