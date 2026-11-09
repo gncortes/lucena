@@ -33,6 +33,7 @@ import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/lucena_card.dart';
+import '../../core/widgets/move_highlight.dart';
 import '../view_models/game_details_cubit.dart';
 import 'key_moments_section.dart';
 import 'review_widgets.dart';
@@ -763,12 +764,9 @@ class _MoveTable extends StatelessWidget {
               horizontal: AppSpacing.sm,
               vertical: AppSpacing.sm,
             ),
-            decoration: BoxDecoration(
-              color: selected ? colors.secondaryContainer : Colors.transparent,
-              borderRadius: BorderRadius.circular(AppShape.small),
-              border: Border.all(
-                color: selected ? colors.outline : Colors.transparent,
-              ),
+            decoration: MoveHighlight.outlinedDecoration(
+              colors,
+              selected: selected,
             ),
             child: LayoutBuilder(
               builder: (context, box) {

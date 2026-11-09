@@ -8,6 +8,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/widgets/move_highlight.dart';
 import '../../core/theme/lesson_text_colors.dart';
 import '../../school/widgets/variation_strip.dart' show GrainFill;
 import '../view_models/lesson_script_state.dart';
@@ -15,7 +16,8 @@ import '../view_models/lesson_script_state.dart';
 /// A lista de lances embaixo do tabuleiro, em notação corrida como a aba
 /// Lances dos detalhes da partida (`CompNotacao` do canvas, estilo Lichess):
 /// direto na superfície, sem caixa; letras das peças do idioma (Re4); número
-/// em cinza, lance num chip de 30 dp, o atual em azul cheio; a variante
+/// em cinza, lance num chip de 30 dp, o atual em azul cheio (ou, com
+/// [MoveHighlight.outlined], no destaque da análise de partida); a variante
 /// vem entre parênteses, cinza e menor, logo depois do lance que ela troca
 /// (no jogo livre, a sublinha que o aluno abriu); "?"/"!" e o resultado. Só
 /// traz o que o aluno já viu. Tocar num lance chama [onTap]. Não rola
@@ -27,8 +29,12 @@ class ScriptMoveList extends StatelessWidget {
     required this.onTap,
     this.covered = const {},
     this.onReveal,
+    this.highlight = MoveHighlight.filled,
     super.key,
   });
+
+  /// Como o lance atual aparece.
+  final MoveHighlight highlight;
 
   final List<ScriptMoveEntry> moves;
   final String? currentId;
@@ -164,14 +170,16 @@ class ScriptMoveList extends StatelessWidget {
   Widget _move(BuildContext context, ScriptMoveEntry entry, {String? number}) {
     final colors = Theme.of(context).colorScheme;
     final selected = entry.id == currentId;
+    // No destaque da análise, o texto fica como os outros lances.
+    final filled = selected && highlight == MoveHighlight.filled;
     final variant = entry.depth > 0;
     final style = TextStyle(
       fontSize: variant ? 14 : 15,
       height: 1.2,
-      fontWeight: selected
+      fontWeight: filled
           ? AppWeight.heavy
           : (variant ? FontWeight.w400 : FontWeight.w500),
-      color: selected
+      color: filled
           ? colors.onPrimary
           : (variant ? colors.onSurfaceVariant : colors.onSurface),
       fontFeatures: const [FontFeature.tabularFigures()],
@@ -210,14 +218,19 @@ class ScriptMoveList extends StatelessWidget {
                 height: 30,
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selected ? colors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(AppShape.small),
-                ),
+                decoration: highlight == MoveHighlight.outlined
+                    ? MoveHighlight.outlinedDecoration(
+                        colors,
+                        selected: selected,
+                      )
+                    : BoxDecoration(
+                        color: selected ? colors.primary : Colors.transparent,
+                        borderRadius: BorderRadius.circular(AppShape.small),
+                      ),
                 child: Text(
                   '${entry.displaySan ?? localizedSan(context.l10n, entry.san)}${entry.symbol ?? ''}',
                   style: style.copyWith(
-                    color: selected ? null : _symbolColor(entry.symbol),
+                    color: filled ? null : _symbolColor(entry.symbol),
                   ),
                 ),
               ),

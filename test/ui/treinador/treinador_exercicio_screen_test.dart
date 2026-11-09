@@ -14,6 +14,7 @@ import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_move_list.dart';
 import 'package:lucena/ui/core/widgets/load_error.dart';
 import 'package:lucena/ui/core/widgets/load_skeleton.dart';
+import 'package:lucena/ui/core/widgets/move_highlight.dart';
 import 'package:lucena/ui/treinador/view_models/treinador_exercicio_cubit.dart';
 
 import '../../../testing/board_gestures.dart';
@@ -287,6 +288,24 @@ void main() {
             .single
             .symbol,
         '?',
+      );
+      // O lance no destaque da análise de partida: fundo secundário com
+      // contorno, não o chip azul cheio.
+      expect(
+        tester.widget<ScriptMoveList>(find.byType(ScriptMoveList)).highlight,
+        MoveHighlight.outlined,
+      );
+      final caixa = tester.widget<AnimatedContainer>(
+        find.descendant(
+          of: find.byType(ScriptMoveList),
+          matching: find.byType(AnimatedContainer),
+        ),
+      );
+      final cores = Theme.of(tester.element(find.byType(ScriptMoveList)))
+          .colorScheme;
+      expect(
+        caixa.decoration,
+        MoveHighlight.outlinedDecoration(cores, selected: true),
       );
       await _tocar(tester, find.byKey(TreinadorKeys.verSolucao));
       final lance = tester

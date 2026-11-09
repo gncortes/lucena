@@ -27,6 +27,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/load_error.dart';
+import '../../core/widgets/move_highlight.dart';
 import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/teacher_speech.dart';
@@ -204,7 +205,8 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
       s.tentativas <= 1 &&
       (s.fase == FaseExercicio.jogando || s.fase == FaseExercicio.acertou);
 
-  /// O lance tentado (com "?" no erro) ou a solução, em SAN, como no Treino.
+  /// O lance tentado (com "?" no erro) ou a solução, em SAN, como no Treino,
+  /// com o destaque do lance da análise de partida.
   /// Na posição do exercício; vazia enquanto o aluno ainda não jogou.
   static Widget _notacao(TreinadorExercicioState s, ExercicioTreinador ex) {
     final posicao = GameRules.fromFen(ex.fen);
@@ -233,6 +235,8 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
       ],
       currentId: '0',
       onTap: (_) {},
+      // O destaque do lance como na análise da partida (T87).
+      highlight: MoveHighlight.outlined,
     );
   }
 
