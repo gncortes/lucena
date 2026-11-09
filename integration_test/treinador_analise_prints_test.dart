@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/course_grant.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
+import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/treinador_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -167,6 +168,12 @@ void main() {
     await $(TreinadorKeys.analise).waitUntilVisible();
     await $.pumpAndSettle();
     await shot.shot('13-analise-completa', ready: TreinadorKeys.analise);
+    await $(GameDetailsKeys.tabMoves).tap();
+    await $.pumpAndSettle();
+    await shot.shot('13a-analise-lances', ready: TreinadorKeys.analise);
+    await $(GameDetailsKeys.tabEngine).tap();
+    await $.pumpAndSettle();
+    await shot.shot('13b-analise-motor', ready: TreinadorKeys.analise);
     // Volta até a lista de partidas (ou a Home, se a pilha acabar antes).
     bool naTela(Key k) => find.byKey(k).hitTestable().evaluate().isNotEmpty;
     for (var i = 0; i < 5; i++) {
@@ -186,6 +193,47 @@ void main() {
     }
     await t.abrirPartida(_nova);
     await _rolando($, '09-resumo', TreinadorKeys.resumo);
+  });
+
+  patrolTest('T87 prints: espera com frases e dica do exercício', ($) async {
+    final app = AppRobot($);
+    final t = TreinadorRobot($);
+    final shot = TrainingCaptureRobot($);
+    final fake = FakeTreinadorRepository.comDados();
+    await app.open(
+      systemLocale: const Locale('pt'),
+      treinador: fake,
+      courseGrants: _assinante(),
+    );
+    await TrainingCaptureRobot.semFaixaDoTeste($);
+    await t.abrirPelaHome();
+    await t.aba(TreinadorKeys.tabPartidas);
+    await t.abrirPartida(_nova);
+    await $(TreinadorKeys.comecar).tap();
+    await t.esperarCarregando();
+    await shot.begin('espera-frases');
+    for (var i = 0; i < 14; i++) {
+      await app.advanceTime(const Duration(seconds: 1));
+      await $.pump(const Duration(milliseconds: 700));
+      if (i == 1 || i == 5 || i == 9) {
+        await shot.shot('06c-espera-$i', ready: TreinadorKeys.carregando);
+      }
+    }
+    await shot.end('espera-frases', ready: TreinadorKeys.carregando);
+    t.concluir(fake, _nova);
+    await $(TreinadorKeys.inicio).waitUntilVisible();
+    await $.pumpAndSettle();
+    await $(TreinadorKeys.comecar).tap();
+    await t.esperarExercicio();
+    await shot.begin('dica-sequencia');
+    await shot.shot('10a-dica-antes', ready: TreinadorKeys.exercicio);
+    await $(TreinadorKeys.dica).tap();
+    await $.pumpAndSettle();
+    await shot.shot('10b-dica-1', ready: TreinadorKeys.exercicio);
+    await $(TreinadorKeys.dica).tap();
+    await $.pumpAndSettle();
+    await shot.shot('10c-dica-2', ready: TreinadorKeys.exercicio);
+    await shot.end('dica-sequencia', ready: TreinadorKeys.exercicio);
   });
 
   patrolTest('T87 prints: erro da análise', ($) async {
