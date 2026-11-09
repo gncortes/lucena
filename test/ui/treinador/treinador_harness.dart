@@ -10,6 +10,7 @@ import 'package:lucena/data/repositories/analysis/learning_analysis_repository.d
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/lesson_ad/course_grants_repository.dart';
 import 'package:lucena/data/repositories/treinador/curiosidades_repository.dart';
+import 'package:lucena/data/repositories/treinador/seu_jogo_filtro_repository.dart';
 import 'package:lucena/data/repositories/treinador/treinador_preferencias.dart';
 import 'package:lucena/data/repositories/treinador/treinador_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
@@ -116,6 +117,10 @@ class TreinadorBed {
       RepositoryProvider<TreinadorRepository>.value(value: repo),
       RepositoryProvider<CourseGrantsRepository>.value(value: grants),
       RepositoryProvider<TreinadorPreferencias>.value(value: preferencias),
+      // A aba Seu jogo (aberta pelo "Onde você mais erra") lê o filtro.
+      RepositoryProvider<SeuJogoFiltroRepository>.value(
+        value: SeuJogoFiltroRepository(memoria),
+      ),
       RepositoryProvider<Now>.value(value: now),
       RepositoryProvider<CuriosidadesRepository>.value(
         value: FakeCuriosidadesRepository(curiosidades),

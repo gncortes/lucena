@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/treinador_keys.dart';
+import 'package:lucena/ui/core/keys/treinador_seu_jogo_keys.dart';
 import 'package:lucena/ui/core/widgets/load_error.dart';
 import 'package:lucena/ui/core/widgets/load_skeleton.dart';
 import 'package:lucena/ui/treinador/widgets/linha_partida.dart';
@@ -683,7 +684,9 @@ void main() {
   });
 
   group('aba Seu jogo', () {
-    testWidgets('sem a outra frente, mostra o "em breve"', (tester) async {
+    testWidgets('a aba mostra o Seu jogo de verdade, sem o "em breve"', (
+      tester,
+    ) async {
       aparelho411x914(tester);
       final bed = TreinadorBed(repo: _comDados(), grants: comPlano());
       await bed.abrir(tester, Routes.treinador());
@@ -691,7 +694,8 @@ void main() {
       await tester.tap(find.byKey(TreinadorKeys.tabSeuJogo));
       await assentar(tester);
       expect(find.byKey(TreinadorKeys.seuJogo), findsOneWidget);
-      expect(find.text('Em breve: onde você mais erra.'), findsOneWidget);
+      expect(find.byKey(SeuJogoKeys.aba), findsOneWidget);
+      expect(find.text('Em breve: onde você mais erra.'), findsNothing);
       expect(find.byKey(TreinadorKeys.hoje), findsNothing);
       expect(tester.takeException(), isNull);
     });
