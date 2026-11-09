@@ -121,6 +121,8 @@ import 'domain/use_cases/now.dart';
 import 'routing/push_route.dart';
 import 'routing/frentes/d2_routes.dart';
 import 'data/repositories/lesson_ad/course_grants_repository.dart';
+import 'data/repositories/treinador/seu_jogo_filtro_repository.dart';
+import 'data/repositories/treinador/treinador_repository.dart';
 import 'routing/router.dart';
 import 'routing/screen_tracker.dart';
 import 'routing/stream_refresh.dart';
@@ -682,6 +684,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<CourseGrantsRepository>.value(
           value: dependencies.courseGrantsRepository,
+        ),
+        RepositoryProvider<TreinadorRepository>.value(
+          value: dependencies.treinadorRepository,
+        ),
+        RepositoryProvider<SeuJogoFiltroRepository>(
+          create: (_) => SeuJogoFiltroRepository(PreferencesService()),
         ),
         RepositoryProvider<AlertsRepository>.value(
           value: dependencies.alertsRepository,

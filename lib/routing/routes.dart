@@ -622,7 +622,10 @@ abstract final class Routes {
       '/training/${Uri.encodeComponent(course)}';
 
   /// Guia do curso já na aba Metas (toque na notificação sem lição pendente).
-  static String trainingGoals(String course) => '${training(course)}?aba=goals';
+  /// [destaque] = id da lição que o Treinador de partidas põe no alto (T87).
+  static String trainingGoals(String course, {String? destaque}) =>
+      '${training(course)}?aba=goals'
+      '${destaque == null ? '' : '&destaque=${Uri.encodeQueryComponent(destaque)}'}';
   static String trainingCatalog(String course) =>
       '${training(course)}?aba=catalog';
   static String trainingPlan(String course) => '${training(course)}/plan';

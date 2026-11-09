@@ -33,6 +33,7 @@ import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/lesson_ad/course_access_repository.dart';
 import '../data/repositories/lesson_ad/course_grants_repository.dart';
+import '../data/repositories/treinador/treinador_repository.dart';
 import '../data/repositories/lesson_ad/demo_ad_repository.dart';
 import '../data/repositories/training/demo_offer_repository.dart';
 import '../data/repositories/purchase/opening_offer_repository.dart';
@@ -174,6 +175,7 @@ import '../data/repositories/learning/learning_repository.dart';
 import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
 import '../data/services/firebase/course_grants_service.dart';
+import '../data/services/firebase/treinador_service.dart';
 import '../data/repositories/data_export/data_export_repository.dart';
 import '../data/repositories/data_export/data_export_repository_cloud.dart';
 import '../data/repositories/legal/legal_consent_repository.dart';
@@ -303,6 +305,7 @@ class Dependencies {
     this.adsRepository = const NoAdsRepository(),
     this.courseAccessRepository = const FullCourseAccessRepository(),
     this.courseGrantsRepository = const NoCourseGrantsRepository(),
+    this.treinadorRepository = const NoTreinadorRepository(),
     this.demoAdRepository = const NoDemoAdRepository(),
     this.demoOfferRepository = const NoDemoOfferRepository(),
     this.openingOfferRepository = const NoOpeningOfferRepository(),
@@ -704,6 +707,14 @@ class Dependencies {
       purchaseRepository: purchases,
       courseAccessRepository: courseAccess,
       courseGrantsRepository: courseGrants,
+      treinadorRepository: firebase
+          ? CloudTreinadorRepository(
+              FirebaseTreinadorService(),
+              preferences,
+              uids: auth.changes.map((account) => account?.uid),
+              currentUid: () => auth.current?.uid,
+            )
+          : const NoTreinadorRepository(),
       storeListingRepository: firebase
           ? const PlayStoreListingRepository()
           : const NoStoreListingRepository(),
@@ -883,6 +894,10 @@ class Dependencies {
   /// Os cursos dados pelo servidor e a tela "Curso liberado" já vista
   /// (H-R5-61/62).
   final CourseGrantsRepository courseGrantsRepository;
+
+  /// O Treinador de partidas: conta ligada, partidas analisadas e o
+  /// progresso dos exercícios (T87).
+  final TreinadorRepository treinadorRepository;
   final DemoAdRepository demoAdRepository;
   final DemoOfferRepository demoOfferRepository;
 
