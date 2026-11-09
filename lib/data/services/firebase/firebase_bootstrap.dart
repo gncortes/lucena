@@ -78,7 +78,7 @@ Future<void> useFirebaseEmulator() async {
 /// configuração do flavor (worktree de QA): o emulador aceita qualquer chave,
 /// então nada aqui é segredo nem aponta para o projeto de verdade.
 const emulatorFirebaseOptions = FirebaseOptions(
-  apiKey: 'AIzaEmuladorDoLucenaSemSegredoNenhum000',
+  apiKey: 'chave-falsa-do-emulador',
   appId: '1:0:android:0',
   messagingSenderId: '0',
   projectId: 'lucena-dev-gnc',
