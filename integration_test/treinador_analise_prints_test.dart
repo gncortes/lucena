@@ -139,10 +139,9 @@ void main() {
 
     // 5 · Partida nova e MP4 da análise até o fim dos exercícios.
     await shot.begin('analise-ate-fim');
-    await t.abrirPartida(_nova);
-    await $.pump(const Duration(milliseconds: 1500));
-    await shot.shot('05-partida-nova', ready: TreinadorKeys.inicio);
-    await $(TreinadorKeys.comecar).tap();
+    // A10 G2: com plano, a partida nova já pede a análise e abre a espera.
+    await $(TreinadorKeys.partida(_nova)).scrollTo();
+    await $.tester.tap(find.byKey(TreinadorKeys.partida(_nova)));
     await t.esperarCarregando();
     await $.pump(const Duration(seconds: 3));
     t.concluir(fake, _nova);
@@ -230,9 +229,8 @@ void main() {
     await $(TreinadorKeys.filtroTodas).tap();
     await $.pumpAndSettle();
     await pausa(1000);
-    await t.abrirPartida(_nova);
-    await pausa(1500);
-    await $(TreinadorKeys.comecar).tap();
+    await $(TreinadorKeys.partida(_nova)).scrollTo();
+    await $.tester.tap(find.byKey(TreinadorKeys.partida(_nova)));
     await t.esperarCarregando();
     await pausa(4000);
     t.concluir(fake, _nova);
@@ -283,8 +281,8 @@ void main() {
     await TrainingCaptureRobot.semFaixaDoTeste($);
     await t.abrirPelaHome();
     await t.aba(TreinadorKeys.tabPartidas);
-    await t.abrirPartida(_nova);
-    await $(TreinadorKeys.comecar).tap();
+    await $(TreinadorKeys.partida(_nova)).scrollTo();
+    await $.tester.tap(find.byKey(TreinadorKeys.partida(_nova)));
     await t.esperarCarregando();
     await shot.begin('espera-frases');
     for (var i = 0; i < 14; i++) {

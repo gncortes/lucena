@@ -22,8 +22,25 @@ class TreinadorRobot {
   static const _espera = Duration(seconds: 20);
 
   /// Da tela inicial ao Treinador, pelo atalho "Análise".
+  /// Com plano, o atalho abre a última partida por fazer por cima da lista
+  /// (A10 G1): volta dela para chegar às abas.
   Future<void> abrirPelaHome() async {
     await $(HomeKeys.analysisButton).scrollTo().tap();
+    // A lista carrega (esqueleto) e só então decide: abas ou a partida.
+    bool visivel(Key k) => find.byKey(k).hitTestable().evaluate().isNotEmpty;
+    for (var i = 0; i < 100; i++) {
+      await $.pump(const Duration(milliseconds: 200));
+      if (visivel(TreinadorKeys.back) || visivel(TreinadorKeys.tabPartidas)) {
+        break;
+      }
+    }
+    for (var i = 0; i < 5; i++) {
+      await $.pump(const Duration(milliseconds: 200));
+    }
+    if (!visivel(TreinadorKeys.tabPartidas) && visivel(TreinadorKeys.back)) {
+      await $.tester.tap(find.byKey(TreinadorKeys.back).hitTestable().first);
+      await $.pumpAndSettle();
+    }
     await $(TreinadorKeys.screen).waitUntilVisible(timeout: _espera);
   }
 
