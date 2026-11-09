@@ -217,4 +217,30 @@ void main() {
       expect(GameRules.endOf(reached), isNull);
     });
   });
+
+  group('replay', () {
+    test('para no máximo pedido e guarda o último lance e o nome dele', () {
+      final r = GameRules.replay(GameRules.initial, [
+        'e2e4',
+        'e7e5',
+        'g1f3',
+      ], max: 2);
+      expect(r.position.fen, startsWith('rnbqkbnr/pppp1ppp/8/4p3/4P3/'));
+      expect(r.last, Move.parse('e7e5'));
+      expect(r.san, 'e5');
+    });
+
+    test('para no primeiro lance ilegal', () {
+      final r = GameRules.replay(GameRules.initial, ['e2e4', 'e2e4']);
+      expect(r.last, Move.parse('e2e4'));
+      expect(r.san, 'e4');
+    });
+
+    test('sem lances, a posição de início e nada em destaque', () {
+      final r = GameRules.replay(GameRules.initial, const []);
+      expect(r.position, GameRules.initial);
+      expect(r.last, isNull);
+      expect(r.san, isNull);
+    });
+  });
 }

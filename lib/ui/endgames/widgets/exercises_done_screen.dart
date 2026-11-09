@@ -99,9 +99,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
           .where((exercise) => completed.containsKey(exercise.id))
           .toList();
       final chapter =
-          int.tryParse(
-            RegExp(r'\.c(\d+)').firstMatch(lesson.id)?.group(1) ?? '',
-          ) ??
+          int.tryParse(_chapterNumber.firstMatch(lesson.id)?.group(1) ?? '') ??
           state.lessonNumber;
       return TestCanvasResultPage(
         chapter: chapter,
@@ -748,3 +746,5 @@ class _SignatureLine extends StatelessWidget {
     );
   }
 }
+
+final _chapterNumber = RegExp(r'\.c(\d+)');

@@ -78,7 +78,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
   }
 
   bool _showSelector(ExplanationBlock block, ExplanationVariation variation) {
-    if (RegExp(r'^[A-Z](?:\.\d+)*$').hasMatch(variation.label)) return true;
+    if (_branchLabel.hasMatch(variation.label)) return true;
     // Keep the fallback control unless a verified inline move actually opens
     // this same origin. A matching caption alone is insufficient.
     return !_texts(block).any(
@@ -321,8 +321,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     final inline = _inlineMove(block, variation, texts);
     final selector = !inline && _showSelector(block, variation);
     final labelled =
-        variation.movesSan.isNotEmpty &&
-        RegExp(r'^[A-Z](?:\.\d+)*$').hasMatch(variation.label);
+        variation.movesSan.isNotEmpty && _branchLabel.hasMatch(variation.label);
     final letter =
         principal &&
         block.kind != ExplanationKind.failedAlternatives &&
@@ -331,7 +330,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     // título não se repete (a linha expansível mantém o título: leva o chevron).
     final move = variation.movesSan.isEmpty
         ? null
-        : variation.movesSan.first.replaceAll(RegExp(r'[?!+#]+$'), '');
+        : variation.movesSan.first.replaceAll(_moveMarksSuffix, '');
     final cited =
         widget.lessonV2 &&
         !expandable &&
@@ -783,3 +782,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     );
   }
 }
+
+final _branchLabel = RegExp(r'^[A-Z](?:\.\d+)*$');
+
+final _moveMarksSuffix = RegExp(r'[?!+#]+$');

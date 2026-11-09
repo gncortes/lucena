@@ -207,11 +207,11 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final cubit = context.read<LessonScriptCubit>();
-    final width = MediaQuery.sizeOf(context).width;
-    final media = MediaQuery.of(context);
+    final screen = MediaQuery.sizeOf(context);
+    final width = screen.width;
     final region =
-        media.size.height -
-        media.padding.vertical -
+        screen.height -
+        MediaQuery.paddingOf(context).vertical -
         64 -
         96 -
         (cubit.endgame ? 0 : 12);

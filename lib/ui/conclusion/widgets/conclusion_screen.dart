@@ -1362,21 +1362,13 @@ class _ReviewBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final game = state.conclusion!.game!;
-    Position position = Chess.fromSetup(Setup.parseFen(game.startFen!));
-    Move? last;
-    for (final uci in game.moves.take(state.reviewDone)) {
-      final move = Move.parse(uci);
-      if (move == null || !position.isLegal(move)) break;
-      position = position.play(move);
-      last = move;
-    }
+    final board = state.reviewBoard;
     return PositionBoard(
       key: ConclusionKeys.reviewBoard,
-      fen: position.fen,
+      fen: board.position.fen,
       size: size,
       orientation: state.conclusion!.userSide,
-      lastMove: last,
+      lastMove: board.last,
     );
   }
 }
@@ -1730,18 +1722,8 @@ class _BestLineState extends State<_BestLine> {
     final ply = state.bestPly;
     final running = state.bestLineRunning;
     final game = widget.conclusion.game!;
-    // A posição depois do lance mostrado e o nome dele (SAN).
-    Position position = Chess.fromSetup(Setup.parseFen(game.startFen!));
-    Move? last;
-    String? san;
-    for (final uci in line.take(ply + 1)) {
-      final move = Move.parse(uci);
-      if (move == null || !position.isLegal(move)) break;
-      final (next, name) = position.makeSan(move);
-      position = next;
-      last = move;
-      san = name;
-    }
+    // A posição depois do lance mostrado e o nome dele (SAN), do estado.
+    final (:position, :last, :san) = state.bestBoard;
     final opponentName =
         state.opponent?.name ??
         game.opponent.label(l10n, level: game.opponentLevel);

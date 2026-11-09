@@ -49,7 +49,7 @@ abstract final class FeaturedLabels {
       l10n.featuredPlayers(_surname(endgame.white), _surname(endgame.black));
 
   static String _surname(FeaturedPlayer player) {
-    final parts = player.name.trim().split(RegExp(r'\s+'));
+    final parts = player.name.trim().split(_whitespace);
     return parts.isEmpty ? player.name : parts.last;
   }
 
@@ -127,3 +127,5 @@ abstract final class FeaturedLabels {
   /// Os relógios que a folha oferece (segundos+incremento).
   static const clocks = <String?>[null, '180+0', '300+0', '600+0'];
 }
+
+final _whitespace = RegExp(r'\s+');

@@ -52,9 +52,7 @@ class ExercisesIntroScreen extends StatelessWidget {
     final next = state.nextExercise;
     if (lesson != null && lesson.id.startsWith('pilares.')) {
       final chapter =
-          int.tryParse(
-            RegExp(r'\.c(\d+)').firstMatch(lesson.id)?.group(1) ?? '',
-          ) ??
+          int.tryParse(_chapterNumber.firstMatch(lesson.id)?.group(1) ?? '') ??
           state.lessonNumber;
       return TestCanvasIntroPage(
         chapter: chapter,
@@ -614,3 +612,5 @@ class _FactCard extends StatelessWidget {
     );
   }
 }
+
+final _chapterNumber = RegExp(r'\.c(\d+)');

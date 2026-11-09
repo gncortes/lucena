@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../domain/use_cases/clock_format.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
 import '../../core/l10n/l10n.dart';
@@ -32,7 +33,7 @@ int earnedOf(ChallengeLevel level, int collected) =>
 /// "0:45".
 String clockText(Duration left) {
   final seconds = (left.inMilliseconds / 1000).ceil();
-  return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+  return ClockFormat.minutesSeconds(seconds);
 }
 
 /// A cor de cada tipo de estrela.

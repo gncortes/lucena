@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/use_cases/clock_format.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../../domain/use_cases/conclusion_rules.dart';
@@ -1060,8 +1061,7 @@ class _TalkBarState extends State<_TalkBar> {
   }
 
   String _clock(Duration duration) {
-    final seconds = duration.inSeconds;
-    return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+    return ClockFormat.minutesSeconds(duration.inSeconds);
   }
 
   @override
@@ -1835,10 +1835,8 @@ class _RecordingState extends State<_Recording>
             ),
             const SizedBox(width: AppSpacing.sm),
             TimeDisplay(
-              value:
-                  '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}',
-              semanticsLabel:
-                  '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}',
+              value: ClockFormat.minutesSeconds(seconds),
+              semanticsLabel: ClockFormat.minutesSeconds(seconds),
               size: TimeDisplaySize.inline,
               state: TimeDisplayState.active,
               presentation: TimeDisplayPresentation.plain,

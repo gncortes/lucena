@@ -63,7 +63,7 @@ class ExternalPageSheet extends StatefulWidget {
 
   /// O domínio, sem `www.` nem `m.`: `pt.wikipedia.org`, `lichess.org`.
   static String domainOf(Uri url) =>
-      url.host.replaceFirst(RegExp(r'^(www|m)\.'), '');
+      url.host.replaceFirst(_wwwOrMobilePrefix, '');
 
   @override
   State<ExternalPageSheet> createState() => _ExternalPageSheetState();
@@ -181,3 +181,5 @@ class _Offline extends StatelessWidget {
     );
   }
 }
+
+final _wwwOrMobilePrefix = RegExp(r'^(www|m)\.');

@@ -118,12 +118,7 @@ class VariationStrip extends StatefulWidget {
   /// inteiro: cortar deixaria um pedaço começando em minúscula.
   @visibleForTesting
   static String withoutLeadingMove(String text) {
-    final rest = text.replaceFirst(
-      RegExp(
-        r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
-      ),
-      '',
-    );
+    final rest = text.replaceFirst(_leadingMove, '');
     if (rest == text || rest.isEmpty) return rest;
     final first = rest[0];
     return first.toLowerCase() == first && first.toUpperCase() != first
@@ -339,8 +334,8 @@ class _VariationStripState extends State<VariationStrip> {
     TreePosition focus,
   ) {
     String sanOf(String label) => label
-        .replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), '')
-        .replaceFirst(RegExp(r'[!?]+$'), '');
+        .replaceFirst(_moveNumberPrefix, '')
+        .replaceFirst(_moveAnnotationSuffix, '');
     final all = <String, bool>{};
     final line = <String, bool>{};
     final inLine = {
@@ -743,7 +738,7 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
     return Semantics(
       container: true,
       label: l10n.lessonVariationAlternative(
-        replaced.replaceFirst(RegExp(r'^\d+\.(?:\.\.)?'), ''),
+        replaced.replaceFirst(_moveNumberPrefix, ''),
       ),
       child: Container(
         key: LessonKeys.variationBranch(branch.id),
@@ -1083,3 +1078,11 @@ class _MoveButton extends StatelessWidget {
     );
   }
 }
+
+final _leadingMove = RegExp(
+  r'^\s*\d+\.(?:\.\.)?\s*[A-Za-z][A-Za-z0-9=+#x\-]*[!?]{0,2}[.:,]?\s+',
+);
+
+final _moveNumberPrefix = RegExp(r'^\d+\.(?:\.\.)?');
+
+final _moveAnnotationSuffix = RegExp(r'[!?]+$');

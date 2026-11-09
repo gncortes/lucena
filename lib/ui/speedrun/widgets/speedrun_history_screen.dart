@@ -77,6 +77,9 @@ class SpeedrunHistoryScreen extends StatelessWidget {
     final colors = theme.colorScheme;
     final locale = Localizations.localeOf(context).toString();
     final month = DateFormat.yMMMM(locale);
+    // Um formato de dia e de hora para a lista toda, não um por tentativa.
+    final dayFormat = DateFormat(context.l10n.historyDayPattern, locale);
+    final timeFormat = DateFormat.Hm(locale);
     final groups = <(String, List<(int, SpeedrunHistoryRun)>)>[];
     for (final (index, run) in state.runs.indexed) {
       final label = toBeginningOfSentenceCase(
@@ -113,6 +116,8 @@ class SpeedrunHistoryScreen extends StatelessWidget {
                     key: SpeedrunKeys.historyRun(index),
                     speedrun: speedrun,
                     entry: run,
+                    dayFormat: dayFormat,
+                    timeFormat: timeFormat,
                   ),
                 ],
               ],
@@ -392,17 +397,24 @@ class _Numbers extends StatelessWidget {
 /// Uma tentativa: o tempo (troféu no recorde) ou onde parou, o dia e, na
 /// primeira conclusão, o rating que ela deu.
 class _RunRow extends StatelessWidget {
-  const _RunRow({required this.speedrun, required this.entry, super.key});
+  const _RunRow({
+    required this.speedrun,
+    required this.entry,
+    required this.dayFormat,
+    required this.timeFormat,
+    super.key,
+  });
 
   final Speedrun speedrun;
   final SpeedrunHistoryRun entry;
+  final DateFormat dayFormat;
+  final DateFormat timeFormat;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final locale = Localizations.localeOf(context).toString();
     final endedAt = entry.endedAt.toLocal();
     final total = speedrun.stages.length;
     final stage = entry.stage.clamp(1, total);
@@ -456,8 +468,8 @@ class _RunRow extends StatelessWidget {
             ),
           };
     final day = l10n.historyDayAt(
-      DateFormat(l10n.historyDayPattern, locale).format(endedAt),
-      DateFormat.Hm(locale).format(endedAt),
+      dayFormat.format(endedAt),
+      timeFormat.format(endedAt),
     );
     final bonus = entry.bonus;
     return InkWell(

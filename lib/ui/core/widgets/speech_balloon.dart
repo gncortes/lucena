@@ -343,7 +343,7 @@ class SpeechFit {
     // Nunca no meio de um nome marcado (`{{nome|chave}}`).
     final marks = SpeechText.wikiPattern.allMatches(text).toList();
     final ends = <int>[
-      for (final m in RegExp(r'\s+').allMatches(text))
+      for (final m in _whitespace.allMatches(text))
         if (!marks.any((w) => m.start > w.start && m.start < w.end)) m.start,
     ];
     String piece(int end) => text.substring(0, end).replaceFirst(_trailing, '');
@@ -753,7 +753,7 @@ class SpeechText extends StatefulWidget {
   /// botão (Gabriel, 16/10/2026).
   static String inline(String label, String before) {
     final prev = before.trimRight();
-    if (prev.isEmpty || RegExp(r'[.!?…:]$').hasMatch(prev)) return label;
+    if (prev.isEmpty || _endsWithPunctuation.hasMatch(prev)) return label;
     return label.substring(0, 1).toLowerCase() + label.substring(1);
   }
 
@@ -959,7 +959,7 @@ class _SpeechTextState extends State<SpeechText> {
   static int? _linkSentence(String text) {
     final link = SpeechText.markPattern.allMatches(text).last;
     final before = text.substring(0, link.start);
-    final end = RegExp(r'[.!?…]\s+').allMatches(before).lastOrNull?.end;
+    final end = _sentenceEnd.allMatches(before).lastOrNull?.end;
     return end == null || end == 0 ? null : end;
   }
 
@@ -1132,3 +1132,9 @@ class _NearSquareTap extends TapGestureRecognizer {
     return square != null && super.isPointerAllowed(event);
   }
 }
+
+final _whitespace = RegExp(r'\s+');
+
+final _endsWithPunctuation = RegExp(r'[.!?…:]$');
+
+final _sentenceEnd = RegExp(r'[.!?…]\s+');

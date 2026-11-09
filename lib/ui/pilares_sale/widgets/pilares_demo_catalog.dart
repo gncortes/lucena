@@ -180,7 +180,7 @@ class PilaresDemoCatalog extends StatelessWidget {
 /// O número da parte pelo id (`pilares.p3` → 3): o Catálogo da demo pula
 /// partes sem capítulo trancado, então a posição na lista não serve.
 int? _partNumber(String partId) =>
-    int.tryParse(RegExp(r'\.p(\d+)$').firstMatch(partId)?.group(1) ?? '');
+    int.tryParse(_partIdNumber.firstMatch(partId)?.group(1) ?? '');
 
 /// O cartão do topo: presente, "Capítulo 1 liberado para você", quantos dos
 /// itens já foram feitos, o texto do anúncio e a barra de progresso.
@@ -309,3 +309,5 @@ class _LockedRow extends StatelessWidget {
     );
   }
 }
+
+final _partIdNumber = RegExp(r'\.p(\d+)$');

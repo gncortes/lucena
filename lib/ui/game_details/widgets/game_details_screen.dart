@@ -7,6 +7,7 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
 import '../../core/widgets/load_error.dart';
 
@@ -814,8 +815,7 @@ class _MoveTable extends StatelessWidget {
   // `3,4 s` ou `1:05` acima de um minuto.
   static String _seconds(BuildContext context, Duration time) {
     if (time.inSeconds >= 60) {
-      final seconds = time.inSeconds.remainder(60).toString().padLeft(2, '0');
-      return '${time.inMinutes}:$seconds';
+      return ClockFormat.minutesSeconds(time.inSeconds);
     }
     final locale = Localizations.localeOf(context).toString();
     final format = NumberFormat('0.0', locale);

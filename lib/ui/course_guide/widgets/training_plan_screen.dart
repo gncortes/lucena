@@ -369,7 +369,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
           t.trainingPlanWeekdaySaturday,
         ];
         final extraKey = config.planExtraRecommendationKeys[plan.minutes];
-        final screenWidth = MediaQuery.of(context).size.width;
+        final screenWidth = MediaQuery.sizeOf(context).width;
         // Seven 48 dp day targets need 336 dp. Retain Canvas gutters whenever
         // space permits, reducing only the compact phone gutters.
         final horizontalPadding = screenWidth < 368 ? 12.0 : 16.0;

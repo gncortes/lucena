@@ -102,7 +102,7 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
                     decimal: true,
                   ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                    FilteringTextInputFormatter.allow(_amountCharacters),
                   ],
                   decoration: InputDecoration(
                     labelText: t.treinoFieldPoints,
@@ -269,3 +269,5 @@ class _TrainingRegisterScreenState extends State<TrainingRegisterScreen> {
     );
   }
 }
+
+final _amountCharacters = RegExp(r'[0-9.,]');

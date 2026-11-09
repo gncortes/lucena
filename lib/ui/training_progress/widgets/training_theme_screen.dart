@@ -1,3 +1,4 @@
+import '../../../domain/use_cases/clock_format.dart';
 import '../../core/theme/app_icon_size.dart';
 
 import 'package:flutter/material.dart';
@@ -304,10 +305,7 @@ class _HistoryRow extends StatelessWidget {
         : (elapsed.clamp(0, 1 << 53) ~/ 1000);
     final label = seconds == null
         ? result
-        : t.themeCanvasResultTime(
-            result,
-            '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}',
-          );
+        : t.themeCanvasResultTime(result, ClockFormat.minutesSeconds(seconds));
     final source = exercise;
     final tap = source == null || onExercise == null
         ? null

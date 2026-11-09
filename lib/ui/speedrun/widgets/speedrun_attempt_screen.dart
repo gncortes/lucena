@@ -311,10 +311,7 @@ class _AlreadyEarned extends StatelessWidget {
           DateFormat.MMMMd(locale).format(paid.at.toLocal()),
         )
         // O "+N" fica LTR dentro do texto, também em árabe.
-        .replaceAllMapped(
-          RegExp(r'\+\d+'),
-          (match) => _ltr(context, match[0]!),
-        );
+        .replaceAllMapped(_plusNumber, (match) => _ltr(context, match[0]!));
     return Row(
       key: SpeedrunKeys.ratingAlreadyEarned,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -780,3 +777,5 @@ class _RecordCard extends StatelessWidget {
     );
   }
 }
+
+final _plusNumber = RegExp(r'\+\d+');

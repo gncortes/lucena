@@ -446,9 +446,9 @@ class CanvasSpeechLayout {
       if (accent >= 0) c = plain[accent];
       units +=
           _widths[c] ??
-          (RegExp('[A-Z]').hasMatch(c)
+          (_capitalLetter.hasMatch(c)
               ? 1330
-              : RegExp('[0-9]').hasMatch(c)
+              : _digit.hasMatch(c)
               ? 1150
               : 1100);
     }
@@ -460,7 +460,7 @@ class CanvasSpeechLayout {
     required double width,
     required int lines,
   }) {
-    final source = text.replaceAll(RegExp(r'\n\s*\n+'), '\n');
+    final source = text.replaceAll(_blankLines, '\n');
     final parts = <(String, String)>[];
     var at = 0;
     // Um nome marcado (`{{nome|chave}}`) mede só o nome e volta inteiro,
@@ -555,7 +555,7 @@ class CanvasSpeechLayout {
     }
     if (output.isNotEmpty) {
       final last = output.removeLast();
-      output.add((last.$1.replaceFirst(RegExp(r'[\s,;:.–-]+$'), ''), last.$2));
+      output.add((last.$1.replaceFirst(_trailingPunctuation, ''), last.$2));
     }
     return CanvasSpeechLayout(
       output
@@ -574,3 +574,11 @@ class CanvasSpeechLayout {
     );
   }
 }
+
+final _capitalLetter = RegExp('[A-Z]');
+
+final _digit = RegExp('[0-9]');
+
+final _blankLines = RegExp(r'\n\s*\n+');
+
+final _trailingPunctuation = RegExp(r'[\s,;:.–-]+$');

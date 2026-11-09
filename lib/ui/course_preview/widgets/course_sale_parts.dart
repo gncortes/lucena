@@ -222,7 +222,7 @@ class SaleSteps extends StatelessWidget {
 /// Um número da venda que conta até o valor (H-ANI-18). O texto vem do
 /// modelo ("105", "850+"): os algarismos contam e o que sobra fica como sufixo.
 Widget saleCount(String value, {TextStyle? style}) {
-  final match = RegExp(r'^(\d[\d.]*)(\D*)$').firstMatch(value.trim());
+  final match = _numberWithSuffix.firstMatch(value.trim());
   final number = int.tryParse(match?.group(1)?.replaceAll('.', '') ?? '');
   if (match == null || number == null) {
     return Text(value, textAlign: TextAlign.center, style: style);
@@ -821,7 +821,7 @@ class SaleSummary extends StatelessWidget {
 /// O maior valor em reais de um texto ("R$ 700 a R$ 1.080" → 1080).
 double? _largestReais(String text) {
   double? largest;
-  for (final match in RegExp(r'\d[\d.]*(,\d+)?').allMatches(text)) {
+  for (final match in _numberWithDecimals.allMatches(text)) {
     final value = double.tryParse(
       match.group(0)!.replaceAll('.', '').replaceAll(',', '.'),
     );
@@ -1009,3 +1009,7 @@ class _Bar extends StatelessWidget {
     altura: height,
   );
 }
+
+final _numberWithSuffix = RegExp(r'^(\d[\d.]*)(\D*)$');
+
+final _numberWithDecimals = RegExp(r'\d[\d.]*(,\d+)?');

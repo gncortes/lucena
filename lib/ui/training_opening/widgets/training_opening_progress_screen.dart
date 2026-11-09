@@ -133,7 +133,7 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
             )
             .toList();
         String slot(TrainingLesson lesson) =>
-            lesson.id.split('.').last.replaceAll(RegExp(r'\d+$'), '');
+            lesson.id.split('.').last.replaceAll(_trailingDigits, '');
         final slots = lessons.map(slot).toSet().toList();
         final selectedSlot = slots.contains(_selected)
             ? _selected
@@ -564,3 +564,5 @@ Color openingAccuracyColor(int percent) => percent == 100
     : percent >= 70
     ? AppColors.trainingMasteryDeveloping
     : AppColors.trainingDayWrong;
+
+final _trailingDigits = RegExp(r'\d+$');
