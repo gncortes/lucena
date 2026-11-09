@@ -16,6 +16,7 @@ import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/entrada_em_cascata.dart';
 import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/transicao_eixo_x.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -122,11 +123,24 @@ class TreinadorPartidaScreen extends StatelessWidget {
               overflow: TextOverflow.visible,
             ),
           ),
-          body: SafeArea(top: false, child: corpo),
+          // Início → preparando → pronta: passos em sequência (H-ANI-03).
+          body: SafeArea(
+            top: false,
+            child: TransicaoEixoX(
+              child: KeyedSubtree(key: ValueKey(_passo(partida)), child: corpo),
+            ),
+          ),
         );
       },
     );
   }
+
+  /// O passo da tela: a troca entre passos desliza no eixo X.
+  static String _passo(PartidaTreinador p) => switch (p.status) {
+    StatusPartida.naFila || StatusPartida.analisando => 'carregando',
+    StatusPartida.pronta when _resumo(p) => 'resumo',
+    final s => s.name,
+  };
 
   /// Pronta e sem exercício a fazer: vai direto ao resumo.
   static bool _resumo(PartidaTreinador p) =>
