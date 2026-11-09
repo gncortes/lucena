@@ -380,6 +380,24 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Agentes noturnos (AG-5b.1): o porteiro importarLote grava o lote
+    // (idempotência), a quarentena com o motivo e a contagem da noite. Pelo
+    // app, só leitura do admin.
+    match /lotes/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /quarentena/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /agentesNoite/{noite} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // As promoções: o app do aluno só consulta pela Function validarCupom.
     match /promocoes/{id} {
       allow read: if isAdmin();

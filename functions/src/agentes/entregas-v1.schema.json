@@ -1,0 +1,687 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lucena.app/agentes/entregas-v1.schema.json",
+  "title": "Lote de entregas de um agente (v1)",
+  "description": "Saída de um agente. Espelha entregas/{id} (E1.19-contrato-embasamento §5-6, lib/domain/models/entrega.dart do lucena-admin). O agente não escolhe id, estado final, criadaEm, aprovadoPor nem hashConteudo: o porteiro carimba. horarioSugerido é HH:MM em horário de Brasília; o porteiro monta a data. Regras por agente e por formato que JSON Schema não expressa bem estão em validar.py (mesmo diretório da nuvem) e em agentes/<agente>.md. Tipo do post = formato (post|carrossel|videoCurto) + tema, independentes; rótulo \"<Formato> / <Tema>\". Tabuleiro sempre orientado para o lado que joga (orientacao == ladoAJogar == lado do FEN); a legenda não revela a solução.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "versao",
+    "agente",
+    "resumo",
+    "entregas"
+  ],
+  "properties": {
+    "versao": {
+      "const": 1
+    },
+    "agente": {
+      "enum": [
+        "memista",
+        "roteirista-posicao",
+        "roteirista-video"
+      ]
+    },
+    "resumo": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "geradoEm": {
+      "type": "string",
+      "description": "Carimbado pelo gancho de fim, nunca pelo agente."
+    },
+    "entregas": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/entrega"
+      }
+    }
+  },
+  "$defs": {
+    "texto": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2200
+    },
+    "fen": {
+      "type": "string",
+      "pattern": "^([pnbrqkPNBRQK1-8]{1,8}/){7}[pnbrqkPNBRQK1-8]{1,8} [wb] (-|[KQkq]{1,4}) (-|[a-h][36]) \\d+ \\d+$"
+    },
+    "hashtag": {
+      "type": "string",
+      "pattern": "^#[^\\s#]{2,40}$"
+    },
+    "referencia": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "O porteiro (importarLote) grava a lista como veio em entregas/{id}.referencias e deriva entregas/{id}.fontes, uma por referência: {afirmacao: titulo, url, tipo, origem, data?}, sem conferidaEm (o Gabriel confere no painel antes de aprovar).",
+      "required": [
+        "tipo",
+        "titulo",
+        "url",
+        "origem"
+      ],
+      "properties": {
+        "tipo": {
+          "enum": [
+            "post",
+            "comentario",
+            "fonte",
+            "dado",
+            "partida",
+            "tendencia"
+          ]
+        },
+        "titulo": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://",
+          "maxLength": 3000,
+          "description": "Só URL que está em comum/fontes.json (conferido no validar.py); no porteiro, só https com host em dominios.json."
+        },
+        "data": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Dia do fato (aaaa-mm-dd), quando a fonte é de um fato datado (notícia, rodada). Vira fontes[].data; fato de hoje trava o Aprovar."
+        },
+        "trecho": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "publico": {
+          "type": "boolean"
+        },
+        "origem": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        }
+      }
+    },
+    "posicao": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fen",
+        "ladoAJogar",
+        "orientacao"
+      ],
+      "properties": {
+        "fen": {
+          "$ref": "#/$defs/fen"
+        },
+        "lances": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "rotulo": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "ladoAJogar": {
+          "enum": [
+            "brancas",
+            "pretas"
+          ],
+          "description": "Quem joga, igual ao 2º campo do FEN (w = brancas, b = pretas)."
+        },
+        "orientacao": {
+          "enum": [
+            "brancas",
+            "pretas"
+          ],
+          "description": "Cor que fica embaixo no tabuleiro: sempre o lado que joga."
+        }
+      }
+    },
+    "slide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "numero",
+        "papel",
+        "texto"
+      ],
+      "properties": {
+        "numero": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "papel": {
+          "enum": [
+            "capa",
+            "ensino",
+            "posicao",
+            "tente",
+            "chamada"
+          ]
+        },
+        "texto": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "fen": {
+          "$ref": "#/$defs/fen"
+        },
+        "lances": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "mascoteVariante": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "ladoAJogar": {
+          "enum": [
+            "brancas",
+            "pretas"
+          ],
+          "description": "Obrigatório quando o slide tem fen."
+        },
+        "orientacao": {
+          "enum": [
+            "brancas",
+            "pretas"
+          ],
+          "description": "Obrigatório quando o slide tem fen; igual a ladoAJogar."
+        }
+      }
+    },
+    "cena": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "numero",
+        "duracaoSeg",
+        "imagem"
+      ],
+      "properties": {
+        "numero": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "duracaoSeg": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "imagem": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "fala": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "textoNaTela": {
+          "type": "string",
+          "maxLength": 60
+        }
+      }
+    },
+    "quiz": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pergunta",
+        "opcoes",
+        "correta",
+        "explicacao"
+      ],
+      "properties": {
+        "pergunta": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "opcoes": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-h][1-8][a-h][1-8][qrbn]?$|^[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](=[QRBN])?[+#]?$|^O-O(-O)?[+#]?$"
+          }
+        },
+        "correta": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "explicacao": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "desafio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "meta",
+        "adversario",
+        "solucao"
+      ],
+      "properties": {
+        "meta": {
+          "enum": [
+            "ganham",
+            "empatam",
+            "mateEm"
+          ]
+        },
+        "lances": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "adversario": {
+          "enum": [
+            "stockfish",
+            "maia1500"
+          ]
+        },
+        "solucao": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Lances copiados do insumo (UCI) ou vazio; o porteiro confere ou preenche na tabelas de finais/Stockfish."
+        },
+        "chamada": {
+          "type": "string",
+          "maxLength": 120
+        }
+      }
+    },
+    "roteiro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duracaoSeg",
+        "cenas"
+      ],
+      "properties": {
+        "duracaoSeg": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 20
+        },
+        "cenas": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/$defs/cena"
+          }
+        }
+      }
+    },
+    "traducao": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "texto": {
+          "type": "string",
+          "maxLength": 2600
+        },
+        "hashtags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 80
+          }
+        },
+        "slides": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "quiz": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pergunta": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "opcoes": {
+              "type": "array",
+              "maxItems": 3,
+              "items": {
+                "type": "string",
+                "maxLength": 20
+              }
+            },
+            "explicacao": {
+              "type": "string",
+              "maxLength": 300
+            }
+          }
+        },
+        "chamada": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "metaTexto": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "cenas": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "fala": {
+                "type": "string",
+                "maxLength": 260
+              },
+              "textoNaTela": {
+                "type": "string",
+                "maxLength": 90
+              }
+            }
+          }
+        },
+        "prompt": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "legendas": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 2600
+          },
+          "description": "PT-BR fiel das legendas das outras redes (chaves facebook, x, xResposta, youtube), para o Gabriel aprovar item em inglês."
+        }
+      }
+    },
+    "entrega": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "idLocal",
+        "tipo",
+        "estado",
+        "formato",
+        "tema",
+        "etapa",
+        "pais",
+        "idioma",
+        "titulo",
+        "porque",
+        "referencias",
+        "horarioSugerido"
+      ],
+      "properties": {
+        "idLocal": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{3,60}$"
+        },
+        "tipo": {
+          "const": "post"
+        },
+        "estado": {
+          "const": "sugerido"
+        },
+        "formato": {
+          "enum": [
+            "post",
+            "carrossel",
+            "videoCurto"
+          ],
+          "description": "Como sai: post = imagem única, carrossel = várias imagens, videoCurto = Reels/Shorts/TikTok. Rótulo: Post | Carrossel | Vídeo curto."
+        },
+        "tema": {
+          "enum": [
+            "desafio",
+            "curiosidade",
+            "meme",
+            "quiz",
+            "posicao",
+            "dataComemorativa",
+            "dica"
+          ],
+          "description": "Do que trata, independente do formato. Rótulo: Desafio | Curiosidade | Meme | Quiz | Posição | Data comemorativa | Dica. O painel mostra \"<Formato> / <Tema>\", ex.: \"Carrossel / Curiosidade\"."
+        },
+        "etapa": {
+          "enum": [
+            "ideia",
+            "pronto"
+          ]
+        },
+        "pais": {
+          "enum": [
+            "BR",
+            "US"
+          ]
+        },
+        "idioma": {
+          "enum": [
+            "pt-BR",
+            "en-US"
+          ]
+        },
+        "origemId": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "aula": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9.]{3,80}$"
+        },
+        "titulo": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "porque": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "referencias": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/referencia"
+          }
+        },
+        "horarioSugerido": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "porqueHorario": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "porQueFuncionaLa": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "gancho": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "descricao": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "esboco": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "mascoteVariante": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "texto": {
+          "$ref": "#/$defs/texto",
+          "description": "Legenda. Não revela a solução (ela fica em quiz.explicacao ou desafio.solucao)."
+        },
+        "hashtags": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/hashtag"
+          }
+        },
+        "posicoes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/posicao"
+          }
+        },
+        "slides": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/slide"
+          }
+        },
+        "quiz": {
+          "$ref": "#/$defs/quiz"
+        },
+        "desafio": {
+          "$ref": "#/$defs/desafio"
+        },
+        "roteiro": {
+          "$ref": "#/$defs/roteiro"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1500
+        },
+        "traducao": {
+          "$ref": "#/$defs/traducao"
+        },
+        "contexto": {
+          "$ref": "#/$defs/contexto"
+        },
+        "legendas": {
+          "$ref": "#/$defs/legendas"
+        }
+      }
+    },
+    "contexto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "partidaId"
+      ],
+      "description": "Origem da posição, copiada de comum/partidas.json (o validar.py confere cada campo). Só com uma entrada de partidas.json; sem ela, a entrega não leva contexto e não cita nome, evento nem ano.",
+      "properties": {
+        "partidaId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "tipo": {
+          "enum": [
+            "partida",
+            "estudo",
+            "classica"
+          ]
+        },
+        "brancas": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "pretas": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "evento": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "ano": {
+          "type": "integer",
+          "minimum": 1400,
+          "maximum": 2100
+        },
+        "autor": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "obra": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    },
+    "legendaRede": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "texto"
+      ],
+      "description": "Legenda de uma rede. Regras por rede em nuvem/regras-fixas/redes.md e no validar.py.",
+      "properties": {
+        "texto": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2200,
+          "description": "Os blocos 1 a 3 (contexto, pergunta, chamada). Sem hashtags: elas ficam em hashtags. Facebook e YouTube terminam em 'Pratique esta posição no app Lucena: lucena.app/p/<id>'; X não leva link; Instagram termina em 'Link nos stories.'."
+        },
+        "hashtags": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/hashtag"
+          }
+        },
+        "resposta": {
+          "type": "string",
+          "maxLength": 280,
+          "description": "Só no X: resposta ao próprio post, com o link."
+        }
+      }
+    },
+    "legendas": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Legenda por rede. O campo texto/hashtags da entrega continua sendo a do Instagram (legendas.instagram é opcional e, se existir, vale também). Obrigatório facebook, x e youtube no roteirista-posicao.",
+      "properties": {
+        "instagram": {
+          "$ref": "#/$defs/legendaRede"
+        },
+        "facebook": {
+          "$ref": "#/$defs/legendaRede"
+        },
+        "x": {
+          "$ref": "#/$defs/legendaRede"
+        },
+        "youtube": {
+          "$ref": "#/$defs/legendaRede"
+        }
+      }
+    }
+  }
+}
