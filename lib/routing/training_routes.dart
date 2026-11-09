@@ -63,6 +63,7 @@ import '../domain/use_cases/training/goal/goal_dates.dart';
 import 'routes.dart';
 import '../ui/lesson_ad/widgets/lesson_entry.dart';
 import '../ui/pilares_sale/widgets/pilares_demo_tabs.dart';
+import '../ui/treinador_seu_jogo/widgets/metas_destaque_treinador.dart';
 import '../ui/core/keys/purchase_keys.dart';
 import 'route_names.dart';
 import 'training_launch.dart';
@@ -652,6 +653,16 @@ class _Guide extends StatelessWidget {
                       highlight: 'meta_capitulo_1',
                     )
                   : null,
+              // T87: a parte que o Treinador de partidas mandou estudar.
+              focus: switch (GoRouterState.of(context)
+                  .uri
+                  .queryParameters['destaque']) {
+                final id? when id.isNotEmpty => MetasDestaqueTreinador(
+                  lessonId: id,
+                  onOpen: (l) => _lesson(context, l, origin: 'treinador'),
+                ),
+                _ => null,
+              },
             ),
           );
         },

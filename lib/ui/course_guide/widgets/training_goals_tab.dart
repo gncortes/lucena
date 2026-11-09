@@ -39,8 +39,13 @@ class TrainingGoalsTab extends StatelessWidget {
     this.lessonSummary,
     this.footer,
     this.chapterDoneInvite,
+    this.focus,
     super.key,
   });
+
+  /// Bloco no alto da lista: a parte do Pilares que o Treinador de partidas
+  /// mandou estudar (T87).
+  final Widget? focus;
   final ValueChanged<TrainingGoal> onGoal;
   final VoidCallback onPlan;
   final ValueChanged<String>? onOpening;
@@ -122,6 +127,7 @@ class TrainingGoalsTab extends StatelessWidget {
       if (hasOfflineLesson) {
         contents.add(const TrainingGoalsOfflineNotice());
       }
+      if (focus case final f?) contents.add(f);
       if (offer) {
         contents.add(
           _panel(

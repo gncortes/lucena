@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/lesson_ad/course_grants_repository.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
+import 'package:lucena/data/repositories/treinador/treinador_repository.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
 import 'package:patrol/patrol.dart';
@@ -46,7 +47,9 @@ class AppRobot {
     PushRepository? push,
     CourseGrantsRepository? courseGrants,
     bool settle = true,
+    TreinadorRepository? treinador,
   }) async {
+    _treinador = treinador;
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
     // fila terminam antes da limpeza: nada dele chega ao cenário novo.
@@ -85,6 +88,9 @@ class AppRobot {
       settle: settle,
     );
   }
+
+  /// O Treinador de partidas do cenário (T87): volta igual no [restart].
+  static TreinadorRepository? _treinador;
 
   /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho. Como
   /// ao fechar à força: nenhuma tela é avisada de que o app vai fechar.
@@ -140,6 +146,7 @@ class AppRobot {
         accountInvite: accountInvite,
         push: push,
         courseGrants: courseGrants,
+        treinador: _treinador,
       ),
     );
     if (!settle) {

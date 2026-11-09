@@ -14544,5 +14544,734 @@
         "type": "int"
       }
     }
+  },
+  "sjTitulo": "Your game",
+  "@sjTitulo": {
+    "description": "Aba Seu jogo do Treinador de partidas (T87). (T87)"
+  },
+  "sjPlataformaLichess": "Lichess",
+  "@sjPlataformaLichess": {
+    "description": "Nome da plataforma. (T87)"
+  },
+  "sjPlataformaChesscom": "Chess.com",
+  "@sjPlataformaChesscom": {
+    "description": "Nome da plataforma. (T87)"
+  },
+  "sjRitmoTodos": "All time controls",
+  "@sjRitmoTodos": {
+    "description": "Filtro de ritmo: todos. (T87)"
+  },
+  "sjRitmoBullet": "Bullet",
+  "@sjRitmoBullet": {
+    "description": "Ritmo bullet. (T87)"
+  },
+  "sjRitmoBlitz": "Blitz",
+  "@sjRitmoBlitz": {
+    "description": "Ritmo blitz. (T87)"
+  },
+  "sjRitmoRapida": "Rapid",
+  "@sjRitmoRapida": {
+    "description": "Ritmo rápido. (T87)"
+  },
+  "sjCorBrancas": "White",
+  "@sjCorBrancas": {
+    "description": "Cor das peças. (T87)"
+  },
+  "sjCorPretas": "Black",
+  "@sjCorPretas": {
+    "description": "Cor das peças. (T87)"
+  },
+  "sjFaseAbertura": "Opening",
+  "@sjFaseAbertura": {
+    "description": "Fase da partida. (T87)"
+  },
+  "sjFaseMeio": "Middlegame",
+  "@sjFaseMeio": {
+    "description": "Fase da partida. (T87)"
+  },
+  "sjFaseFinal": "Endgame",
+  "@sjFaseFinal": {
+    "description": "Fase da partida. (T87)"
+  },
+  "sjNivelPrimeira": "First read",
+  "@sjNivelPrimeira": {
+    "description": "Confiança da leitura do estilo (até 19 partidas). (T87)"
+  },
+  "sjNivelFormacao": "Taking shape",
+  "@sjNivelFormacao": {
+    "description": "Confiança da leitura do estilo (20 a 49 partidas). (T87)"
+  },
+  "sjNivelFirme": "Solid read",
+  "@sjNivelFirme": {
+    "description": "Confiança da leitura do estilo (50 partidas ou mais). (T87)"
+  },
+  "sjEstiloResumo": "Your strength: {forte}. Something to improve: {acertar}.",
+  "@sjEstiloResumo": {
+    "description": "Resumo do estilo com o primeiro ponto forte e o primeiro a melhorar. (T87)",
+    "placeholders": {
+      "forte": {
+        "type": "String"
+      },
+      "acertar": {
+        "type": "String"
+      }
+    }
+  },
+  "sjEstiloSoForte": "Your strength: {forte}.",
+  "@sjEstiloSoForte": {
+    "description": "Resumo do estilo só com ponto forte. (T87)",
+    "placeholders": {
+      "forte": {
+        "type": "String"
+      }
+    }
+  },
+  "sjEstiloSoAcertar": "Something to improve: {acertar}.",
+  "@sjEstiloSoAcertar": {
+    "description": "Resumo do estilo só com ponto a melhorar. (T87)",
+    "placeholders": {
+      "acertar": {
+        "type": "String"
+      }
+    }
+  },
+  "sjEstiloSemLeitura": "It is still too early to talk about style.",
+  "@sjEstiloSemLeitura": {
+    "description": "Resumo do estilo sem pontos. (T87)"
+  },
+  "sjEstiloTitulo": "Your style",
+  "@sjEstiloTitulo": {
+    "description": "Título do card e da tela de estilo. (T87)"
+  },
+  "sjEstiloNivel": "{nivel} · {partidas, plural, =0{{partidas} games} =1{1 game} other{{partidas} games}}",
+  "@sjEstiloNivel": {
+    "description": "Linha do card Seu estilo: confiança e partidas. (T87)",
+    "placeholders": {
+      "nivel": {
+        "type": "String"
+      },
+      "partidas": {
+        "type": "int"
+      }
+    }
+  },
+  "sjEstiloComPartidas": "{partidas, plural, =0{With {partidas} games} =1{With 1 game} other{With {partidas} games}}: {nivel, select, primeira{first read} formacao{taking shape} other{solid read}}",
+  "@sjEstiloComPartidas": {
+    "description": "Título da confiança na tela de estilo; nivel = primeira, formacao ou firme. (T87)",
+    "placeholders": {
+      "partidas": {
+        "type": "int"
+      },
+      "nivel": {
+        "type": "String"
+      }
+    }
+  },
+  "sjEstiloFalta": "{falta, plural, =0{With {falta} more games, the read gets sharper.} =1{With 1 more game, the read gets sharper.} other{With {falta} more games, the read gets sharper.}}",
+  "@sjEstiloFalta": {
+    "description": "Quantas partidas faltam para o próximo degrau. (T87)",
+    "placeholders": {
+      "falta": {
+        "type": "int"
+      }
+    }
+  },
+  "sjEstiloRefeita": "The read is updated with every analyzed game.",
+  "@sjEstiloRefeita": {
+    "description": "Nota da leitura firme. (T87)"
+  },
+  "sjEstiloFortes": "Strengths",
+  "@sjEstiloFortes": {
+    "description": "Seção do estilo. (T87)"
+  },
+  "sjEstiloAcertar": "Things to improve",
+  "@sjEstiloAcertar": {
+    "description": "Seção do estilo. (T87)"
+  },
+  "sjEstiloEmPartidas": "{n, plural, =0{In {n} games} =1{In 1 game} other{In {n} games}}",
+  "@sjEstiloEmPartidas": {
+    "description": "Em quantas partidas o ponto apareceu. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjVerPosicoes": "See the positions",
+  "@sjVerPosicoes": {
+    "description": "Abre as posições de um tema. (T87)"
+  },
+  "sjFocoTitulo": "Where to focus now",
+  "@sjFocoTitulo": {
+    "description": "Card do foco. (T87)"
+  },
+  "sjFocoAbertura": "Your opening",
+  "@sjFocoAbertura": {
+    "description": "Título do foco na abertura. (T87)"
+  },
+  "sjFocoAberturaTexto": "In {vezes} of {partidas} games of {abertura}, you left theory with {jogada} and the position got worse. See what the masters play there.",
+  "@sjFocoAberturaTexto": {
+    "description": "Foco na abertura: vezes que saiu da teoria, partidas, nome e jogada. (T87)",
+    "placeholders": {
+      "abertura": {
+        "type": "String"
+      },
+      "vezes": {
+        "type": "int"
+      },
+      "partidas": {
+        "type": "int"
+      },
+      "jogada": {
+        "type": "String"
+      }
+    }
+  },
+  "sjFocoTemaTexto": "{n, plural, =0{You went wrong on this theme in {n} positions of your recent games.} =1{You went wrong on this theme in 1 position of your recent games.} other{You went wrong on this theme in {n} positions of your recent games.}}",
+  "@sjFocoTemaTexto": {
+    "description": "Foco num tema. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjFocoVerPosicao": "See the position",
+  "@sjFocoVerPosicao": {
+    "description": "Botão do foco na abertura. (T87)"
+  },
+  "sjFocoEstudar": "Study it in Pilares",
+  "@sjFocoEstudar": {
+    "description": "Link do foco para quem não tem o curso. (T87)"
+  },
+  "sjFocoFazerParte": "Study part {n} in Pilares",
+  "@sjFocoFazerParte": {
+    "description": "Link do foco para quem tem o curso. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjBase": "{partidas, plural, =0{Last {partidas} games on {plataforma}} =1{Last game on {plataforma}} other{Last {partidas} games on {plataforma}}}",
+  "@sjBase": {
+    "description": "Base dos números. (T87)",
+    "placeholders": {
+      "partidas": {
+        "type": "int"
+      },
+      "plataforma": {
+        "type": "String"
+      }
+    }
+  },
+  "sjBasePoucas": "{partidas, plural, =0{{partidas} games on {plataforma}} =1{1 game on {plataforma}} other{{partidas} games on {plataforma}}}",
+  "@sjBasePoucas": {
+    "description": "Base dos números com poucas partidas. (T87)",
+    "placeholders": {
+      "partidas": {
+        "type": "int"
+      },
+      "plataforma": {
+        "type": "String"
+      }
+    }
+  },
+  "sjVazioRitmo": "No {ritmo} games among the analyzed ones yet.",
+  "@sjVazioRitmo": {
+    "description": "Filtro de ritmo sem partidas. (T87)",
+    "placeholders": {
+      "ritmo": {
+        "type": "String"
+      }
+    }
+  },
+  "sjVazioTitulo": "No games analyzed yet",
+  "@sjVazioTitulo": {
+    "description": "Seu jogo vazio. (T87)"
+  },
+  "sjVazioTexto": "Play a game: it shows up here after the analysis.",
+  "@sjVazioTexto": {
+    "description": "Seu jogo vazio. (T87)"
+  },
+  "sjPoucasAviso": "Details by phase, theme, time control, color and opening show up from 10 games.",
+  "@sjPoucasAviso": {
+    "description": "Aviso com poucas partidas. (T87)"
+  },
+  "sjPoucasPrecisaoTitulo": "Average accuracy",
+  "@sjPoucasPrecisaoTitulo": {
+    "description": "Card com poucas partidas. (T87)"
+  },
+  "sjPoucasPrecisaoTexto": "{partidas, plural, =0{In the {partidas} games played since you connected Lichess.} =1{In the game played since you connected Lichess.} other{In the {partidas} games played since you connected Lichess.}}",
+  "@sjPoucasPrecisaoTexto": {
+    "description": "Card com poucas partidas. (T87)",
+    "placeholders": {
+      "partidas": {
+        "type": "int"
+      }
+    }
+  },
+  "sjNumPrecisao": "Accuracy",
+  "@sjNumPrecisao": {
+    "description": "Número do topo. (T87)"
+  },
+  "sjNumAproveitamento": "Score",
+  "@sjNumAproveitamento": {
+    "description": "Número do topo. (T87)"
+  },
+  "sjNumVitorias": "{n, plural, =0{{n} wins} =1{1 win} other{{n} wins}}",
+  "@sjNumVitorias": {
+    "description": "Abaixo do aproveitamento. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjNumErrosNa": "{fase, select, abertura{Mistakes in the opening} meio{Mistakes in the middlegame} other{Mistakes in the endgame}}",
+  "@sjNumErrosNa": {
+    "description": "Número do topo: a fase com mais erros. (T87)",
+    "placeholders": {
+      "fase": {
+        "type": "String"
+      }
+    }
+  },
+  "sjNumSemErros": "No mistakes",
+  "@sjNumSemErros": {
+    "description": "Número do topo sem erros. (T87)"
+  },
+  "sjNumMaisAlto": "the highest",
+  "@sjNumMaisAlto": {
+    "description": "Abaixo dos erros da fase. (T87)"
+  },
+  "sjNumVariacao": "{pontos} in 30 days",
+  "@sjNumVariacao": {
+    "description": "Variação da precisão. (T87)",
+    "placeholders": {
+      "pontos": {
+        "type": "int"
+      }
+    }
+  },
+  "sjSemValor": "—",
+  "@sjSemValor": {
+    "description": "Número sem valor. (T87)"
+  },
+  "sjPorcento": "{v}%",
+  "@sjPorcento": {
+    "description": "Porcentagem. (T87)",
+    "placeholders": {
+      "v": {
+        "type": "int"
+      }
+    }
+  },
+  "sjFasesTitulo": "Mistakes by phase",
+  "@sjFasesTitulo": {
+    "description": "Seção. (T87)"
+  },
+  "sjPartidas": "{n, plural, =0{{n} games} =1{1 game} other{{n} games}}",
+  "@sjPartidas": {
+    "description": "Contagem de partidas. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjErros": "{n, plural, =0{{n} mistakes} =1{1 mistake} other{{n} mistakes}}",
+  "@sjErros": {
+    "description": "Contagem de erros. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjSemanasTitulo": "Accuracy by week",
+  "@sjSemanasTitulo": {
+    "description": "Seção. (T87)"
+  },
+  "sjSemanasUltimas": "Last {n} weeks",
+  "@sjSemanasUltimas": {
+    "description": "Quantas semanas. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjSemanaPrecisao": "{semanas, plural, =0{{semanas} weeks ago} =1{This week} other{{semanas} weeks ago}}: accuracy {v}%",
+  "@sjSemanaPrecisao": {
+    "description": "Leitor de tela da barra da semana. (T87)",
+    "placeholders": {
+      "semanas": {
+        "type": "int"
+      },
+      "v": {
+        "type": "int"
+      }
+    }
+  },
+  "sjSemanaSemPartida": "{semanas, plural, =0{{semanas} weeks ago} =1{This week} other{{semanas} weeks ago}}: no games",
+  "@sjSemanaSemPartida": {
+    "description": "Leitor de tela da barra da semana sem partidas. (T87)",
+    "placeholders": {
+      "semanas": {
+        "type": "int"
+      }
+    }
+  },
+  "sjTemasTitulo": "Mistakes by theme",
+  "@sjTemasTitulo": {
+    "description": "Seção. (T87)"
+  },
+  "sjTemaNome": "{tema, select, mate{Mate} garfo{Fork} peca_solta{Loose piece} xeque_duplo{Double check} xeque_descoberto{Discovered check} promocao{Promotion} final_peoes{Pawn endgame} final_torres{Rook endgame} final_pecas_menores{Minor piece endgame} final_dama{Queen endgame} final{Endgame} other{{tema}}}",
+  "@sjTemaNome": {
+    "description": "Nome do tema; tema desconhecido volta igual. (T87)",
+    "placeholders": {
+      "tema": {
+        "type": "String"
+      }
+    }
+  },
+  "sjTemaDescricao": "{tema, select, mate{A mate or mate threat that went unanswered.} garfo{A fork the position had, or one you allowed.} peca_solta{An undefended piece your opponent took.} xeque_duplo{A double check the position had, or one you allowed.} xeque_descoberto{A discovered check the position had, or one you allowed.} promocao{A pawn close to promotion that changed the game.} final_peoes{An equal or winning ending that got worse.} final_torres{An equal or winning ending that got worse.} final_pecas_menores{An equal or winning ending that got worse.} final_dama{An equal or winning ending that got worse.} final{An equal or winning ending that got worse.} other{}}",
+  "@sjTemaDescricao": {
+    "description": "Descrição do tema; vazio esconde a linha. (T87)",
+    "placeholders": {
+      "tema": {
+        "type": "String"
+      }
+    }
+  },
+  "sjRitmosTitulo": "Score by time control",
+  "@sjRitmosTitulo": {
+    "description": "Seção. (T87)"
+  },
+  "sjRitmosSubtitulo": "Points scored per 100 possible",
+  "@sjRitmosSubtitulo": {
+    "description": "Seção. (T87)"
+  },
+  "sjCoresTitulo": "Score by color",
+  "@sjCoresTitulo": {
+    "description": "Seção. (T87)"
+  },
+  "sjAberturasTitulo": "Most played openings",
+  "@sjAberturasTitulo": {
+    "description": "Seção. (T87)"
+  },
+  "sjAberturaCorPartidas": "{cor} · {partidas, plural, =0{{partidas} games} =1{1 game} other{{partidas} games}}",
+  "@sjAberturaCorPartidas": {
+    "description": "Linha da abertura. (T87)",
+    "placeholders": {
+      "cor": {
+        "type": "String"
+      },
+      "partidas": {
+        "type": "int"
+      }
+    }
+  },
+  "sjAberturaPlacar": "{v, plural, =0{{v} wins} =1{1 win} other{{v} wins}} · {e, plural, =0{{e} draws} =1{1 draw} other{{e} draws}} · {d, plural, =0{{d} losses} =1{1 loss} other{{d} losses}}",
+  "@sjAberturaPlacar": {
+    "description": "Placar da abertura. (T87)",
+    "placeholders": {
+      "v": {
+        "type": "int"
+      },
+      "e": {
+        "type": "int"
+      },
+      "d": {
+        "type": "int"
+      }
+    }
+  },
+  "sjAberturaSaida": "Leaves theory on move {lance} in {vezes, plural, =0{{vezes} games} =1{1 game} other{{vezes} games}}",
+  "@sjAberturaSaida": {
+    "description": "Onde sai da teoria na abertura. (T87)",
+    "placeholders": {
+      "lance": {
+        "type": "int"
+      },
+      "vezes": {
+        "type": "int"
+      }
+    }
+  },
+  "sjModelosDe": "Model games: {nome}",
+  "@sjModelosDe": {
+    "description": "Link para as partidas-modelo. (T87)",
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "sjHoje": "Today",
+  "@sjHoje": {
+    "description": "Data curta. (T87)"
+  },
+  "sjOntem": "Yesterday",
+  "@sjOntem": {
+    "description": "Data curta. (T87)"
+  },
+  "sjJogadaBrancas": "{lance}.{san}",
+  "@sjJogadaBrancas": {
+    "description": "Jogada das brancas. (T87)",
+    "placeholders": {
+      "lance": {
+        "type": "int"
+      },
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "sjJogadaPretas": "{lance}...{san}",
+  "@sjJogadaPretas": {
+    "description": "Jogada das pretas. (T87)",
+    "placeholders": {
+      "lance": {
+        "type": "int"
+      },
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "sjModelosTitulo": "Model games",
+  "@sjModelosTitulo": {
+    "description": "Título da tela. (T87)"
+  },
+  "sjModelosAviso": "Notify me of new model games",
+  "@sjModelosAviso": {
+    "description": "Interruptor do aviso. (T87)"
+  },
+  "sjModelosAvisoTexto": "One notification for each new model game of {abertura}.",
+  "@sjModelosAvisoTexto": {
+    "description": "Explica o aviso. (T87)",
+    "placeholders": {
+      "abertura": {
+        "type": "String"
+      }
+    }
+  },
+  "sjModelosSecao": "For your repertoire: {abertura}",
+  "@sjModelosSecao": {
+    "description": "Seção. (T87)",
+    "placeholders": {
+      "abertura": {
+        "type": "String"
+      }
+    }
+  },
+  "sjModelosSecaoTexto": "Picked for the position where you left theory.",
+  "@sjModelosSecaoTexto": {
+    "description": "Seção. (T87)"
+  },
+  "sjModelosVazio": "No model games for this opening yet.",
+  "@sjModelosVazio": {
+    "description": "Lista vazia. (T87)"
+  },
+  "sjModelosAberturaGenerica": "opening",
+  "@sjModelosAberturaGenerica": {
+    "description": "Quando não se sabe o nome da abertura. (T87)"
+  },
+  "sjModeloFonteTorneio": "TOURNAMENT GAME",
+  "@sjModeloFonteTorneio": {
+    "description": "Origem da partida-modelo. (T87)"
+  },
+  "sjModeloFonteHistorica": "HISTORIC GAME",
+  "@sjModeloFonteHistorica": {
+    "description": "Origem da partida-modelo. (T87)"
+  },
+  "sjModeloFonteEstudo": "LICHESS STUDY",
+  "@sjModeloFonteEstudo": {
+    "description": "Origem da partida-modelo. (T87)"
+  },
+  "sjModeloFonteArtigo": "ARTICLE",
+  "@sjModeloFonteArtigo": {
+    "description": "Origem da partida-modelo. (T87)"
+  },
+  "sjModeloAbrirLichess": "Open on Lichess",
+  "@sjModeloAbrirLichess": {
+    "description": "Botão. (T87)"
+  },
+  "sjModeloAbrirArtigo": "Open the article",
+  "@sjModeloAbrirArtigo": {
+    "description": "Botão. (T87)"
+  },
+  "sjTeoriaTitulo": "Out of theory",
+  "@sjTeoriaTitulo": {
+    "description": "Título da tela. (T87)"
+  },
+  "sjTeoriaSem": "We could not find where this game left theory.",
+  "@sjTeoriaSem": {
+    "description": "Partida sem teoria. (T87)"
+  },
+  "sjTeoriaSaiu": "You left theory with {jogada}. See what the masters play here.",
+  "@sjTeoriaSaiu": {
+    "description": "Comentário do tabuleiro. (T87)",
+    "placeholders": {
+      "jogada": {
+        "type": "String"
+      }
+    }
+  },
+  "sjTeoriaSaiuSemLance": "You left theory here. See what the masters play.",
+  "@sjTeoriaSaiuSemLance": {
+    "description": "Comentário sem a jogada. (T87)"
+  },
+  "sjTeoriaLinha": "The theory line: {linha}.",
+  "@sjTeoriaLinha": {
+    "description": "Comentário com a linha escolhida. (T87)",
+    "placeholders": {
+      "linha": {
+        "type": "String"
+      }
+    }
+  },
+  "sjTeoriaNaTeoria": "In theory",
+  "@sjTeoriaNaTeoria": {
+    "description": "Seção. (T87)"
+  },
+  "sjTeoriaFonte": "Lichess games",
+  "@sjTeoriaFonte": {
+    "description": "Fonte da teoria. (T87)"
+  },
+  "sjTeoriaVoceJogou": "You played {jogada}",
+  "@sjTeoriaVoceJogou": {
+    "description": "Jogada fora da teoria. (T87)",
+    "placeholders": {
+      "jogada": {
+        "type": "String"
+      }
+    }
+  },
+  "sjTemaSem": "No positions of this theme in the analyzed games.",
+  "@sjTemaSem": {
+    "description": "Tela de tema vazia. (T87)"
+  },
+  "sjTemaContagem": "{n, plural, =0{{n} positions} =1{1 position} other{{n} positions}} in the last {partidas, plural, =0{{partidas} games} =1{game} other{{partidas} games}}",
+  "@sjTemaContagem": {
+    "description": "Quantas posições do tema. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "partidas": {
+        "type": "int"
+      }
+    }
+  },
+  "sjTemaDaRecente": "Most recent first",
+  "@sjTemaDaRecente": {
+    "description": "Ordem da lista. (T87)"
+  },
+  "sjTemaLance": "Move {lance} · against {adversario}",
+  "@sjTemaLance": {
+    "description": "Linha da posição. (T87)",
+    "placeholders": {
+      "lance": {
+        "type": "int"
+      },
+      "adversario": {
+        "type": "String"
+      }
+    }
+  },
+  "sjTemaAbrirPartida": "Open the game",
+  "@sjTemaAbrirPartida": {
+    "description": "Botão da folha. (T87)"
+  },
+  "sjSlotNome": "{slot, select, london{London System} caroKann{Caro-Kann} slav{Slav Defense} e4White{1.e4} dragon{Accelerated Dragon} kingsIndian{King's Indian} other{Opening}}",
+  "@sjSlotNome": {
+    "description": "Abertura do Pilares. (T87)",
+    "placeholders": {
+      "slot": {
+        "type": "String"
+      }
+    }
+  },
+  "sjSlotCor": "{slot, select, london{White} e4White{White} other{Black}}",
+  "@sjSlotCor": {
+    "description": "Cor da abertura do Pilares. (T87)",
+    "placeholders": {
+      "slot": {
+        "type": "String"
+      }
+    }
+  },
+  "sjPilaresLinha": "{curso} · {perfil} repertoire · {cor}",
+  "@sjPilaresLinha": {
+    "description": "Linha do alto. (T87)",
+    "placeholders": {
+      "curso": {
+        "type": "String"
+      },
+      "perfil": {
+        "type": "String"
+      },
+      "cor": {
+        "type": "String"
+      }
+    }
+  },
+  "sjPilaresParte": "Part {n}",
+  "@sjPilaresParte": {
+    "description": "Parte da abertura. (T87)",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "sjPilaresSemAbertura": "This opening is not in Pilares.",
+  "@sjPilaresSemAbertura": {
+    "description": "Abertura fora do curso. (T87)"
+  },
+  "sjPilaresOfertaTitulo": "The {nome} is part of Pilares do Xadrez",
+  "@sjPilaresOfertaTitulo": {
+    "description": "Oferta. (T87)",
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "sjPilaresOfertaTexto": "The Solid repertoire covers London System, Caro-Kann and Slav Defense; the Aggressive one, 1.e4, Accelerated Dragon and King's Indian.",
+  "@sjPilaresOfertaTexto": {
+    "description": "Oferta. (T87)"
+  },
+  "sjPilaresOfertaParte": "Part {numero} covers move {lance}, where you leave theory.",
+  "@sjPilaresOfertaParte": {
+    "description": "Oferta: a parte do ponto fraco. (T87)",
+    "placeholders": {
+      "numero": {
+        "type": "int"
+      },
+      "lance": {
+        "type": "String"
+      }
+    }
+  },
+  "sjPilaresConhecer": "See the plan",
+  "@sjPilaresConhecer": {
+    "description": "Botão da oferta. (T87)"
+  },
+  "sjMetasDestaqueAviso": "{nome} is in today's goals: it is where your games most need study.",
+  "@sjMetasDestaqueAviso": {
+    "description": "Aviso no alto das Metas de hoje. (T87)",
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "sjMetasDestaqueSecao": "OPENING",
+  "@sjMetasDestaqueSecao": {
+    "description": "Seção das Metas. (T87)"
   }
 }

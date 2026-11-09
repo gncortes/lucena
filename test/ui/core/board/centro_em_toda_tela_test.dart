@@ -84,6 +84,7 @@ const _telas = <String, String>{
   'race/widgets/race_result_view.dart': _miniatura,
   'race/widgets/race_warm_up_sheet.dart': _miniatura,
   'training_progress/widgets/training_theme_screen.dart': _miniatura,
+  'treinador_seu_jogo/widgets/tema_screen.dart': _miniatura,
   // Posição grande numa página de leitura, sem lance.
   'challenge/widgets/challenge_link_screen.dart': _ilustracao,
   'conclusion/widgets/conclusion_screen.dart': _ilustracao,
@@ -91,6 +92,7 @@ const _telas = <String, String>{
   'featured/widgets/featured_endgame_screen.dart': _ilustracao,
   'tour/widgets/tour_screen.dart': _ilustracao,
   'training_profile/widgets/training_profile_why_screen.dart': _ilustracao,
+  'treinador_seu_jogo/widgets/teoria_screen.dart': _ilustracao,
 };
 
 /// Dívida da A8: telas que ainda não cabem em 360x740 com o tabuleiro no
