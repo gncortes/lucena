@@ -64,7 +64,6 @@ class TreinadorRobot {
         ...TreinadorFixtures.tiagoJson(),
         'jogadaEm': atual.jogadaEm.toIso8601String(),
         'adversario': atual.adversario.toJson(),
-        'cor': atual.cor.wire,
         'resultado': atual.resultado.wire,
       })!,
     );
