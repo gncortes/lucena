@@ -894,17 +894,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
   }
 
-  /// "Analisar no Lichess": a posição do exercício no tabuleiro de análise.
-  Widget _lichessButton(BuildContext context, ExerciseState state) =>
-      TextButton.icon(
-        key: ExerciseKeys.lichessButton,
-        // Dentro do app, na folha da página: a aula fica atrás.
-        onPressed: () =>
-            showExternalPage(context, GameExport.lichess(state.exercise!.fen)),
-        icon: const Icon(Icons.open_in_new_rounded),
-        label: Text(context.l10n.exerciseLichess),
-      );
-
   /// O botão principal do resolvido: o próximo exercício, a volta à aula
   /// (treino avulso) ou o resultado (o último da série).
   ExerciseAction _primaryAction(BuildContext context, ExerciseState state) {
@@ -961,7 +950,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final hide = context.select(
       (SettingsCubit c) => c.state?.exerciseHiddenMoves ?? false,
     );
-    final lichess = state.locked ? _lichessButton(context, state) : null;
+    final lichess = state.locked ? _LichessButton(state: state) : null;
     final Widget actions;
     if (state.phase == ExercisePhase.done) {
       actions = ExerciseActions(
@@ -1074,3 +1063,20 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 /// A fala do balão: o texto, os parágrafos da folha e, à parte, a dica do
 /// borrar.
 typedef SpeechLine = ({String text, List<String> paragraphs, String? tip});
+
+/// "Analisar no Lichess": a posição do exercício no tabuleiro de análise.
+class _LichessButton extends StatelessWidget {
+  const _LichessButton({required this.state});
+
+  final ExerciseState state;
+
+  @override
+  Widget build(BuildContext context) => TextButton.icon(
+    key: ExerciseKeys.lichessButton,
+    // Dentro do app, na folha da página: a aula fica atrás.
+    onPressed: () =>
+        showExternalPage(context, GameExport.lichess(state.exercise!.fen)),
+    icon: const Icon(Icons.open_in_new_rounded),
+    label: Text(context.l10n.exerciseLichess),
+  );
+}

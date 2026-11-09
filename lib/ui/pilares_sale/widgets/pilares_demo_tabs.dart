@@ -92,42 +92,13 @@ class _PilaresDemoCalloutState extends State<PilaresDemoCallout> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     // H-ANI-04: a apresentação (`/pilares`) cresce deste cartão.
-    return OrigemQueAbre(id: pilaresSaleOrigin, child: _card(context, theme));
-  }
-
-  Widget _card(BuildContext context, ThemeData theme) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: BorderRadius.circular(AppShape.large),
-        border: Border.all(color: AppColors.cardOutline),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.md,
-          children: [
-            Text(
-              widget.text,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontSize: 14,
-                height: 20 / 14,
-                letterSpacing: 0,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            BusyButton(
-              buttonKey: widget.buttonKey,
-              label: context.l10n.licaoAdLearnMore,
-              style: BusyButtonStyle.outlined,
-              onPressed: () =>
-                  PilaresDemo._presentation(context, widget.origin),
-            ),
-          ],
-        ),
+    return OrigemQueAbre(
+      id: pilaresSaleOrigin,
+      child: _CalloutCard(
+        text: widget.text,
+        buttonKey: widget.buttonKey,
+        origin: widget.origin,
       ),
     );
   }
@@ -419,6 +390,54 @@ class _WeekRow extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CalloutCard extends StatelessWidget {
+  const _CalloutCard({
+    required this.text,
+    required this.buttonKey,
+    required this.origin,
+  });
+
+  final String text;
+  final Key buttonKey;
+  final String origin;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.cardSurface,
+        borderRadius: BorderRadius.circular(AppShape.large),
+        border: Border.all(color: AppColors.cardOutline),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: AppSpacing.md,
+          children: [
+            Text(
+              text,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: 14,
+                height: 20 / 14,
+                letterSpacing: 0,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            BusyButton(
+              buttonKey: buttonKey,
+              label: context.l10n.licaoAdLearnMore,
+              style: BusyButtonStyle.outlined,
+              onPressed: () => PilaresDemo._presentation(context, origin),
             ),
           ],
         ),

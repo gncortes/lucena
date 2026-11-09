@@ -633,40 +633,40 @@ class _MoveTable extends StatelessWidget {
                           Expanded(
                             child: Column(
                               children: [
-                                _cell(
-                                  context,
-                                  row * 2 - offset,
-                                  timeWidth,
-                                  timeStyle,
-                                  moveWidths,
+                                _MoveCell(
+                                  table: this,
+                                  index: row * 2 - offset,
+                                  timeWidth: timeWidth,
+                                  timeStyle: timeStyle,
+                                  moveWidths: moveWidths,
                                 ),
-                                _cell(
-                                  context,
-                                  row * 2 + 1 - offset,
-                                  timeWidth,
-                                  timeStyle,
-                                  moveWidths,
+                                _MoveCell(
+                                  table: this,
+                                  index: row * 2 + 1 - offset,
+                                  timeWidth: timeWidth,
+                                  timeStyle: timeStyle,
+                                  moveWidths: moveWidths,
                                 ),
                               ],
                             ),
                           )
                         else ...[
                           Expanded(
-                            child: _cell(
-                              context,
-                              row * 2 - offset,
-                              timeWidth,
-                              timeStyle,
-                              moveWidths,
+                            child: _MoveCell(
+                              table: this,
+                              index: row * 2 - offset,
+                              timeWidth: timeWidth,
+                              timeStyle: timeStyle,
+                              moveWidths: moveWidths,
                             ),
                           ),
                           Expanded(
-                            child: _cell(
-                              context,
-                              row * 2 + 1 - offset,
-                              timeWidth,
-                              timeStyle,
-                              moveWidths,
+                            child: _MoveCell(
+                              table: this,
+                              index: row * 2 + 1 - offset,
+                              timeWidth: timeWidth,
+                              timeStyle: timeStyle,
+                              moveWidths: moveWidths,
                             ),
                           ),
                         ],
@@ -695,118 +695,6 @@ class _MoveTable extends StatelessWidget {
               ],
             );
           },
-        ),
-      ),
-    );
-  }
-
-  Widget _cell(
-    BuildContext context,
-    int index,
-    double timeWidth,
-    TextStyle timeStyle,
-    List<double> moveWidths,
-  ) {
-    if (index < 0 || index >= state.moves.length) {
-      return const SizedBox(height: 44);
-    }
-    final colors = Theme.of(context).colorScheme;
-    final move = state.moves[index];
-    final quality = state.reviewOf(index)?.quality;
-    final selected = index == state.shownIndex;
-    final time = move.time;
-    final style = _moveStyle(context, index);
-    final label = [
-      move.san,
-      if (quality != null) quality.label(context.l10n),
-      if (time != null) _seconds(context, time),
-    ].join(', ');
-    void select() => context.read<GameDetailsCubit>().select(index);
-    return Semantics(
-      label: label,
-      button: true,
-      selected: selected,
-      onTap: select,
-      excludeSemantics: true,
-      child: Tooltip(
-        message: label,
-        excludeFromSemantics: true,
-        child: InkWell(
-          key: GameDetailsKeys.move(index),
-          borderRadius: BorderRadius.circular(AppShape.small),
-          onTap: select,
-          child: AnimatedContainer(
-            duration: AppMotion.of(context).state,
-            constraints: const BoxConstraints(minHeight: 44),
-            margin: const EdgeInsets.symmetric(
-              vertical: AppSpacing.xs,
-              horizontal: AppSpacing.xs,
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: selected ? colors.secondaryContainer : Colors.transparent,
-              borderRadius: BorderRadius.circular(AppShape.small),
-              border: Border.all(
-                color: selected ? colors.outline : Colors.transparent,
-              ),
-            ),
-            child: LayoutBuilder(
-              builder: (context, box) {
-                final notation = Text.rich(
-                  _notation(index),
-                  key: quality == null
-                      ? null
-                      : GameDetailsKeys.moveQuality(index),
-                  style: style,
-                  strutStyle: StrutStyle.fromTextStyle(
-                    style,
-                    forceStrutHeight: true,
-                  ),
-                  softWrap: false,
-                );
-                final clock = SizedBox(
-                  width: timeWidth,
-                  child: time == null
-                      ? null
-                      : Text(
-                          _seconds(context, time),
-                          key: GameDetailsKeys.moveTime(index),
-                          textAlign: TextAlign.right,
-                          style: timeStyle,
-                          softWrap: false,
-                        ),
-                );
-                if (box.maxWidth < moveWidths[index] + timeWidth + 12) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      notation,
-                      if (time != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: AppSpacing.xs),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: clock,
-                          ),
-                        ),
-                    ],
-                  );
-                }
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Expanded(child: notation),
-                    const SizedBox(width: AppSpacing.md),
-                    clock,
-                  ],
-                );
-              },
-            ),
-          ),
         ),
       ),
     );
@@ -1041,4 +929,127 @@ class _DetailsLoading extends StatelessWidget {
       SkeletonList(rows: 3),
     ],
   );
+}
+
+class _MoveCell extends StatelessWidget {
+  const _MoveCell({
+    required this.table,
+    required this.index,
+    required this.timeWidth,
+    required this.timeStyle,
+    required this.moveWidths,
+  });
+
+  final _MoveTable table;
+  final int index;
+  final double timeWidth;
+  final TextStyle timeStyle;
+  final List<double> moveWidths;
+
+  @override
+  Widget build(BuildContext context) {
+    if (index < 0 || index >= table.state.moves.length) {
+      return const SizedBox(height: 44);
+    }
+    final colors = Theme.of(context).colorScheme;
+    final move = table.state.moves[index];
+    final quality = table.state.reviewOf(index)?.quality;
+    final selected = index == table.state.shownIndex;
+    final time = move.time;
+    final style = table._moveStyle(context, index);
+    final label = [
+      move.san,
+      if (quality != null) quality.label(context.l10n),
+      if (time != null) _MoveTable._seconds(context, time),
+    ].join(', ');
+    void select() => context.read<GameDetailsCubit>().select(index);
+    return Semantics(
+      label: label,
+      button: true,
+      selected: selected,
+      onTap: select,
+      excludeSemantics: true,
+      child: Tooltip(
+        message: label,
+        excludeFromSemantics: true,
+        child: InkWell(
+          key: GameDetailsKeys.move(index),
+          borderRadius: BorderRadius.circular(AppShape.small),
+          onTap: select,
+          child: AnimatedContainer(
+            duration: AppMotion.of(context).state,
+            constraints: const BoxConstraints(minHeight: 44),
+            margin: const EdgeInsets.symmetric(
+              vertical: AppSpacing.xs,
+              horizontal: AppSpacing.xs,
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: selected ? colors.secondaryContainer : Colors.transparent,
+              borderRadius: BorderRadius.circular(AppShape.small),
+              border: Border.all(
+                color: selected ? colors.outline : Colors.transparent,
+              ),
+            ),
+            child: LayoutBuilder(
+              builder: (context, box) {
+                final notation = Text.rich(
+                  table._notation(index),
+                  key: quality == null
+                      ? null
+                      : GameDetailsKeys.moveQuality(index),
+                  style: style,
+                  strutStyle: StrutStyle.fromTextStyle(
+                    style,
+                    forceStrutHeight: true,
+                  ),
+                  softWrap: false,
+                );
+                final clock = SizedBox(
+                  width: timeWidth,
+                  child: time == null
+                      ? null
+                      : Text(
+                          _MoveTable._seconds(context, time),
+                          key: GameDetailsKeys.moveTime(index),
+                          textAlign: TextAlign.right,
+                          style: timeStyle,
+                          softWrap: false,
+                        ),
+                );
+                if (box.maxWidth < moveWidths[index] + timeWidth + 12) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      notation,
+                      if (time != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: clock,
+                          ),
+                        ),
+                    ],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Expanded(child: notation),
+                    const SizedBox(width: AppSpacing.md),
+                    clock,
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

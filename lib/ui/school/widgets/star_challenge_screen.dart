@@ -347,10 +347,9 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
             _reserveBottom(scaler) -
             AppSpacing.sm -
             box.maxWidth / 2;
-        return _layout(
-          context,
-          state,
-          boardSettings,
+        return _Layout(
+          state: state,
+          boardSettings: boardSettings,
           board: board,
           reserveTop: reserveTop,
           lowTime: lowTime,
@@ -367,31 +366,43 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       state.saveError ||
       state.phase == ChallengePhase.ready ||
       state.phase == ChallengePhase.finished;
+}
 
-  Widget _layout(
-    BuildContext context,
-    StarChallengeState state,
-    BoardSettings boardSettings, {
-    required ChessboardController board,
-    required double reserveTop,
-    required bool lowTime,
-    double? centerY,
-  }) {
-    final colors = Theme.of(context).colorScheme;
-    final star = state.star;
+/// O bloco central da tela: relógio, convite ou resultado, tabuleiro e placar.
+class _Layout extends StatelessWidget {
+  const _Layout({
+    required this.state,
+    required this.boardSettings,
+    required this.board,
+    required this.reserveTop,
+    required this.lowTime,
+    this.centerY,
+  });
+
+  final StarChallengeState state;
+  final BoardSettings boardSettings;
+  final ChessboardController board;
+  final double reserveTop;
+  final bool lowTime;
+  final double? centerY;
+
+  @override
+  Widget build(BuildContext context) {
     final scaler = MediaQuery.textScalerOf(context);
-    final withAction = _hasAction(state);
+    final withAction = _StarChallengeScreenState._hasAction(state);
     return CenteredBoardLayout(
       balanced: centerY == null,
       centerY: centerY,
       reserveTop: reserveTop,
       // O topo do bloco tem a altura da reserva, colado no tabuleiro.
       topAlignment: Alignment.bottomCenter,
-      reserveBottom: _reserveBottom(scaler),
+      reserveBottom: _StarChallengeScreenState._reserveBottom(scaler),
       bottomAlignment: Alignment.topCenter,
       // O lugar da ação fixa (o "Vai!" ou o "Jogar de novo", desenhados por
       // cima, fora da área segura): o bloco centra acima dela.
-      footer: withAction ? SizedBox(height: _actionRoom) : null,
+      footer: withAction
+          ? SizedBox(height: _StarChallengeScreenState._actionRoom)
+          : null,
       // O relógio fica; o convite e o resultado rolam na fonte normal quando
       // falta altura (fonte grande em tela baixa), sem cortar o cartão.
       shrinkSides: false,
@@ -402,48 +413,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             // O relógio e a barra do tempo.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.sm,
-                AppSpacing.lg,
-                AppSpacing.sm,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.timer_outlined,
-                    size: AppIconSize.button,
-                    color: lowTime ? colors.error : colors.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  TimeDisplay(
-                    value: clockText(state.timeLeft),
-                    semanticsLabel:
-                        '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
-                        '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
-                    type: TimeDisplayType.countdown,
-                    size: TimeDisplaySize.inline,
-                    presentation: TimeDisplayPresentation.plain,
-                    state: lowTime
-                        ? TimeDisplayState.low
-                        : state.phase == ChallengePhase.running
-                        ? TimeDisplayState.active
-                        : state.phase == ChallengePhase.paused
-                        ? TimeDisplayState.paused
-                        : TimeDisplayState.normal,
-                    textKey: StarChallengeKeys.timer,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: AnimatedProgress(
-                      value: 1 - state.elapsedFraction,
-                      role: lowTime ? ProgressRole.error : ProgressRole.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _Clock(state: state, lowTime: lowTime),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -465,7 +435,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                             ? ChallengePhase.running
                             : state.phase,
                       ),
-                      child: _above(context, state),
+                      child: _Above(state: state),
                     ),
                   ),
                 ),
@@ -474,43 +444,128 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           ],
         ),
       ),
-      board: LayoutBuilder(
-        builder: (context, box) => Directionality(
-          textDirection: TextDirection.ltr,
-          child: Chessboard(
-            key: StarChallengeKeys.board,
-            size: box.maxWidth,
-            controller: board,
-            settings: (state.level?.announcesSquare ?? false)
-                ? boardSettings
-                      .copyWith(coordinates: false, highlightLastMove: false)
-                      .chessground
-                : boardSettings.chessground,
-            orientation: Side.white,
-            shapes: {
-              if (star != null && !(state.level?.announcesSquare ?? false))
-                CustomShape(
-                  orig: star,
-                  scale: 0.75,
-                  child: StarShape(
-                    key: StarChallengeKeys.star(star.name),
-                    color: starColor(state.starKind),
-                    blinking: state.starBlinking,
-                  ),
-                ),
-            },
-            onMove: (move, {viaDragAndDrop}) =>
-                context.read<StarChallengeCubit>().play(move),
-          ),
-        ),
+      board: _BoardView(
+        state: state,
+        boardSettings: boardSettings,
+        board: board,
       ),
-      bottom: _below(context, state),
+      bottom: _Below(state: state),
     );
   }
+}
 
-  /// Sob o relógio: o convite antes de começar; jogando às cegas, a casa da
-  /// estrela pelo nome; no fim, a nota e a melhor marca.
-  Widget _above(BuildContext context, StarChallengeState state) {
+/// O relógio e a barra do tempo.
+class _Clock extends StatelessWidget {
+  const _Clock({required this.state, required this.lowTime});
+
+  final StarChallengeState state;
+  final bool lowTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.timer_outlined,
+            size: AppIconSize.button,
+            color: lowTime ? colors.error : colors.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          TimeDisplay(
+            value: clockText(state.timeLeft),
+            semanticsLabel:
+                '${context.l10n.marathonLeft}: ${clockText(state.timeLeft)}'
+                '${state.phase == ChallengePhase.paused ? ', ${context.l10n.starChallengePaused}' : ''}',
+            type: TimeDisplayType.countdown,
+            size: TimeDisplaySize.inline,
+            presentation: TimeDisplayPresentation.plain,
+            state: lowTime
+                ? TimeDisplayState.low
+                : state.phase == ChallengePhase.running
+                ? TimeDisplayState.active
+                : state.phase == ChallengePhase.paused
+                ? TimeDisplayState.paused
+                : TimeDisplayState.normal,
+            textKey: StarChallengeKeys.timer,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: AnimatedProgress(
+              value: 1 - state.elapsedFraction,
+              role: lowTime ? ProgressRole.error : ProgressRole.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// O tabuleiro do desafio, com a estrela quando ela é desenhada.
+class _BoardView extends StatelessWidget {
+  const _BoardView({
+    required this.state,
+    required this.boardSettings,
+    required this.board,
+  });
+
+  final StarChallengeState state;
+  final BoardSettings boardSettings;
+  final ChessboardController board;
+
+  @override
+  Widget build(BuildContext context) {
+    final star = state.star;
+    return LayoutBuilder(
+      builder: (context, box) => Directionality(
+        textDirection: TextDirection.ltr,
+        child: Chessboard(
+          key: StarChallengeKeys.board,
+          size: box.maxWidth,
+          controller: board,
+          settings: (state.level?.announcesSquare ?? false)
+              ? boardSettings
+                    .copyWith(coordinates: false, highlightLastMove: false)
+                    .chessground
+              : boardSettings.chessground,
+          orientation: Side.white,
+          shapes: {
+            if (star != null && !(state.level?.announcesSquare ?? false))
+              CustomShape(
+                orig: star,
+                scale: 0.75,
+                child: StarShape(
+                  key: StarChallengeKeys.star(star.name),
+                  color: starColor(state.starKind),
+                  blinking: state.starBlinking,
+                ),
+              ),
+          },
+          onMove: (move, {viaDragAndDrop}) =>
+              context.read<StarChallengeCubit>().play(move),
+        ),
+      ),
+    );
+  }
+}
+
+/// Sob o relógio: o convite antes de começar; jogando às cegas, a casa da
+/// estrela pelo nome; no fim, a nota e a melhor marca.
+class _Above extends StatelessWidget {
+  const _Above({required this.state});
+
+  final StarChallengeState state;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -610,9 +665,16 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         );
     }
   }
+}
 
-  /// Sob o tabuleiro: o placar das estrelas, seguido do aviso quando em pausa.
-  Widget _below(BuildContext context, StarChallengeState state) {
+/// Sob o tabuleiro: o placar das estrelas, seguido do aviso quando em pausa.
+class _Below extends StatelessWidget {
+  const _Below({required this.state});
+
+  final StarChallengeState state;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     return Padding(

@@ -359,8 +359,8 @@ class ReviewLegend extends StatelessWidget {
                   ),
                 ),
                 if (review != null) ...[
-                  _legendHeader(context, whiteName),
-                  _legendHeader(context, blackName),
+                  _LegendHeader(name: whiteName),
+                  _LegendHeader(name: blackName),
                 ],
               ],
             ),
@@ -422,18 +422,6 @@ class ReviewLegend extends StatelessWidget {
       ),
     );
   }
-
-  Widget _legendHeader(BuildContext context, String name) => SizedBox(
-    width: 56,
-    child: Text(
-      name,
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.labelMedium
-          ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-    ),
-  );
 }
 
 /// A precisão de um lado numa caixa clara (brancas) ou escura (pretas),
@@ -1337,4 +1325,23 @@ class _EngineLinesPanelState extends State<EngineLinesPanel> {
     }
     return out.toString().trimRight();
   }
+}
+
+class _LegendHeader extends StatelessWidget {
+  const _LegendHeader({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 56,
+    child: Text(
+      name,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.labelMedium
+          ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+    ),
+  );
 }

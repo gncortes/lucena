@@ -110,13 +110,13 @@ class PlayersRow extends StatelessWidget {
             label: character.name,
             child: Row(
               children: [
-                _withRing(character.portrait!, character),
+                _WithRing(portrait: character.portrait!, player: character),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: ExcludeSemantics(
-                    child: _nameAndDetail(
-                      context,
-                      character,
+                    child: _NameAndDetail(
+                      player: character,
+                      detailed: detailed,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -126,8 +126,9 @@ class PlayersRow extends StatelessWidget {
                   if (player.time != null)
                     Semantics(
                       label: player.name,
-                      child: _entering(
-                        GameClock(
+                      child: _Entering(
+                        enterClocks: enterClocks,
+                        clock: GameClock(
                           key: player.clockKey,
                           timeKey: player.timeKey,
                           side: player.side,
@@ -154,24 +155,43 @@ class PlayersRow extends StatelessWidget {
           children: [
             for (final (index, player) in players.indexed)
               if (single)
-                Expanded(child: _player(context, player, showName: true))
+                Expanded(
+                  child: _Player(owner: this, player: player, showName: true),
+                )
               else
-                _player(context, player, showName: false, mirrored: index == 1),
+                _Player(
+                  owner: this,
+                  player: player,
+                  showName: false,
+                  mirrored: index == 1,
+                ),
           ],
         ),
       ),
     );
   }
 
-  /// O nome e, na variante [detailed], a linha de detalhe embaixo, em
-  /// `onSurfaceVariant`. As duas linhas cortam com reticências; com fonte
-  /// grande, a escala para no que cabe na altura da fileira (o relógio e o
-  /// tabuleiro não mudam de lugar).
-  Widget _nameAndDetail(
-    BuildContext context,
-    PlayerEntry player, {
-    required TextOverflow overflow,
-  }) {
+  /// Espessura do anel da vez.
+  static const ringWidth = 2.0;
+}
+
+/// O nome e, na variante [detailed], a linha de detalhe embaixo, em
+/// `onSurfaceVariant`. As duas linhas cortam com reticências; com fonte
+/// grande, a escala para no que cabe na altura da fileira (o relógio e o
+/// tabuleiro não mudam de lugar).
+class _NameAndDetail extends StatelessWidget {
+  const _NameAndDetail({
+    required this.player,
+    required this.detailed,
+    required this.overflow,
+  });
+
+  final PlayerEntry player;
+  final bool detailed;
+  final TextOverflow overflow;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final nameStyle = context.cardTitle;
     final name = Text(
@@ -188,7 +208,8 @@ class PlayersRow extends StatelessWidget {
     );
     double line(TextStyle? style) =>
         (style?.fontSize ?? 14) * (style?.height ?? 1.2);
-    final maxScale = detailedHeight / (line(nameStyle) + line(detailStyle));
+    final maxScale =
+        PlayersRow.detailedHeight / (line(nameStyle) + line(detailStyle));
     return MediaQuery.withClampedTextScaling(
       maxScaleFactor: maxScale,
       child: Column(
@@ -208,68 +229,98 @@ class PlayersRow extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// O anel da vez no retrato (sem relógio): 2 px primário, por cima do
-  /// retrato, sem mudar o tamanho dele.
-  Widget _withRing(Widget portrait, PlayerEntry player) {
+/// O anel da vez no retrato (sem relógio): 2 px primário, por cima do
+/// retrato, sem mudar o tamanho dele.
+class _WithRing extends StatelessWidget {
+  const _WithRing({required this.portrait, required this.player});
+
+  final Widget portrait;
+  final PlayerEntry player;
+
+  @override
+  Widget build(BuildContext context) {
     if (player.time != null || !player.isTurn) return portrait;
-    return Builder(
-      builder: (context) => DecoratedBox(
-        key: player.turnKey,
-        position: DecorationPosition.foreground,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppShape.small),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.primary,
-            width: ringWidth,
-          ),
+    return DecoratedBox(
+      key: player.turnKey,
+      position: DecorationPosition.foreground,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppShape.small),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary,
+          width: PlayersRow.ringWidth,
         ),
-        child: portrait,
       ),
+      child: portrait,
     );
   }
+}
 
-  /// Espessura do anel da vez.
-  static const ringWidth = 2.0;
+/// O relógio com o pop da entrada da tela (a da partida), se pedido.
+class _Entering extends StatelessWidget {
+  const _Entering({required this.enterClocks, required this.clock});
 
-  Widget _entering(Widget clock) => enterClocks
-      ? GameEntrance(part: GameEntrancePart.clock, child: clock)
-      : clock;
+  final bool enterClocks;
+  final Widget clock;
 
-  Widget _player(
-    BuildContext context,
-    PlayerEntry player, {
-    required bool showName,
-    bool mirrored = false,
-  }) {
+  @override
+  Widget build(BuildContext context) {
+    return enterClocks
+        ? GameEntrance(part: GameEntrancePart.clock, child: clock)
+        : clock;
+  }
+}
+
+/// Um lado da fileira: retrato (com o anel da vez), nome e relógio.
+class _Player extends StatelessWidget {
+  const _Player({
+    required this.owner,
+    required this.player,
+    required this.showName,
+    this.mirrored = false,
+  });
+
+  final PlayersRow owner;
+  final PlayerEntry player;
+  final bool showName;
+  final bool mirrored;
+
+  @override
+  Widget build(BuildContext context) {
     final time = player.time;
     final children = [
-      _withRing(
-        player.portrait ?? PlayerPortrait(side: player.side, board: board),
-        player,
+      _WithRing(
+        portrait:
+            player.portrait ??
+            PlayerPortrait(side: player.side, board: owner.board),
+        player: player,
       ),
       const SizedBox(width: AppSpacing.md),
       if (showName)
         Expanded(
           child: ExcludeSemantics(
-            child: _nameAndDetail(
-              context,
-              player,
-              overflow: detailed ? TextOverflow.ellipsis : TextOverflow.fade,
+            child: _NameAndDetail(
+              player: player,
+              detailed: owner.detailed,
+              overflow: owner.detailed
+                  ? TextOverflow.ellipsis
+                  : TextOverflow.fade,
             ),
           ),
         ),
-      if (showName && detailed && time != null)
+      if (showName && owner.detailed && time != null)
         const SizedBox(width: AppSpacing.md),
       if (time != null)
-        _entering(
-          GameClock(
+        _Entering(
+          enterClocks: owner.enterClocks,
+          clock: GameClock(
             key: player.clockKey,
             timeKey: player.timeKey,
             side: player.side,
             time: time,
             running: player.running,
-            width: compactClocks ? 96 : GameClock._width,
+            width: owner.compactClocks ? 96 : GameClock._width,
           ),
         ),
     ];

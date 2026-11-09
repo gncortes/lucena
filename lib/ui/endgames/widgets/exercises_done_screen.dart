@@ -92,49 +92,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
     }
     final grade = state.grade;
     if (state.lesson!.id.startsWith('pilares.')) {
-      final lesson = state.lesson!;
-      final completed =
-          state.progress.completedTestOf(lesson) ?? const <String, bool>{};
-      final answered = lesson.exercises
-          .where((exercise) => completed.containsKey(exercise.id))
-          .toList();
-      final chapter =
-          int.tryParse(_chapterNumber.firstMatch(lesson.id)?.group(1) ?? '') ??
-          state.lessonNumber;
-      return TestCanvasResultPage(
-        chapter: chapter,
-        answers: [
-          for (final exercise in answered) completed[exercise.id] == true,
-        ],
-        themes: [
-          for (final exercise in answered)
-            exercise.theme == null
-                ? null
-                : state.texts.plain('part.${exercise.theme}.title'),
-        ],
-        teacher: state.viktor,
-        onContinue: () => context.pop(),
-        // Sem rota própria do catálogo do capítulo: abre o capítulo do guia.
-        onReviewLessons: () => context.pushReplacement(
-          Routes.trainingChapter('pilares', lesson.id),
-        ),
-        onReview: (index) {
-          final exercise = answered[index];
-          context.push(
-            Routes.learningAnalysisAt(
-              exercise.fen,
-              moves: [
-                for (final turn in exercise.line) ...[
-                  if (turn.accept.isNotEmpty) turn.accept.first,
-                  ?turn.reply,
-                ],
-              ],
-              orientation: exercise.step.side.name,
-            ),
-          );
-        },
-        onRetry: () => _redoTest(lesson.id),
-      );
+      return _PilaresResult(state: state, redo: _redoTest);
     }
     final below = grade == ExerciseGrade.below;
     final practice = state.lesson!.practice;
@@ -184,45 +142,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                   // Passou: a medalha, a faixa, os pontos e o diploma são a
                   // imagem que vai no compartilhar.
                   if (!below)
-                    RepaintBoundary(
-                      key: _card,
-                      child: ColoredBox(
-                        key: ExercisesDoneKeys.shareCard,
-                        color: theme.scaffoldBackgroundColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.sm),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              GradeMedal(grade: grade),
-                              const SizedBox(height: AppSpacing.sm),
-                              Text(
-                                gradeName(l10n, grade),
-                                key: ExercisesDoneKeys.current,
-                                textAlign: TextAlign.center,
-                                style: context.bigNumber?.copyWith(
-                                  color: colors.primary,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                l10n.exercisesDoneScore(
-                                  state.score,
-                                  state.maxScore,
-                                ),
-                                key: ExercisesDoneKeys.score,
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.xl),
-                              _Diploma(state: state),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
+                    _ShareCard(cardKey: _card, state: state, grade: grade)
                   else ...[
                     GradeMedal(grade: grade),
                     const SizedBox(height: AppSpacing.sm),
@@ -268,66 +188,193 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                 ],
               ),
             ),
-            ActionsFooter(
-              stacked: true,
-              children: [
-                // Passou: praticar o final de verdade. Não passou: refazer.
-                if (below)
-                  FilledButton.icon(
-                    key: ExercisesDoneKeys.redo,
-                    icon: const Icon(Icons.replay),
-                    onPressed: () async {
-                      final cubit = context.read<EndgameLessonCubit>();
-                      final router = GoRouter.of(context);
-                      final id = state.lesson!.id;
-                      await cubit.redoExercises();
-                      router.pushReplacement(Routes.endgameExercisesIntro(id));
-                    },
-                    label: Text(l10n.endgameRedoExercises),
-                  )
-                else if (practice != null)
-                  FilledButton.icon(
-                    key: ExercisesDoneKeys.practice,
-                    icon: const Icon(Icons.sports_esports_outlined),
-                    onPressed: () {
-                      context.pushReplacement(
-                        Routes.setup(
-                          practice.fen,
-                          goal: practice.goal.code,
-                          position: practice.positionId,
-                        ),
-                      );
-                    },
-                    label: Text(l10n.exercisesDonePractice),
-                  ),
-                // Passou: concluir. Não passou: rever a lição, do começo.
-                if (below)
-                  OutlinedButton.icon(
-                    key: ExercisesDoneKeys.reviewLesson,
-                    icon: const Icon(Icons.menu_book_outlined),
-                    onPressed: () {
-                      final lesson = state.lesson!;
-                      final first = lesson.lesson.sections.firstOrNull;
-                      context.pushReplacement(
-                        Routes.endgameLessonScript(
-                          lesson.id,
-                          part: lesson.lesson.parts.isEmpty ? null : first?.id,
-                        ),
-                      );
-                    },
-                    label: Text(l10n.endgameLessonReview),
-                  )
-                else
-                  OutlinedButton(
-                    key: ExercisesDoneKeys.back,
-                    onPressed: () => context.pop(),
-                    child: Text(l10n.exercisesDoneFinish),
-                  ),
-              ],
-            ),
+            _DoneFooter(state: state, below: below, practice: practice),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The result actions: redo / review the lesson when below, practice or finish.
+class _DoneFooter extends StatelessWidget {
+  const _DoneFooter({
+    required this.state,
+    required this.below,
+    required this.practice,
+  });
+
+  final EndgameLessonState state;
+  final bool below;
+  final Practice? practice;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        // Passou: praticar o final de verdade. Não passou: refazer.
+        if (below)
+          FilledButton.icon(
+            key: ExercisesDoneKeys.redo,
+            icon: const Icon(Icons.replay),
+            onPressed: () async {
+              final cubit = context.read<EndgameLessonCubit>();
+              final router = GoRouter.of(context);
+              final id = state.lesson!.id;
+              await cubit.redoExercises();
+              router.pushReplacement(Routes.endgameExercisesIntro(id));
+            },
+            label: Text(l10n.endgameRedoExercises),
+          )
+        else if (practice case final practice?)
+          FilledButton.icon(
+            key: ExercisesDoneKeys.practice,
+            icon: const Icon(Icons.sports_esports_outlined),
+            onPressed: () {
+              context.pushReplacement(
+                Routes.setup(
+                  practice.fen,
+                  goal: practice.goal.code,
+                  position: practice.positionId,
+                ),
+              );
+            },
+            label: Text(l10n.exercisesDonePractice),
+          ),
+        // Passou: concluir. Não passou: rever a lição, do começo.
+        if (below)
+          OutlinedButton.icon(
+            key: ExercisesDoneKeys.reviewLesson,
+            icon: const Icon(Icons.menu_book_outlined),
+            onPressed: () {
+              final lesson = state.lesson!;
+              final first = lesson.lesson.sections.firstOrNull;
+              context.pushReplacement(
+                Routes.endgameLessonScript(
+                  lesson.id,
+                  part: lesson.lesson.parts.isEmpty ? null : first?.id,
+                ),
+              );
+            },
+            label: Text(l10n.endgameLessonReview),
+          )
+        else
+          OutlinedButton(
+            key: ExercisesDoneKeys.back,
+            onPressed: () => context.pop(),
+            child: Text(l10n.exercisesDoneFinish),
+          ),
+      ],
+    );
+  }
+}
+
+/// The graduation image shared on pass: medal, band, points and diploma.
+class _ShareCard extends StatelessWidget {
+  const _ShareCard({
+    required this.cardKey,
+    required this.state,
+    required this.grade,
+  });
+
+  final GlobalKey cardKey;
+  final EndgameLessonState state;
+  final ExerciseGrade grade;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return RepaintBoundary(
+      key: cardKey,
+      child: ColoredBox(
+        key: ExercisesDoneKeys.shareCard,
+        color: theme.scaffoldBackgroundColor,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.sm),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              GradeMedal(grade: grade),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                gradeName(l10n, grade),
+                key: ExercisesDoneKeys.current,
+                textAlign: TextAlign.center,
+                style: context.bigNumber?.copyWith(color: colors.primary),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                l10n.exercisesDoneScore(state.score, state.maxScore),
+                key: ExercisesDoneKeys.score,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              _Diploma(state: state),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The chapter test result of a Pilares lesson.
+class _PilaresResult extends StatelessWidget {
+  const _PilaresResult({required this.state, required this.redo});
+
+  final EndgameLessonState state;
+  final Future<void> Function(String lessonId) redo;
+
+  @override
+  Widget build(BuildContext context) {
+    final lesson = state.lesson!;
+    final completed =
+        state.progress.completedTestOf(lesson) ?? const <String, bool>{};
+    final answered = lesson.exercises
+        .where((exercise) => completed.containsKey(exercise.id))
+        .toList();
+    final chapter =
+        int.tryParse(_chapterNumber.firstMatch(lesson.id)?.group(1) ?? '') ??
+        state.lessonNumber;
+    return TestCanvasResultPage(
+      chapter: chapter,
+      answers: [
+        for (final exercise in answered) completed[exercise.id] == true,
+      ],
+      themes: [
+        for (final exercise in answered)
+          exercise.theme == null
+              ? null
+              : state.texts.plain('part.${exercise.theme}.title'),
+      ],
+      teacher: state.viktor,
+      onContinue: () => context.pop(),
+      // Sem rota própria do catálogo do capítulo: abre o capítulo do guia.
+      onReviewLessons: () =>
+          context.pushReplacement(Routes.trainingChapter('pilares', lesson.id)),
+      onReview: (index) {
+        final exercise = answered[index];
+        context.push(
+          Routes.learningAnalysisAt(
+            exercise.fen,
+            moves: [
+              for (final turn in exercise.line) ...[
+                if (turn.accept.isNotEmpty) turn.accept.first,
+                ?turn.reply,
+              ],
+            ],
+            orientation: exercise.step.side.name,
+          ),
+        );
+      },
+      onRetry: () => redo(lesson.id),
     );
   }
 }
@@ -395,15 +442,6 @@ class TestCanvasResultPage extends StatelessWidget {
         : grade == ExerciseGrade.passed
         ? t.testCanvasRegular
         : gradeName(t, grade);
-    Widget button(
-      Key key,
-      String label,
-      VoidCallback? onPressed,
-      bool primary,
-    ) => primary
-        ? FilledButton(key: key, onPressed: onPressed, child: Text(label))
-        : OutlinedButton(key: key, onPressed: onPressed, child: Text(label));
-
     return Scaffold(
       key: ExercisesDoneKeys.screen,
       appBar: LucenaAppBar(
@@ -452,38 +490,10 @@ class TestCanvasResultPage extends StatelessWidget {
           ),
           bolinhas: [
             for (var i = 0; i < answers.length; i++)
-              SizedBox.square(
-                dimension: 44,
-                child: Material(
-                  type: MaterialType.transparency,
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    key: TestCanvasKeys.answer(i),
-                    customBorder: const CircleBorder(),
-                    onTap: () => onReview(i),
-                    child: Center(
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: answers[i]
-                              ? AppColors.trainingDayCorrect
-                              : AppColors.trainingDayWrong,
-                        ),
-                        child: Text(
-                          '${i + 1}',
-                          style: const TextStyle(
-                            color: AppColors.chessWhiteColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              _AnswerDot(
+                index: i,
+                correct: answers[i],
+                onReview: () => onReview(i),
               ),
           ],
           montarBolinhas: (bolinhas) => Padding(
@@ -510,71 +520,17 @@ class TestCanvasResultPage extends StatelessWidget {
             ),
           ),
           viktor: switch (teacher) {
-            final teacher? => Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  textTheme: Theme.of(context).textTheme.copyWith(
-                    bodyLarge: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 14,
-                      height: 20 / 14,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                ),
-                child: TeacherSpeech(
-                  key: ExercisesDoneKeys.retrySpeech,
-                  canvasTrainingBalloon: true,
-                  teacher: teacher,
-                  speechContext: SpeechContext.teaching,
-                  text:
-                      speech ??
-                      (below
-                          ? _failedSpeech(t, far: far)
-                          : t.testCanvasResultSpeech(correct, answers.length)),
-                  avatarSize: 56,
-                  speaks: true,
-                  unifiedSound: true,
-                  canvasHeader: true,
-                  showSpeedBadge: false,
-                ),
-              ),
+            final teacher? => _ResultTeacher(
+              teacher: teacher,
+              text:
+                  speech ??
+                  (below
+                      ? _failedSpeech(t, far: far)
+                      : t.testCanvasResultSpeech(correct, answers.length)),
             ),
             null => null,
           },
-          botoes: ActionsFooter(
-            stacked: true,
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            children: [
-              if (below) ...[
-                button(
-                  TestCanvasKeys.reviewLessons,
-                  t.licaoTesteReverLicoes,
-                  onReviewLessons ?? onContinue,
-                  true,
-                ),
-                button(
-                  ExercisesDoneKeys.redo,
-                  t.testCanvasRetry,
-                  onRetry,
-                  false,
-                ),
-              ] else ...[
-                button(
-                  ExercisesDoneKeys.back,
-                  t.testCanvasContinue,
-                  onContinue,
-                  true,
-                ),
-                button(
-                  ExercisesDoneKeys.redo,
-                  t.testCanvasRetry,
-                  onRetry,
-                  false,
-                ),
-              ],
-            ],
-          ),
+          botoes: _ResultFooter(page: this, below: below),
           // A lista rola; os botões ficam presos embaixo.
           montar: (partes) => Column(
             children: [
@@ -589,6 +545,156 @@ class TestCanvasResultPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// One answer bubble of the result page: opens the review of that answer.
+class _AnswerDot extends StatelessWidget {
+  const _AnswerDot({
+    required this.index,
+    required this.correct,
+    required this.onReview,
+  });
+
+  final int index;
+  final bool correct;
+  final VoidCallback onReview;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: 44,
+      child: Material(
+        type: MaterialType.transparency,
+        shape: const CircleBorder(),
+        child: InkWell(
+          key: TestCanvasKeys.answer(index),
+          customBorder: const CircleBorder(),
+          onTap: onReview,
+          child: Center(
+            child: Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: correct
+                    ? AppColors.trainingDayCorrect
+                    : AppColors.trainingDayWrong,
+              ),
+              child: Text(
+                '${index + 1}',
+                style: const TextStyle(
+                  color: AppColors.chessWhiteColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Viktor's balloon on the result page.
+class _ResultTeacher extends StatelessWidget {
+  const _ResultTeacher({required this.teacher, required this.text});
+
+  final Character teacher;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textTheme: Theme.of(context).textTheme.copyWith(
+            bodyLarge: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(fontSize: 14, height: 20 / 14, letterSpacing: 0),
+          ),
+        ),
+        child: TeacherSpeech(
+          key: ExercisesDoneKeys.retrySpeech,
+          canvasTrainingBalloon: true,
+          teacher: teacher,
+          speechContext: SpeechContext.teaching,
+          text: text,
+          avatarSize: 56,
+          speaks: true,
+          unifiedSound: true,
+          canvasHeader: true,
+          showSpeedBadge: false,
+        ),
+      ),
+    );
+  }
+}
+
+/// A result page button: filled when primary, outlined otherwise.
+class _ResultButton extends StatelessWidget {
+  const _ResultButton(
+    this.label,
+    this.onPressed, {
+    required this.primary,
+    super.key,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final bool primary;
+
+  @override
+  Widget build(BuildContext context) => primary
+      ? FilledButton(onPressed: onPressed, child: Text(label))
+      : OutlinedButton(onPressed: onPressed, child: Text(label));
+}
+
+/// The result page buttons: review the lessons (failed) or continue, and retry.
+class _ResultFooter extends StatelessWidget {
+  const _ResultFooter({required this.page, required this.below});
+
+  final TestCanvasResultPage page;
+  final bool below;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return ActionsFooter(
+      stacked: true,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      children: [
+        if (below) ...[
+          _ResultButton(
+            t.licaoTesteReverLicoes,
+            page.onReviewLessons ?? page.onContinue,
+            primary: true,
+            key: TestCanvasKeys.reviewLessons,
+          ),
+          _ResultButton(
+            t.testCanvasRetry,
+            page.onRetry,
+            primary: false,
+            key: ExercisesDoneKeys.redo,
+          ),
+        ] else ...[
+          _ResultButton(
+            t.testCanvasContinue,
+            page.onContinue,
+            primary: true,
+            key: ExercisesDoneKeys.back,
+          ),
+          _ResultButton(
+            t.testCanvasRetry,
+            page.onRetry,
+            primary: false,
+            key: ExercisesDoneKeys.redo,
+          ),
+        ],
+      ],
     );
   }
 }

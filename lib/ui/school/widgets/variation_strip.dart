@@ -202,7 +202,7 @@ class _VariationStripState extends State<VariationStrip> {
     return found;
   }
 
-  Widget _row(int index, VariationRow row, TextStyle body, bool hasButton) =>
+  _StripRow _row(int index, VariationRow row, TextStyle body, bool hasButton) =>
       _StripRow(
         tree: widget.tree,
         row: row,
@@ -790,13 +790,14 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
           onTap: () => widget.onSelect(move.position),
         ),
       if (row.result case final result?)
-        _resultItem(
-          context,
-          colors,
-          l10n,
-          result,
-          branch!.id,
-          sliding == row.moves.length - 1 ? slideFrom * (1 - slide) : 0,
+        _ResultItem(
+          result: result,
+          branchId: branch!.id,
+          slide: sliding == row.moves.length - 1 ? slideFrom * (1 - slide) : 0,
+          itemKey: _resultKey,
+          covered: _resultUnseen && widget.hideUnseen,
+          opacity: _resultUnseen ? _coveredOpacity() : 1,
+          style: widget.style,
         ),
     ];
   }
@@ -813,51 +814,6 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
 
   bool get _resultUnseen =>
       widget.row.moves.isNotEmpty && _unseen(widget.row.moves.length - 1);
-
-  Widget _resultItem(
-    BuildContext context,
-    ColorScheme colors,
-    AppLocalizations l10n,
-    VariationResult result,
-    String branchId,
-    double slide,
-  ) {
-    final covered = _resultUnseen && widget.hideUnseen;
-    return Opacity(
-      opacity: _resultUnseen ? _coveredOpacity() : 1,
-      child: ExcludeSemantics(
-        excluding: covered,
-        child: Semantics(
-          label: switch (result) {
-            VariationResult.draw => l10n.lessonLineResultDraw,
-          },
-          excludeSemantics: true,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
-            child: ConstrainedBox(
-              key: _resultKey,
-              constraints: const BoxConstraints(
-                minHeight: VariationStrip.tapSize,
-              ),
-              child: Center(
-                widthFactor: 1,
-                child: _slid(
-                  slide,
-                  Text(
-                    '\u2066${result.symbol}\u2069',
-                    key: LessonKeys.variationResult(branchId),
-                    style: widget.style.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   /// Os blocos da linha: um por linha visual que tenha lance coberto.
   List<Widget> _blocks(BuildContext context) {
@@ -953,6 +909,65 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
       blocks.add(block);
     }
     return blocks;
+  }
+}
+
+/// O resultado ("=") que fecha uma linha de alternativa.
+class _ResultItem extends StatelessWidget {
+  const _ResultItem({
+    required this.result,
+    required this.branchId,
+    required this.slide,
+    required this.itemKey,
+    required this.covered,
+    required this.opacity,
+    required this.style,
+  });
+
+  final VariationResult result;
+  final String branchId;
+  final double slide;
+  final GlobalKey itemKey;
+  final bool covered;
+  final double opacity;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
+    return Opacity(
+      opacity: opacity,
+      child: ExcludeSemantics(
+        excluding: covered,
+        child: Semantics(
+          label: switch (result) {
+            VariationResult.draw => l10n.lessonLineResultDraw,
+          },
+          excludeSemantics: true,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
+            child: ConstrainedBox(
+              key: itemKey,
+              constraints: const BoxConstraints(
+                minHeight: VariationStrip.tapSize,
+              ),
+              child: Center(
+                widthFactor: 1,
+                child: _StripRowState._slid(
+                  slide,
+                  Text(
+                    '\u2066${result.symbol}\u2069',
+                    key: LessonKeys.variationResult(branchId),
+                    style: style.copyWith(color: colors.onSurfaceVariant),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

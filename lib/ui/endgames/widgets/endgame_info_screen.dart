@@ -50,13 +50,13 @@ class EndgameInfoScreen extends StatelessWidget {
               ),
               children: [
                 Text(texts.lessonTitle(lesson.id), style: context.screenTitle),
-                _header(context, l10n.endgameInfoHistory),
+                _SectionHeader(l10n.endgameInfoHistory),
                 LinkedText(
                   texts.say('${lesson.id}.history') ?? '',
                   key: EndgameInfoKeys.history,
                   style: theme.textTheme.bodyMedium,
                 ),
-                _header(context, l10n.endgameInfoKeyPositions),
+                _SectionHeader(l10n.endgameInfoKeyPositions),
                 for (final position in lesson.keyPositions)
                   Padding(
                     key: EndgameInfoKeys.keyPosition(position.id),
@@ -91,7 +91,7 @@ class EndgameInfoScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                _header(context, l10n.endgameInfoReferences),
+                _SectionHeader(l10n.endgameInfoReferences),
                 for (final reference in lesson.references.where(
                   (reference) => reference.isLearnerFacing,
                 ))
@@ -100,8 +100,15 @@ class EndgameInfoScreen extends StatelessWidget {
             ),
     );
   }
+}
 
-  Widget _header(BuildContext context, String text) => Padding(
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
     padding: const EdgeInsetsDirectional.fromSTEB(
       0,
       AppSpacing.lg,

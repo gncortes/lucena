@@ -61,9 +61,19 @@ class GradeMedal extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _side(color, Alignment.centerLeft),
+          _Side(
+            size: size,
+            sideRatio: sideRatio,
+            color: color,
+            outer: Alignment.centerLeft,
+          ),
           Icon(Icons.star_rounded, size: size, color: color),
-          _side(color, Alignment.centerRight),
+          _Side(
+            size: size,
+            sideRatio: sideRatio,
+            color: color,
+            outer: Alignment.centerRight,
+          ),
         ],
       ),
       ExerciseGrade.below => Icon(
@@ -74,13 +84,28 @@ class GradeMedal extends StatelessWidget {
       _ => Icon(Icons.star_rounded, size: size, color: color),
     };
   }
+}
 
-  /// Uma lateral; [outer] é o lado de fora, que fica dentro da caixa: só o
-  /// lado de dentro avança sobre a do meio.
-  Widget _side(Color color, Alignment outer) {
+/// Uma lateral; [outer] é o lado de fora, que fica dentro da caixa: só o
+/// lado de dentro avança sobre a do meio.
+class _Side extends StatelessWidget {
+  const _Side({
+    required this.size,
+    required this.sideRatio,
+    required this.color,
+    required this.outer,
+  });
+
+  final double size;
+  final double sideRatio;
+  final Color color;
+  final Alignment outer;
+
+  @override
+  Widget build(BuildContext context) {
     final side = size * sideRatio;
     final star = Icon(Icons.star_rounded, size: side, color: color);
-    if (sideRatio == defaultSideRatio) return star;
+    if (sideRatio == GradeMedal.defaultSideRatio) return star;
     final overlap = size * 0.21;
     return Transform.translate(
       offset: Offset(0, -0.1 * size),

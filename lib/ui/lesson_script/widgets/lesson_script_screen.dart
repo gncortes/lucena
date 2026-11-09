@@ -656,7 +656,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
                           ? const SizedBox.shrink()
                           : Padding(
                               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                              child: _answerChoices(cubit),
+                              child: _AnswerChoices(cubit),
                             )
                     : ScriptMoveList(
                         moves: state.moves,
@@ -669,7 +669,19 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
                       ),
               ),
             ),
-            _footer(context, cubit, state, choicesInFooter: choicesInFooter),
+            _Footer(
+              cubit: cubit,
+              state: state,
+              primary: _action(context, cubit, state.primary, primary: true),
+              secondary: _action(
+                context,
+                cubit,
+                state.secondary,
+                primary: false,
+              ),
+              onAnalyze: widget.onAnalyze,
+              choicesInFooter: choicesInFooter,
+            ),
           ],
         );
       },
@@ -729,176 +741,12 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     );
   }
 
-  Widget _answerChoices(LessonScriptCubit cubit) => Row(
-    spacing: 12,
-    children: [
-      for (final (index, label) in cubit.answerChoices.indexed)
-        Expanded(
-          child: SizedBox(
-            height: kButtonHeight,
-            child: OutlinedButton(
-              key: LessonScriptKeys.answerChoice(index),
-              onPressed: () => unawaited(cubit.answerChoice(index)),
-              child: Text(label),
-            ),
-          ),
-        ),
-    ],
-  );
-
   String stateLabel(LessonScriptState state, BuildContext context) =>
       switch (state.stageId) {
         'ideia' => context.l10n.lessonModelGames,
         'demos' => context.l10n.trainingPartPractice,
         _ => context.l10n.lessonNextStage,
       };
-
-  Widget _footer(
-    BuildContext context,
-    LessonScriptCubit cubit,
-    LessonScriptState state, {
-    bool choicesInFooter = false,
-  }) {
-    final secondary = _action(context, cubit, state.secondary, primary: false);
-    final primary = _action(context, cubit, state.primary, primary: true);
-    final demo = state.demo;
-    // Demonstração (etapa 2): ↻ ⏮ ⏸/▶ e o ⏭ com o anel no lugar dos
-    // botões; no fim, só ↻ e o botão principal (canvas, E12). Teoria (etapa
-    // 1): nas falas de "Continuar", ⏸/▶ e o ⏭ com o anel.
-    final repeat = ScriptDemoButton(
-      buttonKey: LessonScriptKeys.demoRepeat,
-      icon: CanvasSymbols.replay,
-      tooltip: context.l10n.lessonDemoReplay,
-      onPressed: () => unawaited(cubit.demoRepeat()),
-    );
-    final controls = demo == null || demo.ended || primary == null
-        ? null
-        : ScriptDemoControls(
-            playing: demo.playing,
-            speaking: demo.speaking,
-            full: demo.full,
-            progress: demo.progress,
-            remaining: demo.remaining,
-            tick: demo.tick,
-            canStepBack: demo.canStepBack,
-            mainTooltip: primary.label,
-            onRepeat: () => unawaited(cubit.demoRepeat()),
-            onStepBack: cubit.demoStepBack,
-            onToggle: cubit.demoToggle,
-            onNext: () => primary.onPressed?.call(),
-            canvasLayout: true,
-          );
-    // A demonstração com ↻ ⏮ ⏸ e o ⏭ (a teoria só tem ⏸ e o ⏭).
-    final assistindo = controls != null && demo!.full;
-    final back = state.canBack && state.stageId != 'pratica'
-        ? _CanvasLessonFab(
-            key: LessonScriptKeys.back,
-            tooltip: context.l10n.lessonPreviousStep,
-            onPressed: cubit.back,
-            child: const Icon(CanvasSymbols.arrowBack),
-          )
-        : null;
-    Widget actionButton(ExerciseAction action) {
-      final style = ButtonStyle(
-        minimumSize: const WidgetStatePropertyAll(
-          Size(0, kButtonHeightCompact),
-        ),
-        padding: WidgetStatePropertyAll(
-          EdgeInsets.symmetric(
-            horizontal: MediaQuery.sizeOf(context).width < 384 ? 12 : 22,
-          ),
-        ),
-        textStyle: WidgetStatePropertyAll(
-          AppButtonText.footer(context)?.copyWith(
-            fontSize: 14,
-            height: 20 / 14,
-            fontWeight: FontWeight.w500,
-            letterSpacing: .1,
-          ),
-        ),
-      );
-      final label = Text(
-        action.label,
-        maxLines: 2,
-        textAlign: TextAlign.center,
-      );
-      return action.primary
-          ? FilledButton(
-              key: action.key,
-              style: style,
-              onPressed: action.onPressed,
-              child: label,
-            )
-          : OutlinedButton(
-              key: action.key,
-              style: style,
-              onPressed: action.onPressed,
-              child: label,
-            );
-    }
-
-    if (choicesInFooter) {
-      return SizedBox(
-        key: LessonScriptKeys.footer,
-        height: 96,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _answerChoices(cubit),
-        ),
-      );
-    }
-    final acoes = Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 12,
-      children: [
-        if (demo?.ended == true) repeat,
-        if (secondary != null) Flexible(child: actionButton(secondary)),
-        if (primary != null) Flexible(child: actionButton(primary)),
-      ],
-    );
-    // H-ANI-25: no fim da demonstração, o tabuleiro e a fala ficam e ↻ e o
-    // botão principal entram por último; cada fim (também depois do ↻) é um
-    // resultado novo.
-    final fimDaDemo = EntradaDeResultado(
-      id: 'demo-${cubit.lessonId}-${state.stageId}-${demo?.tick}',
-      botoes: acoes,
-    );
-    return SizedBox(
-      key: LessonScriptKeys.footer,
-      height: 96,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          spacing: 12,
-          children: [
-            ?back,
-            // Com ↻ ⏮ ⏸ e o ⏭ na tela o aluno só assiste: a 💡 e a 🔍
-            // esperam o fim da demonstração (e o rodapé cabe em 411 dp).
-            if (!assistindo && cubit.canHint)
-              _CanvasLessonFab(
-                key: LessonScriptKeys.hint,
-                tooltip: context.l10n.lessonHint,
-                onPressed: () => unawaited(cubit.hint()),
-                child: const Icon(CanvasSymbols.lightbulb),
-              ),
-            if (!assistindo && cubit.canAnalyze && widget.onAnalyze != null)
-              _CanvasLessonFab(
-                key: LessonScriptKeys.analyze,
-                tooltip: context.l10n.lessonAnalyzePosition,
-                onPressed: () => widget.onAnalyze!(state.fen),
-                child: const Icon(CanvasSymbols.search),
-              ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: controls ?? (demo?.ended == true ? fimDaDemo : acoes),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _CanvasLessonFab extends StatelessWidget {
@@ -946,4 +794,193 @@ class _CanvasLessonFab extends StatelessWidget {
       ),
     ),
   );
+}
+
+class _AnswerChoices extends StatelessWidget {
+  const _AnswerChoices(this.cubit);
+
+  final LessonScriptCubit cubit;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    spacing: 12,
+    children: [
+      for (final (index, label) in cubit.answerChoices.indexed)
+        Expanded(
+          child: SizedBox(
+            height: kButtonHeight,
+            child: OutlinedButton(
+              key: LessonScriptKeys.answerChoice(index),
+              onPressed: () => unawaited(cubit.answerChoice(index)),
+              child: Text(label),
+            ),
+          ),
+        ),
+    ],
+  );
+}
+
+/// O rodapé: voltar, dica, análise e as ações (ou as respostas, quando
+/// não cabem sob o tabuleiro).
+class _Footer extends StatelessWidget {
+  const _Footer({
+    required this.cubit,
+    required this.state,
+    required this.primary,
+    required this.secondary,
+    required this.onAnalyze,
+    this.choicesInFooter = false,
+  });
+
+  final LessonScriptCubit cubit;
+  final LessonScriptState state;
+  final ExerciseAction? primary;
+  final ExerciseAction? secondary;
+  final ValueChanged<String>? onAnalyze;
+  final bool choicesInFooter;
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = this.primary;
+    final secondary = this.secondary;
+    final demo = state.demo;
+    // Demonstração (etapa 2): ↻ ⏮ ⏸/▶ e o ⏭ com o anel no lugar dos
+    // botões; no fim, só ↻ e o botão principal (canvas, E12). Teoria (etapa
+    // 1): nas falas de "Continuar", ⏸/▶ e o ⏭ com o anel.
+    final repeat = ScriptDemoButton(
+      buttonKey: LessonScriptKeys.demoRepeat,
+      icon: CanvasSymbols.replay,
+      tooltip: context.l10n.lessonDemoReplay,
+      onPressed: () => unawaited(cubit.demoRepeat()),
+    );
+    final controls = demo == null || demo.ended || primary == null
+        ? null
+        : ScriptDemoControls(
+            playing: demo.playing,
+            speaking: demo.speaking,
+            full: demo.full,
+            progress: demo.progress,
+            remaining: demo.remaining,
+            tick: demo.tick,
+            canStepBack: demo.canStepBack,
+            mainTooltip: primary.label,
+            onRepeat: () => unawaited(cubit.demoRepeat()),
+            onStepBack: cubit.demoStepBack,
+            onToggle: cubit.demoToggle,
+            onNext: () => primary.onPressed?.call(),
+            canvasLayout: true,
+          );
+    // A demonstração com ↻ ⏮ ⏸ e o ⏭ (a teoria só tem ⏸ e o ⏭).
+    final assistindo = controls != null && demo!.full;
+    final back = state.canBack && state.stageId != 'pratica'
+        ? _CanvasLessonFab(
+            key: LessonScriptKeys.back,
+            tooltip: context.l10n.lessonPreviousStep,
+            onPressed: cubit.back,
+            child: const Icon(CanvasSymbols.arrowBack),
+          )
+        : null;
+    if (choicesInFooter) {
+      return SizedBox(
+        key: LessonScriptKeys.footer,
+        height: 96,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _AnswerChoices(cubit),
+        ),
+      );
+    }
+    final acoes = Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 12,
+      children: [
+        if (demo?.ended == true) repeat,
+        if (secondary != null) Flexible(child: _ActionButton(secondary)),
+        if (primary != null) Flexible(child: _ActionButton(primary)),
+      ],
+    );
+    // H-ANI-25: no fim da demonstração, o tabuleiro e a fala ficam e ↻ e o
+    // botão principal entram por último; cada fim (também depois do ↻) é um
+    // resultado novo.
+    final fimDaDemo = EntradaDeResultado(
+      id: 'demo-${cubit.lessonId}-${state.stageId}-${demo?.tick}',
+      botoes: acoes,
+    );
+    return SizedBox(
+      key: LessonScriptKeys.footer,
+      height: 96,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          spacing: 12,
+          children: [
+            ?back,
+            // Com ↻ ⏮ ⏸ e o ⏭ na tela o aluno só assiste: a 💡 e a 🔍
+            // esperam o fim da demonstração (e o rodapé cabe em 411 dp).
+            if (!assistindo && cubit.canHint)
+              _CanvasLessonFab(
+                key: LessonScriptKeys.hint,
+                tooltip: context.l10n.lessonHint,
+                onPressed: () => unawaited(cubit.hint()),
+                child: const Icon(CanvasSymbols.lightbulb),
+              ),
+            if (!assistindo && cubit.canAnalyze && onAnalyze != null)
+              _CanvasLessonFab(
+                key: LessonScriptKeys.analyze,
+                tooltip: context.l10n.lessonAnalyzePosition,
+                onPressed: () => onAnalyze!(state.fen),
+                child: const Icon(CanvasSymbols.search),
+              ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: controls ?? (demo?.ended == true ? fimDaDemo : acoes),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O botão de ação do rodapé: cheio se for o principal, de contorno se não.
+class _ActionButton extends StatelessWidget {
+  const _ActionButton(this.action);
+
+  final ExerciseAction action;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll(Size(0, kButtonHeightCompact)),
+      padding: WidgetStatePropertyAll(
+        EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(context).width < 384 ? 12 : 22,
+        ),
+      ),
+      textStyle: WidgetStatePropertyAll(
+        AppButtonText.footer(context)?.copyWith(
+          fontSize: 14,
+          height: 20 / 14,
+          fontWeight: FontWeight.w500,
+          letterSpacing: .1,
+        ),
+      ),
+    );
+    final label = Text(action.label, maxLines: 2, textAlign: TextAlign.center);
+    return action.primary
+        ? FilledButton(
+            key: action.key,
+            style: style,
+            onPressed: action.onPressed,
+            child: label,
+          )
+        : OutlinedButton(
+            key: action.key,
+            style: style,
+            onPressed: action.onPressed,
+            child: label,
+          );
+  }
 }

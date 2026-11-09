@@ -67,45 +67,48 @@ class RatingValue extends StatelessWidget {
         Text(rating.toString(), key: valueKey, style: style),
         if (change != null) ...[
           const SizedBox(width: AppSpacing.sm),
-          ..._change(context, theme, change, up ?? change >= 0),
+          _Change(owner: this, change: change, up: up ?? change >= 0),
         ],
       ],
     );
   }
+}
 
-  List<Widget> _change(
-    BuildContext context,
-    ThemeData theme,
-    int change,
-    bool up,
-  ) {
-    return [
-      // A variação em texto verde ou vermelho, com a seta, sem fundo.
-      Row(
-        key: changeKey,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            up ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-            size: large ? AppIconSize.large : AppIconSize.standard,
-            color: ChangeColors.of(context, up: up),
-          ),
-          Text(
-            signedChange(change),
-            textDirection: TextDirection.ltr,
-            style:
-                (large
-                        ? theme.textTheme.titleLarge
-                        : theme.textTheme.titleMedium)
-                    ?.copyWith(
-                      color: ChangeColors.of(context, up: up),
-                      fontWeight: AppWeight.strong,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-          ),
-        ],
-      ),
-    ];
+/// A variação em texto verde ou vermelho, com a seta, sem fundo.
+class _Change extends StatelessWidget {
+  const _Change({required this.owner, required this.change, required this.up});
+
+  final RatingValue owner;
+  final int change;
+  final bool up;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      key: owner.changeKey,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          up ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+          size: owner.large ? AppIconSize.large : AppIconSize.standard,
+          color: ChangeColors.of(context, up: up),
+        ),
+        Text(
+          signedChange(change),
+          textDirection: TextDirection.ltr,
+          style:
+              (owner.large
+                      ? theme.textTheme.titleLarge
+                      : theme.textTheme.titleMedium)
+                  ?.copyWith(
+                    color: ChangeColors.of(context, up: up),
+                    fontWeight: AppWeight.strong,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+        ),
+      ],
+    );
   }
 }
 

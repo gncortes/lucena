@@ -93,7 +93,7 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
               builder: (context, box) =>
                   _board(context, cubit, exercise, box.maxWidth),
             ),
-            bottom: _dontKnow(context, cubit),
+            bottom: _DontKnowButton(cubit: cubit),
           ),
         );
       },
@@ -173,14 +173,8 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
     // Com a posição, o corpo é o do [GoalPage.fill]. Sem ela no aparelho,
     // conta como não respondida: "Não sei".
     final exercise = cubit.exerciseFor(d.testChapterIds[d.testAnswered]);
-    return [if (exercise == null) _dontKnow(context, cubit)];
+    return [if (exercise == null) _DontKnowButton(cubit: cubit)];
   }
-
-  Widget _dontKnow(BuildContext context, TrainingGoalCubit cubit) => TextButton(
-    key: TrainingGoalKeys.testDontKnow,
-    onPressed: () => _answer(cubit, false),
-    child: Text(context.l10n.treinoTestDontKnow),
-  );
 
   Widget _board(
     BuildContext context,
@@ -301,4 +295,17 @@ class _TrainingTestScreenState extends State<TrainingTestScreen> {
       ),
     ];
   }
+}
+
+class _DontKnowButton extends StatelessWidget {
+  const _DontKnowButton({required this.cubit});
+
+  final TrainingGoalCubit cubit;
+
+  @override
+  Widget build(BuildContext context) => TextButton(
+    key: TrainingGoalKeys.testDontKnow,
+    onPressed: () => cubit.answerTest(false),
+    child: Text(context.l10n.treinoTestDontKnow),
+  );
 }

@@ -38,12 +38,19 @@ class NextStepsScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => CourseAvailabilityCubit(courseAvailable)..load(),
       child: BlocBuilder<CourseAvailabilityCubit, bool?>(
-        builder: (context, course) => _screen(context, course),
+        builder: (context, course) => _NextStepsContent(course: course),
       ),
     );
   }
+}
 
-  Widget _screen(BuildContext context, bool? course) {
+class _NextStepsContent extends StatelessWidget {
+  const _NextStepsContent({required this.course});
+
+  final bool? course;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     void go(String route) => context.go(route);
     final steps = [

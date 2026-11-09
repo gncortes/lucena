@@ -113,7 +113,9 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
           }
           return const LoadSkeletonScreen();
         }
-        if (!view.hasObjective) return _empty(context);
+        if (!view.hasObjective) {
+          return _Empty(onDefine: () => _go(RouteNames.trainingGoal));
+        }
         final filhos = [
           if (!view.hasPlan)
             ..._noPlan(context)
@@ -142,61 +144,6 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
     );
   }
 
-  /// PropV2GuiaSemObjetivo: o convite num cartão e o botão fixo embaixo.
-  Widget _empty(BuildContext context) {
-    final t = context.l10n;
-    final theme = Theme.of(context);
-    return Column(
-      key: TrainingGoalKeys.guideTab,
-      children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.screen),
-            children: [
-              LucenaCard(
-                key: TrainingGoalKeys.guideEmpty,
-                padding: const EdgeInsets.all(24),
-                // H-ANI-16: ícone, título e convite em cascata.
-                child: EntradaEmCascata(
-                  montar: (itens) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 12,
-                    children: itens,
-                  ),
-                  itens: [
-                    ItemDaCascata.selo(
-                      Icon(
-                        Icons.stadium_outlined,
-                        size: 32,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                    ItemDaCascata.titulo(
-                      Text(
-                        t.treinoNoGoalTitle,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    ItemDaCascata.texto(Text(t.treinoNoGoalGuideBody)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        GoalFooter(
-          child: BusyButton(
-            buttonKey: TrainingGoalKeys.guideDefine,
-            label: t.treinoDefineGoal,
-            onPressed: () => _go(RouteNames.trainingGoal),
-          ),
-        ),
-      ],
-    );
-  }
-
   List<Widget> _noPlan(BuildContext context) {
     final t = context.l10n;
     return [
@@ -211,25 +158,6 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
         onPressed: () => _go(RouteNames.trainingDiagnostic),
       ),
     ];
-  }
-
-  Widget _header(BuildContext context, GoalView view) {
-    final t = context.l10n;
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            t.treinoGuidePlanHeader,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ),
-        TextButton(
-          key: TrainingGoalKeys.guideChange,
-          onPressed: () => _go(RouteNames.trainingGoal),
-          child: Text(t.treinoGuideChange),
-        ),
-      ],
-    );
   }
 
   List<Widget> _improve(BuildContext context, GoalView view) {
@@ -258,7 +186,7 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
       ),
     );
     return [
-      _header(context, view),
+      _Header(onChange: () => _go(RouteNames.trainingGoal)),
       Text(
         t.treinoGoalImproveLine(
           view.chapters.length - open.length,
@@ -300,7 +228,7 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
     ];
     final late = view.late;
     return [
-      _header(context, view),
+      _Header(onChange: () => _go(RouteNames.trainingGoal)),
       Text(
         t.treinoGuideTournamentLine(
           name,
@@ -458,5 +386,93 @@ class _GuideBodyState extends State<_GuideBody> with WidgetsBindingObserver {
           child: Text(t.treinoRegisterTournament),
         ),
     ];
+  }
+}
+
+/// PropV2GuiaSemObjetivo: o convite num cartão e o botão fixo embaixo.
+class _Empty extends StatelessWidget {
+  const _Empty({required this.onDefine});
+
+  final VoidCallback onDefine;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    final theme = Theme.of(context);
+    return Column(
+      key: TrainingGoalKeys.guideTab,
+      children: [
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(AppSpacing.screen),
+            children: [
+              LucenaCard(
+                key: TrainingGoalKeys.guideEmpty,
+                padding: const EdgeInsets.all(24),
+                // H-ANI-16: ícone, título e convite em cascata.
+                child: EntradaEmCascata(
+                  montar: (itens) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 12,
+                    children: itens,
+                  ),
+                  itens: [
+                    ItemDaCascata.selo(
+                      Icon(
+                        Icons.stadium_outlined,
+                        size: 32,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    ItemDaCascata.titulo(
+                      Text(
+                        t.treinoNoGoalTitle,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    ItemDaCascata.texto(Text(t.treinoNoGoalGuideBody)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        GoalFooter(
+          child: BusyButton(
+            buttonKey: TrainingGoalKeys.guideDefine,
+            label: t.treinoDefineGoal,
+            onPressed: onDefine,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({required this.onChange});
+
+  final VoidCallback onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            t.treinoGuidePlanHeader,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        TextButton(
+          key: TrainingGoalKeys.guideChange,
+          onPressed: onChange,
+          child: Text(t.treinoGuideChange),
+        ),
+      ],
+    );
   }
 }

@@ -198,14 +198,11 @@ class TeacherSpeech extends StatelessWidget {
     if (part == TeacherSpeechPart.header) {
       // Só o cabeçalho: os botões de voz valem para a fala, mas quem a diz
       // sozinho é o balão (sem repetir a voz).
-      return _headerRow(context, avatar);
+      return _HeaderRow(this, avatar);
     }
     final speech = speechOf(context);
     final text = _plain;
-    final content = _RevealOnChange(
-      text: text,
-      child: _layout(context, avatar),
-    );
+    final content = _RevealOnChange(text: text, child: _Layout(this, avatar));
     if (speech == null) return content;
     final soundEnabled = _soundEnabled(context);
     final speakingContent = AutoSpeak(
@@ -263,18 +260,36 @@ class TeacherSpeech extends StatelessWidget {
     }
   }
 
-  /// O nome e, havendo voz no idioma, o botão de áudio.
-  Widget _header(BuildContext context) {
-    final speech = speechOf(context);
-    final soundEnabled = _soundEnabled(context);
-    final text = _plain;
-    final action = headerAction;
+  /// "Mestre" é só do Viktor; os adversários aparecem só pelo nome.
+  String _label(BuildContext context) =>
+      teacher.isMaster ? context.l10n.teacherName(teacher.name) : teacher.name;
+
+  BalloonTail _tail(BuildContext context) =>
+      _compact(context) || part == TeacherSpeechPart.bubble
+      ? BalloonTail.none
+      : _stackedIn(context)
+      ? (bubbleAboveHeader ? BalloonTail.down : BalloonTail.up)
+      : BalloonTail.start;
+}
+
+/// O nome e, havendo voz no idioma, o botão de áudio.
+class _Header extends StatelessWidget {
+  const _Header(this.owner);
+
+  final TeacherSpeech owner;
+
+  @override
+  Widget build(BuildContext context) {
+    final speech = TeacherSpeech.speechOf(context);
+    final soundEnabled = owner._soundEnabled(context);
+    final text = owner._plain;
+    final action = owner.headerAction;
     if (speech == null || text == null) {
       return action == null
-          ? _name(context)
+          ? _Name(owner)
           : Row(
               children: [
-                Expanded(child: _name(context)),
+                Expanded(child: _Name(owner)),
                 action,
               ],
             );
@@ -282,10 +297,10 @@ class TeacherSpeech extends StatelessWidget {
     final language = Localizations.localeOf(context).toLanguageTag();
     return Row(
       children: [
-        Expanded(child: _name(context)),
-        if (canvasHeader && action != null) const SizedBox(width: 12),
+        Expanded(child: _Name(owner)),
+        if (owner.canvasHeader && action != null) const SizedBox(width: 12),
         ?action,
-        if (canvasHeader) const SizedBox(width: 12),
+        if (owner.canvasHeader) const SizedBox(width: 12),
         BlocBuilder<SpeechCubit, SpeechState>(
           bloc: speech,
           buildWhen: (a, b) =>
@@ -294,29 +309,30 @@ class TeacherSpeech extends StatelessWidget {
               a.settings.enabled != b.settings.enabled ||
               a.availableFor(language) != b.availableFor(language),
           builder: (context, state) {
-            if (lessonV2 || trainingLayout || unifiedSound) {
+            if (owner.lessonV2 || owner.trainingLayout || owner.unifiedSound) {
               final audible =
                   soundEnabled &&
                   state.settings.enabled &&
                   state.availableFor(language);
               return LessonVoiceButton(
-                canvasLayout: canvasHeader,
-                showSpeedBadge: showSpeedBadge,
+                canvasLayout: owner.canvasHeader,
+                showSpeedBadge: owner.showSpeedBadge,
                 audible: audible,
                 speed: state.settings.speed,
                 onPressed:
-                    onSoundSettings ?? () => showLessonSoundDialog(context),
+                    owner.onSoundSettings ??
+                    () => showLessonSoundDialog(context),
               );
             }
             // Sem voz no idioma, o botão de som continua à vista: o toque
             // leva aos ajustes de voz, onde se instala uma.
-            if (controlsOnlyWithVoice && !state.settings.enabled) {
+            if (owner.controlsOnlyWithVoice && !state.settings.enabled) {
               return const SizedBox.shrink();
             }
             if (!state.availableFor(language)) {
               return IconButton(
                 key: VoiceKeys.speakButton,
-                visualDensity: lessonV2
+                visualDensity: owner.lessonV2
                     ? VisualDensity.standard
                     : VisualDensity.compact,
                 tooltip: context.l10n.voiceSection,
@@ -331,14 +347,16 @@ class TeacherSpeech extends StatelessWidget {
               children: [
                 // A velocidade da voz: cada toque passa para a próxima.
                 // Voz desligada: sem o chip de velocidade (CompFalaViktor, `voz`).
-                if (showSpeedBadge && soundEnabled && state.settings.enabled)
+                if (owner.showSpeedBadge &&
+                    soundEnabled &&
+                    state.settings.enabled)
                   TextButton(
                     key: VoiceKeys.speedButton,
                     style: TextButton.styleFrom(
-                      visualDensity: lessonV2
+                      visualDensity: owner.lessonV2
                           ? VisualDensity.standard
                           : VisualDensity.compact,
-                      minimumSize: Size(48, lessonV2 ? 48 : 36),
+                      minimumSize: Size(48, owner.lessonV2 ? 48 : 36),
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.sm,
                       ),
@@ -352,21 +370,21 @@ class TeacherSpeech extends StatelessWidget {
                 // Onde ele fala sozinho, um botão só: ligado, um toque cala
                 // a voz dele (a escolha fica gravada); desligado, liga e já
                 // fala. Nos outros balões, ouvir e parar.
-                if (speaks)
+                if (owner.speaks)
                   IconButton(
                     key: VoiceKeys.speakButton,
-                    visualDensity: lessonV2
+                    visualDensity: owner.lessonV2
                         ? VisualDensity.standard
                         : VisualDensity.compact,
                     tooltip: state.settings.enabled
-                        ? l10n.voiceAutoOff(teacher.name)
-                        : l10n.voiceAutoOn(teacher.name),
+                        ? l10n.voiceAutoOff(owner.teacher.name)
+                        : l10n.voiceAutoOn(owner.teacher.name),
                     isSelected: !state.settings.enabled,
                     icon: const Icon(Icons.volume_up_outlined),
                     selectedIcon: const SoundOffIcon(),
                     onPressed: () async {
-                      if (_stackedIn(context) &&
-                          !(_settingsOf(context)?.state?.sound ?? true)) {
+                      if (owner._stackedIn(context) &&
+                          !(owner._settingsOf(context)?.state?.sound ?? true)) {
                         return;
                       }
                       if (state.settings.enabled) {
@@ -376,13 +394,14 @@ class TeacherSpeech extends StatelessWidget {
                       await speech.setEnabled(enabled: true);
                       if (!context.mounted ||
                           !speech.state.settings.enabled ||
-                          (_stackedIn(context) &&
-                              !(_settingsOf(context)?.state?.sound ?? true))) {
+                          (owner._stackedIn(context) &&
+                              !(owner._settingsOf(context)?.state?.sound ??
+                                  true))) {
                         return;
                       }
                       await speech.say(
                         text,
-                        speakerId: teacher.id,
+                        speakerId: owner.teacher.id,
                         language: language,
                       );
                     },
@@ -390,7 +409,7 @@ class TeacherSpeech extends StatelessWidget {
                 else
                   IconButton(
                     key: VoiceKeys.speakButton,
-                    visualDensity: lessonV2
+                    visualDensity: owner.lessonV2
                         ? VisualDensity.standard
                         : VisualDensity.compact,
                     tooltip: speaking ? l10n.voiceStop : l10n.voiceListen,
@@ -400,7 +419,7 @@ class TeacherSpeech extends StatelessWidget {
                     onPressed: soundEnabled
                         ? () => speech.toggle(
                             text,
-                            speakerId: teacher.id,
+                            speakerId: owner.teacher.id,
                             language: language,
                           )
                         : null,
@@ -412,36 +431,46 @@ class TeacherSpeech extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _layout(BuildContext context, Widget avatar) {
-    if (part == TeacherSpeechPart.bubble) return _closable(context);
-    if (_compact(context)) {
+class _Layout extends StatelessWidget {
+  const _Layout(this.owner, this.avatar);
+
+  final TeacherSpeech owner;
+  final Widget avatar;
+
+  @override
+  Widget build(BuildContext context) {
+    if (owner.part == TeacherSpeechPart.bubble) return _Closable(owner);
+    if (owner._compact(context)) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           avatar,
-          SizedBox(width: lessonV2 ? 8 : 10),
-          Expanded(child: _closable(context)),
+          SizedBox(width: owner.lessonV2 ? 8 : 10),
+          Expanded(child: _Closable(owner)),
         ],
       );
     }
-    if (_stackedIn(context)) {
+    if (owner._stackedIn(context)) {
       return Column(
-        mainAxisSize: trainingLayout ? MainAxisSize.min : MainAxisSize.max,
+        mainAxisSize: owner.trainingLayout
+            ? MainAxisSize.min
+            : MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (bubbleAboveHeader) ...[
-            if (trainingLayout)
-              Flexible(child: _closable(context))
+          if (owner.bubbleAboveHeader) ...[
+            if (owner.trainingLayout)
+              Flexible(child: _Closable(owner))
             else
-              _closable(context),
-            _headerRow(context, avatar),
+              _Closable(owner),
+            _HeaderRow(owner, avatar),
           ] else ...[
             // O vão de 6 da ponta ao retrato vem do balão.
-            _headerRow(context, avatar),
-            if (unifiedSound || canvasTrainingBalloon)
+            _HeaderRow(owner, avatar),
+            if (owner.unifiedSound || owner.canvasTrainingBalloon)
               const SizedBox(height: 2),
-            _closable(context),
+            _Closable(owner),
           ],
         ],
       );
@@ -457,41 +486,53 @@ class TeacherSpeech extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsetsDirectional.only(start: AppSpacing.lg),
-                child: _header(context),
+                child: _Header(owner),
               ),
               const SizedBox(height: AppSpacing.xs),
-              _closable(context),
+              _Closable(owner),
             ],
           ),
         ),
       ],
     );
   }
+}
 
-  /// Retrato, nome e botões. Na lição V2 é a linha de 48 dp do canvas
-  /// (`cabecalho(c, 'linha')`): retrato 28, 8 dp, nome, som na ponta.
-  Widget _headerRow(BuildContext context, Widget avatar) {
+/// Retrato, nome e botões. Na lição V2 é a linha de 48 dp do canvas
+/// (`cabecalho(c, 'linha')`): retrato 28, 8 dp, nome, som na ponta.
+class _HeaderRow extends StatelessWidget {
+  const _HeaderRow(this.owner, this.avatar);
+
+  final TeacherSpeech owner;
+  final Widget avatar;
+
+  @override
+  Widget build(BuildContext context) {
     final row = Row(
       children: [
         avatar,
         SizedBox(
-          width: canvasHeader
+          width: owner.canvasHeader
               ? 12
-              : lessonV2
+              : owner.lessonV2
               ? 8
-              : trainingLayout || unifiedSound || canvasTrainingBalloon
+              : owner.trainingLayout ||
+                    owner.unifiedSound ||
+                    owner.canvasTrainingBalloon
               ? 12
               : 10,
         ),
-        Expanded(child: _header(context)),
+        Expanded(child: _Header(owner)),
       ],
     );
-    if (trainingLayout) return SizedBox(height: this.avatarSize, child: row);
-    if (!lessonV2) return row;
-    final avatarSize = headerAvatar ?? 0;
+    if (owner.trainingLayout) {
+      return SizedBox(height: owner.avatarSize, child: row);
+    }
+    if (!owner.lessonV2) return row;
+    final avatarSize = owner.headerAvatar ?? 0;
     return SizedBox(
       key: ViktorSheetKeys.header,
-      height: canvasHeader
+      height: owner.canvasHeader
           ? 40
           : avatarSize > 48
           ? avatarSize
@@ -499,23 +540,33 @@ class TeacherSpeech extends StatelessWidget {
       child: row,
     );
   }
+}
 
-  /// "Mestre" é só do Viktor; os adversários aparecem só pelo nome.
-  String _label(BuildContext context) =>
-      teacher.isMaster ? context.l10n.teacherName(teacher.name) : teacher.name;
+class _Name extends StatelessWidget {
+  const _Name(this.owner);
 
-  Widget _name(BuildContext context) {
-    final name = _plainName(context);
+  final TeacherSpeech owner;
+
+  @override
+  Widget build(BuildContext context) {
+    final name = _PlainName(owner);
     // Na faixa que abre a folha da fala (o retrato voa até ela), o nome some
     // junto enquanto a folha está aberta.
-    return avatarHeroTag == null ? name : SpeechSheetFade(child: name);
+    return owner.avatarHeroTag == null ? name : SpeechSheetFade(child: name);
   }
+}
 
-  Widget _plainName(BuildContext context) {
+class _PlainName extends StatelessWidget {
+  const _PlainName(this.owner);
+
+  final TeacherSpeech owner;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    if (lessonV2) {
+    if (owner.lessonV2) {
       return Text(
-        _label(context),
+        owner._label(context),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: theme.textTheme.titleMedium?.copyWith(
@@ -525,32 +576,39 @@ class TeacherSpeech extends StatelessWidget {
       );
     }
     return Text(
-      _label(context),
+      owner._label(context),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style:
-          (_stackedIn(context)
+          (owner._stackedIn(context)
                   ? theme.textTheme.titleMedium
                   : theme.textTheme.labelLarge)
               ?.copyWith(
                 color: theme.colorScheme.primary,
-                fontWeight: bubbleAboveHeader
+                fontWeight: owner.bubbleAboveHeader
                     ? FontWeight.w700
                     : FontWeight.w500,
-                letterSpacing: canvasTrainingBalloon ? 0 : null,
+                letterSpacing: owner.canvasTrainingBalloon ? 0 : null,
               ),
     );
   }
+}
 
-  /// O balão (ou, na folha, o texto direto). Sem ✕: a folha tem o dela.
-  /// H-ANI-09: o balão entra pelo bico só na primeira aparição. O pop fica
-  /// acima da troca de fala (que remonta o balão a cada texto e já tem a
-  /// digitação), e não vale onde a fala não tem balão (folha, lição V2).
-  Widget _closable(BuildContext context) {
-    final speech = _speech(context);
-    if (lessonV2 || ViktorSheet.insideOf(context)) return speech;
+/// O balão (ou, na folha, o texto direto). Sem ✕: a folha tem o dela.
+/// H-ANI-09: o balão entra pelo bico só na primeira aparição. O pop fica
+/// acima da troca de fala (que remonta o balão a cada texto e já tem a
+/// digitação), e não vale onde a fala não tem balão (folha, lição V2).
+class _Closable extends StatelessWidget {
+  const _Closable(this.owner);
+
+  final TeacherSpeech owner;
+
+  @override
+  Widget build(BuildContext context) {
+    final speech = _Speech(owner);
+    if (owner.lessonV2 || ViktorSheet.insideOf(context)) return speech;
     return SpeechPop(
-      alignment: switch (_tail(context)) {
+      alignment: switch (owner._tail(context)) {
         BalloonTail.up => AlignmentDirectional.topStart,
         BalloonTail.start => AlignmentDirectional.centerStart,
         BalloonTail.down => AlignmentDirectional.bottomStart,
@@ -559,25 +617,25 @@ class TeacherSpeech extends StatelessWidget {
       child: speech,
     );
   }
+}
 
-  BalloonTail _tail(BuildContext context) =>
-      _compact(context) || part == TeacherSpeechPart.bubble
-      ? BalloonTail.none
-      : _stackedIn(context)
-      ? (bubbleAboveHeader ? BalloonTail.down : BalloonTail.up)
-      : BalloonTail.start;
+/// O balão, que troca de fala com uma transição suave.
+class _Speech extends StatelessWidget {
+  const _Speech(this.owner);
 
-  /// O balão, que troca de fala com uma transição suave.
-  Widget _speech(BuildContext context) {
-    if (explanation case final payload?) {
+  final TeacherSpeech owner;
+
+  @override
+  Widget build(BuildContext context) {
+    if (owner.explanation case final payload?) {
       var paragraphIndex = 0;
       return ExplanationCards(
         payload: payload,
-        lessonV2: lessonV2,
-        onVariation: onVariation,
-        activeCursor: activeVariation,
+        lessonV2: owner.lessonV2,
+        onVariation: owner.onVariation,
+        activeCursor: owner.activeVariation,
         hasInlineNavigation: (text, variation, origin) =>
-            onVariation != null &&
+            owner.onVariation != null &&
             // O rótulo real é "A"/"B": vale o primeiro lance da variação.
             variation.movesSan.isNotEmpty &&
             SpeechLinks.find(
@@ -620,8 +678,8 @@ class TeacherSpeech extends StatelessWidget {
             return null;
           }
 
-          return _bubble(
-            context,
+          return _Bubble(
+            owner,
             WikiMarkup.parse(text),
             useBubbleKey: paragraphIndex++ == 0,
             originOf: originOf,
@@ -634,21 +692,21 @@ class TeacherSpeech extends StatelessWidget {
                       strictPreferred: origin != null,
                     )
                   : null;
-              if (cursor != null && onVariation != null) {
-                onVariation!(cursor);
+              if (cursor != null && owner.onVariation != null) {
+                owner.onVariation!(cursor);
               } else {
-                onLink?.call(link);
+                owner.onLink?.call(link);
               }
             },
           );
         },
-        paragraph: (text) => _bubble(
-          context,
+        paragraph: (text) => _Bubble(
+          owner,
           WikiMarkup.parse(text),
           useBubbleKey: paragraphIndex++ == 0,
         ),
-        variationParagraph: (text, variation) => _bubble(
-          context,
+        variationParagraph: (text, variation) => _Bubble(
+          owner,
           WikiMarkup.parse(text),
           useBubbleKey: paragraphIndex++ == 0,
           originOf: (_) => variation,
@@ -662,17 +720,17 @@ class TeacherSpeech extends StatelessWidget {
                           strictPreferred: true,
                         )
                       : null;
-                  if (cursor != null && onVariation != null) {
-                    onVariation!(cursor);
+                  if (cursor != null && owner.onVariation != null) {
+                    owner.onVariation!(cursor);
                   } else {
-                    onLink?.call(link);
+                    owner.onLink?.call(link);
                   }
                 },
         ),
       );
     }
-    final text = this.text;
-    final plain = _plain;
+    final text = owner.text;
+    final plain = owner._plain;
     return AnimatedSize(
       duration: AppMotion.state,
       curve: AppMotion.enter,
@@ -697,23 +755,35 @@ class TeacherSpeech extends StatelessWidget {
             ? const SizedBox(width: double.infinity)
             : KeyedSubtree(
                 key: ValueKey(plain),
-                child: _bubble(context, WikiMarkup.parse(text)),
+                child: _Bubble(owner, WikiMarkup.parse(text)),
               ),
       ),
     );
   }
+}
 
-  /// O texto que aparece aos poucos; com a voz, acompanha até onde ela
-  /// chegou.
-  Widget _typed(
-    BuildContext context,
-    String text,
-    Text words,
-    bool Function(int)? onTapAt,
-    int Function(int) toDrawn, {
-    List<(int, int)>? snap,
-  }) {
-    final speech = speechOf(context);
+/// O texto que aparece aos poucos; com a voz, acompanha até onde ela
+/// chegou.
+class _Typed extends StatelessWidget {
+  const _Typed(
+    this.owner,
+    this.text,
+    this.words,
+    this.onTapAt,
+    this.toDrawn, {
+    this.snap,
+  });
+
+  final TeacherSpeech owner;
+  final String text;
+  final Text words;
+  final bool Function(int)? onTapAt;
+  final int Function(int) toDrawn;
+  final List<(int, int)>? snap;
+
+  @override
+  Widget build(BuildContext context) {
+    final speech = TeacherSpeech.speechOf(context);
     if (speech == null) {
       return _TypedText(
         key: ValueKey(text),
@@ -726,7 +796,7 @@ class TeacherSpeech extends StatelessWidget {
     final state = speech.state;
     // Vai falar sozinho: o texto anda no passo da voz, não no da leitura.
     final paced =
-        speaks &&
+        owner.speaks &&
         state.settings.enabled &&
         state.availableFor(language) &&
         !MediaQuery.accessibleNavigationOf(context);
@@ -753,32 +823,35 @@ class TeacherSpeech extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// O destaque do lance que está no tabuleiro, pintado atrás do texto.
-  Widget _withBackdrop(
-    Text words,
-    (int, int)? range,
-    Color color,
-    Widget child,
-  ) => _MoveBackdrop(text: words, range: range, color: color, child: child);
+class _Bubble extends StatelessWidget {
+  const _Bubble(
+    this.owner,
+    this.marked, {
+    this.useBubbleKey = true,
+    this.onLinkOverride,
+    this.originOf,
+  });
 
-  Widget _bubble(
-    BuildContext context,
-    MarkedText marked, {
-    bool useBubbleKey = true,
-    ValueChanged<SpeechLink>? onLinkOverride,
-    ExplanationVariation? Function(SpeechLink)? originOf,
-  }) {
+  final TeacherSpeech owner;
+  final MarkedText marked;
+  final bool useBubbleKey;
+  final ValueChanged<SpeechLink>? onLinkOverride;
+  final ExplanationVariation? Function(SpeechLink)? originOf;
+
+  @override
+  Widget build(BuildContext context) {
     final text = marked.text;
     final theme = Theme.of(context);
     final language = Localizations.localeOf(context).languageCode;
     // Os nomes com página na Wikipedia; chave sem página: texto normal.
-    final wiki = wikiOf(context);
+    final wiki = TeacherSpeech.wikiOf(context);
     final pages = [
       for (final mark in marked.marks)
         if (wiki.url(mark.key, language) case final url?) (mark, url),
     ];
-    final onLink = onLinkOverride ?? this.onLink;
+    final onLink = onLinkOverride ?? owner.onLink;
     final links = onLink == null
         ? const <SpeechLink>[]
         : [
@@ -792,21 +865,21 @@ class TeacherSpeech extends StatelessWidget {
               ))
                 link,
           ];
-    final section = lessonV2 || ViktorSheet.insideOf(context);
+    final section = owner.lessonV2 || ViktorSheet.insideOf(context);
     final colors = theme.colorScheme;
     // Corpo da lição V2: 15/22,5, peso 400, onSurface.
     final style = theme.textTheme.bodyLarge?.copyWith(
-      fontSize: canvasTrainingBalloon
+      fontSize: owner.canvasTrainingBalloon
           ? 14
           : section
           ? 15
           : null,
-      height: canvasTrainingBalloon
+      height: owner.canvasTrainingBalloon
           ? 20 / 14
           : section
           ? 1.5
           : null,
-      letterSpacing: canvasTrainingBalloon ? .25 : null,
+      letterSpacing: owner.canvasTrainingBalloon ? .25 : null,
       fontWeight: section ? FontWeight.w400 : null,
       color: section ? colors.onSurface : null,
     );
@@ -829,10 +902,10 @@ class TeacherSpeech extends StatelessWidget {
       decorationColor: colors.primary,
     );
     bool isActiveMove(SpeechLink link) {
-      final active = activeVariation;
-      if (!lessonV2 || !link.isMove || active == null) return false;
+      final active = owner.activeVariation;
+      if (!owner.lessonV2 || !link.isMove || active == null) return false;
       final origin = originOf?.call(link);
-      final cursor = explanation?.cursorForNotation(
+      final cursor = owner.explanation?.cursorForNotation(
         link.text,
         preferred: origin,
         strictPreferred: origin != null,
@@ -847,7 +920,7 @@ class TeacherSpeech extends StatelessWidget {
     // quebras vira espaço, de mesmo tamanho para não mexer nos deslocamentos.
     Iterable<InlineSpan> plainSpans(String value, int offset) sync* {
       yield TextSpan(
-        text: lessonV2 ? value.replaceAll('\n\n', ' \u200B') : value,
+        text: owner.lessonV2 ? value.replaceAll('\n\n', ' \u200B') : value,
       );
     }
 
@@ -856,13 +929,13 @@ class TeacherSpeech extends StatelessWidget {
         (
           link.start,
           link.end,
-          link.isMove || !lessonV2 ? linkStyle : squareStyle,
+          link.isMove || !owner.lessonV2 ? linkStyle : squareStyle,
         ),
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
     // Authored fallback prose keeps its own reading direction while the
     // surrounding controls follow the selected app locale.
-    final direction = lessonV2
+    final direction = owner.lessonV2
         ? Bidi.detectRtlDirectionality(text)
               ? TextDirection.rtl
               : TextDirection.ltr
@@ -871,7 +944,8 @@ class TeacherSpeech extends StatelessWidget {
     // reordered ("Ke3.1"): each notation is isolated as LTR (LRI…PDI). The
     // drawn text then differs from the source; [offsets] maps the two.
     final offsets = _BidiOffsets(
-      lessonV2 && (direction ?? Directionality.of(context)) == TextDirection.rtl
+      owner.lessonV2 &&
+              (direction ?? Directionality.of(context)) == TextDirection.rtl
           ? [
               for (final link in SpeechLinks.find(
                 text,
@@ -882,7 +956,7 @@ class TeacherSpeech extends StatelessWidget {
           : const [],
     );
     InlineSpan? styledSpans() {
-      if (spans.isEmpty && !lessonV2) return null;
+      if (spans.isEmpty && !owner.lessonV2) return null;
       final breaks = <int>{
         0,
         text.length,
@@ -917,10 +991,10 @@ class TeacherSpeech extends StatelessWidget {
 
     final rich = styledSpans();
     final words = rich == null
-        ? Text(text, key: useBubbleKey ? bubbleKey : null, style: style)
+        ? Text(text, key: useBubbleKey ? owner.bubbleKey : null, style: style)
         : Text.rich(
             rich,
-            key: useBubbleKey ? bubbleKey : null,
+            key: useBubbleKey ? owner.bubbleKey : null,
             style: style,
             textDirection: direction,
           );
@@ -929,7 +1003,7 @@ class TeacherSpeech extends StatelessWidget {
     // Tocar numa casa abre o destaque dela e baixa o painel até a borda do
     // tabuleiro (A11); o lance só chama [onLink].
     void fire(SpeechLink link) {
-      if (lessonV2 && !link.isMove) ViktorSheet.collapse(context);
+      if (owner.lessonV2 && !link.isMove) ViktorSheet.collapse(context);
       onLink!(link);
     }
 
@@ -953,7 +1027,7 @@ class TeacherSpeech extends StatelessWidget {
     final tappable = spans.isEmpty ? null : tapAt;
     // Alvo de toque de 48 dp (A6): o toque perto do glifo vale no link mais
     // próximo. Só na lição V2.
-    final snap = lessonV2
+    final snap = owner.lessonV2
         ? [
             for (final link in links)
               (offsets.toDrawn(link.start), offsets.toDrawn(link.end)),
@@ -962,7 +1036,7 @@ class TeacherSpeech extends StatelessWidget {
     final activeLink = links.where(isActiveMove).firstOrNull;
     final content = Semantics(
       liveRegion: true,
-      label: context.l10n.characterSays(teacher.name, text),
+      label: context.l10n.characterSays(owner.teacher.name, text),
       excludeSemantics: true,
       // Com leitor de tela: uma ação por casa ou lance.
       customSemanticsActions: {
@@ -978,19 +1052,19 @@ class TeacherSpeech extends StatelessWidget {
       child: _VoiceLinks(
         text: text,
         links: links,
-        onLink: onSpoken,
-        child: _withBackdrop(
-          words,
-          activeLink == null
+        onLink: owner.onSpoken,
+        child: _MoveBackdrop(
+          text: words,
+          range: activeLink == null
               ? null
               : (
                   offsets.toDrawn(activeLink.start),
                   offsets.toDrawn(activeLink.end),
                 ),
-          LessonTextColors.activeMoveBackground(colors),
-          typed
-              ? _typed(
-                  context,
+          color: LessonTextColors.activeMoveBackground(colors),
+          child: owner.typed
+              ? _Typed(
+                  owner,
                   text,
                   words,
                   tappable,
@@ -1007,19 +1081,21 @@ class TeacherSpeech extends StatelessWidget {
     // O balão único do app (branco, ponta e animação de `SpeechBalloon`): a
     // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
     return SpeechBalloon(
-      padding: canvasTrainingBalloon
+      padding: owner.canvasTrainingBalloon
           ? const EdgeInsetsDirectional.all(16)
-          : unifiedSound
+          : owner.unifiedSound
           ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 12)
-          : trainingLayout && MediaQuery.sizeOf(context).height < 780
+          : owner.trainingLayout && MediaQuery.sizeOf(context).height < 780
           ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 6)
           : SpeechBalloon.defaultPadding,
       // A entrada pelo bico fica em `_closable`, acima da troca de fala.
       pop: false,
-      tail: _tail(context),
-      tailX: SpeechBalloon.tailXFor(avatarSize),
-      tailY: avatarSize / 2,
-      child: trainingLayout ? SingleChildScrollView(child: content) : content,
+      tail: owner._tail(context),
+      tailX: SpeechBalloon.tailXFor(owner.avatarSize),
+      tailY: owner.avatarSize / 2,
+      child: owner.trainingLayout
+          ? SingleChildScrollView(child: content)
+          : content,
     );
   }
 }

@@ -46,7 +46,7 @@ class HistoryGamesTab extends StatelessWidget {
         key: RatingKeys.screen,
         // 32 acima do vazio, como no canvas.
         padding: padding + const EdgeInsets.only(top: AppSpacing.xxl),
-        children: [_empty(context)],
+        children: const [_FirstGameInvite()],
       );
     }
     final cubit = context.read<HistoryCubit>();
@@ -78,30 +78,9 @@ class HistoryGamesTab extends StatelessWidget {
               ),
               ..._months(context, state, games),
             ] else
-              _empty(context),
+              const _FirstGameInvite(),
           ],
         ],
-      ),
-    );
-  }
-
-  // O convite para a primeira partida.
-  Widget _empty(BuildContext context) {
-    final l10n = context.l10n;
-    return KeyedSubtree(
-      key: HistoryKeys.empty,
-      child: EmptyState(
-        icon: Icons.history_rounded,
-        message: l10n.ratingHistoryEmpty,
-        messageKey: RatingKeys.emptyHistory,
-        actionLabel: l10n.emptyFirstEndgame,
-        style: EmptyStateStyle.primary,
-        actionIcon: Icons.play_arrow_rounded,
-        actionKey: RatingKeys.emptyHistoryAction,
-        onAction: () {
-          final router = GoRouter.of(context);
-          ContainerNavigation.leave(context, () => router.go(Routes.catalog));
-        },
       ),
     );
   }
@@ -235,4 +214,30 @@ class HistoryLoading extends StatelessWidget {
       ],
     ],
   );
+}
+
+// O convite para a primeira partida.
+class _FirstGameInvite extends StatelessWidget {
+  const _FirstGameInvite();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return KeyedSubtree(
+      key: HistoryKeys.empty,
+      child: EmptyState(
+        icon: Icons.history_rounded,
+        message: l10n.ratingHistoryEmpty,
+        messageKey: RatingKeys.emptyHistory,
+        actionLabel: l10n.emptyFirstEndgame,
+        style: EmptyStateStyle.primary,
+        actionIcon: Icons.play_arrow_rounded,
+        actionKey: RatingKeys.emptyHistoryAction,
+        onAction: () {
+          final router = GoRouter.of(context);
+          ContainerNavigation.leave(context, () => router.go(Routes.catalog));
+        },
+      ),
+    );
+  }
 }

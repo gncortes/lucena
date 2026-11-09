@@ -10,6 +10,7 @@ import '../../core/keys/training_goal_keys.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../training_goal/widgets/training_goal_card.dart';
 import '../../core/widgets/course/course_navigation_bar.dart';
+import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/use_cases/demo_goals.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../domain/use_cases/training/needs_opening_profile.dart';
@@ -92,19 +93,6 @@ class CourseGuideScreen extends StatelessWidget {
   final String? titleOverride;
   final ValueChanged<CourseGuideTab>? onTabChanged;
 
-  Widget _withPlanBand(Widget body) {
-    final event = planEvent;
-    final clock = now;
-    final open = onPlanBand ?? onPlan;
-    if (event == null || clock == null) return body;
-    return Column(
-      children: [
-        LicaoPlanBand(event: event, now: clock(), onTap: open),
-        Expanded(child: body),
-      ],
-    );
-  }
-
   /// A tela do quadro do canvas de cada aba da Escola (H-ANI-01): a entrada
   /// em ordem só acontece na primeira vez que a aba aparece na sessão.
   static String? _quadro(CourseGuideTab tab, bool aulaVista) => switch (tab) {
@@ -115,23 +103,6 @@ class CourseGuideScreen extends StatelessWidget {
     CourseGuideTab.catalog => 'PropV1TreinoEscolaCatalogo',
     CourseGuideTab.guide => null,
   };
-
-  Widget _entradaDaAba(
-    TrainingCourse course,
-    CourseGuideTab tab,
-    bool aulaVista,
-    Widget corpo,
-  ) {
-    // Nos outros cursos só a aba Aula é da Lição (D1); as demais seguem o
-    // Treino.
-    final id = course == TrainingCourse.escola
-        ? _quadro(tab, aulaVista)
-        : tab == CourseGuideTab.lesson
-        ? (aulaVista ? 'PropV1TreinoAula' : 'PropV1TreinoAulaBoasVindas')
-        : null;
-    if (id == null) return corpo;
-    return EntradaDaTela(key: ValueKey(id), id: id, child: corpo);
-  }
 
   @override
   Widget build(
@@ -217,46 +188,7 @@ class CourseGuideScreen extends StatelessWidget {
                 ? const SizedBox.shrink()
                 // H-ANI-05: o corpo troca por fade through; a barra de
                 // baixo e a app bar ficam.
-                : AbasFadeThrough(
-                    child: KeyedSubtree(
-                      key: ValueKey(tab),
-                      child: _entradaDaAba(
-                        config.course,
-                        tab,
-                        training?.onboardingDone == true,
-                        bodyOverride ??
-                            switch (tab) {
-                              CourseGuideTab.lesson =>
-                                training?.onboardingDone == true
-                                    ? _withPlanBand(
-                                        _LessonTab(
-                                          state: state,
-                                          onLesson: onLesson,
-                                          onDiploma: onDiploma,
-                                        ),
-                                      )
-                                    : _WelcomeTab(
-                                        onContinue: onWelcomeContinue,
-                                      ),
-                              CourseGuideTab.goals => goalsBuilder(context),
-                              CourseGuideTab.guide =>
-                                PilaresDemo.isActive(context, config.course)
-                                    ? const PilaresDemoGuide()
-                                    : TrainingGuideTab(
-                                        key: CourseGuideKeys.guideTab,
-                                        course: config.course,
-                                      ),
-                              CourseGuideTab.stats => progressBuilder(context),
-                              CourseGuideTab.catalog => _CatalogTab(
-                                state: state,
-                                onChapter: onChapter,
-                                onLesson: onLesson,
-                                onLevelTest: onLevelTest,
-                              ),
-                            },
-                      ),
-                    ),
-                  ),
+                : _TabBody(screen: this, state: state, tab: tab),
           ),
         ),
         bottomNavigationBar: CourseNavigationBar(
@@ -298,102 +230,8 @@ class _WelcomeTab extends StatelessWidget {
         ],
       ),
       itens: [
-        ItemDaCascata.titulo(
-          Card(
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppShape.card),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 8,
-                children: [
-                  Text(
-                    courseGuideCopy(context, config.welcomeKeys[0]),
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 20,
-                      height: 26 / 20,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    courseGuideCopy(context, config.welcomeKeys[1]),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        ItemDaCascata.texto(
-          Card(
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppShape.card),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 12,
-                children: [
-                  Text(
-                    t.courseGuideTabsTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  for (final (icon, title, body) in [
-                    (
-                      Icons.school_outlined,
-                      t.courseGuideTabLesson,
-                      config.welcomeKeys.length > 2
-                          ? courseGuideCopy(context, config.welcomeKeys[2])
-                          : t.courseGuideTabsLesson,
-                    ),
-                    (
-                      Icons.task_alt,
-                      t.courseGuideTabGoals,
-                      config.welcomeKeys.length > 3
-                          ? courseGuideCopy(context, config.welcomeKeys[3])
-                          : t.courseGuideTabsGoals,
-                    ),
-                    (
-                      Icons.insights,
-                      t.courseGuideTabProgress,
-                      config.welcomeKeys.length > 4
-                          ? courseGuideCopy(context, config.welcomeKeys[4])
-                          : t.courseGuideTabsProgress,
-                    ),
-                    (
-                      Icons.menu_book_outlined,
-                      t.courseGuideTabCatalog,
-                      config.welcomeKeys.length > 5
-                          ? courseGuideCopy(context, config.welcomeKeys[5])
-                          : t.courseGuideTabsCatalog,
-                    ),
-                  ])
-                    Row(
-                      spacing: 12,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          icon,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        Expanded(
-                          child: Text(
-                            t.courseGuideTabIntro(title, body),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        ItemDaCascata.titulo(_WelcomeIntroCard(config: config)),
+        ItemDaCascata.texto(_WelcomeTabsCard(config: config)),
         ItemDaCascata.botao(
           FilledButton(
             key: CourseGuideKeys.continueButton,
@@ -414,6 +252,118 @@ class _WelcomeTab extends StatelessWidget {
   }
 }
 
+/// O cartão de abertura da boas-vindas: o título e o texto do curso.
+class _WelcomeIntroCard extends StatelessWidget {
+  const _WelcomeIntroCard({required this.config});
+
+  final TrainingCourseConfig config;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppShape.card),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              courseGuideCopy(context, config.welcomeKeys[0]),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontSize: 20,
+                height: 26 / 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              courseGuideCopy(context, config.welcomeKeys[1]),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// O cartão das abas da boas-vindas: o que cada aba mostra.
+class _WelcomeTabsCard extends StatelessWidget {
+  const _WelcomeTabsCard({required this.config});
+
+  final TrainingCourseConfig config;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    return Card(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppShape.card),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 12,
+          children: [
+            Text(
+              t.courseGuideTabsTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            for (final (icon, title, body) in [
+              (
+                Icons.school_outlined,
+                t.courseGuideTabLesson,
+                config.welcomeKeys.length > 2
+                    ? courseGuideCopy(context, config.welcomeKeys[2])
+                    : t.courseGuideTabsLesson,
+              ),
+              (
+                Icons.task_alt,
+                t.courseGuideTabGoals,
+                config.welcomeKeys.length > 3
+                    ? courseGuideCopy(context, config.welcomeKeys[3])
+                    : t.courseGuideTabsGoals,
+              ),
+              (
+                Icons.insights,
+                t.courseGuideTabProgress,
+                config.welcomeKeys.length > 4
+                    ? courseGuideCopy(context, config.welcomeKeys[4])
+                    : t.courseGuideTabsProgress,
+              ),
+              (
+                Icons.menu_book_outlined,
+                t.courseGuideTabCatalog,
+                config.welcomeKeys.length > 5
+                    ? courseGuideCopy(context, config.welcomeKeys[5])
+                    : t.courseGuideTabsCatalog,
+              ),
+            ])
+              Row(
+                spacing: 12,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(icon, color: Theme.of(context).colorScheme.primary),
+                  Expanded(
+                    child: Text(
+                      t.courseGuideTabIntro(title, body),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _LessonTab extends StatelessWidget {
   const _LessonTab({
     required this.state,
@@ -428,113 +378,7 @@ class _LessonTab extends StatelessWidget {
     final cubit = context.read<CourseGuideCubit>();
     final lesson = state.nextLesson;
     if (lesson == null) {
-      final t = context.l10n;
-      if (state.awaitingPublication) {
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          children: [
-            const TrainingUnpublishedNotice(),
-            const SizedBox(height: 12),
-            FilledButton(
-              key: TrainingKeys.completedPrimary,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-              ),
-              onPressed: () => cubit.selectTab(CourseGuideTab.goals),
-              child: Text(t.trainingViewGoals),
-            ),
-            const SizedBox(height: 12),
-            _studyTips(context, cubit),
-          ],
-        );
-      }
-      final school =
-          cubit.config.progressKind == TrainingProgressKind.modulesAndPieces;
-      final cartao = Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 8,
-            children: [
-              Row(
-                spacing: 16,
-                children: [
-                  const Icon(
-                    Icons.emoji_events_outlined,
-                    color: AppColors.trainingDayCorrect,
-                  ),
-                  Expanded(
-                    child: Text(
-                      school
-                          ? t.trainingEscolaCompletedTitle
-                          : t.trainingPilaresCompletedTitle,
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                school
-                    ? t.trainingEscolaCompletedBody
-                    : t.trainingPilaresCompletedBody,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-      final primario = FilledButton(
-        key: TrainingKeys.completedPrimary,
-        style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(kButtonHeight),
-        ),
-        onPressed: school
-            ? onDiploma
-            : () => cubit.selectTab(CourseGuideTab.goals),
-        child: Text(school ? t.schoolGraduationOpen : t.trainingViewGoals),
-      );
-      final catalogo = OutlinedButton.icon(
-        key: TrainingKeys.completedCatalog,
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(kButtonHeight),
-        ),
-        icon: const Icon(Icons.menu_book),
-        onPressed: () => cubit.selectTab(CourseGuideTab.catalog),
-        label: Text(t.trainingViewCatalog),
-      );
-      if (school) {
-        // Escola concluída (H-ANI-25): o resultado se monta em ordem.
-        return EntradaDeResultado(
-          id: 'escola-concluida',
-          titulo: cartao,
-          botoes: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [primario, catalogo],
-          ),
-          montar: (partes) => ListView(
-            key: TrainingKeys.completedCourse,
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            children: [partes[0], const SizedBox(height: 12), partes[1]],
-          ),
-        );
-      }
-      return ListView(
-        key: TrainingKeys.completedCourse,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        children: [
-          cartao,
-          const SizedBox(height: 12),
-          primario,
-          const SizedBox(height: 12),
-          catalogo,
-        ],
-      );
+      return _CompletedCourse(state: state, onDiploma: onDiploma);
     }
     final t = context.l10n;
     final modules =
@@ -639,6 +483,127 @@ class _LessonTab extends StatelessWidget {
           icon: const Icon(Icons.menu_book_outlined),
           label: Text(t.courseGuideSeeCatalog),
         ),
+      ],
+    );
+  }
+}
+
+/// O curso concluído (ou à espera de publicação): o cartão, o primário e o
+/// catálogo.
+class _CompletedCourse extends StatelessWidget {
+  const _CompletedCourse({required this.state, this.onDiploma});
+
+  final CourseGuideState state;
+  final VoidCallback? onDiploma;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<CourseGuideCubit>();
+    final t = context.l10n;
+    if (state.awaitingPublication) {
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: [
+          const TrainingUnpublishedNotice(),
+          const SizedBox(height: 12),
+          FilledButton(
+            key: TrainingKeys.completedPrimary,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
+            ),
+            onPressed: () => cubit.selectTab(CourseGuideTab.goals),
+            child: Text(t.trainingViewGoals),
+          ),
+          const SizedBox(height: 12),
+          _studyTips(context, cubit),
+        ],
+      );
+    }
+    final school =
+        cubit.config.progressKind == TrainingProgressKind.modulesAndPieces;
+    final cartao = Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Row(
+              spacing: 16,
+              children: [
+                const Icon(
+                  Icons.emoji_events_outlined,
+                  color: AppColors.trainingDayCorrect,
+                ),
+                Expanded(
+                  child: Text(
+                    school
+                        ? t.trainingEscolaCompletedTitle
+                        : t.trainingPilaresCompletedTitle,
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              school
+                  ? t.trainingEscolaCompletedBody
+                  : t.trainingPilaresCompletedBody,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    final primario = FilledButton(
+      key: TrainingKeys.completedPrimary,
+      style: FilledButton.styleFrom(
+        minimumSize: const Size.fromHeight(kButtonHeight),
+      ),
+      onPressed: school
+          ? onDiploma
+          : () => cubit.selectTab(CourseGuideTab.goals),
+      child: Text(school ? t.schoolGraduationOpen : t.trainingViewGoals),
+    );
+    final catalogo = OutlinedButton.icon(
+      key: TrainingKeys.completedCatalog,
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(kButtonHeight),
+      ),
+      icon: const Icon(Icons.menu_book),
+      onPressed: () => cubit.selectTab(CourseGuideTab.catalog),
+      label: Text(t.trainingViewCatalog),
+    );
+    if (school) {
+      // Escola concluída (H-ANI-25): o resultado se monta em ordem.
+      return EntradaDeResultado(
+        id: 'escola-concluida',
+        titulo: cartao,
+        botoes: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 12,
+          children: [primario, catalogo],
+        ),
+        montar: (partes) => ListView(
+          key: TrainingKeys.completedCourse,
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          children: [partes[0], const SizedBox(height: 12), partes[1]],
+        ),
+      );
+    }
+    return ListView(
+      key: TrainingKeys.completedCourse,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      children: [
+        cartao,
+        const SizedBox(height: 12),
+        primario,
+        const SizedBox(height: 12),
+        catalogo,
       ],
     );
   }
@@ -958,4 +923,113 @@ Widget _studyTips(BuildContext context, CourseGuideCubit cubit) {
       ),
     ),
   );
+}
+
+/// O corpo da aba escolhida, com troca por fade through (H-ANI-05).
+class _TabBody extends StatelessWidget {
+  const _TabBody({
+    required this.screen,
+    required this.state,
+    required this.tab,
+  });
+
+  final CourseGuideScreen screen;
+  final CourseGuideState state;
+  final CourseGuideTab tab;
+
+  @override
+  Widget build(BuildContext context) {
+    final config = context.read<CourseGuideCubit>().config;
+    final training = state.training;
+    return AbasFadeThrough(
+      child: KeyedSubtree(
+        key: ValueKey(tab),
+        child: _TabEntry(
+          course: config.course,
+          tab: tab,
+          aulaVista: training?.onboardingDone == true,
+          corpo:
+              screen.bodyOverride ??
+              switch (tab) {
+                CourseGuideTab.lesson =>
+                  training?.onboardingDone == true
+                      ? _PlanBand(
+                          screen: screen,
+                          body: _LessonTab(
+                            state: state,
+                            onLesson: screen.onLesson,
+                            onDiploma: screen.onDiploma,
+                          ),
+                        )
+                      : _WelcomeTab(onContinue: screen.onWelcomeContinue),
+                CourseGuideTab.goals => screen.goalsBuilder(context),
+                CourseGuideTab.guide =>
+                  PilaresDemo.isActive(context, config.course)
+                      ? const PilaresDemoGuide()
+                      : TrainingGuideTab(
+                          key: CourseGuideKeys.guideTab,
+                          course: config.course,
+                        ),
+                CourseGuideTab.stats => screen.progressBuilder(context),
+                CourseGuideTab.catalog => _CatalogTab(
+                  state: state,
+                  onChapter: screen.onChapter,
+                  onLesson: screen.onLesson,
+                  onLevelTest: screen.onLevelTest,
+                ),
+              },
+        ),
+      ),
+    );
+  }
+}
+
+/// A faixa do plano até um torneio acima da aba Lição, quando há plano.
+class _PlanBand extends StatelessWidget {
+  const _PlanBand({required this.screen, required this.body});
+
+  final CourseGuideScreen screen;
+  final Widget body;
+
+  @override
+  Widget build(BuildContext context) {
+    final event = screen.planEvent;
+    final clock = screen.now;
+    final open = screen.onPlanBand ?? screen.onPlan;
+    if (event == null || clock == null) return body;
+    return Column(
+      children: [
+        LicaoPlanBand(event: event, now: clock(), onTap: open),
+        Expanded(child: body),
+      ],
+    );
+  }
+}
+
+/// A entrada em ordem do quadro da aba, só na primeira vez que ela aparece.
+class _TabEntry extends StatelessWidget {
+  const _TabEntry({
+    required this.course,
+    required this.tab,
+    required this.aulaVista,
+    required this.corpo,
+  });
+
+  final TrainingCourse course;
+  final CourseGuideTab tab;
+  final bool aulaVista;
+  final Widget corpo;
+
+  @override
+  Widget build(BuildContext context) {
+    // Nos outros cursos só a aba Aula é da Lição (D1); as demais seguem o
+    // Treino.
+    final id = course == TrainingCourse.escola
+        ? CourseGuideScreen._quadro(tab, aulaVista)
+        : tab == CourseGuideTab.lesson
+        ? (aulaVista ? 'PropV1TreinoAula' : 'PropV1TreinoAulaBoasVindas')
+        : null;
+    if (id == null) return corpo;
+    return EntradaDaTela(key: ValueKey(id), id: id, child: corpo);
+  }
 }

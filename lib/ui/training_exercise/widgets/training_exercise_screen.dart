@@ -113,25 +113,6 @@ class _ExerciseViewState extends State<_ExerciseView> {
   final _boardKeys = <int, GlobalKey>{};
   String? _heroId;
 
-  void _cycleAction(
-    TrainingExerciseState state,
-    String action,
-    VoidCallback next,
-  ) {
-    unawaited(
-      context.analytics
-          .log(
-            AnalyticsEvents.treinoCicloAcao(
-              curso: widget.screen.config.course.name,
-              aulaId: state.goal!.ref,
-              acao: action,
-            ),
-          )
-          .catchError((Object _) {}),
-    );
-    next();
-  }
-
   @override
   void dispose() {
     for (final controller in _controllers.values) {
@@ -154,7 +135,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
         state = widget.screen.preview!;
       }
       final l = context.l10n;
-      if (state.phase == TrainingExercisePhase.end) return _end(context, state);
+      if (state.phase == TrainingExercisePhase.end) {
+        return _CycleEnd(screen: widget.screen, state: state);
+      }
       final cubit = context.read<TrainingExerciseCubit>();
       final exercise = state.exercise;
       final ready =
@@ -469,8 +452,36 @@ class _ExerciseViewState extends State<_ExerciseView> {
       texts: [text],
     );
   }
+}
 
-  Widget _end(BuildContext context, TrainingExerciseState state) {
+class _CycleEnd extends StatelessWidget {
+  const _CycleEnd({required this.screen, required this.state});
+
+  final TrainingExerciseScreen screen;
+  final TrainingExerciseState state;
+
+  void _cycleAction(
+    BuildContext context,
+    TrainingExerciseState state,
+    String action,
+    VoidCallback next,
+  ) {
+    unawaited(
+      context.analytics
+          .log(
+            AnalyticsEvents.treinoCicloAcao(
+              curso: screen.config.course.name,
+              aulaId: state.goal!.ref,
+              acao: action,
+            ),
+          )
+          .catchError((Object _) {}),
+    );
+    next();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l = context.l10n;
     final cubit = context.read<TrainingExerciseCubit>();
     final cycle = state.cycle!;
@@ -480,7 +491,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
     final days = state.reinforcement ? cycle.reinforceDays : cycle.cycleDays;
     final score = state.reinforcement ? cycle.reinforceScore : cycle.score;
     final title = firm
-        ? l.trainingEndFirmTitle(widget.screen.title)
+        ? l.trainingEndFirmTitle(screen.title)
         : reinforce
         ? l.trainingEndReinforceTitle
         : redoAfter
@@ -489,10 +500,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
     final body = firm
         ? l.trainingEndFirmBody
         : reinforce
-        ? l.trainingEndReinforceBody(
-            cycle.reinforcement.length,
-            widget.screen.title,
-          )
+        ? l.trainingEndReinforceBody(cycle.reinforcement.length, screen.title)
         : redoAfter
         ? l.trainingEndRedoAfterBody
         : l.trainingEndRedoBody;
@@ -525,7 +533,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
       appBar: LucenaAppBar(
         leading: CloseButton(
           onPressed: () =>
-              _cycleAction(state, 'voltar_metas', widget.screen.onNextGoal),
+              _cycleAction(context, state, 'voltar_metas', screen.onNextGoal),
         ),
       ),
       body: SafeArea(
@@ -614,7 +622,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
                 child: TeacherSpeech(
                   showSpeedBadge: false,
                   canvasTrainingBalloon: true,
-                  teacher: widget.screen.teacher,
+                  teacher: screen.teacher,
                   avatarSize: 56,
                   text: viktor,
                   speechContext: SpeechContext.teaching,
@@ -643,6 +651,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
                   : l.trainingEndRedo,
             ),
             onPressed: () => _cycleAction(
+              context,
               state,
               firm
                   ? 'voltar_metas'
@@ -650,8 +659,8 @@ class _ExerciseViewState extends State<_ExerciseView> {
                   ? 'ver_metas'
                   : 'refazer_aula',
               firm || reinforce
-                  ? widget.screen.onNextGoal
-                  : () => widget.screen.onRedoLesson(state.goal!.ref),
+                  ? screen.onNextGoal
+                  : () => screen.onRedoLesson(state.goal!.ref),
             ),
           ),
           if (!firm)
@@ -669,22 +678,25 @@ class _ExerciseViewState extends State<_ExerciseView> {
               ),
               onPressed: reinforce
                   ? () => _cycleAction(
+                      context,
                       state,
                       'rever_aula',
-                      () => widget.screen.onRedoLesson(state.goal!.ref),
+                      () => screen.onRedoLesson(state.goal!.ref),
                     )
                   : redoAfter
                   ? () => _cycleAction(
+                      context,
                       state,
                       'agora_nao',
-                      widget.screen.onNextGoal,
+                      screen.onNextGoal,
                     )
                   : () async {
-                      if (await cubit.reinforceFirst() && mounted) {
+                      if (await cubit.reinforceFirst() && context.mounted) {
                         _cycleAction(
+                          context,
                           state,
                           'reforco_antes',
-                          widget.screen.onNextGoal,
+                          screen.onNextGoal,
                         );
                       }
                     },

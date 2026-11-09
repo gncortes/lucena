@@ -41,7 +41,7 @@ class FeaturedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (compact) return _compact(context);
+    if (compact) return _CompactFeaturedCard(item: item, onTap: onTap);
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -148,8 +148,41 @@ class FeaturedCard extends StatelessWidget {
   }
 }
 
-extension on FeaturedCard {
-  Widget _compact(BuildContext context) {
+class _Badge extends StatelessWidget {
+  const _Badge({
+    required this.label,
+    required this.color,
+    this.icon,
+    super.key,
+  });
+
+  final String label;
+  final Color color;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelMedium
+        ?.copyWith(color: color, fontWeight: AppWeight.strong);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: AppSpacing.xs,
+      children: [
+        if (icon != null) Icon(icon, size: AppIconSize.small, color: color),
+        Text(label, style: style),
+      ],
+    );
+  }
+}
+
+class _CompactFeaturedCard extends StatelessWidget {
+  const _CompactFeaturedCard({required this.item, required this.onTap});
+
+  final FeaturedItem item;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -213,33 +246,6 @@ extension on FeaturedCard {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _Badge extends StatelessWidget {
-  const _Badge({
-    required this.label,
-    required this.color,
-    this.icon,
-    super.key,
-  });
-
-  final String label;
-  final Color color;
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.labelMedium
-        ?.copyWith(color: color, fontWeight: AppWeight.strong);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      spacing: AppSpacing.xs,
-      children: [
-        if (icon != null) Icon(icon, size: AppIconSize.small, color: color),
-        Text(label, style: style),
-      ],
     );
   }
 }

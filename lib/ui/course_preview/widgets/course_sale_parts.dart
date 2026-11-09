@@ -343,7 +343,7 @@ class SalePartTile extends StatelessWidget {
         padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 8, 14),
         cabecalho: KeyedSubtree(
           key: CoursePreviewKeys.partHeader(part.number),
-          child: _header(context),
+          child: _PartHeader(part: part),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -354,25 +354,6 @@ class SalePartTile extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          context.l10n.coursePartLessons(part.number, part.lessons),
-          style: theme.textTheme.labelMedium?.copyWith(
-            fontSize: 13,
-            height: 18 / 13,
-            color: colors.primary,
-          ),
-        ),
-        Text(part.title, style: saleStrong(context, size: 17)),
-      ],
     );
   }
 }
@@ -1013,3 +994,29 @@ class _Bar extends StatelessWidget {
 final _numberWithSuffix = RegExp(r'^(\d[\d.]*)(\D*)$');
 
 final _numberWithDecimals = RegExp(r'\d[\d.]*(,\d+)?');
+
+class _PartHeader extends StatelessWidget {
+  const _PartHeader({required this.part});
+
+  final CourseSalePart part;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.coursePartLessons(part.number, part.lessons),
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontSize: 13,
+            height: 18 / 13,
+            color: colors.primary,
+          ),
+        ),
+        Text(part.title, style: saleStrong(context, size: 17)),
+      ],
+    );
+  }
+}

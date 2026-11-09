@@ -45,15 +45,34 @@ class TrainingHelpScreen extends StatelessWidget {
     // cascata e as perguntas em ordem; voltar mostra tudo pronto.
     return EntradaDaTela(
       id: 'PropV1TreinoAjuda',
-      child: _scaffold(context, questions, answers),
+      child: _HelpScaffold(
+        questions: questions,
+        answers: answers,
+        onBack: onBack,
+        onTour: onTour,
+        footer: footer,
+      ),
     );
   }
+}
 
-  Widget _scaffold(
-    BuildContext context,
-    List<String> questions,
-    List<String> answers,
-  ) {
+class _HelpScaffold extends StatelessWidget {
+  const _HelpScaffold({
+    required this.questions,
+    required this.answers,
+    required this.onBack,
+    required this.onTour,
+    required this.footer,
+  });
+
+  final List<String> questions;
+  final List<String> answers;
+  final VoidCallback onBack;
+  final VoidCallback onTour;
+  final Widget? footer;
+
+  @override
+  Widget build(BuildContext context) {
     final t = context.l10n;
     return Scaffold(
       key: TrainingKeys.helpScreen,

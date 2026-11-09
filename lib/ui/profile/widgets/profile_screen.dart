@@ -64,29 +64,10 @@ class ProfileScreen extends StatelessWidget {
                 context.canPop() ? context.pop() : context.go(Routes.home),
           );
         }
-        return _build(context);
+        return const _ProfileProviders();
       },
     );
   }
-
-  Widget _build(BuildContext context) => MultiBlocProvider(
-    providers: [
-      BlocProvider(
-        create: (context) => ProfileAccountCubit(
-          accounts: context.read<AccountRepository>(),
-          sync: context.read<SyncScheduler>(),
-          lichess: context.read<LichessRepository>(),
-          profile: context.read<ProfileRepository>(),
-          analytics: context.analytics,
-        )..load(),
-      ),
-      BlocProvider(
-        create: (context) =>
-            CurrentRatingCubit(context.read<RatingRepository>())..load(),
-      ),
-    ],
-    child: const _ProfileView(),
-  );
 }
 
 class _ProfileView extends StatelessWidget {
@@ -644,4 +625,28 @@ class _AccountActions extends StatelessWidget {
       ],
     );
   }
+}
+
+class _ProfileProviders extends StatelessWidget {
+  const _ProfileProviders();
+
+  @override
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => ProfileAccountCubit(
+          accounts: context.read<AccountRepository>(),
+          sync: context.read<SyncScheduler>(),
+          lichess: context.read<LichessRepository>(),
+          profile: context.read<ProfileRepository>(),
+          analytics: context.analytics,
+        )..load(),
+      ),
+      BlocProvider(
+        create: (context) =>
+            CurrentRatingCubit(context.read<RatingRepository>())..load(),
+      ),
+    ],
+    child: const _ProfileView(),
+  );
 }

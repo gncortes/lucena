@@ -139,98 +139,8 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                   )
-                : _scaffold(context, theme),
+                : _HomeScaffold(title: _title, theme: theme),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _scaffold(BuildContext context, ThemeData theme) {
-    return EntradaDaTela(
-      id: homeEntranceId,
-      child: Scaffold(
-        key: HomeKeys.screen,
-        body: SafeArea(child: _content(context, theme)),
-      ),
-    );
-  }
-
-  // O nome do app, o rating e a engrenagem ficam fixos no alto; embaixo
-  // rolam o cartão azul, os finais em destaque e os atalhos (T83).
-  Widget _content(BuildContext context, ThemeData theme) {
-    final l10n = context.l10n;
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: Column(
-          children: [
-            _Entrance(
-              animation: _title,
-              child: SizedBox(
-                height: _topBar,
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.lg,
-                    end: AppSpacing.xs,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          l10n.appTitle,
-                          key: HomeKeys.title,
-                          maxLines: 1,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontSize: 26,
-                            height: 32 / 26,
-                            fontWeight: AppWeight.heavy,
-                          ),
-                        ),
-                      ),
-                      BlocBuilder<HomeCubit, HomeState>(
-                        builder: (context, state) => state.ready
-                            ? PlayerCard(state: state)
-                            : const SkeletonBlock(
-                                width: 96,
-                                height: 32,
-                                radius: AppShape.large,
-                              ),
-                      ),
-                      IconButton(
-                        key: HomeKeys.settingsButton,
-                        icon: const Icon(
-                          CanvasSymbols.settings,
-                          size: AppIconSize.standard,
-                        ),
-                        tooltip: l10n.settingsTitle,
-                        onPressed: () => context.go(Routes.settings),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: BlocBuilder<HomeCubit, HomeState>(
-                // Primeira carga: o esqueleto brilha e se dissolve no
-                // conteúdo (H-ANI-07).
-                builder: (context, state) => ShimmerConteudo(
-                  carregando: !state.ready,
-                  esqueleto: const _HomeSkeleton(),
-                  child: ListView(
-                    padding: scrollPadding(
-                      context,
-                      left: AppSpacing.lg,
-                      top: AppSpacing.sm,
-                      right: AppSpacing.lg,
-                    ),
-                    children: [ListaEmOrdem(itens: _sections(context, state))],
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -238,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   // As partes da rolagem, na ordem em que entram: o cartão, o destaque, o
   // título dos atalhos e uma linha da grade por vez.
-  List<Widget> _sections(BuildContext context, HomeState state) {
+  static List<Widget> _sections(BuildContext context, HomeState state) {
     Widget gap(Widget child, double bottom) => Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: child,
@@ -252,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen>
           AppSpacing.xl,
         ),
       if (state.showsFeatured && state.featured != null)
-        gap(_featured(context, state.featured!), AppSpacing.xl),
+        gap(_FeaturedSection(item: state.featured!), AppSpacing.xl),
       ..._shortcuts(context, state),
     ];
   }
@@ -263,37 +173,9 @@ class _HomeScreenState extends State<HomeScreen>
   /// A altura da barra de cima (canvas `PropV2UxHome`).
   static const _topBar = 64.0;
 
-  // "Finais em destaque": o título, "Ver mais" (a lista) e o destaque.
-  Widget _featured(BuildContext context, FeaturedItem item) {
-    final l10n = context.l10n;
-    return Column(
-      key: FeaturedKeys.homeSection,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.md,
-      children: [
-        HomeSectionHeader(
-          title: l10n.featuredTitle,
-          titleKey: HomeKeys.featuredTitle,
-          seeMoreKey: FeaturedKeys.homeSeeAll,
-          onSeeMore: () => context.go(Routes.featured),
-        ),
-        // H-ANI-20: o destaque afunda no toque.
-        CartaoPressionavel(
-          child: FeaturedCard(
-            key: FeaturedKeys.homeCard,
-            item: item,
-            compact: true,
-            // Por cima da tela inicial: voltar cai nela, não na lista.
-            onTap: () => context.push(Routes.featuredEndgame(item.id)),
-          ),
-        ),
-      ],
-    );
-  }
-
   // "Atalhos": todos os caminhos marcados numa grade 2×N, todos da mesma
   // altura; "Ver mais" abre Todos os modos. Cada linha é uma parte da lista.
-  List<Widget> _shortcuts(BuildContext context, HomeState state) {
+  static List<Widget> _shortcuts(BuildContext context, HomeState state) {
     final shortcuts = state.shortcuts;
     return [
       Padding(
@@ -389,6 +271,153 @@ class _Entrance extends StatelessWidget {
           end: Offset.zero,
         ).animate(animation),
         child: child,
+      ),
+    );
+  }
+}
+
+// "Finais em destaque": o título, "Ver mais" (a lista) e o destaque.
+class _FeaturedSection extends StatelessWidget {
+  const _FeaturedSection({required this.item});
+
+  final FeaturedItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      key: FeaturedKeys.homeSection,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.md,
+      children: [
+        HomeSectionHeader(
+          title: l10n.featuredTitle,
+          titleKey: HomeKeys.featuredTitle,
+          seeMoreKey: FeaturedKeys.homeSeeAll,
+          onSeeMore: () => context.go(Routes.featured),
+        ),
+        // H-ANI-20: o destaque afunda no toque.
+        CartaoPressionavel(
+          child: FeaturedCard(
+            key: FeaturedKeys.homeCard,
+            item: item,
+            compact: true,
+            // Por cima da tela inicial: voltar cai nela, não na lista.
+            onTap: () => context.push(Routes.featuredEndgame(item.id)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// O nome do app, o rating e a engrenagem ficam fixos no alto; embaixo
+// rolam o cartão azul, os finais em destaque e os atalhos (T83).
+class _HomeContent extends StatelessWidget {
+  const _HomeContent({required this.title, required this.theme});
+
+  final Animation<double> title;
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: Column(
+          children: [
+            _Entrance(
+              animation: title,
+              child: SizedBox(
+                height: _HomeScreenState._topBar,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                    start: AppSpacing.lg,
+                    end: AppSpacing.xs,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.appTitle,
+                          key: HomeKeys.title,
+                          maxLines: 1,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontSize: 26,
+                            height: 32 / 26,
+                            fontWeight: AppWeight.heavy,
+                          ),
+                        ),
+                      ),
+                      BlocBuilder<HomeCubit, HomeState>(
+                        builder: (context, state) => state.ready
+                            ? PlayerCard(state: state)
+                            : const SkeletonBlock(
+                                width: 96,
+                                height: 32,
+                                radius: AppShape.large,
+                              ),
+                      ),
+                      IconButton(
+                        key: HomeKeys.settingsButton,
+                        icon: const Icon(
+                          CanvasSymbols.settings,
+                          size: AppIconSize.standard,
+                        ),
+                        tooltip: l10n.settingsTitle,
+                        onPressed: () => context.go(Routes.settings),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: BlocBuilder<HomeCubit, HomeState>(
+                // Primeira carga: o esqueleto brilha e se dissolve no
+                // conteúdo (H-ANI-07).
+                builder: (context, state) => ShimmerConteudo(
+                  carregando: !state.ready,
+                  esqueleto: const _HomeSkeleton(),
+                  child: ListView(
+                    padding: scrollPadding(
+                      context,
+                      left: AppSpacing.lg,
+                      top: AppSpacing.sm,
+                      right: AppSpacing.lg,
+                    ),
+                    children: [
+                      ListaEmOrdem(
+                        itens: _HomeScreenState._sections(context, state),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HomeScaffold extends StatelessWidget {
+  const _HomeScaffold({required this.title, required this.theme});
+
+  final Animation<double> title;
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return EntradaDaTela(
+      id: _HomeScreenState.homeEntranceId,
+      child: Scaffold(
+        key: HomeKeys.screen,
+        body: SafeArea(
+          child: _HomeContent(title: title, theme: theme),
+        ),
       ),
     );
   }

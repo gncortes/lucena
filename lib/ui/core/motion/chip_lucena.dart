@@ -55,23 +55,38 @@ class ChipLucena extends StatelessWidget {
       tween: Tween(end: selecionado ? 1 : 0),
       duration: reduzido ? Duration.zero : LucenaMotion.selecao,
       curve: LucenaMotion.emphasized,
-      builder: (context, t, _) => _chip(
-        reduzido,
-        aoEscolher == null ? null : Color.lerp(vazio, cheio, t),
+      builder: (context, t, _) => _Chip(
+        owner: this,
+        reduzido: reduzido,
+        cor: aoEscolher == null ? null : Color.lerp(vazio, cheio, t),
       ),
     );
   }
+}
 
-  Widget _chip(bool reduzido, Color? cor) => FilterChip(
-    label: label,
-    color: cor == null ? null : WidgetStatePropertyAll(cor),
-    avatar: avatar,
-    tooltip: tooltip,
-    selected: selecionado,
-    onSelected: aoEscolher,
-    showCheckmark: true,
-    materialTapTargetSize: AppChip.tapTarget,
-    visualDensity: AppChip.density,
-    chipAnimationStyle: reduzido ? _semAnimacao : _anima,
-  );
+/// O `FilterChip` do tema, com a cor do fundo do instante da animação.
+class _Chip extends StatelessWidget {
+  const _Chip({required this.owner, required this.reduzido, required this.cor});
+
+  final ChipLucena owner;
+  final bool reduzido;
+  final Color? cor;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      label: owner.label,
+      color: cor == null ? null : WidgetStatePropertyAll(cor),
+      avatar: owner.avatar,
+      tooltip: owner.tooltip,
+      selected: owner.selecionado,
+      onSelected: owner.aoEscolher,
+      showCheckmark: true,
+      materialTapTargetSize: AppChip.tapTarget,
+      visualDensity: AppChip.density,
+      chipAnimationStyle: reduzido
+          ? ChipLucena._semAnimacao
+          : ChipLucena._anima,
+    );
+  }
 }

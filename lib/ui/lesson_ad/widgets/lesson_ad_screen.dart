@@ -262,16 +262,24 @@ class _AdFailed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
     // H-ANI-24: o erro aparece com calma na primeira vez da sessão.
     return EntradaDaTela(
       id: 'PropV2DemoAnuncioFalhou',
-      child: _scaffold(l10n, theme),
+      child: _AdFailedScaffold(onRetry: onRetry, onLearnMore: onLearnMore),
     );
   }
+}
 
-  Widget _scaffold(AppLocalizations l10n, ThemeData theme) {
+class _AdFailedScaffold extends StatelessWidget {
+  const _AdFailedScaffold({required this.onRetry, required this.onLearnMore});
+
+  final Future<void> Function() onRetry;
+  final VoidCallback onLearnMore;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
     return Scaffold(
       key: AdsKeys.failed,
       body: SafeArea(

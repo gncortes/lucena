@@ -52,7 +52,9 @@ class GameEntrance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final route = ModalRoute.of(context)?.animation;
-    if (route == null || AppMotion.of(context).disabled) return _still(child);
+    if (route == null || AppMotion.of(context).disabled) {
+      return _Still(part: part, child: child);
+    }
     return AnimatedBuilder(
       animation: route,
       child: child,
@@ -79,11 +81,6 @@ class GameEntrance extends StatelessWidget {
     );
   }
 
-  /// Parado no lugar, com a mesma árvore dos quadros da entrada.
-  Widget _still(Widget child) => part == GameEntrancePart.clock
-      ? _pop(1, child)
-      : _slide(1, topInterval, Offset.zero, child);
-
   static Widget _slide(double t, Curve interval, Offset from, Widget child) {
     final v = interval.transform(t);
     return Opacity(
@@ -102,4 +99,19 @@ class GameEntrance extends StatelessWidget {
       child: child,
     ),
   );
+}
+
+/// Parado no lugar, com a mesma árvore dos quadros da entrada.
+class _Still extends StatelessWidget {
+  const _Still({required this.part, required this.child});
+
+  final GameEntrancePart part;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return part == GameEntrancePart.clock
+        ? GameEntrance._pop(1, child)
+        : GameEntrance._slide(1, GameEntrance.topInterval, Offset.zero, child);
+  }
 }
