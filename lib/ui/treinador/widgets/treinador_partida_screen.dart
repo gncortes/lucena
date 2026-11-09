@@ -14,6 +14,8 @@ import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -152,31 +154,29 @@ class _Inicio extends StatelessWidget {
         ? total
         : state.exerciciosPrevistos ??
               TreinadorConfig.padrao.exerciciosPorPartida;
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            key: TreinadorKeys.inicio,
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.screen,
-              AppSpacing.sm,
-              AppSpacing.screen,
-              AppSpacing.screen,
-            ),
-            children: [
-              LucenaCard(
-                key: TreinadorKeys.cartaoPartida,
-                padding: EdgeInsets.zero,
-                child: LinhaPartida(
-                  partida: partida,
-                  agora: context.read<Now>()(),
-                  acesso: state.acesso,
-                  mostrarResumo: true,
-                  mostrarSeta: false,
-                ),
+    // H-ANI-16, como nas telas de abertura do app: a partida, o "Como
+    // funciona" e os botões entram em cascata na primeira vez.
+    return EntradaDaTela(
+      id: 'TreinadorPartidaInicio-${partida.id}',
+      child: EntradaEmCascata(
+        itens: [
+          ItemDaCascata.texto(
+            LucenaCard(
+              key: TreinadorKeys.cartaoPartida,
+              padding: EdgeInsets.zero,
+              child: LinhaPartida(
+                partida: partida,
+                agora: context.read<Now>()(),
+                acesso: state.acesso,
+                mostrarResumo: true,
+                mostrarSeta: false,
               ),
-              const SizedBox(height: AppSpacing.lg),
-              LucenaCard(
+            ),
+          ),
+          ItemDaCascata.texto(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.lg),
+              child: LucenaCard(
                 key: TreinadorKeys.comoFunciona,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,38 +205,58 @@ class _Inicio extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-        _Rodape(
-          children: [
-            if (!pronta)
-              BusyButton(
-                buttonKey: TreinadorKeys.comecar,
-                label: l.treinadorPartidaComecarAnalise,
-                busy: state.pedido == PedidoAnalise.enviando,
-                onPressed: () => cubit.analisar(),
-              )
-            else
-              BusyButton(
-                buttonKey: TreinadorKeys.comecar,
-                label: feitos > 0
-                    ? l.treinadorContinuar(feitos, total)
-                    : l.treinadorComecar,
-                onPressed: () => unawaited(
-                  context.push(Routes.treinadorExercicios(partida.id)),
-                ),
-              ),
-            BusyButton(
-              buttonKey: TreinadorKeys.verPartidas,
-              style: BusyButtonStyle.outlined,
-              label: l.treinadorPartidaVerMinhas,
-              onPressed: () =>
-                  context.go(Routes.treinador(aba: AbaTreinador.partidas.name)),
             ),
+          ),
+          ItemDaCascata.botao(
+            _Rodape(
+              children: [
+                if (!pronta)
+                  BusyButton(
+                    buttonKey: TreinadorKeys.comecar,
+                    label: l.treinadorPartidaComecarAnalise,
+                    busy: state.pedido == PedidoAnalise.enviando,
+                    onPressed: () => cubit.analisar(),
+                  )
+                else
+                  BusyButton(
+                    buttonKey: TreinadorKeys.comecar,
+                    label: feitos > 0
+                        ? l.treinadorContinuar(feitos, total)
+                        : l.treinadorComecar,
+                    onPressed: () => unawaited(
+                      context.push(Routes.treinadorExercicios(partida.id)),
+                    ),
+                  ),
+                BusyButton(
+                  buttonKey: TreinadorKeys.verPartidas,
+                  style: BusyButtonStyle.outlined,
+                  label: l.treinadorPartidaVerMinhas,
+                  onPressed: () => context.go(
+                    Routes.treinador(aba: AbaTreinador.partidas.name),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        montar: (itens) => Column(
+          children: [
+            Expanded(
+              child: ListView(
+                key: TreinadorKeys.inicio,
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screen,
+                  AppSpacing.sm,
+                  AppSpacing.screen,
+                  AppSpacing.screen,
+                ),
+                children: itens.sublist(0, itens.length - 1),
+              ),
+            ),
+            itens.last,
           ],
         ),
-      ],
+      ),
     );
   }
 }

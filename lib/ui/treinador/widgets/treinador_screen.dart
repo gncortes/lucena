@@ -10,6 +10,9 @@ import '../../../domain/use_cases/now.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/abas_fade_through.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lista_em_ordem.dart';
 import '../../core/theme/app_chip.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -86,21 +89,34 @@ class _TreinadorScreenState extends State<TreinadorScreen> {
           ),
           body: semConta
               ? _LigarConta(acesso: state.acesso)
-              : switch (_aba) {
-                  AbaTreinador.hoje => _Hoje(state: state),
-                  AbaTreinador.partidas => _Partidas(state: state),
-                  AbaTreinador.seuJogo => KeyedSubtree(
-                    key: TreinadorKeys.seuJogo,
-                    child:
-                        widget.seuJogo?.call(context) ??
-                        Center(
-                          child: EmptyState(
-                            icon: Icons.insights,
-                            message: l.treinadorSeuJogoEmBreve,
-                          ),
-                        ),
+              // H-ANI-05: a troca de aba em fade through, como nas abas de
+              // baixo do resto do app; a barra fica parada.
+              : AbasFadeThrough(
+                  child: KeyedSubtree(
+                    key: ValueKey(_aba),
+                    child: switch (_aba) {
+                      AbaTreinador.hoje => EntradaDaTela(
+                        id: 'TreinadorHoje',
+                        child: _Hoje(state: state),
+                      ),
+                      AbaTreinador.partidas => EntradaDaTela(
+                        id: 'TreinadorPartidas',
+                        child: _Partidas(state: state),
+                      ),
+                      AbaTreinador.seuJogo => KeyedSubtree(
+                        key: TreinadorKeys.seuJogo,
+                        child:
+                            widget.seuJogo?.call(context) ??
+                            Center(
+                              child: EmptyState(
+                                icon: Icons.insights,
+                                message: l.treinadorSeuJogoEmBreve,
+                              ),
+                            ),
+                      ),
+                    },
                   ),
-                },
+                ),
           bottomNavigationBar: IconNavigationBar(
             selectedIndex: _aba.index,
             onDestinationSelected: (i) =>
@@ -244,27 +260,33 @@ class _Hoje extends StatelessWidget {
               ),
             )
           else
-            for (final (p, ex) in paraFazer)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.xs,
-                ),
-                child: CourseItemTile(
-                  key: TreinadorKeys.paraFazerExercicio(p.id, ex.n),
-                  state: CourseItemState.open,
-                  title:
-                      nomeTemaTreinador(l, ex.tema) ??
-                      l.treinadorLance(ex.lance),
-                  summary: l.treinadorHojeExercicio(
-                    p.adversario.nome,
-                    ex.lance,
+            // H-ANI-17: a lista entra em ordem na primeira vez.
+            ListaEmOrdem(
+              itens: [
+                for (final (p, ex) in paraFazer)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.xs,
+                    ),
+                    child: CourseItemTile(
+                      key: TreinadorKeys.paraFazerExercicio(p.id, ex.n),
+                      state: CourseItemState.open,
+                      title:
+                          nomeTemaTreinador(l, ex.tema) ??
+                          l.treinadorLance(ex.lance),
+                      summary: l.treinadorHojeExercicio(
+                        p.adversario.nome,
+                        ex.lance,
+                      ),
+                      difficulty: ex.estrelas.clamp(1, 3),
+                      onTap: () => unawaited(
+                        context.push(Routes.treinadorExercicios(p.id)),
+                      ),
+                    ),
                   ),
-                  difficulty: ex.estrelas.clamp(1, 3),
-                  onTap: () =>
-                      unawaited(context.push(Routes.treinadorExercicios(p.id))),
-                ),
-              ),
+              ],
+            ),
         ],
       ],
     );
@@ -400,22 +422,27 @@ class _Partidas extends StatelessWidget {
           LucenaCard(
             key: TreinadorKeys.partidasBase,
             padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                for (final (i, p) in lista.indexed) ...[
-                  if (i > 0)
-                    const Divider(
-                      height: 1,
-                      indent: AppSpacing.md,
-                      endIndent: AppSpacing.md,
-                    ),
-                  LinhaPartida(
-                    partida: p,
-                    agora: agora,
-                    acesso: state.acesso,
-                    onTap: () => _abrir(context, p),
+            // H-ANI-17: as partidas entram em ordem na primeira vez.
+            child: ListaEmOrdem(
+              itens: [
+                for (final (i, p) in lista.indexed)
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (i > 0)
+                        const Divider(
+                          height: 1,
+                          indent: AppSpacing.md,
+                          endIndent: AppSpacing.md,
+                        ),
+                      LinhaPartida(
+                        partida: p,
+                        agora: agora,
+                        acesso: state.acesso,
+                        onTap: () => _abrir(context, p),
+                      ),
+                    ],
                   ),
-                ],
               ],
             ),
           ),

@@ -782,6 +782,8 @@ void main() {
     ) async {
       for (final partida in [_nova(), TreinadorFixtures.tiago()]) {
         await _abrir(tester, partida);
+        // A cascata de entrada (H-ANI-16) termina antes de medir.
+        await tester.pump(const Duration(seconds: 2));
         final tela = tester.getRect(find.byKey(TreinadorKeys.screen));
         final primario = tester.getRect(find.byKey(TreinadorKeys.comecar));
         final texto = tester.getRect(find.byKey(TreinadorKeys.verPartidas));

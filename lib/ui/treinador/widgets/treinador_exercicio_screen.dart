@@ -20,6 +20,8 @@ import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/motion/retorno_do_lance.dart';
 import '../../core/motion/tabuleiro_animado.dart';
+import '../../core/motion/troca_com_fade.dart';
+import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -51,11 +53,15 @@ class TreinadorExercicioScreen extends StatefulWidget {
 }
 
 class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
-  ChessboardController? _board;
+  /// Uma posição por exercício: na troca, a nova entra pronta num fade
+  /// enquanto a anterior some (H-ANI-03), como no Treino.
+  final _boards = <int, ChessboardController>{};
 
   @override
   void dispose() {
-    _board?.dispose();
+    for (final board in _boards.values) {
+      board.dispose();
+    }
     super.dispose();
   }
 
@@ -90,9 +96,9 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
     final anterior = _anterior;
     _anterior = s;
     if (s.fen == null || s.exercicio == null) return;
-    final board = _board;
+    final board = _boards[s.indice];
     if (board == null) {
-      _board = ChessboardController(game: _dados(s));
+      _boards[s.indice] = ChessboardController(game: _dados(s));
       return;
     }
     board.updatePosition(
@@ -129,8 +135,10 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
             onBack: _voltar,
           );
         }
-        if (_board == null && s.fen != null && s.exercicio != null) {
-          _board = ChessboardController(game: _dados(s));
+        if (!_boards.containsKey(s.indice) &&
+            s.fen != null &&
+            s.exercicio != null) {
+          _boards[s.indice] = ChessboardController(game: _dados(s));
           _anterior = s;
         }
         return BlocBuilder<ViktorThanksCubit, Character?>(
@@ -306,7 +314,7 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
     double size,
     BoardSettings boardSettings,
   ) {
-    final board = _board;
+    final board = _boards[s.indice];
     final ex = s.exercicio!;
     if (board == null) return SizedBox.square(dimension: size);
     final lado = _lado(ex);
@@ -371,20 +379,25 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
         ),
       ),
     );
+    // H-ANI-03: o tabuleiro fica parado; na troca de exercício só a posição
+    // troca em fade, como no Treino.
     if (jogado is! NormalMove ||
         (s.fase != FaseExercicio.acertou && s.fase != FaseExercicio.errou)) {
-      return child;
+      return TrocaComFade(chave: s.indice, child: child);
     }
-    return RetornoDoLance(
-      key: ValueKey('${s.indice}.${s.tentativas}.${s.fase.name}'),
-      tipo: s.fase == FaseExercicio.acertou
-          ? TipoDeRetorno.acerto
-          : TipoDeRetorno.erro,
-      casa: jogado.to,
-      orientacao: lado,
-      tamanho: size,
-      vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
-      child: child,
+    return TrocaComFade(
+      chave: s.indice,
+      child: RetornoDoLance(
+        key: ValueKey('${s.indice}.${s.tentativas}.${s.fase.name}'),
+        tipo: s.fase == FaseExercicio.acertou
+            ? TipoDeRetorno.acerto
+            : TipoDeRetorno.erro,
+        casa: jogado.to,
+        orientacao: lado,
+        tamanho: size,
+        vibrar: context.read<SettingsCubit>().state?.vibration ?? true,
+        child: child,
+      ),
     );
   }
 }
@@ -433,67 +446,89 @@ class _Fim extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.screen),
-                children: [
-                  const SizedBox(height: AppSpacing.sm),
-                  Center(
-                    child: GradeMedal(key: TreinadorKeys.fimNota, grade: nota),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    l.treinadorFimCertos(p.acertos, state.total),
-                    textAlign: TextAlign.center,
-                    style: context.screenTitle?.copyWith(
-                      fontWeight: AppWeight.heavy,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    cadencia == null || cadencia.isEmpty
-                        ? l.treinadorFimSubtituloSemCadencia(adversario)
-                        : l.treinadorFimSubtitulo(adversario, cadencia),
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  _Bolinhas(state: state, diametro: _bolinha),
-                  const SizedBox(height: AppSpacing.lg),
-                  TeacherSpeech(
-                    speechContext: SpeechContext.teaching,
-                    teacher: viktor,
-                    text: fala,
-                  ),
-                ],
+        // H-ANI-25, como no fim do teste e da lista: medalha, título,
+        // partida, bolinhas, Viktor e botões em ordem; reabrir o mesmo
+        // resultado mostra tudo pronto.
+        child: EntradaDeResultado(
+          id: 'treinador-$id-${p.acertos}-${state.total}',
+          estrela: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.sm),
+            child: Center(
+              child: GradeMedal(key: TreinadorKeys.fimNota, grade: nota),
+            ),
+          ),
+          titulo: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.sm),
+            child: Text(
+              l.treinadorFimCertos(p.acertos, state.total),
+              textAlign: TextAlign.center,
+              style: context.screenTitle?.copyWith(fontWeight: AppWeight.heavy),
+            ),
+          ),
+          subtitulo: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
+            child: Text(
+              cadencia == null || cadencia.isEmpty
+                  ? l.treinadorFimSubtituloSemCadencia(adversario)
+                  : l.treinadorFimSubtitulo(adversario, cadencia),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            ActionsFooter(
-              stacked: true,
-              children: [
-                BusyButton(
-                  buttonKey: TreinadorKeys.fimAnalise,
-                  icon: Icons.analytics_outlined,
-                  label: l.treinadorVerAnalise,
-                  onPressed: () =>
-                      unawaited(context.push(Routes.treinadorAnalise(id))),
-                ),
-                BusyButton(
-                  buttonKey: TreinadorKeys.fimSeuJogo,
-                  icon: Icons.insights_outlined,
-                  style: BusyButtonStyle.outlined,
-                  label: l.treinadorOndeErra,
-                  onPressed: () => context.go(
-                    Routes.treinador(aba: AbaTreinador.seuJogo.name),
-                  ),
-                ),
-              ],
+          ),
+          bolinhas: _Bolinhas.itens(context, state, _bolinha),
+          montarBolinhas: (bolinhas) => Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: Wrap(
+              key: TreinadorKeys.fimBolinhas,
+              alignment: WrapAlignment.center,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: bolinhas,
             ),
-          ],
+          ),
+          viktor: Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.lg),
+            child: TeacherSpeech(
+              speechContext: SpeechContext.teaching,
+              teacher: viktor,
+              text: fala,
+            ),
+          ),
+          botoes: ActionsFooter(
+            stacked: true,
+            children: [
+              BusyButton(
+                buttonKey: TreinadorKeys.fimAnalise,
+                icon: Icons.analytics_outlined,
+                label: l.treinadorVerAnalise,
+                onPressed: () =>
+                    unawaited(context.push(Routes.treinadorAnalise(id))),
+              ),
+              BusyButton(
+                buttonKey: TreinadorKeys.fimSeuJogo,
+                icon: Icons.insights_outlined,
+                style: BusyButtonStyle.outlined,
+                label: l.treinadorOndeErra,
+                onPressed: () => context.go(
+                  Routes.treinador(aba: AbaTreinador.seuJogo.name),
+                ),
+              ),
+            ],
+          ),
+          // A rolagem com o conteúdo e os botões fixos no pé.
+          montar: (partes) => Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(AppSpacing.screen),
+                  children: partes.sublist(0, partes.length - 1),
+                ),
+              ),
+              partes.last,
+            ],
+          ),
         ),
       ),
     );
@@ -502,42 +537,34 @@ class _Fim extends StatelessWidget {
 
 /// Uma bolinha por exercício: verde certo, vermelha errado (de
 /// `progresso.resultados`); o que não foi feito fica só com o contorno.
-class _Bolinhas extends StatelessWidget {
-  const _Bolinhas({required this.state, required this.diametro});
-
-  final TreinadorExercicioState state;
-  final double diametro;
-
-  @override
-  Widget build(BuildContext context) {
+abstract final class _Bolinhas {
+  static List<Widget> itens(
+    BuildContext context,
+    TreinadorExercicioState state,
+    double diametro,
+  ) {
     final l = context.l10n;
     final theme = Theme.of(context);
     final porN = {for (final r in state.progresso.resultados) r.n: r};
-    return Wrap(
-      key: TreinadorKeys.fimBolinhas,
-      alignment: WrapAlignment.center,
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children: [
-        for (final (i, ex) in state.exercicios.indexed)
-          _Bolinha(
-            key: TreinadorKeys.fimBolinha(i + 1),
-            numero: i + 1,
-            diametro: diametro,
-            certo: porN[ex.n]?.acertou,
-            semantica: switch (porN[ex.n]?.acertou) {
-              true => l.treinadorFimBolinhaCerta(i + 1),
-              false => l.treinadorFimBolinhaErrada(i + 1),
-              // Sem resultado neste celular: "Exercício n de N" e o valor.
-              null => l.treinadorExercicioTitulo(i + 1, state.total),
-            },
-            valorSemantico: porN[ex.n] == null
-                ? l.treinadorResumoSemResultado
-                : null,
-            texto: theme.textTheme.titleMedium,
-          ),
-      ],
-    );
+    return [
+      for (final (i, ex) in state.exercicios.indexed)
+        _Bolinha(
+          key: TreinadorKeys.fimBolinha(i + 1),
+          numero: i + 1,
+          diametro: diametro,
+          certo: porN[ex.n]?.acertou,
+          semantica: switch (porN[ex.n]?.acertou) {
+            true => l.treinadorFimBolinhaCerta(i + 1),
+            false => l.treinadorFimBolinhaErrada(i + 1),
+            // Sem resultado neste celular: "Exercício n de N" e o valor.
+            null => l.treinadorExercicioTitulo(i + 1, state.total),
+          },
+          valorSemantico: porN[ex.n] == null
+              ? l.treinadorResumoSemResultado
+              : null,
+          texto: theme.textTheme.titleMedium,
+        ),
+    ];
   }
 }
 
