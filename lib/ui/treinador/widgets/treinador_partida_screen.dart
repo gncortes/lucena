@@ -11,6 +11,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/empty_state.dart';
@@ -278,7 +279,7 @@ class _CarregandoState extends State<_Carregando> {
               child: LinearProgressIndicator(
                 value: p / 100,
                 minHeight: 8,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppShape.tiny),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -463,7 +464,7 @@ class _Resumo extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: (valor! / 100).clamp(0, 1),
                             minHeight: 8,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(AppShape.tiny),
                           ),
                         ),
                         const SizedBox(width: AppSpacing.md),

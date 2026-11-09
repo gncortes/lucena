@@ -1,10 +1,12 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../config/ambiente.dart';
+import 'treinador_service.dart';
 
 /// Quanto a abertura espera o Firebase. Ele roda antes do primeiro quadro: se
 /// a rede ou os serviços do Google travam, o app não pode ficar preso no fundo
@@ -31,7 +33,7 @@ Future<bool> startFirebase({
   Duration timeout = firebaseStartTimeout,
 }) async {
   try {
-    await (initialize?.call() ?? Firebase.initializeApp()).timeout(timeout);
+    await (initialize?.call() ?? initializeFirebaseApp()).timeout(timeout);
   } on Object catch (error) {
     debugPrint('Firebase desligado: $error');
     return false;
@@ -66,6 +68,32 @@ Future<void> useFirebaseEmulator() async {
     FirebaseEmulador.host,
     FirebaseEmulador.firestorePort,
   );
+  // O Treinador (T87) chama as Functions da região do servidor.
+  FirebaseFunctions.instanceFor(
+    region: FirebaseTreinadorService.regiao,
+  ).useFunctionsEmulator(FirebaseEmulador.host, FirebaseEmulador.functionsPort);
+}
+
+/// O projeto do Emulator Suite quando o checkout não tem o arquivo de
+/// configuração do flavor (worktree de QA): o emulador aceita qualquer chave,
+/// então nada aqui é segredo nem aponta para o projeto de verdade.
+const emulatorFirebaseOptions = FirebaseOptions(
+  apiKey: 'AIzaEmuladorDoLucenaSemSegredoNenhum000',
+  appId: '1:0:android:0',
+  messagingSenderId: '0',
+  projectId: 'lucena-dev-gnc',
+  storageBucket: 'lucena-dev-gnc.appspot.com',
+);
+
+/// Abre o Firebase pelo arquivo do flavor; só com [FirebaseEmulador.ligado]
+/// e sem o arquivo, abre com [emulatorFirebaseOptions].
+Future<FirebaseApp> initializeFirebaseApp({bool? emulador}) async {
+  try {
+    return await Firebase.initializeApp();
+  } on Object {
+    if (!(emulador ?? FirebaseEmulador.ligado())) rethrow;
+    return Firebase.initializeApp(options: emulatorFirebaseOptions);
+  }
 }
 
 /// O atestado do App Check por ambiente: Play Integrity no app da Play; no

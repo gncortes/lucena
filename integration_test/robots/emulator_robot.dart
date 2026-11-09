@@ -14,6 +14,7 @@ import '../../testing/e2e_dependencies.dart';
 import '../../testing/emulator_admin.dart';
 import '../../testing/emulator_dependencies.dart';
 import '../../testing/fakes/fake_push_repository.dart';
+import 'ciclo.dart';
 import 'home_robot.dart';
 import 'profile_robot.dart';
 
@@ -51,7 +52,25 @@ class EmulatorRobot {
     final dispatcher = $.tester.platformDispatcher;
     dispatcher.localesTestValue = [const Locale('pt', 'BR')];
     addTearDown(dispatcher.clearLocalesTestValue);
-    dependencies = await emulatorDependencies(push: realPush ? null : push);
+    await _pumpApp();
+  }
+
+  /// Fecha e abre o app de novo, como ao fechar à força: o que está no
+  /// aparelho e a conta do Firebase ficam; a memória do app, não.
+  Future<void> restart() async {
+    await $.pumpWidgetAndSettle(const SizedBox());
+    await $.tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
+    );
+    await _pumpApp(manterConta: true);
+  }
+
+  Future<void> _pumpApp({bool manterConta = false}) async {
+    dependencies = await emulatorDependencies(
+      push: realPush ? null : push,
+      manterConta: manterConta,
+    );
+    retomado($);
     await $.pumpWidgetAndSettle(
       LucenaApp(key: UniqueKey(), dependencies: dependencies),
     );
@@ -131,6 +150,18 @@ class EmulatorRobot {
     return '$location; rotas: ${described.toSet().join(' | ')}';
   }
 
+  /// As keys de texto na tela agora (diagnóstico de falha).
+  String get keys => {
+    for (final e
+        in find.byWidgetPredicate((w) => w.key is ValueKey<String>).evaluate())
+      (e.widget.key! as ValueKey<String>).value,
+  }.join(', ');
+
+  /// Os textos na tela agora (diagnóstico de falha).
+  String get textos =>
+      [for (final e in find.byType(Text).evaluate()) ?(e.widget as Text).data]
+          .join(' | ');
+
   /// Deixa o app trabalhar (rede do emulador) até [done] ou [timeout].
   Future<void> pumpUntil(
     bool Function() done, {
@@ -139,7 +170,10 @@ class EmulatorRobot {
     final watch = Stopwatch()..start();
     while (!done()) {
       if (watch.elapsed > timeout) {
-        fail('O app não chegou ao esperado em $timeout; tela $routes');
+        fail(
+          'O app não chegou ao esperado em $timeout; tela $routes; '
+          'keys: $keys; textos: $textos',
+        );
       }
       await $.tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 300)),

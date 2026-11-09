@@ -27,7 +27,9 @@ final class CuriosidadesCubit extends Cubit<CuriosidadesState> {
       final todas = await repository.todas();
       if (isClosed || todas.isEmpty) return;
       final agora = now();
-      final inicio = (agora.millisecondsSinceEpoch ~/ 60000) % todas.length;
+      final inicio =
+          (agora.millisecondsSinceEpoch ~/ Duration.millisecondsPerDay) %
+          todas.length;
       emit(CuriosidadesState(todas: todas, indice: inicio));
     } on Object {
       // Sem curiosidade, a espera mostra só a porcentagem.

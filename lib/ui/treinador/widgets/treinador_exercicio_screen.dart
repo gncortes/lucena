@@ -99,6 +99,10 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    // Lido no build: o boardBuilder roda no layout.
+    final boardSettings = context.select(
+      (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
+    );
     return BlocConsumer<TreinadorExercicioCubit, TreinadorExercicioState>(
       listener: (_, s) => _sincronizar(s),
       builder: (context, s) {
@@ -166,7 +170,8 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
                           pageKey: TreinadorKeys.exercicioPagina,
                           teacher: viktor,
                           text: _fala(l, s, ex),
-                          boardBuilder: (size) => _tabuleiro(context, s, size),
+                          boardBuilder: (size) =>
+                              _tabuleiro(context, s, size, boardSettings),
                           notation: const SizedBox(height: 40),
                         ),
                       ),
@@ -233,13 +238,11 @@ class _TreinadorExercicioScreenState extends State<TreinadorExercicioScreen> {
     BuildContext context,
     TreinadorExercicioState s,
     double size,
+    BoardSettings boardSettings,
   ) {
     final board = _board;
     final ex = s.exercicio!;
     if (board == null) return SizedBox.square(dimension: size);
-    final boardSettings = context.select(
-      (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
-    );
     final lado = _lado(ex);
     final jogado = s.ultimoLance == null ? null : Move.parse(s.ultimoLance!);
     final solucao = Move.parse(ex.solucao);

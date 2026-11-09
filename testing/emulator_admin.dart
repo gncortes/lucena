@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
 import 'package:lucena/config/ambiente.dart';
+import 'package:lucena/data/services/firebase/firebase_bootstrap.dart';
 
 /// Uma conta do Auth Emulator: o uid e o token para chamar as Functions.
 typedef EmulatorAccount = ({String uid, String idToken});
@@ -38,10 +39,10 @@ class EmulatorAdmin {
   String get project => Firebase.app().options.projectId;
 
   Future<void> _firebase() async {
-    if (Firebase.apps.isEmpty) await Firebase.initializeApp();
+    if (Firebase.apps.isEmpty) await initializeFirebaseApp(emulador: true);
   }
 
-  static const _key = 'chave-do-emulador';
+  static final _key = emulatorFirebaseOptions.apiKey;
   String get _auth =>
       'http://${FirebaseEmulador.host}:${FirebaseEmulador.authPort}';
   String get _accounts => '$_auth/identitytoolkit.googleapis.com/v1/accounts';
@@ -106,6 +107,23 @@ class EmulatorAdmin {
     await _post('$_accounts:update?key=$_key', {
       'oobCode': codes.last['oobCode'],
     });
+  }
+
+  /// Troca a senha da conta [uid] como dono do emulador (a conta da semente
+  /// entra no teste com uma senha de teste conhecida, sem ler a do script).
+  Future<void> setPassword(String uid, String password) async {
+    await _firebase();
+    final response = await _http.post(
+      Uri.parse(
+        '$_auth/identitytoolkit.googleapis.com/v1/projects/$project'
+        '/accounts:update',
+      ),
+      headers: _owner,
+      body: jsonEncode({'localId': uid, 'password': password}),
+    );
+    if (response.statusCode != 200) {
+      throw StateError('senha de $uid não mudou: ${response.body}');
+    }
   }
 
   // --- Functions --------------------------------------------------------------
@@ -200,6 +218,38 @@ class EmulatorAdmin {
       headers: _owner,
       body: jsonEncode({
         'fields': {for (final e in data.entries) e.key: _encode(e.value)},
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw StateError('Firestore recusou $path: ${response.body}');
+    }
+  }
+
+  /// Apaga o documento [path] (as subcoleções ficam).
+  Future<void> delete(String path) async {
+    await _firebase();
+    final response = await _http.delete(
+      Uri.parse('$_documents/$path'),
+      headers: _owner,
+    );
+    if (response.statusCode != 200) {
+      throw StateError('Firestore não apagou $path: ${response.body}');
+    }
+  }
+
+  /// Muda só os campos de [data] em [path]; campo com valor nulo sai do
+  /// documento (o resto fica como está).
+  Future<void> merge(String path, Map<String, Object?> data) async {
+    await _firebase();
+    final mask = [for (final k in data.keys) 'updateMask.fieldPaths=$k'];
+    final response = await _http.patch(
+      Uri.parse('$_documents/$path?${mask.join('&')}'),
+      headers: _owner,
+      body: jsonEncode({
+        'fields': {
+          for (final e in data.entries)
+            if (e.value != null) e.key: _encode(e.value),
+        },
       }),
     );
     if (response.statusCode != 200) {

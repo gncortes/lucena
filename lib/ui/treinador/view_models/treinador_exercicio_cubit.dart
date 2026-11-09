@@ -85,7 +85,8 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
   final String id;
   final TreinadorRepository repository;
 
-  /// "Refazer os exercícios": começa do 1 e zera o progresso.
+  /// "Refazer os exercícios": começa do 1 e zera a rodada (o que foi de
+  /// primeira e a análise vista ficam).
   final bool refazer;
 
   Future<void> load() async {
@@ -98,10 +99,9 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
         return _emit(state.copyWith(fase: FaseExercicio.indisponivel));
       }
       var progresso = await repository.progresso(id);
-      if (refazer) {
-        progresso = ProgressoPartida.vazio;
-        await repository.salvarProgresso(id, progresso);
-      }
+      // Refazer só grava com o primeiro resultado: sair antes deixa a
+      // partida no resumo, como estava.
+      if (refazer) progresso = progresso.recomecar();
       final total = partida.exercicios.length;
       final proximo = progresso.proximo(total);
       if (proximo == null) {

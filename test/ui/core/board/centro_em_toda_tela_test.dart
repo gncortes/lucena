@@ -56,6 +56,8 @@ const _telas = <String, String>{
       'test/ui/race/race_warm_up_screen_test.dart',
   'school/widgets/star_challenge_screen.dart':
       'test/ui/school/star_challenge_screen_test.dart',
+  'treinador/widgets/treinador_exercicio_screen.dart':
+      'test/ui/treinador/treinador_exercicio_screen_test.dart',
   'training_exercise/widgets/training_exercise_screen.dart':
       'test/ui/training_exercise/training_exercise_screen_test.dart',
   'training_goal/widgets/training_test_screen.dart':

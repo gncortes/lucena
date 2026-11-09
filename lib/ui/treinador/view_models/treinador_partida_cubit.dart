@@ -114,17 +114,19 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
         );
   }
 
+  // Emite já e grava depois: se a partida mudar no meio da gravação, o
+  // estado novo não é passado para trás pelo antigo.
   Future<void> _chegou(PartidaTreinador? p) async {
     if (isClosed) return;
     var inicio = state.inicioAnalise;
+    Future<void>? gravar;
     if (p != null && p.status.emAndamento && inicio == null) {
       inicio = now();
-      await preferencias.marcarInicio(id, inicio);
+      gravar = preferencias.marcarInicio(id, inicio);
     } else if (p != null && !p.status.emAndamento && inicio != null) {
       inicio = null;
-      await preferencias.esquecerInicio(id);
+      gravar = preferencias.esquecerInicio(id);
     }
-    if (isClosed) return;
     emit(
       state.copyWith(
         carregando: false,
@@ -133,6 +135,7 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
         inicioAnalise: () => inicio,
       ),
     );
+    await gravar;
   }
 
   void tentarDeNovo() {
@@ -158,15 +161,20 @@ final class TreinadorPartidaCubit extends Cubit<TreinadorPartidaState> {
     emit(state.copyWith(pedido: PedidoAnalise.enviando));
     try {
       await repository.analisar(id, avisar: avisar);
-      final inicio = now();
-      await preferencias.marcarInicio(id, inicio);
       if (isClosed) return true;
+      // A partida pode ter ficado pronta antes de o servidor responder.
+      if (state.partida?.pronta ?? false) {
+        emit(state.copyWith(pedido: PedidoAnalise.nenhum));
+        return true;
+      }
+      final inicio = state.inicioAnalise ?? now();
       emit(
         state.copyWith(
           pedido: PedidoAnalise.nenhum,
           inicioAnalise: () => inicio,
         ),
       );
+      await preferencias.marcarInicio(id, inicio);
       return true;
     } on TreinadorCallException catch (e) {
       if (isClosed) return false;

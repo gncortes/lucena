@@ -6,6 +6,8 @@ import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_shape.dart';
 import 'treinador_textos.dart';
 
 /// Uma partida nas listas do Treinador (Hoje, Partidas e o início): o
@@ -148,7 +150,7 @@ class _Resultado extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: fundo,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppShape.small),
         ),
         child: Text(
           context.letraDoResultado(resultado),
@@ -212,7 +214,7 @@ class _Estado extends StatelessWidget {
     if (aberta) return linha;
     return Row(
       children: [
-        Icon(Icons.lock_outline, size: 14, color: cor),
+        Icon(Icons.lock_outline, size: AppIconSize.small, color: cor),
         const SizedBox(width: AppSpacing.xs),
         Flexible(child: linha),
       ],

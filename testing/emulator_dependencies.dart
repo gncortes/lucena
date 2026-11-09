@@ -35,10 +35,15 @@ Future<void> startEmulatorFirebase() async {
 /// Sem [push], o push é o de verdade: o FCM do projeto do flavor dev entrega
 /// o que as Functions do emulador mandam (jornada 7, push real).
 ///
+/// [manterConta]: reabrir depois de fechar à força, com a sessão guardada.
+///
 /// O Analytics fica desligado pelo `E2E=true` (E1.03 §10).
-Future<Dependencies> emulatorDependencies({PushRepository? push}) async {
+Future<Dependencies> emulatorDependencies({
+  PushRepository? push,
+  bool manterConta = false,
+}) async {
   await startEmulatorFirebase();
-  await FirebaseAuth.instance.signOut();
+  if (!manterConta) await FirebaseAuth.instance.signOut();
   return Dependencies.normal(
     version: await Dependencies.installedVersion(),
     firebase: true,

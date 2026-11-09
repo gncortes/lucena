@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,9 +54,12 @@ final List<RouteBase> treinadorRoutes = [
         preferencias: c.read<TreinadorPreferencias>(),
         now: c.read<Now>(),
       )..load(),
-      child: TreinadorScreen(
-        key: ValueKey(state.uri.queryParameters['aba']),
-        aba: AbaTreinador.parse(state.uri.queryParameters['aba']),
+      child: _VoltarDoSistema(
+        destino: Routes.home,
+        child: TreinadorScreen(
+          key: ValueKey(state.uri.queryParameters['aba']),
+          aba: AbaTreinador.parse(state.uri.queryParameters['aba']),
+        ),
       ),
     ),
   ),
@@ -81,7 +86,7 @@ final List<RouteBase> treinadorRoutes = [
             )..load(),
           ),
         ],
-        child: const TreinadorPartidaScreen(),
+        child: const _VoltarDoSistema(child: TreinadorPartidaScreen()),
       );
     },
   ),
@@ -103,18 +108,40 @@ final List<RouteBase> treinadorRoutes = [
                 ..load(),
         ),
       ],
-      child: const TreinadorExercicioScreen(),
+      child: const _VoltarDoSistema(child: TreinadorExercicioScreen()),
     ),
   ),
   appRoute(
     name: RouteNames.treinadorAnalise,
     path: TreinadorPaths.analise,
-    builder: (context, state) => _AnaliseDaPartida(
-      id: state.pathParameters['id']!,
-      lance: int.tryParse(state.uri.queryParameters['lance'] ?? ''),
+    builder: (context, state) => _VoltarDoSistema(
+      child: _AnaliseDaPartida(
+        id: state.pathParameters['id']!,
+        lance: int.tryParse(state.uri.queryParameters['lance'] ?? ''),
+      ),
     ),
   ),
 ];
+
+/// O Voltar do sistema numa tela do Treinador aberta sem nada embaixo (o
+/// atalho da Home usa `go`, a notificação abre a partida direto): em vez de
+/// fechar o app, vai a [destino] (a Home, ou a lista do Treinador). Com tela
+/// embaixo, o Voltar volta normalmente.
+class _VoltarDoSistema extends StatelessWidget {
+  const _VoltarDoSistema({required this.child, this.destino});
+
+  final Widget child;
+  final String? destino;
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: GoRouter.of(context).canPop(),
+    onPopInvokedWithResult: (didPop, _) {
+      if (!didPop) context.go(destino ?? Routes.treinador());
+    },
+    child: child,
+  );
+}
 
 /// A análise completa da partida: a linha do PGN no tabuleiro de análise,
 /// com os comentários do servidor nos lances ruins.
@@ -136,6 +163,24 @@ class _AnaliseDaPartidaState extends State<_AnaliseDaPartida> {
       .partida(widget.id)
       .first
       .timeout(const Duration(seconds: 20));
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_marcarVista());
+  }
+
+  /// `progresso.viuAnalise` (o funil do painel): uma vez por partida.
+  Future<void> _marcarVista() async {
+    final repository = context.read<TreinadorRepository>();
+    try {
+      final progresso = await repository.progresso(widget.id);
+      if (progresso.viuAnalise) return;
+      await repository.salvarProgresso(widget.id, progresso.comAnaliseVista());
+    } on Object catch (e) {
+      debugPrint('análise vista sem gravar: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

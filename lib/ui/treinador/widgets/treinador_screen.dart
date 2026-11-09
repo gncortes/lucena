@@ -11,6 +11,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_chip.dart';
+import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/course/course_item_tile.dart';
@@ -174,7 +175,7 @@ class _Hoje extends StatelessWidget {
               key: TreinadorKeys.ultimaPartida,
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppShape.large),
               ),
               child: Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -221,7 +222,7 @@ class _Hoje extends StatelessWidget {
                   vertical: AppSpacing.xs,
                 ),
                 child: CourseItemTile(
-                  key: TreinadorKeys.partida(p.id),
+                  key: TreinadorKeys.paraFazer(p.id),
                   state: (p.progresso?.feitos ?? 0) > 0
                       ? CourseItemState.started
                       : CourseItemState.next,

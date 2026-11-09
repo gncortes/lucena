@@ -26,6 +26,9 @@ abstract final class TreinadorKeys {
   static const limparFiltros = Key('treinador.partidas.limparFiltros');
   static Key partida(String id) => Key('treinador.partida.$id');
 
+  /// A partida pronta com exercícios a fazer, na aba Hoje.
+  static Key paraFazer(String id) => Key('treinador.paraFazer.$id');
+
   // Sem plano.
   static const semPlano = Key('treinador.semPlano');
   static const conhecerPlano = Key('treinador.semPlano.conhecer');

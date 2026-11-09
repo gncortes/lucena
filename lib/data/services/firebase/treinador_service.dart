@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 
 /// Os documentos do Treinador de partidas (T87) e as Functions que o app
 /// chama. O servidor é dono do formato (`docs/tasks/T87-treinador.md`):
@@ -182,12 +183,14 @@ class FirebaseTreinadorService implements TreinadorService {
       final result = await _functions.httpsCallable(nome).call<Object?>(dados);
       return result.data;
     } on FirebaseFunctionsException catch (error) {
+      debugPrint('treinador $nome recusou: ${error.code} ${error.message}');
       final details = error.details;
       throw TreinadorCallException(
         error.code,
         motivo: details is Map ? details['motivo']?.toString() : null,
       );
     } on FirebaseException catch (error) {
+      debugPrint('treinador $nome falhou: ${error.code} ${error.message}');
       throw TreinadorCallException(error.code);
     }
   }
