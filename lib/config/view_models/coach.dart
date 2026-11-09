@@ -7,58 +7,58 @@ import '../../data/repositories/lesson_ad/course_access_repository.dart';
 import '../../data/repositories/lesson_ad/course_grants_repository.dart';
 import '../../data/repositories/settings/settings_repository.dart';
 import '../../data/repositories/training/course_training_repository.dart';
-import '../../data/repositories/treinador/curiosidades_repository.dart';
-import '../../data/repositories/treinador/seu_jogo_filtro_repository.dart';
-import '../../data/repositories/treinador/treinador_preferencias.dart';
-import '../../data/repositories/treinador/treinador_repository.dart';
+import '../../data/repositories/coach/trivia_repository.dart';
+import '../../data/repositories/coach/your_game_filter_repository.dart';
+import '../../data/repositories/coach/coach_preferences.dart';
+import '../../data/repositories/coach/coach_repository.dart';
 import '../../domain/models/imported_game.dart';
-import '../../domain/models/treinador/treinador.dart';
+import '../../domain/models/coach/coach.dart';
 import '../../domain/use_cases/now.dart';
 import '../../ui/game_details/view_models/game_details_cubit.dart';
 import '../../ui/survey/view_models/viktor_thanks_cubit.dart';
-import '../../ui/treinador/view_models/coach_analysis_cubit.dart';
-import '../../ui/treinador/view_models/curiosidades_cubit.dart';
-import '../../ui/treinador/view_models/ligar_conta_cubit.dart';
-import '../../ui/treinador/view_models/treinador_cubit.dart';
-import '../../ui/treinador/view_models/treinador_exercicio_cubit.dart';
-import '../../ui/treinador/view_models/treinador_partida_cubit.dart';
-import '../../ui/treinador_seu_jogo/view_models/curso_da_abertura_cubit.dart';
-import '../../ui/treinador_seu_jogo/view_models/partidas_modelo_cubit.dart';
-import '../../ui/treinador_seu_jogo/view_models/seu_jogo_cubit.dart';
-import '../../ui/treinador_seu_jogo/view_models/teoria_cubit.dart';
+import '../../ui/coach/view_models/coach_analysis_cubit.dart';
+import '../../ui/coach/view_models/trivia_cubit.dart';
+import '../../ui/coach/view_models/link_account_cubit.dart';
+import '../../ui/coach/view_models/coach_cubit.dart';
+import '../../ui/coach/view_models/coach_exercise_cubit.dart';
+import '../../ui/coach/view_models/coach_game_cubit.dart';
+import '../../ui/coach_your_game/view_models/opening_course_cubit.dart';
+import '../../ui/coach_your_game/view_models/model_games_cubit.dart';
+import '../../ui/coach_your_game/view_models/your_game_cubit.dart';
+import '../../ui/coach_your_game/view_models/theory_cubit.dart';
 
 /// A lista do Treinador (as três abas).
-TreinadorCubit createCoachCubit(BuildContext context) => TreinadorCubit(
-  repository: context.read<TreinadorRepository>(),
+CoachCubit createCoachCubit(BuildContext context) => CoachCubit(
+  repository: context.read<CoachRepository>(),
   grants: context.read<CourseGrantsRepository>(),
-  preferencias: context.read<TreinadorPreferencias>(),
+  preferences: context.read<CoachPreferences>(),
   now: context.read<Now>(),
 );
 
-/// Ligar a conta de [plataforma].
-LigarContaCubit createLinkAccountCubit(
+/// Ligar a conta de [platform].
+LinkAccountCubit createLinkAccountCubit(
   BuildContext context, {
-  required Plataforma plataforma,
-}) => LigarContaCubit(
-  repository: context.read<TreinadorRepository>(),
-  plataforma: plataforma,
+  required Platform platform,
+}) => LinkAccountCubit(
+  repository: context.read<CoachRepository>(),
+  platform: platform,
 );
 
 /// Uma partida analisada pelo servidor.
-TreinadorPartidaCubit createCoachGameCubit(
+CoachGameCubit createCoachGameCubit(
   BuildContext context, {
   required String id,
-}) => TreinadorPartidaCubit(
+}) => CoachGameCubit(
   id: id,
-  repository: context.read<TreinadorRepository>(),
+  repository: context.read<CoachRepository>(),
   grants: context.read<CourseGrantsRepository>(),
-  preferencias: context.read<TreinadorPreferencias>(),
+  preferences: context.read<CoachPreferences>(),
   now: context.read<Now>(),
 );
 
 /// As curiosidades que passam enquanto a partida é analisada.
-CuriosidadesCubit createTriviaCubit(BuildContext context) => CuriosidadesCubit(
-  repository: context.read<CuriosidadesRepository>(),
+TriviaCubit createTriviaCubit(BuildContext context) => TriviaCubit(
+  repository: context.read<TriviaRepository>(),
   now: context.read<Now>(),
 );
 
@@ -67,23 +67,22 @@ ViktorThanksCubit createViktorThanksCubit(BuildContext context) =>
     ViktorThanksCubit(characters: context.read<CharacterRepository>());
 
 /// Os exercícios de uma partida; [redo] recomeça do primeiro.
-TreinadorExercicioCubit createCoachExerciseCubit(
+CoachExerciseCubit createCoachExerciseCubit(
   BuildContext context, {
   required String id,
   required bool redo,
-}) => TreinadorExercicioCubit(
+}) => CoachExerciseCubit(
   id: id,
-  repository: context.read<TreinadorRepository>(),
-  preferencias: context.read<TreinadorPreferencias>(),
-  refazer: redo,
+  repository: context.read<CoachRepository>(),
+  preferences: context.read<CoachPreferences>(),
+  redo: redo,
 );
 
 /// A partida da análise completa.
 CoachAnalysisCubit createCoachAnalysisCubit(
   BuildContext context, {
   required String id,
-}) =>
-    CoachAnalysisCubit(repository: context.read<TreinadorRepository>(), id: id);
+}) => CoachAnalysisCubit(repository: context.read<CoachRepository>(), id: id);
 
 /// A análise completa de uma partida importada, na base da análise do app.
 GameDetailsCubit createImportedGameDetailsCubit(
@@ -96,38 +95,30 @@ GameDetailsCubit createImportedGameDetailsCubit(
 );
 
 /// A aba Seu jogo (e as telas de estilo e de tema, que leem o mesmo resumo).
-SeuJogoCubit createYourGameCubit(BuildContext context) => SeuJogoCubit(
-  repository: context.read<TreinadorRepository>(),
-  filtro: context.read<SeuJogoFiltroRepository>(),
+YourGameCubit createYourGameCubit(BuildContext context) => YourGameCubit(
+  repository: context.read<CoachRepository>(),
+  filter: context.read<YourGameFilterRepository>(),
   now: context.read<Now>(),
 );
 
-/// Onde a partida [partidaId] saiu da teoria.
-TeoriaCubit createTheoryCubit(
-  BuildContext context, {
-  required String partidaId,
-}) => TeoriaCubit(
-  repository: context.read<TreinadorRepository>(),
-  partidaId: partidaId,
-);
+/// Onde a partida [gameId] saiu da teoria.
+TheoryCubit createTheoryCubit(BuildContext context, {required String gameId}) =>
+    TheoryCubit(repository: context.read<CoachRepository>(), gameId: gameId);
 
 /// As partidas-modelo da abertura [eco].
-PartidasModeloCubit createModelGamesCubit(
+ModelGamesCubit createModelGamesCubit(
   BuildContext context, {
   required String eco,
-}) => PartidasModeloCubit(
-  repository: context.read<TreinadorRepository>(),
-  eco: eco,
-);
+}) => ModelGamesCubit(repository: context.read<CoachRepository>(), eco: eco);
 
 /// A abertura [slot] no Pilares e se ele já tem o curso.
-CursoDaAberturaCubit createOpeningCourseCubit(
+OpeningCourseCubit createOpeningCourseCubit(
   BuildContext context, {
   required String slot,
-  int? parte,
-}) => CursoDaAberturaCubit(
+  int? part,
+}) => OpeningCourseCubit(
   training: context.read<TrainingRepository>(),
   access: context.read<CourseAccessRepository>(),
   slot: slot,
-  parte: parte,
+  part: part,
 );

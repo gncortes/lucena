@@ -52,7 +52,7 @@ import 'notifications.dart';
 import 'progress.dart';
 import 'store.dart';
 import 'training.dart';
-import 'treinador.dart';
+import 'coach.dart';
 
 /// A composição do app de verdade (`Dependencies.normal`), montada por área.
 Dependencies buildNormalDependencies({
@@ -66,7 +66,7 @@ Dependencies buildNormalDependencies({
   final content = ContentDependencies.create(core);
   final engines = EngineDependencies.create(core);
   final store = StoreDependencies.create(core);
-  final treinador = TreinadorDependencies.create(core);
+  final coach = CoachDependencies.create(core);
   late final TrainingDependencies training;
   final progress = ProgressDependencies.create(
     core,
@@ -183,7 +183,7 @@ Dependencies buildNormalDependencies({
     purchaseRepository: store.purchases,
     courseAccessRepository: store.courseAccess,
     courseGrantsRepository: store.courseGrants,
-    treinadorRepository: treinador.treinador,
+    coachRepository: coach.coach,
     storeListingRepository: store.storeListing,
     feedbackRepository: account.feedback,
     dataExportRepository: account.dataExport,

@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../config/ambiente.dart';
-import 'treinador_service.dart';
+import 'coach_service.dart';
 
 /// Quanto a abertura espera o Firebase. Ele roda antes do primeiro quadro: se
 /// a rede ou os serviços do Google travam, o app não pode ficar preso no fundo
@@ -70,7 +70,7 @@ Future<void> useFirebaseEmulator() async {
   );
   // O Treinador (T87) chama as Functions da região do servidor.
   FirebaseFunctions.instanceFor(
-    region: FirebaseTreinadorService.regiao,
+    region: FirebaseCoachService.region,
   ).useFunctionsEmulator(FirebaseEmulador.host, FirebaseEmulador.functionsPort);
 }
 

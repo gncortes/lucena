@@ -618,30 +618,27 @@ abstract final class Routes {
   /// "Conhecer o Pilares" das outras telas abrem aqui.
   static const pilaresSale = '/pilares';
 
-  /// O Treinador de partidas (T87): a casca na aba [aba] (`hoje`, `partidas`
-  /// ou `seuJogo`; nula abre em Hoje).
+  /// O Treinador de partidas (T87): a casca na aba [tab] (`hoje`, `partidas`
+  /// ou `seuJogo`, o [CoachTab.wire]; nula abre em Hoje).
   ///
-  /// [abrirUltima] (atalho da Home, A10): abre por cima a última partida, se
+  /// [openLast] (atalho da Home, A10): abre por cima a última partida, se
   /// ainda há o que fazer nela.
-  static String treinador({String? aba, bool abrirUltima = false}) {
-    final query = [
-      if (aba != null) 'aba=$aba',
-      if (abrirUltima) 'abrir=ultima',
-    ];
+  static String coach({String? tab, bool openLast = false}) {
+    final query = [if (tab != null) 'aba=$tab', if (openLast) 'abrir=ultima'];
     return query.isEmpty ? '/treinador' : '/treinador?${query.join('&')}';
   }
 
   /// A partida do Treinador: início, espera, erro ou resumo.
-  static String treinadorPartida(String id) =>
+  static String coachGame(String id) =>
       '/treinador/partida/${Uri.encodeComponent(id)}';
 
-  /// Os exercícios da partida; [refazer] começa do 1 e zera o progresso.
-  static String treinadorExercicios(String id, {bool refazer = false}) =>
-      '${treinadorPartida(id)}/exercicios${refazer ? '?refazer=1' : ''}';
+  /// Os exercícios da partida; [redo] começa do 1 e zera o progresso.
+  static String coachExercises(String id, {bool redo = false}) =>
+      '${coachGame(id)}/exercicios${redo ? '?refazer=1' : ''}';
 
-  /// A análise completa da partida, aberta no meio-lance [lance].
-  static String treinadorAnalise(String id, {int? lance}) =>
-      '${treinadorPartida(id)}/analise${lance == null ? '' : '?lance=$lance'}';
+  /// A análise completa da partida, aberta no meio-lance [ply].
+  static String coachAnalysis(String id, {int? ply}) =>
+      '${coachGame(id)}/analise${ply == null ? '' : '?lance=$ply'}';
 
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';

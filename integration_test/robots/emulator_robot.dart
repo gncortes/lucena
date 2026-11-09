@@ -14,7 +14,7 @@ import '../../testing/e2e_dependencies.dart';
 import '../../testing/emulator_admin.dart';
 import '../../testing/emulator_dependencies.dart';
 import '../../testing/fakes/fake_push_repository.dart';
-import 'ciclo.dart';
+import 'lifecycle.dart';
 import 'home_robot.dart';
 import 'profile_robot.dart';
 
@@ -62,15 +62,15 @@ class EmulatorRobot {
     await $.tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await _pumpApp(manterConta: true);
+    await _pumpApp(keepAccount: true);
   }
 
-  Future<void> _pumpApp({bool manterConta = false}) async {
+  Future<void> _pumpApp({bool keepAccount = false}) async {
     dependencies = await emulatorDependencies(
       push: realPush ? null : push,
-      manterConta: manterConta,
+      keepAccount: keepAccount,
     );
-    retomado($);
+    resumed($);
     await $.pumpWidgetAndSettle(
       LucenaApp(key: UniqueKey(), dependencies: dependencies),
     );

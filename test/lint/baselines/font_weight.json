@@ -9,6 +9,8 @@
   "lib/ui/analytics/widgets/team_mode_sheet.dart": 1,
   "lib/ui/campaign/widgets/link_lead_sheet.dart": 2,
   "lib/ui/challenge/widgets/challenge_result_card.dart": 3,
+  "lib/ui/coach_your_game/widgets/theory_screen.dart": 1,
+  "lib/ui/coach_your_game/widgets/your_game_parts.dart": 1,
   "lib/ui/core/motion/abertura_animada.dart": 2,
   "lib/ui/core/widgets/account_avatar.dart": 1,
   "lib/ui/core/widgets/board/piece_badge_overlay.dart": 1,
@@ -98,8 +100,6 @@
   "lib/ui/training_opening/widgets/opening_goal_cards.dart": 1,
   "lib/ui/training_opening/widgets/training_opening_progress_screen.dart": 2,
   "lib/ui/training_progress/widgets/training_theme_screen.dart": 8,
-  "lib/ui/treinador_seu_jogo/widgets/seu_jogo_pecas.dart": 1,
-  "lib/ui/treinador_seu_jogo/widgets/teoria_screen.dart": 1,
   "lib/ui/update/widgets/update_body.dart": 1,
   "lib/ui/week/widgets/week_screen.dart": 4,
   "lib/ui/wiki/widgets/linked_text.dart": 1

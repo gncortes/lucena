@@ -106,7 +106,7 @@ extension HomeShortcutUi on HomeShortcut {
     HomeShortcut.stars => HomePath.stars.route,
     HomeShortcut.freeBoard => HomePath.board.route,
     HomeShortcut.customPosition => HomePath.position.route,
-    HomeShortcut.analysis => Routes.treinador(abrirUltima: true),
+    HomeShortcut.analysis => Routes.coach(openLast: true),
   };
 
   /// A mesma key dos cartões de caminho de antes.

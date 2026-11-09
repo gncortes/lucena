@@ -1,6 +1,7 @@
 {
   "lib/ui/account/widgets/account_consent_screen.dart": 2,
   "lib/ui/catalog/widgets/catalog_screen.dart": 1,
+  "lib/ui/coach_your_game/widgets/focus_card.dart": 1,
   "lib/ui/core/motion/abertura_animada.dart": 2,
   "lib/ui/core/widgets/course/chapter_lesson_list.dart": 2,
   "lib/ui/core/widgets/course/course_chapter_layout.dart": 1,
@@ -58,6 +59,5 @@
   "lib/ui/training_exercise/widgets/training_exercise_screen.dart": 4,
   "lib/ui/training_help/widgets/training_help_screen.dart": 2,
   "lib/ui/training_help/widgets/training_tour.dart": 1,
-  "lib/ui/training_progress/widgets/training_theme_screen.dart": 10,
-  "lib/ui/treinador_seu_jogo/widgets/foco_card.dart": 1
+  "lib/ui/training_progress/widgets/training_theme_screen.dart": 10
 }

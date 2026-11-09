@@ -20,7 +20,7 @@ enum PushKind {
   gift('presente'),
 
   /// A partida analisada pelo Treinador (T87): o toque abre a partida.
-  treinador('treinador');
+  coach('treinador');
 
   const PushKind(this.code);
 
@@ -52,14 +52,14 @@ abstract final class PushData {
   static const account = 'conta';
 
   /// A partida do Treinador (T87), sem `link`: o app monta o destino.
-  static const partida = 'partida';
+  static const game = 'partida';
 
   /// O destino do push sem `link`: o do Treinador sai da partida.
   static String? linkOf(Map<String, String> data) {
-    final dado = data[PushData.link];
-    if (dado != null && dado.trim().isNotEmpty) return dado;
-    if (data[kind] != PushKind.treinador.code) return null;
-    final id = data[partida]?.trim();
+    final datum = data[PushData.link];
+    if (datum != null && datum.trim().isNotEmpty) return datum;
+    if (data[kind] != PushKind.coach.code) return null;
+    final id = data[game]?.trim();
     return id == null || id.isEmpty
         ? '/treinador'
         : '/treinador/partida/${Uri.encodeComponent(id)}';
@@ -252,6 +252,6 @@ class PushTexts {
     PushKind.news ||
     PushKind.free ||
     PushKind.gift ||
-    PushKind.treinador => (id: 'push_novidades_quieto', name: news),
+    PushKind.coach => (id: 'push_novidades_quieto', name: news),
   };
 }

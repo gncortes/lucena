@@ -78,7 +78,7 @@ export '../../data/repositories/speedrun/speedrun_repository.dart';
 export '../../data/repositories/store/store_listing_repository.dart';
 export '../../data/repositories/survey/survey_repository.dart';
 export '../../data/repositories/sync/sync_repository.dart';
-export '../../data/repositories/treinador/treinador_repository.dart';
+export '../../data/repositories/coach/coach_repository.dart';
 export '../../data/repositories/tablebase/kpk_repository.dart';
 export '../../data/repositories/tablebase/script_table_repository.dart';
 export '../../data/repositories/training/course_download_repository.dart';

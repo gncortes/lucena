@@ -91,7 +91,7 @@ class Dependencies {
     this.adsRepository = const NoAdsRepository(),
     this.courseAccessRepository = const FullCourseAccessRepository(),
     this.courseGrantsRepository = const NoCourseGrantsRepository(),
-    this.treinadorRepository = const NoTreinadorRepository(),
+    this.coachRepository = const NoCoachRepository(),
     this.demoAdRepository = const NoDemoAdRepository(),
     this.demoOfferRepository = const NoDemoOfferRepository(),
     this.openingOfferRepository = const NoOpeningOfferRepository(),
@@ -265,7 +265,7 @@ class Dependencies {
 
   /// O Treinador de partidas: conta ligada, partidas analisadas e o
   /// progresso dos exercícios (T87).
-  final TreinadorRepository treinadorRepository;
+  final CoachRepository coachRepository;
   final DemoAdRepository demoAdRepository;
   final DemoOfferRepository demoOfferRepository;
 

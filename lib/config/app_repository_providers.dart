@@ -79,10 +79,10 @@ import '../data/repositories/sync/sync_scheduler.dart';
 import '../data/repositories/tablebase/kpk_repository.dart';
 import '../data/repositories/tablebase/script_table_repository.dart';
 import '../data/repositories/training/course_download_repository.dart';
-import '../data/repositories/treinador/curiosidades_repository.dart';
-import '../data/repositories/treinador/seu_jogo_filtro_repository.dart';
-import '../data/repositories/treinador/treinador_preferencias.dart';
-import '../data/repositories/treinador/treinador_repository.dart';
+import '../data/repositories/coach/trivia_repository.dart';
+import '../data/repositories/coach/your_game_filter_repository.dart';
+import '../data/repositories/coach/coach_preferences.dart';
+import '../data/repositories/coach/coach_repository.dart';
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../data/repositories/training/demo_offer_repository.dart';
@@ -117,7 +117,7 @@ List<RepositoryProvider<Object?>> appRepositoryProviders(
   ..._home(deps),
   ..._care(deps),
   ..._store(deps),
-  ..._treinador(deps),
+  ..._coach(deps),
 ];
 
 /// O app em si: relógio, versão, preferências, estatísticas e links.
@@ -356,17 +356,15 @@ _Providers _store(Dependencies deps) => [
 
 /// O Treinador de partidas (T87): conta ligada, filtros, preferências e o
 /// Livro de Curiosidades.
-_Providers _treinador(Dependencies deps) => [
-  RepositoryProvider<TreinadorRepository>.value(
-    value: deps.treinadorRepository,
+_Providers _coach(Dependencies deps) => [
+  RepositoryProvider<CoachRepository>.value(value: deps.coachRepository),
+  RepositoryProvider<YourGameFilterRepository>(
+    create: (_) => YourGameFilterRepository(PreferencesService()),
   ),
-  RepositoryProvider<SeuJogoFiltroRepository>(
-    create: (_) => SeuJogoFiltroRepository(PreferencesService()),
+  RepositoryProvider<CoachPreferences>(
+    create: (_) => CoachPreferences(PreferencesService()),
   ),
-  RepositoryProvider<TreinadorPreferencias>(
-    create: (_) => TreinadorPreferencias(PreferencesService()),
-  ),
-  RepositoryProvider<CuriosidadesRepository>(
-    create: (_) => AssetCuriosidadesRepository(const AssetService()),
+  RepositoryProvider<TriviaRepository>(
+    create: (_) => AssetTriviaRepository(const AssetService()),
   ),
 ];

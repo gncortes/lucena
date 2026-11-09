@@ -56,8 +56,8 @@ const _telas = <String, String>{
       'test/ui/race/race_warm_up_screen_test.dart',
   'school/widgets/star_challenge_screen.dart':
       'test/ui/school/star_challenge_screen_test.dart',
-  'treinador/widgets/treinador_exercicio_screen.dart':
-      'test/ui/treinador/treinador_exercicio_screen_test.dart',
+  'coach/widgets/coach_exercise_screen.dart':
+      'test/ui/coach/coach_exercise_screen_test.dart',
   'training_exercise/widgets/training_exercise_screen.dart':
       'test/ui/training_exercise/training_exercise_screen_test.dart',
   'training_goal/widgets/training_test_screen.dart':
@@ -86,7 +86,7 @@ const _telas = <String, String>{
   'race/widgets/race_result_view.dart': _miniatura,
   'race/widgets/race_warm_up_sheet.dart': _miniatura,
   'training_progress/widgets/training_theme_screen.dart': _miniatura,
-  'treinador_seu_jogo/widgets/tema_screen.dart': _miniatura,
+  'coach_your_game/widgets/motif_screen.dart': _miniatura,
   // Posição grande numa página de leitura, sem lance.
   'challenge/widgets/challenge_link_screen.dart': _ilustracao,
   'conclusion/widgets/conclusion_screen.dart': _ilustracao,
@@ -94,7 +94,7 @@ const _telas = <String, String>{
   'featured/widgets/featured_endgame_screen.dart': _ilustracao,
   'tour/widgets/tour_screen.dart': _ilustracao,
   'training_profile/widgets/training_profile_why_screen.dart': _ilustracao,
-  'treinador_seu_jogo/widgets/teoria_screen.dart': _ilustracao,
+  'coach_your_game/widgets/theory_screen.dart': _ilustracao,
 };
 
 /// Dívida da A8: telas que ainda não cabem em 360x740 com o tabuleiro no

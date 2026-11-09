@@ -36,9 +36,9 @@ void main() {
   test('aviso do Treinador abre a partida analisada', () async {
     expect(
       await route('treinador/partida/lichess_AbC12345'),
-      Routes.treinadorPartida('lichess_AbC12345'),
+      Routes.coachGame('lichess_AbC12345'),
     );
-    expect(await route('/treinador'), Routes.treinador());
+    expect(await route('/treinador'), Routes.coach());
   });
 
   test('o endereço do app vale como o caminho', () async {

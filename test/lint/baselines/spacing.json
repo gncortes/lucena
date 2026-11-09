@@ -1,4 +1,8 @@
 {
+  "lib/ui/coach/widgets/game_row.dart": 1,
+  "lib/ui/coach_your_game/widgets/focus_card.dart": 1,
+  "lib/ui/coach_your_game/widgets/your_game_parts.dart": 1,
+  "lib/ui/coach_your_game/widgets/your_game_tab.dart": 6,
   "lib/ui/core/motion/cartao_de_plano.dart": 1,
   "lib/ui/core/motion/selo_na_peca.dart": 1,
   "lib/ui/core/widgets/course/chapter_lesson_list.dart": 2,
@@ -26,9 +30,5 @@
   "lib/ui/training_opening/widgets/opening_goal_cards.dart": 1,
   "lib/ui/training_opening/widgets/training_opening_progress_screen.dart": 3,
   "lib/ui/training_profile/widgets/training_profile_screen.dart": 1,
-  "lib/ui/training_progress/widgets/training_theme_screen.dart": 1,
-  "lib/ui/treinador/widgets/linha_partida.dart": 1,
-  "lib/ui/treinador_seu_jogo/widgets/foco_card.dart": 1,
-  "lib/ui/treinador_seu_jogo/widgets/seu_jogo_aba.dart": 6,
-  "lib/ui/treinador_seu_jogo/widgets/seu_jogo_pecas.dart": 1
+  "lib/ui/training_progress/widgets/training_theme_screen.dart": 1
 }

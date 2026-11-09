@@ -153,16 +153,16 @@ abstract final class RouteNames {
   static const trainingNextGoal = 'trainingNextGoal';
   static const dailyEmpty = 'dailyEmpty';
 
-  // T87 (Treinador de partidas, Seu jogo): `frentes/treinador_seu_jogo_routes.dart`.
-  static const seuJogo = 'seuJogo';
-  static const seuJogoTema = 'seuJogoTema';
-  static const seuJogoEstilo = 'seuJogoEstilo';
-  static const seuJogoTeoria = 'seuJogoTeoria';
-  static const seuJogoModelos = 'seuJogoModelos';
-  static const seuJogoPilares = 'seuJogoPilares';
-  // T87 (Treinador de partidas): registra em `frentes/treinador_routes.dart`.
-  static const treinador = 'treinador';
-  static const treinadorPartida = 'treinadorPartida';
-  static const treinadorExercicios = 'treinadorExercicios';
-  static const treinadorAnalise = 'treinadorAnalise';
+  // T87 (Treinador de partidas, Seu jogo): `frentes/coach_your_game_routes.dart`.
+  static const yourGame = 'yourGame';
+  static const yourGameMotif = 'yourGameMotif';
+  static const yourGameStyle = 'yourGameStyle';
+  static const yourGameTheory = 'yourGameTheory';
+  static const yourGameModelGames = 'yourGameModelGames';
+  static const yourGamePilares = 'yourGamePilares';
+  // T87 (Treinador de partidas): registra em `frentes/coach_routes.dart`.
+  static const coach = 'coach';
+  static const coachGame = 'coachGame';
+  static const coachExercises = 'coachExercises';
+  static const coachAnalysis = 'coachAnalysis';
 }

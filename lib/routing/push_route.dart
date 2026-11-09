@@ -44,8 +44,8 @@ Future<String?> pushRoute(
     ['course' || 'curso', final course, final chapter] when _known(course) =>
       Routes.trainingChapter(course, chapter),
     // O Treinador (T87): a aba Hoje e a partida analisada.
-    ['treinador'] => Routes.treinador(),
-    ['treinador', 'partida', final id] => Routes.treinadorPartida(id),
+    ['treinador'] => Routes.coach(),
+    ['treinador', 'partida', final id] => Routes.coachGame(id),
     _ => null,
   };
 }
