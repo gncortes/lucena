@@ -49,7 +49,15 @@ class CourseSaleScreen extends StatelessWidget {
       );
     }
     final sale = loadState.preview?.sale;
-    if (sale == null) return const Scaffold(key: CoursePreviewKeys.sale);
+    if (sale == null) {
+      // Sem o conteúdo da venda (repositório devolveu nulo): nunca uma tela
+      // em branco sem saída.
+      return LoadErrorScreen(
+        kind: LoadErrorKind.unavailable,
+        onAction: context.read<CoursePreviewCubit>().retryLoad,
+        onBack: () => _back(context),
+      );
+    }
     return _SalePage(sale: sale, viktor: loadState.viktor, origin: origin);
   }
 }
