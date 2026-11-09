@@ -375,7 +375,9 @@ void main() {
       final vistas = <String>{frase()};
       for (var i = 0; i < 3; i++) {
         bed.now.advance(const Duration(seconds: 4));
-        await tester.pump(const Duration(seconds: 1));
+        for (var s = 0; s < 4; s++) {
+          await tester.pump(const Duration(seconds: 1));
+        }
         vistas.add(frase());
       }
       expect(vistas, {
@@ -388,7 +390,9 @@ void main() {
       bed.now.advance(const Duration(seconds: 160));
       for (var i = 0; i < 4; i++) {
         bed.now.advance(const Duration(seconds: 4));
-        await tester.pump(const Duration(seconds: 1));
+        for (var s = 0; s < 4; s++) {
+          await tester.pump(const Duration(seconds: 1));
+        }
         vistas.add(frase());
       }
       expect(vistas, contains('Quase lá'));

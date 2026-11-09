@@ -340,13 +340,17 @@ class _Carregando extends StatefulWidget {
 class _CarregandoState extends State<_Carregando> {
   Timer? _timer;
 
+  /// Segundos com a espera na tela: as frases se revezam por aqui, e não pelo
+  /// início da análise, que pode não ter chegado do servidor.
+  int _segundos = 0;
+
   bool get _naFila => widget.partida.status == StatusPartida.naFila;
 
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted && !_naFila) setState(() {});
+      if (mounted && !_naFila) setState(() => _segundos++);
     });
   }
 
@@ -362,7 +366,7 @@ class _CarregandoState extends State<_Carregando> {
   /// A frase da espera: na fila, a da fila; analisando, frases curtas que
   /// se revezam e tranquilizam, sem narrar o passo da análise (o servidor
   /// não conta em que passo está). "Quase lá" só entra perto do fim.
-  String _frase(int p, DateTime agora) {
+  String _frase(int p) {
     final l = context.l10n;
     if (_naFila) return l.treinadorFilaFrase;
     final frases = [
@@ -371,11 +375,8 @@ class _CarregandoState extends State<_Carregando> {
       l.treinadorEsperaMontando,
       if (p >= 80) l.treinadorEsperaQuaseLa,
     ];
-    final inicio = widget.inicio;
-    final passadas = inicio == null
-        ? 0
-        : agora.difference(inicio).inSeconds ~/ _porFrase.inSeconds;
-    return frases[passadas.clamp(0, 1 << 30) % frases.length];
+    final passadas = _segundos ~/ _porFrase.inSeconds;
+    return frases[passadas % frases.length];
   }
 
   @override
@@ -404,7 +405,7 @@ class _CarregandoState extends State<_Carregando> {
                   children: [
                     Expanded(
                       child: Text(
-                        _frase(p, agora),
+                        _frase(p),
                         key: TreinadorKeys.carregandoFrase,
                         style: context.cardTitle,
                       ),
