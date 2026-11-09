@@ -1,3 +1,4 @@
+import 'package:lucena/data/repositories/treinador/treinador_repository.dart';
 import 'package:lucena/data/repositories/account/account_invite_repository.dart';
 import 'package:lucena/data/repositories/training/training_endgame_content.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
@@ -337,6 +338,7 @@ Future<Dependencies> e2eDependencies({
   bool signedIn = false,
   bool accountInvite = false,
   CourseGrantsRepository? courseGrants,
+  TreinadorRepository? treinador,
 }) async {
   if (realCourseTraining && trainingScenario != null) {
     throw ArgumentError('Real course training cannot use a seeded scenario');
@@ -515,6 +517,8 @@ Future<Dependencies> e2eDependencies({
     pushRepository: push ?? e2ePush,
     // O acesso aos cursos que o cenário do presente controla (H-R5-63).
     courseGrantsRepository: courseGrants ?? const NoCourseGrantsRepository(),
+    // O Treinador de partidas (T87): o cenário passa o fake.
+    treinadorRepository: treinador ?? const NoTreinadorRepository(),
     remindersRepository: LocalRemindersRepository(
       notifications ?? e2eNotifications,
       progress: LocalEndgameProgressRepository(PreferencesService()),
