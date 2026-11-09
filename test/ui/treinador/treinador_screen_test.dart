@@ -575,11 +575,10 @@ void main() {
         findsOneWidget,
       );
       for (final (key, texto) in [
-        (TreinadorKeys.filtroRitmo('todos'), 'Todos'),
+        (TreinadorKeys.filtroTodas, 'Todas'),
         (TreinadorKeys.filtroRitmo('bullet'), 'Bullet'),
         (TreinadorKeys.filtroRitmo('blitz'), 'Blitz'),
         (TreinadorKeys.filtroRitmo('rapida'), 'Rápido'),
-        (TreinadorKeys.filtroResultado('todos'), 'Todas'),
         (TreinadorKeys.filtroResultado('vitoria'), 'Vitórias'),
         (TreinadorKeys.filtroResultado('derrota'), 'Derrotas'),
         (TreinadorKeys.filtroResultado('empate'), 'Empates'),
@@ -589,6 +588,9 @@ void main() {
       expect(find.text('Pronta para analisar'), findsNWidgets(3));
       expect(find.text('Analisando…'), findsOneWidget);
       expect(find.text('0 de 4 exercícios feitos'), findsOneWidget);
+      // Uma fileira só: "Todas" aparece uma vez.
+      expect(find.text('Todas'), findsOneWidget);
+      expect(find.text('Todos'), findsNothing);
       expect(tester.takeException(), isNull);
     });
 

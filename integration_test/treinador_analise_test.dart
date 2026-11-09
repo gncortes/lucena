@@ -219,12 +219,12 @@ void main() {
     await $.pumpAndSettle();
     t.espera(TreinadorKeys.partida(_analisando));
     t.naoTem(TreinadorKeys.partida(_nova));
-    await $(TreinadorKeys.filtroRitmo('todos')).tap();
+    await $(TreinadorKeys.filtroTodas).tap();
     await $(TreinadorKeys.filtroResultado('derrota')).tap();
     await $.pumpAndSettle();
     t.espera(TreinadorKeys.partida(_derrota));
     t.naoTem(TreinadorKeys.partida(_nova));
-    await $(TreinadorKeys.filtroResultado('todos')).tap();
+    await $(TreinadorKeys.filtroTodas).tap();
     await $.pumpAndSettle();
 
     // Partida já feita: abre no resumo.

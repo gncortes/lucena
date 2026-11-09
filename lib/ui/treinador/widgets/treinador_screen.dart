@@ -341,53 +341,63 @@ class _Partidas extends StatelessWidget {
           selected: selected,
           onSelected: (_) => onTap(),
         );
-    Widget fila(List<Widget> chips) => Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Wrap(
-        spacing: AppSpacing.sm,
-        runSpacing: AppSpacing.sm,
-        children: chips,
-      ),
-    );
     return ListView(
       key: TreinadorKeys.partidas,
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        // Canvas DPartidasFiltro: duas filas de chips sem rótulo.
-        fila([
-          chip(
-            TreinadorKeys.filtroRitmo('todos'),
-            l.treinadorFiltroTodos,
-            filtro.ritmo == null,
-            () => unawaited(cubit.filtrar(filtro.comRitmo(null))),
+        // Canvas DPartidasFiltro: uma fileira que rola; "Todas" uma vez só.
+        SingleChildScrollView(
+          key: TreinadorKeys.filtros,
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: Row(
+            spacing: AppSpacing.sm,
+            children: [
+              chip(
+                TreinadorKeys.filtroTodas,
+                l.treinadorListaTodas,
+                filtro.ritmo == null && filtro.resultado == null,
+                () => unawaited(
+                  cubit.filtrar(filtro.comRitmo(null).comResultado(null)),
+                ),
+              ),
+              for (final r in Ritmo.values)
+                chip(
+                  TreinadorKeys.filtroRitmo(r.wire),
+                  context.ritmo(r),
+                  filtro.ritmo == r,
+                  () => unawaited(
+                    cubit.filtrar(
+                      filtro.comRitmo(filtro.ritmo == r ? null : r),
+                    ),
+                  ),
+                ),
+              SizedBox(
+                height: AppSpacing.lg,
+                child: VerticalDivider(
+                  width: 1,
+                  color: theme.colorScheme.outlineVariant,
+                ),
+              ),
+              for (final (r, nome) in [
+                (Resultado.vitoria, l.treinadorFiltroVitorias),
+                (Resultado.derrota, l.treinadorFiltroDerrotas),
+                (Resultado.empate, l.treinadorFiltroEmpates),
+              ])
+                chip(
+                  TreinadorKeys.filtroResultado(r.wire),
+                  nome,
+                  filtro.resultado == r,
+                  () => unawaited(
+                    cubit.filtrar(
+                      filtro.comResultado(filtro.resultado == r ? null : r),
+                    ),
+                  ),
+                ),
+            ],
           ),
-          for (final r in Ritmo.values)
-            chip(
-              TreinadorKeys.filtroRitmo(r.wire),
-              context.ritmo(r),
-              filtro.ritmo == r,
-              () => unawaited(cubit.filtrar(filtro.comRitmo(r))),
-            ),
-        ]),
-        fila([
-          chip(
-            TreinadorKeys.filtroResultado('todos'),
-            l.treinadorListaTodas,
-            filtro.resultado == null,
-            () => unawaited(cubit.filtrar(filtro.comResultado(null))),
-          ),
-          for (final (r, nome) in [
-            (Resultado.vitoria, l.treinadorFiltroVitorias),
-            (Resultado.derrota, l.treinadorFiltroDerrotas),
-            (Resultado.empate, l.treinadorFiltroEmpates),
-          ])
-            chip(
-              TreinadorKeys.filtroResultado(r.wire),
-              nome,
-              filtro.resultado == r,
-              () => unawaited(cubit.filtrar(filtro.comResultado(r))),
-            ),
-        ]),
+        ),
         if (state.partidas.isEmpty)
           EmptyState(
             key: TreinadorKeys.partidasVazio,

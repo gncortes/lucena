@@ -272,40 +272,45 @@ void main() {
       expect(estrela(), Icons.star_outline_rounded);
     });
 
-    testWidgets('dica: marca a peça, depois o lance; a estrela segue cheia enquanto vale pontos', (
-      tester,
-    ) async {
-      aparelho411x914(tester);
-      final bed = TreinadorBed(repo: _repo());
-      await bed.abrir(tester, Routes.treinadorExercicios(_idTiago));
-      final solucao =
-          Move.parse(_estado(tester).exercicio!.solucao)! as NormalMove;
-      Set<Shape> marcas() => tester
-          .widget<Chessboard>(find.byKey(TreinadorKeys.exercicioTabuleiro))
-          .shapes;
-      IconData? estrela() =>
-          tester.widget<Icon>(find.byKey(TreinadorKeys.exercicioEstrelas)).icon;
-      final dica = find.byKey(TreinadorKeys.dica);
-      expect(dica, findsOneWidget);
-      expect(tester.widget<IconButton>(dica).tooltip, 'Dica (custa um ponto)');
-      expect(marcas(), isEmpty);
+    testWidgets(
+      'dica: marca a peça, depois o lance; a estrela segue cheia enquanto vale pontos',
+      (tester) async {
+        aparelho411x914(tester);
+        final bed = TreinadorBed(repo: _repo());
+        await bed.abrir(tester, Routes.treinadorExercicios(_idTiago));
+        final solucao =
+            Move.parse(_estado(tester).exercicio!.solucao)! as NormalMove;
+        Set<Shape> marcas() => tester
+            .widget<Chessboard>(find.byKey(TreinadorKeys.exercicioTabuleiro))
+            .shapes;
+        IconData? estrela() => tester
+            .widget<Icon>(find.byKey(TreinadorKeys.exercicioEstrelas))
+            .icon;
+        final dica = find.byKey(TreinadorKeys.dica);
+        expect(dica, findsOneWidget);
+        expect(
+          tester.widget<IconButton>(dica).tooltip,
+          'Dica (custa um ponto)',
+        );
+        expect(marcas(), isEmpty);
 
-      await _tocar(tester, dica);
-      expect(estrela(), Icons.star_rounded);
-      expect(marcas().single, isA<Circle>());
-      expect((marcas().single as Circle).orig, solucao.from);
+        await _tocar(tester, dica);
+        expect(estrela(), Icons.star_rounded);
+        expect(marcas().single, isA<Circle>());
+        expect((marcas().single as Circle).orig, solucao.from);
 
-      await _tocar(tester, dica);
-      final seta = marcas().single as Arrow;
-      expect((seta.orig, seta.dest), (solucao.from, solucao.to));
-      // O lance já está à vista: a lâmpada sai.
-      expect(dica, findsNothing);
+        await _tocar(tester, dica);
+        final seta = marcas().single as Arrow;
+        expect((seta.orig, seta.dest), (solucao.from, solucao.to));
+        // O lance já está à vista: a lâmpada sai.
+        expect(dica, findsNothing);
 
-      await _jogar(tester, solucao.uci);
-      expect(_estado(tester).progresso.resultados.single.pontos, 1);
-      expect(_estado(tester).progresso.resultados.single.dicas, 2);
-      expect(tester.takeException(), isNull);
-    });
+        await _jogar(tester, solucao.uci);
+        expect(_estado(tester).progresso.resultados.single.pontos, 1);
+        expect(_estado(tester).progresso.resultados.single.dicas, 2);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('dica some no erro e depois de resolver', (tester) async {
       aparelho411x914(tester);

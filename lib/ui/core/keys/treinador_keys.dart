@@ -18,6 +18,10 @@ abstract final class TreinadorKeys {
   static const hojeVazio = Key('treinador.hoje.vazio');
 
   // Partidas.
+  static const filtros = Key('treinador.filtros');
+
+  /// "Todas": limpa o ritmo e o resultado.
+  static const filtroTodas = Key('treinador.filtro.todas');
   static Key filtroRitmo(String id) => Key('treinador.filtro.ritmo.$id');
   static Key filtroResultado(String id) =>
       Key('treinador.filtro.resultado.$id');
