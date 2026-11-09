@@ -73,7 +73,12 @@ void main() {
       expect(pr.pontos, 3);
       expect(pr.proximo(4), 3);
       expect(pr.completo(4), isFalse);
-      expect(pr.toRemoto(), {'feitos': 2, 'acertos': 1, 'pontos': 3});
+      expect(pr.toRemoto(), {
+        'feitos': 2,
+        'acertos': 1,
+        'pontos': 3,
+        'resultados': {'1': true, '2': false},
+      });
       final de = ProgressoPartida.fromJson(pr.toJson());
       expect(de.feitos, 2);
       expect(de.proximo(4), 3);

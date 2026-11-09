@@ -14545,6 +14545,847 @@
       }
     }
   },
+  "treinadorTitle": "Analysis",
+  "@treinadorTitle": {
+    "description": "T87 Treinador: shell AppBar title and Home tile title"
+  },
+  "treinadorHomeBody": "Train with your own games",
+  "@treinadorHomeBody": {
+    "description": "T87 Treinador: Home tile subtitle"
+  },
+  "treinadorTabHoje": "Today",
+  "@treinadorTabHoje": {
+    "description": "T87 Treinador: bottom tab"
+  },
+  "treinadorTabPartidas": "Games",
+  "@treinadorTabPartidas": {
+    "description": "T87 Treinador: bottom tab"
+  },
+  "treinadorTabSeuJogo": "Your game",
+  "@treinadorTabSeuJogo": {
+    "description": "T87 Treinador: bottom tab"
+  },
+  "treinadorSeuJogoEmBreve": "Soon: where you go wrong the most.",
+  "@treinadorSeuJogoEmBreve": {
+    "description": "T87 Treinador: placeholder of the Your game tab"
+  },
+  "treinadorLichess": "Lichess",
+  "@treinadorLichess": {
+    "description": "T87 Treinador: platform name"
+  },
+  "treinadorChesscom": "chess.com",
+  "@treinadorChesscom": {
+    "description": "T87 Treinador: platform name"
+  },
+  "treinadorUltimaPartida": "Your last game",
+  "@treinadorUltimaPartida": {
+    "description": "T87 Treinador: Today tab section"
+  },
+  "treinadorVerPartida": "See the game",
+  "@treinadorVerPartida": {
+    "description": "T87 Treinador: Today tab button"
+  },
+  "treinadorParaFazer": "Exercises to do",
+  "@treinadorParaFazer": {
+    "description": "T87 Treinador: Today tab section"
+  },
+  "treinadorHojeVazio": "Play a game on {platform} and it shows up here.",
+  "@treinadorHojeVazio": {
+    "description": "T87 Treinador: empty state without games",
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorHojeEmDia": "You finished the exercises of every analyzed game.",
+  "@treinadorHojeEmDia": {
+    "description": "T87 Treinador: Today tab with nothing pending"
+  },
+  "treinadorRitmoBullet": "Bullet",
+  "@treinadorRitmoBullet": {
+    "description": "T87 Treinador: time control"
+  },
+  "treinadorRitmoBlitz": "Blitz",
+  "@treinadorRitmoBlitz": {
+    "description": "T87 Treinador: time control"
+  },
+  "treinadorRitmoRapida": "Rapid",
+  "@treinadorRitmoRapida": {
+    "description": "T87 Treinador: time control"
+  },
+  "treinadorCorBrancas": "White",
+  "@treinadorCorBrancas": {
+    "description": "T87 Treinador: side played"
+  },
+  "treinadorCorPretas": "Black",
+  "@treinadorCorPretas": {
+    "description": "T87 Treinador: side played"
+  },
+  "treinadorQuandoHoje": "Today",
+  "@treinadorQuandoHoje": {
+    "description": "T87 Treinador: when the game was played"
+  },
+  "treinadorQuandoOntem": "Yesterday",
+  "@treinadorQuandoOntem": {
+    "description": "T87 Treinador: when the game was played"
+  },
+  "treinadorQuandoDias": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@treinadorQuandoDias": {
+    "description": "T87 Treinador: when the game was played",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorLetraVitoria": "W",
+  "@treinadorLetraVitoria": {
+    "description": "T87 Treinador: result square letter (win)"
+  },
+  "treinadorLetraDerrota": "L",
+  "@treinadorLetraDerrota": {
+    "description": "T87 Treinador: result square letter (loss)"
+  },
+  "treinadorLetraEmpate": "D",
+  "@treinadorLetraEmpate": {
+    "description": "T87 Treinador: result square letter (draw)"
+  },
+  "treinadorVitoria": "Win",
+  "@treinadorVitoria": {
+    "description": "T87 Treinador: result name"
+  },
+  "treinadorDerrota": "Loss",
+  "@treinadorDerrota": {
+    "description": "T87 Treinador: result name"
+  },
+  "treinadorEmpate": "Draw",
+  "@treinadorEmpate": {
+    "description": "T87 Treinador: result name"
+  },
+  "treinadorEstadoNova": "Ready to analyze",
+  "@treinadorEstadoNova": {
+    "description": "T87 Treinador: game row state"
+  },
+  "treinadorEstadoAnalisando": "Analyzing…",
+  "@treinadorEstadoAnalisando": {
+    "description": "T87 Treinador: game row state"
+  },
+  "treinadorEstadoExercicios": "{done} of {total} exercises done",
+  "@treinadorEstadoExercicios": {
+    "description": "T87 Treinador: game row state",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorEstadoCompleta": "{right} of {total} right",
+  "@treinadorEstadoCompleta": {
+    "description": "T87 Treinador: game row state",
+    "placeholders": {
+      "right": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorEstadoSemExercicios": "No exercises in this game",
+  "@treinadorEstadoSemExercicios": {
+    "description": "T87 Treinador: game row state"
+  },
+  "treinadorEstadoErro": "Could not analyze",
+  "@treinadorEstadoErro": {
+    "description": "T87 Treinador: game row state"
+  },
+  "treinadorEstadoBloqueada": "Summary in the analysis plan",
+  "@treinadorEstadoBloqueada": {
+    "description": "T87 Treinador: locked game row"
+  },
+  "treinadorFiltroRitmo": "Time control",
+  "@treinadorFiltroRitmo": {
+    "description": "T87 Treinador: filter group"
+  },
+  "treinadorFiltroResultado": "Result",
+  "@treinadorFiltroResultado": {
+    "description": "T87 Treinador: filter group"
+  },
+  "treinadorFiltroTodos": "All",
+  "@treinadorFiltroTodos": {
+    "description": "T87 Treinador: filter chip"
+  },
+  "treinadorFiltroVitorias": "Wins",
+  "@treinadorFiltroVitorias": {
+    "description": "T87 Treinador: filter chip"
+  },
+  "treinadorFiltroDerrotas": "Losses",
+  "@treinadorFiltroDerrotas": {
+    "description": "T87 Treinador: filter chip"
+  },
+  "treinadorFiltroEmpates": "Draws",
+  "@treinadorFiltroEmpates": {
+    "description": "T87 Treinador: filter chip"
+  },
+  "treinadorPartidasVazio": "No games with these filters.",
+  "@treinadorPartidasVazio": {
+    "description": "T87 Treinador: filter empty state"
+  },
+  "treinadorLimparFiltros": "Clear filters",
+  "@treinadorLimparFiltros": {
+    "description": "T87 Treinador: filter empty state button"
+  },
+  "treinadorSemPlanoTitulo": "Game trainer",
+  "@treinadorSemPlanoTitulo": {
+    "description": "T87 Treinador: no-plan box title"
+  },
+  "treinadorSemPlanoTexto": "With the analysis plan, every new game turns into exercises. Without it, you get 3 free analyses a week.",
+  "@treinadorSemPlanoTexto": {
+    "description": "T87 Treinador: no-plan box body"
+  },
+  "treinadorConhecerPlano": "See the analysis plan",
+  "@treinadorConhecerPlano": {
+    "description": "T87 Treinador: no-plan box button"
+  },
+  "treinadorLigarTitulo": "Where do you play?",
+  "@treinadorLigarTitulo": {
+    "description": "T87 Treinador: link account title"
+  },
+  "treinadorLigarTexto": "Link your account and we turn your mistakes into exercises. The first analysis is free.",
+  "@treinadorLigarTexto": {
+    "description": "T87 Treinador: link account body"
+  },
+  "treinadorUsuarioNo": "Your {platform} username",
+  "@treinadorUsuarioNo": {
+    "description": "T87 Treinador: username field label",
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorLigarConta": "Link account",
+  "@treinadorLigarConta": {
+    "description": "T87 Treinador: link account button"
+  },
+  "treinadorHojeUltima": "Last game",
+  "@treinadorHojeUltima": {
+    "description": "T87 Treinador: aba Hoje: rótulo dentro do cartão"
+  },
+  "treinadorHojeParaFazer": "To do now",
+  "@treinadorHojeParaFazer": {
+    "description": "T87 Treinador: aba Hoje: título da lista"
+  },
+  "treinadorHojeExercicio": "Position from your game against {opponent}, move {move}.",
+  "@treinadorHojeExercicio": {
+    "description": "T87 Treinador: aba Hoje: subtítulo do exercício pendente",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      },
+      "move": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorListaSeparador": " · ",
+  "@treinadorListaSeparador": {
+    "description": "T87 Treinador: separador entre ritmo, cor, abertura e quando"
+  },
+  "treinadorListaTodas": "All",
+  "@treinadorListaTodas": {
+    "description": "T87 Treinador: chip de resultado: todas as partidas"
+  },
+  "treinadorListaPrecisao": "Accuracy {precision}% · {total, plural, =0{{right} of 0 exercises right} =1{{right} of 1 exercise right} other{{right} of {total} exercises right}}",
+  "@treinadorListaPrecisao": {
+    "description": "T87 Treinador: estado da partida com os exercícios feitos",
+    "placeholders": {
+      "precision": {
+        "type": "int"
+      },
+      "right": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorListaPartidas": "{count, plural, =0{no games} =1{1 game} other{{count} games}}",
+  "@treinadorListaPartidas": {
+    "description": "T87 Treinador: contagem da lista: sem filtro de resultado",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorListaVitorias": "{count, plural, =0{no wins} =1{1 win} other{{count} wins}}",
+  "@treinadorListaVitorias": {
+    "description": "T87 Treinador: contagem da lista: vitórias",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorListaDerrotas": "{count, plural, =0{no losses} =1{1 loss} other{{count} losses}}",
+  "@treinadorListaDerrotas": {
+    "description": "T87 Treinador: contagem da lista: derrotas",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorListaEmpates": "{count, plural, =0{no draws} =1{1 draw} other{{count} draws}}",
+  "@treinadorListaEmpates": {
+    "description": "T87 Treinador: contagem da lista: empates",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorListaContagemRitmo": "{count, plural, =0{{name} in {pace}} other{{name} in {pace}, most recent first}}",
+  "@treinadorListaContagemRitmo": {
+    "description": "T87 Treinador: linha de contagem com o filtro de ritmo",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      },
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorListaContagemSite": "{count, plural, =0{{name} on {platform}} other{{name} on {platform}, most recent first}}",
+  "@treinadorListaContagemSite": {
+    "description": "T87 Treinador: linha de contagem sem filtro de ritmo",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      },
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorLigarTituloConta": "Link your account",
+  "@treinadorLigarTituloConta": {
+    "description": "T87 Treinador: ligar conta: título"
+  },
+  "treinadorLigarTextoConta": "The trainer reads the games you play on Lichess or chess.com and shows where you went wrong.",
+  "@treinadorLigarTextoConta": {
+    "description": "T87 Treinador: ligar conta: texto"
+  },
+  "treinadorLigarBotao": "Link {platform}",
+  "@treinadorLigarBotao": {
+    "description": "T87 Treinador: ligar conta: botão do site",
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorLigarPrivacidade": "We only read public games. You can unlink whenever you want.",
+  "@treinadorLigarPrivacidade": {
+    "description": "T87 Treinador: ligar conta: nota de privacidade"
+  },
+  "treinadorHojeTema": "{theme, select, mate{Mate} garfo{Fork} peca_solta{Loose piece} xeque_duplo{Double check} xeque_descoberto{Discovered check} promocao{Promotion} other{{fallback}}}",
+  "@treinadorHojeTema": {
+    "description": "T87 Treinador: aba Hoje: nome do tema do exercício; other mostra o texto de reserva",
+    "placeholders": {
+      "theme": {
+        "type": "String"
+      },
+      "fallback": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorTrocarSite": "Change site",
+  "@treinadorTrocarSite": {
+    "description": "T87 Treinador: go back to platform choice"
+  },
+  "treinadorContaNaoExiste": "We could not find this user on {platform}.",
+  "@treinadorContaNaoExiste": {
+    "description": "T87 Treinador: link account error",
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorContaSemResposta": "No answer from the server. Check your internet and try again.",
+  "@treinadorContaSemResposta": {
+    "description": "T87 Treinador: link account error"
+  },
+  "treinadorContaSemPlano": "Linking an account needs the analysis plan.",
+  "@treinadorContaSemPlano": {
+    "description": "T87 Treinador: link account error"
+  },
+  "treinadorContaSemLogin": "Sign in to Lucena to link your account.",
+  "@treinadorContaSemLogin": {
+    "description": "T87 Treinador: link account error"
+  },
+  "treinadorInicioTitulo": "Your game",
+  "@treinadorInicioTitulo": {
+    "description": "T87 Treinador: start screen title"
+  },
+  "treinadorComoFunciona": "How it works",
+  "@treinadorComoFunciona": {
+    "description": "T87 Treinador: start screen section"
+  },
+  "treinadorPasso1": "We review every move of the game.",
+  "@treinadorPasso1": {
+    "description": "T87 Treinador: how it works step 1"
+  },
+  "treinadorPasso2": "We pick the moments where you could do better.",
+  "@treinadorPasso2": {
+    "description": "T87 Treinador: how it works step 2"
+  },
+  "treinadorPasso3": "You train those moves as exercises.",
+  "@treinadorPasso3": {
+    "description": "T87 Treinador: how it works step 3"
+  },
+  "treinadorAnalisar": "Analyze the game",
+  "@treinadorAnalisar": {
+    "description": "T87 Treinador: start button (new game)"
+  },
+  "treinadorComecar": "Start the exercises",
+  "@treinadorComecar": {
+    "description": "T87 Treinador: start button (analyzed game)"
+  },
+  "treinadorContinuar": "Continue ({done} of {total})",
+  "@treinadorContinuar": {
+    "description": "T87 Treinador: start button (half done)",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorVerPartidas": "See all games",
+  "@treinadorVerPartidas": {
+    "description": "T87 Treinador: start screen secondary"
+  },
+  "treinadorCarregandoTitulo": "Analyzing your game",
+  "@treinadorCarregandoTitulo": {
+    "description": "T87 Treinador: wait screen title"
+  },
+  "treinadorFraseBuscando": "Fetching your game from {platform}",
+  "@treinadorFraseBuscando": {
+    "description": "T87 Treinador: wait phrase 1",
+    "placeholders": {
+      "platform": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorFraseRevendo": "Going over each move calmly",
+  "@treinadorFraseRevendo": {
+    "description": "T87 Treinador: wait phrase 2"
+  },
+  "treinadorFraseOlhando": "Looking closely at the game",
+  "@treinadorFraseOlhando": {
+    "description": "T87 Treinador: wait phrase 3"
+  },
+  "treinadorFraseMomentos": "Finding the moments that decided the game",
+  "@treinadorFraseMomentos": {
+    "description": "T87 Treinador: wait phrase 4"
+  },
+  "treinadorFraseSeparando": "Picking the moves where you could do better",
+  "@treinadorFraseSeparando": {
+    "description": "T87 Treinador: wait phrase 5"
+  },
+  "treinadorFrasePreparando": "Preparing your exercises",
+  "@treinadorFrasePreparando": {
+    "description": "T87 Treinador: wait phrase 6"
+  },
+  "treinadorFraseRetoques": "Adding the final touches",
+  "@treinadorFraseRetoques": {
+    "description": "T87 Treinador: wait phrase 7"
+  },
+  "treinadorPorcentagem": "{percent}%",
+  "@treinadorPorcentagem": {
+    "description": "T87 Treinador: wait percentage",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorVoceSabia": "Did you know?",
+  "@treinadorVoceSabia": {
+    "description": "T87 Treinador: curiosity card title"
+  },
+  "treinadorOutraCuriosidade": "Another fact",
+  "@treinadorOutraCuriosidade": {
+    "description": "T87 Treinador: curiosity button"
+  },
+  "treinadorMeAvise": "Let me know when it ends",
+  "@treinadorMeAvise": {
+    "description": "T87 Treinador: wait screen button"
+  },
+  "treinadorErroTitulo": "We could not analyze this game",
+  "@treinadorErroTitulo": {
+    "description": "T87 Treinador: error screen title"
+  },
+  "treinadorErroTexto": "Try again in a little while.",
+  "@treinadorErroTexto": {
+    "description": "T87 Treinador: error screen body"
+  },
+  "treinadorErroVariante": "This game is a variant, and the trainer only analyzes standard chess.",
+  "@treinadorErroVariante": {
+    "description": "T87 Treinador: error screen body (variant)"
+  },
+  "treinadorRecusado": "This month's analyses are over. They come back next month.",
+  "@treinadorRecusado": {
+    "description": "T87 Treinador: snackbar: monthly cap"
+  },
+  "treinadorPedidoFalhou": "Could not ask for the analysis. Try again.",
+  "@treinadorPedidoFalhou": {
+    "description": "T87 Treinador: snackbar: request failed"
+  },
+  "treinadorExercicioTitulo": "Exercise {n} of {total}",
+  "@treinadorExercicioTitulo": {
+    "description": "T87 Treinador: exercise AppBar title",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorEnunciadoPadrao": "Find the best move.",
+  "@treinadorEnunciadoPadrao": {
+    "description": "T87 Treinador: fallback prompt"
+  },
+  "treinadorAcertoPadrao": "Correct, that is the move.",
+  "@treinadorAcertoPadrao": {
+    "description": "T87 Treinador: fallback right"
+  },
+  "treinadorErroPadrao": "That is not it. Look at the position again.",
+  "@treinadorErroPadrao": {
+    "description": "T87 Treinador: fallback wrong"
+  },
+  "treinadorSolucaoPadrao": "The arrow shows the right move.",
+  "@treinadorSolucaoPadrao": {
+    "description": "T87 Treinador: fallback solution"
+  },
+  "treinadorProximo": "Next exercise",
+  "@treinadorProximo": {
+    "description": "T87 Treinador: exercise button"
+  },
+  "treinadorVerPontuacao": "See the score",
+  "@treinadorVerPontuacao": {
+    "description": "T87 Treinador: exercise button (last)"
+  },
+  "treinadorEstrelas": "{count, plural, =1{Difficulty: 1 star} other{Difficulty: {count} stars}}",
+  "@treinadorEstrelas": {
+    "description": "T87 Treinador: stars semantics",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorFimPerfeito": "Perfect!",
+  "@treinadorFimPerfeito": {
+    "description": "T87 Treinador: end title"
+  },
+  "treinadorFimBom": "Very good!",
+  "@treinadorFimBom": {
+    "description": "T87 Treinador: end title"
+  },
+  "treinadorFimAprovado": "Good work",
+  "@treinadorFimAprovado": {
+    "description": "T87 Treinador: end title"
+  },
+  "treinadorFimAbaixo": "Worth reviewing",
+  "@treinadorFimAbaixo": {
+    "description": "T87 Treinador: end title"
+  },
+  "treinadorFimSubtitulo": "Your game against {adversario} · {cadencia}",
+  "@treinadorFimSubtitulo": {
+    "description": "T87 Treinador: end subtitle with the time control",
+    "placeholders": {
+      "adversario": {
+        "type": "String"
+      },
+      "cadencia": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorFimSubtituloSemCadencia": "Your game against {adversario}",
+  "@treinadorFimSubtituloSemCadencia": {
+    "description": "T87 Treinador: end subtitle when the game has no time control",
+    "placeholders": {
+      "adversario": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorFimBolinhaCerta": "Exercise {n}: right",
+  "@treinadorFimBolinhaCerta": {
+    "description": "T87 Treinador: end dot semantics, right",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorFimBolinhaErrada": "Exercise {n}: wrong",
+  "@treinadorFimBolinhaErrada": {
+    "description": "T87 Treinador: end dot semantics, wrong",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorFimCertos": "{right} of {total} right",
+  "@treinadorFimCertos": {
+    "description": "T87 Treinador: end score",
+    "placeholders": {
+      "right": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorFimPontos": "{count, plural, =1{1 point} other{{count} points}}",
+  "@treinadorFimPontos": {
+    "description": "T87 Treinador: end points",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorFimVikPerfeito": "You found every move. Your game is improving.",
+  "@treinadorFimVikPerfeito": {
+    "description": "T87 Treinador: Viktor at the end"
+  },
+  "treinadorFimVikBom": "Good result. Review the moves you missed in the analysis.",
+  "@treinadorFimVikBom": {
+    "description": "T87 Treinador: Viktor at the end"
+  },
+  "treinadorFimVikAbaixo": "These moments repeat in your games. The analysis shows each one calmly.",
+  "@treinadorFimVikAbaixo": {
+    "description": "T87 Treinador: Viktor at the end"
+  },
+  "treinadorVerAnalise": "See the full analysis",
+  "@treinadorVerAnalise": {
+    "description": "T87 Treinador: end and summary button"
+  },
+  "treinadorOndeErra": "Where you go wrong the most",
+  "@treinadorOndeErra": {
+    "description": "T87 Treinador: end button"
+  },
+  "treinadorResumoTitulo": "Game summary",
+  "@treinadorResumoTitulo": {
+    "description": "T87 Treinador: summary title"
+  },
+  "treinadorPrecisao": "Accuracy",
+  "@treinadorPrecisao": {
+    "description": "T87 Treinador: summary label"
+  },
+  "treinadorPrecisaoValor": "{percent}%",
+  "@treinadorPrecisaoValor": {
+    "description": "T87 Treinador: accuracy value",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorExercicios": "Exercises",
+  "@treinadorExercicios": {
+    "description": "T87 Treinador: summary section"
+  },
+  "treinadorPrecisaoPorFase": "Accuracy by phase",
+  "@treinadorPrecisaoPorFase": {
+    "description": "T87 Treinador: summary section"
+  },
+  "treinadorFaseAbertura": "Opening",
+  "@treinadorFaseAbertura": {
+    "description": "T87 Treinador: phase"
+  },
+  "treinadorFaseMeio": "Middlegame",
+  "@treinadorFaseMeio": {
+    "description": "T87 Treinador: phase"
+  },
+  "treinadorFaseFinal": "Endgame",
+  "@treinadorFaseFinal": {
+    "description": "T87 Treinador: phase"
+  },
+  "treinadorPosicoesChave": "Key positions",
+  "@treinadorPosicoesChave": {
+    "description": "T87 Treinador: summary section"
+  },
+  "treinadorLance": "Move {n}",
+  "@treinadorLance": {
+    "description": "T87 Treinador: key position row",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorRefazer": "Redo the exercises",
+  "@treinadorRefazer": {
+    "description": "T87 Treinador: summary button"
+  },
+  "treinadorPartidaComecarAnalise": "Start the analysis",
+  "@treinadorPartidaComecarAnalise": {
+    "description": "T87 Treinador: Game screen: primary button on a new game"
+  },
+  "treinadorPartidaVerMinhas": "See my games",
+  "@treinadorPartidaVerMinhas": {
+    "description": "T87 Treinador: Game screen: outlined button back to the list"
+  },
+  "treinadorPartidaPasso1Titulo": "{n, plural, =0{Exercises} =1{1 exercise} other{{n} exercises}}",
+  "@treinadorPartidaPasso1Titulo": {
+    "description": "T87 Treinador: Game screen: how it works, item 1 title",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorPartidaPasso1Texto": "Key positions that decided the game.",
+  "@treinadorPartidaPasso1Texto": {
+    "description": "T87 Treinador: Game screen: how it works, item 1 text"
+  },
+  "treinadorPartidaPasso2Titulo": "Think before you move",
+  "@treinadorPartidaPasso2Titulo": {
+    "description": "T87 Treinador: Game screen: how it works, item 2 title"
+  },
+  "treinadorPartidaPasso2Texto": "Look at the threats on both sides before choosing the move.",
+  "@treinadorPartidaPasso2Texto": {
+    "description": "T87 Treinador: Game screen: how it works, item 2 text"
+  },
+  "treinadorPartidaPasso3Titulo": "Then, the whole game",
+  "@treinadorPartidaPasso3Titulo": {
+    "description": "T87 Treinador: Game screen: how it works, item 3 title"
+  },
+  "treinadorPartidaPasso3Texto": "With the score and the annotated moves.",
+  "@treinadorPartidaPasso3Texto": {
+    "description": "T87 Treinador: Game screen: how it works, item 3 text"
+  },
+  "treinadorEsperaSubtitulo": "We are going through your game move by move. It may take a few minutes.",
+  "@treinadorEsperaSubtitulo": {
+    "description": "T87 Treinador: Waiting screen: subtitle under the progress bar"
+  },
+  "treinadorEsperaNota": "You can leave the app: we will tell you when the exercises are ready.",
+  "@treinadorEsperaNota": {
+    "description": "T87 Treinador: Waiting screen: note above the notify button"
+  },
+  "treinadorFilaFrase": "Your game is in the queue",
+  "@treinadorFilaFrase": {
+    "description": "T87 Treinador: Waiting screen: free queue, phrase beside the bar"
+  },
+  "treinadorFilaSubtitulo": "The analysis starts as soon as it is its turn.",
+  "@treinadorFilaSubtitulo": {
+    "description": "T87 Treinador: Waiting screen: free queue, subtitle"
+  },
+  "treinadorResumoContra": "Against {nome}",
+  "@treinadorResumoContra": {
+    "description": "T87 Treinador: Summary: title with the opponent",
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorResumoSuaPrecisao": "Your accuracy",
+  "@treinadorResumoSuaPrecisao": {
+    "description": "T87 Treinador: Summary: accuracy card label"
+  },
+  "treinadorResumoExerciciosNota": "right in the analysis",
+  "@treinadorResumoExerciciosNota": {
+    "description": "T87 Treinador: Summary: exercises card note"
+  },
+  "treinadorResumoLanceTema": "Move {n} · {tema}",
+  "@treinadorResumoLanceTema": {
+    "description": "T87 Treinador: Summary: key position title",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "tema": {
+        "type": "String"
+      }
+    }
+  },
+  "treinadorResumoTipoAdversario": "Opponent's resource",
+  "@treinadorResumoTipoAdversario": {
+    "description": "T87 Treinador: Summary: key position type"
+  },
+  "treinadorResumoTipoProfilaxia": "Stop the threat",
+  "@treinadorResumoTipoProfilaxia": {
+    "description": "T87 Treinador: Summary: key position type"
+  },
+  "treinadorResumoTipoSeuMelhor": "Your best move",
+  "@treinadorResumoTipoSeuMelhor": {
+    "description": "T87 Treinador: Summary: key position type"
+  },
+  "treinadorResumoTipoDecisivo": "Deciding move",
+  "@treinadorResumoTipoDecisivo": {
+    "description": "T87 Treinador: Summary: key position type"
+  },
+  "treinadorResumoSemValor": "–",
+  "@treinadorResumoSemValor": {
+    "description": "T87 Treinador: Summary: value when there is no number"
+  },
+  "treinadorResumoAcertosDeTotal": "{right} of {total}",
+  "@treinadorResumoAcertosDeTotal": {
+    "description": "T87 Treinador: summary exercises value",
+    "placeholders": {
+      "right": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "treinadorResumoAcertou": "Got it right",
+  "@treinadorResumoAcertou": {
+    "description": "T87 Treinador: Summary: key position state (accessibility)"
+  },
+  "treinadorResumoErrou": "Got it wrong",
+  "@treinadorResumoErrou": {
+    "description": "T87 Treinador: Summary: key position state (accessibility)"
+  },
+  "treinadorResumoSemResultado": "No result on this device",
+  "@treinadorResumoSemResultado": {
+    "description": "T87 Treinador: Summary: key position state (accessibility)"
+  },
+  "treinadorAnaliseTitulo": "Game analysis",
+  "@treinadorAnaliseTitulo": {
+    "description": "T87 Treinador: analysis title"
+  },
   "sjTitulo": "Your game",
   "@sjTitulo": {
     "description": "Aba Seu jogo do Treinador de partidas (T87). (T87)"

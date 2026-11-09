@@ -102,6 +102,7 @@ void main() {
         'feitos': 1,
         'acertos': 1,
         'pontos': 3,
+        'resultados': {'1': true},
       });
       await sub.cancel();
 

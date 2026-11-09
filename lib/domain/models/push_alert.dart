@@ -17,7 +17,10 @@ enum PushKind {
 
   /// O curso dado de presente pelo painel (H-R5-63): o toque abre o
   /// presente.
-  gift('presente');
+  gift('presente'),
+
+  /// A partida analisada pelo Treinador (T87): o toque abre a partida.
+  treinador('treinador');
 
   const PushKind(this.code);
 
@@ -47,6 +50,20 @@ abstract final class PushData {
   /// (`ra***@gmail.com`), para quem abre o toque sem estar nela.
   static const uid = 'uid';
   static const account = 'conta';
+
+  /// A partida do Treinador (T87), sem `link`: o app monta o destino.
+  static const partida = 'partida';
+
+  /// O destino do push sem `link`: o do Treinador sai da partida.
+  static String? linkOf(Map<String, String> data) {
+    final dado = data[PushData.link];
+    if (dado != null && dado.trim().isNotEmpty) return dado;
+    if (data[kind] != PushKind.treinador.code) return null;
+    final id = data[partida]?.trim();
+    return id == null || id.isEmpty
+        ? '/treinador'
+        : '/treinador/partida/${Uri.encodeComponent(id)}';
+  }
 }
 
 /// Um push para o app mostrar como notificação própria.
@@ -78,7 +95,7 @@ class PushAlert {
       body: shownBody ?? '',
       id: _filled(data[PushData.id]),
       kind: PushKind.of(data[PushData.kind]),
-      link: _filled(data[PushData.link]),
+      link: PushData.linkOf(data),
       country: _filled(data[PushData.country]),
       course: _filled(data[PushData.course]),
       uid: _filled(data[PushData.uid]),
@@ -149,7 +166,7 @@ class PushOpening {
 
   /// O push tocado dos dados [data] (notificação do sistema).
   factory PushOpening.fromData(Map<String, String> data) => PushOpening(
-    link: _uri(data[PushData.link]),
+    link: _uri(PushData.linkOf(data)),
     pushId: PushAlert._filled(data[PushData.id]),
     country: PushAlert._filled(data[PushData.country]),
     kind: PushKind.of(data[PushData.kind]),
@@ -234,6 +251,7 @@ class PushTexts {
     PushKind.lesson => (id: 'push_aulas_quieto', name: lessons),
     PushKind.news ||
     PushKind.free ||
-    PushKind.gift => (id: 'push_novidades_quieto', name: news),
+    PushKind.gift ||
+    PushKind.treinador => (id: 'push_novidades_quieto', name: news),
   };
 }

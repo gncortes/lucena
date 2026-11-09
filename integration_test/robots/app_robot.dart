@@ -19,7 +19,13 @@ import 'package:lucena/ui/core/theme/app_theme.dart';
 import '../../testing/e2e_dependencies.dart';
 import '../../testing/training/e2e_training.dart';
 
+import 'ciclo.dart';
 import 'variant.dart';
+
+// O Treinador e os acessos do [AppRobot.open] voltam no [AppRobot.restart]:
+// são o servidor, que não some quando o app fecha.
+TreinadorRepository? _treinadorAberto;
+CourseGrantsRepository? _acessosAbertos;
 
 /// Ações do app inteiro e do aparelho: abrir, reiniciar, segundo plano, rede,
 /// tema e idioma do sistema.
@@ -46,10 +52,11 @@ class AppRobot {
     bool accountInvite = false,
     PushRepository? push,
     CourseGrantsRepository? courseGrants,
-    bool settle = true,
     TreinadorRepository? treinador,
+    bool settle = true,
   }) async {
-    _treinador = treinador;
+    _treinadorAberto = treinador;
+    _acessosAbertos = courseGrants;
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
     // fila terminam antes da limpeza: nada dele chega ao cenário novo.
@@ -85,12 +92,10 @@ class AppRobot {
       accountInvite: accountInvite,
       push: push,
       courseGrants: courseGrants,
+      treinador: treinador,
       settle: settle,
     );
   }
-
-  /// O Treinador de partidas do cenário (T87): volta igual no [restart].
-  static TreinadorRepository? _treinador;
 
   /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho. Como
   /// ao fechar à força: nenhuma tela é avisada de que o app vai fechar.
@@ -107,7 +112,7 @@ class AppRobot {
       await Future<void>.delayed(const Duration(milliseconds: 300));
       if (open != null) await conclusions.open(open);
     });
-    await _pumpApp();
+    await _pumpApp(courseGrants: _acessosAbertos, treinador: _treinadorAberto);
   }
 
   /// Fecha o app e troca o banco por um da versão 3 (antes da Jornada), com
@@ -134,6 +139,7 @@ class AppRobot {
     bool accountInvite = false,
     PushRepository? push,
     CourseGrantsRepository? courseGrants,
+    TreinadorRepository? treinador,
     bool settle = true,
   }) async {
     final app = LucenaApp(
@@ -146,9 +152,10 @@ class AppRobot {
         accountInvite: accountInvite,
         push: push,
         courseGrants: courseGrants,
-        treinador: _treinador,
+        treinador: treinador,
       ),
     );
+    retomado($);
     if (!settle) {
       // Tela com animação sem fim (a abertura do presente): o pumpAndSettle
       // nunca termina, então o tempo anda em passos fixos.

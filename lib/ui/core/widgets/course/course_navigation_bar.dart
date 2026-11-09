@@ -6,6 +6,7 @@ import '../../../../domain/models/training/training_course.dart';
 import '../../keys/course_guide_keys.dart';
 import '../../l10n/l10n.dart';
 import '../../theme/canvas_symbols.dart';
+import '../icon_navigation_bar.dart';
 
 /// The course tabs during entry, downloads and the installed guide: icons
 /// only (H-TRE-18). Each tab keeps its name for the screen reader.
@@ -41,7 +42,6 @@ class CourseNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final l = context.l10n;
     String name(CourseGuideTab tab) => switch (tab) {
       CourseGuideTab.lesson => l.courseGuideTabLesson,
@@ -53,38 +53,18 @@ class CourseNavigationBar extends StatelessWidget {
       CourseGuideTab.stats => l.courseGuideTabProgress,
       CourseGuideTab.catalog => l.courseGuideTabCatalog,
     };
-    return SafeArea(
-      top: false,
-      // Sem risco em cima: no canvas a barra continua o fundo da tela.
-      child: NavigationBar(
-        height: 64,
-        selectedIndex: selectedIndex,
-        onDestinationSelected: onDestinationSelected,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-        // A cor do fundo da tela, como no canvas: a barra não forma faixa
-        // branca (Gabriel, 05/11).
-        backgroundColor: colors.surface,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        indicatorColor: Colors.transparent,
-        destinations: [
-          for (final (i, tab) in tabs.indexed)
-            NavigationDestination(
-              key: CourseGuideKeys.tab(tab.name),
-              label: name(tab),
-              icon: _wrap(
-                tab,
-                Icon(
-                  _icon(tab),
-                  color: i == selectedIndex
-                      ? colors.primary
-                      : colors.onSurfaceVariant,
-                ),
-                l,
-              ),
-            ),
-        ],
-      ),
+    return IconNavigationBar(
+      selectedIndex: selectedIndex,
+      onDestinationSelected: onDestinationSelected,
+      tabs: [
+        for (final tab in tabs)
+          (
+            key: CourseGuideKeys.tab(tab.name),
+            label: name(tab),
+            icon: _icon(tab),
+          ),
+      ],
+      wrap: (i, icon) => _wrap(tabs[i], icon, l),
     );
   }
 

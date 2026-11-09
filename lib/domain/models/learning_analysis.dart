@@ -8,11 +8,24 @@ class LearningAnalysisLaunch {
     required this.fen,
     this.moves = const [],
     this.orientation = Side.white,
+    this.selected,
   });
   final String fen;
   final List<String> moves;
   final Side orientation;
+
+  /// O lance em que a análise abre (índice do nó: 1 é o primeiro lance). Nulo
+  /// abre no último. Vale a cada abertura, por cima da sessão guardada.
+  final int? selected;
   String get id => '$fen|${moves.join(',')}|${orientation.name}';
+}
+
+/// A marca de um lance na notação (Treinador, T87): o sufixo de erro ("?",
+/// "??") em vermelho e o comentário logo depois do lance, como no Lichess.
+class AnalysisAnnotation {
+  const AnalysisAnnotation({this.suffix, this.comment});
+  final String? suffix;
+  final String? comment;
 }
 
 class LearningAnalysisSettings {
@@ -70,7 +83,12 @@ class LearningAnalysisSession {
       );
       position = played.position;
     }
-    return LearningAnalysisSession(nodes: nodes, selected: nodes.length - 1);
+    final last = nodes.length - 1;
+    final pick = launch.selected;
+    return LearningAnalysisSession(
+      nodes: nodes,
+      selected: pick == null || pick < 0 || pick > last ? last : pick,
+    );
   }
   final List<LearningAnalysisNode> nodes;
   final int selected;

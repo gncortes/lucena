@@ -1,4 +1,5 @@
 import 'package:lucena/domain/models/treinador/treinador.dart';
+import 'package:lucena/domain/use_cases/treinador/lances_da_partida.dart';
 
 /// Dados de exemplo do Treinador de partidas (T87), os mesmos do canvas
 /// (`design/ferramentas/propostas/v2_treinador.py`): a derrota de Pretas na
@@ -110,18 +111,13 @@ abstract final class TreinadorFixtures {
     'rating': 1580,
     'resultado': 'derrota',
     'abertura': {'eco': 'B12', 'nome': 'Defesa Caro-Kann'},
-    'pgn':
-        '1. e4 c6 2. d4 d5 3. e5 c5 4. c3 Nc6 5. Nf3 e6 6. Bd3 Qb6 '
-        '7. O-O cxd4 *',
+    'pgn': pgnTiago,
     'status': status,
     if (status == 'pronta') ...{
       'resumo': 'Você perdeu no lance 51, num final de torres que empatava.',
       'precisao': 78,
       'exercicios': [for (var n = 1; n <= exercicios; n++) exercicioJson(n)],
-      'lances': [
-        {'san': 'e4', 'fen': _depoisE4, 'cp': 30, 'classe': 'ok'},
-        {'san': 'c6', 'fen': _depoisC6, 'cp': 35, 'classe': 'ok'},
-      ],
+      'lances': lancesTiago(),
       'teoria': {
         'lance': 5,
         'fen': 'rnbqkbnr/pp2pppp/2p5/3pP3/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3',
@@ -154,10 +150,27 @@ abstract final class TreinadorFixtures {
     },
   };
 
-  static const _depoisE4 =
-      'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1';
-  static const _depoisC6 =
-      'rnbqkbnr/pp1ppppp/2p5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+  /// Os 14 meio-lances do PGN da partida contra Tiago_Rook, com 6...Qb6
+  /// marcado como erro do usuário (o comentário que a análise mostra).
+  static List<Map<String, Object?>> lancesTiago() => [
+    for (final (i, l) in LancesDaPartida.de(pgnTiago).indexed)
+      {
+        'san': l.san,
+        'fen': l.fen,
+        'cp': i == 11 ? 120 : 30,
+        'classe': i == 11 ? 'erro' : 'ok',
+        if (i == 11) ...{
+          'melhor': 'Bd7',
+          'comentario':
+              'A dama sai cedo e vira alvo. 6...Bd7 terminava o '
+              'desenvolvimento.',
+        },
+      },
+  ];
+
+  static const pgnTiago =
+      '1. e4 c6 2. d4 d5 3. e5 c5 4. c3 Nc6 5. Nf3 e6 6. Bd3 Qb6 '
+      '7. O-O cxd4 *';
 
   /// As cinco partidas da lista do canvas (da mais nova).
   static Map<String, Map<String, Object?>> listaJson() => {

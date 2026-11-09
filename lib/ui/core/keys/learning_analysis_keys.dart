@@ -19,4 +19,8 @@ abstract final class LearningAnalysisKeys {
   static const confirm = ValueKey('learningAnalysis.confirm');
   static ValueKey<String> move(int index) =>
       ValueKey('learningAnalysis.move.$index');
+
+  /// O comentário do treinador logo depois do lance (T87).
+  static ValueKey<String> comment(int index) =>
+      ValueKey('learningAnalysis.comment.$index');
 }
