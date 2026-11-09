@@ -2,28 +2,26 @@ import '../../ui/treinador_seu_jogo/widgets/seu_jogo_aba.dart';
 
 import 'dart:async';
 
-import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/repositories/analysis/analysis_repository.dart';
-import '../../data/repositories/analysis/learning_analysis_repository.dart';
 import '../../data/repositories/characters/character_repository.dart';
 import '../../data/repositories/lesson_ad/course_grants_repository.dart';
+import '../../data/repositories/settings/settings_repository.dart';
 import '../../data/repositories/treinador/curiosidades_repository.dart';
 import '../../data/repositories/treinador/treinador_preferencias.dart';
 import '../../data/repositories/treinador/treinador_repository.dart';
-import '../../domain/models/learning_analysis.dart';
 import '../../domain/models/treinador/treinador.dart';
 import '../../domain/use_cases/now.dart';
-import '../../domain/use_cases/treinador/lances_da_partida.dart';
+import '../../domain/use_cases/treinador/revisao_da_partida.dart';
 import '../../ui/core/keys/treinador_keys.dart';
 import '../../ui/core/l10n/l10n.dart';
 import '../../ui/core/widgets/load_error.dart';
 import '../../ui/core/widgets/load_skeleton.dart';
-import '../../ui/learning_analysis/view_models/learning_analysis_cubit.dart';
-import '../../ui/learning_analysis/widgets/learning_analysis_screen.dart';
+import '../../ui/game_details/view_models/game_details_cubit.dart';
+import '../../ui/game_details/widgets/game_details_screen.dart';
 import '../../ui/survey/view_models/viktor_thanks_cubit.dart';
 import '../../ui/treinador/view_models/curiosidades_cubit.dart';
 import '../../ui/treinador/view_models/treinador_cubit.dart';
@@ -152,8 +150,9 @@ class _VoltarDoSistema extends StatelessWidget {
   );
 }
 
-/// A análise completa da partida: a linha do PGN no tabuleiro de análise,
-/// com os comentários do servidor nos lances ruins.
+/// A análise completa da partida, na mesma base da análise de partida do app
+/// ([GameDetailsScreen]): a linha do PGN, a qualidade de cada lance pela
+/// classe do servidor e os comentários do treinador.
 class _AnaliseDaPartida extends StatefulWidget {
   const _AnaliseDaPartida({required this.id, this.lance});
 
@@ -212,39 +211,22 @@ class _AnaliseDaPartidaState extends State<_AnaliseDaPartida> {
                 : context.go(Routes.treinador()),
           );
         }
-        final lances = LancesDaPartida.de(partida.pgn);
-        final anotacoes = <int, AnalysisAnnotation>{
-          for (final (i, lance) in partida.lances.indexed)
-            if (lance.classe.ruim || (lance.comentario ?? '').isNotEmpty)
-              i + 1: AnalysisAnnotation(
-                suffix: switch (lance.classe) {
-                  ClasseLance.grave => '??',
-                  ClasseLance.erro => '?',
-                  ClasseLance.imprecisao => '?!',
-                  ClasseLance.ok => null,
-                },
-                comment: lance.comentario,
-              ),
-        };
-        final launch = LearningAnalysisLaunch(
-          fen: LancesDaPartida.inicio(partida.pgn),
-          moves: [for (final m in lances) m.uci],
-          orientation: partida.cor == CorPartida.pretas
-              ? Side.black
-              : Side.white,
-          selected: widget.lance?.clamp(0, lances.length),
+        final jogo = RevisaoDaPartida.de(
+          partida,
+          lance: widget.lance,
+          peso: GameDetailsCubit.importedWeight,
         );
         return KeyedSubtree(
           key: TreinadorKeys.analise,
           child: BlocProvider(
-            create: (c) => LearningAnalysisCubit(
-              launch: launch,
-              repository: c.read<LearningAnalysisRepository>(),
-              engine: c.read<AnalysisRepository>(),
+            create: (c) => GameDetailsCubit.imported(
+              jogo,
+              analysis: c.read<AnalysisRepository>(),
+              settings: c.read<SettingsRepository>(),
             )..load(),
-            child: LearningAnalysisScreen(
+            child: GameDetailsScreen(
               title: l.treinadorAnaliseTitulo,
-              annotations: anotacoes,
+              onBack: () => Navigator.maybePop(context),
             ),
           ),
         );

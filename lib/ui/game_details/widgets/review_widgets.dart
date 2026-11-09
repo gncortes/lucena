@@ -118,7 +118,9 @@ class ReviewSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AnalysisLevelCard(state: state),
+          // A partida de fora vem analisada (ou a engine anota lance a lance):
+          // sem o nível da análise, que é o das partidas do app.
+          if (state.imported == null) AnalysisLevelCard(state: state),
           if (review != null) ...[
             const SizedBox(height: AppSpacing.md),
             Row(
@@ -878,6 +880,10 @@ class MoveExplanation extends StatelessWidget {
         }
       }
     }
+    // O comentário do treinador (partida do Treinador), sob a qualidade.
+    final comment = state.inVariation || index < 0
+        ? null
+        : state.commentOf(index);
     return Container(
       key: GameDetailsKeys.explanation,
       margin: const EdgeInsets.fromLTRB(
@@ -900,7 +906,19 @@ class MoveExplanation extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: [title, ?subtitle],
+              children: [
+                title,
+                ?subtitle,
+                if (comment != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.xs),
+                    child: Text(
+                      comment,
+                      key: GameDetailsKeys.moveComment,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+              ],
             ),
           ),
           ?trailing,
@@ -937,14 +955,9 @@ List<InlineSpan> _sanSpans(String san) => [
 
 /// Os botões de lance a lance, a engine e o menu de abrir fora e copiar.
 class ReviewNavigation extends StatelessWidget {
-  const ReviewNavigation({
-    required this.state,
-    required this.attempt,
-    super.key,
-  });
+  const ReviewNavigation({required this.state, super.key});
 
   final GameDetailsState state;
-  final Attempt attempt;
 
   @override
   Widget build(BuildContext context) {
@@ -1086,10 +1099,11 @@ class ReviewNavigation extends StatelessWidget {
         await Clipboard.setData(ClipboardData(text: fen));
         if (context.mounted) showLucenaSnackBar(context, copied);
       case _Export.pgn:
-        final result = switch (attempt.outcome) {
+        final result = switch (state.outcome) {
+          null => '*',
           AttemptOutcome.draw => '1/2-1/2',
-          AttemptOutcome.win => attempt.userSide == Side.black ? '0-1' : '1-0',
-          AttemptOutcome.loss => attempt.userSide == Side.black ? '1-0' : '0-1',
+          AttemptOutcome.win => state.userSide == Side.black ? '0-1' : '1-0',
+          AttemptOutcome.loss => state.userSide == Side.black ? '1-0' : '0-1',
         };
         await Clipboard.setData(
           ClipboardData(
@@ -1097,7 +1111,7 @@ class ReviewNavigation extends StatelessWidget {
               startFen: state.start!.fen,
               sans: [for (final move in state.moves) move.san],
               result: result,
-              date: attempt.playedAt.toLocal(),
+              date: state.playedAt?.toLocal(),
             ),
           ),
         );

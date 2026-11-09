@@ -50,8 +50,17 @@ import '../../core/motion/shimmer_conteudo.dart';
 /// do lance, a barra de avaliação e a navegação lance a lance; a engine
 /// ligável com as melhores linhas; e a tabela de lances, com a qualidade e o
 /// tempo de cada um.
+///
+/// A mesma tela abre a partida de fora do app (a do Treinador): sem o cartão
+/// da partida nem o nível da análise, com [title] e [onBack] de quem a abre.
 class GameDetailsScreen extends StatelessWidget {
-  const GameDetailsScreen({super.key});
+  const GameDetailsScreen({this.title, this.onBack, super.key});
+
+  /// O título no lugar do padrão.
+  final String? title;
+
+  /// O voltar da barra, sempre visível (a tela pode abrir sem nada embaixo).
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -71,13 +80,16 @@ class GameDetailsScreen extends StatelessWidget {
     return Scaffold(
       key: GameDetailsKeys.screen,
       appBar: LucenaAppBar(
-        leading: ContainerNavigation.canClose(context)
+        leading: onBack != null
+            ? BackButton(onPressed: onBack)
+            : ContainerNavigation.canClose(context)
             ? BackButton(onPressed: () => ContainerNavigation.close(context))
             : null,
         title: Text(
-          state.ready && attempt == null
-              ? l10n.partidaAnaliseTitulo
-              : l10n.gameDetailsTitle,
+          title ??
+              (state.ready && attempt == null
+                  ? l10n.partidaAnaliseTitulo
+                  : l10n.gameDetailsTitle),
         ),
       ),
       body: BoardViewport(
@@ -87,7 +99,7 @@ class GameDetailsScreen extends StatelessWidget {
           esqueleto: const _DetailsLoading(),
           child: !state.ready
               ? const SizedBox.shrink()
-              : attempt == null
+              : attempt == null && state.imported == null
               ? Center(
                   child: ErrorState(
                     message: l10n.gameDetailsNotFound,
@@ -97,7 +109,9 @@ class GameDetailsScreen extends StatelessWidget {
               : _ReviewBody(
                   state: state,
                   attempt: attempt,
-                  opponent: _opponentName(context, state, attempt),
+                  opponent: attempt == null
+                      ? state.imported!.opponentName
+                      : _opponentName(context, state, attempt),
                 ),
         ),
       ),
@@ -133,7 +147,9 @@ class _ReviewBody extends StatelessWidget {
   });
 
   final GameDetailsState state;
-  final Attempt attempt;
+
+  /// A partida do app. Nula na partida de fora ([GameDetailsState.imported]).
+  final Attempt? attempt;
   final String opponent;
 
   /// O maior tabuleiro da revisão, e a altura mínima das abas com a lista
@@ -145,7 +161,8 @@ class _ReviewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final user = attempt.userSide;
+    final user = state.userSide;
+    final attempt = this.attempt;
     final you = l10n.reviewYou;
     final (whiteName, blackName) = switch (user) {
       Side.white => (you, opponent),
@@ -171,13 +188,13 @@ class _ReviewBody extends StatelessWidget {
           rightName: blackName,
           leftIsWhite: true,
         ),
-      _Header(state: state, attempt: attempt),
+      if (attempt != null) _Header(state: state, attempt: attempt),
       ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
     ];
     final moves = [
       MoveExplanation(state: state),
       if (state.variation.isEmpty) const _VariationHint(),
-      _MoveTable(state: state, score: _score(attempt)),
+      _MoveTable(state: state, score: _score(state)),
     ];
     final engine = [if (state.engine) EngineLinesPanel(state: state)];
     if (state.shownPosition == null) {
@@ -283,7 +300,7 @@ class _ReviewBody extends StatelessWidget {
               },
             ),
           ),
-          ReviewNavigation(state: state, attempt: attempt),
+          ReviewNavigation(state: state),
         ],
       ),
     );
@@ -291,9 +308,10 @@ class _ReviewBody extends StatelessWidget {
 }
 
 /// O placar da partida (1–0, 0–1, ½–½); sem o lado do jogador, só o empate.
-String? _score(Attempt attempt) {
-  final user = attempt.userSide;
-  return switch (attempt.outcome) {
+String? _score(GameDetailsState state) {
+  final user = state.userSide;
+  return switch (state.outcome) {
+    null => null,
     AttemptOutcome.draw => '½–½',
     _ when user == null => null,
     final outcome =>

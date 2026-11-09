@@ -6,9 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lucena/data/repositories/analysis/analysis_repository.dart';
-import 'package:lucena/data/repositories/analysis/learning_analysis_repository.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/lesson_ad/course_grants_repository.dart';
+import 'package:lucena/data/repositories/settings/settings_repository.dart';
 import 'package:lucena/data/repositories/treinador/curiosidades_repository.dart';
 import 'package:lucena/data/repositories/treinador/seu_jogo_filtro_repository.dart';
 import 'package:lucena/data/repositories/treinador/treinador_preferencias.dart';
@@ -127,8 +127,9 @@ class TreinadorBed {
       ),
       RepositoryProvider<CharacterRepository>.value(value: characters),
       RepositoryProvider<AnalysisRepository>.value(value: motor),
-      RepositoryProvider<LearningAnalysisRepository>.value(
-        value: LearningAnalysisRepository(AnalysisMemoryPreferences()),
+      // A análise da partida lê a barra de avaliação dos ajustes.
+      RepositoryProvider<SettingsRepository>.value(
+        value: FakeSettingsRepository(),
       ),
     ],
     child: TestApp(

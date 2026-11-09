@@ -17,6 +17,7 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/deep_analysis_job.dart';
 import '../../../domain/models/game_review.dart';
+import '../../../domain/models/imported_game.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/review_rules.dart';
 
@@ -43,6 +44,7 @@ class GameDetailsState {
     this.ready = false,
     this.failed = false,
     this.attempt,
+    this.imported,
     this.start,
     this.moves = const [],
     this.ratingChange,
@@ -74,6 +76,17 @@ class GameDetailsState {
 
   /// A partida. Nula se não foi achada.
   final Attempt? attempt;
+
+  /// A partida de fora do app (a do Treinador), no lugar de [attempt].
+  final ImportedGame? imported;
+
+  /// O lado do jogador, como a partida terminou para ele e quando foi.
+  Side? get userSide => attempt?.userSide ?? imported?.userSide;
+  AttemptOutcome? get outcome => attempt?.outcome ?? imported?.outcome;
+  DateTime? get playedAt => attempt?.playedAt ?? imported?.playedAt;
+
+  /// O comentário do treinador no lance [index] (só na partida de fora).
+  String? commentOf(int index) => imported?.comments[index];
 
   /// A posição de início e os lances, refeitos a partir do que foi gravado.
   final Position? start;
@@ -239,6 +252,7 @@ class GameDetailsState {
     ready: ready,
     failed: failed,
     attempt: attempt,
+    imported: imported,
     start: start,
     moves: moves,
     ratingChange: ratingChange,
@@ -293,7 +307,26 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
     this._deepAnalysis,
     this._lessons,
     this._settings,
-  }) : super(const GameDetailsState());
+  }) : _imported = null,
+       super(const GameDetailsState());
+
+  /// A análise de uma partida de fora do app ([ImportedGame]): sem rating,
+  /// sem revisão guardada e sem análise a fundo; a engine do aparelho anota
+  /// os lances que vieram sem anotação.
+  GameDetailsCubit.imported(ImportedGame game, {this._analysis, this._settings})
+    : _imported = game,
+      _gameId = -1,
+      _progress = null,
+      _rating = null,
+      _characters = null,
+      _reviews = null,
+      _deepAnalysis = null,
+      _lessons = null,
+      super(const GameDetailsState());
+
+  /// O peso das anotações que vêm prontas com a partida de fora: o maior,
+  /// para a engine do aparelho não trocar a classe delas.
+  static int get importedWeight => budgets.length - 1;
 
   /// Os orçamentos da engine por peso: 0 ao passar pelo lance; 1, 2 e 3 nas
   /// revisões rápida, média e profunda (o tempo é por posição, então por
@@ -324,7 +357,8 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   static const engineLineCount = 3;
 
   final int _gameId;
-  final ProgressRepository _progress;
+  final ImportedGame? _imported;
+  final ProgressRepository? _progress;
   final RatingRepository? _rating;
   final CharacterRepository? _characters;
   final AnalysisRepository? _analysis;
@@ -354,8 +388,60 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
         .whenComplete(() => _loading = null);
   }
 
+  /// Refaz os lances [ucis] a partir de [start]; para no primeiro ilegal.
+  static List<LoggedMove> _replay(
+    Position start,
+    List<String> ucis, {
+    List<Duration> times = const [],
+  }) {
+    final moves = <LoggedMove>[];
+    var position = start;
+    for (final (index, uci) in ucis.indexed) {
+      final move = Move.parse(uci);
+      final played = move == null ? null : GameRules.play(position, move);
+      if (played == null) break;
+      position = played.position;
+      moves.add(
+        LoggedMove(
+          san: played.san,
+          move: move!,
+          position: position,
+          time: index < times.length ? times[index] : null,
+        ),
+      );
+    }
+    return moves;
+  }
+
+  Future<void> _loadImported(ImportedGame game) async {
+    final start = GameRules.fromFen(game.startFen);
+    final moves = start == null
+        ? const <LoggedMove>[]
+        : _replay(start, game.moves);
+    final review = game.review?.moves.length == moves.length
+        ? game.review
+        : null;
+    final engine = (await _settings?.load())?.evalBar ?? false;
+    if (isClosed) return;
+    emit(
+      GameDetailsState(
+        engine: engine,
+        review: review,
+        live: {...?review?.moves.asMap()},
+        ready: true,
+        imported: game,
+        start: start,
+        moves: moves,
+        selected: game.selected?.clamp(-1, moves.length - 1),
+      ),
+    );
+    if (engine) unawaited(_analyseShown());
+    unawaited(_annotate(state.shownIndex));
+  }
+
   Future<void> _load({required String language}) async {
-    final attempt = (await _progress.attemptsById([_gameId]))[_gameId];
+    if (_imported case final game?) return _loadImported(game);
+    final attempt = (await _progress!.attemptsById([_gameId]))[_gameId];
     final characters = await _characters?.characters() ?? const <Character>[];
     // O que a partida fez no rating: o ponto dela e o anterior.
     int? change;
@@ -367,26 +453,9 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
       if (index > 0) change = after - history[index - 1].rating.rounded;
     }
     final start = GameRules.fromFen(attempt?.startFen ?? '');
-    final moves = <LoggedMove>[];
-    if (attempt != null && start != null) {
-      var position = start;
-      for (final (index, uci) in attempt.moves.indexed) {
-        final move = Move.parse(uci);
-        final played = move == null ? null : GameRules.play(position, move);
-        if (played == null) break;
-        position = played.position;
-        moves.add(
-          LoggedMove(
-            san: played.san,
-            move: move!,
-            position: position,
-            time: index < attempt.moveTimes.length
-                ? attempt.moveTimes[index]
-                : null,
-          ),
-        );
-      }
-    }
+    final moves = attempt != null && start != null
+        ? _replay(start, attempt.moves, times: attempt.moveTimes)
+        : <LoggedMove>[];
     final saved = await _reviews?.load(_gameId);
     final review = saved != null && saved.moves.length == moves.length
         ? saved

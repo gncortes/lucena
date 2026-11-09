@@ -78,6 +78,9 @@ abstract final class GameDetailsKeys {
   /// A explicação do lance mostrado e a barra de avaliação (só com a
   /// engine ligada).
   static const explanation = Key('gameDetails.explanation');
+
+  /// O comentário do treinador no lance (partida do Treinador).
+  static const moveComment = Key('gameDetails.explanation.comment');
   static const evalBar = Key('gameDetails.evalBar');
 
   /// A legenda dos símbolos, no fim.

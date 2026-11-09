@@ -52,7 +52,7 @@ class KeyMomentsSection extends StatelessWidget {
           firstIsWhite: firstIsWhite,
           userIsWhite: userIsWhite!,
         );
-    final won = state.attempt?.outcome == AttemptOutcome.win;
+    final won = state.outcome == AttemptOutcome.win;
     return Padding(
       key: GameDetailsKeys.moments,
       padding: const EdgeInsets.fromLTRB(

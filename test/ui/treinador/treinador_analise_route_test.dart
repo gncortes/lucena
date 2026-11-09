@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/keys/game_details_keys.dart';
 import 'package:lucena/ui/core/keys/treinador_keys.dart';
 import 'package:lucena/ui/core/widgets/load_error.dart';
 import 'package:lucena/ui/core/widgets/load_skeleton.dart';
@@ -88,6 +89,41 @@ void main() {
     await bed.abrir(tester, Routes.treinadorAnalise(TreinadorFixtures.idTiago));
 
     expect(find.byKey(TreinadorKeys.analise), findsOneWidget);
+    // A mesma base da análise de partida do app, com o título do Treinador.
+    expect(
+      find.descendant(
+        of: find.byKey(TreinadorKeys.analise),
+        matching: find.byKey(GameDetailsKeys.screen),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Análise da partida'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('?lance abre o lance com a classe e o comentário do servidor', (
+    tester,
+  ) async {
+    aparelho411x914(tester);
+    final bed = TreinadorBed();
+    await bed.abrir(
+      tester,
+      '${Routes.treinadorAnalise(TreinadorFixtures.idTiago)}?lance=12',
+    );
+
+    await tester.tap(find.byKey(GameDetailsKeys.tabMoves));
+    await assentar(tester);
+    expect(
+      tester.widget<Text>(find.byKey(GameDetailsKeys.moveComment)).data,
+      startsWith('A dama sai cedo'),
+    );
+    await tester.dragUntilVisible(
+      find.byKey(GameDetailsKeys.move(11)),
+      find.byKey(GameDetailsKeys.panel),
+      const Offset(0, -120),
+    );
+    expect(find.byKey(GameDetailsKeys.moveQuality(11)), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
