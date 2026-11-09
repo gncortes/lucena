@@ -11,10 +11,6 @@ extension TreinadorTextos on BuildContext {
     Plataforma.chesscom => l10n.treinadorChesscom,
   };
 
-  /// O site da partida pelo prefixo do id (`lichess_...`, `chesscom_...`).
-  String plataformaDaPartida(PartidaTreinador p) =>
-      plataforma(Plataforma.parse(p.plataforma) ?? Plataforma.lichess);
-
   String ritmo(Ritmo r) => switch (r) {
     Ritmo.bullet => l10n.treinadorRitmoBullet,
     Ritmo.blitz => l10n.treinadorRitmoBlitz,

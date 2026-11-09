@@ -14987,38 +14987,21 @@
   "@treinadorCarregandoTitulo": {
     "description": "T87 Treinador: wait screen title"
   },
-  "treinadorFraseBuscando": "Fetching your game from {platform}",
-  "@treinadorFraseBuscando": {
-    "description": "T87 Treinador: wait phrase 1",
-    "placeholders": {
-      "platform": {
-        "type": "String"
-      }
-    }
+  "treinadorEsperaPreparando": "Preparing your exercises",
+  "@treinadorEsperaPreparando": {
+    "description": "T87 Treinador: rotating wait phrase 1 (reassuring, not a literal step)"
   },
-  "treinadorFraseRevendo": "Going over each move calmly",
-  "@treinadorFraseRevendo": {
-    "description": "T87 Treinador: wait phrase 2"
+  "treinadorEsperaSeparando": "Picking the moves that teach the most",
+  "@treinadorEsperaSeparando": {
+    "description": "T87 Treinador: rotating wait phrase 2 (reassuring, not a literal step)"
   },
-  "treinadorFraseOlhando": "Looking closely at the game",
-  "@treinadorFraseOlhando": {
-    "description": "T87 Treinador: wait phrase 3"
+  "treinadorEsperaMontando": "Putting your training together",
+  "@treinadorEsperaMontando": {
+    "description": "T87 Treinador: rotating wait phrase 3 (reassuring, not a literal step)"
   },
-  "treinadorFraseMomentos": "Finding the moments that decided the game",
-  "@treinadorFraseMomentos": {
-    "description": "T87 Treinador: wait phrase 4"
-  },
-  "treinadorFraseSeparando": "Picking the moves where you could do better",
-  "@treinadorFraseSeparando": {
-    "description": "T87 Treinador: wait phrase 5"
-  },
-  "treinadorFrasePreparando": "Preparing your exercises",
-  "@treinadorFrasePreparando": {
-    "description": "T87 Treinador: wait phrase 6"
-  },
-  "treinadorFraseRetoques": "Adding the final touches",
-  "@treinadorFraseRetoques": {
-    "description": "T87 Treinador: wait phrase 7"
+  "treinadorEsperaQuaseLa": "Almost there",
+  "@treinadorEsperaQuaseLa": {
+    "description": "T87 Treinador: rotating wait phrase 4 (reassuring, not a literal step)"
   },
   "treinadorPorcentagem": "{percent}%",
   "@treinadorPorcentagem": {

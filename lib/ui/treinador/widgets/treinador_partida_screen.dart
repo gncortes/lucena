@@ -31,7 +31,6 @@ import '../view_models/curiosidades_cubit.dart';
 import '../view_models/treinador_partida_cubit.dart';
 import 'linha_partida.dart';
 import 'treinador_screen.dart';
-import 'treinador_textos.dart';
 
 /// Uma partida do Treinador: o início, a espera da análise, o erro e o
 /// resumo, conforme o status que o servidor gravou.
@@ -324,7 +323,8 @@ class _Passo extends StatelessWidget {
   }
 }
 
-/// A espera da análise (canvas `DCarregandoMeio`): frase e porcentagem, a
+/// A espera da análise (canvas `DCarregandoMeio`): frase (que se reveza) e
+/// porcentagem, a
 /// barra, o Viktor com a curiosidade e, no pé, a nota e "Me avise". Na fila
 /// do grátis a barra corre sem número, porque a análise ainda não começou.
 class _Carregando extends StatefulWidget {
@@ -356,20 +356,26 @@ class _CarregandoState extends State<_Carregando> {
     super.dispose();
   }
 
-  String _frase(int p) {
+  /// Quanto tempo cada frase da espera fica na tela.
+  static const _porFrase = Duration(seconds: 4);
+
+  /// A frase da espera: na fila, a da fila; analisando, frases curtas que
+  /// se revezam e tranquilizam, sem narrar o passo da análise (o servidor
+  /// não conta em que passo está). "Quase lá" só entra perto do fim.
+  String _frase(int p, DateTime agora) {
     final l = context.l10n;
     if (_naFila) return l.treinadorFilaFrase;
-    if (p < 8) {
-      return l.treinadorFraseBuscando(
-        context.plataformaDaPartida(widget.partida),
-      );
-    }
-    if (p < 25) return l.treinadorFraseRevendo;
-    if (p < 45) return l.treinadorFraseOlhando;
-    if (p < 65) return l.treinadorFraseMomentos;
-    if (p < 80) return l.treinadorFraseSeparando;
-    if (p < 90) return l.treinadorFrasePreparando;
-    return l.treinadorFraseRetoques;
+    final frases = [
+      l.treinadorEsperaPreparando,
+      l.treinadorEsperaSeparando,
+      l.treinadorEsperaMontando,
+      if (p >= 80) l.treinadorEsperaQuaseLa,
+    ];
+    final inicio = widget.inicio;
+    final passadas = inicio == null
+        ? 0
+        : agora.difference(inicio).inSeconds ~/ _porFrase.inSeconds;
+    return frases[passadas.clamp(0, 1 << 30) % frases.length];
   }
 
   @override
@@ -377,7 +383,8 @@ class _CarregandoState extends State<_Carregando> {
     final l = context.l10n;
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
-    final p = PorcentagemDaEspera.de(widget.inicio, context.read<Now>()());
+    final agora = context.read<Now>()();
+    final p = PorcentagemDaEspera.de(widget.inicio, agora);
     return Column(
       key: TreinadorKeys.carregando,
       children: [
@@ -397,7 +404,7 @@ class _CarregandoState extends State<_Carregando> {
                   children: [
                     Expanded(
                       child: Text(
-                        _frase(p),
+                        _frase(p, agora),
                         key: TreinadorKeys.carregandoFrase,
                         style: context.cardTitle,
                       ),

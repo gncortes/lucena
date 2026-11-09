@@ -318,7 +318,7 @@ void main() {
       expect(find.text('Análise da partida'), findsOneWidget);
       expect(
         tester.widget<Text>(find.byKey(TreinadorKeys.carregandoFrase)).data,
-        'Buscando sua partida no Lichess',
+        'Preparando seus exercícios',
       );
       expect(
         tester
@@ -360,6 +360,38 @@ void main() {
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets('as frases se revezam e "Quase lá" só vem perto do fim', (
+      tester,
+    ) async {
+      final partida = TreinadorFixtures.lista().firstWhere(
+        (p) => p.id == _idAnalisando,
+      );
+      final bed = await _abrir(tester, partida);
+      String frase() =>
+          tester.widget<Text>(find.byKey(TreinadorKeys.carregandoFrase)).data!;
+      final vistas = <String>{frase()};
+      for (var i = 0; i < 3; i++) {
+        bed.now.advance(const Duration(seconds: 4));
+        await tester.pump(const Duration(seconds: 1));
+        vistas.add(frase());
+      }
+      expect(vistas, {
+        'Preparando seus exercícios',
+        'Separando os lances que mais ensinam',
+        'Montando seu treino',
+      });
+
+      // Perto do fim (80% ou mais), "Quase lá" entra no revezamento.
+      bed.now.advance(const Duration(seconds: 160));
+      for (var i = 0; i < 4; i++) {
+        bed.now.advance(const Duration(seconds: 4));
+        await tester.pump(const Duration(seconds: 1));
+        vistas.add(frase());
+      }
+      expect(vistas, contains('Quase lá'));
       await tester.pumpWidget(const SizedBox());
     });
 
@@ -698,7 +730,7 @@ void main() {
         'Sua partida está na fila',
       );
       expect(find.byKey(TreinadorKeys.carregandoPorcentagem), findsNothing);
-      expect(find.text('Buscando sua partida no Lichess'), findsNothing);
+      expect(find.text('Preparando seus exercícios'), findsNothing);
       expect(find.byKey(TreinadorKeys.carregandoFila), findsOneWidget);
       expect(find.byKey(TreinadorKeys.carregandoSubtitulo), findsNothing);
       expect(
