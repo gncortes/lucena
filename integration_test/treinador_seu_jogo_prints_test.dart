@@ -3,9 +3,14 @@
 // python3 tools/capture/t85_capture_server.py --serial emulator-5558
 //   --output docs/qa/T87-app-seu-jogo --port 8796
 // e o Patrol com --dart-define=E2E_CAPTURE_URL=http://10.0.2.2:8796.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/treinador/treinador.dart';
+import 'package:lucena/routing/frentes/treinador_seu_jogo_routes.dart';
+import 'package:lucena/ui/core/keys/treinador_keys.dart';
 import 'package:lucena/ui/core/keys/treinador_seu_jogo_keys.dart';
 import 'package:patrol/patrol.dart';
 
@@ -39,6 +44,15 @@ FakeTreinadorRepository _treinador() => FakeTreinadorRepository(
     ],
   },
 );
+
+/// O servidor fora do ar: a lista de partidas não chega.
+class _TreinadorComErro extends FakeTreinadorRepository {
+  _TreinadorComErro() : super(conta: TreinadorFixtures.conta);
+
+  @override
+  Stream<List<PartidaTreinador>> partidas() =>
+      Stream.error(StateError('sem servidor'));
+}
 
 /// A aba inteira, uma tela por print (rola até o fim).
 Future<void> _abaInteira(PatrolIntegrationTester $, String nome) async {
@@ -101,5 +115,64 @@ void main() {
     // As partes e a oferta cabem numa tela só (411×914).
     await $(SeuJogoKeys.pilaresConhecer).scrollTo();
     await shot.shot('06-pilares-oferta', ready: SeuJogoKeys.pilaresScreen);
+  });
+
+  patrolTest('T87 prints: estilo, tema e a posição abrindo a análise', (
+    $,
+  ) async {
+    final app = AppRobot($);
+    final seuJogo = SeuJogoRobot($);
+    final shot = TrainingCaptureRobot($);
+    await app.open(
+      systemLocale: const Locale('pt'),
+      demo: true,
+      treinador: _treinador(),
+    );
+    await TrainingCaptureRobot.semFaixaDoTeste($);
+    await seuJogo.open();
+    await $(SeuJogoKeys.estilo).scrollTo().tap();
+    await $(SeuJogoKeys.estiloScreen).waitUntilVisible();
+    await shot.shot('08-estilo', ready: SeuJogoKeys.estiloScreen);
+    await seuJogo.voltarPelaSeta(SeuJogoKeys.aba);
+
+    await $(SeuJogoKeys.tema('garfo')).scrollTo().tap();
+    await $(SeuJogoKeys.temaScreen).waitUntilVisible();
+    await shot.shot('09-tema', ready: SeuJogoKeys.temaScreen);
+    await shot.record(
+      '10-tema-analise',
+      () => $(SeuJogoKeys.temaPosicao(0)).tap(),
+      ready: TreinadorKeys.analise,
+    );
+    await shot.shot('10-tema-analise', ready: TreinadorKeys.analise);
+  });
+
+  patrolTest('T87 prints: aba sem partidas', ($) async {
+    final shot = TrainingCaptureRobot($);
+    await AppRobot($).open(
+      systemLocale: const Locale('pt'),
+      demo: true,
+      treinador: FakeTreinadorRepository(conta: TreinadorFixtures.conta),
+    );
+    await TrainingCaptureRobot.semFaixaDoTeste($);
+    final context = $.tester.element(find.byType(Scaffold).first);
+    unawaited(GoRouter.of(context).push(SeuJogoPaths.seuJogo));
+    // O centro do vazio é espaço em branco: existe, mas não é "visível" para o Patrol.
+    await $(SeuJogoKeys.vazio).waitUntilExists();
+    await $.pumpAndSettle();
+    await shot.shot('11-vazio', ready: SeuJogoKeys.screen);
+  });
+
+  patrolTest('T87 prints: aba com erro', ($) async {
+    final shot = TrainingCaptureRobot($);
+    await AppRobot($).open(
+      systemLocale: const Locale('pt'),
+      demo: true,
+      treinador: _TreinadorComErro(),
+    );
+    await TrainingCaptureRobot.semFaixaDoTeste($);
+    final context = $.tester.element(find.byType(Scaffold).first);
+    unawaited(GoRouter.of(context).push(SeuJogoPaths.seuJogo));
+    await $(SeuJogoKeys.erro).waitUntilVisible();
+    await shot.shot('12-erro', ready: SeuJogoKeys.erro);
   });
 }
