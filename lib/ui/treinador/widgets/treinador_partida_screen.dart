@@ -13,6 +13,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/treinador_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -119,6 +120,7 @@ class TreinadorPartidaScreen extends StatelessWidget {
               titulo,
               maxLines: 2,
               softWrap: true,
+              textAlign: TextAlign.center,
               overflow: TextOverflow.visible,
             ),
           ),
@@ -173,6 +175,8 @@ class _Inicio extends StatelessWidget {
                   partida: partida,
                   agora: context.read<Now>()(),
                   acesso: state.acesso,
+                  mostrarResumo: true,
+                  mostrarSeta: false,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -181,25 +185,22 @@ class _Inicio extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l.treinadorComoFunciona,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text(l.treinadorComoFunciona, style: context.cardTitle),
                     const SizedBox(height: AppSpacing.lg),
                     _Passo(
-                      icon: Icons.extension,
+                      icon: Icons.extension_outlined,
                       titulo: l.treinadorPartidaPasso1Titulo(previstos),
                       texto: l.treinadorPartidaPasso1Texto,
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     _Passo(
-                      icon: Icons.timer,
+                      icon: Icons.visibility_outlined,
                       titulo: l.treinadorPartidaPasso2Titulo,
                       texto: l.treinadorPartidaPasso2Texto,
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     _Passo(
-                      icon: Icons.analytics,
+                      icon: Icons.analytics_outlined,
                       titulo: l.treinadorPartidaPasso3Titulo,
                       texto: l.treinadorPartidaPasso3Texto,
                     ),
@@ -308,7 +309,7 @@ class _Passo extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(titulo, style: theme.textTheme.titleMedium),
+              Text(titulo, style: context.cardTitle),
               Text(
                 texto,
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -398,7 +399,7 @@ class _CarregandoState extends State<_Carregando> {
                       child: Text(
                         _frase(p),
                         key: TreinadorKeys.carregandoFrase,
-                        style: theme.textTheme.titleMedium,
+                        style: context.cardTitle,
                       ),
                     ),
                     if (!_naFila) ...[
@@ -406,7 +407,7 @@ class _CarregandoState extends State<_Carregando> {
                       Text(
                         l.treinadorPorcentagem(p),
                         key: TreinadorKeys.carregandoPorcentagem,
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: context.cardTitle?.copyWith(
                           color: theme.colorScheme.primary,
                         ),
                       ),
@@ -507,7 +508,7 @@ class _Curiosidade extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.lightbulb,
+                        Icons.lightbulb_outline,
                         size: AppIconSize.compact,
                         color: theme.colorScheme.primary,
                       ),
@@ -674,6 +675,8 @@ class _Resumo extends StatelessWidget {
                   partida: partida,
                   agora: context.read<Now>()(),
                   acesso: state.acesso,
+                  mostrarEstado: false,
+                  mostrarSeta: false,
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -769,8 +772,13 @@ class _Numero extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(valor, style: theme.textTheme.headlineSmall),
-            Text(rotulo, style: theme.textTheme.titleSmall),
+            Text(valor, style: context.bigNumber),
+            Text(
+              rotulo,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: AppWeight.strong,
+              ),
+            ),
             if (nota case final nota?)
               Text(
                 nota,
@@ -803,7 +811,7 @@ class _CartaoFases extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l.treinadorPrecisaoPorFase, style: theme.textTheme.titleMedium),
+          Text(l.treinadorPrecisaoPorFase, style: context.cardTitle),
           const SizedBox(height: AppSpacing.sm),
           for (final (nome, valor) in fases)
             Padding(
@@ -849,7 +857,6 @@ class _CartaoPosicoes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final theme = Theme.of(context);
     return LucenaCard(
       key: TreinadorKeys.resumoPosicoes,
       padding: const EdgeInsets.symmetric(
@@ -861,10 +868,7 @@ class _CartaoPosicoes extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: Text(
-              l.treinadorPosicoesChave,
-              style: theme.textTheme.titleMedium,
-            ),
+            child: Text(l.treinadorPosicoesChave, style: context.cardTitle),
           ),
           for (final (i, ex) in partida.exercicios.indexed) ...[
             if (i > 0) const Divider(height: 1),
@@ -909,11 +913,11 @@ class _LinhaPosicao extends StatelessWidget {
     final colors = theme.colorScheme;
     final (icone, cor, rotulo) = switch (resultado) {
       true => (
-        Icons.check_circle,
-        AppColors.of(context).success,
+        Icons.check_circle_outline,
+        AppColors.trainingDayCorrect,
         l.treinadorResumoAcertou,
       ),
-      false => (Icons.cancel, colors.error, l.treinadorResumoErrou),
+      false => (Icons.highlight_off, colors.error, l.treinadorResumoErrou),
       null => (
         Icons.radio_button_unchecked,
         colors.outline,

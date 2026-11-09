@@ -76,14 +76,15 @@ void main() {
       await montar(tester, _longa(status: status));
 
       expect(find.text('JogadorDeNomeLongo_25 (1612)'), findsOneWidget);
-      // Com a abertura longa, ela ganha a própria linha; o resto fica junto.
+      // Com a abertura longa, ela abre a linha de baixo (ordem estável:
+      // ritmo, cor, abertura, quando).
       final textos = [
         for (final p in _paragrafos(tester)) p.text.toPlainText(),
       ];
-      expect(textos, contains('15+10 Rápida · Pretas · Hoje'));
+      expect(textos, contains('15+10 Rápida · Pretas'));
       expect(
         textos,
-        contains('Defesa Siciliana: Variante Najdorf, Ataque Inglês'),
+        contains('Defesa Siciliana: Variante Najdorf, Ataque Inglês · Hoje'),
       );
       for (final p in _paragrafos(tester)) {
         // Nenhum texto passa do máximo de linhas (nada é cortado).
@@ -92,10 +93,41 @@ void main() {
           isFalse,
           reason: 'cortou: ${p.text.toPlainText()}',
         );
-        expect(p.maxLines, anyOf(isNull, LinhaPartida.detalheMaxLinhas));
+        expect(
+          p.maxLines,
+          anyOf(
+            isNull,
+            LinhaPartida.detalheMaxLinhas,
+            LinhaPartida.detalheMaxLinhas + 1,
+          ),
+        );
         expect(p.text.toPlainText(), isNot(contains('…')));
       }
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('sem seta e sem estado: só nome e detalhe', (tester) async {
+    aparelho411x914(tester);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: Scaffold(
+          body: LinhaPartida(
+            partida: _longa(status: StatusPartida.nova),
+            agora: agoraDeTeste(),
+            acesso: true,
+            mostrarSeta: false,
+            mostrarEstado: false,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byIcon(Icons.chevron_right), findsNothing);
+    final textos = [for (final p in _paragrafos(tester)) p.text.toPlainText()];
+    // A letra do resultado, o nome e as duas linhas do detalhe.
+    expect(textos, hasLength(4));
+  });
 }

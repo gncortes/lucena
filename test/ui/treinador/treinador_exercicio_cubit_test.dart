@@ -103,7 +103,7 @@ void main() {
       expect(c.state.fase, FaseExercicio.jogando);
     });
 
-    testWidgets('partida que nunca fica pronta: offline em 20 s', (
+    testWidgets('partida que nunca fica pronta: offline em 8 s', (
       tester,
     ) async {
       repo = novoRepo(
@@ -111,7 +111,7 @@ void main() {
       );
       final c = criar();
       unawaited(c.load());
-      await tester.pump(const Duration(seconds: 19));
+      await tester.pump(const Duration(seconds: 7));
       expect(c.state.fase, FaseExercicio.carregando);
       await tester.pump(const Duration(seconds: 2));
       expect(c.state.fase, FaseExercicio.offline);

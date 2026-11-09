@@ -376,7 +376,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      // Um item por exercício pendente: o tema e a posição, no CourseItemTile.
+      // O próximo exercício pendente: o tema e a posição, no CourseItemTile.
       final item = TreinadorKeys.paraFazerExercicio(
         TreinadorFixtures.idTiago,
         1,
@@ -388,11 +388,12 @@ void main() {
         findsOneWidget,
       );
       expect(_textoEm(item, 'Xeque duplo'), findsNothing);
+      // Um item por partida: o próximo; os outros ficam para depois.
       expect(
         find.byKey(
           TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, 3),
         ),
-        findsOneWidget,
+        findsNothing,
       );
       expect(tester.takeException(), isNull);
     });
@@ -410,7 +411,7 @@ void main() {
     });
 
     testWidgets(
-      'tocar num exercício para fazer abre os exercícios da partida',
+      'tocar no exercício para fazer abre a partida no exercício mostrado',
       (tester) async {
         aparelho411x914(tester);
         final bed = TreinadorBed(repo: _comDados(), grants: comPlano());
@@ -419,7 +420,7 @@ void main() {
         await _tocar(
           tester,
           find.byKey(
-            TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, 2),
+            TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, 1),
           ),
         );
         expect(
@@ -431,7 +432,9 @@ void main() {
       },
     );
 
-    testWidgets('só os exercícios que faltam aparecem', (tester) async {
+    testWidgets('só o próximo exercício pendente de cada partida aparece', (
+      tester,
+    ) async {
       aparelho411x914(tester);
       final parcial = TreinadorFixtures.tiago().copyWith(
         progresso: _progresso(2, acertos: 1),
@@ -445,7 +448,7 @@ void main() {
       );
       await bed.abrir(tester, Routes.treinador());
 
-      for (final n in [1, 2]) {
+      for (final n in [1, 2, 4]) {
         expect(
           find.byKey(
             TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, n),
@@ -453,14 +456,12 @@ void main() {
           findsNothing,
         );
       }
-      for (final n in [3, 4]) {
-        expect(
-          find.byKey(
-            TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, n),
-          ),
-          findsOneWidget,
-        );
-      }
+      expect(
+        find.byKey(
+          TreinadorKeys.paraFazerExercicio(TreinadorFixtures.idTiago, 3),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('sem plano: mostra a caixa e conhecer o plano abre a venda', (
@@ -471,7 +472,7 @@ void main() {
       await bed.abrir(tester, Routes.treinador());
 
       expect(find.byKey(TreinadorKeys.semPlano), findsWidgets);
-      expect(find.text('Treinador de partidas'), findsOneWidget);
+      expect(find.text('Análise de partidas'), findsOneWidget);
       expect(
         find.text(
           'Com o plano de análise, toda partida nova vira exercícios. '
@@ -577,7 +578,7 @@ void main() {
         (TreinadorKeys.filtroRitmo('bullet'), 'Bullet'),
         (TreinadorKeys.filtroRitmo('blitz'), 'Blitz'),
         (TreinadorKeys.filtroRitmo('rapida'), 'Rápida'),
-        (TreinadorKeys.filtroResultado('todos'), 'Todas as partidas'),
+        (TreinadorKeys.filtroResultado('todos'), 'Todas'),
         (TreinadorKeys.filtroResultado('vitoria'), 'Vitórias'),
         (TreinadorKeys.filtroResultado('derrota'), 'Derrotas'),
         (TreinadorKeys.filtroResultado('empate'), 'Empates'),

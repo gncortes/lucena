@@ -34,8 +34,8 @@ void main() {
     final fake = FakeTreinadorRepository(partidas: TreinadorFixtures.lista());
     await app.open(treinador: fake);
     await t.abrirPelaHome();
+    // Canvas DLigarConta: a barra das abas já aparece no passo de ligar.
     t.espera(TreinadorKeys.ligarConta);
-    t.naoTem(TreinadorKeys.tabHoje);
 
     // A conta não existe.
     fake.falhaLigar = FalhaLigarConta.naoExiste;

@@ -110,9 +110,9 @@ void _confereComoFunciona(int n) {
   expect(find.text('Posições-chave que decidiram a partida.'), findsOneWidget);
   expect(find.text('Pense antes de jogar'), findsOneWidget);
   expect(find.text('Depois, a partida inteira'), findsOneWidget);
-  expect(find.byIcon(Icons.extension), findsOneWidget);
-  expect(find.byIcon(Icons.timer), findsOneWidget);
-  expect(find.byIcon(Icons.analytics), findsOneWidget);
+  expect(find.byIcon(Icons.extension_outlined), findsOneWidget);
+  expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+  expect(find.byIcon(Icons.analytics_outlined), findsOneWidget);
 }
 
 Future<TreinadorBed> _abrir(
@@ -450,7 +450,7 @@ void main() {
 
       expect(
         find.text(
-          'Esta partida é de uma variante, e o Treinador só analisa o '
+          'Esta partida é de uma variante, e a análise só vale para o '
           'xadrez comum.',
         ),
         findsOneWidget,
@@ -473,7 +473,22 @@ void main() {
       final bed = await _abrir(tester, TreinadorFixtures.tiago());
 
       expect(find.byKey(TreinadorKeys.inicio), findsOneWidget);
-      expect(find.text('0 de 4 exercícios feitos'), findsOneWidget);
+      // O cartão traz a frase do resumo (DInicio), sem seta.
+      expect(find.text('0 de 4 exercícios feitos'), findsNothing);
+      expect(
+        _textoEm(
+          TreinadorKeys.cartaoPartida,
+          'Você perdeu no lance 51, num final de torres que empatava.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(TreinadorKeys.cartaoPartida),
+          matching: find.byIcon(Icons.chevron_right),
+        ),
+        findsNothing,
+      );
       expect(
         _textoEm(TreinadorKeys.comecar, 'Começar os exercícios'),
         findsOneWidget,
@@ -860,9 +875,9 @@ void main() {
         of: find.byKey(TreinadorKeys.posicaoChave(n)),
         matching: find.byIcon(i),
       );
-      expect(icone(1, Icons.check_circle), findsOneWidget);
-      expect(icone(3, Icons.check_circle), findsOneWidget);
-      expect(icone(4, Icons.cancel), findsOneWidget);
+      expect(icone(1, Icons.check_circle_outline), findsOneWidget);
+      expect(icone(3, Icons.check_circle_outline), findsOneWidget);
+      expect(icone(4, Icons.highlight_off), findsOneWidget);
     });
 
     testWidgets('sem resultados no aparelho, a posição fica neutra', (
@@ -874,8 +889,8 @@ void main() {
       await _abrir(tester, remoto);
 
       expect(find.byKey(TreinadorKeys.resumo), findsOneWidget);
-      expect(find.byIcon(Icons.check_circle), findsNothing);
-      expect(find.byIcon(Icons.cancel), findsNothing);
+      expect(find.byIcon(Icons.check_circle_outline), findsNothing);
+      expect(find.byIcon(Icons.highlight_off), findsNothing);
       await tester.ensureVisible(find.byKey(TreinadorKeys.posicaoChave(4)));
       await tester.pump();
       expect(find.byIcon(Icons.radio_button_unchecked), findsNWidgets(4));

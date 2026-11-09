@@ -132,17 +132,12 @@ class _TreinadorScreenState extends State<TreinadorScreen> {
 void _abrir(BuildContext context, PartidaTreinador p) =>
     unawaited(context.push(Routes.treinadorPartida(p.id)));
 
-/// Os exercícios ainda por fazer de uma partida pronta.
-List<ExercicioTreinador> _pendentes(PartidaTreinador p) {
-  if (!p.pronta) return const [];
-  final progresso = p.progresso ?? ProgressoPartida.vazio;
-  return [
-    for (final (i, ex) in p.exercicios.indexed)
-      if (progresso.resultados.isEmpty
-          ? i >= progresso.feitos
-          : !progresso.resultados.any((r) => r.n == ex.n))
-        ex,
-  ];
+/// O próximo exercício pendente de uma partida pronta: o mesmo em que a tela
+/// de exercícios começa (`ProgressoPartida.proximo`). Nulo se não há nenhum.
+ExercicioTreinador? _proximo(PartidaTreinador p) {
+  if (!p.pronta) return null;
+  final feitos = (p.progresso ?? ProgressoPartida.vazio).feitos;
+  return feitos < p.exercicios.length ? p.exercicios[feitos] : null;
 }
 
 /// O nome do tema do exercício (`xeque_duplo` → "Xeque duplo"). Tema sem nome
@@ -171,7 +166,7 @@ class _Hoje extends StatelessWidget {
     final ultima = state.ultima;
     final paraFazer = [
       for (final p in state.partidas)
-        for (final ex in _pendentes(p)) (p, ex),
+        if (_proximo(p) case final ex?) (p, ex),
     ];
     return ListView(
       key: TreinadorKeys.hoje,
@@ -319,6 +314,7 @@ class _Partidas extends StatelessWidget {
           materialTapTargetSize: AppChip.tapTarget,
           visualDensity: AppChip.density,
           label: Text(label),
+          showCheckmark: false,
           selected: selected,
           onSelected: (_) => onTap(),
         );
@@ -489,7 +485,11 @@ class _LigarContaState extends State<_LigarConta> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final plataforma = _plataforma;
-    const padding = EdgeInsets.all(AppSpacing.xl);
+    // Canvas DLigarConta: 32 dp dos lados.
+    const padding = EdgeInsets.symmetric(
+      horizontal: AppSpacing.xxl,
+      vertical: AppSpacing.xl,
+    );
     // Canvas DLigarConta: o bloco centrado na altura, com rolagem se não couber.
     return LayoutBuilder(
       builder: (context, box) => SingleChildScrollView(

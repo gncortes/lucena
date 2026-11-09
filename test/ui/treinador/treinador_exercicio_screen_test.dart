@@ -116,7 +116,7 @@ void main() {
     // Não libera a partida (ao chegar, o tabuleiro cairia no BUG abaixo):
     // passados 20 s, é falta de conexão (com "Tentar de novo"), não "não
     // encontrada".
-    await tester.pump(const Duration(seconds: 21));
+    await tester.pump(const Duration(seconds: 9));
     await tester.pump();
     expect(find.byType(LoadSkeletonScreen), findsNothing);
     expect(find.byType(LoadErrorScreen), findsOneWidget);
@@ -187,10 +187,10 @@ void main() {
                       .decoration)!
                   as BoxDecoration)
               .color;
-      expect(cor(1), AppColors.successColor);
-      expect(cor(2), AppColors.successColor);
-      expect(cor(3), AppColors.errorColor);
-      expect(cor(4), AppColors.errorColor);
+      expect(cor(1), AppColors.trainingDayCorrect);
+      expect(cor(2), AppColors.trainingDayCorrect);
+      expect(cor(3), AppColors.trainingDayWrong);
+      expect(cor(4), AppColors.trainingDayWrong);
       expect(tester.takeException(), isNull);
     });
 

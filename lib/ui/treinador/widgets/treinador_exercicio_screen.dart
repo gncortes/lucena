@@ -21,6 +21,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/motion/retorno_do_lance.dart';
 import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
@@ -413,8 +414,8 @@ class _Fim extends StatelessWidget {
                   Text(
                     l.treinadorFimCertos(p.acertos, state.total),
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+                    style: context.screenTitle?.copyWith(
+                      fontWeight: AppWeight.heavy,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
@@ -443,14 +444,14 @@ class _Fim extends StatelessWidget {
               children: [
                 BusyButton(
                   buttonKey: TreinadorKeys.fimAnalise,
-                  icon: Icons.analytics,
+                  icon: Icons.analytics_outlined,
                   label: l.treinadorVerAnalise,
                   onPressed: () =>
                       unawaited(context.push(Routes.treinadorAnalise(id))),
                 ),
                 BusyButton(
                   buttonKey: TreinadorKeys.fimSeuJogo,
-                  icon: Icons.insights,
+                  icon: Icons.insights_outlined,
                   style: BusyButtonStyle.outlined,
                   label: l.treinadorOndeErra,
                   onPressed: () => context.go(
@@ -491,9 +492,15 @@ class _Bolinhas extends StatelessWidget {
             numero: i + 1,
             diametro: diametro,
             certo: porN[ex.n]?.acertou,
-            semantica: porN[ex.n]?.acertou == true
-                ? l.treinadorFimBolinhaCerta(i + 1)
-                : l.treinadorFimBolinhaErrada(i + 1),
+            semantica: switch (porN[ex.n]?.acertou) {
+              true => l.treinadorFimBolinhaCerta(i + 1),
+              false => l.treinadorFimBolinhaErrada(i + 1),
+              // Sem resultado neste celular: "Exercício n de N" e o valor.
+              null => l.treinadorExercicioTitulo(i + 1, state.total),
+            },
+            valorSemantico: porN[ex.n] == null
+                ? l.treinadorResumoSemResultado
+                : null,
             texto: theme.textTheme.titleMedium,
           ),
       ],
@@ -508,6 +515,7 @@ class _Bolinha extends StatelessWidget {
     required this.certo,
     required this.semantica,
     required this.texto,
+    this.valorSemantico,
     super.key,
   });
 
@@ -517,29 +525,37 @@ class _Bolinha extends StatelessWidget {
   /// Nulo: ainda sem resultado.
   final bool? certo;
   final String semantica;
+  final String? valorSemantico;
   final TextStyle? texto;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final cor = switch (certo) {
-      true => AppColors.successColor,
-      false => AppColors.errorColor,
-      null => Theme.of(context).colorScheme.outlineVariant,
+      true => AppColors.trainingDayCorrect,
+      false => AppColors.trainingDayWrong,
+      null => null,
     };
     return Semantics(
       label: semantica,
+      value: valorSemantico,
       excludeSemantics: true,
       child: Container(
         width: diametro,
         height: diametro,
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: cor, shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: cor,
+          // Sem resultado: só o contorno, com o número na cor do texto.
+          border: cor == null ? Border.all(color: colors.outline) : null,
+          shape: BoxShape.circle,
+        ),
         child: Text(
           NumberFormat.decimalPattern(
             Localizations.localeOf(context).toString(),
           ).format(numero),
           style: texto?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: cor == null ? colors.onSurface : AppColors.chessWhiteColor,
           ),
         ),
       ),

@@ -101,6 +101,12 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
     return load();
   }
 
+  /// Quanto esperar a partida. O repositório não expõe falha de leitura (sem
+  /// rede e sem cópia o fluxo só não emite), então o limite é o que vale: com
+  /// cópia a leitura é imediata, e 8 s cobrem uma rede lenta sem deixar o
+  /// esqueleto parado.
+  static const _esperaDaLeitura = Duration(seconds: 8);
+
   Future<void> load() async {
     try {
       final PartidaTreinador? partida;
@@ -108,7 +114,7 @@ final class TreinadorExercicioCubit extends Cubit<TreinadorExercicioState> {
         partida = await repository
             .partida(id)
             .firstWhere((p) => p == null || p.pronta)
-            .timeout(const Duration(seconds: 20));
+            .timeout(_esperaDaLeitura);
       } on StateError {
         // O fluxo terminou sem partida: ela não existe.
         return _emit(state.copyWith(fase: FaseExercicio.indisponivel));

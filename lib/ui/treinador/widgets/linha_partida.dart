@@ -19,6 +19,8 @@ class LinhaPartida extends StatelessWidget {
     required this.acesso,
     this.onTap,
     this.mostrarResumo = false,
+    this.mostrarEstado = true,
+    this.mostrarSeta = true,
     super.key,
   });
 
@@ -30,6 +32,14 @@ class LinhaPartida extends StatelessWidget {
   /// Na terceira linha, a frase do resumo da partida (cartão da aba Hoje)
   /// no lugar do estado, quando a análise está pronta e aberta.
   final bool mostrarResumo;
+
+  /// Terceira linha (resumo ou estado). No resumo da partida some: só nome e
+  /// detalhe (canvas `DPartida`).
+  final bool mostrarEstado;
+
+  /// A seta à direita: some quando o cartão não leva a lugar nenhum (início e
+  /// resumo da partida).
+  final bool mostrarSeta;
 
   static const minHeight = 64.0;
   static const quadrado = 36.0;
@@ -55,9 +65,6 @@ class LinhaPartida extends StatelessWidget {
     ];
     final quando = context.quando(p.jogadaEm, agora);
     final muted = theme.textTheme.bodySmall?.copyWith(
-      fontSize: 12,
-      height: 16 / 12,
-      letterSpacing: 0,
       color: colors.onSurfaceVariant,
     );
     return InkWell(
@@ -84,12 +91,7 @@ class LinhaPartida extends StatelessWidget {
                         Flexible(
                           child: Text(
                             adversario,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 14,
-                              height: 20 / 14,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0,
-                            ),
+                            style: theme.textTheme.titleSmall,
                           ),
                         ),
                         if (p.status == StatusPartida.nova) ...[
@@ -111,18 +113,20 @@ class LinhaPartida extends StatelessWidget {
                       quando: quando,
                       style: muted,
                     ),
-                    if (mostrarResumo &&
-                        aberta &&
-                        p.pronta &&
-                        (p.resumo ?? '').isNotEmpty)
-                      // Canvas DHoje: o resumo em 14/400 na cor do texto.
-                      Text(p.resumo!, style: theme.textTheme.bodyMedium)
-                    else
-                      _Estado(partida: p, aberta: aberta, style: muted),
+                    if (mostrarEstado)
+                      if (mostrarResumo &&
+                          aberta &&
+                          p.pronta &&
+                          (p.resumo ?? '').isNotEmpty)
+                        // Canvas DHoje: o resumo em 14/400 na cor do texto.
+                        Text(p.resumo!, style: theme.textTheme.bodyMedium)
+                      else
+                        _Estado(partida: p, aberta: aberta, style: muted),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
+              if (mostrarSeta)
+                Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
             ],
           ),
         ),
@@ -166,20 +170,25 @@ class _Detalhe extends StatelessWidget {
           return Text(
             completo,
             maxLines: LinhaPartida.detalheMaxLinhas,
+            overflow: TextOverflow.ellipsis,
             style: style,
           );
         }
+        // Ordem fixa (ritmo, cor, abertura, quando): se não cabe, quebra depois
+        // da cor e a abertura abre a linha de baixo.
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              [...ritmoCor, quando].join(separador),
+              ritmoCor.join(separador),
               maxLines: LinhaPartida.detalheMaxLinhas,
+              overflow: TextOverflow.ellipsis,
               style: style,
             ),
             Text(
-              abertura,
-              maxLines: LinhaPartida.detalheMaxLinhas,
+              [abertura, quando].join(separador),
+              maxLines: LinhaPartida.detalheMaxLinhas + 1,
+              overflow: TextOverflow.ellipsis,
               style: style,
             ),
           ],
@@ -304,7 +313,7 @@ class _Estado extends StatelessWidget {
           child: Icon(
             aberta ? Icons.check_circle_outline : Icons.lock_outline,
             size: AppIconSize.small,
-            color: aberta ? AppColors.record : cor,
+            color: aberta ? AppColors.trainingDayCorrect : cor,
           ),
         ),
         const SizedBox(width: AppSpacing.xs),
