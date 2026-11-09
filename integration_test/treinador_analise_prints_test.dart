@@ -106,7 +106,15 @@ void main() {
       courseGrants: _assinante(),
     );
     await TrainingCaptureRobot.semFaixaDoTeste($);
+    // MP4 das animações padrão: a lista do Hoje em ordem e a troca de aba.
+    await shot.begin('abas-e-listas');
     await t.abrirPelaHome();
+    await $.pump(const Duration(milliseconds: 1500));
+    await t.aba(TreinadorKeys.tabPartidas);
+    await $.pump(const Duration(milliseconds: 1500));
+    await t.aba(TreinadorKeys.tabHoje);
+    await $.pump(const Duration(milliseconds: 1000));
+    await shot.end('abas-e-listas', ready: TreinadorKeys.hoje);
     await _rolando($, '02-hoje-com-plano', TreinadorKeys.hoje);
     await t.aba(TreinadorKeys.tabPartidas);
     await _rolando($, '04-partidas', TreinadorKeys.partidas);
@@ -130,9 +138,10 @@ void main() {
     }
 
     // 5 · Partida nova e MP4 da análise até o fim dos exercícios.
-    await t.abrirPartida(_nova);
-    await shot.shot('05-partida-nova', ready: TreinadorKeys.inicio);
     await shot.begin('analise-ate-fim');
+    await t.abrirPartida(_nova);
+    await $.pump(const Duration(milliseconds: 1500));
+    await shot.shot('05-partida-nova', ready: TreinadorKeys.inicio);
     await $(TreinadorKeys.comecar).tap();
     await t.esperarCarregando();
     await $.pump(const Duration(seconds: 3));
