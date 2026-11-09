@@ -6,8 +6,8 @@ import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/account/avatar_repository.dart';
 import '../../../data/repositories/photo/photo_repository.dart';
-import '../../../data/services/firebase/file_store_service.dart';
 import '../../../domain/models/avatar_photo.dart';
+import '../../../domain/models/file_store_exception.dart';
 import '../../../domain/models/user_profile.dart';
 
 /// O avatar escolhido em "Seu perfil", ainda sem salvar.
