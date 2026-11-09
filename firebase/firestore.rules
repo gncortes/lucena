@@ -135,6 +135,31 @@ service cloud.firestore {
           && validGame(data())
           && gamesAfter(uid) == gamesBefore(uid) + 1;
       }
+
+      // T87 · Treinador: conta ligada e estatísticas. Só o servidor grava (callables).
+      match /treinador/{doc} {
+        allow read: if isOwner(uid);
+        allow write: if false;
+      }
+
+      // T87 · Partidas importadas e analisadas pelo servidor. O dono só espelha o
+      // progresso dos exercícios; o painel só põe uma partida com erro de volta na fila.
+      match /partidas/{id} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow update: if canWrite(uid)
+          && changed().hasOnly(['progresso'])
+          && data().progresso is map
+          && data().progresso.keys().hasOnly(['feitos', 'acertos', 'pontos', 'resultados', 'viuAnalise'])
+          && optInt(data().progresso, 'feitos')
+          && optInt(data().progresso, 'acertos')
+          && optInt(data().progresso, 'pontos')
+          && (!('resultados' in data().progresso)
+            || (data().progresso.resultados is map && data().progresso.resultados.size() <= 10))
+          && (!('viuAnalise' in data().progresso) || data().progresso.viuAnalise is bool);
+        allow update: if isAdmin()
+          && changed().hasOnly(['status'])
+          && previous().status == 'erro' && data().status == 'na_fila';
+      }
     }
 
     // O ProgressSummary.toJson (progress_summary.dart). As listas e mapas têm
@@ -407,6 +432,21 @@ service cloud.firestore {
     // Os finais em destaque publicados: todos leem, só o admin escreve.
     match /featured/{id} {
       allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // T87 · Treinador: configuração e agregados do painel, partidas-modelo por ECO.
+    // Fila, contas e cache da teoria (treinador_fila, treinador_contas,
+    // treinador_teoria) são só do servidor: sem regra, ninguém lê pelo app.
+    match /treinador_config/{doc} {
+      allow read, write: if isAdmin();
+    }
+    match /treinador_painel/{doc} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /treinador_modelos/{eco} {
+      allow read: if signedIn();
       allow write: if isAdmin();
     }
 

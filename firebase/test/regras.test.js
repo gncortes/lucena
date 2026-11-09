@@ -467,3 +467,55 @@ describe('conteudo/{teste|alunos} (H-R5-38): índices de pacotes', () => {
     await assertFails(db('ana').doc('conteudo/teste').set({ format: 1 }));
   });
 });
+
+describe('treinador (T87): servidor grava; dono espelha só o progresso', () => {
+  const partida = 'users/ana/partidas/lichess_abc12345';
+  beforeEach(async () => {
+    await semRegras(async (f) => {
+      await f.doc(partida).set({ status: 'pronta', precisao: 88, exercicios: [] });
+      await f.doc('users/ana/partidas/lichess_erro0001').set({ status: 'erro' });
+      await f.doc('users/ana/treinador/conta').set({ plataforma: 'lichess', usuario: 'ana' });
+      await f.doc('treinador_painel/estado').set({ fila: {} });
+      await f.doc('treinador_modelos/B12').set({ modelos: [] });
+    });
+  });
+
+  test('o dono lê partida e conta e grava o progresso', async () => {
+    await assertSucceeds(db('ana').doc(partida).get());
+    await assertSucceeds(db('ana').doc('users/ana/treinador/conta').get());
+    await assertSucceeds(db('ana').doc(partida).set({ progresso: { feitos: 2, acertos: 1, pontos: 30 } }, { merge: true }));
+    await assertSucceeds(
+      db('ana')
+        .doc(partida)
+        .update({ progresso: { feitos: 2, acertos: 1, pontos: 30, resultados: { 1: true, 2: false }, viuAnalise: true } }),
+    );
+  });
+
+  test('o dono não muda a análise, o status nem a conta; outro não lê', async () => {
+    await assertFails(db('ana').doc(partida).update({ precisao: 100 }));
+    await assertFails(db('ana').doc(partida).update({ status: 'na_fila' }));
+    await assertFails(db('ana').doc(partida).set({ progresso: { feitos: 'dois' } }, { merge: true }));
+    await assertFails(db('ana').doc(partida).update({ progresso: { feitos: 1, viuAnalise: 'sim' } }));
+    await assertFails(db('ana').doc(partida).update({ progresso: { feitos: 1, resultados: 'tudo' } }));
+    await assertFails(db('ana').doc('users/ana/partidas/lichess_novo0001').set({ status: 'pronta' }));
+    await assertFails(db('ana').doc('users/ana/treinador/conta').set({ usuario: 'outro' }));
+    await assertFails(db('bia').doc(partida).get());
+  });
+
+  test('o painel põe a partida com erro de volta na fila e só isso', async () => {
+    await assertSucceeds(db('admin').doc('users/ana/partidas/lichess_erro0001').update({ status: 'na_fila' }));
+    await assertFails(db('admin').doc(partida).update({ status: 'na_fila' }));
+    await assertSucceeds(db('admin').doc('treinador_painel/estado').get());
+    await assertFails(db('admin').doc('treinador_painel/estado').set({ x: 1 }));
+    await assertSucceeds(db('admin').doc('treinador_config/geral').set({ exerciciosPorPartida: 5 }));
+    await assertFails(db('ana').doc('treinador_config/geral').get());
+  });
+
+  test('modelos: quem tem conta lê; fila, contas e teoria ninguém lê pelo app', async () => {
+    await assertSucceeds(db('ana').doc('treinador_modelos/B12').get());
+    await assertFails(db('ana').doc('treinador_modelos/B12').set({ modelos: [] }));
+    await assertFails(db('admin').doc('treinador_fila/ana_x').get());
+    await assertFails(db('ana').doc('treinador_contas/ana').get());
+    await assertFails(db('ana').doc('treinador_teoria/x').get());
+  });
+});

@@ -2,7 +2,10 @@
 // Cada história acrescenta aqui o export da sua Function. A regra fica no
 // módulo (testável no emulador); aqui só a casca: conferir admin e chamar.
 import './comum/config';
-import { initializeApp } from 'firebase-admin/app';
+import { applicationDefault, initializeApp } from 'firebase-admin/app';
+import { getFunctions } from 'firebase-admin/functions';
+import { onDocumentUpdated } from 'firebase-functions/firestore';
+import { onTaskDispatched } from 'firebase-functions/tasks';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
@@ -20,7 +23,20 @@ import {
   reverterVersaoCore,
   type DepsVersoes,
 } from './conteudo/versoes';
-import { FUSO } from './comum/config';
+import { FUSO, REGIAO } from './comum/config';
+import { httpReal } from './treinador/fontes';
+import { abrirMotor } from './treinador/motor';
+import { comCache, exploradorLichess, tokenLichess } from './treinador/teoria';
+import {
+  analisarCore,
+  avisoModelosCore,
+  buscaCore,
+  desligarContaCore,
+  ligarContaCore,
+  partidaMudou,
+  processarPartida,
+  type DepsTreinador,
+} from './treinador/servico';
 import { analyticsDoBigQuery, atencaoDoAnalytics, ativosDoBigQuery } from './fechamento/bigquery';
 import { ativosPeriodoCore } from './fechamento/periodo';
 import { atualizarHoje, fecharDia, type DepsFechamento } from './fechamento/fechar';
@@ -156,8 +172,10 @@ export const pedirCorrecao = onCall(async (req) => {
 });
 
 /** Dataset do export do Analytics no BigQuery (`analytics_<id da propriedade>`), em `functions/.env.<projeto>`. */
+// No emulador (projeto demo-*) o valor padrão evita a pergunta interativa; no deploy segue obrigatório.
 const DATASET_ANALYTICS = defineString('ANALYTICS_DATASET', {
   description: 'Dataset do export do GA4 no BigQuery, ex.: analytics_123456789',
+  ...(process.env.GCLOUD_PROJECT?.startsWith('demo-') ? { default: 'analytics_emulador' } : {}),
 });
 
 function depsFechamento(): DepsFechamento {
@@ -294,4 +312,76 @@ export const conferirCompra = onCall(async (req) => {
     req.auth?.uid,
     req.data,
   );
+});
+
+// ---------------------------------------------------------------- T87 · Treinador de partidas
+
+let depsTreinadorDeTeste: Partial<DepsTreinador> | null = null;
+
+/** Só para os testes no emulador: troca fila, motor, explorador ou HTTP por fakes (null volta ao real). */
+export function usarTreinador(d: Partial<DepsTreinador> | null): void {
+  depsTreinadorDeTeste = d;
+}
+
+const FILA_TREINADOR = `locations/${REGIAO}/functions/analisarPartidaTreinador`;
+
+function depsTreinador(): DepsTreinador {
+  const db = getFirestore();
+  const base: DepsTreinador = {
+    db,
+    mensageiro: mensageiroDeTeste ?? getMessaging(),
+    agora: new Date(),
+    http: httpReal,
+    enfileirar: (uid, partida) =>
+      getFunctions().taskQueue(FILA_TREINADOR).enqueue({ uid, partida }, { dispatchDeadlineSeconds: 600 }),
+    abrirMotor: () => abrirMotor(),
+    explorador: async () => {
+      const token = await tokenLichess(httpReal, process.env.GCLOUD_PROJECT, async () => {
+        const t = await applicationDefault().getAccessToken();
+        return t.access_token ?? null;
+      });
+      return token ? comCache(db, exploradorLichess(httpReal, token)) : null;
+    },
+  };
+  return { ...base, ...(depsTreinadorDeTeste ?? {}) };
+}
+
+/** T87 · App: liga a conta do Lichess ou do chess.com (`{plataforma, usuario}`). */
+export const treinadorLigarConta = onCall({ timeoutSeconds: 120 }, async (req) =>
+  ligarContaCore(depsTreinador(), req.auth?.uid, req.data),
+);
+
+/** T87 · App: desliga a conta (as partidas analisadas ficam). */
+export const treinadorDesligarConta = onCall(async (req) => desligarContaCore(depsTreinador(), req.auth?.uid));
+
+/** T87 · App: pede a análise de uma partida (`{partida, avisar}`). */
+export const treinadorAnalisar = onCall(async (req) => analisarCore(depsTreinador(), req.auth?.uid, req.data));
+
+/** T87 · App: liga ou desliga o aviso de partidas-modelo (`{ligado}`). */
+export const treinadorAvisoModelos = onCall(async (req) => avisoModelosCore(depsTreinador(), req.auth?.uid, req.data));
+
+/** T87 · Fila de análise (Cloud Tasks): Stockfish por nós fixos, 1 vCPU e 2 GiB, até 3 ao mesmo tempo. */
+export const analisarPartidaTreinador = onTaskDispatched<{ uid: string; partida: string }>(
+  {
+    retryConfig: { maxAttempts: 2, minBackoffSeconds: 60 },
+    rateLimits: { maxConcurrentDispatches: 3 },
+    memory: '2GiB',
+    cpu: 1,
+    timeoutSeconds: 540,
+  },
+  async (req) => processarPartida(depsTreinador(), req.data.uid, req.data.partida),
+);
+
+/** T87 · Busca as partidas novas das contas ligadas a cada 30 minutos. */
+export const buscaTreinador = onSchedule(
+  { schedule: 'every 30 minutes', timeZone: FUSO, retryCount: 0, timeoutSeconds: 540 },
+  async () => {
+    await buscaCore(depsTreinador());
+  },
+);
+
+/** T87 · Progresso espelhado pelo app (funil do painel) e "Tentar de novo" do painel. */
+// O Firestore é nam5 (firebase.json): o gatilho fica em us-central1, a região do banco.
+export const treinadorPartidaMudou = onDocumentUpdated({ document: 'users/{uid}/partidas/{id}', region: 'us-central1' }, async (ev) => {
+  await partidaMudou(depsTreinador(), ev.params.uid, ev.params.id, ev.data?.before.data(), ev.data?.after.data());
 });
