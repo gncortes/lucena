@@ -219,6 +219,21 @@ describe('treinador no emulador', () => {
     assert.equal((await db().doc('treinador_painel/estado').get()).get('lichess.ok'), true);
   });
 
+  test('429 do Lichess na busca não para o chess.com dos outros (G11)', async () => {
+    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    await chamar(treinadorLigarConta, 'bia', { plataforma: 'chesscom', usuario: 'hikaru' });
+    // Ana foi buscada há mais tempo: vem primeiro e leva o 429.
+    await db().doc('treinador_contas/ana').set({ ultimaBusca: Timestamp.fromMillis(1) }, { merge: true });
+    await db().doc('treinador_contas/bia').set({ ultimaBusca: Timestamp.fromMillis(2) }, { merge: true });
+    const base = httpFalso();
+    const http: DepsTreinador['http'] = async (url, init) =>
+      url.startsWith('https://lichess.org/api/games/') ? { status: 429, text: async () => '' } : base(url, init);
+    await buscaCore(deps({ http }));
+    assert.equal((await db().doc('treinador_contas/ana').get()).get('ultimaBusca').toMillis(), 1);
+    assert.ok((await db().doc('treinador_contas/bia').get()).get('ultimaBusca').toMillis() > 2, 'o chess.com da Bia foi buscado');
+    assert.equal((await db().doc('treinador_painel/estado').get()).get('lichess.ok'), false);
+  });
+
   test('falha na análise: status erro, falha no painel; "Tentar de novo" do painel volta à fila', async () => {
     await assinante('bia');
     await chamar(treinadorLigarConta, 'bia', { plataforma: 'chesscom', usuario: 'hikaru' });

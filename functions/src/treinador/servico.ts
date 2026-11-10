@@ -57,6 +57,11 @@ const MAX_PARTIDAS_ESTATISTICA = 200;
 
 const USUARIO_VALIDO = /^[A-Za-z0-9][A-Za-z0-9_-]{1,29}$/;
 
+/** Milissegundos de um Timestamp gravado; sem valor conta como nunca (vem primeiro). */
+function quando(v: unknown): number {
+  return v instanceof Timestamp ? v.toMillis() : 0;
+}
+
 function ts(d: Date): Timestamp {
   return Timestamp.fromDate(d);
 }
@@ -481,11 +486,15 @@ export async function buscaCore(deps: DepsTreinador): Promise<{ contas: number; 
   let assinantes = 0;
   let lichessOk: boolean | null = null;
   let lichessLimite = false;
-  for (const c of contas.docs) {
+  // Quem foi buscado há mais tempo vem primeiro: um 429 no meio não deixa sempre os mesmos para trás.
+  const ordem = [...contas.docs].sort((a, b) => quando(a.get('ultimaBusca')) - quando(b.get('ultimaBusca')));
+  for (const c of ordem) {
     const uid = c.id;
     const plataforma = c.get('plataforma') as Plataforma;
     const usuario = c.get('usuario') as string;
     if (await ehAssinante(db, uid, agora)) assinantes++;
+    // 429 do Lichess: pausa só o Lichess nesta rodada; o chess.com segue.
+    if (plataforma === 'lichess' && lichessLimite) continue;
     const cursor = c.get('cursor');
     let partidas: PartidaBruta[];
     try {
@@ -494,8 +503,7 @@ export async function buscaCore(deps: DepsTreinador): Promise<{ contas: number; 
     } catch (e) {
       if (plataforma === 'lichess' && e instanceof ErroFonte) {
         lichessOk = false;
-        lichessLimite ||= e.motivo === 'limite';
-        if (e.motivo === 'limite') break; // 429: para a rodada, o Lichess pede um minuto de pausa
+        lichessLimite ||= e.motivo === 'limite'; // 429: o Lichess pede um minuto de pausa
       }
       console.warn(`treinador: busca de ${uid} falhou`, e);
       continue;
