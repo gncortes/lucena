@@ -14,11 +14,20 @@ export interface Pedido {
 }
 
 /** HTTP falso: DrNykterstein no Lichess, hikaru no chess.com (um mês), o resto 404. `status` força uma resposta. */
+/** Token do login do Lichess no http falso (texto comum, sem formato de chave real). */
+export const TOKEN_LICHESS_FALSO = 'token-falso-do-drnykterstein';
+
 export function httpFalso(pedidos: Pedido[] = [], status: number | null = null): Http {
   return async (url, init) => {
     pedidos.push({ url, headers: init?.headers ?? {} });
     const r = (s: number, corpo = '') => ({ status: s, text: async () => corpo });
     if (status !== null) return r(status);
+    if (url === 'https://lichess.org/api/account') {
+      // Só o token falso do DrNykterstein é válido; qualquer outro é revogado.
+      return init?.headers?.Authorization === `Bearer ${TOKEN_LICHESS_FALSO}`
+        ? r(200, JSON.stringify({ id: 'drnykterstein', username: 'DrNykterstein' }))
+        : r(401, JSON.stringify({ error: 'No such token' }));
+    }
     if (url === 'https://lichess.org/api/user/DrNykterstein' || url === 'https://lichess.org/api/user/drnykterstein') {
       return r(200, JSON.stringify({ id: 'drnykterstein', username: 'DrNykterstein' }));
     }

@@ -2849,6 +2849,8 @@
   "treinadorTrocarSite": "Trocar de site",
   "treinadorContaNaoExiste": "Não achamos esse usuário no {platform}.",
   "treinadorContaSemResposta": "Sem resposta do servidor. Confira a internet e tente de novo.",
+  "treinadorLichessTexto": "Para confirmar que a conta é sua, entra no Lichess e autoriza o Lucena.",
+  "treinadorContaMuitasTentativas": "Tentaste ligar muitas vezes hoje. Tenta de novo amanhã.",
   "treinadorContaSemPlano": "Ligar a conta pede o plano de análise.",
   "treinadorContaSemLogin": "Entre na sua conta do Lucena para ligar.",
   "treinadorInicioTitulo": "Sua partida",

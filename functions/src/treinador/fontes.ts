@@ -130,6 +130,22 @@ export async function usuarioLichess(http: Http, usuario: string): Promise<strin
   return j.username;
 }
 
+/**
+ * O dono do token do Lichess (login OAuth com PKCE feito no app): `GET /api/account` com o token. É a prova de que a
+ * conta é de quem está ligando. Token inválido ou revogado: null. O token não é gravado nem vai para o log.
+ */
+export async function donoDoTokenLichess(http: Http, token: string): Promise<string | null> {
+  const r = await http('https://lichess.org/api/account', {
+    headers: { Accept: 'application/json', 'User-Agent': AGENTE, Authorization: `Bearer ${token}` },
+  });
+  if (r.status === 401 || r.status === 403) return null;
+  if (r.status === 429) throw new ErroFonte('lichess', 'limite', 429);
+  if (r.status !== 200) throw new ErroFonte('lichess', 'fora', r.status);
+  const j = JSON.parse(await r.text()) as { username?: string; closed?: boolean; disabled?: boolean };
+  if (j.closed || j.disabled || !j.username) return null;
+  return j.username;
+}
+
 /** Partidas terminadas desde `desde` (ms, criação), mais novas primeiro, até `max`. */
 export async function partidasLichess(
   http: Http,

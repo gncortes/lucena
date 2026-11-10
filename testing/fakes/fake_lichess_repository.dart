@@ -34,7 +34,11 @@ class FakeLichessRepository implements LichessRepository {
     final failure = this.failure;
     if (failure != null) throw LichessException(failure);
     connected = true;
-    return rating!;
+    return rating ??
+        PlatformRating(
+          user: 'DrNykterstein',
+          readAt: DateTime.utc(2026, 11, 9),
+        );
   }
 
   @override
@@ -76,4 +80,10 @@ class FakeLichessRepository implements LichessRepository {
 
   @override
   Future<bool> isConnected() async => connected;
+
+  /// O token que o servidor recebe; os testes trocam para simular revogado.
+  String token = 'token-falso-do-lichess';
+
+  @override
+  Future<String?> accessToken() async => connected ? token : null;
 }

@@ -192,36 +192,69 @@ void main() {
       },
     );
 
-    testWidgets('escolher o Lichess mostra o campo do usuário; ligar leva '
-        'às abas', (tester) async {
+    testWidgets('escolher o Lichess abre o login de lá, sem campo de '
+        'usuário, e liga o dono do token', (tester) async {
       device411x914(tester);
       await bed.open(tester, Routes.coach());
 
       await tester.tap(find.byKey(CoachKeys.linkLichess));
       await assentar(tester);
-      expect(find.byKey(CoachKeys.username), findsOneWidget);
-      expect(find.text('Seu usuário no Lichess'), findsOneWidget);
-      expect(find.byKey(CoachKeys.linkLichess), findsNothing);
-      expect(
-        _textAt(CoachKeys.confirmAccount, 'Conectar a conta'),
-        findsOneWidget,
-      );
-      expect(_textAt(CoachKeys.switchSite, 'Trocar de site'), findsOneWidget);
 
-      await tester.enterText(find.byKey(CoachKeys.username), 'gabriel');
-      await assentar(tester);
-      await tester.tap(find.byKey(CoachKeys.confirmAccount));
-      await assentar(tester);
-
-      expect(bed.repo.links, [(Platform.lichess, 'gabriel')]);
+      expect(bed.lichess.connects, 1);
+      expect(bed.repo.lichessTokens, ['token-falso-do-lichess']);
+      expect(bed.repo.links, isEmpty);
+      expect(find.byKey(CoachKeys.username), findsNothing);
       expect(find.byKey(CoachKeys.linkAccount), findsNothing);
       expect(find.byKey(CoachKeys.tabToday), findsOneWidget);
-      expect(find.byKey(CoachKeys.todayEmpty), findsOneWidget);
       expect(
         find.text('Jogue uma partida no Lichess e ela aparece aqui.'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('já entrou no Lichess pelo Perfil: liga sem abrir o login', (
+      tester,
+    ) async {
+      device411x914(tester);
+      bed.lichess.connected = true;
+      await bed.open(tester, Routes.coach());
+
+      await tester.tap(find.byKey(CoachKeys.linkLichess));
+      await assentar(tester);
+
+      expect(bed.lichess.connects, 0);
+      expect(bed.repo.lichessTokens, ['token-falso-do-lichess']);
+      expect(find.byKey(CoachKeys.tabToday), findsOneWidget);
+    });
+
+    testWidgets('voltou do Lichess sem autorizar: fica na tela com o texto e '
+        'o botão para tentar de novo', (tester) async {
+      device411x914(tester);
+      bed.lichess.hold = true;
+      await bed.open(tester, Routes.coach());
+
+      await tester.tap(find.byKey(CoachKeys.linkLichess));
+      await assentar(tester);
+      bed.lichess.cancel();
+      await assentar(tester);
+
+      expect(find.byKey(CoachKeys.linkAccount), findsOneWidget);
+      expect(
+        find.text(
+          'Para confirmar que a conta é sua, você entra no Lichess e '
+          'autoriza o Lucena.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(CoachKeys.accountError), findsNothing);
+      expect(bed.repo.lichessTokens, isEmpty);
+
+      bed.lichess.hold = false;
+      await tester.tap(find.byKey(CoachKeys.confirmAccount));
+      await assentar(tester);
+      expect(bed.repo.lichessTokens, ['token-falso-do-lichess']);
+      expect(find.byKey(CoachKeys.tabToday), findsOneWidget);
     });
 
     testWidgets('escolher o chess.com mostra o nome do site no campo', (
@@ -245,7 +278,7 @@ void main() {
       device411x914(tester);
       await bed.open(tester, Routes.coach());
 
-      await tester.tap(find.byKey(CoachKeys.linkLichess));
+      await tester.tap(find.byKey(CoachKeys.linkChesscom));
       await assentar(tester);
       await tester.tap(find.byKey(CoachKeys.switchSite));
       await assentar(tester);
@@ -256,7 +289,14 @@ void main() {
     });
 
     for (final (failure, text) in [
-      (LinkAccountFailure.doesNotExist, 'Não achamos esse usuário no Lichess.'),
+      (
+        LinkAccountFailure.doesNotExist,
+        'Não achamos esse usuário no chess.com.',
+      ),
+      (
+        LinkAccountFailure.tooMany,
+        'Você tentou conectar muitas vezes hoje. Tente de novo amanhã.',
+      ),
       (
         LinkAccountFailure.noResponse,
         'Sem resposta do servidor. Verifique sua conexão com a internet e '
@@ -274,7 +314,7 @@ void main() {
         bed.repo.linkFailure = failure;
         await bed.open(tester, Routes.coach());
 
-        await tester.tap(find.byKey(CoachKeys.linkLichess));
+        await tester.tap(find.byKey(CoachKeys.linkChesscom));
         await assentar(tester);
         await tester.enterText(find.byKey(CoachKeys.username), 'ninguem');
         await assentar(tester);
@@ -299,7 +339,7 @@ void main() {
       bed.repo.linkFailure = LinkAccountFailure.noPlan;
       await bed.open(tester, Routes.coach());
 
-      await tester.tap(find.byKey(CoachKeys.linkLichess));
+      await tester.tap(find.byKey(CoachKeys.linkChesscom));
       await assentar(tester);
       await tester.enterText(find.byKey(CoachKeys.username), 'gabriel');
       await assentar(tester);

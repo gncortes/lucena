@@ -625,8 +625,18 @@ class _LinkAccountViewState extends State<_LinkAccount> {
                 ] else
                   BlocProvider(
                     key: ValueKey(platform),
-                    create: (c) =>
-                        createLinkAccountCubit(c, platform: platform),
+                    create: (c) {
+                      final cubit = createLinkAccountCubit(
+                        c,
+                        platform: platform,
+                      );
+                      // Lichess: abre o login de lá na hora; o dono da conta
+                      // sai do token, sem nome digitado.
+                      if (platform == Platform.lichess) {
+                        unawaited(cubit.linkLichess());
+                      }
+                      return cubit;
+                    },
                     child: _AccountForm(
                       onSwitch: () => setState(() => _platform = null),
                     ),
@@ -658,23 +668,34 @@ class _AccountForm extends StatelessWidget {
           LinkAccountFailure.noResponse => l.treinadorContaSemResposta,
           LinkAccountFailure.noPlan => l.treinadorContaSemPlano,
           LinkAccountFailure.noLogin => l.treinadorContaSemLogin,
+          LinkAccountFailure.lichessLogin => l.treinadorContaSemResposta,
+          LinkAccountFailure.tooMany => l.treinadorContaMuitasTentativas,
         };
+        final lichess = state.platform == Platform.lichess;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              key: CoachKeys.username,
-              autofocus: true,
-              autocorrect: false,
-              enableSuggestions: false,
-              textInputAction: TextInputAction.done,
-              onChanged: cubit.typeText,
-              onSubmitted: (_) => unawaited(cubit.link()),
-              decoration: InputDecoration(
-                labelText: l.treinadorUsuarioNo(site),
-                border: const OutlineInputBorder(),
+            if (lichess)
+              Text(
+                l.treinadorLichessTexto,
+                key: CoachKeys.lichessLoginText,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              )
+            else
+              TextField(
+                key: CoachKeys.username,
+                autofocus: true,
+                autocorrect: false,
+                enableSuggestions: false,
+                textInputAction: TextInputAction.done,
+                onChanged: cubit.typeText,
+                onSubmitted: (_) => unawaited(cubit.link()),
+                decoration: InputDecoration(
+                  labelText: l.treinadorUsuarioNo(site),
+                  border: const OutlineInputBorder(),
+                ),
               ),
-            ),
             if (error != null)
               Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.sm),
@@ -690,7 +711,9 @@ class _AccountForm extends StatelessWidget {
               buttonKey: CoachKeys.confirmAccount,
               label: l.treinadorLigarConta,
               busy: state.sending,
-              onPressed: state.canSend ? cubit.link : null,
+              onPressed: lichess
+                  ? (state.sending ? null : cubit.linkLichess)
+                  : (state.canSend ? cubit.link : null),
             ),
             if (state.failure == LinkAccountFailure.noPlan) ...[
               const SizedBox(height: AppSpacing.sm),

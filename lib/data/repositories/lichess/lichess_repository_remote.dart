@@ -114,6 +114,9 @@ class RemoteLichessRepository implements LichessRepository {
   @override
   Future<bool> isConnected() async => await _storage.read(tokenKey) != null;
 
+  @override
+  Future<String?> accessToken() => _storage.read(tokenKey);
+
   Future<PlatformRating> _finish(Uri uri) async {
     final pending = (await _storage.read(pendingKey))?.split(' ');
     await _storage.delete(pendingKey);

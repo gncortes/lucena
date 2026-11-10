@@ -85,6 +85,12 @@ enum LinkAccountFailure {
 
   /// Precisa entrar numa conta do Lucena antes.
   noLogin,
+
+  /// O login do Lichess não vale mais (token revogado ou expirado).
+  lichessLogin,
+
+  /// Passou do limite de tentativas de ligar do dia.
+  tooMany,
 }
 
 final class LinkAccountException implements Exception {

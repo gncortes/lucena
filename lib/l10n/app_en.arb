@@ -14931,6 +14931,14 @@
   "@treinadorContaSemResposta": {
     "description": "T87 Treinador: link account error"
   },
+  "treinadorLichessTexto": "To confirm the account is yours, sign in to Lichess and allow Lucena.",
+  "@treinadorLichessTexto": {
+    "description": "T87 Treinador: link Lichess account (login proves ownership)"
+  },
+  "treinadorContaMuitasTentativas": "Too many tries today. Try again tomorrow.",
+  "@treinadorContaMuitasTentativas": {
+    "description": "T87 Treinador: link Lichess account (login proves ownership)"
+  },
   "treinadorContaSemPlano": "Linking an account needs the analysis plan.",
   "@treinadorContaSemPlano": {
     "description": "T87 Treinador: link account error"

@@ -43,4 +43,8 @@ abstract class LichessRepository {
   Future<void> disconnect();
 
   Future<bool> isConnected();
+
+  /// O token do login, para o servidor conferir o dono da conta (Treinador).
+  /// Nulo: desconectado. Nunca vai para o log.
+  Future<String?> accessToken();
 }
