@@ -12,6 +12,10 @@ import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
 import { getStorage } from 'firebase-admin/storage';
 import { AgentesPausados, importarLoteCore } from './agentes/importar';
+import { ChamadorRecusado, conferirChamador, emailDoPorteiro, verificadorGoogle, type VerificarToken } from './agentes/chamador';
+
+let verificador: VerificarToken | null = null;
+const verificarPorteiro: VerificarToken = (t) => (verificador ??= verificadorGoogle())(t);
 import { decidirEntregaCore, marcarFonteConferidaCore } from './conteudo/entregas';
 import { leitorDoStorage } from './conteudo/storage';
 import {
@@ -299,13 +303,25 @@ export const conferirCompra = onCall(async (req) => {
 
 /**
  * AG-5b.1 · O porteiro dos agentes noturnos (`POST {loteId, conteudo}`, E1.21 §6.1). Sem acesso público: o
- * run.invoker da conta porteiro-agentes (WIF) e a reconferência do ID token entram na AG-5b.3; motor e
+ * run.invoker só da conta porteiro-agentes (WIF) e o código reconfere o ID token (AG-5b.3, `chamador.ts`); motor e
  * tablebase na AG-5b.2.
  */
 export const importarLote = onRequest({ invoker: 'private', timeoutSeconds: 60 }, async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ erro: 'Use POST.' });
     return;
+  }
+  // No Emulator Suite não há IAM nem token do Google: os testes chamam o núcleo direto.
+  if (process.env.FUNCTIONS_EMULATOR !== 'true') {
+    try {
+      await conferirChamador(req.headers.authorization, verificarPorteiro, emailDoPorteiro(process.env.GCLOUD_PROJECT));
+    } catch (e) {
+      if (e instanceof ChamadorRecusado) {
+        res.status(403).json({ erro: e.message });
+        return;
+      }
+      throw e;
+    }
   }
   try {
     res.json(await importarLoteCore({ db: getFirestore(), agora: new Date() }, req.body));

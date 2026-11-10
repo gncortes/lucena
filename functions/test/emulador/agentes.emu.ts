@@ -1,5 +1,5 @@
 // AG-5b.1 · importarLote no emulador do Firestore: idempotência, quarentena, injeção e limites da noite (E1.21 §6.1/§6.2).
-import { beforeEach, describe, test } from 'node:test';
+import { after, before, beforeEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/https';
@@ -309,6 +309,25 @@ describe('importarLote · agentes pausados', () => {
 });
 
 describe('importarLote · casca HTTP', () => {
+  // A casca só pula a conferência do token do Google no Emulator Suite.
+  before(() => {
+    process.env.FUNCTIONS_EMULATOR = 'true';
+  });
+  after(() => {
+    delete process.env.FUNCTIONS_EMULATOR;
+  });
+
+  test('fora do emulador, sem ID token do porteiro: 403 e nada gravado', async () => {
+    delete process.env.FUNCTIONS_EMULATOR;
+    try {
+      const r = await chamarHttp('POST', { loteId: 'lote-h3', conteudo: lerAmostra(EXEMPLO) });
+      assert.equal(r.codigo, 403);
+      assert.equal((await db().collection('entregas').get()).size, 0);
+    } finally {
+      process.env.FUNCTIONS_EMULATOR = 'true';
+    }
+  });
+
   test('agentes pausados: 423 com o motivo', async () => {
     await db().doc('config/agentes').set({ pausado: true, motivo: 'tetoMensal' });
     const r = await chamarHttp('POST', { loteId: 'lote-h2', conteudo: lerAmostra(EXEMPLO) });
