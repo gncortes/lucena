@@ -14,7 +14,7 @@ import {
 import type { Mensageiro } from '../../src/pessoas/acessos';
 import { abrirMotor } from '../../src/treinador/motor';
 import { diaBR } from '../../src/treinador/politica';
-import { buscaCore, partidaMudou, processarPartida, type DepsTreinador } from '../../src/treinador/servico';
+import { buscaCore, LIGAR_POR_DIA, partidaMudou, processarPartida, type DepsTreinador } from '../../src/treinador/servico';
 import { httpFalso } from '../treinador/apoio';
 import { chamar, codigoDoErro, criarPessoa, limpar } from './apoio';
 
@@ -256,5 +256,29 @@ describe('treinador no emulador', () => {
     assert.equal((await db().collection('users/ana/partidas').get()).size, 3);
     assert.equal(await codigoDoErro(chamar(treinadorAnalisar, 'ana', { partida: 'x' })), 'invalid-argument');
     assert.equal(await codigoDoErro(chamar(treinadorAnalisar, 'ana', { partida: 'lichess_naoexiste' })), 'not-found');
+  });
+
+  test('ligar tem limite por dia, contado antes de chamar a plataforma', async () => {
+    const pedidos: { url: string }[] = [];
+    usarTreinador({ http: httpFalso(pedidos as never), enfileirar: deps().enfileirar, explorador: async () => null });
+    for (let i = 0; i < LIGAR_POR_DIA; i++) {
+      await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'ninguem-aqui' }));
+    }
+    const antes = pedidos.length;
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' })), 'resource-exhausted');
+    assert.equal(pedidos.length, antes, 'recusou sem chamar a plataforma');
+    // O limite é por conta: a Bia liga normalmente.
+    await chamar(treinadorLigarConta, 'bia', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    assert.equal((await db().doc('users/bia/treinador/conta').get()).exists, true);
+  });
+
+  test('desligar e ligar de novo não zera a cota do grátis', async () => {
+    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    const cota = (await db().doc('treinador_contas/ana').get()).get('semana');
+    assert.ok(cota?.n > 0, 'a importação gastou cota');
+    await chamar(treinadorDesligarConta, 'ana', {});
+    await chamar(treinadorLigarConta, 'ana', { plataforma: 'chesscom', usuario: 'hikaru' });
+    const depois = (await db().doc('treinador_contas/ana').get()).get('semana');
+    assert.ok(depois.n >= cota.n, `cota voltou (${cota.n} → ${depois.n})`);
   });
 });
