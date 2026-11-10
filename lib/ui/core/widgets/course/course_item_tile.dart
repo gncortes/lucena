@@ -210,11 +210,18 @@ class _CourseItemTexts extends StatelessWidget {
         if (summary != null && summary.isNotEmpty && difficulty != null)
           Row(
             spacing: AppSpacing.xs,
+            // Resumo em 2 linhas: a estrela fica na altura da 1ª, não no meio.
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TrainingBadge.difficultyIcon(
-                context,
-                difficulty,
-                key: CourseGuideKeys.difficultyStar(title),
+              SizedBox(
+                height: _lineHeight(theme.textTheme.bodyMedium),
+                child: Center(
+                  child: TrainingBadge.difficultyIcon(
+                    context,
+                    difficulty,
+                    key: CourseGuideKeys.difficultyStar(title),
+                  ),
+                ),
               ),
               Flexible(
                 child: Text(
@@ -235,3 +242,7 @@ class _CourseItemTexts extends StatelessWidget {
     );
   }
 }
+
+/// Altura de uma linha do [style], para alinhar ícone à 1ª linha do texto.
+double _lineHeight(TextStyle? style) =>
+    (style?.fontSize ?? 14) * (style?.height ?? 1.43);

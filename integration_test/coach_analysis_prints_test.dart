@@ -77,7 +77,7 @@ void main() {
     await TrainingCaptureRobot.semFaixaDoTeste($);
     await t.openFromHome();
     await shot.shot('01-conectar-conta', ready: CoachKeys.linkAccount);
-    await $(CoachKeys.linkLichess).tap();
+    await $(CoachKeys.linkChesscom).tap();
     await $.pumpAndSettle();
     await shot.shot('01b-conectar-usuario', ready: CoachKeys.username);
     fake.linkFailure = LinkAccountFailure.doesNotExist;
