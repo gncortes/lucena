@@ -2849,6 +2849,8 @@
   "treinadorTrocarSite": "Change site",
   "treinadorContaNaoExiste": "We could not find this user on {platform}.",
   "treinadorContaSemResposta": "No answer from the server. Check your internet and try again.",
+  "treinadorLichessTexto": "To confirm the account is yours, sign in to Lichess and allow Lucena.",
+  "treinadorContaMuitasTentativas": "Too many tries today. Try again tomorrow.",
   "treinadorContaSemPlano": "Linking an account needs the analysis plan.",
   "treinadorContaSemLogin": "Sign in to Lucena to link your account.",
   "treinadorInicioTitulo": "Your game",

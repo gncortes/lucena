@@ -5,6 +5,7 @@ import 'package:lucena/domain/models/coach/coach.dart';
 import 'package:lucena/ui/coach/view_models/link_account_cubit.dart';
 
 import '../../../testing/fakes/fake_coach_repository.dart';
+import '../../../testing/fakes/fake_lichess_repository.dart';
 
 /// Um repositório em que ligar a conta falha com um erro qualquer.
 class _RepoThatBreaks extends FakeCoachRepository {
@@ -26,17 +27,25 @@ class _RepoWithGate extends FakeCoachRepository {
 
 void main() {
   late FakeCoachRepository repo;
+  late FakeLichessRepository lichess;
 
   LinkAccountCubit create({
-    Platform platform = Platform.lichess,
+    Platform platform = Platform.chesscom,
     FakeCoachRepository? r,
   }) {
-    final c = LinkAccountCubit(repository: r ?? repo, platform: platform);
+    final c = LinkAccountCubit(
+      repository: r ?? repo,
+      lichess: lichess,
+      platform: platform,
+    );
     addTearDown(c.close);
     return c;
   }
 
-  setUp(() => repo = FakeCoachRepository());
+  setUp(() {
+    repo = FakeCoachRepository();
+    lichess = FakeLichessRepository();
+  });
 
   test('começa vazio, na plataforma escolhida, sem poder enviar', () {
     final c = create(platform: Platform.chesscom);
@@ -76,11 +85,11 @@ void main() {
       expect(c.state.linked, isTrue);
       expect(c.state.sending, isFalse);
       expect(c.state.failure, isNull);
-      expect(repo.links, [(Platform.lichess, 'gabriel_lucena')]);
+      expect(repo.links, [(Platform.chesscom, 'gabriel_lucena')]);
     });
 
     test('usa a plataforma do chess.com', () async {
-      final c = create(platform: Platform.chesscom);
+      final c = create();
       c.typeText('hikaru');
       await c.link();
       expect(repo.links, [(Platform.chesscom, 'hikaru')]);
@@ -92,7 +101,7 @@ void main() {
       await c.link();
       final account = await repo.account().first;
       expect(account?.username, 'gabriel_lucena');
-      expect(account?.platform, Platform.lichess);
+      expect(account?.platform, Platform.chesscom);
     });
 
     test('conta que não existe: falha naoExiste, sem ligar', () async {
@@ -182,6 +191,79 @@ void main() {
       await c.close();
       r.gate.complete();
       await expectLater(sent, completes);
+    });
+  });
+
+  group('Lichess pelo login de lá', () {
+    test('sem login: abre o Lichess e manda o token ao servidor', () async {
+      final c = create(platform: Platform.lichess);
+      await c.linkLichess();
+      expect(lichess.connects, 1);
+      expect(repo.lichessTokens, ['token-falso-do-lichess']);
+      expect(c.state.linked, isTrue);
+      final account = await repo.account().first;
+      expect(account?.platform, Platform.lichess);
+    });
+
+    test('com login do Perfil: usa o token que já existe', () async {
+      lichess.connected = true;
+      final c = create(platform: Platform.lichess);
+      await c.linkLichess();
+      expect(lichess.connects, 0);
+      expect(c.state.linked, isTrue);
+    });
+
+    test(
+      'token que não vale mais: sai, entra de novo e tenta uma vez',
+      () async {
+        lichess.connected = true;
+        repo.revokedTokens.add('token-falso-do-lichess');
+        lichess.hold = true;
+        final c = create(platform: Platform.lichess);
+        final done = c.linkLichess();
+        await pumpEventQueue();
+        lichess.token = 'token-falso-novo-do-lichess';
+        lichess.complete();
+        await done;
+        expect(lichess.disconnects, 1);
+        expect(lichess.connects, 1);
+        expect(repo.lichessTokens, [
+          'token-falso-do-lichess',
+          'token-falso-novo-do-lichess',
+        ]);
+        expect(c.state.linked, isTrue);
+      },
+    );
+
+    test('o login novo também não vale: falha lichessLogin', () async {
+      lichess.connected = true;
+      repo.revokedTokens.add('token-falso-do-lichess');
+      final c = create(platform: Platform.lichess);
+      await c.linkLichess();
+      expect(repo.lichessTokens, hasLength(2));
+      expect(c.state.failure, LinkAccountFailure.lichessLogin);
+      expect(c.state.linked, isFalse);
+    });
+
+    test('voltou sem autorizar: cancelado, sem erro', () async {
+      lichess.hold = true;
+      final c = create(platform: Platform.lichess);
+      final done = c.linkLichess();
+      await pumpEventQueue();
+      lichess.cancel();
+      await done;
+      expect(c.state.cancelled, isTrue);
+      expect(c.state.failure, isNull);
+      expect(c.state.sending, isFalse);
+      expect(repo.lichessTokens, isEmpty);
+    });
+
+    test('muitas tentativas: falha tooMany', () async {
+      repo.linkFailure = LinkAccountFailure.tooMany;
+      final c = create(platform: Platform.lichess);
+      await c.linkLichess();
+      expect(c.state.failure, LinkAccountFailure.tooMany);
+      expect(c.state.linked, isFalse);
     });
   });
 }

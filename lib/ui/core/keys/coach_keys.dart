@@ -52,6 +52,7 @@ abstract final class CoachKeys {
   static const confirmAccount = Key('treinador.conta.confirmar');
   static const accountError = Key('treinador.conta.erro');
   static const switchSite = Key('treinador.conta.trocarSite');
+  static const lichessLoginText = Key('treinador.conta.lichessTexto');
 
   // Início da análise de uma partida.
   static const start = Key('treinador.inicio');

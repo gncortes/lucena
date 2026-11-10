@@ -15,7 +15,7 @@ import type { Mensageiro } from '../../src/pessoas/acessos';
 import { abrirMotor } from '../../src/treinador/motor';
 import { diaBR } from '../../src/treinador/politica';
 import { buscaCore, LIGAR_POR_DIA, partidaMudou, processarPartida, type DepsTreinador } from '../../src/treinador/servico';
-import { httpFalso } from '../treinador/apoio';
+import { httpFalso, TOKEN_LICHESS_FALSO } from '../treinador/apoio';
 import { chamar, codigoDoErro, criarPessoa, limpar } from './apoio';
 
 const db = () => getFirestore();
@@ -72,12 +72,15 @@ describe('treinador no emulador', () => {
   });
 
   test('ligar: login, plataforma, usuário inexistente e plataforma fora', async () => {
-    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, null, { plataforma: 'lichess', usuario: 'DrNykterstein' })), 'unauthenticated');
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, null, { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO })), 'unauthenticated');
     assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'fide', usuario: 'x1' })), 'invalid-argument');
-    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'a b' })), 'invalid-argument');
-    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'ninguem-aqui' })), 'not-found');
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: 'a b' })), 'invalid-argument');
+    // Lichess só pelo login de lá: o nome digitado não prova o dono da conta.
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' })), 'invalid-argument');
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: 'token-falso-revogado-x' })), 'failed-precondition');
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'chesscom', usuario: 'ninguem-aqui' })), 'not-found');
     usarTreinador({ http: httpFalso([], 429) });
-    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' })), 'unavailable');
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO })), 'unavailable');
     assert.equal((await db().doc('treinador_painel/estado').get()).get('lichess.ok'), false);
     assert.equal((await db().doc('users/ana/treinador/conta').get()).exists, false);
   });
@@ -85,7 +88,7 @@ describe('treinador no emulador', () => {
   test('ligar o Lichess (grátis): conta, 3 partidas na fila, cota da semana e conta nova no painel', async () => {
     const r = await chamar<{ usuario: string; importadas: number }>(treinadorLigarConta, 'ana', {
       plataforma: 'lichess',
-      usuario: 'drnykterstein',
+      token: TOKEN_LICHESS_FALSO,
     });
     assert.deepEqual(r, { usuario: 'DrNykterstein', importadas: 3 });
     const conta = (await db().doc('users/ana/treinador/conta').get()).data()!;
@@ -201,7 +204,7 @@ describe('treinador no emulador', () => {
 
   test('orçamento a 100%: grátis espera na fila sem tarefa; com verba de novo, a busca libera', async () => {
     await db().doc(`treinador_painel/dia-${diaBR(new Date())}`).set({ data: diaBR(new Date()), custoUsd: { pagas: 25 } });
-    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO });
     assert.equal(fila.length, 0);
     const naFila = await db().collection('treinador_fila').get();
     assert.equal(naFila.size, 3);
@@ -220,7 +223,7 @@ describe('treinador no emulador', () => {
   });
 
   test('429 do Lichess na busca não para o chess.com dos outros (G11)', async () => {
-    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO });
     await chamar(treinadorLigarConta, 'bia', { plataforma: 'chesscom', usuario: 'hikaru' });
     // Ana foi buscada há mais tempo: vem primeiro e leva o 429.
     await db().doc('treinador_contas/ana').set({ ultimaBusca: Timestamp.fromMillis(1) }, { merge: true });
@@ -261,7 +264,7 @@ describe('treinador no emulador', () => {
   });
 
   test('aviso de modelos e desligar (as partidas ficam)', async () => {
-    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO });
     await chamar(treinadorAvisoModelos, 'ana', { ligado: true });
     assert.equal((await db().doc('users/ana/treinador/conta').get()).get('avisoModelos'), true);
     assert.equal(await codigoDoErro(chamar(treinadorAvisoModelos, 'ana', { ligado: 'sim' })), 'invalid-argument');
@@ -277,18 +280,18 @@ describe('treinador no emulador', () => {
     const pedidos: { url: string }[] = [];
     usarTreinador({ http: httpFalso(pedidos as never), enfileirar: deps().enfileirar, explorador: async () => null });
     for (let i = 0; i < LIGAR_POR_DIA; i++) {
-      await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'ninguem-aqui' }));
+      await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: 'token-falso-revogado-x' }));
     }
     const antes = pedidos.length;
-    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' })), 'resource-exhausted');
+    assert.equal(await codigoDoErro(chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO })), 'resource-exhausted');
     assert.equal(pedidos.length, antes, 'recusou sem chamar a plataforma');
     // O limite é por conta: a Bia liga normalmente.
-    await chamar(treinadorLigarConta, 'bia', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    await chamar(treinadorLigarConta, 'bia', { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO });
     assert.equal((await db().doc('users/bia/treinador/conta').get()).exists, true);
   });
 
   test('desligar e ligar de novo não zera a cota do grátis', async () => {
-    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', usuario: 'DrNykterstein' });
+    await chamar(treinadorLigarConta, 'ana', { plataforma: 'lichess', token: TOKEN_LICHESS_FALSO });
     const cota = (await db().doc('treinador_contas/ana').get()).get('semana');
     assert.ok(cota?.n > 0, 'a importação gastou cota');
     await chamar(treinadorDesligarConta, 'ana', {});

@@ -3159,6 +3159,8 @@
   "treinadorTrocarSite": "Trocar de site",
   "treinadorContaNaoExiste": "Não achamos esse usuário no {platform}.",
   "treinadorContaSemResposta": "Sem resposta do servidor. Verifique sua conexão com a internet e tente novamente.",
+  "treinadorLichessTexto": "Para confirmar que a conta é sua, você entra no Lichess e autoriza o Lucena.",
+  "treinadorContaMuitasTentativas": "Você tentou conectar muitas vezes hoje. Tente de novo amanhã.",
   "treinadorContaSemPlano": "Para conectar a conta, você precisa do plano de análise.",
   "treinadorContaSemLogin": "Entre na sua conta do Lucena para conectar a conta de xadrez.",
   "treinadorInicioTitulo": "Sua partida",

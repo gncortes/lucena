@@ -22,6 +22,12 @@ abstract interface class CoachRepository {
   /// usuário existe. Lança [LinkAccountException].
   Future<void> linkAccount(Platform platform, String username);
 
+  /// Liga a conta do Lichess pelo login de lá: o servidor lê o dono do
+  /// [token] no Lichess, o que prova que a conta é de quem liga. Lança
+  /// [LinkAccountException] ([LinkAccountFailure.lichessLogin]: token
+  /// que não vale mais).
+  Future<void> linkLichess(String token);
+
   Future<void> unlinkAccount();
 
   /// Liga ou desliga o aviso das partidas-modelo.
@@ -59,6 +65,10 @@ final class NoCoachRepository implements CoachRepository {
 
   @override
   Future<void> linkAccount(Platform platform, String username) async =>
+      throw const LinkAccountException(LinkAccountFailure.noResponse);
+
+  @override
+  Future<void> linkLichess(String token) async =>
       throw const LinkAccountException(LinkAccountFailure.noResponse);
 
   @override
@@ -157,18 +167,24 @@ final class CloudCoachRepository implements CoachRepository {
   );
 
   @override
-  Future<void> linkAccount(Platform platform, String username) async {
+  Future<void> linkAccount(Platform platform, String username) =>
+      _link({'plataforma': platform.wire, 'usuario': username.trim()});
+
+  @override
+  Future<void> linkLichess(String token) =>
+      _link({'plataforma': Platform.lichess.wire, 'token': token});
+
+  Future<void> _link(Map<String, Object?> data) async {
     if (_currentUid() == null) {
       throw const LinkAccountException(LinkAccountFailure.noLogin);
     }
     try {
-      await _service.call(CoachFunctions.linkAccount, {
-        'plataforma': platform.wire,
-        'usuario': username.trim(),
-      });
+      await _service.call(CoachFunctions.linkAccount, data);
     } on CoachCallException catch (e) {
       throw LinkAccountException(switch (e.code) {
         'not-found' || 'invalid-argument' => LinkAccountFailure.doesNotExist,
+        'failed-precondition' => LinkAccountFailure.lichessLogin,
+        'resource-exhausted' => LinkAccountFailure.tooMany,
         'permission-denied' => LinkAccountFailure.noPlan,
         'unauthenticated' => LinkAccountFailure.noLogin,
         _ => LinkAccountFailure.noResponse,

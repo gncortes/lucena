@@ -13,6 +13,7 @@ import 'package:lucena/data/repositories/coach/trivia_repository.dart';
 import 'package:lucena/data/repositories/coach/your_game_filter_repository.dart';
 import 'package:lucena/data/repositories/coach/coach_preferences.dart';
 import 'package:lucena/data/repositories/coach/coach_repository.dart';
+import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/course_grant.dart';
@@ -29,6 +30,7 @@ import '../../../testing/fakes/fake_trivia_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_coach_repository.dart';
+import '../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../testing/test_app.dart';
 import '../learning_analysis/analysis_test_support.dart';
 
@@ -84,6 +86,9 @@ class CoachBed {
   final List<Trivia>? trivias;
   final engine = ControlledAnalysisEngine();
   final characters = FakeCharacterRepository();
+
+  /// O login do Lichess (ligar a conta de lá passa por ele).
+  final lichess = FakeLichessRepository();
   late final GoRouter router = GoRouter(
     initialLocation: Routes.home,
     routes: [
@@ -114,6 +119,7 @@ class CoachBed {
   Widget app({SettingsCubit? settings}) => MultiRepositoryProvider(
     providers: [
       RepositoryProvider<CoachRepository>.value(value: repo),
+      RepositoryProvider<LichessRepository>.value(value: lichess),
       RepositoryProvider<CourseGrantsRepository>.value(value: grants),
       RepositoryProvider<CoachPreferences>.value(value: preferences),
       // A aba Seu jogo (aberta pelo "Onde você mais erra") lê o filtro.

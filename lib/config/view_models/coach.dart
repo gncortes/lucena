@@ -11,6 +11,7 @@ import '../../data/repositories/coach/trivia_repository.dart';
 import '../../data/repositories/coach/your_game_filter_repository.dart';
 import '../../data/repositories/coach/coach_preferences.dart';
 import '../../data/repositories/coach/coach_repository.dart';
+import '../../data/repositories/lichess/lichess_repository.dart';
 import '../../domain/models/imported_game.dart';
 import '../../domain/models/coach/coach.dart';
 import '../../domain/use_cases/now.dart';
@@ -41,6 +42,7 @@ LinkAccountCubit createLinkAccountCubit(
   required Platform platform,
 }) => LinkAccountCubit(
   repository: context.read<CoachRepository>(),
+  lichess: context.read<LichessRepository>(),
   platform: platform,
 );
 

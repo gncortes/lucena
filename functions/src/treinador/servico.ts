@@ -5,7 +5,7 @@ import { HttpsError } from 'firebase-functions/https';
 import { TOKEN_NAO_REGISTRADO, type Mensageiro } from '../pessoas/acessos';
 import { analisarPartida } from './analise';
 import { calcularEstatisticas, type PartidaParaEstatistica } from './estatisticas';
-import { buscarPartidas, conferirUsuario, ErroFonte, type Http } from './fontes';
+import { buscarPartidas, conferirUsuario, donoDoTokenLichess, ErroFonte, type Http } from './fontes';
 import type { Motor } from './motor';
 import {
   config,
@@ -56,6 +56,8 @@ export const PUSH_INTERVALO_MS = 60 * 60_000;
 const MAX_PARTIDAS_ESTATISTICA = 200;
 
 const USUARIO_VALIDO = /^[A-Za-z0-9][A-Za-z0-9_-]{1,29}$/;
+/** Token do Lichess: texto sem espaço, de tamanho razoável (o formato exato é deles). */
+const TOKEN_VALIDO = /^[A-Za-z0-9_.-]{16,200}$/;
 
 /** Milissegundos de um Timestamp gravado; sem valor conta como nunca (vem primeiro). */
 function quando(v: unknown): number {
@@ -329,31 +331,42 @@ function exigeLogin(uid: string | undefined): string {
   return uid;
 }
 
-/** `treinadorLigarConta {plataforma, usuario}`: confere na plataforma, grava a conta e importa as últimas partidas. */
+/** `treinadorLigarConta {plataforma, usuario | token}`: confere na plataforma, grava a conta e importa as últimas partidas. */
 export async function ligarContaCore(
   deps: DepsTreinador,
   uidLogado: string | undefined,
   dados: unknown,
 ): Promise<{ usuario: string; importadas: number }> {
   const uid = exigeLogin(uidLogado);
-  const d = (dados ?? {}) as { plataforma?: unknown; usuario?: unknown };
+  const d = (dados ?? {}) as { plataforma?: unknown; usuario?: unknown; token?: unknown };
   const plataforma = d.plataforma;
   if (plataforma !== 'lichess' && plataforma !== 'chesscom') {
     throw new HttpsError('invalid-argument', 'Plataforma inválida.');
   }
+  // Lichess: só com o login de lá (token OAuth), que prova o dono da conta. chess.com: nome digitado, conferido na
+  // API pública, até o OAuth deles ser liberado (acesso por aprovação).
+  const token = typeof d.token === 'string' ? d.token.trim() : '';
   const digitado = typeof d.usuario === 'string' ? d.usuario.trim() : '';
-  if (!USUARIO_VALIDO.test(digitado)) throw new HttpsError('invalid-argument', 'Usuário inválido.');
+  if (plataforma === 'lichess' ? !TOKEN_VALIDO.test(token) : !USUARIO_VALIDO.test(digitado)) {
+    throw new HttpsError('invalid-argument', plataforma === 'lichess' ? 'Entre pelo Lichess.' : 'Usuário inválido.');
+  }
   await contarTentativaDeLigar(deps.db, uid, deps.agora);
   let oficial: string | null;
   try {
-    oficial = await conferirUsuario(deps.http, plataforma as Plataforma, digitado);
+    oficial =
+      plataforma === 'lichess'
+        ? await donoDoTokenLichess(deps.http, token)
+        : await conferirUsuario(deps.http, plataforma as Plataforma, digitado);
   } catch (e) {
     if (e instanceof ErroFonte && plataforma === 'lichess') {
       await registrarLichess(deps.db, deps.agora, false, e.motivo === 'limite');
     }
     throw new HttpsError('unavailable', 'A plataforma não respondeu.');
   }
-  if (!oficial) throw new HttpsError('not-found', 'Usuário não encontrado.');
+  if (!oficial) {
+    if (plataforma === 'lichess') throw new HttpsError('failed-precondition', 'Entre pelo Lichess de novo.');
+    throw new HttpsError('not-found', 'Usuário não encontrado.');
+  }
 
   const { db, agora } = deps;
   const antes = (await refConta(db, uid).get()).data();

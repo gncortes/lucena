@@ -2855,6 +2855,8 @@
   "treinadorTrocarSite": "[Çhåñĝé šîté one two]",
   "treinadorContaNaoExiste": "[Wé çöûld ñöt fîñd thîš ûšéŕ öñ {platform}. one two three four]",
   "treinadorContaSemResposta": "[Ñö åñšwéŕ fŕöm thé šéŕvéŕ. Çhéçk ýöûŕ îñtéŕñét åñd tŕý åĝåîñ. one two three four five six]",
+  "treinadorLichessTexto": "[Tö çöñfîŕm thé åççöûñt îš ýöûŕš, šîĝñ îñ tö Lîçhéšš åñd ållöw Lûçéñå. one two three four five six]",
+  "treinadorContaMuitasTentativas": "[Töö måñý tŕîéš tödåý. Tŕý åĝåîñ tömöŕŕöw. one two three four]",
   "treinadorContaSemPlano": "[Lîñkîñĝ åñ åççöûñt ñéédš thé åñålýšîš plåñ. one two three four]",
   "treinadorContaSemLogin": "[Šîĝñ îñ tö Lûçéñå tö lîñk ýöûŕ åççöûñt. one two three four]",
   "treinadorInicioTitulo": "[Ýöûŕ ĝåmé one]",

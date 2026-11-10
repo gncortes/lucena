@@ -107,6 +107,28 @@ class FakeCoachRepository implements CoachRepository {
     );
   }
 
+  /// Os tokens recebidos em [linkLichess].
+  final List<String> lichessTokens = [];
+
+  /// Tokens que o "servidor" recusa como revogados.
+  final Set<String> revokedTokens = {};
+
+  @override
+  Future<void> linkLichess(String token) async {
+    lichessTokens.add(token);
+    if (linkFailure case final failure?) {
+      linkFailure = null;
+      throw LinkAccountException(failure);
+    }
+    if (revokedTokens.contains(token)) {
+      throw const LinkAccountException(LinkAccountFailure.lichessLogin);
+    }
+    currentAccount = const CoachAccount(
+      platform: Platform.lichess,
+      username: 'DrNykterstein',
+    );
+  }
+
   @override
   Future<void> unlinkAccount() async => currentAccount = null;
 

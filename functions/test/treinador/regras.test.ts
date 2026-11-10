@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Timestamp } from 'firebase-admin/firestore';
 import { calcularEstatisticas, type PartidaParaEstatistica } from '../../src/treinador/estatisticas';
-import { buscarPartidas, conferirUsuario, ErroFonte, nomeDaAberturaChesscom } from '../../src/treinador/fontes';
+import { buscarPartidas, conferirUsuario, donoDoTokenLichess, ErroFonte, nomeDaAberturaChesscom } from '../../src/treinador/fontes';
 import {
   CONFIG_TREINADOR_PADRAO,
   configDaAnalise,
@@ -16,7 +16,7 @@ import {
 } from '../../src/treinador/politica';
 import { textoDoPush } from '../../src/treinador/servico';
 import { acharTeoria, chaveFen, tokenLichess, type LanceExplorador, type RespostaExplorador } from '../../src/treinador/teoria';
-import { httpFalso, type Pedido } from './apoio';
+import { httpFalso, TOKEN_LICHESS_FALSO, type Pedido } from './apoio';
 
 describe('fontes', () => {
   it('confere o usuário do Lichess e do chess.com com o nome oficial', async () => {
@@ -28,6 +28,14 @@ describe('fontes', () => {
     assert.equal(await conferirUsuario(http, 'chesscom', 'ninguem-aqui'), null);
     // User-Agent próprio: o Lichess recusa o padrão.
     assert.ok(pedidos.every((p) => p.headers['User-Agent']?.startsWith('Lucena/')));
+  });
+
+  it('o token do login do Lichess diz o dono da conta; token revogado dá null', async () => {
+    const pedidos: Pedido[] = [];
+    assert.equal(await donoDoTokenLichess(httpFalso(pedidos), TOKEN_LICHESS_FALSO), 'DrNykterstein');
+    assert.equal(await donoDoTokenLichess(httpFalso(pedidos), 'token-falso-revogado-x'), null);
+    assert.equal(pedidos[0].url, 'https://lichess.org/api/account');
+    await assert.rejects(donoDoTokenLichess(httpFalso([], 429), 'x'), (e: unknown) => e instanceof ErroFonte && e.motivo === 'limite');
   });
 
   it('429 do Lichess vira ErroFonte limite; 500 vira fora', async () => {
