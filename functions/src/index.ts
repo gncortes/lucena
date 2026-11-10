@@ -23,7 +23,7 @@ import {
   reverterVersaoCore,
   type DepsVersoes,
 } from './conteudo/versoes';
-import { FUSO, REGIAO } from './comum/config';
+import { FUSO, REGIAO, SO_APP } from './comum/config';
 import { httpReal } from './treinador/fontes';
 import { abrirMotor } from './treinador/motor';
 import { comCache, exploradorLichess, tokenLichess } from './treinador/teoria';
@@ -290,10 +290,10 @@ export const republicarPromocao = onCall(async (req) => {
 });
 
 /** H-R5-74 · App: o código do link vale? (`{codigo}`, R23; pede conta). */
-export const validarCupom = onCall(async (req) => validarCupomCore(depsPromocoes(), req.auth?.uid, req.data));
+export const validarCupom = onCall(SO_APP, async (req) => validarCupomCore(depsPromocoes(), req.auth?.uid, req.data));
 
 /** H-R5-74 · App: segura a vaga do link por 30 min antes de comprar (`{codigo}`, R24). */
-export const reservarVaga = onCall(async (req) => reservarVagaCore(depsPromocoes(), req.auth?.uid, req.data));
+export const reservarVaga = onCall(SO_APP, async (req) => reservarVagaCore(depsPromocoes(), req.auth?.uid, req.data));
 
 let playComprasDeTeste: PlayCompras | null = null;
 // Dev e emulador: Play simulada por tokens `teste:` (decisão do Gabriel); produção: a real, quando ligada.
@@ -305,7 +305,7 @@ export function usarPlayCompras(p: PlayCompras | null): void {
 }
 
 /** H-R5-3A · App: confere a compra pelo token (`{token}`, R24) e libera o curso. */
-export const conferirCompra = onCall(async (req) => {
+export const conferirCompra = onCall(SO_APP, async (req) => {
   const p = depsPromocoes();
   return conferirCompraCore(
     { db: p.db, play: playComprasDeTeste ?? playComprasDoAmbiente, ofertas: p.play, agora: p.agora },
@@ -347,18 +347,18 @@ function depsTreinador(): DepsTreinador {
 }
 
 /** T87 · App: liga a conta do Lichess ou do chess.com (`{plataforma, usuario}`). */
-export const treinadorLigarConta = onCall({ timeoutSeconds: 120 }, async (req) =>
+export const treinadorLigarConta = onCall({ ...SO_APP, timeoutSeconds: 120 }, async (req) =>
   ligarContaCore(depsTreinador(), req.auth?.uid, req.data),
 );
 
 /** T87 · App: desliga a conta (as partidas analisadas ficam). */
-export const treinadorDesligarConta = onCall(async (req) => desligarContaCore(depsTreinador(), req.auth?.uid));
+export const treinadorDesligarConta = onCall(SO_APP, async (req) => desligarContaCore(depsTreinador(), req.auth?.uid));
 
 /** T87 · App: pede a análise de uma partida (`{partida, avisar}`). */
-export const treinadorAnalisar = onCall(async (req) => analisarCore(depsTreinador(), req.auth?.uid, req.data));
+export const treinadorAnalisar = onCall(SO_APP, async (req) => analisarCore(depsTreinador(), req.auth?.uid, req.data));
 
 /** T87 · App: liga ou desliga o aviso de partidas-modelo (`{ligado}`). */
-export const treinadorAvisoModelos = onCall(async (req) => avisoModelosCore(depsTreinador(), req.auth?.uid, req.data));
+export const treinadorAvisoModelos = onCall(SO_APP, async (req) => avisoModelosCore(depsTreinador(), req.auth?.uid, req.data));
 
 /** T87 · Fila de análise (Cloud Tasks): Stockfish por nós fixos, 1 vCPU e 2 GiB, até 3 ao mesmo tempo. */
 export const analisarPartidaTreinador = onTaskDispatched<{ uid: string; partida: string }>(
