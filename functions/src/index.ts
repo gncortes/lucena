@@ -9,11 +9,12 @@ import { onTaskDispatched } from 'firebase-functions/tasks';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
-import { onCall } from 'firebase-functions/https';
+import { HttpsError, onCall, onRequest } from 'firebase-functions/https';
 import { defineString } from 'firebase-functions/params';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
 import { getStorage } from 'firebase-admin/storage';
+import { AgentesPausados, importarLoteCore } from './agentes/importar';
 import { decidirEntregaCore, marcarFonteConferidaCore } from './conteudo/entregas';
 import { leitorDoStorage } from './conteudo/storage';
 import {
@@ -384,4 +385,29 @@ export const buscaTreinador = onSchedule(
 // O Firestore é nam5 (firebase.json): o gatilho fica em us-central1, a região do banco.
 export const treinadorPartidaMudou = onDocumentUpdated({ document: 'users/{uid}/partidas/{id}', region: 'us-central1' }, async (ev) => {
   await partidaMudou(depsTreinador(), ev.params.uid, ev.params.id, ev.data?.before.data(), ev.data?.after.data());
+});
+
+/**
+ * AG-5b.1 · O porteiro dos agentes noturnos (`POST {loteId, conteudo}`, E1.21 §6.1). Sem acesso público: o
+ * run.invoker da conta porteiro-agentes (WIF) e a reconferência do ID token entram na AG-5b.3; motor e
+ * tablebase na AG-5b.2.
+ */
+export const importarLote = onRequest({ invoker: 'private', timeoutSeconds: 60 }, async (req, res) => {
+  if (req.method !== 'POST') {
+    res.status(405).json({ erro: 'Use POST.' });
+    return;
+  }
+  try {
+    res.json(await importarLoteCore({ db: getFirestore(), agora: new Date() }, req.body));
+  } catch (e) {
+    if (e instanceof AgentesPausados) {
+      res.status(423).json({ erro: e.message, detalhes: { codigo: 'pausado', motivo: e.motivo } });
+      return;
+    }
+    if (e instanceof HttpsError) {
+      res.status(e.httpErrorCode.status).json({ erro: e.message, detalhes: e.details ?? null });
+      return;
+    }
+    throw e;
+  }
 });

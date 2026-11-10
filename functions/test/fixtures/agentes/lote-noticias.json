@@ -1,0 +1,41 @@
+{
+  "versao": 1,
+  "agente": "redator-noticias",
+  "resumo": "Duas notícias da FIDE da semana e a coleção que junta as duas.",
+  "entregas": [
+    {
+      "idLocal": "fide-calendario",
+      "tipo": "noticia",
+      "estado": "sugerido",
+      "pais": "BR",
+      "idioma": "pt-BR",
+      "titulo": "FIDE divulga o calendário de 2027",
+      "link": "https://www.fide.com/news/1234",
+      "data": "2026-11-08",
+      "fonte": "FIDE",
+      "resumo": "A federação internacional publicou as datas dos principais torneios do ano que vem."
+    },
+    {
+      "idLocal": "fide-olimpiada",
+      "tipo": "noticia",
+      "estado": "sugerido",
+      "pais": "BR",
+      "idioma": "pt-BR",
+      "titulo": "Sede da Olimpíada de 2028 confirmada",
+      "link": "https://www.fide.com/news/1240",
+      "data": "2026-11-07",
+      "fonte": "FIDE",
+      "resumo": "A próxima Olimpíada já tem cidade e datas definidas."
+    },
+    {
+      "idLocal": "noticias-da-semana",
+      "tipo": "colecao",
+      "estado": "sugerido",
+      "pais": "BR",
+      "idioma": "pt-BR",
+      "titulo": "Notícias da semana",
+      "porque": "Junta as notícias da FIDE num carrossel só.",
+      "itens": ["fide-calendario", "fide-olimpiada"]
+    }
+  ]
+}

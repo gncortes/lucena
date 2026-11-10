@@ -1,0 +1,115 @@
+{
+  "versao": 1,
+  "agente": "memista",
+  "resumo": "Três ideias de teste: torre e peão, oposição e defesa frontal.",
+  "entregas": [
+    {
+      "idLocal": "exemplo-torre-peao-posicao",
+      "tipo": "post",
+      "estado": "sugerido",
+      "formato": "post",
+      "tema": "posicao",
+      "etapa": "pronto",
+      "pais": "BR",
+      "idioma": "pt-BR",
+      "aula": "rook.frontal",
+      "titulo": "Torre e peão: a defesa pela frente",
+      "porque": "Final que aparece em toda partida de clube e tem uma ideia só.",
+      "referencias": [
+        {
+          "tipo": "fonte",
+          "titulo": "Lichess: estudo de defesa frontal (exemplo)",
+          "url": "https://lichess.org/study/exemplo01",
+          "origem": "rook.frontal"
+        },
+        {
+          "tipo": "partida",
+          "titulo": "chessgames.com: partida de exemplo",
+          "url": "https://www.chessgames.com/perl/chessgame?gid=1",
+          "origem": "rook.frontal.k.exemplo",
+          "publico": true
+        }
+      ],
+      "horarioSugerido": "19:30",
+      "texto": "As pretas defendem com a torre na frente do peão. Como as brancas avançam?",
+      "hashtags": ["#xadrez", "#finais", "#lucena"],
+      "posicoes": [
+        {
+          "fen": "8/8/8/4k3/8/8/4P3/4K3 w - - 0 1",
+          "ladoAJogar": "brancas",
+          "orientacao": "brancas"
+        }
+      ],
+      "contexto": {
+        "partidaId": "rook.frontal.k.exemplo",
+        "tipo": "partida",
+        "brancas": "Brancas de Exemplo",
+        "pretas": "Pretas de Exemplo",
+        "ano": 1990
+      },
+      "legendas": {
+        "facebook": {
+          "texto": "As pretas defendem pela frente. Pratique esta posição no app Lucena: lucena.app/p/<id>"
+        },
+        "x": {
+          "texto": "Defesa pela frente: como as brancas avançam?",
+          "resposta": "Pratique no app Lucena: lucena.app/p/<id>"
+        },
+        "youtube": {
+          "texto": "Defesa frontal em 30 segundos. Pratique esta posição no app Lucena: lucena.app/p/<id>"
+        }
+      },
+      "traducao": {
+        "slides": {
+          "1": "Torre na frente do peão"
+        }
+      }
+    },
+    {
+      "idLocal": "exemplo-oposicao-curiosidade",
+      "tipo": "post",
+      "estado": "sugerido",
+      "formato": "carrossel",
+      "tema": "curiosidade",
+      "etapa": "ideia",
+      "pais": "BR",
+      "idioma": "pt-BR",
+      "titulo": "A oposição em quatro passos",
+      "porque": "Ideia curta que serve de porta de entrada para os finais de peão.",
+      "referencias": [
+        {
+          "tipo": "fonte",
+          "titulo": "Wikipedia: Opposition (chess)",
+          "url": "https://en.wikipedia.org/wiki/Opposition_(chess)",
+          "origem": "pawns.opposition"
+        }
+      ],
+      "horarioSugerido": "12:15",
+      "gancho": "Quem tem a oposição decide o final.",
+      "esboco": ["Capa com a pergunta", "A posição de partida", "O lance que toma a oposição", "Chamada para o app"]
+    },
+    {
+      "idLocal": "exemplo-xeque-volta-dica",
+      "tipo": "post",
+      "estado": "sugerido",
+      "formato": "videoCurto",
+      "tema": "dica",
+      "etapa": "ideia",
+      "pais": "BR",
+      "idioma": "pt-BR",
+      "titulo": "Xeque pela lateral e volta",
+      "porque": "Defesa prática que o aluno intermediário ainda não conhece.",
+      "referencias": [
+        {
+          "tipo": "fonte",
+          "titulo": "Lichess: defesa frontal (exemplo)",
+          "url": "https://lichess.org/study/exemplo02",
+          "origem": "rook.frontal",
+          "data": "2026-11-08"
+        }
+      ],
+      "horarioSugerido": "21:00",
+      "descricao": "Vídeo curto com a torre que dá xeque de longe e volta para a frente do peão."
+    }
+  ]
+}

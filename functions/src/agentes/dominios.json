@@ -1,0 +1,24 @@
+{
+  "descricao": "Allowlist de hosts (E1.21 §2.3). Vale para coletor, hook e porteiro (importarLote): só https, host exatamente igual a um destes (sem subdomínio curinga), sem usuário, senha nem porta. Fora da lista = item na quarentena. Os hosts das referências atuais saíram de comum/fontes.json (09/11); hosts genéricos (raw.githubusercontent.com, blogspot) ficam fora de propósito.",
+  "hosts": [
+    "lichess.org",
+    "tablebase.lichess.ovh",
+    "api.chess.com",
+    "www.chess.com",
+    "fide.com",
+    "www.fide.com",
+    "theweekinchess.com",
+    "en.chessbase.com",
+    "en.wikipedia.org",
+    "pt.wikipedia.org",
+    "de.wikipedia.org",
+    "commons.wikimedia.org",
+    "www.chessgames.com",
+    "www.pgnmentor.com",
+    "www.chesshistory.com",
+    "www.gutenberg.org"
+  ],
+  "textoLivre": [
+    "lucena.app"
+  ]
+}
