@@ -18,6 +18,8 @@ export const MOTIVOS_QUARENTENA = [
   'limiteDaNoite',
   'limiteLotesAgente',
   'hashDiferente',
+  'colecaoIncompleta',
+  'tetoMensal',
 ] as const;
 export type MotivoQuarentena = (typeof MOTIVOS_QUARENTENA)[number];
 
@@ -27,6 +29,8 @@ export const CORPO_MAXIMO = 256 * 1024;
 export const ENTREGAS_POR_NOITE = 20;
 /** Lotes por agente por noite (§6.1). */
 export const LOTES_POR_AGENTE = 2;
+/** Entregas aceitas por mês, somando todos os agentes (§6.4): estourou, o lote vai à quarentena e os agentes pausam. */
+export const TETO_MENSAL = 150;
 
 export interface Referencia {
   tipo: string;
@@ -38,9 +42,16 @@ export interface Referencia {
   data?: string;
 }
 
+/** Item do lote: post (referencias), noticia (link, data, fonte) ou colecao (itens do mesmo lote). */
 export interface ItemLote {
   idLocal: string;
-  referencias: Referencia[];
+  tipo: 'post' | 'noticia' | 'colecao';
+  referencias?: Referencia[];
+  link?: string;
+  data?: string;
+  fonte?: string;
+  titulo?: string;
+  itens?: string[];
   [campo: string]: unknown;
 }
 
@@ -155,11 +166,13 @@ export function conferirItem(item: ItemLote): Achado[] {
   const achados: Achado[] = [];
   const visitar = (v: unknown, onde: string): void => {
     if (typeof v === 'string') {
-      if (/^\/referencias\/\d+\/url$/.test(onde)) {
+      if (/^\/referencias\/\d+\/url$/.test(onde) || (item.tipo === 'noticia' && onde === '/link')) {
         if (!urlPermitida(v)) achados.push({ motivo: 'urlForaDaLista', onde });
         if (INVISIVEL.test(v)) achados.push({ motivo: 'caractereInvisivel', onde });
       } else {
-        achados.push(...conferirTexto(v, onde, /^\/referencias\/\d+\//.test(onde)));
+        // Título e fonte da notícia podem citar o site da lista ("Chess.com anuncia…"); o resumo, não.
+        const comSite = /^\/referencias\/\d+\//.test(onde) || (item.tipo === 'noticia' && /^\/(titulo|fonte)$/.test(onde));
+        achados.push(...conferirTexto(v, onde, comSite));
       }
     } else if (Array.isArray(v)) {
       v.forEach((x, i) => visitar(x, `${onde}/${i}`));
@@ -183,6 +196,19 @@ export function fontesDe(referencias: Referencia[]): Record<string, unknown>[] {
     origem: r.origem,
     ...(r.data ? { data: r.data } : {}),
   }));
+}
+
+/** fontes[] de qualquer item: post pelas referências, notícia pelo link, coleção nenhuma (as fontes são dos itens). */
+export function fontesDoItem(item: ItemLote): Record<string, unknown>[] {
+  if (item.tipo === 'noticia') {
+    return [{ afirmacao: item.titulo, url: item.link, tipo: 'fonte', origem: item.fonte, data: item.data }];
+  }
+  return fontesDe(item.referencias ?? []);
+}
+
+/** Mês (aaaa-mm) da noite, para o teto mensal. */
+export function mesDe(noite: string): string {
+  return noite.slice(0, 7);
 }
 
 /** Id da entrega no Firestore: o porteiro carimba (o agente só dá o idLocal). */

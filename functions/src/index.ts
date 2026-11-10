@@ -11,7 +11,7 @@ import { defineString } from 'firebase-functions/params';
 import { onSchedule } from 'firebase-functions/scheduler';
 import { exigeAdmin } from './comum/admin';
 import { getStorage } from 'firebase-admin/storage';
-import { importarLoteCore } from './agentes/importar';
+import { AgentesPausados, importarLoteCore } from './agentes/importar';
 import { decidirEntregaCore, marcarFonteConferidaCore } from './conteudo/entregas';
 import { leitorDoStorage } from './conteudo/storage';
 import {
@@ -310,6 +310,10 @@ export const importarLote = onRequest({ invoker: 'private', timeoutSeconds: 60 }
   try {
     res.json(await importarLoteCore({ db: getFirestore(), agora: new Date() }, req.body));
   } catch (e) {
+    if (e instanceof AgentesPausados) {
+      res.status(423).json({ erro: e.message, detalhes: { codigo: 'pausado', motivo: e.motivo } });
+      return;
+    }
     if (e instanceof HttpsError) {
       res.status(e.httpErrorCode.status).json({ erro: e.message, detalhes: e.details ?? null });
       return;

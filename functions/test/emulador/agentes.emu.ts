@@ -4,9 +4,9 @@ import assert from 'node:assert/strict';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { HttpsError } from 'firebase-functions/https';
 import { importarLote } from '../../src/index';
-import { importarLoteCore, type ResultadoLote } from '../../src/agentes/importar';
+import { AgentesPausados, importarLoteCore, type ResultadoLote } from '../../src/agentes/importar';
 import { sha256 } from '../../src/agentes/porteiro';
-import { EXEMPLO, lerAmostra, loteDe } from '../fixtures/agentes';
+import { EXEMPLO, NOTICIAS, lerAmostra, loteDe } from '../fixtures/agentes';
 import { limpar } from './apoio';
 
 const db = () => getFirestore();
@@ -34,6 +34,16 @@ async function erro(p: Promise<unknown>): Promise<HttpsError> {
     return e;
   }
   assert.fail('devia recusar');
+}
+
+async function pausado(p: Promise<unknown>): Promise<AgentesPausados> {
+  try {
+    await p;
+  } catch (e) {
+    assert.ok(e instanceof AgentesPausados, String(e));
+    return e;
+  }
+  assert.fail('devia recusar com 423');
 }
 
 beforeEach(limpar);
@@ -193,7 +203,119 @@ describe('importarLote · limites da noite', () => {
   });
 });
 
+describe('importarLote · notícia e coleção', () => {
+  test('notícias viram entregas sugerido com a fonte do link; a coleção aponta para as entregas do lote', async () => {
+    const r = await importar('lote-noticias', lerAmostra(NOTICIAS));
+    assert.equal(r.estado, 'importado');
+    assert.equal(r.aceitas.length, 3);
+    const n = (await db().doc('entregas/lote-noticias-fide-calendario').get()).data()!;
+    assert.equal(n.tipo, 'noticia');
+    assert.equal(n.estado, 'sugerido');
+    assert.equal(n.agente, 'redator-noticias');
+    assert.deepEqual(n.fontes, [
+      { afirmacao: n.titulo, url: 'https://www.fide.com/news/1234', tipo: 'fonte', origem: 'FIDE', data: '2026-11-08' },
+    ]);
+    const c = (await db().doc('entregas/lote-noticias-noticias-da-semana').get()).data()!;
+    assert.equal(c.tipo, 'colecao');
+    assert.deepEqual(c.itens, ['lote-noticias-fide-calendario', 'lote-noticias-fide-olimpiada']);
+    assert.deepEqual(c.fontes, []);
+  });
+
+  test('notícia com link fora da lista vai à quarentena e leva junto a coleção que dependia dela', async () => {
+    const l = loteDe(NOTICIAS);
+    l.entregas[1].link = 'https://golpe.com/olimpiada';
+    const r = await importar('lote-noticias-sujo', JSON.stringify(l));
+    assert.equal(r.estado, 'parcial');
+    assert.deepEqual(r.aceitas, ['lote-noticias-sujo-fide-calendario']);
+    assert.deepEqual(
+      r.recusadas.map((x) => [x.idLocal, x.motivo]),
+      [
+        ['fide-olimpiada', 'urlForaDaLista'],
+        ['noticias-da-semana', 'colecaoIncompleta'],
+      ],
+    );
+    assert.equal(Object.keys(await docs('quarentena')).length, 2);
+    assert.equal((await db().doc(`agentesNoite/${NOITE}`).get()).data()?.entregas, 1);
+  });
+});
+
+describe('importarLote · teto mensal', () => {
+  const MES = '2026-11';
+
+  test('até 150 entregas no mês entra; a contagem do mês soma as aceitas', async () => {
+    await db().doc(`agentesMes/${MES}`).set({ entregas: 147 });
+    const r = await importar('lote-t1', loteCom('memista', 3));
+    assert.equal(r.estado, 'importado');
+    assert.equal((await db().doc(`agentesMes/${MES}`).get()).data()?.entregas, 150);
+    assert.equal((await db().doc('config/agentes').get()).exists, false);
+  });
+
+  test('estourou 150: o lote inteiro vai à quarentena (tetoMensal) e o porteiro pausa os agentes com o motivo', async () => {
+    await db().doc(`agentesMes/${MES}`).set({ entregas: 148 });
+    const r = await importar('lote-t2', loteCom('memista', 3));
+    assert.equal(r.estado, 'recusado');
+    assert.equal(r.pausou, true);
+    assert.deepEqual(r.aceitas, []);
+    assert.deepEqual(r.recusadas.map((x) => [x.idLocal, x.motivo]), [
+      ['item-0', 'tetoMensal'],
+      ['item-1', 'tetoMensal'],
+      ['item-2', 'tetoMensal'],
+    ]);
+    assert.deepEqual(await docs('entregas'), {});
+    const q = Object.values(await docs('quarentena'));
+    assert.equal(q.length, 3);
+    assert.ok(q.every((x) => x.motivo === 'tetoMensal' && typeof x.item === 'string'));
+
+    const config = (await db().doc('config/agentes').get()).data()!;
+    assert.equal(config.pausado, true);
+    assert.equal(config.motivo, 'tetoMensal');
+    assert.match(config.detalhe, /150 entregas no mês 2026-11/);
+    assert.equal(config.pausadoPor, 'porteiro');
+    assert.ok(config.pausadoEm instanceof Timestamp);
+    assert.equal((await db().doc(`agentesMes/${MES}`).get()).data()?.entregas, 148);
+    assert.equal((await db().doc(`agentesNoite/${NOITE}`).get()).exists, false);
+
+    // Depois da pausa, o próximo lote é recusado com 423.
+    const e = await pausado(importar('lote-t3', loteCom('roteirista-posicao', 1)));
+    assert.equal(e.status, 423);
+  });
+});
+
+describe('importarLote · agentes pausados', () => {
+  test('config/agentes.pausado == true: recusa tudo com 423 e não grava nada', async () => {
+    await db().doc('config/agentes').set({ pausado: true, motivo: 'manual' });
+    for (const dados of [
+      { loteId: 'lote-p1', conteudo: lerAmostra(EXEMPLO) },
+      { loteId: 'lote-p2', conteudo: '{ não é json' },
+      { loteId: '../x', conteudo: '' },
+    ]) {
+      const e = await pausado(importarLoteCore({ db: db(), agora: AGORA }, dados));
+      assert.equal(e.status, 423);
+      assert.equal(e.motivo, 'manual');
+    }
+    assert.deepEqual(await docs('lotes'), {});
+    assert.deepEqual(await docs('quarentena'), {});
+    assert.deepEqual(await docs('entregas'), {});
+  });
+
+  test('lote já importado também é recusado enquanto pausado; pausado false volta ao normal', async () => {
+    const conteudo = lerAmostra(EXEMPLO);
+    await importar('lote-p3', conteudo);
+    await db().doc('config/agentes').set({ pausado: true, motivo: 'manual' });
+    assert.equal((await pausado(importar('lote-p3', conteudo))).status, 423);
+    await db().doc('config/agentes').set({ pausado: false });
+    assert.equal((await importar('lote-p3', conteudo)).repetido, true);
+  });
+});
+
 describe('importarLote · casca HTTP', () => {
+  test('agentes pausados: 423 com o motivo', async () => {
+    await db().doc('config/agentes').set({ pausado: true, motivo: 'tetoMensal' });
+    const r = await chamarHttp('POST', { loteId: 'lote-h2', conteudo: lerAmostra(EXEMPLO) });
+    assert.equal(r.codigo, 423);
+    assert.deepEqual((r.corpo as { detalhes: unknown }).detalhes, { codigo: 'pausado', motivo: 'tetoMensal' });
+  });
+
   type Resposta = { codigo: number; corpo: unknown };
   async function chamarHttp(method: string, body: unknown): Promise<Resposta> {
     const resp: Resposta = { codigo: 200, corpo: null };

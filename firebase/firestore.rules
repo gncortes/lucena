@@ -398,6 +398,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Teto mensal (150 entregas) e a pausa dos agentes: só o porteiro grava.
+    match /agentesMes/{mes} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /config/agentes {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // As promoções: o app do aluno só consulta pela Function validarCupom.
     match /promocoes/{id} {
       allow read: if isAdmin();

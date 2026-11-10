@@ -7,6 +7,8 @@ import { dirname, join } from 'node:path';
 const PASTA = join(__dirname, '..', '..', '..', 'test', 'fixtures', 'agentes');
 
 export const EXEMPLO = 'lote-exemplo.json';
+/** Lote do redator de notícias: duas notícias e a coleção que junta as duas. */
+export const NOTICIAS = 'lote-noticias.json';
 
 /** O texto do arquivo como está (o sha256 do porteiro é dele). */
 export function lerAmostra(nome: string): string {

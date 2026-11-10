@@ -443,6 +443,8 @@ describe('coleções só do servidor (H-R5-31)', () => {
     'lotes/2026-11-09-memista-0211',
     'quarentena/q1',
     'agentesNoite/2026-11-09',
+    'agentesMes/2026-11',
+    'config/agentes',
     'pushes/p1',
     'promocoes/promo1',
   ];

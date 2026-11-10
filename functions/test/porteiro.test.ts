@@ -8,12 +8,13 @@ import {
   conferirItem,
   conferirTexto,
   fontesDe,
+  fontesDoItem,
   noiteDe,
   urlPermitida,
   type ItemLote,
 } from '../src/agentes/porteiro';
 import { diaLocal } from '../src/fechamento/datas';
-import { EXEMPLO, amostrasReais, esquemaDoUtils, lerAmostra, loteDe } from './fixtures/agentes';
+import { EXEMPLO, NOTICIAS, amostrasReais, esquemaDoUtils, lerAmostra, loteDe } from './fixtures/agentes';
 
 const motivos = (texto: string) => conferirTexto(texto, '/texto').map((a) => a.motivo);
 
@@ -74,7 +75,65 @@ describe('esquema único (AG-5b.0)', () => {
     (l.entregas[0].referencias as Record<string, unknown>[])[0].data = '2026-11-08';
     const r = conferirEsquema(l);
     assert.ok(r.ok);
-    assert.equal(fontesDe(r.lote.entregas[0].referencias)[0].data, '2026-11-08');
+    assert.equal(fontesDe(r.lote.entregas[0].referencias!)[0].data, '2026-11-08');
+  });
+});
+
+describe('notícia e coleção (AG-5b.0)', () => {
+  test('o lote do redator de notícias passa no esquema e nas regras de item', () => {
+    const r = conferirEsquema(loteDe(NOTICIAS));
+    assert.ok(r.ok, JSON.stringify(!r.ok && r.erros));
+    for (const item of r.lote.entregas) assert.deepEqual(conferirItem(item), [], item.idLocal);
+  });
+
+  test('recusa notícia sem link, data ou fonte, com link http, data fora do formato ou campo de post', () => {
+    const base = loteDe(NOTICIAS);
+    const casos: [string, (n: Record<string, any>) => void][] = [
+      ['sem link', (n) => delete n.link],
+      ['sem data', (n) => delete n.data],
+      ['sem fonte', (n) => delete n.fonte],
+      ['sem resumo', (n) => delete n.resumo],
+      ['http', (n) => (n.link = 'http://www.fide.com/news/1234')],
+      ['data', (n) => (n.data = '08/11/2026')],
+      ['campo de post', (n) => (n.hashtags = ['#a', '#b', '#c'])],
+      ['estado', (n) => (n.estado = 'aprovado')],
+    ];
+    for (const [nome, mudar] of casos) {
+      const l = structuredClone(base);
+      mudar(l.entregas[0]);
+      assert.equal(conferirEsquema(l).ok, false, nome);
+    }
+  });
+
+  test('recusa coleção com menos de 2 itens, itens repetidos ou tipo desconhecido', () => {
+    const base = loteDe(NOTICIAS);
+    const casos: [string, (l: typeof base) => void][] = [
+      ['1 item', (l) => (l.entregas[2].itens = ['fide-calendario'])],
+      ['repetidos', (l) => (l.entregas[2].itens = ['fide-calendario', 'fide-calendario'])],
+      ['tipo', (l) => (l.entregas[0].tipo = 'boato')],
+    ];
+    for (const [nome, mudar] of casos) {
+      const l = structuredClone(base);
+      mudar(l);
+      assert.equal(conferirEsquema(l).ok, false, nome);
+    }
+  });
+
+  test('link da notícia só da allowlist; resumo em texto puro; título e fonte podem citar o site da lista', () => {
+    const n = loteDe(NOTICIAS).entregas[0] as unknown as ItemLote;
+    assert.deepEqual(conferirItem({ ...n, titulo: 'Chess.com anuncia torneio', fonte: 'Chess.com' }), []);
+    const fora = conferirItem({ ...n, link: 'https://golpe.com/fide' }).map((a) => `${a.motivo} ${a.onde}`);
+    assert.deepEqual(fora, ['urlForaDaLista /link']);
+    const sujo = conferirItem({ ...n, resumo: 'Veja <b>já</b> em golpe.com/x' }).map((a) => `${a.motivo} ${a.onde}`);
+    assert.deepEqual(sujo, ['html /resumo', 'urlForaDaLista /resumo']);
+  });
+
+  test('fontes da notícia: uma, do link, com a data; coleção sem fonte própria', () => {
+    const [n, , c] = loteDe(NOTICIAS).entregas as unknown as ItemLote[];
+    assert.deepEqual(fontesDoItem(n), [
+      { afirmacao: n.titulo, url: n.link, tipo: 'fonte', origem: 'FIDE', data: '2026-11-08' },
+    ]);
+    assert.deepEqual(fontesDoItem(c), []);
   });
 });
 
@@ -155,7 +214,7 @@ describe('texto puro e injeção', () => {
 
 describe('referencias → fontes e noite', () => {
   test('uma fonte por referência, no formato que decidirEntrega lê, sem conferidaEm', () => {
-    const refs = (loteDe(EXEMPLO).entregas[0] as unknown as ItemLote).referencias;
+    const refs = (loteDe(EXEMPLO).entregas[0] as unknown as ItemLote).referencias!;
     assert.deepEqual(fontesDe(refs), [
       { afirmacao: refs[0].titulo, url: refs[0].url, tipo: 'fonte', origem: 'rook.frontal' },
       { afirmacao: refs[1].titulo, url: refs[1].url, tipo: 'partida', origem: 'rook.frontal.k.exemplo' },
