@@ -46,7 +46,7 @@ export interface DepsTreinador {
 }
 
 /** Partidas importadas ao ligar a conta. */
-export const IMPORTAR_AO_LIGAR = 3;
+export const IMPORTAR_AO_LIGAR = 2;
 /** Partidas por conta a cada busca. */
 export const MAX_POR_BUSCA = 20;
 /** Análise parada há mais que isso volta para a fila. */

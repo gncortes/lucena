@@ -14743,7 +14743,7 @@
   "@treinadorSemPlanoTitulo": {
     "description": "T87 Treinador: no-plan box title"
   },
-  "treinadorSemPlanoTexto": "With the analysis plan, every new game turns into exercises. Without it, you get 3 free analyses a week.",
+  "treinadorSemPlanoTexto": "With the analysis plan, every new game turns into exercises. Without it, you get 2 free analyses a week.",
   "@treinadorSemPlanoTexto": {
     "description": "T87 Treinador: no-plan box body"
   },

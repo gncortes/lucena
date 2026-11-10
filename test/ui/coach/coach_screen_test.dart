@@ -494,7 +494,7 @@ void main() {
       expect(
         find.text(
           'Com o plano de análise, toda partida nova vira exercícios. '
-          'Sem ele, são 3 análises grátis por semana.',
+          'Sem ele, são 2 análises grátis por semana.',
         ),
         findsOneWidget,
       );

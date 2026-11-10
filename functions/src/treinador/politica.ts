@@ -24,7 +24,7 @@ export const CONFIG_TREINADOR_PADRAO: ConfigTreinador = {
   exerciciosPorPartida: 4,
   orcamentoMensalUsd: 20,
   filaGratis: true,
-  gratisPorSemana: 3,
+  gratisPorSemana: 2,
   tetoMensalAssinante: 150,
   nosUsuario: 1_000_000,
   nosDemais: 300_000,
