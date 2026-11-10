@@ -12,6 +12,7 @@ import {
   configDaAnalise,
   custoUsd,
   decidir,
+  diaBR,
   ehAssinante,
   somarCota,
   type Decisao,
@@ -68,6 +69,11 @@ function data(v: unknown): Date {
 
 const refConta = (db: Firestore, uid: string) => db.doc(`users/${uid}/treinador/conta`);
 const refContaServidor = (db: Firestore, uid: string) => db.doc(`treinador_contas/${uid}`);
+/** Só do servidor e nunca apagado ao desligar: tentativas de ligar no dia e a cota guardada. */
+const refLimites = (db: Firestore, uid: string) => db.doc(`treinador_limites/${uid}`);
+
+/** Tentativas de ligar por conta por dia (Brasília). Cada uma custa chamadas às plataformas e importação. */
+export const LIGAR_POR_DIA = 5;
 const refPartida = (db: Firestore, uid: string, id: string) => db.doc(`users/${uid}/partidas/${id}`);
 const refFila = (db: Firestore, uid: string, id: string) => db.doc(`treinador_fila/${uid}_${id}`);
 
@@ -332,6 +338,7 @@ export async function ligarContaCore(
   }
   const digitado = typeof d.usuario === 'string' ? d.usuario.trim() : '';
   if (!USUARIO_VALIDO.test(digitado)) throw new HttpsError('invalid-argument', 'Usuário inválido.');
+  await contarTentativaDeLigar(deps.db, uid, deps.agora);
   let oficial: string | null;
   try {
     oficial = await conferirUsuario(deps.http, plataforma as Plataforma, digitado);
@@ -354,6 +361,8 @@ export async function ligarContaCore(
     avisoModelos: antes?.avisoModelos === true,
   });
   const contaServidor = (await refContaServidor(db, uid).get()).data();
+  // Religou depois de desligar: a cota guardada volta (desligar e ligar não zera o grátis).
+  const guardada = contaServidor ? undefined : (await refLimites(db, uid).get()).get('cota');
   await refContaServidor(db, uid).set(
     {
       plataforma,
@@ -361,6 +370,8 @@ export async function ligarContaCore(
       ligadaEm: ts(agora),
       ultimaBusca: ts(agora),
       cursor: mesma ? (contaServidor?.cursor ?? null) : null,
+      ...(guardada?.semana ? { semana: guardada.semana } : {}),
+      ...(guardada?.mes ? { mes: guardada.mes } : {}),
     },
     { merge: true },
   );
@@ -389,9 +400,30 @@ async function avancarCursor(db: Firestore, uid: string, partidas: PartidaBruta[
 /** `treinadorDesligarConta {}`: apaga a conta; as partidas e a análise ficam. */
 export async function desligarContaCore(deps: DepsTreinador, uidLogado: string | undefined): Promise<{ ok: true }> {
   const uid = exigeLogin(uidLogado);
+  const servidor = (await refContaServidor(deps.db, uid).get()).data();
+  if (servidor?.semana || servidor?.mes) {
+    await refLimites(deps.db, uid).set(
+      { cota: { ...(servidor.semana ? { semana: servidor.semana } : {}), ...(servidor.mes ? { mes: servidor.mes } : {}) } },
+      { merge: true },
+    );
+  }
   await refConta(deps.db, uid).delete();
   await refContaServidor(deps.db, uid).delete();
   return { ok: true };
+}
+
+/** Conta a tentativa antes de chamar a plataforma; passou de `LIGAR_POR_DIA` no dia, recusa. */
+async function contarTentativaDeLigar(db: Firestore, uid: string, agora: Date): Promise<void> {
+  const dia = diaBR(agora);
+  const ref = refLimites(db, uid);
+  const passou = await db.runTransaction(async (t) => {
+    const atual = (await t.get(ref)).get('ligar');
+    const n = atual?.dia === dia ? Number(atual.n) || 0 : 0;
+    if (n >= LIGAR_POR_DIA) return true;
+    t.set(ref, { ligar: { dia, n: n + 1 } }, { merge: true });
+    return false;
+  });
+  if (passou) throw new HttpsError('resource-exhausted', 'Muitas tentativas hoje. Tente amanhã.');
 }
 
 /** `treinadorAvisoModelos {ligado}`. */
