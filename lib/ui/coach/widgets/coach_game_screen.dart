@@ -760,7 +760,7 @@ class _Summary extends StatelessWidget {
                     const SizedBox(width: AppSpacing.sm),
                     _Number(
                       key: CoachKeys.summaryExercises,
-                      label: l.coachExercises,
+                      label: l.treinadorExercicios,
                       value: total == 0
                           ? l.treinadorResumoSemValor
                           : l.treinadorResumoAcertosDeTotal(
