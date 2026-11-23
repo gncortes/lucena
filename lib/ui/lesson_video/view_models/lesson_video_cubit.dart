@@ -238,7 +238,14 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   // ---- Controles ---------------------------------------------------------
 
   void play() {
-    if (!_ready || state.waiting || _branch != null) return;
+    if (!_ready || state.waiting) return;
+    if (_branch != null) {
+      // Retoma a fala do lance (pausada por interrupção ou pelo botão).
+      _branchClock = _branchClock.play(_now());
+      _startTicking();
+      tick();
+      return;
+    }
     if (state.ended) _clock = const VideoClock();
     if (state.notice) emit(state.copyWith(notice: false));
     _clock = _clock.play(_now());
@@ -248,6 +255,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
 
   void pause() {
     if (!_ready) return;
+    if (_branch != null) _branchClock = _branchClock.pause(_now());
     _clock = _clock.pause(_now());
     _stopTicking();
     tick();
@@ -467,7 +475,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     emit(
       state.copyWith(
         frame: branch.frameAt(t),
-        playing: true,
+        playing: _branchClock.playing,
         waiting: false,
         turn: () => VideoTurnView(
           canReveal: _turn?.canReveal ?? false,

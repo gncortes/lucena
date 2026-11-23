@@ -12,7 +12,9 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
+import '../../../testing/fakes/fake_lesson_video_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_video_interruptions_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/script_fixture.dart';
 import '../../../testing/test_app.dart';
@@ -43,7 +45,14 @@ Map<String, dynamic> _listaJson() {
 void main() {
   late FakeNow now;
 
-  setUp(() => now = FakeNow(DateTime(2026, 11, 23, 10)));
+  late FakeLessonVideoRepository videos;
+  late FakeVideoInterruptionsRepository interruptions;
+
+  setUp(() {
+    now = FakeNow(DateTime(2026, 11, 23, 10));
+    videos = FakeLessonVideoRepository();
+    interruptions = FakeVideoInterruptionsRepository();
+  });
 
   Future<LessonVideoCubit> pump(WidgetTester tester) async {
     tester.view
@@ -57,6 +66,8 @@ void main() {
     addTearDown(settings.close);
     await settings.load();
     final cubit = LessonVideoCubit(
+      videos: videos,
+      interruptions: interruptions,
       scripts: FakeLessonScriptRepository(
         LessonScript.fromJson(_listaJson()),
         scriptTexts(),
@@ -150,7 +161,10 @@ void main() {
     expect(cubit.state.turn?.inBranch, isTrue);
     expect(find.byKey(LessonVideoKeys.wrongMark), findsOneWidget);
     expect(find.byKey(LessonVideoKeys.yourMove), findsNothing);
-    expect(enabled(tester, LessonVideoKeys.playPause), isFalse);
+    // Na fala do lance o play pausa/retoma a fala; só o ±10 fica desligado.
+    expect(enabled(tester, LessonVideoKeys.playPause), isTrue);
+    expect(enabled(tester, LessonVideoKeys.back10), isFalse);
+    expect(enabled(tester, LessonVideoKeys.forward10), isFalse);
 
     // Tocando a dica o tabuleiro não aceita lance.
     await move(tester, 'd4e5');

@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/lesson_video/video_interruptions_repository.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/use_cases/video_turn.dart';
 import 'package:lucena/ui/lesson_video/view_models/lesson_video_cubit.dart';
 
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
+import '../../../testing/fakes/fake_lesson_video_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_video_interruptions_repository.dart';
 import '../../../testing/script_fixture.dart';
 
 /// O roteiro de teste com as perguntas no juiz `lista` (sem jogo livre): as
@@ -34,10 +37,19 @@ void main() {
   // Pergunta 2: certo e8e7, alternativa e8f7, erro e8f8.
   late FakeNow now;
 
-  setUp(() => now = FakeNow(DateTime(2026, 11, 23, 10)));
+  late FakeLessonVideoRepository videos;
+  late FakeVideoInterruptionsRepository interruptions;
+
+  setUp(() {
+    now = FakeNow(DateTime(2026, 11, 23, 10));
+    videos = FakeLessonVideoRepository();
+    interruptions = FakeVideoInterruptionsRepository();
+  });
 
   Future<LessonVideoCubit> atFirstGate() async {
     final cubit = LessonVideoCubit(
+      videos: videos,
+      interruptions: interruptions,
       scripts: FakeLessonScriptRepository(
         LessonScript.fromJson(_listaJson()),
         scriptTexts(),
@@ -166,6 +178,8 @@ void main() {
 
   test('legado (juiz ≠ lista): o vídeo pausa e não julga o lance', () async {
     final cubit = LessonVideoCubit(
+      videos: videos,
+      interruptions: interruptions,
       scripts: FakeLessonScriptRepository(scriptFixture(), scriptTexts()),
       now: now,
       lessonId: 'pawns.test',
@@ -183,6 +197,66 @@ void main() {
     expect(cubit.state.turn?.legacy, isTrue);
     expect(cubit.state.turn?.awaitingMove, isFalse);
   });
+
+  test(
+    'interrupção no meio da fala do lance pausa a fala; play retoma',
+    () async {
+      final cubit = await atFirstGate();
+      cubit.onMove('d3d4');
+      expect(cubit.state.playing, isTrue);
+      interruptions.emit(VideoInterruption.background);
+      await pumpEventQueue();
+      expect(cubit.state.playing, isFalse);
+      expect(cubit.state.turn?.inBranch, isTrue);
+      final frame = cubit.state.frame;
+      now.advance(const Duration(seconds: 30));
+      cubit.tick();
+      expect(cubit.state.frame?.t, frame?.t, reason: 'a fala não anda pausada');
+      cubit.play();
+      expect(cubit.state.playing, isTrue);
+      finishBranch(cubit);
+      expect(cubit.state.waiting, isTrue);
+    },
+  );
+
+  test(
+    'salvar no meio da fala do lance retoma no início da pergunta',
+    () async {
+      final cubit = await atFirstGate();
+      final gate = cubit.state.position;
+      cubit
+        ..onMove('d3d4')
+        ..pause();
+      await cubit.close();
+      final again = LessonVideoCubit(
+        scripts: FakeLessonScriptRepository(
+          LessonScript.fromJson(_listaJson()),
+          scriptTexts(),
+        ),
+        videos: videos,
+        interruptions: interruptions,
+        now: now,
+        lessonId: 'pawns.test',
+        partId: 'distant',
+        scriptPath: 'roteiro.json',
+        autoplay: false,
+        ticker: (_, _) => null,
+      );
+      addTearDown(again.close);
+      await again.start();
+      expect(again.state.position, lessThanOrEqualTo(gate));
+      expect(again.state.turn?.inBranch, isNot(true));
+      again.play();
+      now.advance(const Duration(minutes: 5));
+      again.tick();
+      expect(
+        again.state.position,
+        gate,
+        reason: 'a pergunta não foi resolvida',
+      );
+      expect(again.state.waiting, isTrue);
+    },
+  );
 
   test('Vídeo 30: lance fora da lista volta a esperar', () async {
     final cubit = await atFirstGate();

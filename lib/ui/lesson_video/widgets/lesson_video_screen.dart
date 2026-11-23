@@ -315,8 +315,10 @@ class _Bottom extends StatelessWidget {
     final position = _clock(state.position);
     final whole = _clock(state.total);
     final turn = state.turn;
-    // Na sua vez e tocando a fala do lance (ramo): play e ±10 não valem.
-    final paused = state.waiting || (turn?.inBranch ?? false);
+    // Na sua vez: play e ±10 não valem. Tocando a fala do lance (ramo), só
+    // o ±10 não vale (o play pausa e retoma a fala).
+    final paused = state.waiting;
+    final noSkip = paused || (turn?.inBranch ?? false);
     final reveal = state.waiting && turn != null && turn.canReveal;
     final column = Column(
       children: [
@@ -390,7 +392,12 @@ class _Bottom extends StatelessWidget {
           height: LessonVideoLayout.controlsHeight,
           child: state.ended
               ? _EndFooter(cubit: cubit, onNextStage: onNextStage)
-              : _Controls(state: state, cubit: cubit, dim: paused),
+              : _Controls(
+                  state: state,
+                  cubit: cubit,
+                  dim: paused,
+                  noSkip: noSkip,
+                ),
         ),
         const SizedBox(height: LessonVideoLayout.bottomMargin),
       ],
@@ -427,6 +434,7 @@ class _Controls extends StatelessWidget {
     required this.state,
     required this.cubit,
     required this.dim,
+    required this.noSkip,
   });
 
   final LessonVideoState state;
@@ -434,6 +442,9 @@ class _Controls extends StatelessWidget {
 
   /// Na sua vez: play e ±10 esmaecidos.
   final bool dim;
+
+  /// ±10 desligados (na vez e no ramo).
+  final bool noSkip;
 
   @override
   Widget build(BuildContext context) {
@@ -474,7 +485,7 @@ class _Controls extends StatelessWidget {
                     height: 56,
                   ),
                   icon: const Icon(Icons.replay_10),
-                  onPressed: dim
+                  onPressed: noSkip
                       ? null
                       : () => cubit.skip(-LessonVideoCubit.skipStep),
                 ),
@@ -502,7 +513,7 @@ class _Controls extends StatelessWidget {
                     height: 56,
                   ),
                   icon: const Icon(Icons.forward_10),
-                  onPressed: dim
+                  onPressed: noSkip
                       ? null
                       : () => cubit.skip(LessonVideoCubit.skipStep),
                 ),
