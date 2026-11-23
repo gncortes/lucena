@@ -22,6 +22,8 @@ import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/video_clock.dart';
 import '../../../domain/use_cases/video_resume.dart';
 import '../../../domain/use_cases/video_timeline.dart';
+import '../../../domain/use_cases/video_turn.dart';
+import 'lesson_video_turn_view.dart';
 
 /// O tique periódico (nos testes, nenhum: o teste chama [LessonVideoCubit.tick]).
 typedef VideoTicker = Timer? Function(
@@ -47,6 +49,7 @@ class LessonVideoState {
     this.notice = false,
     this.chapters = const [],
     this.gates = const [],
+    this.turn,
   });
 
   final LessonVideoStatus status;
@@ -82,6 +85,9 @@ class LessonVideoState {
   final List<Duration> chapters;
   final List<Duration> gates;
 
+  /// A vez do aluno (L2): nulo fora da pergunta.
+  final VideoTurnView? turn;
+
   LessonVideoState copyWith({
     LessonVideoStatus? status,
     VideoFrame? frame,
@@ -97,6 +103,7 @@ class LessonVideoState {
     bool? notice,
     List<Duration>? chapters,
     List<Duration>? gates,
+    VideoTurnView? Function()? turn,
   }) => LessonVideoState(
     status: status ?? this.status,
     frame: frame ?? this.frame,
@@ -112,6 +119,7 @@ class LessonVideoState {
     notice: notice ?? this.notice,
     chapters: chapters ?? this.chapters,
     gates: gates ?? this.gates,
+    turn: turn == null ? this.turn : turn(),
   );
 }
 
@@ -157,6 +165,20 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   final _resolved = <String>{};
   Timer? _timer;
   StreamSubscription<VideoInterruption>? _interrupted;
+
+  // ---- Sua vez (L2) ------------------------------------------------------
+  VideoTurn? _turn;
+  String? _turnLine;
+  TurnOutcome? _outcome;
+  VideoTimeline? _branch;
+  VideoClock _branchClock = const VideoClock();
+
+  /// O ✓ do acerto fica na tela este tempo depois que o vídeo segue.
+  static const sealHold = Duration(milliseconds: 1800);
+  TurnResult? _sealed;
+  String? _sealedSquare;
+  String? _movedTo;
+  DateTime? _sealedAt;
 
   Future<void> start() async {
     emit(state.copyWith(status: LessonVideoStatus.loading));
@@ -216,7 +238,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   // ---- Controles ---------------------------------------------------------
 
   void play() {
-    if (!_ready || state.waiting) return;
+    if (!_ready || state.waiting || _branch != null) return;
     if (state.ended) _clock = const VideoClock();
     if (state.notice) emit(state.copyWith(notice: false));
     _clock = _clock.play(_now());
@@ -236,7 +258,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
 
   /// Vai para [t] (a barra); não passa da primeira pergunta sem resposta.
   void seek(Duration t) {
-    if (!_ready) return;
+    if (!_ready || _branch != null) return;
     _clock = _clock.seek(_main.reachable(t, _resolved), _now());
     tick();
   }
@@ -332,6 +354,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   /// Recalcula o quadro na hora atual (o tique; público para os testes).
   void tick() {
     if (!_ready) return;
+    if (_tickBranch()) return;
     final raw = _clock.position(_now());
     final t = _main.reachable(raw, _resolved);
     final stop =
@@ -352,8 +375,137 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
         waiting: frame.atGate,
         ended: t >= _main.total,
         flip: _flipAt(frame.lineIndex),
+        turn: () => _turnView(t) ?? _sealView(),
       ),
     );
+  }
+
+  /// O lance do aluno na pergunta (Vídeo 26–30): julga e toca o ramo.
+  void onMove(String uci) {
+    if (!_ready || !state.waiting || _branch != null) return;
+    final turn = _turnAt(state.position);
+    if (turn == null || turn.gate.legacy) return;
+    _movedTo = uci.length >= 4 ? uci.substring(2, 4) : null;
+    _play(turn.judge(uci));
+  }
+
+  /// "Ver a resposta" (Vídeo 27, a partir do 2º erro).
+  void reveal() {
+    if (!_ready || !state.waiting || _branch != null) return;
+    final outcome = _turnAt(state.position)?.reveal();
+    if (outcome != null) _play(outcome);
+  }
+
+  /// A vez na pergunta em [t] (a mesma enquanto a pergunta não muda).
+  VideoTurn? _turnAt(Duration t) {
+    final timed = _main.gateAt(t, _resolved);
+    final gate = timed?.line.gate;
+    if (timed == null || gate == null) return null;
+    if (_turnLine != timed.line.id) {
+      _turnLine = timed.line.id;
+      _turn = VideoTurn(gate);
+      _outcome = null;
+    }
+    return _turn;
+  }
+
+  /// O ✓ logo depois do acerto ou da alternativa (Vídeo 28).
+  VideoTurnView? _sealView() {
+    final at = _sealedAt;
+    if (_sealed == null || at == null) return null;
+    if (_now().difference(at) >= sealHold) {
+      _sealed = null;
+      _sealedAt = null;
+      return null;
+    }
+    return VideoTurnView(last: _sealed, rightSquare: _sealedSquare);
+  }
+
+  VideoTurnView? _turnView(Duration t) {
+    final turn = _turnAt(t);
+    if (turn == null) return null;
+    return VideoTurnView(
+      movable: turn.movable,
+      canReveal: turn.canReveal,
+      wrongSquare: _outcome?.wrongSquare,
+      last: _outcome?.result,
+      legacy: turn.gate.legacy,
+    );
+  }
+
+  void _play(TurnOutcome outcome) {
+    _outcome = outcome;
+    final lines = outcome.branch == null
+        ? null
+        : _video!.branches[outcome.branch];
+    if (lines == null || lines.isEmpty) {
+      _afterBranch();
+      return;
+    }
+    _branch = VideoTimeline.layout(
+      lines,
+      pace: VideoPace.reading,
+      rate: state.rate,
+      startFen: state.frame?.fen,
+    );
+    _branchClock = const VideoClock().play(_now());
+    _startTicking();
+    tick();
+  }
+
+  /// Toca o ramo; falso quando não há ramo (o tique segue na linha).
+  bool _tickBranch() {
+    final branch = _branch;
+    if (branch == null) return false;
+    final t = _branchClock.position(_now());
+    if (t >= branch.total) {
+      _branch = null;
+      _branchClock = const VideoClock();
+      _afterBranch();
+      return true;
+    }
+    emit(
+      state.copyWith(
+        frame: branch.frameAt(t),
+        playing: true,
+        waiting: false,
+        turn: () => VideoTurnView(
+          canReveal: _turn?.canReveal ?? false,
+          wrongSquare: _outcome?.wrongSquare,
+          last: _outcome?.result,
+          inBranch: true,
+        ),
+      ),
+    );
+    return true;
+  }
+
+  /// Fim do ramo: segue o vídeo (certo, alternativa, resposta) ou volta a
+  /// esperar na pergunta (erro, fora).
+  void _afterBranch() {
+    final outcome = _outcome;
+    final timed = _main.gateAt(state.position, _resolved);
+    if (outcome == null || timed == null) return;
+    if (!outcome.resumes) {
+      _stopTicking();
+      tick();
+      return;
+    }
+    _resolved.add(timed.line.id);
+    if (outcome.result != TurnResult.revealed) {
+      _sealed = outcome.result;
+      _sealedSquare = _movedTo;
+      _sealedAt = _now();
+    }
+    _turn = null;
+    _turnLine = null;
+    _outcome = null;
+    final at = outcome.skipsRightLines
+        ? _main.resumeAfterAlternative(timed.index)
+        : state.position;
+    _clock = VideoClock(anchor: at).play(_now());
+    _startTicking();
+    tick();
   }
 
   bool _flipAt(int lineIndex) {
