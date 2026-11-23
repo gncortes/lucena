@@ -5,6 +5,8 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/glossary_term.dart';
+import '../../glossary/widgets/glossary_text.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -54,14 +56,23 @@ class LessonVideoScreen extends StatelessWidget {
     this.viktor,
     this.onGlossary,
     this.onNextStage,
+    this.terms = const [],
+    this.onTerm,
     super.key,
   });
 
   final String title;
   final Character? viktor;
 
-  /// O livro do topo (o Glossário é do L5; até lá, quem abre decide).
+  /// O livro do topo: quem abre pausa o vídeo e vai ao Glossário.
   final VoidCallback? onGlossary;
+
+  /// Os termos do Glossário sublinhados na fala.
+  final List<GlossaryTerm> terms;
+
+  /// Tocar um termo sublinhado: quem abre pausa o vídeo e vai ao Glossário
+  /// filtrado pelo termo (com a folha/Wikipédia); nulo = só sublinha.
+  final ValueChanged<GlossaryTerm>? onTerm;
 
   /// "Próxima etapa" no fim; nulo esconde o botão.
   final VoidCallback? onNextStage;
@@ -100,6 +111,8 @@ class LessonVideoScreen extends StatelessWidget {
             state: state,
             viktor: viktor,
             onNextStage: onNextStage,
+            terms: terms,
+            onTerm: onTerm,
           ),
         },
       ),
@@ -108,11 +121,19 @@ class LessonVideoScreen extends StatelessWidget {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({required this.state, this.viktor, this.onNextStage});
+  const _Body({
+    required this.state,
+    this.viktor,
+    this.onNextStage,
+    this.terms = const [],
+    this.onTerm,
+  });
 
   final LessonVideoState state;
   final Character? viktor;
   final VoidCallback? onNextStage;
+  final List<GlossaryTerm> terms;
+  final ValueChanged<GlossaryTerm>? onTerm;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +167,12 @@ class _Body extends StatelessWidget {
                   children: [
                     SizedBox(
                       height: LessonVideoLayout.balloonHeight,
-                      child: _Balloon(frame: frame, visible: state.captions),
+                      child: _Balloon(
+                        frame: frame,
+                        visible: state.captions,
+                        terms: terms,
+                        onTerm: onTerm,
+                      ),
                     ),
                     const SizedBox(height: LessonVideoLayout.gap),
                     SizedBox(
@@ -201,10 +227,17 @@ class _Body extends StatelessWidget {
 
 /// O balão da legenda: a fala surge até a palavra dita, em 2 linhas.
 class _Balloon extends StatelessWidget {
-  const _Balloon({required this.frame, required this.visible});
+  const _Balloon({
+    required this.frame,
+    required this.visible,
+    this.terms = const [],
+    this.onTerm,
+  });
 
   final VideoFrame? frame;
   final bool visible;
+  final List<GlossaryTerm> terms;
+  final ValueChanged<GlossaryTerm>? onTerm;
 
   @override
   Widget build(BuildContext context) {
@@ -224,13 +257,17 @@ class _Balloon extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Align(
             alignment: AlignmentDirectional.topStart,
-            child: Text(
-              text,
-              key: LessonVideoKeys.caption,
-              maxLines: 2,
+            child: DefaultTextStyle.merge(
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyLarge
-                  ?.copyWith(fontSize: 18, height: 26 / 18),
+              child: GlossaryText(
+                text,
+                key: LessonVideoKeys.caption,
+                terms: terms,
+                maxLines: 2,
+                onOpen: onTerm,
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(fontSize: 18, height: 26 / 18),
+              ),
             ),
           ),
         ),

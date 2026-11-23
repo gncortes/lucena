@@ -514,6 +514,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     _clock = VideoClock(anchor: at).play(_now());
     _startTicking();
     tick();
+    _save();
   }
 
   bool _flipAt(int lineIndex) {

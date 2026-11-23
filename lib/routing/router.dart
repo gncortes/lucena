@@ -21,6 +21,8 @@ import '../data/repositories/survey/survey_repository.dart';
 import '../data/repositories/glossary/glossary_repository.dart';
 import '../ui/glossary/view_models/glossary_cubit.dart';
 import '../ui/glossary/widgets/glossary_screen.dart';
+import '../ui/glossary/widgets/glossary_text.dart';
+import '../domain/models/glossary_term.dart';
 import '../domain/models/survey.dart';
 import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import '../ui/lesson_finished/widgets/lesson_finished_screen.dart';
@@ -1352,27 +1354,41 @@ GoRouter buildRouter({
                             stage: stage,
                             language: language,
                           )..start(),
-                          child: FutureBuilder<(String, Character?)>(
-                            future: (
-                              lessons
-                                  .texts(language)
-                                  .then((t) => t.partTitle(id, part) ?? ''),
-                              context
-                                  .read<CharacterRepository>()
-                                  .characters()
-                                  .then(
-                                    (all) => all
-                                        .where((c) => c.isMaster)
-                                        .firstOrNull,
-                                  ),
-                            ).wait,
-                            // O Glossário é do L5: até lá, o livro fica
-                            // desligado (onGlossary nulo).
-                            builder: (context, loaded) => LessonVideoScreen(
-                              title: loaded.data?.$1 ?? '',
-                              viktor: loaded.data?.$2,
-                            ),
-                          ),
+                          child:
+                              FutureBuilder<
+                                (String, Character?, List<GlossaryTerm>)
+                              >(
+                                future: (
+                                  lessons
+                                      .texts(language)
+                                      .then((t) => t.partTitle(id, part) ?? ''),
+                                  context
+                                      .read<CharacterRepository>()
+                                      .characters()
+                                      .then(
+                                        (all) => all
+                                            .where((c) => c.isMaster)
+                                            .firstOrNull,
+                                      ),
+                                  context.read<GlossaryRepository>().terms(),
+                                ).wait,
+                                // Livro do topo e termo sublinhado: pausa o
+                                // vídeo e abre o Glossário (filtrado pelo termo,
+                                // com a folha/Wikipédia).
+                                builder: (context, loaded) => LessonVideoScreen(
+                                  title: loaded.data?.$1 ?? '',
+                                  viktor: loaded.data?.$2,
+                                  terms: loaded.data?.$3 ?? const [],
+                                  onGlossary: () {
+                                    context.read<LessonVideoCubit>().pause();
+                                    context.push(Routes.glossary);
+                                  },
+                                  onTerm: (term) {
+                                    context.read<LessonVideoCubit>().pause();
+                                    GlossaryText.open(context, term);
+                                  },
+                                ),
+                              ),
                         );
                       },
                     ),
