@@ -18,6 +18,10 @@ abstract final class LessonVideoKeys {
   static const yourMove = Key('lessonVideo.yourMove');
   static const reveal = Key('lessonVideo.reveal');
 
+  /// O selo do lance na casa: ✗ (erro ou fora) e ✓ (acerto ou alternativa).
+  static const wrongMark = Key('lessonVideo.wrongMark');
+  static const rightMark = Key('lessonVideo.rightMark');
+
   // Controles do player.
   static const playPause = Key('lessonVideo.playPause');
   static const back10 = Key('lessonVideo.back10');

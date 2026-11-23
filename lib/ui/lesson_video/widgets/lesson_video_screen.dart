@@ -7,16 +7,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/video_timeline.dart';
+import '../../../domain/use_cases/video_turn.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/keys/lesson_video_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../lesson_script/widgets/script_board.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_video_cubit.dart';
+import '../view_models/lesson_video_turn_view.dart';
 
 /// Medidas da tela do vídeo (contrato T-aula-video, 412×917).
 abstract final class LessonVideoLayout {
@@ -172,6 +176,9 @@ class _Body extends StatelessWidget {
                   settings: board,
                   shapes: marks,
                   flip: state.flip,
+                  yourMove: state.waiting,
+                  turn: state.turn,
+                  onMove: cubit.onMove,
                 ),
               ),
             Positioned(
@@ -307,8 +314,11 @@ class _Bottom extends StatelessWidget {
         : (state.position.inMilliseconds / total).clamp(0.0, 1.0);
     final position = _clock(state.position);
     final whole = _clock(state.total);
-    final paused = state.waiting;
-    return Column(
+    final turn = state.turn;
+    // Na sua vez e tocando a fala do lance (ramo): play e ±10 não valem.
+    final paused = state.waiting || (turn?.inBranch ?? false);
+    final reveal = state.waiting && turn != null && turn.canReveal;
+    final column = Column(
       children: [
         SizedBox(
           height: LessonVideoLayout.barHeight,
@@ -353,7 +363,26 @@ class _Bottom extends StatelessWidget {
         const SizedBox(height: LessonVideoLayout.bottomMargin),
       ],
     );
+    if (!reveal) return column;
+    return Stack(
+      children: [
+        column,
+        PositionedDirectional(
+          end: 16,
+          top: _revealTop,
+          height: _revealHeight,
+          child: _RevealPill(onPressed: cubit.reveal),
+        ),
+      ],
+    );
   }
+
+  /// A pílula "Ver a resposta" (Vídeo 27): o desenho de 32 na linha do
+  /// tempo, à direita (o tempo fica à esquerda), de logo abaixo do trilho
+  /// até o topo dos controles. O alvo de 48 passa 8 acima e abaixo.
+  static const _revealHeight = 48.0;
+  static const _revealTop =
+      LessonVideoLayout.barHeight + LessonVideoLayout.gap - _revealHeight / 2;
 
   static String _clock(Duration d) {
     final s = d.inSeconds;
@@ -471,6 +500,39 @@ class _Controls extends StatelessWidget {
   }
 }
 
+/// A pílula tonal "Ver a resposta" (protótipo `pilulaK`, a mesma da
+/// retomada): 32 de altura, ícone `visibility` 18, alvo de 48.
+class _RevealPill extends StatelessWidget {
+  const _RevealPill({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Center(
+      widthFactor: 1,
+      child: FilledButton.tonalIcon(
+        key: LessonVideoKeys.reveal,
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: colors.secondaryContainer,
+          foregroundColor: colors.onSecondaryContainer,
+          minimumSize: const Size(0, 32),
+          fixedSize: const Size.fromHeight(32),
+          padding: const EdgeInsetsDirectional.only(start: 12, end: 14),
+          tapTargetSize: MaterialTapTargetSize.padded,
+          shape: const StadiumBorder(),
+          textStyle: Theme.of(context).textTheme.labelLarge
+              ?.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+        icon: const Icon(Icons.visibility, size: 18),
+        label: Text(context.l10n.lessonVideoReveal),
+      ),
+    );
+  }
+}
+
 class _EndFooter extends StatelessWidget {
   const _EndFooter({required this.cubit, this.onNextStage});
 
@@ -509,8 +571,11 @@ class _EndFooter extends StatelessWidget {
   }
 }
 
-/// O tabuleiro do app mostrando o quadro do vídeo (sem lance no L1: a sua
-/// vez entra no L2). Toque fora da sua vez não move peça nem pausa.
+/// O tabuleiro do app mostrando o quadro do vídeo. Na sua vez (Vídeo 25)
+/// ganha o contorno `primary` de 3 e aceita lance só das casas `movable`
+/// (vazio = qualquer peça do lado que joga); fora dela, tocando o ramo ou
+/// em pergunta `legacy` o toque não move peça (Vídeo 1). O selo ✗/✓ fica no canto da
+/// casa (Vídeo 26/28/30).
 class _VideoBoard extends StatefulWidget {
   const _VideoBoard({
     required this.frame,
@@ -518,6 +583,9 @@ class _VideoBoard extends StatefulWidget {
     required this.settings,
     required this.shapes,
     required this.flip,
+    required this.yourMove,
+    required this.turn,
+    required this.onMove,
     super.key,
   });
 
@@ -527,6 +595,11 @@ class _VideoBoard extends StatefulWidget {
   final bool shapes;
   final bool flip;
 
+  /// O vídeo parou na pergunta: o contorno de "sua vez".
+  final bool yourMove;
+  final VideoTurnView? turn;
+  final ValueChanged<String> onMove;
+
   @override
   State<_VideoBoard> createState() => _VideoBoardState();
 }
@@ -534,14 +607,35 @@ class _VideoBoard extends StatefulWidget {
 class _VideoBoardState extends State<_VideoBoard> {
   late final _controller = ChessboardController(game: _data());
 
+  /// O tabuleiro aceita lance agora (só no vídeo parado na pergunta).
+  static bool _live(_VideoBoard w) =>
+      w.yourMove && (w.turn?.awaitingMove ?? false);
+
+  /// As casas de onde sai lance (vazio = todas as do lado que joga).
+  static List<String> _from(_VideoBoard w) =>
+      _live(w) ? w.turn!.movable : const [];
+
   GameData _data() {
     final frame = widget.frame;
     final last = frame.lastMove;
+    final position = _live(widget) ? GameRules.fromFen(frame.fen) : null;
+    final turn =
+        position?.turn ?? (frame.fen.contains(' b') ? Side.black : Side.white);
+    final from = {for (final s in _from(widget)) Square.fromName(s)};
     return GameData(
       fen: frame.fen,
-      playerSide: PlayerSide.none,
-      sideToMove: frame.fen.contains(' b') ? Side.black : Side.white,
-      validMoves: const {},
+      playerSide: position == null
+          ? PlayerSide.none
+          : turn == Side.white
+          ? PlayerSide.white
+          : PlayerSide.black,
+      sideToMove: turn,
+      validMoves: position == null
+          ? const {}
+          : {
+              for (final e in GameRules.legalMoves(position).entries)
+                if (from.isEmpty || from.contains(e.key)) e.key: e.value,
+            },
       lastMove: last == null ? null : Move.parse(last),
     );
   }
@@ -550,7 +644,15 @@ class _VideoBoardState extends State<_VideoBoard> {
   void didUpdateWidget(_VideoBoard old) {
     super.didUpdateWidget(old);
     final moved = old.frame.fen != widget.frame.fen;
-    if (moved || old.frame.lastMove != widget.frame.lastMove) {
+    final oldFrom = _from(old);
+    final from = _from(widget);
+    final movableChanged =
+        _live(old) != _live(widget) ||
+        oldFrom.length != from.length ||
+        !oldFrom.every(from.contains);
+    if (moved ||
+        old.frame.lastMove != widget.frame.lastMove ||
+        movableChanged) {
       _controller.updatePosition(
         _data(),
         animate: moved && widget.frame.animating,
@@ -579,13 +681,94 @@ class _VideoBoardState extends State<_VideoBoard> {
     };
   }
 
+  /// O selo da vez: ✗ na casa do erro, ✓ no destino do lance certo.
+  (String, bool)? _seal() {
+    final turn = widget.turn;
+    final last = turn?.last;
+    if (turn == null || last == null) return null;
+    switch (last) {
+      case TurnResult.wrong || TurnResult.outside:
+        final sq = turn.wrongSquare;
+        return sq == null ? null : (sq, false);
+      case TurnResult.right || TurnResult.alternative:
+        final sq = turn.rightSquare;
+        if (sq != null) return (sq, true);
+        final move = widget.frame.lastMove;
+        return move == null || move.length < 4
+            ? null
+            : (move.substring(2, 4), true);
+      case TurnResult.revealed:
+        return null;
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => Chessboard(
-    size: widget.size,
-    controller: _controller,
-    settings: widget.settings.chessground,
-    orientation: widget.flip ? Side.black : Side.white,
-    shapes: _shapes(Theme.of(context).colorScheme),
-    onMove: (move, {viaDragAndDrop}) {},
-  );
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final seal = _seal();
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Chessboard(
+          size: widget.size,
+          controller: _controller,
+          settings: widget.settings.chessground,
+          orientation: widget.flip ? Side.black : Side.white,
+          shapes: _shapes(colors),
+          onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
+        ),
+        if (widget.yourMove)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                key: LessonVideoKeys.yourMove,
+                decoration: BoxDecoration(
+                  border: Border.all(color: colors.primary, width: 3),
+                ),
+              ),
+            ),
+          ),
+        if (seal != null) _sealAt(seal.$1, ok: seal.$2),
+      ],
+    );
+  }
+
+  /// O selo de 22 no canto de cima à direita da casa (protótipo `selo()`:
+  /// 17 para dentro da borda direita, 5 acima da de cima).
+  Widget _sealAt(String square, {required bool ok}) {
+    final q = widget.size / 8;
+    final file = square.codeUnitAt(0) - 'a'.codeUnitAt(0);
+    final rank = int.parse(square.substring(1, 2)) - 1;
+    final col = widget.flip ? 7 - file : file;
+    final row = widget.flip ? rank : 7 - rank;
+    return Positioned(
+      left: (col + 1) * q - 17,
+      top: row * q - 5,
+      width: 22,
+      height: 22,
+      child: IgnorePointer(
+        child: DecoratedBox(
+          key: ok ? LessonVideoKeys.rightMark : LessonVideoKeys.wrongMark,
+          decoration:
+              const BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.black38,
+                    blurRadius: 2,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ).copyWith(
+                color: ok ? AppColors.moveSealRight : AppColors.moveSealWrong,
+              ),
+          child: Icon(
+            ok ? Icons.check : Icons.close,
+            size: 16,
+            color: AppColors.white,
+          ),
+        ),
+      ),
+    );
+  }
 }
