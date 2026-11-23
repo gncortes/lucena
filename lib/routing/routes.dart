@@ -31,6 +31,21 @@ abstract final class Routes {
     },
   ).toString();
   static const boardControls = '/board-controls';
+
+  /// O Glossário (tela própria, de qualquer lugar). Com [query], já
+  /// filtrado; com [term], abre a Wikipédia (ou a folha) desse termo.
+  static const glossary = '/glossary';
+  static String glossaryAt({String? query, String? term}) {
+    final params = {
+      if (query != null && query.isNotEmpty) 'q': query,
+      if (term != null && term.isNotEmpty) 'term': term,
+    };
+    return Uri(
+      path: glossary,
+      queryParameters: params.isEmpty ? null : params,
+    ).toString();
+  }
+
   static const home = '/';
   static const invalidLink = '/invalid-link';
 

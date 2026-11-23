@@ -4458,6 +4458,52 @@
   "@externalPageOfflineBody": {
     "description": "Body shown in the in-app page sheet when the page cannot load; the lesson is not affected."
   },
+  "glossaryTitle": "Glossary",
+  "@glossaryTitle": {
+    "description": "Title of the shared Glossary screen."
+  },
+  "glossaryOpen": "Open the glossary",
+  "@glossaryOpen": {
+    "description": "Tooltip of the book button that opens the Glossary."
+  },
+  "glossarySearchLabel": "Search term",
+  "@glossarySearchLabel": {
+    "description": "Floating label of the Glossary search field."
+  },
+  "glossarySearchHint": "E.g. bridge, zugzwang",
+  "@glossarySearchHint": {
+    "description": "Hint inside the Glossary search field."
+  },
+  "glossaryCount": "{count, plural, =1{1 term} other{{count} terms}}",
+  "@glossaryCount": {
+    "description": "How many terms the Glossary list shows.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "glossaryReadOnWikipedia": "Read on Wikipedia",
+  "@glossaryReadOnWikipedia": {
+    "description": "Row in a term sheet that opens its Wikipedia page."
+  },
+  "glossaryOfflineTitle": "No internet",
+  "@glossaryOfflineTitle": {
+    "description": "Title shown in a term sheet when there is no internet."
+  },
+  "glossaryOfflineBody": "The definition stays here. Wikipedia opens when you're back online.",
+  "@glossaryOfflineBody": {
+    "description": "Body shown in a term sheet when there is no internet."
+  },
+  "glossaryEmpty": "No term matches \"{query}\".",
+  "@glossaryEmpty": {
+    "description": "Empty state when the Glossary search finds nothing.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "wikiOpen": "Open {name} on Wikipedia",
   "@wikiOpen": {
     "description": "Screen-reader action on an underlined name in a lesson: opens its Wikipedia page.",
