@@ -2819,6 +2819,6 @@
   "lessonVideoReveal": "Show the answer",
   "lessonVideoTimeSemantics": "{position} of {total}",
   "glossaryOpen": "Open the glossary",
-  "lessonVideoResumeNotice": "You stopped here.",
-  "lessonVideoResumeRestart": "Start over"
+  "lessonVideoStoppedHere": "You stopped here.",
+  "lessonVideoRestart": "Start over"
 }

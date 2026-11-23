@@ -3112,6 +3112,6 @@
   "lessonVideoReveal": "Ver a resposta",
   "lessonVideoTimeSemantics": "{position} de {total}",
   "glossaryOpen": "Abrir o Glossário",
-  "lessonVideoResumeNotice": "Você parou aqui.",
-  "lessonVideoResumeRestart": "Recomeçar do início"
+  "lessonVideoStoppedHere": "Você parou aqui.",
+  "lessonVideoRestart": "Recomeçar do início"
 }

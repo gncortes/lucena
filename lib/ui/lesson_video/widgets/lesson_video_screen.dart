@@ -395,7 +395,7 @@ class _Bottom extends StatelessWidget {
                     child: Text.rich(
                       key: LessonVideoKeys.notice,
                       TextSpan(
-                        text: '${l10n.lessonVideoResumeNotice} ',
+                        text: '${l10n.lessonVideoStoppedHere} ',
                         children: [
                           WidgetSpan(
                             alignment: PlaceholderAlignment.middle,
@@ -403,7 +403,7 @@ class _Bottom extends StatelessWidget {
                               key: LessonVideoKeys.noticeAction,
                               onTap: cubit.restart,
                               child: Text(
-                                l10n.lessonVideoResumeRestart,
+                                l10n.lessonVideoRestart,
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: colors.primary,

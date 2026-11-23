@@ -131,7 +131,7 @@ void main() {
         'da pergunta (reachable)', () {
       // Arrange: pergunta sem resposta em 40 s. Act: seek(55 s).
       // Assert: posição = 40 s e estado "sua vez" esperando.
-    }, skip: 'L2: sua vez e limite da barra no cubit');
+    });
 
     test(
       'Vídeo 6: −10 s no meio da animação de um lance → corta a animação e '
@@ -284,30 +284,30 @@ void main() {
       // Arrange: sua vez esperando. Act: lance errado.
       // Assert: marca de erro na casa, posição da pergunta, fala da dica,
       // estado ainda esperando.
-    }, skip: 'L2: sua vez (erro com dica) no cubit');
+    });
 
     test('Vídeo 27: sua vez, erra de novo / não sabe → "Ver a resposta" a '
         'partir do 2º erro', () {
       // Act: dois lances errados. Assert: revelar disponível só depois do
       // 2º erro; revelar joga o lance certo e segue.
-    }, skip: 'L2: sua vez (revelar resposta; pergunta 5 ao Gabriel)');
+    });
 
     test('Vídeo 28: sua vez, acerto → ✓ e o vídeo segue sozinho', () {
       // Act: lance certo. Assert: marca de acerto e estado volta a tocar
       // a partir da fala seguinte à pergunta.
-    }, skip: 'L2: sua vez (acerto) no cubit');
+    });
 
     test('Vídeo 29: sua vez, alternativa boa → fala curta própria e volta à '
         'linha principal', () {
       // Act: lance alternativo aceito. Assert: toca a fala da alternativa e
       // retoma depois das falas que são só do lance certo.
-    }, skip: 'L2: sua vez (alternativa) no cubit');
+    });
 
     test('Vídeo 30: sua vez, peça fora de pecas ou lance fora da lista → ramo '
         'fora (fala) e volta a esperar', () {
       // Act: lance com peça fora de `pecas`. Assert: fala do ramo `fora`,
       // peça volta e estado esperando.
-    }, skip: 'L2: sua vez (ramo fora) no cubit');
+    });
 
     test('Vídeo 31: sua vez e 2º plano / fechar à força → volta na pergunta '
         'esperando; resposta já dada não repergunta', () async {

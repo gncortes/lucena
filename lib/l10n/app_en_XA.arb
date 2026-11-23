@@ -2808,6 +2808,6 @@
   "lessonVideoReveal": "[Šhöw thé åñšwéŕ one two]",
   "lessonVideoTimeSemantics": "[{position} öf {total} one two three]",
   "glossaryOpen": "[Öpéñ thé ĝlöššåŕý one two]",
-  "lessonVideoResumeNotice": "[Ýöû štöppéd héŕé. one two]",
-  "lessonVideoResumeRestart": "[Štåŕt övéŕ one]"
+  "lessonVideoStoppedHere": "[Ýöû štöppéd héŕé. one two]",
+  "lessonVideoRestart": "[Štåŕt övéŕ one]"
 }
