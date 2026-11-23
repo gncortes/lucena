@@ -18,6 +18,9 @@ import 'training_goal_return.dart';
 import '../data/repositories/training/training_school_content.dart';
 import '../ui/home/view_models/training_lesson_preview.dart';
 import '../data/repositories/survey/survey_repository.dart';
+import '../data/repositories/glossary/glossary_repository.dart';
+import '../ui/glossary/view_models/glossary_cubit.dart';
+import '../ui/glossary/widgets/glossary_screen.dart';
 import '../domain/models/survey.dart';
 import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import '../ui/lesson_finished/widgets/lesson_finished_screen.dart';
@@ -394,6 +397,17 @@ GoRouter buildRouter({
           create: (_) =>
               BoardControlsCubit(context.read<OnboardingRepository>())..load(),
           child: const BoardControlsScreen(),
+        ),
+      ),
+      _route(
+        name: RouteNames.glossary,
+        path: Routes.glossary,
+        builder: (context, state) => BlocProvider(
+          create: (_) => GlossaryCubit(
+            context.read<GlossaryRepository>(),
+            context.read<ConnectivityRepository>(),
+          )..load(query: state.uri.queryParameters['q'] ?? ''),
+          child: GlossaryScreen(openTermId: state.uri.queryParameters['term']),
         ),
       ),
       _route(
