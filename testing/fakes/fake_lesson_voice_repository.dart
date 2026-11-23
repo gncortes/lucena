@@ -23,9 +23,20 @@ class FakeLessonVoiceRepository implements LessonVoiceRepository {
       states[chapterId] ?? const VoicePackMissing();
 
   @override
-  Stream<VoicePackState> watch(String chapterId) async* {
-    yield await state(chapterId);
-    yield* _changes.stream.where((c) => c.$1 == chapterId).map((c) => c.$2);
+  Stream<VoicePackState> watch(String chapterId) {
+    // Sem async*: cancelar não espera o gerador (trava o tearDown do widget).
+    StreamSubscription<(String, VoicePackState)>? changes;
+    late final StreamController<VoicePackState> out;
+    out = StreamController<VoicePackState>(
+      onListen: () {
+        out.add(states[chapterId] ?? const VoicePackMissing());
+        changes = _changes.stream
+            .where((c) => c.$1 == chapterId)
+            .listen((c) => out.add(c.$2));
+      },
+      onCancel: () => changes?.cancel(),
+    );
+    return out.stream;
   }
 
   @override

@@ -9,10 +9,7 @@ void main() {
   late LessonVoiceCubit cubit;
 
   Future<void> start({VoicePackState? pack, bool on = true}) async {
-    repository = FakeLessonVoiceRepository(
-      states: {'c1': ?pack},
-      on: on,
-    );
+    repository = FakeLessonVoiceRepository(states: {'c1': ?pack}, on: on);
     cubit = LessonVoiceCubit(repository, chapterId: 'c1');
     addTearDown(cubit.close);
     await cubit.load();
