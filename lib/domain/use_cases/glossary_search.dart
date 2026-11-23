@@ -12,14 +12,32 @@ class GlossaryMatch {
 /// A busca do Glossário e os termos de uma fala, sem acento nem caixa:
 /// "oposicao" acha "Oposição".
 abstract final class GlossarySearch {
-  /// Os termos cujo nome contém [query]; busca vazia devolve todos.
+  /// Os termos cujo nome ou sinônimo contém [query]; busca vazia devolve
+  /// todos.
   static List<GlossaryTerm> filter(List<GlossaryTerm> terms, String query) {
     final wanted = fold(query.trim());
     if (wanted.isEmpty) return terms;
     return [
       for (final term in terms)
-        if (fold(term.name).contains(wanted)) term,
+        if ([
+          term.name,
+          ...term.synonyms,
+        ].any((name) => fold(name).contains(wanted)))
+          term,
     ];
+  }
+
+  /// Como o termo aparece numa fala: cada variante do nome, sem o
+  /// parêntese ("ala do rei / ala da dama", "corte (do rei)" → "corte"),
+  /// e os sinônimos.
+  static List<String> forms(GlossaryTerm term) {
+    final plain = term.name.replaceAll(RegExp(r'\s*\([^)]*\)'), '');
+    return {
+      for (final part in plain.split(RegExp(r'\s*/\s*|,\s*')))
+        if (part.trim().isNotEmpty) part.trim(),
+      for (final synonym in term.synonyms)
+        if (synonym.trim().isNotEmpty) synonym.trim(),
+    }.toList();
   }
 
   /// Os termos citados em [text], palavra inteira, sem sobreposição; o nome
@@ -27,13 +45,14 @@ abstract final class GlossarySearch {
   /// plural simples com "s" ("xeques").
   static List<GlossaryMatch> find(String text, List<GlossaryTerm> terms) {
     final folded = fold(text);
-    final byLength = [...terms]
-      ..sort((a, b) => b.name.length.compareTo(a.name.length));
+    final byLength = [
+      for (final term in terms)
+        for (final form in forms(term)) (term: term, name: fold(form)),
+    ]..sort((a, b) => b.name.length.compareTo(a.name.length));
     final found = <GlossaryMatch>[];
     bool free(int start, int end) =>
         found.every((m) => end <= m.start || start >= m.end);
-    for (final term in byLength) {
-      final name = fold(term.name);
+    for (final (:term, :name) in byLength) {
       if (name.isEmpty) continue;
       var from = 0;
       while (true) {
