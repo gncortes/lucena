@@ -1661,19 +1661,6 @@
       ]
     },
     {
-      "id": "peao_passado_distante",
-      "nome": "peão passado distante",
-      "definicao": "Peão passado longe dos outros peões, na ala oposta. Ele serve de isca: enquanto o rei adversário vai atrás dele, o seu rei captura os peões do outro lado.",
-      "nota": "O exemplo mais famoso é de 1971: no match de Candidatos em Denver, Fischer usou um peão de torre como isca contra Bent Larsen e ganhou sem precisar coroar; venceu aquele match por 6 a 0.",
-      "chaveWiki": null,
-      "sinonimos": [
-        "peão passado afastado"
-      ],
-      "aulas": [
-        "endgames/pawns.outsidePasser"
-      ]
-    },
-    {
       "id": "peao_protegido",
       "nome": "peão passado protegido",
       "definicao": "Peão passado defendido por outro peão. O rei adversário não pode capturá-lo nem sair do quadrado dele, e por isso o seu rei fica livre para capturar os peões do outro lado.",
