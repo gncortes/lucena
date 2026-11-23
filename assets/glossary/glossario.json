@@ -1,0 +1,94 @@
+{
+  "termos": [
+    {
+      "id": "casas-chave",
+      "nome": "Casas-chave",
+      "definicao": "Casas que, alcançadas pelo rei do atacante, garantem a coroação.",
+      "chaveWiki": "en:Key_square"
+    },
+    {
+      "id": "cortar-o-rei",
+      "nome": "Cortar o rei",
+      "definicao": "Pôr a torre numa coluna ou fileira que o rei adversário não pode atravessar.",
+      "chaveWiki": null
+    },
+    {
+      "id": "garfo",
+      "nome": "Garfo",
+      "definicao": "Um lance que ataca duas peças ao mesmo tempo.",
+      "chaveWiki": null
+    },
+    {
+      "id": "lance-de-espera",
+      "nome": "Lance de espera",
+      "definicao": "Lance que não muda a posição útil e devolve a vez ao adversário.",
+      "chaveWiki": "en:Tempo_(chess)"
+    },
+    {
+      "id": "lance-tranquilo",
+      "nome": "Lance tranquilo",
+      "definicao": "Lance sem xeque nem captura que prepara a ameaça.",
+      "chaveWiki": null
+    },
+    {
+      "id": "oposicao",
+      "nome": "Oposição",
+      "definicao": "Reis na mesma coluna ou fileira com casas vazias entre eles; tem a oposição quem não precisa jogar.",
+      "chaveWiki": "pt:Oposição_(xadrez)"
+    },
+    {
+      "id": "oposicao-diagonal",
+      "nome": "Oposição diagonal",
+      "definicao": "Reis na mesma diagonal, número ímpar de casas entre eles; converte-se em direta.",
+      "chaveWiki": "en:Opposition_(chess)"
+    },
+    {
+      "id": "oposicao-direta",
+      "nome": "Oposição direta",
+      "definicao": "Uma casa vazia entre os reis.",
+      "chaveWiki": "en:Opposition_(chess)"
+    },
+    {
+      "id": "oposicao-distante",
+      "nome": "Oposição distante",
+      "definicao": "Três (ou cinco) casas vazias entre os reis; ao se aproximarem, vira direta.",
+      "chaveWiki": "en:Opposition_(chess)"
+    },
+    {
+      "id": "ponte",
+      "nome": "Ponte",
+      "definicao": "A torre vai para a quarta fileira e, quando vierem os xeques, se põe entre o rei e a torre adversária.",
+      "chaveWiki": null
+    },
+    {
+      "id": "posicao-de-lucena",
+      "nome": "Posição de Lucena",
+      "definicao": "Final de torre e peão: o peão na sétima, o rei dele na frente e o rei adversário cortado por pelo menos uma coluna. É vitória: o rei sai com a ponte.",
+      "chaveWiki": null
+    },
+    {
+      "id": "simplificar",
+      "nome": "Simplificar",
+      "definicao": "Trocar peças para cair numa posição conhecida.",
+      "chaveWiki": null
+    },
+    {
+      "id": "triangulacao",
+      "nome": "Triangulação",
+      "definicao": "Manobra do rei em três casas para perder um tempo.",
+      "chaveWiki": "pt:Final_(xadrez)"
+    },
+    {
+      "id": "xeque",
+      "nome": "Xeque",
+      "definicao": "Ataque ao rei. Quem está em xeque precisa sair dele no lance seguinte.",
+      "chaveWiki": null
+    },
+    {
+      "id": "zugzwang",
+      "nome": "Zugzwang",
+      "definicao": "Posição em que qualquer lance piora a situação de quem joga.",
+      "chaveWiki": "pt:Zugzwang"
+    }
+  ]
+}

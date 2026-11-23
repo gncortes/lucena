@@ -8,6 +8,7 @@ import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/alerts/alerts_repository.dart';
+import '../data/repositories/glossary/glossary_repository.dart';
 import '../data/repositories/alerts/region_prompt_repository.dart';
 import '../data/repositories/analysis/analysis_repository.dart';
 import '../data/repositories/analysis/learning_analysis_repository.dart';
@@ -319,6 +320,10 @@ _Providers _home(Dependencies deps) => [
 /// A opinião de quem usa: pesquisa, feedback e o pedido de avaliação.
 _Providers _care(Dependencies deps) => [
   RepositoryProvider<SurveyRepository>.value(value: deps.surveyRepository),
+  RepositoryProvider<GlossaryRepository>.value(value: deps.glossaryRepository),
+  RepositoryProvider<ConnectivityRepository>.value(
+    value: deps.connectivityRepository,
+  ),
   RepositoryProvider<FeedbackRepository>.value(value: deps.feedbackRepository),
   RepositoryProvider<FeedbackDraftRepository>.value(
     value: deps.feedbackDraftRepository,

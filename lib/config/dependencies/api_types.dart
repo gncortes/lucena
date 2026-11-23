@@ -90,6 +90,7 @@ export '../../data/repositories/update/app_update_repository.dart';
 export '../../data/repositories/voice/voice_repository.dart';
 export '../../data/repositories/week/week_repository.dart';
 export '../../data/repositories/wiki/wiki_links_repository.dart';
+export '../../data/repositories/glossary/glossary_repository.dart';
 export '../../data/services/firebase/push_service.dart';
 export '../../data/services/firebase/remote_config_service.dart';
 export '../../data/services/notification_service.dart';

@@ -73,6 +73,8 @@ class Dependencies {
     required this.blindCheckpointRepository,
     required this.surveyRepository,
     required this.wikiLinksRepository,
+    this.glossaryRepository = const EmptyGlossaryRepository(),
+    this.connectivityRepository = const DeviceConnectivityRepository(),
     required this.featuredRepository,
     required this.coursePreviewRepository,
     required this.featuredProgressRepository,
@@ -216,6 +218,12 @@ class Dependencies {
 
   /// As páginas da Wikipedia dos nomes marcados nas falas das aulas.
   final WikiLinksRepository wikiLinksRepository;
+
+  /// Os termos do Glossário (tela própria, aberta de qualquer lugar).
+  final GlossaryRepository glossaryRepository;
+
+  /// Se a Wikipédia do termo abre agora.
+  final ConnectivityRepository connectivityRepository;
 
   /// Os finais em destaque, o que o jogador já fez com eles e o aviso de
   /// final novo (sem canal por enquanto: E1.20 e E1.21).
