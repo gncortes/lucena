@@ -2810,5 +2810,7 @@
   "lessonVideoYourMove": "Sua vez: faça o lance no tabuleiro.",
   "lessonVideoReveal": "Ver a resposta",
   "lessonVideoTimeSemantics": "{position} de {total}",
-  "glossaryOpen": "Abrir o Glossário"
+  "glossaryOpen": "Abrir o Glossário",
+  "lessonVideoResumeNotice": "Parou aqui.",
+  "lessonVideoResumeRestart": "Recomeçar do início"
 }

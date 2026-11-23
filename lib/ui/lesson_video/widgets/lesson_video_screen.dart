@@ -332,14 +332,46 @@ class _Bottom extends StatelessWidget {
         SizedBox(
           height: LessonVideoLayout.timeHeight,
           child: Padding(
-            padding: const EdgeInsetsDirectional.only(start: 24),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                l10n.lessonVideoTime(position, whole),
-                key: LessonVideoKeys.time,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+            padding: const EdgeInsetsDirectional.only(start: 24, end: 16),
+            child: Row(
+              children: [
+                Text(
+                  l10n.lessonVideoTime(position, whole),
+                  key: LessonVideoKeys.time,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                if (state.notice) ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text.rich(
+                      key: LessonVideoKeys.notice,
+                      TextSpan(
+                        text: '${l10n.lessonVideoResumeNotice} ',
+                        children: [
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: GestureDetector(
+                              key: LessonVideoKeys.noticeAction,
+                              onTap: cubit.restart,
+                              child: Text(
+                                l10n.lessonVideoResumeRestart,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: colors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),

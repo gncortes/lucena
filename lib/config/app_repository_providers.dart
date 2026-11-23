@@ -66,6 +66,10 @@ import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/review/game_review_repository.dart';
 import '../data/repositories/review/review_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/lesson_video/lesson_video_repository.dart';
+import '../data/repositories/lesson_video/lesson_video_repository_local.dart';
+import '../data/repositories/lesson_video/video_interruptions_repository.dart';
+import '../data/repositories/lesson_video/video_interruptions_repository_device.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/school/star_challenge_repository.dart';
@@ -208,6 +212,13 @@ _Providers _game(Dependencies deps) => [
     create: (_) =>
         deps.learningAnalysisRepository ??
         LearningAnalysisRepository(PreferencesService()),
+  ),
+  // A aula em vídeo: onde parou, os ajustes e o que a pausa (L3).
+  RepositoryProvider<LessonVideoRepository>(
+    create: (_) => LocalLessonVideoRepository(PreferencesService()),
+  ),
+  RepositoryProvider<VideoInterruptionsRepository>(
+    create: (_) => DeviceVideoInterruptionsRepository(),
   ),
   RepositoryProvider<DeepAnalysisRepository>.value(
     value: deps.deepAnalysisRepository,

@@ -11,6 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../testing/board_center.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
+import '../../../testing/fakes/fake_lesson_video_repository.dart';
+import '../../../testing/fakes/fake_video_interruptions_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/script_fixture.dart';
@@ -49,6 +51,8 @@ Future<LessonVideoCubit> _pump(
   await settings.load();
   final cubit = LessonVideoCubit(
     scripts: FakeLessonScriptRepository(scriptFixture(), scriptTexts()),
+    videos: FakeLessonVideoRepository(),
+    interruptions: FakeVideoInterruptionsRepository(),
     now: FakeNow(DateTime(2026, 11, 23, 10)),
     lessonId: 'pawns.test',
     partId: 'distant',

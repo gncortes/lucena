@@ -2810,5 +2810,7 @@
   "lessonVideoYourMove": "Your turn: play the move on the board.",
   "lessonVideoReveal": "Show the answer",
   "lessonVideoTimeSemantics": "{position} of {total}",
-  "glossaryOpen": "Open the glossary"
+  "glossaryOpen": "Open the glossary",
+  "lessonVideoResumeNotice": "You stopped here.",
+  "lessonVideoResumeRestart": "Start over"
 }

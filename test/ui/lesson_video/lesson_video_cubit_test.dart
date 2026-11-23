@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/lesson_video/video_interruptions_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/models/lesson_video_progress.dart';
 import 'package:lucena/ui/lesson_video/view_models/lesson_video_cubit.dart';
 
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
+import '../../../testing/fakes/fake_lesson_video_repository.dart';
+import '../../../testing/fakes/fake_video_interruptions_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/script_fixture.dart';
 
@@ -21,8 +24,14 @@ class _BrokenScripts implements LessonScriptRepository {
 
 void main() {
   late FakeNow now;
+  late FakeLessonVideoRepository videos;
+  late FakeVideoInterruptionsRepository interruptions;
 
-  setUp(() => now = FakeNow(DateTime(2026, 11, 23, 10)));
+  setUp(() {
+    now = FakeNow(DateTime(2026, 11, 23, 10));
+    videos = FakeLessonVideoRepository();
+    interruptions = FakeVideoInterruptionsRepository();
+  });
 
   LessonVideoCubit build({
     String stage = 'ideia',
@@ -32,6 +41,8 @@ void main() {
     final cubit = LessonVideoCubit(
       scripts:
           scripts ?? FakeLessonScriptRepository(scriptFixture(), scriptTexts()),
+      videos: videos,
+      interruptions: interruptions,
       now: now,
       lessonId: 'pawns.test',
       partId: 'distant',
@@ -169,5 +180,113 @@ void main() {
     final cubit = build(scripts: _BrokenScripts());
     await cubit.start();
     expect(cubit.state.status, LessonVideoStatus.failed);
+  });
+
+  group('retomada e interrupções (L3)', () {
+    const key = 'pawns.test.distant.demos';
+
+    test(
+      'pausa no meio salva a fala; reabrir fica pausado com aviso',
+      () async {
+        final cubit = build(stage: 'demos');
+        await cubit.start();
+        now.advance(const Duration(seconds: 12));
+        cubit.pause();
+        await Future<void>.delayed(Duration.zero);
+        expect(videos.saved[key], isNotNull);
+
+        final again = build(stage: 'demos');
+        await again.start();
+        expect(again.state.notice, isTrue);
+        expect(again.state.playing, isFalse);
+        expect(again.state.position, greaterThan(Duration.zero));
+        expect(
+          again.state.position,
+          lessThanOrEqualTo(const Duration(seconds: 12)),
+        );
+
+        again.play();
+        expect(again.state.notice, isFalse);
+        expect(again.state.playing, isTrue);
+      },
+    );
+
+    test(
+      '"Recomeçar do início" volta a 0:00 tocando e esquece o salvo',
+      () async {
+        final cubit = build(stage: 'demos');
+        await cubit.start();
+        now.advance(const Duration(seconds: 12));
+        cubit.pause();
+        final again = build(stage: 'demos');
+        await again.start();
+        again.restart();
+        await Future<void>.delayed(Duration.zero);
+        expect(again.state.position, Duration.zero);
+        expect(again.state.playing, isTrue);
+        expect(again.state.notice, isFalse);
+        expect(videos.saved[key], isNull);
+      },
+    );
+
+    test(
+      'chegar ao fim da etapa esquece o progresso (reabre em 0:00)',
+      () async {
+        final cubit = build(stage: 'demos');
+        await cubit.start();
+        now.advance(const Duration(seconds: 5));
+        cubit.pause();
+        await Future<void>.delayed(Duration.zero);
+        expect(videos.saved[key], isNotNull);
+        cubit.play();
+        now.advance(cubit.state.total);
+        cubit.tick();
+        await Future<void>.delayed(Duration.zero);
+        expect(cubit.state.ended, isTrue);
+        expect(videos.saved[key], isNull);
+      },
+    );
+
+    for (final event in VideoInterruption.values) {
+      test(
+        'interrupção ${event.name} pausa, salva e não volta tocando',
+        () async {
+          final cubit = build(stage: 'demos');
+          await cubit.start();
+          now.advance(const Duration(seconds: 8));
+          interruptions.emit(event);
+          await Future<void>.delayed(Duration.zero);
+          expect(cubit.state.playing, isFalse);
+          expect(videos.saved[key], isNotNull);
+          now.advance(const Duration(seconds: 30));
+          cubit.tick();
+          expect(cubit.state.playing, isFalse);
+        },
+      );
+    }
+
+    test('close cancela a assinatura das interrupções', () async {
+      final cubit = build(stage: 'demos');
+      await cubit.start();
+      expect(interruptions.hasListener, isTrue);
+      await cubit.close();
+      expect(interruptions.hasListener, isFalse);
+    });
+
+    test('velocidade e legenda salvas voltam ao abrir', () async {
+      final cubit = build(autoplay: false);
+      await cubit.start();
+      cubit
+        ..cycleRate()
+        ..toggleCaptions();
+      await Future<void>.delayed(Duration.zero);
+      expect(videos.current.rate, 1.25);
+      expect(videos.current.captions, isFalse);
+
+      final again = build(autoplay: false);
+      await again.start();
+      expect(again.state.rate, 1.25);
+      expect(again.state.captions, isFalse);
+    });
   });
 }

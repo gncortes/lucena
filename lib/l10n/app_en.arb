@@ -14621,5 +14621,13 @@
   "glossaryOpen": "Open the glossary",
   "@glossaryOpen": {
     "description": "Tooltip of the book button that opens the glossary."
+  },
+  "lessonVideoResumeNotice": "You stopped here.",
+  "@lessonVideoResumeNotice": {
+    "description": "One-line notice when the lesson video reopens where the student stopped."
+  },
+  "lessonVideoResumeRestart": "Start over",
+  "@lessonVideoResumeRestart": {
+    "description": "Action of the resume notice: plays the lesson video from 0:00."
   }
 }

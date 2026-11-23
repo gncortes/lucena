@@ -128,6 +128,7 @@ import '../ui/daily/widgets/daily_start_screen.dart';
 import '../ui/streak/widgets/streak_screen.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
+import '../domain/models/character.dart';
 import '../data/repositories/characters/talk_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
@@ -145,6 +146,8 @@ import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/lesson_video/lesson_video_repository.dart';
+import '../data/repositories/lesson_video/video_interruptions_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/school/lesson_source.dart';
@@ -1321,6 +1324,9 @@ GoRouter buildRouter({
                           key: ValueKey('video.$id.$part.$stage'),
                           create: (_) => LessonVideoCubit(
                             scripts: context.read<LessonScriptRepository>(),
+                            videos: context.read<LessonVideoRepository>(),
+                            interruptions: context
+                                .read<VideoInterruptionsRepository>(),
                             now: context.read<Now>(),
                             lessonId: id,
                             partId: part,
@@ -1332,16 +1338,26 @@ GoRouter buildRouter({
                             stage: stage,
                             language: language,
                           )..start(),
-                          child: FutureBuilder<String>(
-                            future: lessons
-                                .texts(language)
-                                .then(
-                                  (texts) => texts.partTitle(id, part) ?? '',
-                                ),
+                          child: FutureBuilder<(String, Character?)>(
+                            future: (
+                              lessons
+                                  .texts(language)
+                                  .then((t) => t.partTitle(id, part) ?? ''),
+                              context
+                                  .read<CharacterRepository>()
+                                  .characters()
+                                  .then(
+                                    (all) => all
+                                        .where((c) => c.isMaster)
+                                        .firstOrNull,
+                                  ),
+                            ).wait,
                             // O Glossário é do L5: até lá, o livro fica
                             // desligado (onGlossary nulo).
-                            builder: (context, title) =>
-                                LessonVideoScreen(title: title.data ?? ''),
+                            builder: (context, loaded) => LessonVideoScreen(
+                              title: loaded.data?.$1 ?? '',
+                              viktor: loaded.data?.$2,
+                            ),
                           ),
                         );
                       },

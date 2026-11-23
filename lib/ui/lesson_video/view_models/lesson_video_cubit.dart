@@ -3,20 +3,24 @@
 // para voltar a qualquer ponto. O relógio manda (`VideoClock` + `Now`): em
 // cada tique o view model calcula o quadro (`VideoTimeline.frameAt`).
 //
-// Escopo do L1: modo leitura (sem áudio; a voz entra no L4), sem resposta às
-// perguntas (o vídeo para na pergunta; o L2 trata o lance) e sem persistência
-// (preferências e progresso entram no L3).
+// Escopo: modo leitura (sem áudio; a voz entra no L4) e sem resposta às
+// perguntas (o vídeo para na pergunta; o L2 trata o lance). O L3 salva onde
+// parou e os ajustes (`LessonVideoRepository`, `VideoResume`) e pausa em
+// qualquer interrupção, sem nunca voltar a tocar sozinho.
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/lesson_video/lesson_video_repository.dart';
+import '../../../data/repositories/lesson_video/video_interruptions_repository.dart';
 import '../../../data/repositories/school/lesson_script_repository.dart';
 import '../../../domain/models/lesson_video.dart';
 import '../../../domain/models/lesson_video_progress.dart';
 import '../../../domain/use_cases/lesson_video_converter.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/video_clock.dart';
+import '../../../domain/use_cases/video_resume.dart';
 import '../../../domain/use_cases/video_timeline.dart';
 
 /// O tique periódico (nos testes, nenhum: o teste chama [LessonVideoCubit.tick]).
@@ -40,6 +44,7 @@ class LessonVideoState {
     this.rate = 1,
     this.captions = true,
     this.flip = false,
+    this.notice = false,
     this.chapters = const [],
     this.gates = const [],
   });
@@ -70,6 +75,9 @@ class LessonVideoState {
   /// O tabuleiro do exemplo atual é visto pelas pretas.
   final bool flip;
 
+  /// "Você parou aqui. Recomeçar do início": reabriu no meio; some no play.
+  final bool notice;
+
   /// Começo de cada exemplo e cada pergunta (marcas na barra).
   final List<Duration> chapters;
   final List<Duration> gates;
@@ -86,6 +94,7 @@ class LessonVideoState {
     double? rate,
     bool? captions,
     bool? flip,
+    bool? notice,
     List<Duration>? chapters,
     List<Duration>? gates,
   }) => LessonVideoState(
@@ -100,6 +109,7 @@ class LessonVideoState {
     rate: rate ?? this.rate,
     captions: captions ?? this.captions,
     flip: flip ?? this.flip,
+    notice: notice ?? this.notice,
     chapters: chapters ?? this.chapters,
     gates: gates ?? this.gates,
   );
@@ -108,6 +118,8 @@ class LessonVideoState {
 class LessonVideoCubit extends Cubit<LessonVideoState> {
   LessonVideoCubit({
     required this._scripts,
+    required this._videos,
+    required this._interruptions,
     required this._now,
     required this.lessonId,
     required this.partId,
@@ -120,6 +132,8 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
        super(const LessonVideoState());
 
   final LessonScriptRepository _scripts;
+  final LessonVideoRepository _videos;
+  final VideoInterruptionsRepository _interruptions;
   final Now _now;
   final VideoTicker _ticker;
   final bool _autoplay;
@@ -142,12 +156,15 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   VideoClock _clock = const VideoClock();
   final _resolved = <String>{};
   Timer? _timer;
+  StreamSubscription<VideoInterruption>? _interrupted;
 
   Future<void> start() async {
     emit(state.copyWith(status: LessonVideoStatus.loading));
     try {
       final script = await _scripts.script(scriptPath);
       final texts = await _scripts.texts(lessonId, language);
+      final settings = await _videos.settings();
+      final saved = await _videos.progress(lessonId, partId, stage);
       final video = LessonVideoConverter.convert(
         script,
         texts,
@@ -158,18 +175,27 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
       _main = VideoTimeline.layout(
         video.lines,
         pace: VideoPace.reading,
-        rate: state.rate,
+        rate: settings.rate,
       );
-      _clock = const VideoClock();
+      final point = VideoResume.pointFrom(_main, saved);
+      _resolved
+        ..clear()
+        ..addAll(point.resolved);
+      _clock = VideoClock(anchor: point.at);
+      _interrupted ??= _interruptions.interruptions.listen((_) => pause());
       emit(
         state.copyWith(
           status: LessonVideoStatus.ready,
+          rate: settings.rate,
+          captions: settings.captions,
+          notice: point.notice,
           total: _main.total,
           chapters: _chapterStarts(video, _main),
           gates: [for (final g in _main.gates) g.at],
         ),
       );
-      if (_autoplay) {
+      // Reabrindo no meio, fica pausado com o aviso (o aluno toca play).
+      if (_autoplay && !point.notice) {
         play();
       } else {
         tick();
@@ -192,6 +218,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   void play() {
     if (!_ready || state.waiting) return;
     if (state.ended) _clock = const VideoClock();
+    if (state.notice) emit(state.copyWith(notice: false));
     _clock = _clock.play(_now());
     _startTicking();
     tick();
@@ -202,6 +229,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     _clock = _clock.pause(_now());
     _stopTicking();
     tick();
+    _save();
   }
 
   void toggle() => state.playing ? pause() : play();
@@ -218,14 +246,19 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     if (_ready) seek(state.position + delta);
   }
 
-  /// "Voltar ao início": revê a etapa desde 0:00, tocando.
+  /// "Voltar ao início" (e "Recomeçar do início" do aviso): revê a etapa
+  /// desde 0:00, tocando. As perguntas respondidas continuam respondidas.
   void restart() {
     if (!_ready) return;
     _clock = const VideoClock();
+    unawaited(_videos.clearProgress(lessonId, partId, stage));
     play();
   }
 
-  void toggleCaptions() => emit(state.copyWith(captions: !state.captions));
+  void toggleCaptions() {
+    emit(state.copyWith(captions: !state.captions));
+    _saveSettings();
+  }
 
   /// A próxima velocidade (depois da última, volta à primeira), mantendo a
   /// fala e a fração em que está.
@@ -259,6 +292,30 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
       ),
     );
     tick();
+    _saveSettings();
+  }
+
+  // ---- Persistência ------------------------------------------------------
+
+  void _saveSettings() => unawaited(
+    _videos.saveSettings(
+      VideoSettings(captions: state.captions, rate: state.rate),
+    ),
+  );
+
+  /// Guarda onde está (pausa, pergunta, interrupção, saída); no fim da etapa
+  /// esquece, e ela reabre em 0:00.
+  void _save() {
+    if (_video == null) return;
+    final t = _clock.position(_now());
+    if (t >= _main.total) {
+      unawaited(_videos.clearProgress(lessonId, partId, stage));
+      return;
+    }
+    final progress = VideoResume.progressAt(_main, t, _resolved);
+    if (progress != null) {
+      unawaited(_videos.saveProgress(lessonId, partId, stage, progress));
+    }
   }
 
   // ---- Relógio -----------------------------------------------------------
@@ -283,6 +340,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
       // Chegou à pergunta ou ao fim: para ali.
       _clock = VideoClock(anchor: t);
       _stopTicking();
+      _save();
     }
     final frame = _main.frameAt(t, resolved: _resolved);
     emit(
@@ -308,8 +366,10 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     _stopTicking();
+    await _interrupted?.cancel();
+    _save();
     return super.close();
   }
 }
