@@ -12,7 +12,7 @@ class _FakePlayer extends Fake implements AudioPlayer {
   Completer<void>? loading;
   bool _playing = false;
   Duration _position = Duration.zero;
-  double speed = 1;
+  double lastSpeed = 1;
 
   @override
   bool get playing => _playing;
@@ -46,7 +46,7 @@ class _FakePlayer extends Fake implements AudioPlayer {
   @override
   Future<void> setSpeed(double speed) async {
     calls.add('speed $speed');
-    this.speed = speed;
+    lastSpeed = speed;
   }
 
   @override
