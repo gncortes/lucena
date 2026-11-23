@@ -43,6 +43,7 @@ abstract final class RouteNames {
   static const endgameChallenge = 'endgameChallenge';
   static const endgameLesson = 'endgameLesson';
   static const endgameLessonScript = 'endgameLessonScript';
+  static const endgameLessonVideo = 'endgameLessonVideo';
   static const endgameInfo = 'endgameInfo';
   static const endgameExercisesIntro = 'endgameExercisesIntro';
   static const endgameExercisesDone = 'endgameExercisesDone';

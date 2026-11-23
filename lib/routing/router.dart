@@ -77,6 +77,7 @@ import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../data/repositories/sync/sync_repository.dart';
+import '../config/ambiente.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
@@ -173,6 +174,8 @@ import '../ui/school/widgets/star_challenges_screen.dart';
 import '../ui/school/view_models/school_cubit.dart';
 import '../ui/lesson_script/view_models/lesson_script_cubit.dart';
 import '../ui/lesson_script/widgets/lesson_script_screen.dart';
+import '../ui/lesson_video/view_models/lesson_video_cubit.dart';
+import '../ui/lesson_video/widgets/lesson_video_screen.dart';
 import '../ui/school/widgets/school_screen.dart';
 import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
@@ -1302,6 +1305,47 @@ GoRouter buildRouter({
                       );
                     },
                   ),
+                  // A aula em vídeo (L1, atrás da flag; nunca no prod).
+                  if (AulaVideo.ligada())
+                    _route(
+                      name: RouteNames.endgameLessonVideo,
+                      path: 'video',
+                      builder: (context, state) {
+                        final id = state.pathParameters['lesson']!;
+                        final part = state.uri.queryParameters['part'] ?? '';
+                        final stage =
+                            state.uri.queryParameters['etapa'] ?? 'ideia';
+                        final language = _language(context);
+                        final lessons = context.read<EndgameLessonRepository>();
+                        return BlocProvider(
+                          key: ValueKey('video.$id.$part.$stage'),
+                          create: (_) => LessonVideoCubit(
+                            scripts: context.read<LessonScriptRepository>(),
+                            now: context.read<Now>(),
+                            lessonId: id,
+                            partId: part,
+                            scriptPath:
+                                AssetLessonScriptRepository.chapterScriptPath(
+                                  id,
+                                  part,
+                                ),
+                            stage: stage,
+                            language: language,
+                          )..start(),
+                          child: FutureBuilder<String>(
+                            future: lessons
+                                .texts(language)
+                                .then(
+                                  (texts) => texts.partTitle(id, part) ?? '',
+                                ),
+                            // O Glossário é do L5: até lá, o livro fica
+                            // desligado (onGlossary nulo).
+                            builder: (context, title) =>
+                                LessonVideoScreen(title: title.data ?? ''),
+                          ),
+                        );
+                      },
+                    ),
                   _route(
                     name: RouteNames.endgameInfo,
                     path: 'info',
