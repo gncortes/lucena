@@ -14,6 +14,11 @@ class GlossaryTerm {
 
   final String id;
   final String name;
+
+  /// O nome para exibição, com a inicial maiúscula (o [name] fica como está
+  /// para busca e sublinhado).
+  String get displayName =>
+      name.isEmpty ? name : name[0].toUpperCase() + name.substring(1);
   final String definition;
 
   /// Outros nomes do termo ("peão passado afastado"): a busca e a fala casam.

@@ -63,7 +63,7 @@ class GlossaryTermSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SheetHeader(title: term.name, titleMaxLines: 2),
+          SheetHeader(title: term.displayName, titleMaxLines: 2),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             child: Text(term.definition, style: theme.textTheme.bodyLarge),
