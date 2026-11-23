@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "Ini memerlukan internet",
   "externalPageOfflineBody": "Sambungkan ke internet untuk membaca halaman ini. Pelajaran tetap berjalan seperti biasa.",
   "glossaryTitle": "Glosarium",
-  "glossaryOpen": "Buka glosarium",
   "glossarySearchLabel": "Cari istilah",
   "glossarySearchHint": "Mis.: jembatan, zugzwang",
   "glossaryCount": "{count, plural, other{{count} istilah}}",

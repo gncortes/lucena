@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "インターネット接続が必要です",
   "externalPageOfflineBody": "このページを読むにはインターネットに接続してください。レッスンはそのまま続けられます。",
   "glossaryTitle": "用語集",
-  "glossaryOpen": "用語集を開く",
   "glossarySearchLabel": "用語を検索",
   "glossarySearchHint": "例：ブリッジ、ツークツワンク",
   "glossaryCount": "{count, plural, other{{count} 件の用語}}",

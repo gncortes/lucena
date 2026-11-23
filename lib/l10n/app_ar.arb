@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "هذا يحتاج إلى الإنترنت",
   "externalPageOfflineBody": "اتصل بالإنترنت لقراءة هذه الصفحة. يستمر الدرس كالمعتاد.",
   "glossaryTitle": "المسرد",
-  "glossaryOpen": "افتح المسرد",
   "glossarySearchLabel": "ابحث عن مصطلح",
   "glossarySearchHint": "مثلًا: الجسر، زوغزوانغ",
   "glossaryCount": "{count, plural, =1{مصطلح واحد} other{{count} مصطلحات}}",

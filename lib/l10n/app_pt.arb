@@ -873,7 +873,6 @@
   "externalPageOfflineTitle": "Esta consulta precisa de internet",
   "externalPageOfflineBody": "Conecte-se à internet para ler esta página. O app segue normal.",
   "glossaryTitle": "Glossário",
-  "glossaryOpen": "Abrir o Glossário",
   "glossarySearchLabel": "Buscar termo",
   "glossarySearchHint": "Ex.: ponte, zugzwang",
   "glossaryCount": "{count, plural, =1{1 termo} other{{count} termos}}",

@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "این بخش به اینترنت نیاز دارد",
   "externalPageOfflineBody": "برای خواندن این صفحه به اینترنت وصل شوید. درس به‌طور عادی ادامه دارد.",
   "glossaryTitle": "واژه‌نامه",
-  "glossaryOpen": "باز کردن واژه‌نامه",
   "glossarySearchLabel": "جستجوی اصطلاح",
   "glossarySearchHint": "مثلاً: پل، تسوگسوانگ",
   "glossaryCount": "{count, plural, =1{۱ اصطلاح} other{{count} اصطلاح}}",

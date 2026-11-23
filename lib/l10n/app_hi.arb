@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "इसके लिए इंटरनेट चाहिए",
   "externalPageOfflineBody": "यह पेज पढ़ने के लिए इंटरनेट से जुड़ें। पाठ सामान्य रूप से चलता रहेगा।",
   "glossaryTitle": "शब्दावली",
-  "glossaryOpen": "शब्दावली खोलें",
   "glossarySearchLabel": "शब्द खोजें",
   "glossarySearchHint": "जैसे: ब्रिज, ज़ुगज़्वांग",
   "glossaryCount": "{count, plural, =1{1 शब्द} other{{count} शब्द}}",

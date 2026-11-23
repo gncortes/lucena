@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "Cần có internet",
   "externalPageOfflineBody": "Hãy kết nối internet để đọc trang này. Bài học vẫn tiếp tục bình thường.",
   "glossaryTitle": "Thuật ngữ",
-  "glossaryOpen": "Mở bảng thuật ngữ",
   "glossarySearchLabel": "Tìm thuật ngữ",
   "glossarySearchHint": "VD: cầu, zugzwang",
   "glossaryCount": "{count, plural, other{{count} thuật ngữ}}",

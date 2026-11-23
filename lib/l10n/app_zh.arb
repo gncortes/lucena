@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "需要连接互联网",
   "externalPageOfflineBody": "请连接互联网以阅读此页面。课程照常进行。",
   "glossaryTitle": "术语表",
-  "glossaryOpen": "打开术语表",
   "glossarySearchLabel": "搜索术语",
   "glossarySearchHint": "例如：搭桥，楚茨文格",
   "glossaryCount": "{count, plural, other{{count} 个术语}}",

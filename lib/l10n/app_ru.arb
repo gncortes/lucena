@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "Для этого нужен интернет",
   "externalPageOfflineBody": "Подключитесь к интернету, чтобы прочитать эту страницу. Урок продолжается как обычно.",
   "glossaryTitle": "Глоссарий",
-  "glossaryOpen": "Открыть глоссарий",
   "glossarySearchLabel": "Поиск термина",
   "glossarySearchHint": "Напр.: мост, цугцванг",
   "glossaryCount": "{count, plural, one{{count} термин} few{{count} термина} many{{count} терминов} other{{count} термина}}",

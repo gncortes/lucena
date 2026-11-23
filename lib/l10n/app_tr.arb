@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "Bunun için internet gerekiyor",
   "externalPageOfflineBody": "Bu sayfayı okumak için internete bağlanın. Ders normal şekilde devam ediyor.",
   "glossaryTitle": "Sözlük",
-  "glossaryOpen": "Sözlüğü aç",
   "glossarySearchLabel": "Terim ara",
   "glossarySearchHint": "Örn.: köprü, zugzwang",
   "glossaryCount": "{count, plural, =1{1 terim} other{{count} terim}}",

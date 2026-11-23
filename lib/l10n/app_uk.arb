@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "Для цього потрібен інтернет",
   "externalPageOfflineBody": "Підключіться до інтернету, щоб прочитати цю сторінку. Урок триває як звичайно.",
   "glossaryTitle": "Глосарій",
-  "glossaryOpen": "Відкрити глосарій",
   "glossarySearchLabel": "Пошук терміна",
   "glossarySearchHint": "Напр.: міст, цугцванг",
   "glossaryCount": "{count, plural, one{{count} термін} few{{count} терміни} many{{count} термінів} other{{count} терміна}}",

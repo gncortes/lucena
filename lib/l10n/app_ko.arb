@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "인터넷 연결이 필요합니다",
   "externalPageOfflineBody": "이 페이지를 읽으려면 인터넷에 연결하세요. 수업은 그대로 계속됩니다.",
   "glossaryTitle": "용어집",
-  "glossaryOpen": "용어집 열기",
   "glossarySearchLabel": "용어 검색",
   "glossarySearchHint": "예: 브리지, 추크츠방",
   "glossaryCount": "{count, plural, other{용어 {count}개}}",

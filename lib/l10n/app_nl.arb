@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "Hiervoor is internet nodig",
   "externalPageOfflineBody": "Maak verbinding met internet om deze pagina te lezen. De les gaat gewoon verder.",
   "glossaryTitle": "Woordenlijst",
-  "glossaryOpen": "Woordenlijst openen",
   "glossarySearchLabel": "Term zoeken",
   "glossarySearchHint": "Bijv. brug, zugzwang",
   "glossaryCount": "{count, plural, =1{1 term} other{{count} termen}}",

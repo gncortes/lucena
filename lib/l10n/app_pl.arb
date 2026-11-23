@@ -858,7 +858,6 @@
   "externalPageOfflineTitle": "To wymaga internetu",
   "externalPageOfflineBody": "Połącz się z internetem, aby przeczytać tę stronę. Lekcja toczy się dalej.",
   "glossaryTitle": "Słowniczek",
-  "glossaryOpen": "Otwórz słowniczek",
   "glossarySearchLabel": "Szukaj terminu",
   "glossarySearchHint": "Np. most, zugzwang",
   "glossaryCount": "{count, plural, =1{1 termin} few{{count} terminy} many{{count} terminów} other{{count} terminu}}",
