@@ -18,10 +18,8 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
-import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/keys/motion_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
@@ -141,19 +139,6 @@ Future<void> _sampleGeometry(
   }
 }
 
-/// Um relógio que nunca dispara: o passo automático da etapa 1 não anda
-/// sozinho no meio do teste nem deixa timer pendente no fim.
-class _InertTimer implements Timer {
-  @override
-  bool get isActive => false;
-
-  @override
-  int get tick => 0;
-
-  @override
-  void cancel() {}
-}
-
 class _Setup {
   _Setup(this.cubit, this.voice);
 
@@ -222,6 +207,7 @@ Future<_Setup> _open(
   addTearDown(settings.close);
   await settings.load();
   final cubit = LessonScriptCubit(
+    videoStages: const {},
     lessonId: 'pawns.test',
     partId: 'distant',
     scriptPath: 'roteiro.json',
@@ -236,9 +222,6 @@ Future<_Setup> _open(
     source: source ?? FakeLessonSource(),
     initialStage: stage,
     delay: (_) async {},
-    // O relógio de verdade só onde o teste mede o passo automático (por
-    // padrão, a etapa 2).
-    timer: autoPlay ?? stage == 1 ? Timer.new : (_, _) => _InertTimer(),
   );
   addTearDown(() {
     if (!cubit.isClosed) return cubit.close();
@@ -568,107 +551,6 @@ void main() {
       }
     });
 
-    testWidgets('LIÇÃO $size: repetir demonstração neutra conserva o '
-        'tabuleiro na troca de fase', (tester) async {
-      final json = _geometryScript();
-      final stages = json['etapas'] as List;
-      final idea = ((stages.first as Map)['exemplos'] as List).first as Map;
-      final demo = ((stages[1] as Map)['exemplos'] as List).first as Map;
-      demo['entrada'] = idea['entrada'];
-      demo['linha'] = <dynamic>[];
-      final setup = await _open(
-        tester,
-        size,
-        json: json,
-        stage: 1,
-        autoPlay: false,
-        texts: {
-          for (var i = 0; i < _neutralSpeeches.length; i++)
-            'layout.$i': _neutralSpeeches[i],
-        },
-      );
-      // Os controles mudam ao terminar; a área do tabuleiro deve permanecer.
-      final geometry = _geometry(tester)..remove(LessonScriptKeys.primary);
-      final footer = tester.getRect(find.byKey(LessonScriptKeys.footer));
-      // Conteúdo de 64 dp (anel) + folgas de 8 dp acima e 16 dp abaixo.
-      expect(footer.height, closeTo(96, 0.5));
-      for (var cycle = 0; cycle < 2; cycle++) {
-        expect(setup.cubit.state.speech, [_neutralSpeeches.first]);
-        for (var i = 1; i < _neutralSpeeches.length; i++) {
-          await tester.tap(find.byKey(LessonScriptKeys.primary));
-          await _sampleGeometry(tester, geometry);
-          expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
-          expect(setup.cubit.state.speech, [_neutralSpeeches[i]]);
-        }
-        expect(setup.cubit.state.phase, ScriptPhase.fimEtapa);
-        // H-ANI-25: ↻ e o botão principal entram por último (até 1,3 s).
-        await tester.pump(const Duration(milliseconds: 1300));
-        _expectGeometry(tester, geometry);
-        await tester.tap(find.byKey(LessonScriptKeys.demoRepeat));
-        await _sampleGeometry(tester, geometry);
-        expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
-        expect(setup.cubit.state.phase, ScriptPhase.entrada);
-      }
-    });
-
-    for (final reduced in [false, true]) {
-      testWidgets('H-ANI-25 $size: no fim da demonstração ↻ e o botão '
-          'principal entram por último (reduzido: $reduced)', (tester) async {
-        tester.platformDispatcher.accessibilityFeaturesTestValue =
-            FakeAccessibilityFeatures(disableAnimations: reduced);
-        addTearDown(
-          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
-        );
-        final json = _geometryScript();
-        final stages = json['etapas'] as List;
-        final idea = ((stages.first as Map)['exemplos'] as List).first as Map;
-        final demo = ((stages[1] as Map)['exemplos'] as List).first as Map;
-        demo['entrada'] = idea['entrada'];
-        demo['linha'] = <dynamic>[];
-        final setup = await _open(
-          tester,
-          size,
-          json: json,
-          stage: 1,
-          autoPlay: false,
-          texts: {
-            for (var i = 0; i < _neutralSpeeches.length; i++)
-              'layout.$i': _neutralSpeeches[i],
-          },
-        );
-        final footer = tester.getRect(find.byKey(LessonScriptKeys.footer));
-        final botoes = find.byKey(MotionKeys.parteDoResultado('botoes'));
-        for (var cycle = 0; cycle < 2; cycle++) {
-          // Durante a demonstração, o rodapé não é resultado.
-          expect(botoes, findsNothing);
-          for (var i = 1; i < _neutralSpeeches.length - 1; i++) {
-            await tester.tap(find.byKey(LessonScriptKeys.primary));
-            await tester.pumpAndSettle();
-          }
-          await tester.tap(find.byKey(LessonScriptKeys.primary));
-          await tester.pump();
-          await tester.pump();
-          expect(setup.cubit.state.phase, ScriptPhase.fimEtapa);
-          expect(opacidadeDaParte(tester, botoes), reduced ? 1 : 0);
-          await tester.pump(const Duration(milliseconds: 1300));
-          await tester.pump();
-          expect(opacidadeDaParte(tester, botoes), 1);
-          expect(
-            find.descendant(
-              of: botoes,
-              matching: find.byKey(LessonScriptKeys.demoRepeat),
-            ),
-            findsOneWidget,
-          );
-          expect(tester.getRect(find.byKey(LessonScriptKeys.footer)), footer);
-          // Cada fim é um resultado novo: anima também depois do ↻.
-          await tester.pumpAndSettle();
-          await tester.tap(find.byKey(LessonScriptKeys.demoRepeat));
-          await tester.pumpAndSettle();
-        }
-        expect(tester.takeException(), isNull);
-      });
-    }
 
     testWidgets('ScriptPage $size: revelação incremental sintética e '
         'pontinhos preservam a posição reservada', (tester) async {
@@ -770,54 +652,6 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await setup.cubit.close();
   });
-  for (final androidBack in [false, true]) {
-    testWidgets(
-      'saída ${androidBack ? 'Android' : 'appbar'} aguarda persistência '
-      'e cancela avanço automático sem perder cursor',
-      (tester) async {
-        final source = _ExitSource(FakeEndgameProgressRepository());
-        final setup = await _open(
-          tester,
-          _tall,
-          stage: 1,
-          source: source,
-          navigable: true,
-          texts: {'d1a': _long, 'd1b': _long},
-        );
-        await setup.cubit.onAction(ScriptAction.continuar);
-        await tester.pump();
-        final before = (await source.progress.load()).ongoing!;
-        expect(before.open, isTrue);
-        expect(before.scriptTrack, 'entrada');
-        expect(before.scriptHead, 1);
-        expect(setup.cubit.state.demo!.playing, isTrue);
-        if (androidBack) {
-          await tester.binding.handlePopRoute();
-        } else {
-          await tester.tap(find.byKey(LessonScriptKeys.close));
-        }
-        await tester.pump();
-        expect(source.leaves, 1);
-        expect(find.byKey(LessonScriptKeys.screen), findsOneWidget);
-        // Enquanto leave aguarda I/O, nem o timer nem outro Voltar avançam.
-        await tester.binding.handlePopRoute();
-        await tester.pump(const Duration(seconds: 10));
-        expect(source.leaves, 1);
-        expect((await source.progress.load()).ongoing, before);
-        source.exitGate.complete();
-        await tester.pump();
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pump();
-        expect(find.byKey(LessonScriptKeys.screen), findsNothing);
-        expect(find.text('origem'), findsOneWidget);
-        final progress = await source.progress.load();
-        expect(progress.ongoing, before.copyWith(open: false));
-        expect(launchLocation(endgames: progress), Routes.home);
-        await tester.pumpAndSettle();
-        await tester.pumpWidget(const SizedBox());
-      },
-    );
-  }
 
   testWidgets('background e descarte da tela conservam retomada automática', (
     tester,
@@ -891,47 +725,6 @@ void main() {
     final label = '${size.width.toInt()}x${size.height.toInt()}';
 
     group('tela $label', () {
-      testWidgets('entrada: barra, livro, balão colado, ⏸ e ⏭ e ◀ parado', (
-        tester,
-      ) async {
-        await _open(tester, size);
-        expect(tester.takeException(), isNull);
-        expect(find.text('Oposição distante'), findsOneWidget);
-        expect(find.byKey(LessonScriptKeys.bookButton), findsOneWidget);
-        expect(
-          tester.getSize(find.byKey(LessonScriptKeys.bookButton)).width,
-          greaterThanOrEqualTo(48),
-        );
-        // Balão abaixo da barra (56 dp), com ao menos 2 dp de folga.
-        final speech = _rect(tester, LessonScriptKeys.speech);
-        expect(speech.top, greaterThanOrEqualTo(56 + 2 - 0.5));
-        // Com a área da fala fixa, o tabuleiro fica no meio entre a faixa do
-        // Viktor e o rodapé (sobra igual em cima e embaixo); na tela baixa,
-        // logo abaixo da fala.
-        final board = _rect(tester, LessonScriptKeys.board);
-        final page = _rect(tester, LessonScriptKeys.page);
-        if (size == _tall) {
-          final strip = _rect(tester, LessonScriptKeys.characterBar);
-          // Faixa colada no tabuleiro; a sobra se divide igual entre o alto
-          // da área da fala e o fundo da página.
-          expect(board.top - strip.bottom, closeTo(0, 0.01));
-          expect(board.bottom, lessThan(page.bottom));
-        } else {
-          expect(board.top, greaterThan(speech.bottom));
-        }
-        // A fala de "Continuar" da etapa 1 passa sozinha: ⏸ e o Continuar
-        // que enche (Gabriel, 16/10/2026).
-        expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
-        expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
-        expect(find.text('Continuar'), findsOneWidget);
-        expect(find.text('Ver resposta'), findsNothing);
-        // Sem passo anterior, o botão voltar não aparece.
-        expect(find.byKey(LessonScriptKeys.back), findsNothing);
-        expect(find.byKey(LessonScriptKeys.moveList), findsNothing);
-        // Rodapé com o fundo da tela, só com a linha em cima (F2).
-        expect(_rect(tester, LessonScriptKeys.footer).height, 96);
-      });
-
       testWidgets('balão: área fixa de 3 linhas; fala curta ou longa, o '
           'tabuleiro e a faixa não se mexem', (tester) async {
         await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
@@ -1292,136 +1085,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('demonstração com voz: o passo espera o Viktor acabar de '
-      'falar e só faz a pausa depois', (tester) async {
-    final s = await _open(tester, _tall, stage: 1, voiceOn: true);
-    // A tela alta junta os trechos curtos num balão só.
-    final first = s.cubit.state.speech;
-    expect(s.voice.spoken.last.$1, first.join(' '));
-    expect(s.cubit.state.demo!.speaking, isTrue);
-    // Bem mais que o tempo de leitura: a voz ainda fala, o passo espera.
-    await tester.pump(LessonScriptCubit.readTime(first.join(' ')) * 3);
-    expect(s.cubit.state.speech, first);
-    s.voice.emit(const TtsFinished());
-    await tester.pump();
-    expect(s.cubit.state.demo!.speaking, isFalse);
-    expect(s.cubit.state.demo!.remaining, LessonScriptCubit.voicePause);
-    await tester.pump(LessonScriptCubit.voicePause);
-    await tester.pump();
-    final next = s.cubit.state.speech;
-    expect(next, isNot(first));
-    expect(s.voice.spoken.last.$1, next.join(' '));
-    // O fim da etapa não tem relógio: a voz fala e nada espera por ela.
-    expect(s.cubit.state.demo!.ended, isTrue);
-    expect(s.cubit.state.demo!.speaking, isFalse);
-    s.voice.emit(const TtsFinished());
-    await _settle(tester);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('demonstração sem voz: vale o tempo de leitura', (tester) async {
-    final s = await _open(tester, _tall, stage: 1);
-    final first = s.cubit.state.speech;
-    expect(s.voice.spoken, isEmpty);
-    expect(s.cubit.state.demo!.speaking, isFalse);
-    final read = LessonScriptCubit.readTime(first.join(' '));
-    // O `_open` já passou 1,2 s (1 s e o pop do balão).
-    await tester.pump(read - const Duration(milliseconds: 1300));
-    expect(s.cubit.state.speech, first);
-    await tester.pump(const Duration(milliseconds: 200));
-    expect(s.cubit.state.speech, isNot(first));
-    expect(s.cubit.state.demo!.ended, isTrue);
-    await _settle(tester);
-  });
-
-  testWidgets('segundo plano: a demonstração espera no fundo e segue na '
-      'volta', (tester) async {
-    final s = await _open(tester, _tall, stage: 1);
-    final first = s.cubit.state.speech;
-    final read = LessonScriptCubit.readTime(first.join(' '));
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-    await tester.pump(read * 5);
-    expect(s.cubit.state.speech, first);
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await tester.pump();
-    expect(s.cubit.state.speech, first);
-    expect(s.cubit.state.demo!.playing, isTrue);
-    await tester.pump(read);
-    await tester.pump();
-    expect(s.cubit.state.speech, isNot(first));
-    await _settle(tester);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('rodapé da demonstração em 411×914: com ↻ ⏮ ⏸ e o ⏭ na tela, '
-      'a lupa espera o fim e nada estoura', (tester) async {
-    // Duas demonstrações: a primeira acaba num fim de exemplo, com os
-    // controles ainda na tela.
-    final json = scriptJson();
-    final demos = (json['etapas'] as List).cast<Map<String, dynamic>>()[1];
-    final d1 = (demos['exemplos'] as List).single as Map<String, dynamic>;
-    demos['exemplos'] = [
-      {...d1, 'fim': 'exemplo'},
-      {...d1, 'id': 'd2'},
-    ];
-    final s = await _open(
-      tester,
-      const Size(411, 914),
-      json: json,
-      stage: 1,
-      onAnalyze: (_) {},
-    );
-    var fimDeExemploComControles = false;
-    for (var i = 0; i < 12 && s.cubit.state.demo?.ended != true; i++) {
-      final emAndamento = find.byKey(LessonScriptKeys.demoRing).evaluate();
-      if (emAndamento.isNotEmpty) {
-        expect(find.byKey(LessonScriptKeys.analyze), findsNothing);
-        if (s.cubit.state.phase == ScriptPhase.fimExemplo) {
-          fimDeExemploComControles = true;
-        }
-      }
-      expect(tester.takeException(), isNull);
-      await _tap(tester, LessonScriptKeys.primary);
-    }
-    expect(fimDeExemploComControles, isTrue);
-    // No fim da demonstração a lupa volta, ao lado do ↻ e do botão.
-    expect(s.cubit.state.demo?.ended, isTrue);
-    expect(find.byKey(LessonScriptKeys.analyze), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('rodapé da demonstração: ← sempre, ↻ ⏮ ⏸ e o ⏭ com anel; '
-      'no fim, só ↻ e Próxima etapa', (tester) async {
-    final s = await _open(tester, _tall, stage: 1);
-    expect(s.cubit.state.demo, isNotNull);
-    for (final key in [
-      LessonScriptKeys.back,
-      LessonScriptKeys.demoRepeat,
-      LessonScriptKeys.demoStepBack,
-      LessonScriptKeys.demoToggle,
-      LessonScriptKeys.demoRing,
-      LessonScriptKeys.primary,
-    ]) {
-      expect(find.byKey(key), findsOneWidget, reason: '$key');
-    }
-    expect(find.text('Continuar'), findsNothing);
-    // ⏸ pausa: o ícone vira ▶.
-    await _tap(tester, LessonScriptKeys.demoToggle);
-    expect(s.cubit.state.demo!.playing, isFalse);
-    expect(find.byIcon(CanvasSymbols.playArrow), findsOneWidget);
-    // ⏭ avança mesmo pausada.
-    final tick = s.cubit.state.demo!.tick;
-    await _tap(tester, LessonScriptKeys.primary);
-    expect(s.cubit.state.demo?.tick, isNot(tick));
-    await _until(tester, s, ScriptPhase.fimEtapa);
-    expect(s.cubit.state.demo?.ended, isTrue);
-    expect(find.byKey(LessonScriptKeys.demoRepeat), findsOneWidget);
-    expect(find.byKey(LessonScriptKeys.demoToggle), findsNothing);
-    expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
-    expect(find.text('Praticar'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('fala de 5 linhas na tela alta: o balão usa a sobra de cima, '
       'sem rolar nem diminuir a letra, e o tabuleiro não se mexe (Gabriel, '
       '16/10/2026)', (tester) async {
@@ -1453,44 +1116,6 @@ void main() {
     expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 15);
     expect(tester.takeException(), isNull);
   });
-
-  testWidgets(
-    'teoria (etapa 1): ← quando há volta, ⏸ e o Continuar que enche, sem ↻ '
-    'nem ⏮; a fala passa sozinha e a pergunta espera o aluno',
-    (tester) async {
-      final s = await _open(tester, _tall, autoPlay: true);
-      expect(s.cubit.state.stageId, 'ideia');
-      expect(s.cubit.state.demo?.full, isFalse);
-      expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
-      expect(find.byKey(LessonScriptKeys.demoRing), findsNothing);
-      expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byKey(LessonScriptKeys.primary),
-          matching: find.text('Continuar'),
-        ),
-        findsOneWidget,
-      );
-      expect(find.byKey(LessonScriptKeys.demoRepeat), findsNothing);
-      expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
-      // ⏸ pausa; ▶ retoma.
-      await _tap(tester, LessonScriptKeys.demoToggle);
-      expect(s.cubit.state.demo!.playing, isFalse);
-      await _tap(tester, LessonScriptKeys.demoToggle);
-      expect(s.cubit.state.demo!.playing, isTrue);
-      // Sem voz, o tempo de leitura passa a fala sozinha até a pergunta, que
-      // não tem relógio.
-      for (var i = 0; i < 12; i++) {
-        if (s.cubit.state.phase == ScriptPhase.pergunta) break;
-        await tester.pump(const Duration(seconds: 9));
-        await _settle(tester);
-      }
-      expect(s.cubit.state.phase, ScriptPhase.pergunta);
-      expect(s.cubit.state.demo, isNull);
-      expect(find.byKey(LessonScriptKeys.theoryFill), findsNothing);
-      expect(tester.takeException(), isNull);
-    },
-  );
 
   testWidgets('fim da parte: Rever a ideia volta; Continuar conclui', (
     tester,

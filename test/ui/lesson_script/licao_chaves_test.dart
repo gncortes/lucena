@@ -8,6 +8,5 @@ void main() {
     expect(LessonScriptKeys.balloonSeeMore, SpeechKeys.balloonSeeMore);
     expect(LessonScriptKeys.lessonVoiceToggle, VoiceKeys.speakButton);
     expect(LessonScriptKeys.lessonAnalyze, LessonScriptKeys.analyze);
-    expect(LessonScriptKeys.lessonPauseToggle, LessonScriptKeys.demoToggle);
   });
 }

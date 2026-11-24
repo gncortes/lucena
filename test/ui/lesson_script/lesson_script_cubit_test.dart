@@ -9,8 +9,6 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
-import 'package:lucena/routing/launch_location.dart';
-import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/sound/game_sounds.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
@@ -119,6 +117,7 @@ class _Rig {
     final now = FakeNow(DateTime(2026, 10, 14, 9));
     final timers = <_FakeTimer>[];
     final cubit = LessonScriptCubit(
+      videoStages: const {},
       lessonId: _lessonId,
       partId: _partId,
       scriptPath: 'roteiro.json',
@@ -132,11 +131,6 @@ class _Rig {
       initialStage: stage,
       delay: delay ?? (_) async {},
       now: now,
-      timer: (duration, callback) {
-        final timer = _FakeTimer(duration, callback);
-        timers.add(timer);
-        return timer;
-      },
       opponent: opponent,
       sounds: sounds,
       analytics: analytics ?? FakeAnalyticsRepository(),
@@ -373,29 +367,6 @@ void main() {
       },
     );
 
-    test(
-      'explicação reinicia etapa após force stop, mesmo antes pausada',
-      () async {
-        final r = await _Rig.open();
-        await r.next();
-        r.cubit.demoToggle();
-        final checkpoint = await saved(r);
-        final reopened = await _Rig.open(checkpoint: checkpoint);
-        expect(reopened.s.speech, ['e1']);
-        expect(reopened.s.fen, exampleOneFen);
-        expect(
-          reopened.s.marks,
-          scriptFixture().stages.first.examples.first.entry.first.marks,
-        );
-        expect(reopened.s.demo!.playing, isTrue);
-        expect(reopened.pending, hasLength(1));
-        reopened.cubit.back();
-        expect(reopened.s.speech, ['e1']);
-        final back = await _Rig.open(checkpoint: await saved(reopened));
-        expect(back.s.speech, ['e1']);
-      },
-    );
-
     test('force stop descarta ramo e exemplo, recomeçando a etapa', () async {
       final r = await _Rig.open();
       await _toQuestion(r);
@@ -414,19 +385,6 @@ void main() {
       expect(reopened.s.transition.ucis, isEmpty);
       await reopened.next();
       expect(reopened.s.speech, ['e2']);
-    });
-
-    test('demonstração recomeça do início ao recriar o processo', () async {
-      final r = await _Rig.open(stage: 1);
-      await r.next();
-      r.cubit.demoToggle();
-      final reopened = await _Rig.open(checkpoint: await saved(r));
-      expect(reopened.s.speech, ['d1a']);
-      expect(reopened.s.demo!.playing, isTrue);
-      await reopened.cubit.demoRepeat();
-      final repeated = await _Rig.open(checkpoint: await saved(reopened));
-      expect(repeated.s.speech, ['d1a']);
-      expect(repeated.s.demo!.playing, isTrue);
     });
 
     test(
@@ -1078,29 +1036,6 @@ void main() {
         expect(r.s.lastMove, isNotNull);
       },
     );
-
-    test(
-      'fim da etapa: Próxima etapa abre a seguinte e grava o ponto',
-      () async {
-        final r = await secondExample();
-        await r.next();
-        await r.cubit.onMove('e8e7');
-        await r.next();
-        expect(r.s.phase, ScriptPhase.fimEtapa);
-        expect(r.s.primary, ScriptAction.proximaEtapa);
-        await r.cubit.onAction(ScriptAction.proximaEtapa);
-        expect(r.s.stageIndex, 1);
-        expect(r.s.stageId, 'demos');
-        expect(r.s.phase, ScriptPhase.entrada);
-        // Na etapa 2 o ◀ fica ativo: volta ao fim da etapa 1.
-        expect(r.s.canBack, isTrue);
-        expect({for (final c in r.source.checkpoints) c.step}, {0, 1});
-        r.cubit.back();
-        expect(r.s.stageIndex, 0);
-        expect(r.s.phase, ScriptPhase.fimEtapa);
-        expect(r.s.demo, isNull);
-      },
-    );
   });
 
   group('etapa de demonstrações', () {
@@ -1121,190 +1056,6 @@ void main() {
   });
 
   group('demonstração automática', () {
-    test('etapa 1: a fala de Continuar anda sozinha, sem ↻ nem ⏮; a '
-        'pergunta espera o aluno', () async {
-      final r = await _Rig.open();
-      expect(r.s.phase, ScriptPhase.entrada);
-      final first = r.s.demo!;
-      expect(first.full, isFalse);
-      expect(first.playing, isTrue);
-      expect(first.ended, isFalse);
-      expect(r.pending.single.duration, LessonScriptCubit.theoryReadTime('e1'));
-      // A entrada passa sozinha até a pergunta, que não tem relógio.
-      for (var i = 0; i < 5 && r.s.phase != ScriptPhase.pergunta; i++) {
-        await r.elapse();
-      }
-      expect(r.s.phase, ScriptPhase.pergunta);
-      expect(r.s.demo, isNull);
-      expect(r.pending, isEmpty);
-      // Depois do lance certo, a linha volta a andar sozinha.
-      await r.cubit.onMove('d3e4');
-      expect(r.s.phase, ScriptPhase.linha);
-      expect(r.s.demo!.full, isFalse);
-      expect(r.pending, hasLength(1));
-    });
-
-    test('etapa 1: a refutação de um erro espera o aluno', () async {
-      final r = await _Rig.open();
-      await _toQuestion(r);
-      await r.cubit.onMove('d3d4');
-      expect(r.s.phase, ScriptPhase.refutacao);
-      expect(r.s.demo, isNull);
-      expect(r.pending, isEmpty);
-    });
-
-    test('etapa 1: ⏸ vale até o passo que espera o aluno; voz e ◀ como na '
-        'demonstração', () async {
-      final r = await _Rig.open();
-      r.cubit.demoToggle();
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.pending, isEmpty);
-      await r.next();
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.pending, isEmpty);
-      r.cubit.demoToggle();
-      r.cubit.demoVoice(speaking: true);
-      expect(r.s.demo!.speaking, isTrue);
-      r.cubit.demoVoice(speaking: false);
-      expect(r.pending.single.duration, LessonScriptCubit.theoryVoicePause);
-      // ◀: quem volta quer reler, o passo para.
-      r.cubit.back();
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.pending, isEmpty);
-    });
-
-    test('anda sozinha pelo tempo de leitura até o fim da etapa', () async {
-      final r = await _Rig.open(stage: 1);
-      final first = r.s.demo!;
-      expect(first.playing, isTrue);
-      expect(first.ended, isFalse);
-      expect(first.progress, 0);
-      expect(first.remaining, LessonScriptCubit.readTime('d1a'));
-      expect(first.canStepBack, isFalse);
-      expect(r.pending.single.duration, LessonScriptCubit.readTime('d1a'));
-      await r.elapse();
-      expect(r.s.speech, ['d1b']);
-      expect(r.s.demo!.tick, greaterThan(first.tick));
-      await r.elapse();
-      expect(r.s.phase, ScriptPhase.fimEtapa);
-      expect(r.s.demo!.ended, isTrue);
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.s.demo!.canStepBack, isTrue);
-      expect(r.s.primary, ScriptAction.proximaEtapa);
-      expect(r.pending, isEmpty);
-    });
-
-    test('voz: falando, o relógio para; no fim, só a pausa', () async {
-      final r = await _Rig.open(stage: 1);
-      r.now.advance(const Duration(seconds: 1));
-      r.cubit.demoVoice(speaking: true);
-      expect(r.s.demo!.speaking, isTrue);
-      // Só o teto de segurança contra o TTS travado.
-      expect(r.pending.single.duration, LessonScriptCubit.speechCap('d1a'));
-      r.cubit.demoVoice(speaking: false);
-      expect(r.s.demo!.speaking, isFalse);
-      expect(r.s.demo!.remaining, LessonScriptCubit.voicePause);
-      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
-      await r.elapse();
-      expect(r.s.speech, ['d1b']);
-      // Passo novo: sem voz, volta o tempo de leitura.
-      expect(r.s.demo!.speaking, isFalse);
-      expect(r.pending.single.duration, LessonScriptCubit.readTime('d1b'));
-    });
-
-    test('voz com a demonstração pausada: no fim, espera o ▶', () async {
-      final r = await _Rig.open(stage: 1);
-      r.cubit.demoVoice(speaking: true);
-      r.cubit.demoToggle();
-      expect(r.s.demo!.playing, isFalse);
-      r.cubit.demoVoice(speaking: false);
-      expect(r.pending, isEmpty);
-      r.cubit.demoToggle();
-      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
-    });
-
-    test('▶ com a voz falando não agenda o passo', () async {
-      final r = await _Rig.open(stage: 1);
-      r.cubit.demoToggle();
-      r.cubit.demoVoice(speaking: true);
-      r.cubit.demoToggle();
-      expect(r.s.demo!.playing, isTrue);
-      expect(r.pending.single.duration, LessonScriptCubit.speechCap('d1a'));
-    });
-
-    test('TTS travado falando: no teto, o passo segue como se a voz tivesse '
-        'acabado', () async {
-      final r = await _Rig.open(stage: 1);
-      r.cubit.demoVoice(speaking: true);
-      await r.elapse();
-      expect(r.s.speech, ['d1a']);
-      expect(r.s.demo!.speaking, isFalse);
-      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
-      await r.elapse();
-      expect(r.s.speech, ['d1b']);
-      // O fim que chega atrasado não volta nada.
-      r.cubit.demoVoice(speaking: false);
-      expect(r.s.speech, ['d1b']);
-      expect(r.pending.single.duration, LessonScriptCubit.readTime('d1b'));
-    });
-
-    test('o teto não corre com a demonstração pausada nem no fundo', () async {
-      final r = await _Rig.open(stage: 1);
-      r.cubit.demoVoice(speaking: true);
-      r.cubit.demoToggle();
-      expect(r.pending, isEmpty);
-      r.cubit.demoToggle();
-      r.cubit.pauseForBackground();
-      expect(r.pending, isEmpty);
-      r.cubit.resumeFromBackground();
-      expect(r.pending.single.duration, LessonScriptCubit.speechCap('d1a'));
-    });
-
-    test('voz fora do passo automático não faz nada', () async {
-      final r = await _Rig.open();
-      await _toQuestion(r);
-      r.cubit.demoVoice(speaking: true);
-      expect(r.s.demo, isNull);
-    });
-
-    test('segundo plano: o relógio para onde está e segue na volta, sem '
-        'pausar', () async {
-      final r = await _Rig.open(stage: 1);
-      final total = LessonScriptCubit.readTime('d1a');
-      r.now.advance(const Duration(seconds: 1));
-      r.cubit.pauseForBackground();
-      expect(r.pending, isEmpty);
-      // Uma hora no fundo não conta.
-      r.now.advance(const Duration(hours: 1));
-      r.cubit.pauseForBackground();
-      r.cubit.resumeFromBackground();
-      expect(r.s.speech, ['d1a']);
-      expect(r.s.demo!.playing, isTrue);
-      expect(r.s.demo!.remaining, total - const Duration(seconds: 1));
-      expect(r.pending.single.duration, total - const Duration(seconds: 1));
-      await r.elapse();
-      expect(r.s.speech, ['d1b']);
-    });
-
-    test('segundo plano com a demonstração pausada: volta pausada', () async {
-      final r = await _Rig.open(stage: 1);
-      r.cubit.demoToggle();
-      r.cubit.pauseForBackground();
-      r.cubit.resumeFromBackground();
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.pending, isEmpty);
-    });
-
-    test('a voz que acaba no fundo só agenda na volta', () async {
-      final r = await _Rig.open(stage: 1);
-      r.cubit.demoVoice(speaking: true);
-      r.cubit.pauseForBackground();
-      r.cubit.demoVoice(speaking: false);
-      expect(r.pending, isEmpty);
-      r.cubit.resumeFromBackground();
-      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
-    });
-
     test('segundo plano fora do passo automático não muda o estado', () async {
       final r = await _Rig.open();
       await _toQuestion(r);
@@ -1312,100 +1063,6 @@ void main() {
       r.cubit.pauseForBackground();
       r.cubit.resumeFromBackground();
       expect(r.s, before);
-    });
-
-    test(
-      'fechar de verdade reabre o início da demonstração pela rota padrão',
-      () async {
-        final r = await _Rig.open(stage: 1);
-        await r.elapse();
-        final saved = r.source.checkpoints.last;
-        expect(saved.lessonId, _lessonId);
-        expect(saved.part, _partId);
-        expect(saved.open, isTrue);
-        // A rota continua padrão; o Cubit recupera o cursor persistido.
-        final location = launchLocation(
-          endgames: EndgameProgress(ongoing: saved),
-        );
-        expect(Uri.parse(location).queryParameters['part'], _partId);
-        final route = Uri.parse(
-          Routes.endgameLessonScript(_lessonId, part: _partId),
-        );
-        final stage = int.parse(route.queryParameters['etapa']!);
-        expect(stage, 0);
-        final reopened = await _Rig.open(stage: stage, checkpoint: saved);
-        expect(reopened.s.stageIndex, 1);
-        expect(reopened.s.speech, ['d1a']);
-        expect(reopened.s.fen, scriptFixture().stages[1].examples[0].fen);
-        expect(reopened.s.demo!.full, isTrue);
-      },
-    );
-
-    test('⏸ guarda o tempo decorrido; ▶ retoma com o que falta', () async {
-      final r = await _Rig.open(stage: 1);
-      final total = LessonScriptCubit.readTime('d1a');
-      r.now.advance(const Duration(seconds: 1));
-      r.cubit.demoToggle();
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.s.demo!.remaining, total - const Duration(seconds: 1));
-      expect(r.s.demo!.progress, closeTo(1000 / total.inMilliseconds, 1e-9));
-      expect(r.pending, isEmpty);
-      r.now.advance(const Duration(minutes: 1));
-      r.cubit.demoToggle();
-      expect(r.s.demo!.playing, isTrue);
-      expect(r.pending.single.duration, total - const Duration(seconds: 1));
-      await r.elapse();
-      expect(r.s.speech, ['d1b']);
-    });
-
-    test('⏭ com a demonstração pausada segue pausada', () async {
-      final r = await _Rig.open(stage: 1);
-      r.cubit.demoToggle();
-      await r.next();
-      expect(r.s.speech, ['d1b']);
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.s.demo!.progress, 0);
-      expect(r.pending, isEmpty);
-    });
-
-    test('⏮ desfaz o lance animando e pausa', () async {
-      final r = await _Rig.open(stage: 1);
-      await r.elapse();
-      await r.elapse();
-      r.cubit.demoStepBack();
-      expect(r.s.fen, exampleOneFen);
-      expect(r.s.speech, ['d1b']);
-      expect(r.s.transition.kind, TransitionKind.back);
-      expect(r.s.transition.ucis, ['d3e4']);
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.s.demo!.canStepBack, isFalse);
-      expect(r.pending, isEmpty);
-    });
-
-    test('↻ recomeça o exemplo andando', () async {
-      final r = await _Rig.open(stage: 1);
-      await r.elapse();
-      await r.elapse();
-      await r.cubit.demoRepeat();
-      expect(r.s.speech, ['d1a']);
-      expect(r.s.demo!.playing, isTrue);
-      expect(r.s.demo!.ended, isFalse);
-      expect(r.s.moves, isEmpty);
-      expect(r.pending, hasLength(1));
-    });
-
-    test('◀ pausa; no começo da etapa 2 volta ao começo da 1', () async {
-      final r = await _Rig.open(stage: 1);
-      await r.elapse();
-      r.cubit.back();
-      expect(r.s.speech, ['d1a']);
-      expect(r.s.demo!.playing, isFalse);
-      expect(r.pending, isEmpty);
-      r.cubit.back();
-      await Future<void>.delayed(Duration.zero);
-      expect(r.s.stageIndex, 0);
-      expect(r.s.phase, ScriptPhase.entrada);
-      expect(r.s.demo!.full, isFalse);
     });
 
     test('fechar cancela o timer', () async {

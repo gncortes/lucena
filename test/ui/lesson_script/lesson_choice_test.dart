@@ -32,6 +32,7 @@ void main() {
         ];
         final source = FakeLessonSource();
         LessonScriptCubit open() => LessonScriptCubit(
+          videoStages: const {},
           lessonId: 'choice.fixture',
           partId: 'part',
           scriptPath: 'script.json',

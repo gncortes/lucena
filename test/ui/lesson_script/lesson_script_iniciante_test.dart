@@ -173,6 +173,7 @@ class _Rig {
     final undo = <Completer<void>>[];
     final script = LessonScript.fromJson(json);
     final cubit = LessonScriptCubit(
+      videoStages: const {},
       lessonId: script.lessonId,
       partId: script.partId,
       scriptPath: 'roteiro.json',

@@ -20,17 +20,6 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/script_fixture.dart';
 import '../../../testing/test_app.dart';
 
-class _InertTimer implements Timer {
-  @override
-  bool get isActive => false;
-
-  @override
-  int get tick => 0;
-
-  @override
-  void cancel() {}
-}
-
 /// H-LIC-29: os rótulos da aula de abertura (curso, fora da trilha
 /// de finais) seguem o quadro PropV1TreinoAbIdeiaFim / AbModeloFim.
 void main() {
@@ -51,6 +40,7 @@ void main() {
     addTearDown(settings.close);
     await settings.load();
     final cubit = LessonScriptCubit(
+      videoStages: const {},
       lessonId: 'opening.test',
       partId: 'p1',
       scriptPath: 'roteiro.json',
@@ -63,7 +53,6 @@ void main() {
       source: FakeLessonSource(endgame: endgame),
       initialStage: stage,
       delay: (_) async {},
-      timer: (_, _) => _InertTimer(),
     );
     addTearDown(cubit.close);
     await tester.pumpWidget(

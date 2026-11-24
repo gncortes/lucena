@@ -13,6 +13,7 @@ const _finalFen = '8/8/8/3k4/8/3K4/5P2/8 w - - 4 3';
 Future<LessonScriptCubit> _open(Map<String, dynamic> json) async {
   final script = LessonScript.fromJson(json);
   final cubit = LessonScriptCubit(
+    videoStages: const {},
     lessonId: script.lessonId,
     partId: script.partId,
     scriptPath: 'roteiro.json',

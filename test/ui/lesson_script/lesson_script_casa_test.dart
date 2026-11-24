@@ -67,6 +67,7 @@ LessonScriptCubit _cubit(
   }
   final script = LessonScript.fromJson(json);
   final cubit = LessonScriptCubit(
+    videoStages: const {},
     lessonId: script.lessonId,
     partId: script.partId,
     scriptPath: 'roteiro.json',

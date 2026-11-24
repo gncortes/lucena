@@ -82,8 +82,6 @@ class _CanvasCubit extends LessonScriptCubit {
       _component(data, 'CompRodapeLicao')['analisar'] == 'true';
   @override
   Future<void> start() async => emit(snapshot);
-  @override
-  void demoVoice({required bool speaking}) {}
 }
 
 Map<String, dynamic> _component(Map<String, dynamic> data, String name) =>
@@ -110,8 +108,6 @@ LessonScriptState _state(Map<String, dynamic> data) {
   final footer = _component(data, 'CompRodapeLicao');
   final board = _component(data, 'CompTabuleiro');
   final speech = _component(data, 'CompBalao');
-  final demo = footer['demo'] as String? ?? '';
-  final theory = footer['teoria'] as String? ?? '';
   final stage = name.contains('Demo') || name.contains('Modelo')
       ? 1
       : RegExp('Pratica|ValeAqui|Armadilha|Tarefa|Mate').hasMatch(name)
@@ -196,18 +192,6 @@ LessonScriptState _state(Map<String, dynamic> data) {
         : name.contains('Acertou')
         ? ScriptTone.good
         : ScriptTone.neutral,
-    demo: demo.isNotEmpty || theory.isNotEmpty
-        ? ScriptDemo(
-            playing: (demo.isNotEmpty ? demo : theory) == 'tocando',
-            ended: demo == 'fim',
-            progress: double.tryParse(footer['anel'] as String? ?? '') ?? 0,
-            remaining: const Duration(hours: 1),
-            tick: 0,
-            speaking: true,
-            canStepBack: footer['lance-anterior'] == 'true',
-            full: demo.isNotEmpty,
-          )
-        : null,
   );
 }
 
