@@ -114,6 +114,38 @@ LessonVideo _convert({Map<String, VoiceClip> clips = const {}}) =>
     LessonVideoConverter.convert(_script, _texts, language: 'pt', clips: clips);
 
 void main() {
+  test('{verResposta} vira o texto do botão e as palavras casam até o fim; '
+      'a chave do áudio segue o texto com a marca', () {
+    const raw = 'Na dúvida, toque em {verResposta}.';
+    final key = LessonVideoConverter.audioKey('pt', 'viktor', raw);
+    final video = LessonVideoConverter.convert(
+      _script,
+      const ScriptTexts({'rot.e2': raw}),
+      language: 'pt',
+      buttons: const {'verResposta': 'Ver resposta'},
+      clips: {
+        key: VoiceClip.fromJson({
+          'ms': 2000,
+          'palavras': [
+            {'texto': 'Na', 'ini': 0, 'fim': 200},
+            {'texto': 'dúvida,', 'ini': 200, 'fim': 700},
+            {'texto': 'toque', 'ini': 700, 'fim': 1000},
+            {'texto': 'em', 'ini': 1000, 'fim': 1100},
+            {'texto': 'Ver', 'ini': 1100, 'fim': 1400},
+            {'texto': 'resposta.', 'ini': 1400, 'fim': 2000},
+          ],
+        }),
+      },
+    );
+    final line = video.lines[1];
+    expect(line.audio, LessonVideoConverter.audioPath('pt', 'viktor', key));
+    expect(line.text, 'Na dúvida, toque em ver resposta.');
+    expect(
+      [for (final w in line.words) line.text.substring(w.start, w.end)],
+      ['Na', 'dúvida,', 'toque', 'em', 'ver', 'resposta.'],
+    );
+  });
+
   test('Teoria e Demonstração viram falas na ordem; a prática fica fora', () {
     final video = _convert();
     expect(video.lessonId, 'teste.licao');

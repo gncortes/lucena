@@ -1357,6 +1357,10 @@ GoRouter buildRouter({
                             language: language,
                             voice: context.read<LessonVoiceRepository?>(),
                             audio: JustAudioVoiceAudioService.create,
+                            buttons: {
+                              'verResposta': context.l10n.lessonShowAnswer,
+                              'linhaPrincipal': context.l10n.lessonMainLine,
+                            },
                           )..start(),
                           child:
                               FutureBuilder<

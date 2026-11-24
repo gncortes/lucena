@@ -57,16 +57,20 @@ abstract final class LessonVideoConverter {
     required String language,
     String voice = defaultVoice,
     Map<String, VoiceClip> clips = const {},
-  }) => _Converter(texts, language, voice, clips).run(script);
+    Map<String, String> buttons = const {},
+  }) => _Converter(texts, language, voice, clips, buttons).run(script);
 }
 
 class _Converter {
-  _Converter(this.texts, this.language, this.voice, this.clips);
+  _Converter(this.texts, this.language, this.voice, this.clips, this.buttons);
 
   final ScriptTexts texts;
   final String language;
   final String voice;
   final Map<String, VoiceClip> clips;
+
+  /// O texto dos botões citados na fala (`verResposta`, `linhaPrincipal`).
+  final Map<String, String> buttons;
 
   static const _outsideDefault = 'ini.fora';
 
@@ -222,9 +226,12 @@ class _Converter {
     String? exampleFen,
     VideoGate? gate,
   }) {
-    final marked = WikiMarkup.parse(texts.say(step.t));
+    final parsed = WikiMarkup.parse(texts.say(step.t));
+    // A chave do áudio é do texto com a marca do botão (como a publicação
+    // grava); a legenda e o alinhamento usam o texto do botão.
+    final key = LessonVideoConverter.audioKey(language, voice, parsed.text);
+    final marked = _withButtons(parsed);
     final text = marked.text;
-    final key = LessonVideoConverter.audioKey(language, voice, text);
     final clip = clips[key];
     final Duration length;
     final List<VideoWord> words;
@@ -273,6 +280,51 @@ class _Converter {
     );
   }
 
+  static final _button = RegExp(r'\{(linhaPrincipal|verResposta)\}');
+  static final _endsSentence = RegExp(r'[.!?…:]$');
+
+  // As marcas `{verResposta}`/`{linhaPrincipal}` viram o texto do botão
+  // (minúsculo no meio da frase, como no balão da aula); os links depois
+  // da marca andam junto.
+  MarkedText _withButtons(MarkedText marked) {
+    final raw = marked.text;
+    if (buttons.isEmpty || !_button.hasMatch(raw)) return marked;
+    final out = StringBuffer();
+    final shifts = <(int, int)>[];
+    var last = 0;
+    for (final m in _button.allMatches(raw)) {
+      final label = buttons[m.group(1)];
+      if (label == null || label.isEmpty) continue;
+      out.write(raw.substring(last, m.start));
+      final before = out.toString().trimRight();
+      out.write(
+        before.isEmpty || _endsSentence.hasMatch(before)
+            ? label
+            : label.substring(0, 1).toLowerCase() + label.substring(1),
+      );
+      shifts.add((m.end, label.length - (m.end - m.start)));
+      last = m.end;
+    }
+    out.write(raw.substring(last));
+    int moved(int at) {
+      var delta = 0;
+      for (final (end, d) in shifts) {
+        if (at >= end) delta += d;
+      }
+      return at + delta;
+    }
+
+    return MarkedText(out.toString(), [
+      for (final w in marked.marks)
+        WikiMark(
+          start: moved(w.start),
+          end: moved(w.end),
+          text: w.text,
+          key: w.key,
+        ),
+    ]);
+  }
+
   static final _word = RegExp(r'\S+');
   static final _notSquare = RegExp('[^a-h1-8]');
 
@@ -306,10 +358,15 @@ class _Converter {
   // alinhador normalizou (pontuação, número) fica com a próxima do texto.
   static List<VideoWord> _wordsFromClip(String text, VoiceClip clip) {
     final out = <VideoWord>[];
+    // Sem distinguir maiúscula (o botão vira minúsculo no meio da frase);
+    // se a troca mudar o tamanho (İ do turco), compara como está.
+    final folded = text.toLowerCase();
+    final fold = folded.length == text.length;
+    final lower = fold ? folded : text;
     var cursor = 0;
     for (final w in clip.words) {
-      final target = w.text.trim();
-      var start = target.isEmpty ? -1 : text.indexOf(target, cursor);
+      final target = fold ? w.text.trim().toLowerCase() : w.text.trim();
+      var start = target.isEmpty ? -1 : lower.indexOf(target, cursor);
       int end;
       if (start < 0) {
         final next = _word.firstMatch(text.substring(cursor));

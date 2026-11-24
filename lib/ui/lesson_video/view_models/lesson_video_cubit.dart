@@ -155,6 +155,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     this._voice,
     this._audio,
     String? chapterId,
+    this.buttons = const {},
   }) : _ticker = ticker ?? Timer.periodic,
        chapterId = chapterId ?? lessonId,
        super(const LessonVideoState());
@@ -164,6 +165,10 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
 
   /// O capítulo do pacote da voz (padrão: a lição).
   final String chapterId;
+
+  /// O texto dos botões citados na fala (`verResposta`, `linhaPrincipal`),
+  /// no idioma da tela: a legenda mostra o botão no lugar da marca.
+  final Map<String, String> buttons;
 
   final LessonScriptRepository _scripts;
   final LessonVideoRepository _videos;
@@ -235,6 +240,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
         texts,
         language: language,
         clips: clips,
+        buttons: buttons,
       ).stage(stage);
       if (isClosed) return;
       _script = script;
@@ -694,6 +700,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
       _texts!,
       language: language,
       clips: clips,
+      buttons: buttons,
     ).stage(stage);
     await _prepareAudio(video);
     if (!_ready) return;
