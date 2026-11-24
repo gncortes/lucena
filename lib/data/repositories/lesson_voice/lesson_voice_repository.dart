@@ -1,3 +1,4 @@
+import '../../../domain/models/lesson_video.dart';
 import '../../../domain/models/lesson_voice.dart';
 
 export '../../../domain/models/lesson_voice.dart';
@@ -19,6 +20,10 @@ abstract interface class LessonVoiceRepository {
   /// O arquivo no aparelho do áudio [audioPath] de uma fala do capítulo;
   /// nulo sem o pacote completo ou sem o arquivo.
   Future<String?> audioFile(String chapterId, String audioPath);
+
+  /// Os tempos de cada fala do capítulo baixado, pela chave do áudio; vazio
+  /// sem o pacote completo.
+  Future<Map<String, VoiceClip>> clips(String chapterId);
 
   /// A voz do Viktor ligada na aula em vídeo (padrão: ligada). Desligada, a
   /// aula toca em modo leitura, sem o aviso "Sem áudio".

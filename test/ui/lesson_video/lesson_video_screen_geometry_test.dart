@@ -168,27 +168,20 @@ void main() {
     expect(find.byKey(LessonVideoKeys.playPause), findsOneWidget);
   });
 
-  testWidgets('CC esconde o balão (opacidade 0) e mostra de novo', (
+  testWidgets('CC troca o balão por "Legenda desligada" e volta', (
     tester,
   ) async {
     await _pump(tester);
-    double opacity() => tester
-        .widget<AnimatedOpacity>(
-          find
-              .ancestor(
-                of: find.byKey(LessonVideoKeys.caption),
-                matching: find.byType(AnimatedOpacity),
-              )
-              .first,
-        )
-        .opacity;
-    expect(opacity(), 1);
+    expect(find.byKey(LessonVideoKeys.caption), findsOneWidget);
     await tester.tap(find.byKey(LessonVideoKeys.captions));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(opacity(), 0);
+    expect(find.byKey(LessonVideoKeys.caption), findsNothing);
+    final off = tester.getRect(find.byKey(LessonVideoKeys.captionsOff));
+    expect(off.height, 48, reason: 'linha de 48 do protótipo');
     await tester.tap(find.byKey(LessonVideoKeys.captions));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(opacity(), 1);
+    expect(find.byKey(LessonVideoKeys.caption), findsOneWidget);
+    expect(find.byKey(LessonVideoKeys.captionsOff), findsNothing);
   });
 
   testWidgets('o livro do topo chama o callback do Glossário', (tester) async {

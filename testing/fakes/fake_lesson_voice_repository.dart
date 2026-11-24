@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:lucena/data/repositories/lesson_voice/lesson_voice_repository.dart';
+import 'package:lucena/domain/models/lesson_video.dart';
 
 /// A voz dos capítulos em memória: o teste diz o estado de cada capítulo e o
 /// que o próximo download devolve.
@@ -8,7 +9,12 @@ class FakeLessonVoiceRepository implements LessonVoiceRepository {
   FakeLessonVoiceRepository({
     Map<String, VoicePackState>? states,
     this.on = true,
-  }) : states = states ?? {};
+    Map<String, VoiceClip>? clips,
+  }) : states = states ?? {},
+       clipsByKey = clips ?? {};
+
+  /// Os tempos das falas de todo capítulo pronto, pela chave do áudio.
+  final Map<String, VoiceClip> clipsByKey;
 
   final Map<String, VoicePackState> states;
 
@@ -50,6 +56,10 @@ class FakeLessonVoiceRepository implements LessonVoiceRepository {
   @override
   Future<String?> audioFile(String chapterId, String audioPath) async =>
       states[chapterId] is VoicePackReady ? '/fake/$audioPath' : null;
+
+  @override
+  Future<Map<String, VoiceClip>> clips(String chapterId) async =>
+      states[chapterId] is VoicePackReady ? clipsByKey : const {};
 
   @override
   Future<bool> voiceOn() async => on;

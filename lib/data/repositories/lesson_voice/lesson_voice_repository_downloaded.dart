@@ -1,3 +1,5 @@
+import '../../../domain/models/lesson_video.dart';
+
 import 'dart:async';
 
 import '../../services/preferences_service.dart';
@@ -132,6 +134,13 @@ class DownloadedLessonVoiceRepository implements LessonVoiceRepository {
     if (packs == null) return null;
     if (await state(chapterId) is! VoicePackReady) return null;
     return packs.file(audioPath);
+  }
+
+  @override
+  Future<Map<String, VoiceClip>> clips(String chapterId) async {
+    final packs = _packs;
+    if (packs == null) return const {};
+    return packs.clips(await _language(), voice, chapterId);
   }
 
   @override

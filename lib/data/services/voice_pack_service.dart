@@ -1,3 +1,5 @@
+import '../../domain/models/lesson_video.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -32,6 +34,9 @@ class VoicePackException implements Exception {
 /// download; credenciais de envio nunca ficam no app). O índice da voz do
 /// capítulo é `voice/<idioma>/<voz>/<capítulo>.json`:
 /// `{"formato": 1, "arquivos": {"audio/...opus": {"bytes": n, "sha256": h}}}`.
+/// Cada arquivo pode trazer os tempos da fala (`"ms"` e `"palavras"`, o
+/// contrato de [VoiceClip] gerado pelo `gerar_licao.py`); sem eles, a fala
+/// toca o áudio com os tempos estimados.
 ///
 /// Cada arquivo vai para `<pasta>/voice/<versão>/<caminho>` pelo nome da
 /// chave (texto igual, áudio igual: capítulos dividem arquivos), escrito em
@@ -200,6 +205,30 @@ class VoicePackService {
         throw const VoicePackException('storage');
       }
       rethrow;
+    }
+  }
+
+  /// Os tempos de cada fala do capítulo instalado, pela chave do áudio
+  /// (o nome do arquivo); vazio sem o capítulo ou sem tempos no índice.
+  Future<Map<String, VoiceClip>> clips(
+    String language,
+    String voice,
+    String chapter,
+  ) async {
+    if (!await installed(language, voice, chapter)) return const {};
+    final marker = await _marker(language, voice, chapter);
+    try {
+      final json = jsonDecode(utf8.decode(await marker.readAsBytes())) as Map;
+      final out = <String, VoiceClip>{};
+      for (final MapEntry(:key, :value) in (json['arquivos'] as Map).entries) {
+        if (key is! String || value is! Map || value['ms'] is! num) continue;
+        final name = key.substring(key.lastIndexOf('/') + 1);
+        out[name.substring(0, name.length - '.opus'.length)] =
+            VoiceClip.fromJson(value.cast<String, dynamic>());
+      }
+      return out;
+    } on Object {
+      return const {};
     }
   }
 
