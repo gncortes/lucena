@@ -16,9 +16,16 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/keys/lesson_video_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../lesson_script/widgets/script_board.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/lesson_video_cubit.dart';
@@ -41,16 +48,37 @@ abstract final class LessonVideoLayout {
   static const bottom =
       barHeight + timeHeight + gap + controlsHeight + bottomMargin;
 
+  /// Em tela baixa (360×740) a margem de baixo encolhe até 28 para o
+  /// tabuleiro crescer (contrato: ~340 em 360×740); os controles ficam a
+  /// ~64 da borda de baixo.
+  static const minBottomMargin = 28.0;
+
+  static double _side(Size area, double margin) => max(
+    0,
+    min(area.width, area.height - 2 * max(top, bottom - bottomMargin + margin)),
+  );
+
+  /// A margem de baixo numa área de [area]: 40, ou menos (até
+  /// [minBottomMargin]) quando o tabuleiro não chega à largura toda.
+  static double bottomMarginFor(Size area) {
+    final lack = area.width - _side(area, bottomMargin);
+    if (lack <= 0) return bottomMargin;
+    return max(minBottomMargin, bottomMargin - lack / 2);
+  }
+
+  /// A altura do bloco de baixo numa área de [area].
+  static double bottomFor(Size area) =>
+      bottom - bottomMargin + bottomMarginFor(area);
+
   /// Lado do tabuleiro numa área de [area] (abaixo da app bar): a regra de
   /// `partida()`, centro exato com os dois blocos de fora.
-  static double boardSide(Size area) =>
-      max(0, min(area.width, area.height - 2 * max(top, bottom)));
+  static double boardSide(Size area) => _side(area, bottomMarginFor(area));
 }
 
 /// A aula em vídeo (L1, atrás de flag): app bar com o livro do Glossário,
 /// balão de 2 linhas, faixa do Viktor, tabuleiro no centro, barra, controles
 /// e o rodapé do fim da etapa.
-class LessonVideoScreen extends StatelessWidget {
+class LessonVideoScreen extends StatefulWidget {
   const LessonVideoScreen({
     required this.title,
     this.viktor,
@@ -78,8 +106,30 @@ class LessonVideoScreen extends StatelessWidget {
   final VoidCallback? onNextStage;
 
   @override
+  State<LessonVideoScreen> createState() => _LessonVideoScreenState();
+}
+
+class _LessonVideoScreenState extends State<LessonVideoScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Vídeo 37: com leitor de tela, o vídeo não começa sozinho.
+    if (MediaQuery.accessibleNavigationOf(context)) {
+      context.read<LessonVideoCubit>().holdAutoplay();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final LessonVideoScreen(
+      :title,
+      :viktor,
+      :onGlossary,
+      :onNextStage,
+      :terms,
+      :onTerm,
+    ) = widget;
     return Scaffold(
       key: LessonVideoKeys.screen,
       appBar: LucenaAppBar(
@@ -96,15 +146,31 @@ class LessonVideoScreen extends StatelessWidget {
       ),
       body: BlocBuilder<LessonVideoCubit, LessonVideoState>(
         builder: (context, state) => switch (state.status) {
-          LessonVideoStatus.loading => const Center(
+          LessonVideoStatus.loading => _Body(
             key: LessonVideoKeys.loading,
-            child: CircularProgressIndicator(),
+            state: state,
+            viktor: viktor,
+            loading: true,
           ),
           LessonVideoStatus.failed => Center(
             key: LessonVideoKeys.unavailable,
-            child: TextButton(
-              onPressed: () => context.read<LessonVideoCubit>().start(),
-              child: Text(l10n.lessonVideoPlay),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.loadErrorUnavailableTitle,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => context.read<LessonVideoCubit>().start(),
+                    child: Text(l10n.lessonRetry),
+                  ),
+                ],
+              ),
             ),
           ),
           LessonVideoStatus.ready => _Body(
@@ -127,7 +193,13 @@ class _Body extends StatelessWidget {
     this.onNextStage,
     this.terms = const [],
     this.onTerm,
+    this.loading = false,
+    super.key,
   });
+
+  /// Carregando (Vídeo 43): esqueleto no balão, tabuleiro vazio e os
+  /// controles desligados.
+  final bool loading;
 
   final LessonVideoState state;
   final Character? viktor;
@@ -149,6 +221,7 @@ class _Body extends StatelessWidget {
       builder: (context, box) {
         final area = box.biggest;
         final side = LessonVideoLayout.boardSide(area);
+        final margin = LessonVideoLayout.bottomMarginFor(area);
         return Stack(
           children: [
             Positioned(
@@ -158,9 +231,9 @@ class _Body extends StatelessWidget {
               height: LessonVideoLayout.top,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(
-                  12,
+                  AppSpacing.md,
                   LessonVideoLayout.gap,
-                  12,
+                  AppSpacing.md,
                   LessonVideoLayout.gap,
                 ),
                 child: Column(
@@ -170,6 +243,7 @@ class _Body extends StatelessWidget {
                       child: _Balloon(
                         frame: frame,
                         visible: state.captions,
+                        loading: loading,
                         terms: terms,
                         onTerm: onTerm,
                       ),
@@ -189,7 +263,26 @@ class _Body extends StatelessWidget {
                 ),
               ),
             ),
-            if (frame != null)
+            if (loading)
+              Positioned(
+                left: (area.width - side) / 2,
+                top: (area.height - side) / 2,
+                width: side,
+                height: side,
+                child: Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: StaticChessboard(
+                    key: LessonVideoKeys.board,
+                    size: side,
+                    orientation: Side.white,
+                    fen: _emptyFen,
+                    settings: StaticChessboardSettings.fromBoardSettings(
+                      board.chessground,
+                    ),
+                  ),
+                ),
+              )
+            else if (frame != null)
               Positioned(
                 left: (area.width - side) / 2,
                 top: (area.height - side) / 2,
@@ -211,11 +304,16 @@ class _Body extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 0,
-              height: LessonVideoLayout.bottom,
+              height:
+                  LessonVideoLayout.bottom -
+                  LessonVideoLayout.bottomMargin +
+                  margin,
               child: _Bottom(
                 state: state,
                 cubit: cubit,
                 onNextStage: onNextStage,
+                margin: margin,
+                enabled: !loading,
               ),
             ),
           ],
@@ -223,6 +321,9 @@ class _Body extends StatelessWidget {
       },
     );
   }
+
+  /// O tabuleiro enquanto o roteiro não chega: sem peças.
+  static const _emptyFen = '8/8/8/8/8/8/8/8 w - - 0 1';
 }
 
 /// O balão da legenda: a fala surge até a palavra dita, em 2 linhas.
@@ -230,12 +331,16 @@ class _Balloon extends StatelessWidget {
   const _Balloon({
     required this.frame,
     required this.visible,
+    this.loading = false,
     this.terms = const [],
     this.onTerm,
   });
 
   final VideoFrame? frame;
   final bool visible;
+
+  /// Carregando: duas linhas de esqueleto no lugar da fala.
+  final bool loading;
   final List<GlossaryTerm> terms;
   final ValueChanged<GlossaryTerm>? onTerm;
 
@@ -243,32 +348,41 @@ class _Balloon extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final frame = this.frame;
-    final text = frame == null ? '' : _shown(frame);
+    final Widget content = loading
+        ? const Column(
+            key: LessonVideoKeys.caption,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SkeletonBlock(height: 18),
+              SizedBox(height: 8),
+              SkeletonBlock(width: 180, height: 18),
+            ],
+          )
+        : DefaultTextStyle.merge(
+            overflow: TextOverflow.ellipsis,
+            child: GlossaryText(
+              frame == null ? '' : _shown(frame),
+              key: LessonVideoKeys.caption,
+              terms: terms,
+              maxLines: 2,
+              onOpen: onTerm,
+              style: context.videoCaption,
+            ),
+          );
     return AnimatedOpacity(
-      opacity: visible ? 1 : 0,
-      duration: const Duration(milliseconds: 150),
+      opacity: visible || loading ? 1 : 0,
+      duration: AppMotion.caption,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppShape.medium),
           border: Border.all(color: colors.outlineVariant),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Align(
             alignment: AlignmentDirectional.topStart,
-            child: DefaultTextStyle.merge(
-              overflow: TextOverflow.ellipsis,
-              child: GlossaryText(
-                text,
-                key: LessonVideoKeys.caption,
-                terms: terms,
-                maxLines: 2,
-                onOpen: onTerm,
-                style: Theme.of(context).textTheme.bodyLarge
-                    ?.copyWith(fontSize: 18, height: 26 / 18),
-              ),
-            ),
+            child: content,
           ),
         ),
       ),
@@ -320,14 +434,22 @@ class _ViktorStrip extends StatelessWidget {
                 ?.copyWith(color: colors.primary),
           ),
         ),
-        IconButton(
-          key: LessonScriptKeys.marksToggle,
-          tooltip: marks ? l10n.lessonHideMarks : l10n.lessonShowMarks,
-          style: IconButton.styleFrom(
-            backgroundColor: marks ? null : colors.surfaceContainerHigh,
+        // O alvo é 48 numa faixa de 44: passa 2 para cima e para baixo.
+        SizedBox(
+          width: 48,
+          child: OverflowBox(
+            maxHeight: 48,
+            minHeight: 48,
+            child: IconButton(
+              key: LessonScriptKeys.marksToggle,
+              tooltip: marks ? l10n.lessonHideMarks : l10n.lessonShowMarks,
+              style: IconButton.styleFrom(
+                backgroundColor: marks ? null : colors.surfaceContainerHigh,
+              ),
+              icon: Icon(marks ? Icons.layers : Icons.layers_clear),
+              onPressed: onMarks,
+            ),
           ),
-          icon: Icon(marks ? Icons.layers : Icons.layers_clear),
-          onPressed: onMarks,
         ),
       ],
     );
@@ -335,11 +457,23 @@ class _ViktorStrip extends StatelessWidget {
 }
 
 class _Bottom extends StatelessWidget {
-  const _Bottom({required this.state, required this.cubit, this.onNextStage});
+  const _Bottom({
+    required this.state,
+    required this.cubit,
+    this.onNextStage,
+    this.margin = LessonVideoLayout.bottomMargin,
+    this.enabled = true,
+  });
 
   final LessonVideoState state;
   final LessonVideoCubit cubit;
   final VoidCallback? onNextStage;
+
+  /// A margem de baixo (encolhe em tela baixa).
+  final double margin;
+
+  /// Desligado enquanto carrega: barra e controles sem ação.
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -354,7 +488,7 @@ class _Bottom extends StatelessWidget {
     final turn = state.turn;
     // Na sua vez: play e ±10 não valem. Tocando a fala do lance (ramo), só
     // o ±10 não vale (o play pausa e retoma a fala).
-    final paused = state.waiting;
+    final paused = state.waiting || !enabled;
     final noSkip = paused || (turn?.inBranch ?? false);
     final reveal = state.waiting && turn != null && turn.canReveal;
     final column = Column(
@@ -373,8 +507,10 @@ class _Bottom extends StatelessWidget {
               value: value,
               semanticFormatterCallback: (_) =>
                   l10n.lessonVideoTimeSemantics(position, whole),
-              onChanged: (v) =>
-                  cubit.seek(Duration(milliseconds: (v * total).round())),
+              onChanged: enabled
+                  ? (v) =>
+                        cubit.seek(Duration(milliseconds: (v * total).round()))
+                  : null,
             ),
           ),
         ),
@@ -407,7 +543,7 @@ class _Bottom extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: colors.primary,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: AppWeight.medium,
                                     ),
                               ),
                             ),
@@ -434,9 +570,10 @@ class _Bottom extends StatelessWidget {
                   cubit: cubit,
                   dim: paused,
                   noSkip: noSkip,
+                  enabled: enabled,
                 ),
         ),
-        const SizedBox(height: LessonVideoLayout.bottomMargin),
+        SizedBox(height: margin),
       ],
     );
     if (!reveal) return column;
@@ -472,7 +609,11 @@ class _Controls extends StatelessWidget {
     required this.cubit,
     required this.dim,
     required this.noSkip,
+    this.enabled = true,
   });
+
+  /// Carregando: velocidade e legenda também sem ação.
+  final bool enabled;
 
   final LessonVideoState state;
   final LessonVideoCubit cubit;
@@ -499,7 +640,7 @@ class _Controls extends StatelessWidget {
             height: 48,
             child: TextButton(
               key: LessonVideoKeys.rate,
-              onPressed: cubit.cycleRate,
+              onPressed: enabled ? cubit.cycleRate : null,
               child: Text(
                 l10n.lessonVideoRateValue(rate),
                 semanticsLabel: l10n.lessonVideoRate,
@@ -571,7 +712,7 @@ class _Controls extends StatelessWidget {
                     ? Icons.closed_caption
                     : Icons.closed_caption_off,
               ),
-              onPressed: cubit.toggleCaptions,
+              onPressed: enabled ? cubit.toggleCaptions : null,
             ),
           ),
         ],
@@ -582,6 +723,7 @@ class _Controls extends StatelessWidget {
 
 /// A pílula tonal "Ver a resposta" (protótipo `pilulaK`, a mesma da
 /// retomada): 32 de altura, ícone `visibility` 18, alvo de 48.
+// reuso: AppChip não serve porque é um botão tonal de 32 com alvo de 48.
 class _RevealPill extends StatelessWidget {
   const _RevealPill({required this.onPressed});
 
@@ -600,19 +742,22 @@ class _RevealPill extends StatelessWidget {
           foregroundColor: colors.onSecondaryContainer,
           minimumSize: const Size(0, 32),
           fixedSize: const Size.fromHeight(32),
-          padding: const EdgeInsetsDirectional.only(start: 12, end: 14),
+          padding: const EdgeInsetsDirectional.only(
+            start: AppSpacing.md,
+            end: AppSpacing.md,
+          ),
           tapTargetSize: MaterialTapTargetSize.padded,
           shape: const StadiumBorder(),
-          textStyle: Theme.of(context).textTheme.labelLarge
-              ?.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
+          textStyle: context.pillLabel,
         ),
-        icon: const Icon(Icons.visibility, size: 18),
+        icon: const Icon(Icons.visibility, size: AppIconSize.compact),
         label: Text(context.l10n.lessonVideoReveal),
       ),
     );
   }
 }
 
+// reuso: sem rodapé de dois botões no core; este vive só no fim do vídeo.
 class _EndFooter extends StatelessWidget {
   const _EndFooter({required this.cubit, this.onNextStage});
 
@@ -629,7 +774,9 @@ class _EndFooter extends StatelessWidget {
           Expanded(
             child: OutlinedButton(
               key: LessonVideoKeys.endRestart,
-              style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(0, kButtonHeightCompact),
+              ),
               onPressed: cubit.restart,
               child: Text(l10n.lessonBackToStart),
             ),
@@ -639,7 +786,9 @@ class _EndFooter extends StatelessWidget {
             Expanded(
               child: FilledButton(
                 key: LessonVideoKeys.endNext,
-                style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(0, kButtonHeightCompact),
+                ),
                 onPressed: onNextStage,
                 child: Text(l10n.lessonNextStage),
               ),
@@ -844,7 +993,7 @@ class _VideoBoardState extends State<_VideoBoard> {
               ),
           child: Icon(
             ok ? Icons.check : Icons.close,
-            size: 16,
+            size: AppIconSize.small,
             color: AppColors.white,
           ),
         ),

@@ -14,6 +14,7 @@ import 'package:lucena/domain/use_cases/video_timeline.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_video_keys.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
+import 'package:lucena/ui/core/widgets/skeleton.dart';
 import 'package:lucena/ui/lesson_video/view_models/lesson_video_cubit.dart';
 import 'package:lucena/ui/lesson_video/widgets/lesson_video_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -391,7 +392,7 @@ void main() {
     );
   });
 
-  group('gaps L1 (pendente: geometria em 360)', () {
+  group('gaps L1 (geometria em 360)', () {
     testWidgets(
       'Vídeo 35: tela pequena (360×740, 360×800) → tabuleiro encolhe e fica '
       'no centro (~340 em 360×740)',
@@ -414,34 +415,37 @@ void main() {
         }
       },
     );
-  }, skip: 'L1: em 360×740 o lado medido é 316 (contrato: 340 ± 8)');
+  });
 
-  group(
-    'gaps L1 (pendente: alvo do botão de marcações)',
-    () {
-      testWidgets('Vídeo 37: leitor de tela → todo botão com alvo ≥ 48', (
-        tester,
-      ) async {
-        await _pump(tester, accessible: true);
-        for (final key in [..._labeledButtons, LessonVideoKeys.rate]) {
-          _expectTarget(tester, key);
-        }
-      });
-    },
-    skip:
-        'L1: LessonScriptKeys.marksToggle mede 48×44 (a faixa do Viktor '
-        'tem 44 de altura)',
-  );
+  group('gaps L1 (alvo do botão de marcações)', () {
+    testWidgets('Vídeo 37: leitor de tela → todo botão com alvo ≥ 48', (
+      tester,
+    ) async {
+      await _pump(tester, accessible: true);
+      for (final key in [..._labeledButtons, LessonVideoKeys.rate]) {
+        _expectTarget(tester, key);
+      }
+    });
+  });
 
-  group('gaps L1 (pendente: leitor de tela não segura o autoplay)', () {
+  group('gaps L1 (leitor de tela segura o autoplay)', () {
     testWidgets('Vídeo 37: leitor de tela → não começa sozinho', (
       tester,
     ) async {
       // Como o router: cubit com autoplay (padrão).
       final p = await _pump(tester, autoplay: true, accessible: true);
       expect(p.cubit.state.playing, isFalse);
+      expect(p.cubit.state.status, LessonVideoStatus.ready);
+      await tester.tap(find.byKey(LessonVideoKeys.playPause));
+      await tester.pump();
+      expect(p.cubit.state.playing, isTrue, reason: 'o play do aluno toca');
     });
-  }, skip: 'L1: o cubit toca com autoplay sem olhar accessibleNavigation');
+
+    testWidgets('sem leitor de tela → começa sozinho', (tester) async {
+      final p = await _pump(tester, autoplay: true);
+      expect(p.cubit.state.playing, isTrue);
+    });
+  });
 
   group('gaps L1 (pendente: termo e casa do balão)', () {
     testWidgets('Vídeo 37: leitor de tela → termo e casa são links', (
@@ -452,57 +456,75 @@ void main() {
     });
   }, skip: 'L5: termo e casa sublinhados no balão ainda não existem');
 
-  group(
-    'gaps L1 (pendente: carregando sem esqueleto)',
-    () {
-      testWidgets(
-        'Vídeo 43: carregando o vídeo/áudio → esqueleto no balão, tabuleiro na '
-        'posição inicial',
-        (tester) async {
-          await _pump(tester, scripts: _HangingScripts(), waitStart: false);
-          expect(find.byKey(LessonVideoKeys.caption), findsOneWidget);
-          expect(find.byKey(LessonVideoKeys.board), findsOneWidget);
-        },
-      );
-    },
-    skip:
-        'L1: carregando mostra só o spinner (sem balão-esqueleto nem '
-        'tabuleiro; a posição inicial depende do roteiro que ainda não chegou)',
-  );
-
-  group(
-    'gaps L1 (pendente: texto do aviso de indisponível)',
-    () {
-      testWidgets(
-        'Vídeo 44: roteiro ausente ou ilegível → aviso de lição indisponível '
-        'com "Tentar de novo"',
-        (tester) async {
-          await _pump(tester, scripts: _FlakyScripts());
-          expect(
-            find.descendant(
-              of: find.byKey(LessonVideoKeys.unavailable),
-              matching: find.text('Tentar de novo'),
-            ),
-            findsOneWidget,
-          );
-        },
-      );
-    },
-    skip:
-        'L1: o aviso é só um botão "Tocar" (lessonVideoPlay), sem texto '
-        'de lição indisponível nem "Tentar de novo"',
-  );
-
-  group('gaps L2', () {
+  group('gaps L1 (carregando com esqueleto)', () {
     testWidgets(
-      'Vídeo 25: sua vez esperando o lance → vídeo parado, tabuleiro com '
-      'contorno, play e ±10 esmaecidos',
+      'Vídeo 43: carregando o vídeo/áudio → esqueleto no balão, tabuleiro na '
+      'posição inicial',
       (tester) async {
-        // Arrange: tocar até a pergunta. Assert: LessonVideoKeys.yourMove;
-        // play, back10 e forward10 com opacidade 38 %.
+        await _pump(tester, scripts: _HangingScripts(), waitStart: false);
+        final loading = find.byKey(LessonVideoKeys.loading);
+        expect(
+          find.descendant(
+            of: find.byKey(LessonVideoKeys.caption),
+            matching: find.byType(SkeletonBlock),
+          ),
+          findsNWidgets(2),
+        );
+        // Sem roteiro não há posição: o tabuleiro aparece vazio, no lugar
+        // e no tamanho de quando o vídeo abre.
+        final board = find.descendant(
+          of: loading,
+          matching: find.byKey(LessonVideoKeys.board),
+        );
+        expect(board, findsOneWidget);
+        expect(
+          tester.widget<StaticChessboard>(board).fen,
+          startsWith('8/8/8/8/8/8/8/8'),
+        );
+        expect(tester.getSize(board).width, 412);
+        final play = tester.widget<IconButton>(
+          find.byKey(LessonVideoKeys.playPause),
+        );
+        expect(play.onPressed, isNull);
+        await tester.drag(
+          find.byKey(LessonVideoKeys.bar),
+          const Offset(200, 0),
+        );
+        await tester.tap(find.byKey(LessonVideoKeys.rate));
+        await tester.pump();
+        expect(find.byType(CircularProgressIndicator), findsNothing);
       },
     );
-  }, skip: 'L2: sua vez (perguntas) ainda não existe');
+  });
+
+  group('gaps L1 (texto do aviso de indisponível)', () {
+    // Decisão do orq (23/11): "Tentar de novo" reusa `lessonRetry`
+    // ("Tentar novamente"), sem chave nova.
+    testWidgets(
+      'Vídeo 44: roteiro ausente ou ilegível → aviso de lição indisponível '
+      'com "Tentar novamente"',
+      (tester) async {
+        await _pump(tester, scripts: _FlakyScripts());
+        final unavailable = find.byKey(LessonVideoKeys.unavailable);
+        expect(
+          find.descendant(
+            of: unavailable,
+            matching: find.text('Conteúdo indisponível'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: unavailable,
+            matching: find.widgetWithText(TextButton, 'Tentar novamente'),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+  });
+
+  // gaps L2 (Vídeo 25–30): em `lesson_video_turn_screen_test.dart`.
 
   group('gaps L3', () {
     testWidgets(

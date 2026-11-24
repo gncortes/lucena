@@ -109,23 +109,16 @@ void main() {
       },
     );
 
-    test(
-      'Vídeo 3: arrastar a barra para dentro dos 400 ms de um lance → o '
-      'tabuleiro vai à posição sem animar o lance',
-      () async {
-        final ref = reference('demos');
-        final cubit = build(stage: 'demos', autoplay: false);
-        await cubit.start();
-        final move = firstMove(ref).at;
-        cubit.seek(move + const Duration(milliseconds: 100));
-        expect(cubit.state.frame!.fen, ref.frameAt(move).fen);
-        expect(cubit.state.frame!.animating, isFalse);
-      },
-      skip:
-          'L1: seek() que cai até 400 ms depois de um lance devolve '
-          'frame.animating = true (frameAt puro), e a tela anima o lance ao '
-          'arrastar',
-    );
+    test('Vídeo 3: arrastar a barra para dentro dos 400 ms de um lance → o '
+        'tabuleiro vai à posição sem animar o lance', () async {
+      final ref = reference('demos');
+      final cubit = build(stage: 'demos', autoplay: false);
+      await cubit.start();
+      final move = firstMove(ref).at;
+      cubit.seek(move + const Duration(milliseconds: 100));
+      expect(cubit.state.frame!.fen, ref.frameAt(move).fen);
+      expect(cubit.state.frame!.animating, isFalse);
+    });
 
     test('Vídeo 4: arrastar além da pergunta sem resposta → para no instante '
         'da pergunta (reachable)', () {
@@ -141,8 +134,13 @@ void main() {
         final cubit = build(stage: 'demos', autoplay: false);
         await cubit.start();
         final move = firstMove(ref).at;
-        cubit.seek(move + const Duration(milliseconds: 200));
+        // Chega ao meio do lance tocando (arrastar para lá não anima, V3).
+        cubit.seek(move - const Duration(milliseconds: 100));
+        cubit.play();
+        now.advance(const Duration(milliseconds: 300));
+        cubit.tick();
         expect(cubit.state.frame!.animating, isTrue, reason: 'pré-condição');
+        cubit.pause();
 
         cubit.skip(-LessonVideoCubit.skipStep);
         final back = cubit.state.position;

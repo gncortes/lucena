@@ -154,6 +154,27 @@ class VideoFrame {
 
   /// Parado no ponto de interação: espera o lance do aluno.
   final bool atGate;
+
+  /// O mesmo quadro com a peça já parada (depois de arrastar a barra para
+  /// dentro do lance, Vídeo 3).
+  VideoFrame still() => VideoFrame(
+    t: t,
+    lineIndex: lineIndex,
+    fen: fen,
+    caption: caption,
+    lastMove: lastMove,
+    marks: marks,
+    arrows: arrows,
+    word: word,
+    words: words,
+    links: links,
+    wordTimes: wordTimes,
+    previousCaption: previousCaption,
+    previousWords: previousWords,
+    speaking: speaking,
+    spoken: spoken,
+    atGate: atGate,
+  );
 }
 
 /// Como medir cada fala.

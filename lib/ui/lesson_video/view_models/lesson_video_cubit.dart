@@ -180,6 +180,12 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   String? _movedTo;
   DateTime? _sealedAt;
 
+  bool _autoplayHeld = false;
+
+  /// Não começa sozinho (leitor de tela ligado, Vídeo 37): a tela chama
+  /// antes do roteiro chegar; o aluno toca play.
+  void holdAutoplay() => _autoplayHeld = true;
+
   Future<void> start() async {
     emit(state.copyWith(status: LessonVideoStatus.loading));
     try {
@@ -217,7 +223,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
         ),
       );
       // Reabrindo no meio, fica pausado com o aviso (o aluno toca play).
-      if (_autoplay && !point.notice) {
+      if (_autoplay && !_autoplayHeld && !point.notice) {
         play();
       } else {
         tick();
@@ -267,7 +273,11 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   /// Vai para [t] (a barra); não passa da primeira pergunta sem resposta.
   void seek(Duration t) {
     if (!_ready || _branch != null) return;
-    _clock = _clock.seek(_main.reachable(t, _resolved), _now());
+    final to = _main.reachable(t, _resolved);
+    _clock = _clock.seek(to, _now());
+    // Caiu no meio de um lance: a peça já aparece na casa, sem andar.
+    final landed = _main.frameAt(to, resolved: _resolved);
+    _stillFen = landed.animating ? landed.fen : null;
     tick();
   }
 
@@ -359,6 +369,9 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     _timer = null;
   }
 
+  /// A posição em que a barra caiu no meio de um lance (não anima).
+  String? _stillFen;
+
   /// Recalcula o quadro na hora atual (o tique; público para os testes).
   void tick() {
     if (!_ready) return;
@@ -373,7 +386,14 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
       _stopTicking();
       _save();
     }
-    final frame = _main.frameAt(t, resolved: _resolved);
+    var frame = _main.frameAt(t, resolved: _resolved);
+    if (_stillFen != null) {
+      if (frame.animating && frame.fen == _stillFen) {
+        frame = frame.still();
+      } else {
+        _stillFen = null;
+      }
+    }
     emit(
       state.copyWith(
         frame: frame,
