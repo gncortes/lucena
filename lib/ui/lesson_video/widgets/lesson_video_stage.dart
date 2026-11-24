@@ -12,6 +12,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/glossary_term.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../routing/routes.dart';
+import '../../core/l10n/l10n.dart';
 import '../../glossary/widgets/glossary_text.dart';
 import '../view_models/lesson_video_cubit.dart';
 import 'lesson_video_screen.dart';
@@ -69,6 +70,10 @@ class LessonVideoStage extends StatelessWidget {
         stage: stage,
         language: language,
         autoplay: autoplay,
+        buttons: {
+          'verResposta': context.l10n.lessonShowAnswer,
+          'linhaPrincipal': context.l10n.lessonMainLine,
+        },
         voice: context.read<LessonVoiceRepository?>(),
         audio: JustAudioVoiceAudioService.create,
       )..start(),
