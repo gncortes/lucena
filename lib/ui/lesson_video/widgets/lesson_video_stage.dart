@@ -31,6 +31,7 @@ class LessonVideoStage extends StatelessWidget {
     required this.onBack,
     required this.onNextStage,
     this.viktor,
+    this.autoplay = true,
     super.key,
   });
 
@@ -43,6 +44,9 @@ class LessonVideoStage extends StatelessWidget {
   final String language;
   final Future<String?>? title;
   final Character? viktor;
+
+  /// `false` abre em 0:00 pausada (revisão de lição concluída, E3).
+  final bool autoplay;
 
   /// A seta do topo: sai da lição salvando (E12).
   final VoidCallback onBack;
@@ -64,6 +68,7 @@ class LessonVideoStage extends StatelessWidget {
         scriptPath: scriptPath,
         stage: stage,
         language: language,
+        autoplay: autoplay,
         voice: context.read<LessonVoiceRepository?>(),
         audio: JustAudioVoiceAudioService.create,
       )..start(),

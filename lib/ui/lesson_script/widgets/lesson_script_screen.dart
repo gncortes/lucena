@@ -309,6 +309,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             language: cubit.language,
             title: _safeTitle(),
             viktor: _viktor,
+            autoplay: !cubit.videoOpensPaused,
             onBack: () => unawaited(_leave()),
             onNextStage: () => unawaited(cubit.videoStageDone()),
           );

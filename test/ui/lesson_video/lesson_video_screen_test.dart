@@ -618,15 +618,4 @@ void main() {
       },
     );
   }, skip: 'L5: casa sublinhada no balão e square_flash ainda não existem');
-
-  group('gaps L6', () {
-    testWidgets(
-      'Vídeo 33: fim da Demonstração → rodapé → Prática com a fala de '
-      'entrada',
-      (tester) async {
-        // Arrange: Demonstração no fim. Act: tocar LessonVideoKeys.endNext.
-        // Assert: tela da Prática atual com a fala de entrada.
-      },
-    );
-  }, skip: 'L6: ligação do vídeo com a Prática');
 }

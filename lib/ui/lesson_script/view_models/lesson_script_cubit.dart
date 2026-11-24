@@ -600,6 +600,13 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final checkpoint = await _source.checkpoint();
     if (isClosed || _leaving) return;
     await _logOpened(checkpoint);
+    // Lição já concluída, sem ponto salvo desta parte: revisão. A Teoria
+    // abre em 0:00 pausada (decisão do Gabriel, E3).
+    if (checkpoint?.lessonId != lessonId || checkpoint?.part != partId) {
+      final done = await _source.completion(lessonId, part: partId);
+      _reviewOpening = partId.isEmpty ? done.lesson : done.part;
+      if (isClosed || _leaving) return;
+    }
     final savedStage =
         checkpoint?.lessonId == lessonId && checkpoint?.part == partId
         ? checkpoint!.step
@@ -699,6 +706,12 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   final Set<String> videoStages;
 
   /// A etapa atual é tocada pela aula em vídeo (`LessonVideoStage`).
+  bool _reviewOpening = false;
+
+  /// A etapa em vídeo da vez abre pausada: só a primeira de uma revisão de
+  /// lição concluída (E3); as seguintes tocam ao entrar (E9).
+  bool get videoOpensPaused => _reviewOpening;
+
   bool get isVideoStage => videoStages.contains(_stageData.id);
 
   /// Entra numa etapa em vídeo: só publica a etapa e grava o ponto (a
@@ -737,6 +750,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// "Próxima etapa" no fim do vídeo (E9, E10): a Demonstração ou a Prática.
   Future<void> videoStageDone() async {
     if (!state.ready || !isVideoStage) return;
+    _reviewOpening = false;
     await _nextStage();
   }
 
