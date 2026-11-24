@@ -106,6 +106,14 @@ class LocalHttpLessonContentReader extends LessonContentReader {
 /// Download operation only. Upload/deploy credentials never belong to the app.
 typedef LessonObjectDownload = Future<Uint8List?> Function(String object);
 
+/// The published release download (Firebase Storage, read-only, 8 MB max).
+/// Shared by the text packages and the chapter voice packages.
+Future<Uint8List?> firebaseLessonObjectDownload(String object) =>
+    FirebaseStorage.instance
+        .ref(object)
+        .getData(8 * 1024 * 1024)
+        .timeout(const Duration(seconds: 20));
+
 /// Reads one immutable, reviewed release; backend rules must enforce purchases.
 /// A published server index may select another reader; draft releases are rejected.
 class PublishedLessonContentReader extends LessonContentReader {
@@ -292,12 +300,7 @@ LessonContentAssets createLessonContentAssets({
     );
   }
   if (firebase && publishedRelease.isNotEmpty) {
-    final read =
-        download ??
-        (String object) => FirebaseStorage.instance
-            .ref(object)
-            .getData(8 * 1024 * 1024)
-            .timeout(const Duration(seconds: 20));
+    final read = download ?? firebaseLessonObjectDownload;
     return LessonContentAssets(
       reader: PublishedLessonContentReader(
         release: publishedRelease,

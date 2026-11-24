@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
+import '../data/repositories/lesson_voice/lesson_voice_repository.dart';
 
 import 'dependencies/api_types.dart';
 import 'dependencies/normal.dart';
@@ -12,7 +13,8 @@ export 'build_flags.dart';
 /// As implementações que entram no app.
 ///
 /// As composições de teste ficam em `testing/`: código de `lib/` não importa
-/// `testing/`.
+/// `testing/`.import '../data/repositories/lesson_voice/lesson_voice_repository.dart';
+
 class Dependencies {
   Dependencies({
     required this.now,
@@ -30,6 +32,7 @@ class Dependencies {
     required this.soundRepository,
     required this.analysisRepository,
     this.learningAnalysisRepository,
+    this.lessonVoice,
     required this.gameReviewRepository,
     required this.deepAnalysisRepository,
     required this.ongoingGameRepository,
@@ -73,6 +76,8 @@ class Dependencies {
     required this.blindCheckpointRepository,
     required this.surveyRepository,
     required this.wikiLinksRepository,
+    this.glossaryRepository = const EmptyGlossaryRepository(),
+    this.connectivityRepository = const DeviceConnectivityRepository(),
     required this.featuredRepository,
     required this.coursePreviewRepository,
     required this.featuredProgressRepository,
@@ -166,6 +171,9 @@ class Dependencies {
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;
   final LearningAnalysisRepository? learningAnalysisRepository;
+
+  /// A voz gravada das aulas (pacote por capítulo; nulo nos testes = leitura).
+  final LessonVoiceRepository? lessonVoice;
   final GameReviewRepository gameReviewRepository;
   final DeepAnalysisRepository deepAnalysisRepository;
   final OngoingGameRepository ongoingGameRepository;
@@ -216,6 +224,12 @@ class Dependencies {
 
   /// As páginas da Wikipedia dos nomes marcados nas falas das aulas.
   final WikiLinksRepository wikiLinksRepository;
+
+  /// Os termos do Glossário (tela própria, aberta de qualquer lugar).
+  final GlossaryRepository glossaryRepository;
+
+  /// Se a Wikipédia do termo abre agora.
+  final ConnectivityRepository connectivityRepository;
 
   /// Os finais em destaque, o que o jogador já fez com eles e o aviso de
   /// final novo (sem canal por enquanto: E1.20 e E1.21).

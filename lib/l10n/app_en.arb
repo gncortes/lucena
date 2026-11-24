@@ -4458,6 +4458,48 @@
   "@externalPageOfflineBody": {
     "description": "Body shown in the in-app page sheet when the page cannot load; the lesson is not affected."
   },
+  "glossaryTitle": "Glossary",
+  "@glossaryTitle": {
+    "description": "Title of the shared Glossary screen."
+  },
+  "glossarySearchLabel": "Search term",
+  "@glossarySearchLabel": {
+    "description": "Floating label of the Glossary search field."
+  },
+  "glossarySearchHint": "E.g. bridge, zugzwang",
+  "@glossarySearchHint": {
+    "description": "Hint inside the Glossary search field."
+  },
+  "glossaryCount": "{count, plural, =1{1 term} other{{count} terms}}",
+  "@glossaryCount": {
+    "description": "How many terms the Glossary list shows.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "glossaryReadOnWikipedia": "Read on Wikipedia",
+  "@glossaryReadOnWikipedia": {
+    "description": "Row in a term sheet that opens its Wikipedia page."
+  },
+  "glossaryOfflineTitle": "No internet",
+  "@glossaryOfflineTitle": {
+    "description": "Title shown in a term sheet when there is no internet."
+  },
+  "glossaryOfflineBody": "The definition stays here. Wikipedia opens when you're back online.",
+  "@glossaryOfflineBody": {
+    "description": "Body shown in a term sheet when there is no internet."
+  },
+  "glossaryEmpty": "No term matches \"{query}\".",
+  "@glossaryEmpty": {
+    "description": "Empty state when the Glossary search finds nothing.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
   "wikiOpen": "Open {name} on Wikipedia",
   "@wikiOpen": {
     "description": "Screen-reader action on an underlined name in a lesson: opens its Wikipedia page.",
@@ -14544,5 +14586,106 @@
         "type": "int"
       }
     }
+  },
+  "lessonVideoPlay": "Play",
+  "@lessonVideoPlay": {
+    "description": "Button that plays the lesson video."
+  },
+  "lessonVideoPause": "Pause",
+  "@lessonVideoPause": {
+    "description": "Button that pauses the lesson video."
+  },
+  "lessonVideoBack10": "Back 10 seconds",
+  "@lessonVideoBack10": {
+    "description": "Button that rewinds the lesson video by 10 seconds."
+  },
+  "lessonVideoForward10": "Forward 10 seconds",
+  "@lessonVideoForward10": {
+    "description": "Button that moves the lesson video forward by 10 seconds."
+  },
+  "lessonVideoRate": "Speed",
+  "@lessonVideoRate": {
+    "description": "Button that changes the speed of the lesson video."
+  },
+  "lessonVideoRateValue": "{rate}×",
+  "@lessonVideoRateValue": {
+    "description": "Current speed of the lesson video, like 1.25×.",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonVideoCaptionsShow": "Show captions",
+  "@lessonVideoCaptionsShow": {
+    "description": "Button that shows the captions of the lesson video."
+  },
+  "lessonVideoCaptionsHide": "Hide captions",
+  "@lessonVideoCaptionsHide": {
+    "description": "Button that hides the captions of the lesson video."
+  },
+  "lessonVideoProgress": "Video progress",
+  "@lessonVideoProgress": {
+    "description": "Accessibility label of the lesson video progress bar."
+  },
+  "lessonVideoTime": "{position} / {total}",
+  "@lessonVideoTime": {
+    "description": "Elapsed and total time of the lesson video, like 0:12 / 4:53.",
+    "placeholders": {
+      "position": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonVideoYourMove": "Your turn: play the move on the board.",
+  "@lessonVideoYourMove": {
+    "description": "Shown when the lesson video stops and waits for the student's move."
+  },
+  "lessonVideoReveal": "Show the answer",
+  "@lessonVideoReveal": {
+    "description": "Button that shows the answer when the lesson video waits for the student's move."
+  },
+  "lessonVideoTimeSemantics": "{position} of {total}",
+  "@lessonVideoTimeSemantics": {
+    "description": "Screen reader value of the lesson video progress bar, like 0:14 of 1:02.",
+    "placeholders": {
+      "position": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "glossaryOpen": "Open the glossary",
+  "@glossaryOpen": {
+    "description": "Tooltip of the book button that opens the glossary."
+  },
+  "lessonVideoStoppedHere": "You stopped here.",
+  "@lessonVideoStoppedHere": {
+    "description": "One-line notice when the lesson video reopens where the student stopped."
+  },
+  "lessonVideoRestart": "Start over",
+  "@lessonVideoRestart": {
+    "description": "Action of the resume notice: plays the lesson video from 0:00."
+  },
+  "lessonVideoNoAudio": "No audio.",
+  "@lessonVideoNoAudio": {
+    "description": "Notice when the voice of the chapter is not on the device: the lesson video plays at reading pace."
+  },
+  "lessonVideoDownloadVoice": "Download the voice",
+  "@lessonVideoDownloadVoice": {
+    "description": "Action of the no-audio notice: downloads the voice of the chapter."
+  },
+  "lessonVideoVoiceFailed": "Couldn't download the voice.",
+  "@lessonVideoVoiceFailed": {
+    "description": "Notice when downloading the voice of the chapter failed; the action is lessonRetry."
+  },
+  "lessonVideoCaptionsOff": "Captions off",
+  "@lessonVideoCaptionsOff": {
+    "description": "Shown in place of the caption balloon when captions are off."
   }
 }

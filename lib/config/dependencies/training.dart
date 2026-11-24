@@ -100,6 +100,7 @@ class TrainingDependencies {
       ),
       courseDownloads: CourseDownloadRepository(
         content.packages,
+        voice: content.lessonVoice.download,
         openingProfile: () async =>
             (await courseTraining.load(TrainingCourseConfig.pilares.course))
                 .openingProfile,

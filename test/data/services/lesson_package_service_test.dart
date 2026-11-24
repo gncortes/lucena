@@ -38,7 +38,19 @@ void main() {
     user = 'student-1';
     source = _Reader({indexPath: '{"partes":[]}', lessonPath: '{"parts":[]}'});
   });
-  tearDown(() async => root.delete(recursive: true));
+  // Um refresh em segundo plano (prepare de pacote já instalado) pode ainda
+  // estar gravando: espera e tenta de novo antes de apagar a pasta.
+  tearDown(() async {
+    for (var attempt = 0; ; attempt++) {
+      try {
+        await root.delete(recursive: true);
+        return;
+      } on FileSystemException {
+        if (attempt >= 20) rethrow;
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+    }
+  });
 
   test('complete package survives service recreation and has no network dependency', () async {
     final packages = service();
@@ -167,6 +179,56 @@ void main() {
     await restored.prepare(TrainingCourseConfig.pilares);
     expect(await restored.isDownloaded(TrainingCourseConfig.pilares), isTrue);
   });
+
+  test(
+    'baixar o capítulo também pede a voz dele, e falha da voz não atrapalha',
+    () async {
+      source.files[indexPath] = jsonEncode({
+        'partes': [
+          {
+            'capitulos': [
+              {
+                'id': 'pilares.c1',
+                'aulas': [
+                  {'id': 'pilares.c1', 'tipo': 'teste'},
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      source.files.addAll({
+        'assets/lessons/en/lessons.json': '{}',
+        'assets/lessons/en/endgames/pilares.c1.json': '{}',
+      });
+      final voices = <String>[];
+      final repository = CourseDownloadRepository(
+        service(),
+        voice: (chapterId) async {
+          voices.add(chapterId);
+          throw const SocketException('sem internet');
+        },
+      );
+      // Capítulo antes da entrada: os dois instalam esperando (nenhum
+      // refresh em segundo plano fica gravando no tearDown).
+      await repository.prepare(
+        TrainingCourseConfig.pilares,
+        chapterId: 'pilares.c1',
+      );
+      await pumpEventQueue();
+      expect(voices, ['pilares.c1']);
+      await repository.prepare(TrainingCourseConfig.pilares);
+      await pumpEventQueue();
+      expect(voices, ['pilares.c1'], reason: 'sem capítulo, sem voz');
+      expect(
+        await repository.isDownloaded(
+          TrainingCourseConfig.pilares,
+          chapterId: 'pilares.c1',
+        ),
+        isTrue,
+      );
+    },
+  );
 
   test('school package follows every script and never accepts missing required content', () async {
     const school = 'assets/lessons/course.json';

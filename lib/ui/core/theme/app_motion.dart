@@ -63,6 +63,9 @@ abstract final class AppMotion {
   /// Selo de fim do final em destaque: pisca (entra, fica e sai) em 1,5 s.
   static const featuredFlash = Duration(milliseconds: 1500);
 
+  /// Balão da aula em vídeo: troca de fala (some e volta) em 150 ms.
+  static const caption = Durations.short3;
+
   /// Selo de fim com "remover animações": só um fade curto.
   static const reducedFade = Duration(milliseconds: 150);
 

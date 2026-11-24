@@ -7,6 +7,7 @@ abstract final class RouteNames {
   static const invalidLink = 'invalidLink';
   static const legacyDaily = 'legacyDaily';
   static const boardControls = 'boardControls';
+  static const glossary = 'glossary';
   static const updateRequired = 'updateRequired';
   static const updateRecommended = 'updateRecommended';
   static const tour = 'tour';
@@ -43,6 +44,7 @@ abstract final class RouteNames {
   static const endgameChallenge = 'endgameChallenge';
   static const endgameLesson = 'endgameLesson';
   static const endgameLessonScript = 'endgameLessonScript';
+  static const endgameLessonVideo = 'endgameLessonVideo';
   static const endgameInfo = 'endgameInfo';
   static const endgameExercisesIntro = 'endgameExercisesIntro';
   static const endgameExercisesDone = 'endgameExercisesDone';

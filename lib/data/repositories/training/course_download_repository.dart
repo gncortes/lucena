@@ -16,14 +16,20 @@ class CourseDownloadRepository {
     this.packages, {
     this.openingProfile,
     this.indexSource,
+    this.voice,
   });
   const CourseDownloadRepository.unconfigured()
     : packages = null,
       openingProfile = null,
-      indexSource = null;
+      indexSource = null,
+      voice = null;
   final LessonPackageService? packages;
   final Future<String> Function()? openingProfile;
   final LessonPackageIndexSource? indexSource;
+
+  /// Baixa a voz do capítulo (aula em vídeo) depois do texto, em segundo
+  /// plano: falha não impede o capítulo; a aula mostra "Sem áudio".
+  final Future<Object?> Function(String chapterId)? voice;
   Future<String> _profile() async => await openingProfile?.call() ?? 'solido';
 
   String _key(TrainingCourseConfig config, String? chapterId, String profile) =>
@@ -45,6 +51,16 @@ class CourseDownloadRepository {
   }
 
   Future<void> prepare(TrainingCourseConfig config, {String? chapterId}) async {
+    await _prepare(config, chapterId: chapterId);
+    if (chapterId != null && voice != null) {
+      unawaited(voice!(chapterId).then((_) {}, onError: (Object _) {}));
+    }
+  }
+
+  Future<void> _prepare(
+    TrainingCourseConfig config, {
+    String? chapterId,
+  }) async {
     final service = packages;
     if (service == null) throw const LessonContentUnavailable();
     if (await isDownloaded(config, chapterId: chapterId)) {

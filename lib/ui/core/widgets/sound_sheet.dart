@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/app_settings.dart';
+import '../../lesson_video/view_models/lesson_voice_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../keys/game_sound_keys.dart';
@@ -19,8 +20,9 @@ import 'sound_off_icon.dart';
 
 /// Onde a folha "Som e voz" foi aberta (T73, 8.2). A folha é uma só; muda a
 /// segunda preferência: nas falas dos adversários (partida) ou na voz do
-/// Viktor (aula).
-enum SoundSheetScope { game, lesson }
+/// Viktor (aula). Na aula em vídeo ([lessonVideo]) a voz é a gravada e não
+/// há a linha de velocidade: a velocidade fica no "1×" do player.
+enum SoundSheetScope { game, lesson, lessonVideo }
 
 /// A folha "Som e voz" do app: som geral, a voz do contexto e a velocidade da
 /// voz. Usa as preferências existentes; fechar não altera nada. Em partida,
@@ -29,7 +31,12 @@ Future<void> showSoundSheet(
   BuildContext context, {
   required SoundSheetScope scope,
   ValueChanged<bool>? onCharacterTalkChanged,
+  LessonVoiceCubit? videoVoice,
 }) {
+  assert(
+    (scope == SoundSheetScope.lessonVideo) == (videoVoice != null),
+    'A aula em vídeo passa o LessonVoiceCubit; as outras, não.',
+  );
   final settings = context.read<SettingsCubit>();
   final speech = context.read<SpeechCubit>();
   return showLucenaSheet<void>(
@@ -44,6 +51,7 @@ Future<void> showSoundSheet(
       providers: [
         BlocProvider.value(value: settings),
         BlocProvider.value(value: speech),
+        if (videoVoice != null) BlocProvider.value(value: videoVoice),
       ],
       child: _SoundSheetBody(
         scope: scope,
@@ -74,7 +82,13 @@ class _SoundSheetBody extends StatelessWidget {
     final l10n = context.l10n;
     final language = Localizations.localeOf(context).toLanguageTag();
     final speeds = {..._speeds, speech.settings.speed}.toList()..sort();
-    final secondOn = _game ? settings.characterTalk : speech.settings.enabled;
+    final video = scope == SoundSheetScope.lessonVideo;
+    final videoOn = video && context.watch<LessonVoiceCubit>().state.voiceOn;
+    final secondOn = _game
+        ? settings.characterTalk
+        : video
+        ? videoOn
+        : speech.settings.enabled;
     final heard = _game
         ? settings.sound && settings.characterTalk && speech.charactersHeard
         : settings.sound && speech.settings.enabled;
@@ -127,12 +141,14 @@ class _SoundSheetBody extends StatelessWidget {
               unawaited(
                 speechCubit.setCharactersHeard(heard: settings.sound && value),
               );
+            } else if (video) {
+              unawaited(context.read<LessonVoiceCubit>().setVoiceOn(on: value));
             } else {
               unawaited(speechCubit.setEnabled(enabled: value));
             }
           },
         ),
-        if (heard && speech.availableFor(language)) ...[
+        if (!video && heard && speech.availableFor(language)) ...[
           const SizedBox(height: AppSpacing.sm),
           Text(l10n.voiceSpeed, style: theme.textTheme.labelLarge),
           const SizedBox(height: AppSpacing.sm),

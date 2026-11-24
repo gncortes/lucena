@@ -31,6 +31,21 @@ abstract final class Routes {
     },
   ).toString();
   static const boardControls = '/board-controls';
+
+  /// O Glossário (tela própria, de qualquer lugar). Com [query], já
+  /// filtrado; com [term], abre a Wikipédia (ou a folha) desse termo.
+  static const glossary = '/glossary';
+  static String glossaryAt({String? query, String? term}) {
+    final params = {
+      if (query != null && query.isNotEmpty) 'q': query,
+      if (term != null && term.isNotEmpty) 'term': term,
+    };
+    return Uri(
+      path: glossary,
+      queryParameters: params.isEmpty ? null : params,
+    ).toString();
+  }
+
   static const home = '/';
   static const invalidLink = '/invalid-link';
 
@@ -405,6 +420,17 @@ abstract final class Routes {
   }) => Uri(
     path: '/endgames/$id/roteiro',
     queryParameters: {'part': ?part, 'etapa': '$stage', 'origem': ?origin},
+  ).toString();
+
+  /// A aula em vídeo (L1, só com a flag `AulaVideo`): a etapa [stage]
+  /// (`ideia` ou `demos`) da parte [part].
+  static String endgameLessonVideo(
+    String id, {
+    required String part,
+    String stage = 'ideia',
+  }) => Uri(
+    path: '/endgames/$id/video',
+    queryParameters: {'part': part, 'etapa': stage},
   ).toString();
 
   /// A entrada da aula de um link de campanha (T84): `/aula/<id>` ou
