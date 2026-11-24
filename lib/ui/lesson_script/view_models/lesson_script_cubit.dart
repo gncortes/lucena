@@ -38,7 +38,6 @@ import 'dart:async';
 
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 
-
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -74,7 +73,6 @@ export 'lesson_script_state.dart';
 
 /// Espera [duration]. Nos testes, volta na hora.
 typedef ScriptDelay = Future<void> Function(Duration duration);
-
 
 /// Uma fotografia da tela para o ◀.
 class _Frame {

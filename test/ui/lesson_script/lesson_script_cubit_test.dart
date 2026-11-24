@@ -25,52 +25,13 @@ import '../../../testing/script_fixture.dart';
 const _lessonId = 'pawns.test';
 const _partId = 'distant';
 
-/// Um timer que só dispara quando o teste manda.
-class _FakeTimer implements Timer {
-  _FakeTimer(this.duration, this.callback);
-
-  final Duration duration;
-  final void Function() callback;
-  bool _active = true;
-
-  void fire() {
-    if (!_active) return;
-    _active = false;
-    callback();
-  }
-
-  @override
-  bool get isActive => _active;
-
-  @override
-  int get tick => 0;
-
-  @override
-  void cancel() => _active = false;
-}
-
 class _Rig {
-  _Rig._(this.cubit, this.source, this.oracle, this.now, this.timers);
+  _Rig._(this.cubit, this.source, this.oracle, this.now);
 
   final LessonScriptCubit cubit;
   final FakeLessonSource source;
   final FakeKpkOracle oracle;
   final FakeNow now;
-  final List<_FakeTimer> timers;
-
-  /// Os timers da demonstração ainda armados.
-  List<_FakeTimer> get pending => [
-    for (final t in timers)
-      if (t.isActive) t,
-  ];
-
-  /// O tempo do passo acaba: a demonstração passa sozinha.
-  Future<void> elapse() async {
-    final timer = pending.single;
-    now.advance(timer.duration);
-    timer.fire();
-    await Future<void>.delayed(Duration.zero);
-  }
 
   LessonScriptState get s => cubit.state;
 
@@ -115,7 +76,6 @@ class _Rig {
     if (checkpoint != null) source.checkpoints.add(checkpoint);
     final kpk = oracle ?? FakeKpkOracle();
     final now = FakeNow(DateTime(2026, 10, 14, 9));
-    final timers = <_FakeTimer>[];
     final cubit = LessonScriptCubit(
       videoStages: const {},
       lessonId: _lessonId,
@@ -139,7 +99,7 @@ class _Rig {
     addTearDown(cubit.close);
     if (fits != null) cubit.setSpeechFits(fits);
     await cubit.start();
-    return _Rig._(cubit, source, kpk, now, timers);
+    return _Rig._(cubit, source, kpk, now);
   }
 }
 
@@ -1055,21 +1015,14 @@ void main() {
     });
   });
 
-  group('demonstração automática', () {
-    test('segundo plano fora do passo automático não muda o estado', () async {
+  group('segundo plano', () {
+    test('segundo plano não muda o estado', () async {
       final r = await _Rig.open();
       await _toQuestion(r);
       final before = r.s;
       r.cubit.pauseForBackground();
       r.cubit.resumeFromBackground();
       expect(r.s, before);
-    });
-
-    test('fechar cancela o timer', () async {
-      final r = await _Rig.open(stage: 1);
-      final timer = r.pending.single;
-      await r.cubit.close();
-      expect(timer.isActive, isFalse);
     });
   });
 

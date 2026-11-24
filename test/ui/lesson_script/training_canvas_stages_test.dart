@@ -45,6 +45,7 @@ class _CanvasCubit extends LessonScriptCubit {
         scripts: FakeLessonScriptRepository(scriptFixture(), scriptTexts()),
         kpk: FakeKpkRepository(FakeKpkOracle()),
         source: FakeLessonSource(endgame: !school),
+        videoStages: const {},
       );
   final LessonScriptState snapshot;
   final Map<String, dynamic> data;

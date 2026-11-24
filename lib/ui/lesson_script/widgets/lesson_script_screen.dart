@@ -298,7 +298,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           );
         }
         // L6: Teoria e Demonstração são a aula em vídeo; a Prática segue aqui.
-        if (state.ready && !_contentUnavailable && cubit.isVideoStage) {
+        if (state.ready &&
+            !_contentUnavailable &&
+            cubit.videoStages.contains(state.stageId)) {
           return LessonVideoStage(
             lessonId: cubit.lessonId,
             partId: cubit.partId,
@@ -1067,10 +1069,7 @@ class _Footer extends StatelessWidget {
                 child: const Icon(CanvasSymbols.search),
               ),
             Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: acoes,
-              ),
+              child: Align(alignment: Alignment.centerRight, child: acoes),
             ),
           ],
         ),

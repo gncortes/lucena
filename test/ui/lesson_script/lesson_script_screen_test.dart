@@ -551,7 +551,6 @@ void main() {
       }
     });
 
-
     testWidgets('ScriptPage $size: revelação incremental sintética e '
         'pontinhos preservam a posição reservada', (tester) async {
       tester.view
