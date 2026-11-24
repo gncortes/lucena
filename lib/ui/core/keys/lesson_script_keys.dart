@@ -34,13 +34,6 @@ abstract final class LessonScriptKeys {
   static const speechSheet = Key('lessonScript.speechSheet');
   static const speechSheetClose = Key('lessonScript.speechSheetClose');
 
-  /// O rodapé da demonstração (etapa 2): repetir, lance anterior, tocar ou
-  /// pausar, e o anel do botão principal.
-  static const demoRepeat = Key('lessonScript.demoRepeat');
-  static const demoStepBack = Key('lessonScript.demoStepBack');
-  static const demoToggle = Key('lessonScript.demoToggle');
-  static const demoRing = Key('lessonScript.demoRing');
-  static const theoryFill = Key('lessonScript.theoryFill');
   static const back = Key('lessonScript.back');
 
   /// Continuar, Próxima etapa, Voltar ao início.
@@ -65,14 +58,6 @@ abstract final class LessonScriptKeys {
   /// "Continuar" da lição (e "Praticar", "Próxima etapa").
   static const lessonContinue = primary;
   static const lessonPractice = primary;
-
-  /// Pausar e tocar a fala ou a demonstração.
-  static const lessonPauseToggle = demoToggle;
-  static const demoPlayPause = demoToggle;
-
-  /// Lance anterior e próximo da demonstração (o próximo é o botão com anel).
-  static const demoPrev = demoStepBack;
-  static const demoNext = primary;
 
   /// O `search` do rodapé: analisar a posição.
   static const lessonAnalyze = analyze;

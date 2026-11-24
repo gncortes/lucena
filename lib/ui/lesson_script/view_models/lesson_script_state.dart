@@ -133,49 +133,6 @@ class ScriptMoveEntry {
   final String? result;
 }
 
-/// O passo automático: a fala passa sozinha quando o anel em volta do ⏭
-/// enche (canvas E12). Na demonstração (etapa 2) e nas falas da teoria
-/// (etapa 1) que só pedem "Continuar" ([full] diz qual).
-class ScriptDemo {
-  const ScriptDemo({
-    required this.playing,
-    required this.ended,
-    required this.progress,
-    required this.remaining,
-    required this.tick,
-    required this.canStepBack,
-    this.speaking = false,
-    this.full = true,
-  });
-
-  /// Andando (⏸ na tela) ou pausada (▶).
-  final bool playing;
-
-  /// Acabaram os passos da etapa: só ↻ e o botão principal.
-  final bool ended;
-
-  /// A fração do passo já decorrida no momento da emissão (0 a 1).
-  final double progress;
-
-  /// Quanto falta para passar sozinha; o anel anda de [progress] até 1 nesse
-  /// tempo enquanto [playing].
-  final Duration remaining;
-
-  /// Muda a cada passo novo (reinicia o anel).
-  final int tick;
-
-  /// O ⏮ (lance anterior) está ativo.
-  final bool canStepBack;
-
-  /// A voz do Viktor está dizendo a fala: o anel espera parado.
-  final bool speaking;
-
-  /// Os controles inteiros da demonstração (etapa 2: ↻ ⏮ ⏸ ⏭). Falso na
-  /// teoria (etapa 1): só ⏸ e o ⏭ com o anel, porque o ◀ já volta o passo e
-  /// não há o que repetir (Gabriel, 16/10/2026).
-  final bool full;
-}
-
 /// A folha Curiosidades já com as falas e as referências resolvidas.
 class ScriptCuriosities {
   const ScriptCuriosities({
@@ -261,10 +218,6 @@ abstract class LessonScriptState with _$LessonScriptState {
 
     /// A folha Curiosidades do exemplo; nula se não tem (esconde o livro).
     ScriptCuriosities? curiosities,
-
-    /// O passo automático (etapa 2 e as falas de "Continuar" da etapa 1);
-    /// nulo fora dele.
-    ScriptDemo? demo,
 
     /// Preenchido quando a parte foi concluída (`finishPart`).
     LessonOutcome? outcome,

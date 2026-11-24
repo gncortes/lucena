@@ -14,7 +14,7 @@ void main() {
     'lib/ui/core/board/board_settings_ui.dart',
     'lib/ui/core/review/move_quality_ui.dart',
     'lib/ui/lesson_script/widgets/script_board.dart',
-    'lib/ui/lesson_script/widgets/script_demo_controls.dart',
+    'lib/ui/core/widgets/round_nav_button.dart',
   };
   final raw = RegExp(r'(^|[^A-Za-z])Colors\.(?!transparent)|Color\(0x');
 
