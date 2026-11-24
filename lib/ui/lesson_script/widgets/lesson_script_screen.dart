@@ -43,6 +43,7 @@ import '../../voice/view_models/speech_cubit.dart';
 import '../view_models/lesson_script_cubit.dart';
 import 'curiosities_sheet.dart';
 import 'script_demo_controls.dart';
+import '../../lesson_video/widgets/lesson_video_stage.dart';
 import 'script_board.dart';
 import 'script_move_list.dart';
 import 'script_page.dart';
@@ -297,6 +298,20 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             onAction: cubit.retryPracticeIssue,
             onBack: () =>
                 context.canPop() ? context.pop() : context.go(Routes.home),
+          );
+        }
+        // L6: Teoria e Demonstração são a aula em vídeo; a Prática segue aqui.
+        if (state.ready && !_contentUnavailable && cubit.isVideoStage) {
+          return LessonVideoStage(
+            lessonId: cubit.lessonId,
+            partId: cubit.partId,
+            scriptPath: cubit.scriptPath,
+            stage: state.stageId,
+            language: cubit.language,
+            title: _safeTitle(),
+            viktor: _viktor,
+            onBack: () => unawaited(_leave()),
+            onNextStage: () => unawaited(cubit.videoStageDone()),
           );
         }
         return Scaffold(

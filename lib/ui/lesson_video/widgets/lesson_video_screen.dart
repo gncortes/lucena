@@ -18,6 +18,7 @@ import '../../core/keys/lesson_video_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -75,7 +76,7 @@ abstract final class LessonVideoLayout {
   static double boardSide(Size area) => _side(area, bottomMarginFor(area));
 }
 
-/// A aula em vídeo (L1, atrás de flag): app bar com o livro do Glossário,
+/// A aula em vídeo (Teoria e Demonstração da lição): app bar com o livro do Glossário,
 /// balão de 2 linhas, faixa do Viktor, tabuleiro no centro, barra, controles
 /// e o rodapé do fim da etapa.
 class LessonVideoScreen extends StatefulWidget {
@@ -86,10 +87,14 @@ class LessonVideoScreen extends StatefulWidget {
     this.onNextStage,
     this.terms = const [],
     this.onTerm,
+    this.onBack,
     super.key,
   });
 
   final String title;
+
+  /// A seta do topo (na lição: sai salvando, E12); nula = voltar padrão.
+  final VoidCallback? onBack;
   final Character? viktor;
 
   /// O livro do topo: quem abre pausa o vídeo e vai ao Glossário.
@@ -129,10 +134,19 @@ class _LessonVideoScreenState extends State<LessonVideoScreen> {
       :onNextStage,
       :terms,
       :onTerm,
+      :onBack,
     ) = widget;
     return Scaffold(
       key: LessonVideoKeys.screen,
       appBar: LucenaAppBar(
+        leading: onBack == null
+            ? null
+            : IconButton(
+                key: LessonScriptKeys.close,
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                onPressed: onBack,
+                icon: const Icon(CanvasSymbols.arrowBack),
+              ),
         title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
         centerTitle: true,
         actions: [

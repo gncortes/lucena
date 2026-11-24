@@ -647,7 +647,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         ? checkpoint!.step
         : initialStage;
     await _enterStage(savedStage.clamp(0, last));
-    if (!isClosed && _leftMidway(checkpoint)) {
+    // A etapa em vídeo tem o próprio aviso ("Você parou aqui", L3).
+    if (!isClosed && !isVideoStage && _leftMidway(checkpoint)) {
       emit(state.copyWith(restartNotice: true));
     }
     await _checkpointWrites;
@@ -675,7 +676,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// Só cenas reproduzíveis do roteiro: erros e animações conservam o
   /// último ponto estável, sem guardar FENs ou lances transitórios.
   void _saveScriptCheckpoint() {
-    if (!state.ready || _leaving) return;
+    if (!state.ready || _leaving || isVideoStage) return;
     final track = _scene.track;
     final scripted = _isScriptTrack(track);
     if (!scripted && track != 'question' && track != 'pratica') return;
@@ -726,7 +727,56 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _seenBy.clear();
     }
     _epoch++;
+    if (isVideoStage) return _enterVideoStage();
     await _enterExample(0, jump: true);
+  }
+
+  // ---- Etapas em vídeo (L6) ----------------------------------------------
+
+  /// As etapas que a aula em vídeo toca (Teoria e Demonstração); a Prática
+  /// segue neste cubit.
+  static const videoStages = {'ideia', 'demos'};
+
+  /// A etapa atual é tocada pela aula em vídeo (`LessonVideoStage`).
+  bool get isVideoStage => videoStages.contains(_stageData.id);
+
+  /// Entra numa etapa em vídeo: só publica a etapa e grava o ponto (a
+  /// retomada volta a ela); o vídeo cuida da fala, do tabuleiro e do
+  /// progresso dentro da etapa.
+  Future<void> _enterVideoStage() async {
+    _loadExample(0);
+    if (isClosed || _leaving) return;
+    emit(
+      state.copyWith(
+        ready: true,
+        stageIndex: _stage,
+        stageCount: _script.stages.length,
+        stageId: _stageData.id,
+        exampleIndex: 0,
+        exampleCount: _stageData.examples.length,
+        orientation: _example.student,
+      ),
+    );
+    final revision = ++_checkpointRevision;
+    _checkpointPending = true;
+    _checkpointWrites = _source
+        .saveCheckpoint(
+          LessonCheckpoint(
+            lessonId: lessonId,
+            part: partId,
+            step: _stage,
+            stepId: '${_stageData.id}/video',
+          ),
+        )
+        .whenComplete(() {
+          if (revision == _checkpointRevision) _checkpointPending = false;
+        });
+  }
+
+  /// "Próxima etapa" no fim do vídeo (E9, E10): a Demonstração ou a Prática.
+  Future<void> videoStageDone() async {
+    if (!state.ready || !isVideoStage) return;
+    await _nextStage();
   }
 
   void _loadExample(int index) {

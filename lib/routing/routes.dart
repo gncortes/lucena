@@ -422,17 +422,6 @@ abstract final class Routes {
     queryParameters: {'part': ?part, 'etapa': '$stage', 'origem': ?origin},
   ).toString();
 
-  /// A aula em vídeo (L1, só com a flag `AulaVideo`): a etapa [stage]
-  /// (`ideia` ou `demos`) da parte [part].
-  static String endgameLessonVideo(
-    String id, {
-    required String part,
-    String stage = 'ideia',
-  }) => Uri(
-    path: '/endgames/$id/video',
-    queryParameters: {'part': part, 'etapa': stage},
-  ).toString();
-
   /// A entrada da aula de um link de campanha (T84): `/aula/<id>` ou
   /// `/escola/<id>`, o mesmo caminho do link só de aula. A rota confere se a
   /// aula abre e segue para [linkedLesson].
