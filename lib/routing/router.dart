@@ -18,6 +18,11 @@ import 'training_goal_return.dart';
 import '../data/repositories/training/training_school_content.dart';
 import '../ui/home/view_models/training_lesson_preview.dart';
 import '../data/repositories/survey/survey_repository.dart';
+import '../data/repositories/glossary/glossary_repository.dart';
+import '../ui/glossary/view_models/glossary_cubit.dart';
+import '../ui/glossary/widgets/glossary_screen.dart';
+import '../ui/glossary/widgets/glossary_text.dart';
+import '../domain/models/glossary_term.dart';
 import '../domain/models/survey.dart';
 import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import '../ui/lesson_finished/widgets/lesson_finished_screen.dart';
@@ -77,6 +82,7 @@ import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../data/repositories/sync/sync_repository.dart';
+import '../config/ambiente.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
@@ -127,6 +133,7 @@ import '../ui/daily/widgets/daily_start_screen.dart';
 import '../ui/streak/widgets/streak_screen.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
+import '../domain/models/character.dart';
 import '../data/repositories/characters/talk_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/rating/rating_repository.dart';
@@ -144,6 +151,8 @@ import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/lesson_video/lesson_video_repository.dart';
+import '../data/repositories/lesson_video/video_interruptions_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/school/lesson_source.dart';
@@ -173,6 +182,8 @@ import '../ui/school/widgets/star_challenges_screen.dart';
 import '../ui/school/view_models/school_cubit.dart';
 import '../ui/lesson_script/view_models/lesson_script_cubit.dart';
 import '../ui/lesson_script/widgets/lesson_script_screen.dart';
+import '../ui/lesson_video/view_models/lesson_video_cubit.dart';
+import '../ui/lesson_video/widgets/lesson_video_screen.dart';
 import '../ui/school/widgets/school_screen.dart';
 import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
@@ -388,6 +399,17 @@ GoRouter buildRouter({
           create: (_) =>
               BoardControlsCubit(context.read<OnboardingRepository>())..load(),
           child: const BoardControlsScreen(),
+        ),
+      ),
+      _route(
+        name: RouteNames.glossary,
+        path: Routes.glossary,
+        builder: (context, state) => BlocProvider(
+          create: (_) => GlossaryCubit(
+            context.read<GlossaryRepository>(),
+            context.read<ConnectivityRepository>(),
+          )..load(query: state.uri.queryParameters['q'] ?? ''),
+          child: GlossaryScreen(openTermId: state.uri.queryParameters['term']),
         ),
       ),
       _route(
@@ -1302,6 +1324,74 @@ GoRouter buildRouter({
                       );
                     },
                   ),
+                  // A aula em vídeo (L1, atrás da flag; nunca no prod).
+                  if (AulaVideo.ligada())
+                    _route(
+                      name: RouteNames.endgameLessonVideo,
+                      path: 'video',
+                      builder: (context, state) {
+                        final id = state.pathParameters['lesson']!;
+                        final part = state.uri.queryParameters['part'] ?? '';
+                        final stage =
+                            state.uri.queryParameters['etapa'] ?? 'ideia';
+                        final language = _language(context);
+                        final lessons = context.read<EndgameLessonRepository>();
+                        return BlocProvider(
+                          key: ValueKey('video.$id.$part.$stage'),
+                          create: (_) => LessonVideoCubit(
+                            scripts: context.read<LessonScriptRepository>(),
+                            videos: context.read<LessonVideoRepository>(),
+                            interruptions: context
+                                .read<VideoInterruptionsRepository>(),
+                            now: context.read<Now>(),
+                            lessonId: id,
+                            partId: part,
+                            scriptPath:
+                                AssetLessonScriptRepository.chapterScriptPath(
+                                  id,
+                                  part,
+                                ),
+                            stage: stage,
+                            language: language,
+                          )..start(),
+                          child:
+                              FutureBuilder<
+                                (String, Character?, List<GlossaryTerm>)
+                              >(
+                                future: (
+                                  lessons
+                                      .texts(language)
+                                      .then((t) => t.partTitle(id, part) ?? ''),
+                                  context
+                                      .read<CharacterRepository>()
+                                      .characters()
+                                      .then(
+                                        (all) => all
+                                            .where((c) => c.isMaster)
+                                            .firstOrNull,
+                                      ),
+                                  context.read<GlossaryRepository>().terms(),
+                                ).wait,
+                                // Livro do topo e termo sublinhado: pausa o
+                                // vídeo e abre o Glossário (filtrado pelo termo,
+                                // com a folha/Wikipédia).
+                                builder: (context, loaded) => LessonVideoScreen(
+                                  title: loaded.data?.$1 ?? '',
+                                  viktor: loaded.data?.$2,
+                                  terms: loaded.data?.$3 ?? const [],
+                                  onGlossary: () {
+                                    context.read<LessonVideoCubit>().pause();
+                                    context.push(Routes.glossary);
+                                  },
+                                  onTerm: (term) {
+                                    context.read<LessonVideoCubit>().pause();
+                                    GlossaryText.open(context, term);
+                                  },
+                                ),
+                              ),
+                        );
+                      },
+                    ),
                   _route(
                     name: RouteNames.endgameInfo,
                     path: 'info',

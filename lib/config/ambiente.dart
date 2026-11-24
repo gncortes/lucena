@@ -48,3 +48,13 @@ abstract final class FirebaseEmulador {
     Ambiente? ambiente,
   }) => define && !(ambiente ?? Ambiente.atual()).isProd;
 }
+
+/// A aula em vídeo (lote L1, em construção): a rota `/endgames/<id>/video`
+/// só existe com `--dart-define=AULA_VIDEO=true`, e nunca no `prod`.
+/// [define] e [ambiente] existem para o teste.
+abstract final class AulaVideo {
+  static bool ligada({
+    bool define = const bool.fromEnvironment('AULA_VIDEO'),
+    Ambiente? ambiente,
+  }) => define && !(ambiente ?? Ambiente.atual()).isProd;
+}

@@ -1,0 +1,2394 @@
+{
+  "termos": [
+    {
+      "id": "abandonar",
+      "nome": "abandonar",
+      "definicao": "Encerrar a partida antes do mate, reconhecendo a derrota: o jogador avisa que abandona ou deita o próprio rei, e o adversário fica com a vitória.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "abertura",
+      "nome": "abertura",
+      "definicao": "Fase inicial da partida, em que os lados desenvolvem as peças, disputam o centro e põem o rei em segurança. Vem antes do meio-jogo e do final.",
+      "chaveWiki": null,
+      "aulas": [
+        "iniciante/notation.read",
+        "iniciante/tricks.principles",
+        "lessons"
+      ]
+    },
+    {
+      "id": "abertura_flanco",
+      "nome": "abertura de flanco",
+      "definicao": "Abertura que evita ou adia levar os peões centrais à quarta fileira, como a Inglesa (1.c4) e a Réti (1.Cf3); quem a joga controla o centro à distância, com peças e peões dos flancos.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "abertura_semiaberta",
+      "nome": "abertura semiaberta",
+      "definicao": "Abertura em que as Brancas jogam 1.e4 e as Pretas respondem com outro lance que não 1...e5, como na Defesa Siciliana e na Francesa; costuma gerar posições assimétricas.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "abertura_semifechada",
+      "nome": "abertura semifechada",
+      "definicao": "Abertura em que as Brancas jogam 1.d4 e as Pretas respondem com outro lance que não 1...d5, como nas defesas índias; costuma gerar posições assimétricas, boas para o contra-ataque.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "afogamento",
+      "nome": "afogamento",
+      "definicao": "Situação em que o lado que joga não tem nenhum lance legal e o rei dele não está em xeque: a partida termina empatada. Nos finais, é o recurso que salva quem defende e a armadilha de quem tem material a mais.",
+      "nota": "Afogar o rei adversário e entregar o empate numa partida ganha é um erro que acontece em todos os níveis. Em Nice, em 2009, numa partida às cegas, Kamsky levou o peão à sétima fileira com xeque contra Kramnik, e o rei preto, na frente do peão, ficou afogado.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rookPawns.vsPawn",
+        "iniciante/graduation.twoBishops",
+        "iniciante/mates.queen",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.rookKnight",
+        "iniciante/minor.rookTwoBishops",
+        "iniciante/minor.rookTwoKnights",
+        "iniciante/pawns.kingPawn",
+        "iniciante/pieces.stalemate",
+        "iniciante/technique.opposition",
+        "iniciante/technique.zugzwang",
+        "lessons"
+      ]
+    },
+    {
+      "id": "agudo",
+      "nome": "agudo (lance, posição)",
+      "definicao": "Lance ou posição cheio de complicações táticas e de riscos para os dois lados; jogador agudo é o que procura esse tipo de jogo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ala",
+      "nome": "ala do rei / ala da dama",
+      "definicao": "As duas metades do tabuleiro: a ala da dama vai da coluna a à coluna d, e a ala do rei, da coluna e à coluna h. Nos finais, indica de que lado estão os peões e por onde o rei pode entrar.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.twoBishops",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.reti",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff"
+      ]
+    },
+    {
+      "id": "alcancar",
+      "nome": "alcançar (o peão, a casa)",
+      "definicao": "Chegar a tempo de deter um peão ou de ocupar uma casa antes do adversário. Nos finais de peões, saber se o rei alcança o peão decide se ele coroa, e a regra do quadrado responde sem calcular lance por lance.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/mates.twoRooks",
+        "iniciante/minor.twoRooksVsKnight",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.square",
+        "iniciante/pieces.check",
+        "iniciante/pieces.king",
+        "iniciante/pieces.knight",
+        "iniciante/pieces.queen",
+        "iniciante/pieces.rook",
+        "iniciante/pieces.stalemate",
+        "iniciante/rules.captureProtect",
+        "iniciante/rules.castling",
+        "iniciante/rules.draws",
+        "iniciante/rules.outOfCheck",
+        "iniciante/technique.rookCut",
+        "lessons"
+      ]
+    },
+    {
+      "id": "ameaca",
+      "nome": "ameaça",
+      "definicao": "Um ataque que vai se concretizar no próximo lance se o adversário não reagir: uma captura, um mate ou outro ganho.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "analise",
+      "nome": "análise",
+      "definicao": "Estudo detalhado das continuações possíveis a partir de uma posição. Na partida de torneio ela é feita só de cabeça; depois do jogo, os dois costumam rever a partida movendo as peças.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "armadilha",
+      "nome": "armadilha",
+      "definicao": "Lance ou sequência que deixa ao adversário uma continuação tentadora que, na verdade, leva à perda. Só funciona se ele cair nela.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ataque",
+      "nome": "ataque",
+      "definicao": "Ação agressiva numa região do tabuleiro, ou a ameaça de capturar uma peça ou um peão.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ataque_descoberto",
+      "nome": "ataque descoberto",
+      "definicao": "Uma peça sai da frente e revela o ataque de uma dama, torre ou bispo que estava atrás dela. O lance da peça que sai pode criar uma segunda ameaça ao mesmo tempo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ataque_duplo",
+      "nome": "ataque duplo",
+      "definicao": "Lance que ataca dois alvos ao mesmo tempo, de modo que o adversário costuma salvar só um. O garfo é o caso em que uma única peça faz os dois ataques.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ativo",
+      "nome": "ativo (lance, posição)",
+      "definicao": "Lance ou posição que cria ameaças e disputa a iniciativa; peça ativa é a que controla muitas casas úteis. O contrário é passivo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "bateria",
+      "nome": "bateria",
+      "definicao": "Duas peças que atacam na mesma linha, uma atrás da outra, como torres dobradas numa coluna ou dama e bispo na mesma diagonal. A força das duas se soma no mesmo alvo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "bispo_cor_errada",
+      "nome": "bispo da cor errada",
+      "definicao": "Bispo que não anda na cor da casa de promoção de um peão de torre. Com rei, bispo e esse peão contra rei, se o rei que defende chega ao canto, a partida é empate; quem ataca precisa fechar a entrada do canto antes.",
+      "nota": "A ideia é antiga: já aparece num estudo do italiano Gioachino Greco, do século XVII. Em Vancouver, em 1971, Mark Taimanov podia entregar o cavalo e levar o rei ao canto contra Bobby Fischer, salvando o empate, mas não viu e perdeu.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/minor.wrongBishop"
+      ]
+    },
+    {
+      "id": "bispos_cores_opostas",
+      "nome": "bispos de cores opostas",
+      "definicao": "Cada lado tem um único bispo e eles andam em casas de cores diferentes, por isso nunca se enfrentam. No final, isso aumenta muito as chances de empate.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "blitz",
+      "nome": "blitz",
+      "definicao": "Modalidade de partida rápida em que cada jogador tem 10 minutos ou menos para fazer todos os lances. Com tão pouco tempo, saber de cor a técnica dos finais básicos faz diferença.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.queenMate",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/queen.vsRook.philidor",
+        "lessons"
+      ]
+    },
+    {
+      "id": "bloquear",
+      "nome": "bloquear",
+      "definicao": "Pôr uma peça na frente de um peão para impedir que ele avance, ou no caminho de uma peça de longo alcance, fechando a coluna, a fileira ou a diagonal. Contra um peão passado, bloqueá-lo com uma peça impede a promoção.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.race",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.spareTempi",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.lucena",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/pieces.pawn",
+        "iniciante/pieces.rook",
+        "iniciante/technique.zugzwang",
+        "lessons"
+      ]
+    },
+    {
+      "id": "bloqueio",
+      "nome": "bloqueio",
+      "definicao": "Colocar uma peça na casa da frente de um peão adversário para impedir que ele avance; o cavalo é o bloqueador preferido. A ideia foi popularizada por Nimzowitsch.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "cadeia_peoes",
+      "nome": "cadeia de peões",
+      "definicao": "Peões do mesmo lado em diagonal, cada um protegendo o da frente; o peão de trás, a base, é o ponto mais fácil de atacar.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "capturar",
+      "nome": "capturar, captura",
+      "definicao": "Levar uma peça para a casa ocupada por uma peça adversária, que sai do tabuleiro no mesmo lance. O en passant é a única captura em que a peça não vai para a casa da peça capturada.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/mates.queen",
+        "iniciante/mates.twoRooks",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.twoRooksVsKnight",
+        "iniciante/notation.moves",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.rookTwoPawns",
+        "iniciante/pawns.square",
+        "iniciante/pieces.check",
+        "iniciante/pieces.pawn",
+        "iniciante/rules.captureProtect",
+        "iniciante/rules.draws",
+        "iniciante/rules.enPassant",
+        "iniciante/rules.outOfCheck",
+        "iniciante/rules.pieceValue",
+        "iniciante/tactics.matePatterns",
+        "iniciante/tricks.defendScholar",
+        "iniciante/tricks.scholarsMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "casas_chave",
+      "nome": "casas-chave",
+      "definicao": "Casas que, ocupadas pelo rei do lado que tem o peão, garantem a promoção, seja quem for que jogue. Com o peão em d3, por exemplo, as casas-chave são c5, d5 e e5.",
+      "nota": "O atalho das casas-chave é de Yuri Averbakh (1922–2022), grande mestre soviético e um dos maiores especialistas em finais: em vez de calcular, procure as casas que, se o seu rei pisar nelas, garantem a vitória. Averbakh comparava o rei a um pai que leva o filho para atravessar a rua indo na frente. No Torneio de Candidatos de 1959, o jovem Fischer salvou meio ponto contra Gligorić porque encontrou o único caminho de rei que mantinha o empate.",
+      "chaveWiki": "en:Key_square",
+      "aulas": [
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "iniciante/pawns.kingPawn"
+      ]
+    },
+    {
+      "id": "casas_claras_escuras",
+      "nome": "casas claras / casas escuras",
+      "definicao": "As 64 casas do tabuleiro se dividem em 32 claras e 32 escuras. Cada bispo anda só nas casas de uma cor, por isso se fala em bispo das casas claras e bispo das casas escuras.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/minor.wrongBishop",
+        "endgames/queen.vsRook.philidor",
+        "iniciante/graduation.twoBishops",
+        "iniciante/pieces.bishop",
+        "iniciante/pieces.knight",
+        "lessons"
+      ]
+    },
+    {
+      "id": "casas_correspondentes",
+      "nome": "casas correspondentes",
+      "definicao": "Pares de casas dos dois reis: quando um rei está em uma delas, o rei adversário precisa ocupar a casa correspondente para manter a posição. Achar essas casas decide finais de peões travados, em que quem fica sem a casa certa na vez certa perde.",
+      "nota": "A posição mais famosa é de 1901, composta por Emanuel Lasker, então campeão do mundo, e o americano Gustavus Reichhelm. Em 1932, o pintor Marcel Duchamp, que também era mestre de xadrez, escreveu com Vitaly Halberstadt um livro inteiro só sobre esse tema.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.triangulation"
+      ]
+    },
+    {
+      "id": "casas_minadas",
+      "nome": "casas minadas",
+      "definicao": "Casas em que o rei não pode pisar primeiro, porque entrega o zugzwang ao adversário.",
+      "nota": "Mark Dvoretsky deu às casas minadas uma seção do seu manual de finais. Emanuel Lasker, numa simultânea em Filadélfia em 1892, devolveu uma torre só para chegar a essa posição com o adversário na vez, e Alexander Alekhine ganhou de Frederick Yates em Hamburgo, em 1910, porque não pisou primeiro na casa minada.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.minedSquares"
+      ]
+    },
+    {
+      "id": "centralizar",
+      "nome": "centralizar",
+      "definicao": "Levar peças ou peões para as casas centrais ou para perto delas, de onde controlam mais casas.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "centro",
+      "nome": "centro",
+      "definicao": "As quatro casas do meio do tabuleiro, d4, d5, e4 e e5, e as que estão em volta delas. Nos finais, o rei no centro vai para qualquer lado mais depressa, e quem dá mate empurra o rei adversário do centro para a borda.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.reti",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/graduation.twoBishops",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.rookKnight",
+        "iniciante/minor.rookTwoBishops",
+        "iniciante/minor.rookTwoKnights",
+        "iniciante/notation.coordinates",
+        "iniciante/pieces.king",
+        "iniciante/pieces.knight",
+        "iniciante/pieces.queen",
+        "iniciante/rules.castling",
+        "iniciante/technique.rookMate",
+        "iniciante/tricks.foolsMate",
+        "iniciante/tricks.principles",
+        "lessons"
+      ]
+    },
+    {
+      "id": "centro_peoes",
+      "nome": "centro de peões",
+      "definicao": "Peões instalados no centro, sobretudo em d4 e e4 (ou d5 e e5), que controlam as casas à frente e tiram espaço do adversário.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "centro_estendido",
+      "nome": "centro estendido",
+      "definicao": "As casas em volta das quatro casas centrais (d4, e4, d5 e e5). Como no centro, as peças colocadas ali alcançam mais casas.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "coluna",
+      "nome": "coluna",
+      "definicao": "Cada uma das oito linhas verticais de casas, nomeadas de a a h. Nos finais de torre, cortar o rei adversário por uma coluna é uma das ideias principais.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/mates.queen",
+        "iniciante/mates.twoRooks",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookKnight",
+        "iniciante/minor.twoRooksVsKnight",
+        "iniciante/notation.coordinates",
+        "iniciante/notation.moves",
+        "iniciante/notation.read",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.rookTwoPawns",
+        "iniciante/pieces.bishop",
+        "iniciante/pieces.check",
+        "iniciante/pieces.king",
+        "iniciante/pieces.pawn",
+        "iniciante/pieces.queen",
+        "iniciante/pieces.rook",
+        "iniciante/rules.captureProtect",
+        "iniciante/rules.outOfCheck",
+        "iniciante/technique.rookCut",
+        "iniciante/technique.rookMate",
+        "iniciante/technique.zugzwang",
+        "iniciante/tricks.defendScholar",
+        "iniciante/tricks.scholarsMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "coluna_semiaberta",
+      "nome": "coluna semiaberta",
+      "definicao": "Coluna em que um lado não tem peões e o outro tem pelo menos um. A torre do lado sem peões usa essa coluna para pressionar o peão adversário.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "combinacao",
+      "nome": "combinação",
+      "definicao": "Sequência forçada de lances, quase sempre com um sacrifício, que explora detalhes da posição para alcançar um objetivo concreto, como o mate ou o ganho de material.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "compensacao",
+      "nome": "compensação",
+      "definicao": "Vantagem num aspecto que equilibra a desvantagem em outro, como desenvolvimento mais rápido em troca de um peão sacrificado.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "controle",
+      "nome": "controle",
+      "definicao": "Domínio de uma região do tabuleiro, de uma coluna ou de uma casa, de modo que o adversário não consiga usá-la.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "controle_tempo",
+      "nome": "controle de tempo (ritmo de jogo)",
+      "definicao": "Regra da competição que fixa quanto tempo cada jogador tem no relógio para certo número de lances ou para a partida toda. Quem deixa o tempo acabar perde, salvo raras exceções.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "corrida",
+      "nome": "corrida de peões",
+      "definicao": "Situação em que os dois lados avançam peões passados para promover, e é preciso contar os lances para saber quem coroa primeiro e se a dama nova decide com xeque ou espeto. Também se fala em corrida do rei quando o rei vai na direção de um peão ou de uma casa.",
+      "nota": "Em 1958, Petrosian e Fischer, dois futuros campeões do mundo, combinaram o empate num final de corrida, porque o peão de Fischer chegaria perto demais da coroação para a dama conseguir ganhar. Em 1937, Alatortsev venceu Chekhover numa corrida parecida, porque lá o peão estava uma casa mais atrás.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.rookMate",
+        "endgames/mates.bishopKnight.full",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rookPawns.vsPawn"
+      ]
+    },
+    {
+      "id": "corte_rei",
+      "nome": "corte (do rei)",
+      "definicao": "Uso de uma peça, em geral a torre, para impedir que o rei adversário atravesse uma coluna ou uma fileira. Nos mates básicos, o corte confina o rei perto da borda; nos finais de torre, afasta o rei que defende do peão.",
+      "nota": "É a ideia mais antiga dos finais de torre e leva direto à posição de Lucena. Como uma coluna a menos ou um tempo a mais muda o resultado, os autores criaram regras de contagem, como a regra dos cinco, dos livros de Andrew Soltis e Edmar Mednis. Tudo cabe numa frase: corte primeiro, conte depois.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.rookMate",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rookPawns.vsPawn",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.rookKnight",
+        "iniciante/minor.rookTwoBishops",
+        "iniciante/minor.rookTwoKnights",
+        "iniciante/minor.twoRooksVsKnight",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.rookTwoPawns",
+        "iniciante/technique.rookCut",
+        "iniciante/technique.rookMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "cravada",
+      "nome": "cravada",
+      "definicao": "Ataque a uma peça que não pode sair da linha sem deixar exposta uma peça mais valiosa atrás dela; quando atrás está o rei, sair é ilegal. Nos finais de dama, a cravada ganha tempo para o rei se aproximar ou prepara o mate.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/minor.wrongBishop",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRookPawn",
+        "endgames/rookPawns.vsPawn"
+      ]
+    },
+    {
+      "id": "dama_contra_peao",
+      "nome": "dama contra peão",
+      "definicao": "Final de dama contra um peão a um passo da coroação. A dama ganha contra quase todos os peões; as exceções são o peão de torre e o peão de bispo na sétima fileira, com o rei ao lado e o rei adversário longe.",
+      "nota": "Giambattista Lolli, italiano do século XVIII, publicou em 1763 um estudo que mostra quando o rei de quem tem a dama ainda chega a tempo. Em 1996, Van Wely, com a dama, não conseguiu ganhar do peão de bispo de Leko. A técnica está em todos os manuais, de Reuben Fine, em 1941, a Jesús de la Villa.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws"
+      ]
+    },
+    {
+      "id": "dama_contra_torre",
+      "nome": "dama contra torre",
+      "definicao": "Final de rei e dama contra rei e torre. Sem peões, a dama sempre ganha, mas o caminho engana até grandes mestres.",
+      "nota": "Em 1895 já existia em Londres um livro inteiro sobre este final, assinado por um misterioso Euclid. Em 2002, o grande mestre John Nunn o dividiu em quatro fases: trazer o rei e empurrar o rei adversário para uma borda, e depois desfazer as defesas da torre na quarta, na terceira e na segunda fileira, que leva à posição de Philidor. Quando Walter Browne enfrentou o computador em 1978, foi na defesa da terceira fileira que ele mais lutou.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn"
+      ]
+    },
+    {
+      "id": "dar_ombro",
+      "nome": "dar o ombro",
+      "definicao": "Usar o próprio rei como barreira: ele ocupa o caminho do rei adversário e o empurra para longe, sem tocar nele.",
+      "nota": "Em inglês a técnica se chama shouldering; Mark Dvoretsky lhe dá uma seção no seu manual de finais, ao lado da oposição e da triangulação. Vários estudos e apostilas publicados indicam o caminho errado, porque uma única casa para o lado basta para trocar a vitória pela derrota.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.shoulder"
+      ]
+    },
+    {
+      "id": "defesa",
+      "nome": "defesa",
+      "definicao": "Lance ou plano que impede o ataque do adversário. Também dá nome a aberturas escolhidas pelas Pretas, como a Defesa Francesa e a Defesa Caro-Kann.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "defesa_ultima_fileira",
+      "nome": "defesa da última fileira",
+      "definicao": "Defesa de torre contra torre e peão em que o rei fica na casa de promoção e a torre espera na última fileira, indo e voltando.",
+      "nota": "Contra peões de torre e de cavalo ela empata, mas contra peões de bispo e centrais costuma perder. O grande mestre Hovhannes Gabuzyan resume: contra os peões do meio, é preciso saber a defesa de Philidor; contra os da borda, a última fileira basta.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.backRank"
+      ]
+    },
+    {
+      "id": "defesa_philidor",
+      "nome": "defesa de Philidor",
+      "definicao": "Defesa de torre e peão contra torre que empata: a torre do lado que defende segura a sua terceira fileira e impede o rei adversário de avançar; quando o peão chega a essa fileira, a torre passa a dar xeques por trás.",
+      "nota": "François-André Philidor, músico e o melhor jogador do seu tempo, publicou essa defesa em 1777. Durante mais de um século os livros repetiram a análise dele, inclusive um erro: ele dava como perdidas posições que ainda empatavam, como mostrou o alemão Max Karstedt em 1897.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.backRank",
+        "endgames/rook.cutOff",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide"
+      ]
+    },
+    {
+      "id": "defesa_frontal",
+      "nome": "defesa frontal",
+      "definicao": "Defesa de torre contra torre e peão usada quando o rei que defende está cortado do peão: a torre vai para a frente do peão, na coluna dele, e dá xeques de frente ou oferece a troca.",
+      "nota": "Ela funciona melhor contra uns peões do que contra outros: contra peão de cavalo costuma segurar, contra peão de bispo depende de quem joga. André Chéron já mostrava isso em 1923, e Edmar Mednis e John Emms organizaram as regras práticas em livros mais recentes.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal"
+      ]
+    },
+    {
+      "id": "desenvolvimento",
+      "nome": "desenvolvimento",
+      "definicao": "Tirar as peças das casas iniciais e levá-las a casas onde controlam mais espaço e ganham mobilidade; é a primeira tarefa da abertura.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "diagonal",
+      "nome": "diagonal",
+      "definicao": "Linha reta de casas da mesma cor que vai de uma borda do tabuleiro a uma borda vizinha; é por ela que andam o bispo e a dama. Nos finais, o rei que vai pela diagonal chega tão depressa quanto em linha reta, o que está na base da regra do quadrado.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/graduation.twoBishops",
+        "iniciante/mates.queen",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.rookTwoBishops",
+        "iniciante/notation.moves",
+        "iniciante/pieces.bishop",
+        "iniciante/pieces.king",
+        "iniciante/pieces.pawn",
+        "iniciante/pieces.queen",
+        "iniciante/rules.captureProtect",
+        "iniciante/rules.draws",
+        "iniciante/rules.enPassant",
+        "iniciante/rules.outOfCheck",
+        "iniciante/tricks.defendScholar",
+        "iniciante/tricks.foolsMate",
+        "iniciante/tricks.scholarsMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "en_passant",
+      "nome": "en passant",
+      "definicao": "Captura especial de peão: quando um peão avança duas casas e para ao lado de um peão adversário, este pode capturá-lo como se ele tivesse avançado só uma casa, mas apenas no lance seguinte. A expressão é francesa e quer dizer \"de passagem\".",
+      "chaveWiki": null,
+      "aulas": [
+        "iniciante/rules.enPassant",
+        "lessons"
+      ]
+    },
+    {
+      "id": "era_romantica",
+      "nome": "era romântica",
+      "definicao": "Período do xadrez no século XIX em que sacrifícios e ataques ao rei eram o ideal e recusar um sacrifício era visto como covardia. Hoje se chama de romântico o jogador que arrisca muito no ataque.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "erro_grave",
+      "nome": "erro grave",
+      "definicao": "Lance muito ruim, que perde material ou entrega ao adversário uma vantagem decisiva de posição; na notação, leva o sinal '??'.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "escola_classica",
+      "nome": "escola clássica",
+      "definicao": "Corrente que defende ocupar o centro com peões logo na abertura. Seus princípios tendem a ser rígidos e foram contestados pela escola hipermoderna.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "escola_hipermoderna",
+      "nome": "escola hipermoderna",
+      "definicao": "Corrente liderada por Réti e Nimzowitsch que prefere controlar o centro à distância, a partir dos flancos, em vez de ocupá-lo logo com peões.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "espaco",
+      "nome": "espaço",
+      "definicao": "Território controlado por cada lado, medido pelas casas que suas peças e peões dominam. Quem tem mais espaço manobra com mais liberdade.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "estilo",
+      "nome": "estilo",
+      "definicao": "Maneira de jogar de cada enxadrista, que reflete o temperamento: há jogadores de ataque e jogadores posicionais, por exemplo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "estrategia",
+      "nome": "estratégia",
+      "definicao": "Raciocínio de longo prazo que orienta os lances e os planos, em contraste com a tática, que cuida das oportunidades imediatas.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "estrutura_peoes",
+      "nome": "estrutura de peões",
+      "definicao": "Disposição dos peões dos dois lados no tabuleiro. Ela define as casas fortes e fracas e indica os planos de cada lado.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "estudo",
+      "nome": "estudo",
+      "definicao": "Posição criada por um compositor para mostrar uma ideia, em vez de vir de uma partida real. As aulas usam estudos, como os de Nikolai Grigoriev, para isolar uma técnica de final.",
+      "nota": "Entre os grandes compositores de estudos estão o russo Alexey Troitsky, um dos maiores da história, e Nikolai Grigoriev, nascido em Moscou, um dos grandes compositores de estudos de finais de peões; um estudo de Grigoriev de 1920 é posição de aula no app. O estudo de Réti, de 1921, com só quatro peças, é um dos mais famosos da história do xadrez.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsRookPawn",
+        "endgames/rookPawns.vsPawn",
+        "lessons"
+      ]
+    },
+    {
+      "id": "fator_dinamico",
+      "nome": "fator dinâmico",
+      "definicao": "Vantagem ligada à ação imediata, como iniciativa, ameaças e peças ativas, que tende a sumir se não for usada logo; o contrário dos fatores estáticos, como a estrutura de peões.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "fianqueto",
+      "nome": "fianqueto",
+      "definicao": "Desenvolver o bispo na grande diagonal depois de avançar uma casa o peão de cavalo: bispo branco em g2 ou b2, bispo preto em g7 ou b7. O nome vem do italiano e quer dizer 'no flanco'.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "fide",
+      "nome": "FIDE",
+      "definicao": "Federação Internacional de Xadrez (Fédération Internationale des Échecs): organiza o Campeonato Mundial, concede os títulos internacionais e mantém o rating Elo oficial.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "fileira",
+      "nome": "fileira",
+      "definicao": "Cada uma das oito linhas horizontais de casas, numeradas de 1 a 8 a partir do lado das brancas. Nos finais, a fileira em que está o peão mostra quanto falta para a promoção.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/minor.knightVsPawn",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/mates.queen",
+        "iniciante/mates.twoRooks",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.rookTwoBishops",
+        "iniciante/minor.rookTwoKnights",
+        "iniciante/minor.twoRooksVsKnight",
+        "iniciante/notation.coordinates",
+        "iniciante/notation.moves",
+        "iniciante/pawns.kingPawn",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.square",
+        "iniciante/pieces.check",
+        "iniciante/pieces.knight",
+        "iniciante/pieces.pawn",
+        "iniciante/pieces.queen",
+        "iniciante/pieces.rook",
+        "iniciante/pieces.stalemate",
+        "iniciante/rules.draws",
+        "iniciante/rules.outOfCheck",
+        "iniciante/tactics.matePatterns",
+        "iniciante/technique.rookCut",
+        "iniciante/technique.rookMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "final",
+      "nome": "final",
+      "definicao": "Fase da partida em que restam poucas peças, depois da abertura e do meio-jogo. Com menos peças, o rei passa a ser uma peça ativa, e a técnica de cada tipo de final decide o resultado.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/rook.backRank",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/rules.draws",
+        "lessons"
+      ]
+    },
+    {
+      "id": "final_peoes",
+      "nome": "final de peões",
+      "definicao": "Final em que restam só os reis e os peões. Como não há outras peças, o resultado depende de contar os tempos e de pôr o rei na casa certa, com oposição, casas-chave e casas correspondentes.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/rook.frontal",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "lessons"
+      ]
+    },
+    {
+      "id": "fortaleza",
+      "nome": "fortaleza",
+      "definicao": "Posição em que o lado mais fraco, mesmo com menos material, organiza uma defesa que o adversário não consegue romper, e a partida termina empatada. Nas aulas, aparece em dama contra torre e peão.",
+      "nota": "Na dama contra torre, um peão ao lado da torre pode formar com o rei e a torre uma fortaleza que a dama não rompe; Nikolai Grigoriev publicou em 1933 uma delas, com o peão na sexta fileira, em que tudo depende de quem joga. Em 2019, na Ilha de Man, Magnus Carlsen mostrou a Maxim Matlakov como se derruba uma fortaleza que só parece fortaleza: vinte e sete lances de paciência, com o rei dando a volta até ficar atrás do peão.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/queen.vsRookPawn",
+        "endgames/rookPawns.vsPawn"
+      ]
+    },
+    {
+      "id": "fraqueza",
+      "nome": "fraqueza",
+      "definicao": "Peão ou casa que o adversário ataca com facilidade e que é difícil de defender.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "gambito",
+      "nome": "gambito",
+      "definicao": "Sacrifício de um peão, às vezes mais, na abertura, em troca de compensação, em geral tempo para desenvolver as peças.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "garfo",
+      "nome": "garfo",
+      "definicao": "Lance que ataca duas peças adversárias ao mesmo tempo, de modo que só uma pode ser salva. Nos finais, o garfo de cavalo com xeque contra rei e dama pode salvar ou decidir a partida, como em Kosteniuk contra Polgar.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/minor.knightVsPawn",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "lessons"
+      ]
+    },
+    {
+      "id": "grande_diagonal",
+      "nome": "grande diagonal",
+      "definicao": "Cada uma das duas diagonais mais longas do tabuleiro, de a1 a h8 e de h1 a a8. É nela que fica o bispo do fianqueto.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "grande_mestre",
+      "nome": "grande mestre",
+      "definicao": "O mais alto título de jogador concedido pela FIDE, a federação internacional de xadrez, e vitalício. As aulas citam grandes mestres como autores de livros e jogadores das partidas reais mostradas.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsTwo",
+        "lessons"
+      ]
+    },
+    {
+      "id": "igualdade",
+      "nome": "igualdade",
+      "definicao": "Avaliação em que nenhum lado tem vantagem, ou em que as vantagens de cada lado se compensam.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ilha_peoes",
+      "nome": "ilha de peões",
+      "definicao": "Grupo de peões do mesmo lado separado dos demais por colunas sem peões próprios. Em geral, quem tem menos ilhas tem a estrutura melhor.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "iniciativa",
+      "nome": "iniciativa",
+      "definicao": "Ter a iniciativa é poder fazer ameaças que obrigam o adversário a responder, ditando o rumo da partida.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "interpor",
+      "nome": "interpor",
+      "definicao": "Colocar uma peça entre a peça que ataca e a peça atacada, bloqueando a linha do ataque. Contra um xeque de dama, torre ou bispo, interpor é uma das três defesas, ao lado de mover o rei e capturar a peça que dá o xeque.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/rook.backRank",
+        "endgames/rook.cutOff",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide"
+      ]
+    },
+    {
+      "id": "intuicao",
+      "nome": "intuição",
+      "definicao": "Escolher o lance pela sensação de que ele é o certo, sem calcular tudo até o fim.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "jogo_posicional",
+      "nome": "jogo posicional",
+      "definicao": "Lance ou estilo baseado em vantagens de longo prazo, como estrutura de peões, casas fortes e peças melhores, acumuladas aos poucos.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "lado_curto_longo",
+      "nome": "lado curto / lado longo",
+      "definicao": "Em finais de torre, o peão divide o tabuleiro em dois lados: o curto, com menos colunas, e o longo, com mais. Quem defende leva o rei para o lado curto e deixa o longo para a torre, que dá xeques laterais de longe.",
+      "nota": "Os manuais do século XIX davam esses finais por perdidos, e Johann Berger ainda dizia isso em 1890; em 1897, o professor alemão Max Karstedt mostrou que a posição empata, desde que rei e torre fiquem nos lados certos. Em 2006, um jovem Magnus Carlsen perdeu de Levon Aronian uma posição empatada porque deu um xeque quando o lance certo era de rei.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/queen.vsPawn.draws",
+        "endgames/rook.backRank",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide"
+      ]
+    },
+    {
+      "id": "lance_espera",
+      "nome": "lance de espera",
+      "definicao": "Lance que não muda nada de importante na posição e serve só para passar a vez ao adversário. Quando ele fica sem um bom lance, como o rei que tem uma só casa, a espera o obriga a piorar a própria posição.",
+      "nota": "Nikolai Grigoriev (1895–1938), de Moscou, jogador e compositor de estudos de finais, sobretudo de peões, compôs estudos famosos sobre o tema, em que dois peões e dois reis parecem parados e só um lance de espera preciso conserva o resultado. Num deles, de 1930, a vitória depende de um lance de espera do rei.",
+      "chaveWiki": "en:Tempo_(chess)",
+      "aulas": [
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/minor.knightVsPawn",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.reti",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.behindPasser",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "iniciante/technique.rookMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "lance_livro",
+      "nome": "lance de livro (teoria de livro)",
+      "definicao": "Lance de abertura já analisado em livros e revistas; jogar 'de livro' é repetir essa análise memorizada em vez de pensar a posição.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "lance_especulativo",
+      "nome": "lance especulativo",
+      "definicao": "Lance, em geral um sacrifício, feito sem calcular todas as consequências, confiando na intuição.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "lance_forcado",
+      "nome": "lance forçado",
+      "definicao": "Lance que precisa ser jogado porque todas as outras opções levam a uma perda grave.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "lance_intermediario",
+      "nome": "lance intermediário (zwischenzug)",
+      "definicao": "Lance inesperado, muitas vezes um xeque ou uma ameaça, inserido no meio de uma sequência que parecia óbvia, como uma série de trocas, e que muda o resultado dela.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "lance_secreto",
+      "nome": "lance secreto",
+      "definicao": "Quando uma partida era adiada, o jogador da vez escrevia o lance num envelope fechado, sem jogá-lo no tabuleiro; o envelope era aberto quando a partida recomeçava.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "lance_tranquilo",
+      "nome": "lance tranquilo",
+      "definicao": "Lance sem xeque e sem captura que prepara uma ameaça decisiva. Nos mates de final, é comum ele tirar a última casa do rei adversário antes do mate.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.shortSide"
+      ]
+    },
+    {
+      "id": "lance_unico",
+      "nome": "lance único",
+      "definicao": "O único lance que mantém o resultado da posição, a vitória ou o empate; qualquer outro deixa escapar esse resultado. Não confunda com o lance forçado, quando só existe um lance legal.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "lessons"
+      ]
+    },
+    {
+      "id": "linhas_abertas",
+      "nome": "linhas abertas",
+      "definicao": "Colunas e diagonais sem peões no caminho. Por elas, torres, bispos e damas chegam depressa a qualquer parte do tabuleiro para atacar ou defender.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "luft",
+      "nome": "luft (respiro)",
+      "definicao": "Avanço de um peão da frente do rei para lhe dar uma casa de fuga e evitar o mate na primeira fileira. A palavra é alemã e quer dizer 'ar'.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "maioria_peoes",
+      "nome": "maioria de peões",
+      "definicao": "Ter mais peões que o adversário numa ala. Com o total de peões igual, a maioria numa ala significa minoria na outra, e avançar a maioria é o primeiro passo para criar um peão passado.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "manobra_reti",
+      "nome": "manobra de Réti",
+      "definicao": "Caminho do rei que ameaça duas coisas ao mesmo tempo: alcançar o peão adversário e apoiar o próprio peão. Assim, um rei que parece longe demais salva a partida; Richard Réti publicou a posição em 1921.",
+      "nota": "Richard Réti, mestre tcheco, publicou o estudo em 1921, com só quatro peças, e o compositor Abram Gurvich chamou a ideia de caça às duas lebres. A manobra já tinha aparecido numa partida de verdade: em 1914, em São Petersburgo, Lasker salvou contra Tarrasch um final de peões que parecia perdido.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.reti"
+      ]
+    },
+    {
+      "id": "manobra_w",
+      "nome": "manobra em W",
+      "definicao": "No mate de bispo e cavalo, o caminho do cavalo em zigue-zague, desenhando um W, enquanto o rei e o bispo empurram o rei adversário pela borda do canto errado até o canto da cor do bispo.",
+      "nota": "Quem primeiro chamou a atenção para esse caminho do cavalo foi o francês François-André Philidor, em 1777.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight.w"
+      ]
+    },
+    {
+      "id": "mate_abafado",
+      "nome": "mate abafado",
+      "definicao": "Mate em que o rei não tem fuga porque está cercado pelas próprias peças; quase sempre é dado por um cavalo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "mate_arabe",
+      "nome": "mate árabe",
+      "definicao": "Mate de torre e cavalo: a torre dá o xeque ao lado do rei, e o cavalo protege a torre e controla as casas de fuga que restam.",
+      "chaveWiki": null,
+      "aulas": [
+        "iniciante/minor.rookKnight",
+        "iniciante/minor.rookTwoKnights",
+        "iniciante/tactics.matePatterns",
+        "lessons"
+      ]
+    },
+    {
+      "id": "escadinha",
+      "nome": "mate da escada (escadinha)",
+      "definicao": "Mate de duas torres contra o rei solitário: uma torre fecha uma fileira e a outra dá xeque na seguinte, e as duas se revezam até empurrar o rei para a borda.",
+      "chaveWiki": null,
+      "aulas": [
+        "lessons"
+      ]
+    },
+    {
+      "id": "mate_bispo_cavalo",
+      "nome": "mate de bispo e cavalo",
+      "definicao": "Mate com rei, bispo e cavalo contra o rei solitário, que só acontece no canto da cor das casas do bispo. A técnica tem três etapas: levar o rei adversário à borda, tirá-lo do canto errado e dar o mate no canto certo.",
+      "nota": "O final aparece mais ou menos uma vez a cada seis mil partidas, e o mate só sai num dos dois cantos da cor do bispo. Em 2013, em Genebra, Anna Ushenina, então campeã mundial feminina, não conseguiu dar o mate em Olga Girya. Em 1997, o americano Tal Shaked venceu Alexander Morozevich com ele e foi campeão mundial juvenil.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight.edge"
+      ]
+    },
+    {
+      "id": "mate_dama",
+      "nome": "mate de dama (rei e dama contra rei)",
+      "definicao": "Mate dado com rei e dama contra o rei solitário. É o primeiro mate que todo mundo aprende e o que mais aparece, porque quase todo peão que coroa leva a ele.",
+      "nota": "A dama ganhou o movimento de hoje na Espanha, no fim do século XV; antes, a peça ao lado do rei andava só uma casa na diagonal, e este mate dava um trabalho enorme. Um dos primeiros livros a ensiná-lo foi o de Luis Ramírez de Lucena, o mesmo Lucena que dá nome a este aplicativo.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.queenMate"
+      ]
+    },
+    {
+      "id": "mate_stamma",
+      "nome": "mate de Stamma",
+      "definicao": "Mate de rei e cavalo contra o rei preso no canto pelo próprio peão de torre: o peão, que deveria salvar o defensor, tira a última casa do rei. Leva o nome de Philipp Stamma, mestre de Alepo que publicou um livro de xadrez.",
+      "nota": "O nome é de Philipp Stamma, nascido em Aleppo, na Síria, que publicou o mate em um livro em 1737. Em 2001, no campeonato cubano, Gongora entregou o cavalo por um peão e depois capturou o último peão de Nogueiras, achando que era empate; no lance 84, com o rei preso no canto e o mate sem defesa, abandonou.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/minor.knightVsPawn"
+      ]
+    },
+    {
+      "id": "mate_torre",
+      "nome": "mate de torre (rei e torre contra rei)",
+      "definicao": "Mate dado com rei e torre contra o rei solitário: o rei adversário é empurrado até a borda, sem afogá-lo e sem deixar a torre ser capturada.",
+      "nota": "José Raúl Capablanca abriu o seu livro Chess Fundamentals, de 1921, com este mate; admitia que o exercício é monótono, mas dizia que ensina como poucos a lidar com as peças. Hoje muitos professores o explicam com a ideia da caixa: a torre fecha um retângulo, e cada lance o deixa menor.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.rookMate"
+      ]
+    },
+    {
+      "id": "mate_pastor",
+      "nome": "mate do pastor",
+      "definicao": "Mate na abertura em que a dama e o bispo atacam juntos o peão de f7, defendido só pelo rei, e a dama o captura com mate. Conhecer a ameaça basta para se defender dela.",
+      "chaveWiki": null,
+      "aulas": [
+        "iniciante/tricks.defendScholar",
+        "iniciante/tricks.scholarsMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "material",
+      "nome": "material",
+      "definicao": "O conjunto de peças e peões de cada lado. Vantagem material é ter mais peças ou peças de maior valor que o adversário.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "material_insuficiente",
+      "nome": "material insuficiente",
+      "definicao": "Quando nenhum dos lados tem peças suficientes para dar mate com qualquer sequência de lances legais, como rei contra rei, a partida termina empatada.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight",
+        "lessons"
+      ]
+    },
+    {
+      "id": "meio_jogo",
+      "nome": "meio-jogo",
+      "definicao": "Fase entre a abertura e o final, com a maior parte das peças ainda no tabuleiro.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "mestre_internacional",
+      "nome": "mestre internacional",
+      "definicao": "Título vitalício de jogador concedido pela FIDE, logo abaixo de grande mestre. As aulas citam, por exemplo, Jeremy Silman, mestre internacional norte-americano e autor de livros de xadrez.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.twoBishops",
+        "endgames/rook.lucena"
+      ]
+    },
+    {
+      "id": "miniatura",
+      "nome": "miniatura",
+      "definicao": "Partida curta, com menos de 20 lances, que costuma terminar de forma violenta ou brilhante.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "mobilidade",
+      "nome": "mobilidade",
+      "definicao": "Liberdade de movimento das peças, medida pelas casas úteis que elas alcançam.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "motor",
+      "nome": "motor (de xadrez)",
+      "definicao": "Programa de computador que analisa posições e escolhe lances. No Lucena, os adversários são motores: o Maia, que joga como pessoas de cada nível, e o Stockfish, na força máxima.",
+      "chaveWiki": null,
+      "aulas": [
+        "lessons"
+      ]
+    },
+    {
+      "id": "notacao",
+      "nome": "notação algébrica",
+      "definicao": "Sistema de registrar os lances: cada casa tem uma letra de coluna (a a h) e um número de fileira (1 a 8), e cada peça tem uma inicial (R, D, T, B, C; o peão não tem). É o único sistema reconhecido pela FIDE e o usado nas aulas.",
+      "chaveWiki": null,
+      "aulas": [
+        "lessons"
+      ]
+    },
+    {
+      "id": "novidade_teorica",
+      "nome": "novidade teórica",
+      "definicao": "Lance de abertura jogado pela primeira vez numa posição já conhecida, muitas vezes preparado em casa para surpreender o adversário.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ocupar",
+      "nome": "ocupar",
+      "definicao": "Uma peça ocupa a casa em que está; uma torre ou dama ocupa a coluna ou a fileira que controla, como em 'ocupar a coluna aberta'.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "oposicao",
+      "nome": "oposição",
+      "definicao": "Posição dos reis na mesma coluna ou fileira com uma casa vazia entre eles; tem a oposição quem não está com a vez. Nos finais de peão, ela obriga o rei adversário a ceder passagem.",
+      "nota": "Em Chess Fundamentals (1921), José Raúl Capablanca, cubano e campeão mundial de 1921 a 1927, dedica um capítulo à oposição e a explica com exemplos de finais de peões. \"Quem tem a vez ganha.\" (Capablanca)",
+      "chaveWiki": "pt:Oposição_(xadrez)",
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/rook.frontal",
+        "endgames/rook.philidor",
+        "iniciante/pawns.kingPawn",
+        "iniciante/technique.opposition",
+        "iniciante/technique.rookMate",
+        "iniciante/technique.zugzwang",
+        "lessons"
+      ]
+    },
+    {
+      "id": "oposicao_diagonal",
+      "nome": "oposição diagonal",
+      "definicao": "Oposição com os reis na mesma diagonal, com uma casa entre eles. Como na oposição direta, ela é de quem não está com a vez.",
+      "chaveWiki": "en:Opposition_(chess)",
+      "aulas": [
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares"
+      ]
+    },
+    {
+      "id": "oposicao_distante",
+      "nome": "oposição distante",
+      "definicao": "Oposição com os reis mais afastados, na mesma coluna, com três ou cinco casas entre eles. Quem a tem, sem a vez, consegue chegar à oposição direta quando os reis se aproximam.",
+      "nota": "No Norway Chess de 2017, em Stavanger, Wesley So, com as pretas e um peão a menos, defendeu o final contra Magnus Carlsen acompanhando o rei branco de longe, e a partida terminou empatada.",
+      "chaveWiki": "en:Opposition_(chess)",
+      "aulas": [
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves"
+      ]
+    },
+    {
+      "id": "passivo",
+      "nome": "passivo (lance, posição)",
+      "definicao": "Lance ou posição sem ameaças, em que o lado só se defende e espera; o contrário de ativo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "peao_atrasado",
+      "nome": "peão atrasado",
+      "definicao": "Peão que ficou para trás dos peões das colunas vizinhas; como eles já avançaram, nenhum peão pode protegê-lo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "peao_dama_isolado",
+      "nome": "peão dama isolado (isolani)",
+      "definicao": "Peão isolado na coluna d, sem peões do mesmo lado nas colunas c e e. Só peças podem defendê-lo, e ele não protege as casas à sua frente, mas no meio-jogo dá liberdade às peças para atacar.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "peao_bispo_cavalo",
+      "nome": "peão de bispo, peão de cavalo, peão central",
+      "definicao": "Nomes do peão pela coluna em que está: peão de cavalo nas colunas b e g, peão de bispo nas colunas c e f, e peão central nas colunas d e e. Nos finais, a coluna do peão muda o resultado, porque muda o espaço que os reis e as peças têm perto da borda.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.race",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn"
+      ]
+    },
+    {
+      "id": "peao_torre",
+      "nome": "peão de torre",
+      "definicao": "Peão das colunas a ou h. Nos finais, ele empata muitas vezes: com o rei defensor no canto, o atacante não consegue tirá-lo de lá sem afogá-lo.",
+      "nota": "Com o peão de torre, basta o rei que defende chegar ao canto para a partida terminar empatada. Em Zurique, em 1959, o húngaro Gedeon Barcza salvou o empate contra o jovem Fischer porque o seu rei chegou a tempo ao canto. Em Buenos Aires, em 1968, Najdorf chegou ao mesmo tipo de final um lance atrasado: Panno levou o rei primeiro e Najdorf abandonou.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.cutOff",
+        "endgames/rook.lucena",
+        "endgames/rookPawns.vsPawn",
+        "lessons"
+      ]
+    },
+    {
+      "id": "peao_envenenado",
+      "nome": "peão envenenado",
+      "definicao": "Peão oferecido que parece de graça, mas capturá-lo atrasa o desenvolvimento ou abre um ataque perigoso contra quem o capturou.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "peao_passado",
+      "nome": "peão passado",
+      "definicao": "Peão sem peão adversário à frente dele na mesma coluna nem nas colunas vizinhas, de modo que só peças e o rei podem pará-lo. Nos finais, criar e avançar um peão passado costuma decidir a partida.",
+      "nota": "\"O peão passado tem vontade de se expandir.\" (Aron Nimzowitsch)",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.spareTempi",
+        "endgames/rook.behindPasser"
+      ]
+    },
+    {
+      "id": "peao_protegido",
+      "nome": "peão passado protegido",
+      "definicao": "Peão passado defendido por outro peão. O rei adversário não pode capturá-lo nem sair do quadrado dele, e por isso o seu rei fica livre para capturar os peões do outro lado.",
+      "nota": "Ele aparece em todo livro de finais, de Reuben Fine e Pal Benko a Mark Dvoretsky, e Jesús de la Villa o põe entre os cem finais que todo jogador precisa conhecer.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser"
+      ]
+    },
+    {
+      "id": "peca_sobrecarregada",
+      "nome": "peça sobrecarregada",
+      "definicao": "Peça encarregada de várias defesas ao mesmo tempo; quando é obrigada a cumprir uma delas, abandona a outra.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "peca_tocada",
+      "nome": "peça tocada, peça jogada",
+      "definicao": "Quem tem a vez e toca de propósito numa peça sua deve jogá-la; se toca numa peça adversária, deve capturá-la, quando for possível. Para só arrumar uma peça na casa, o jogador avisa antes com 'j'adoube' ('eu arrumo').",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "pecas_maiores",
+      "nome": "peças maiores (peças pesadas)",
+      "definicao": "A dama e as torres.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "pecas_menores",
+      "nome": "peças menores (peças leves)",
+      "definicao": "Os bispos e os cavalos, que valem cerca de 3 pontos cada.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "peoes_dobrados",
+      "nome": "peões dobrados",
+      "definicao": "Dois peões da mesma cor na mesma coluna, situação que só surge depois de uma captura. Em geral são uma fraqueza, porque um bloqueia o avanço do outro.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.correspondingSquares"
+      ]
+    },
+    {
+      "id": "peoes_ligados",
+      "nome": "peões ligados",
+      "definicao": "Peões lado a lado; perto da promoção, um protege o outro, e dois deles podem ser mais fortes que uma torre.",
+      "nota": "O campeão mundial Max Euwe e Walter Meiden escreveram que dois peões ligados na sexta fileira valem uma torre; Reuben Fine e Pal Benko acrescentaram que tudo depende de onde está o rei da torre. Em Praga, em 2022, Shankland contra Maghsoodloo, o rei acompanhou os peões até o fim.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rookPawns.vsTwo"
+      ]
+    },
+    {
+      "id": "plano",
+      "nome": "plano",
+      "definicao": "Objetivo de curto ou longo prazo que orienta a escolha dos lances, como atacar um peão fraco ou levar o rei ao centro.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "ponte",
+      "nome": "ponte",
+      "definicao": "Técnica de vitória na posição de Lucena: a torre vai para a quarta ou a quinta fileira e, quando o rei sai da frente do peão e recebe xeques, ela se interpõe e acaba com os xeques. Por isso se diz \"construir a ponte\".",
+      "nota": "A ideia de construir uma ponte com a torre ganhou esse nome com Aron Nimzowitsch, em 1925.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.lucena",
+        "lessons"
+      ]
+    },
+    {
+      "id": "posicao_critica",
+      "nome": "posição crítica",
+      "definicao": "Momento decisivo da partida, em que a escolha do lance define o resultado.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "posicao_lucena",
+      "nome": "posição de Lucena",
+      "definicao": "Posição de torre e peão contra torre em que o peão está na sétima fileira, o rei do atacante está na frente dele e o rei defensor está cortado; o atacante ganha construindo a ponte. Leva o nome de Luis Ramírez de Lucena, mas não aparece no livro dele, de 1497: o registro mais antigo é de Alessandro Salvio, em 1634.",
+      "nota": "O nome é um engano histórico: o espanhol Luis Ramírez de Lucena escreveu por volta de 1497 um dos primeiros livros de xadrez impressos, mas a posição não está nele; ela aparece pela primeira vez em 1634, num livro do italiano Alessandro Salvio. Em 1999, na Suécia, Ulf Andersson trocou peões só para chegar a ela, e o adversário desistiu antes de a ponte aparecer no tabuleiro.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.backRank",
+        "endgames/rook.cutOff",
+        "endgames/rook.lucena",
+        "lessons"
+      ]
+    },
+    {
+      "id": "posicao_saavedra",
+      "nome": "posição de Saavedra",
+      "definicao": "Final de torre contra peão em que as brancas só ganham promovendo o peão a torre: promover a dama permite um xeque que obriga a capturar a torre preta e deixa as pretas afogadas. Ensina que, perto da promoção, é preciso conferir o afogamento antes de escolher a peça nova.",
+      "nota": "Em 1895, um jornal de Glasgow publicou como empate uma posição de torre contra peão, e um padre espanhol que vivia na cidade, Fernando Saavedra, mostrou que o peão é que ganhava, promovendo a torre em vez de dama para não afogar o rei adversário. Desde então a posição de Saavedra é um dos estudos mais conhecidos do xadrez.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rookPawns.vsPawn"
+      ]
+    },
+    {
+      "id": "posicao_vancura",
+      "nome": "posição de Vančura",
+      "definicao": "Defesa de empate no final de torre e peão de torre contra torre: a torre que defende ataca o peão de lado, de longe, e o rei defensor fica do outro lado do tabuleiro. Assim o rei atacante não consegue proteger o peão sem levar xeques.",
+      "chaveWiki": null,
+      "aulas": [
+        "lessons"
+      ]
+    },
+    {
+      "id": "prematuro",
+      "nome": "prematuro",
+      "definicao": "Lance ou plano executado antes da hora, sem a preparação necessária.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "preparacao",
+      "nome": "preparação (variante preparada)",
+      "definicao": "Linha de abertura estudada em casa, muitas vezes com um lance novo, guardada para usar contra um adversário específico. O lance inédito é chamado de novidade teórica.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "principios_gerais",
+      "nome": "princípios gerais",
+      "definicao": "Orientações práticas que ajudam a escolher lances sem cálculo concreto, como desenvolver as peças e rocar cedo na abertura; servem de guia, não de lei.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "problema_xadrez",
+      "nome": "problema (de xadrez)",
+      "definicao": "Composição artística em que se pede um mate num número fixo de lances, a partir de uma posição criada pelo autor. É diferente do estudo, que pede vitória ou empate.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "profilaxia",
+      "nome": "profilaxia",
+      "definicao": "Descobrir o plano do adversário e jogar para impedi-lo antes que ele aconteça, olhando a posição como se estivesse do outro lado do tabuleiro.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "promocao",
+      "nome": "promoção",
+      "definicao": "Quando o peão alcança a última fileira, ele é trocado no mesmo lance por uma dama, torre, bispo ou cavalo da mesma cor; diz-se que o peão promove ou coroa. Nos finais, quase todo plano gira em torno de promover um peão ou impedir a promoção do adversário.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/notation.read",
+        "iniciante/pawns.kingPawn",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.rookTwoPawns",
+        "iniciante/pawns.square",
+        "iniciante/pieces.pawn",
+        "iniciante/pieces.stalemate",
+        "iniciante/rules.draws",
+        "iniciante/technique.opposition",
+        "iniciante/technique.zugzwang",
+        "lessons"
+      ]
+    },
+    {
+      "id": "queda_de_seta",
+      "nome": "queda de seta",
+      "definicao": "O fim do tempo de um jogador no relógio. Em regra, quem tem a queda de seta perde; mas, se o adversário não tem como dar mate por nenhuma sequência de lances, a partida empata.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "regra_tarrasch",
+      "nome": "regra de Tarrasch",
+      "definicao": "A torre rende mais atrás de um peão passado do que na frente dele: atrás, ganha espaço a cada passo do peão; na frente, fica presa. Vale para o seu peão e para o do adversário.",
+      "nota": "Ela leva o nome de Siegbert Tarrasch (1862–1934), tão bom professor que, na Alemanha, o chamavam de \"o professor da Alemanha\", que a escreveu no livro sobre o torneio de São Petersburgo de 1914, comentando uma partida de Marshall contra Lasker. A regra tem exceções famosas, como Kramnik contra Beliavsky, em 1993.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.behindPasser"
+      ]
+    },
+    {
+      "id": "regra_quadrado",
+      "nome": "regra do quadrado",
+      "definicao": "Forma rápida de saber se o rei alcança um peão passado: imagine o quadrado que vai da casa do peão até a casa de promoção. Se o rei consegue entrar nesse quadrado, ele alcança o peão; se não, o peão promove sozinho.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.shoulder",
+        "iniciante/pawns.square",
+        "lessons"
+      ]
+    },
+    {
+      "id": "regra_50",
+      "nome": "regra dos cinquenta lances",
+      "definicao": "Um jogador pode pedir o empate quando cada lado fez cinquenta lances seguidos sem nenhum lance de peão e sem nenhuma captura; com setenta e cinco lances, o empate é automático. Nos mates longos, como o de bispo e cavalo, o atacante precisa dar o mate dentro desse limite.",
+      "nota": "Em 2001, num Campeonato Mundial em Moscou, Peter Svidler teve a dama contra a torre de Boris Gelfand, não achou o caminho, e a partida terminou empatada pela regra dos cinquenta lances. No mesmo ano, na liga alemã, Vladimir Epishin não achou o mate de bispo e cavalo contra Robert Kempinski, deixou passar os cinquenta lances e acabou afogando o rei adversário.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "lessons"
+      ]
+    },
+    {
+      "id": "rei_ativo",
+      "nome": "rei ativo",
+      "definicao": "Rei que sai do abrigo e vai para o centro ou para perto dos peões para participar da luta. No final, com poucas peças no tabuleiro, o rei fica fora de perigo e passa a ser uma peça de ataque e defesa.",
+      "chaveWiki": null,
+      "aulas": [
+        "lessons"
+      ]
+    },
+    {
+      "id": "rei_solitario",
+      "nome": "rei solitário",
+      "definicao": "Rei que ficou sem nenhuma outra peça do seu lado. Nos mates básicos, o lado com o rei solitário só pode defender, fugindo para o centro e procurando um afogamento.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "relogio_xadrez",
+      "nome": "relógio de xadrez",
+      "definicao": "Relógio com dois mostradores ligados, um para cada jogador; só anda o do jogador da vez.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "repeticao",
+      "nome": "repetição de posição",
+      "definicao": "Quando a mesma posição aparece pela terceira vez, com o mesmo jogador na vez, a partida pode terminar empatada; na quinta vez, o empate é automático. É o recurso de quem defende com xeques ou com lances de ida e volta.",
+      "chaveWiki": null,
+      "aulas": [
+        "lessons"
+      ]
+    },
+    {
+      "id": "restricao",
+      "nome": "restrição",
+      "definicao": "Falta de lances úteis para as peças, quase sempre causada por falta de espaço.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "roque",
+      "nome": "roque",
+      "definicao": "Único lance em que duas peças se movem juntas: o rei anda duas casas em direção a uma torre, e a torre passa para o outro lado dele. Serve para proteger o rei e pôr a torre em jogo; nos finais, quase sempre já não está disponível.",
+      "chaveWiki": null,
+      "aulas": [
+        "iniciante/notation.read",
+        "iniciante/rules.castling",
+        "iniciante/tricks.principles",
+        "lessons"
+      ]
+    },
+    {
+      "id": "ruptura",
+      "nome": "ruptura",
+      "definicao": "Avanço de peão contra os peões adversários, muitas vezes entregando um ou dois peões de propósito, para criar um peão passado que ninguém alcança. Antes de fazê-la, conte se o rei adversário chega a tempo de parar o peão novo.",
+      "nota": "Os grandes manuais de finais, como os de Mark Dvoretsky e de Jesús de la Villa, ensinam o tema. Numa partida amistosa de 1913, em Londres, José Raúl Capablanca, anos antes de ser campeão do mundo, fez passar um peão sem capturar nada, e Edward Lasker teve que desistir.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.reti"
+      ]
+    },
+    {
+      "id": "sacrificio",
+      "nome": "sacrifício",
+      "definicao": "Entregar material de propósito em troca de algo maior: promover um peão, dar mate, desviar uma peça ou salvar o empate. Nos finais, é comum sacrificar um peão para criar um peão passado ou a torre para impedir uma promoção.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.breakthrough",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/rook.lucena",
+        "endgames/rookPawns.vsTwo",
+        "lessons"
+      ]
+    },
+    {
+      "id": "seguranca_rei",
+      "nome": "segurança do rei",
+      "definicao": "Proteger o rei contra ataques, cuidado principal enquanto há muitas peças no tabuleiro. No final, com poucas peças, o rei fica forte e deve ir para o centro.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "setima_fileira",
+      "nome": "sétima fileira",
+      "definicao": "A fileira anterior à última, contada a partir do lado de quem joga. Nos finais, a torre na sétima fileira corta o rei adversário na última fileira e ataca os peões, e um peão na sétima está a um lance da promoção.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.w",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.race",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/pieces.queen",
+        "lessons"
+      ]
+    },
+    {
+      "id": "simplificar",
+      "nome": "simplificar",
+      "definicao": "Trocar peças para chegar a uma posição mais simples, que você já sabe ganhar ou empatar. Exemplo: com vantagem material, trocar as peças restantes para chegar à posição de Lucena.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/queen.vsPawn",
+        "endgames/rook.lucena"
+      ]
+    },
+    {
+      "id": "simultanea",
+      "nome": "simultânea",
+      "definicao": "Evento em que um jogador forte joga ao mesmo tempo contra vários adversários, cada um no seu tabuleiro.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.minedSquares"
+      ]
+    },
+    {
+      "id": "subpromocao",
+      "nome": "subpromoção",
+      "definicao": "Promover o peão a uma peça que não seja a dama: torre, bispo ou cavalo. Serve, por exemplo, para evitar o afogamento ou para dar xeque com o cavalo.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "tabela_finais",
+      "nome": "tabelas de finais",
+      "definicao": "Bancos de dados, calculados por computador, com o resultado de jogo perfeito de todas as posições com poucas peças; as mais completas cobrem até sete peças. Dizem se o lado na vez vence, empata ou perde e qual é o melhor lance.",
+      "chaveWiki": null,
+      "aulas": [
+        "lessons"
+      ]
+    },
+    {
+      "id": "tatica",
+      "nome": "tática",
+      "definicao": "Lances que exploram oportunidades imediatas, como garfos, cravadas e combinações; posição tática é a que está cheia delas.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "tempo_reserva",
+      "nome": "tempo de reserva",
+      "definicao": "Lance de peão guardado só para passar a vez na hora certa. Nos finais de peões, quem tem um tempo de reserva a mais costuma vencer a disputa do zugzwang.",
+      "nota": "Em 1986, John Nunn venceu Klaus Bischoff graças a um peão de torre que nem tinha saído da casa inicial: avançando uma ou duas casas, conforme precisava, ele deixou as pretas sem lances bons.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.waitingMoves"
+      ]
+    },
+    {
+      "id": "tempo",
+      "nome": "tempo (plural tempi)",
+      "definicao": "A unidade de um lance: perder um tempo é gastar dois lances no que se faria com um, e ganhar um tempo é fazer um lance útil que obriga o adversário a gastar o seu respondendo. A palavra também designa o tempo do relógio.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "teoria",
+      "nome": "teoria",
+      "definicao": "O conjunto de posições e lances já analisados e publicados, sobretudo nas aberturas e nos finais.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "torre_ativa",
+      "nome": "torre ativa",
+      "definicao": "Torre colocada para atacar peões, dar xeques e limitar o rei adversário, em vez de só defender. Em finais de torre, uma torre ativa muitas vezes salva posições com peões fracos.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "transposicao",
+      "nome": "transposição",
+      "definicao": "Chegar à mesma posição por outra ordem de lances; 1.d4 e6 2.e4 d5, por exemplo, leva à mesma posição da Defesa Francesa (1.e4 e6 2.d4 d5).",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "trebuchet",
+      "nome": "trebuchet",
+      "definicao": "Posição de reis e peões em zugzwang recíproco: os dois reis atacam o peão um do outro, e quem tiver a vez perde.",
+      "nota": "O nome é o de uma catapulta medieval; o verbo francês de onde ele vem, trébucher, quer dizer tropeçar, e é o que acontece com o rei.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/pawns.minedSquares"
+      ]
+    },
+    {
+      "id": "triangulacao",
+      "nome": "triangulação",
+      "definicao": "Manobra do rei por três casas vizinhas, em forma de triângulo, para voltar à mesma posição com o adversário na vez. Funciona quando o rei adversário não tem como imitar o percurso, e serve para colocá-lo em zugzwang.",
+      "nota": "Em 1978, Kasparov, com 15 anos, venceu Lev Alburt com um triângulo de rei: deu uma volta, devolveu a vez ao adversário, e Alburt abandonou. A ideia não vive só nos finais de peões: nos Candidatos de 1965, Boris Spassky triangulou com o rei num final de torre contra Tal.",
+      "chaveWiki": "pt:Final_(xadrez)",
+      "aulas": [
+        "endgames/mates.twoKnightsPawn",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.triangulation"
+      ]
+    },
+    {
+      "id": "deletang",
+      "nome": "triângulos de Delétang",
+      "definicao": "Método para dar o mate de bispo e cavalo: o bispo controla uma diagonal e, com o rei e o cavalo, confina o rei adversário em triângulos cada vez menores até o canto da cor do bispo. Daniel Delétang publicou o método em 1923, na revista francesa La Stratégie.",
+      "nota": "O método é de Daniel Delétang, que escreveu de Buenos Aires o artigo publicado na revista La Stratégie em 1923: o bispo fecha uma diagonal, as outras peças fecham as casas ao lado dela, e o rei adversário fica preso em três triângulos cada vez menores. Não é o caminho mais curto, mas é fácil de lembrar e cabe no limite de cinquenta lances.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight.full"
+      ]
+    },
+    {
+      "id": "valor_pecas",
+      "nome": "valor das peças",
+      "definicao": "Escala usada para comparar material: peão vale 1, cavalo e bispo valem 3, torre vale 5 e dama vale 9. Serve para contar antes de capturar ou trocar, mas nos finais a posição concreta pode valer mais que a conta.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.outsidePasser",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.lucena",
+        "iniciante/pawns.rookTwoPawns",
+        "iniciante/rules.captureProtect",
+        "lessons"
+      ]
+    },
+    {
+      "id": "vantagem",
+      "nome": "vantagem",
+      "definicao": "Superioridade de um lado, que vem de material, tempo, espaço ou estrutura de peões; a avaliação vai de pequena vantagem a vantagem decisiva.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "vantagem_decisiva",
+      "nome": "vantagem decisiva",
+      "definicao": "Vantagem suficiente para vencer com jogo correto, o grau mais alto da escala de avaliação usada nas aulas: igual, pequena vantagem, vantagem clara e vantagem decisiva.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "variante",
+      "nome": "variante",
+      "definicao": "Uma linha de lances dentro de uma análise ou um ramo de uma abertura, que costuma levar o nome de um jogador ou de uma cidade.",
+      "chaveWiki": null,
+      "aulas": []
+    },
+    {
+      "id": "cegas",
+      "nome": "xadrez às cegas",
+      "definicao": "Modalidade em que o jogador disputa a partida sem ver o tabuleiro, apenas ouvindo e dizendo os lances.",
+      "nota": "Em 1994, numa partida às cegas em Monte Carlo, Judit Polgár levou o rei de Ljubomir Ljubojević do centro até a borda e deu o mate de bispo e cavalo.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/pawns.keySquares",
+        "lessons"
+      ]
+    },
+    {
+      "id": "xeque",
+      "nome": "xeque",
+      "definicao": "O rei está em xeque quando é atacado por uma ou mais peças adversárias, e o lance seguinte tem de tirá-lo do ataque. Nos finais, o xeque serve para empurrar o rei adversário ou ganhar um tempo, mas um xeque sem plano pode só ajudar o rei a sair.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight",
+        "endgames/mates.bishopKnight.deletang",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/minor.wrongBishop",
+        "endgames/pawns.breakthrough",
+        "endgames/pawns.correspondingSquares",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.outsidePasser",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.reti",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/pawns.shoulder",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.cutOff",
+        "endgames/rook.frontal",
+        "endgames/rook.lucena",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/graduation.twoBishops",
+        "iniciante/mates.queen",
+        "iniciante/mates.twoRooks",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.rookKnight",
+        "iniciante/minor.rookTwoBishops",
+        "iniciante/minor.rookTwoKnights",
+        "iniciante/minor.twoRooksVsKnight",
+        "iniciante/notation.moves",
+        "iniciante/pawns.kingPawn",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.rookTwoPawns",
+        "iniciante/pieces.check",
+        "iniciante/pieces.stalemate",
+        "iniciante/rules.captureProtect",
+        "iniciante/rules.castling",
+        "iniciante/rules.draws",
+        "iniciante/rules.outOfCheck",
+        "iniciante/tactics.matePatterns",
+        "iniciante/technique.opposition",
+        "iniciante/technique.rookCut",
+        "iniciante/technique.rookMate",
+        "iniciante/technique.zugzwang",
+        "iniciante/tricks.foolsMate",
+        "iniciante/tricks.scholarsMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "xeque_distancia",
+      "nome": "xeque à distância",
+      "definicao": "Xeque de torre dado de longe, com várias casas entre a torre e o rei, para que o rei não consiga se aproximar e atacá-la. É a arma da torre que defende contra um peão passado.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser"
+      ]
+    },
+    {
+      "id": "xeque_descoberto",
+      "nome": "xeque descoberto",
+      "definicao": "Xeque que surge quando uma peça sai da linha e abre o caminho de outra peça até o rei. O adversário gasta o lance saindo do xeque, e quem deu o xeque ganha um tempo para mover a peça que saiu.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/mates.bishopKnight.edge",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/rookPawns.vsTwo"
+      ]
+    },
+    {
+      "id": "xeque_mate",
+      "nome": "xeque-mate",
+      "definicao": "Xeque do qual o rei não tem como sair: não pode fugir, interpor uma peça nem capturar a peça que ataca, e a partida termina com a vitória de quem deu o mate. Muitos finais terminam num mate básico depois que um peão promove.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/basics.kingPawn",
+        "endgames/basics.queenMate",
+        "endgames/basics.rookMate",
+        "endgames/basics.twoBishops",
+        "endgames/mates.bishopKnight",
+        "endgames/mates.bishopKnight.deletang",
+        "endgames/mates.bishopKnight.edge",
+        "endgames/mates.bishopKnight.full",
+        "endgames/mates.bishopKnight.w",
+        "endgames/mates.twoKnightsPawn",
+        "endgames/minor.knightVsPawn",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.race",
+        "endgames/pawns.rookPawnDraw",
+        "endgames/queen.vsPawn",
+        "endgames/queen.vsPawn.draws",
+        "endgames/queen.vsRook.approach",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRook.thirdRank",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide",
+        "endgames/rookPawns.vsPawn",
+        "endgames/rookPawns.vsTwo",
+        "iniciante/graduation.twoBishops",
+        "iniciante/mates.queen",
+        "iniciante/mates.twoRooks",
+        "iniciante/minor.rookBishop",
+        "iniciante/minor.rookBishopKnight",
+        "iniciante/minor.rookKnight",
+        "iniciante/minor.rookTwoBishops",
+        "iniciante/minor.rookTwoKnights",
+        "iniciante/minor.twoRooksVsKnight",
+        "iniciante/notation.moves",
+        "iniciante/pawns.rookPawn",
+        "iniciante/pawns.rookTwoPawns",
+        "iniciante/pieces.check",
+        "iniciante/pieces.stalemate",
+        "iniciante/rules.draws",
+        "iniciante/rules.outOfCheck",
+        "iniciante/tactics.matePatterns",
+        "iniciante/technique.rookMate",
+        "iniciante/tricks.defendScholar",
+        "iniciante/tricks.foolsMate",
+        "iniciante/tricks.scholarsMate",
+        "lessons"
+      ]
+    },
+    {
+      "id": "xeque_perpetuo",
+      "nome": "xeque perpétuo",
+      "definicao": "Série de xeques da qual o rei não consegue escapar. Leva ao empate pela repetição de posição e salva quem tem menos material.",
+      "chaveWiki": null,
+      "aulas": [
+        "iniciante/rules.draws",
+        "lessons"
+      ]
+    },
+    {
+      "id": "xeques_laterais",
+      "nome": "xeques laterais",
+      "definicao": "Defesa nos finais de torre em que a torre dá xeques pela fileira, de lado, para afastar o rei adversário do peão. Funciona com a torre no lado longo, onde há colunas suficientes para os xeques terem distância.",
+      "nota": "Siegbert Tarrasch estudou a defesa pelo lado curto em 1906, e são dele as posições dos xeques pelo lado.",
+      "chaveWiki": null,
+      "aulas": [
+        "endgames/rook.backRank",
+        "endgames/rook.behindPasser",
+        "endgames/rook.philidor",
+        "endgames/rook.shortSide"
+      ]
+    },
+    {
+      "id": "zugzwang",
+      "nome": "zugzwang",
+      "definicao": "Palavra alemã que quer dizer obrigação de jogar: a situação em que ter a vez prejudica quem joga, porque qualquer lance piora a posição. Quando isso vale para os dois lados, o zugzwang é recíproco, e oposição, triangulação e tempos de reserva servem para deixar a vez com o adversário.",
+      "nota": "Zugzwang é uma palavra alemã que quer dizer obrigação de jogar, e já aparecia numa revista de xadrez em 1858. A ideia é muito mais antiga: há problemas com zugzwang no shatranj, o antepassado árabe do xadrez, de mais de mil anos atrás.",
+      "chaveWiki": "pt:Zugzwang",
+      "aulas": [
+        "endgames/mates.twoKnightsPawn",
+        "endgames/pawns.distantOpposition",
+        "endgames/pawns.keySquares",
+        "endgames/pawns.minedSquares",
+        "endgames/pawns.protectedPasser",
+        "endgames/pawns.reti",
+        "endgames/pawns.spareTempi",
+        "endgames/pawns.triangulation",
+        "endgames/pawns.waitingMoves",
+        "endgames/queen.vsRook.philidor",
+        "endgames/queen.vsRookPawn",
+        "endgames/rook.lucena",
+        "iniciante/technique.rookMate",
+        "iniciante/technique.zugzwang",
+        "lessons"
+      ]
+    }
+  ]
+}

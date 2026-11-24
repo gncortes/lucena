@@ -90,6 +90,8 @@ flutter:
     - assets/achievements.json
     - assets/legal/
     - assets/featured/featured.json
+    # Glossário (tools/gen_glossario.py)
+    - assets/glossary/glossario.json
     - assets/daily/queue.json
     - assets/characters/
     - assets/voices/

@@ -69,6 +69,11 @@ class AppColors extends ThemeExtension<AppColors> {
   static const trainingDayWrong = Color(0xffb3261e);
   static const trainingMasteryDeveloping = Color(0xff9a6b00);
 
+  /// O selo do lance do aluno na aula em vídeo (protótipo `selo()`): ✓
+  /// verde-claro no acerto, ✗ vermelho no erro, ícone branco.
+  static const moveSealRight = Color(0xff96bc4b);
+  static const moveSealWrong = Color(0xffd9534f);
+
   static const goldColor = Color(0xfff2b705);
 
   /// Texto sobre o dourado (D26): selos, medalha e relatório.
