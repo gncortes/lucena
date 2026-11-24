@@ -447,14 +447,18 @@ void main() {
     });
   });
 
-  group('gaps L1 (pendente: termo e casa do balão)', () {
-    testWidgets('Vídeo 37: leitor de tela → termo e casa são links', (
-      tester,
-    ) async {
-      // Assert: LessonVideoKeys.term(id) e LessonVideoKeys.square(sq) com
-      // semântica de link.
-    });
-  }, skip: 'L5: termo e casa sublinhados no balão ainda não existem');
+  group(
+    'gaps L1 (pendente: termo e casa do balão)',
+    () {
+      testWidgets('Vídeo 37: leitor de tela → termo e casa são links', (
+        tester,
+      ) async {
+        // Assert: LessonVideoKeys.term(id) e LessonVideoKeys.square(sq) com
+        // semântica de link.
+      });
+    },
+    skip: 'L5: casa sublinhada não existe; o termo é GlossaryText sem chave por termo',
+  );
 
   group('gaps L1 (carregando com esqueleto)', () {
     testWidgets(
@@ -567,7 +571,16 @@ void main() {
         'citada (L5)',
   );
 
-  group('gaps L5', () {
+  // gaps L5 já cobertos (V1, 24/11):
+  // - Vídeo 17 (volta do Glossário continua só se tocava): `pauseWhile` em
+  //   `lesson_video_glossary_test.dart`, ligado no router.
+  // - Vídeo 18 (termo → pausa + Glossário filtrado com a folha):
+  //   `lesson_video_glossary_test.dart` (pausa e termo) e
+  //   `test/ui/glossary/glossary_screen_test.dart` (GlossaryText, rota com
+  //   busca = termo, folha, lista filtrada).
+  // - Vídeo 19 (sem internet → folha offline) e Vídeo 21 (busca sem
+  //   resultado): `test/ui/glossary/glossary_screen_test.dart`.
+  group('gaps L5 (casa sublinhada)', () {
     testWidgets(
       'Vídeo 2: toque numa casa sublinhada do balão → a casa pisca no '
       'tabuleiro (square_flash), o vídeo segue',
@@ -576,40 +589,7 @@ void main() {
         // Assert: square_flash em c8 e o vídeo continua tocando.
       },
     );
-
-    testWidgets(
-      'Vídeo 17: livro → Glossário → voltar → pausa; ao voltar continua só '
-      'se tocava',
-      (tester) async {
-        // Act: tocar glossaryButton tocando; voltar. Assert: pausou ao abrir
-        // e voltou a tocar. Repetir pausado: continua pausado.
-      },
-    );
-
-    testWidgets(
-      'Vídeo 18: tocar termo sublinhado → pausa; Glossário com a busca = '
-      'termo e folha da Wikipédia; fechar a folha deixa a lista filtrada',
-      (tester) async {
-        // Act: tap em LessonVideoKeys.term(id). Assert: GlossaryKeys.search
-        // com o termo, folha aberta; fechar → lista filtrada; X limpa.
-      },
-    );
-
-    testWidgets('Vídeo 19: termo sem internet → folha do termo com definição + '
-        '"Sem internet…"', (tester) async {
-      // Arrange: conectividade off. Act: tocar termo.
-      // Assert: GlossaryKeys.sheet com definição e GlossaryKeys.offline.
-    });
-
-    testWidgets(
-      'Vídeo 21: busca no Glossário sem resultado → estado vazio "Nenhum '
-      'termo com …"',
-      (tester) async {
-        // Act: digitar termo inexistente em GlossaryKeys.search.
-        // Assert: GlossaryKeys.empty com o texto da busca.
-      },
-    );
-  }, skip: 'L5: Glossário (tela, busca, folhas) e termo/casa sublinhados');
+  }, skip: 'L5: casa sublinhada no balão e square_flash ainda não existem');
 
   group('gaps L6', () {
     testWidgets(

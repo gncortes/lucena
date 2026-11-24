@@ -259,6 +259,15 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     tick();
   }
 
+  /// Glossário (livro do topo ou termo da fala, Vídeo 17/E8): pausa enquanto
+  /// [away] estiver aberto e, na volta, continua só se tocava.
+  Future<void> pauseWhile(Future<void> Function() away) async {
+    final wasPlaying = state.playing;
+    pause();
+    await away();
+    if (wasPlaying && !isClosed) play();
+  }
+
   void pause() {
     if (!_ready) return;
     if (_branch != null) _branchClock = _branchClock.pause(_now());

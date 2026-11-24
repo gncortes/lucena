@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -90,6 +92,31 @@ void main() {
     await tester.pump();
     expect(opened.single.id, 'oposicao');
     expect(cubit.state.playing, isFalse);
+  });
+
+  group('Vídeo 17 / E8: voltar do Glossário', () {
+    testWidgets('tocava → pausa enquanto aberto e volta a tocar', (
+      tester,
+    ) async {
+      final (cubit, _, _) = await pump(tester);
+      final glossary = Completer<void>();
+      expect(cubit.state.playing, isTrue);
+      final away = cubit.pauseWhile(() => glossary.future);
+      await tester.pump();
+      expect(cubit.state.playing, isFalse);
+      final at = cubit.state.position;
+      glossary.complete();
+      await away;
+      expect(cubit.state.playing, isTrue);
+      expect(cubit.state.position, at, reason: 'no mesmo instante');
+    });
+
+    testWidgets('pausado → continua pausado na volta', (tester) async {
+      final (cubit, _, _) = await pump(tester);
+      cubit.pause();
+      await cubit.pauseWhile(() async {});
+      expect(cubit.state.playing, isFalse);
+    });
   });
 
   testWidgets('o livro do topo abre o Glossário', (tester) async {

@@ -1374,19 +1374,22 @@ GoRouter buildRouter({
                                 ).wait,
                                 // Livro do topo e termo sublinhado: pausa o
                                 // vídeo e abre o Glossário (filtrado pelo termo,
-                                // com a folha/Wikipédia).
+                                // com a folha/Wikipédia); na volta, continua só
+                                // se tocava (Vídeo 17, E8).
                                 builder: (context, loaded) => LessonVideoScreen(
                                   title: loaded.data?.$1 ?? '',
                                   viktor: loaded.data?.$2,
                                   terms: loaded.data?.$3 ?? const [],
-                                  onGlossary: () {
-                                    context.read<LessonVideoCubit>().pause();
-                                    context.push(Routes.glossary);
-                                  },
-                                  onTerm: (term) {
-                                    context.read<LessonVideoCubit>().pause();
-                                    GlossaryText.open(context, term);
-                                  },
+                                  onGlossary: () => context
+                                      .read<LessonVideoCubit>()
+                                      .pauseWhile(
+                                        () => context.push(Routes.glossary),
+                                      ),
+                                  onTerm: (term) => context
+                                      .read<LessonVideoCubit>()
+                                      .pauseWhile(
+                                        () => GlossaryText.open(context, term),
+                                      ),
                                 ),
                               ),
                         );
