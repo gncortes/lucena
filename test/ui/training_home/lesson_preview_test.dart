@@ -58,6 +58,7 @@ void main() {
         final scripts = _DelayedScripts(script, scriptTexts(json));
         final source = FakeLessonSource();
         final cubit = LessonScriptCubit(
+          videoStages: const {},
           lessonId: script.lessonId,
           partId: script.partId,
           scriptPath: 'script.json',

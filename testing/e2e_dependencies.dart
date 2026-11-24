@@ -143,6 +143,7 @@ import 'package:lucena/data/repositories/featured/featured_alerts_repository.dar
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_repository_asset.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
+import 'package:lucena/data/repositories/glossary/glossary_repository_asset.dart';
 
 import 'fakes/fake_evaluation_repository.dart';
 import 'fakes/fake_haptics_repository.dart';
@@ -634,6 +635,7 @@ Future<Dependencies> e2eDependencies({
     surveyRepository: LocalSurveyRepository(PreferencesService(), clock),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(content),
+    glossaryRepository: AssetGlossaryRepository(const AssetService()),
     featuredRepository: AssetFeaturedRepository(const AssetService()),
     coursePreviewRepository: AssetCoursePreviewRepository(content),
     featuredProgressRepository: ActiveFeaturedProgressRepository(

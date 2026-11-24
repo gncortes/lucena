@@ -2,12 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../data/repositories/endgames/endgame_lesson_repository_asset.dart';
+import '../../data/repositories/lesson_voice/lesson_voice_repository.dart';
+import '../../data/repositories/lesson_voice/lesson_voice_repository_downloaded.dart';
 import '../../data/repositories/endgames/visible_endgame_lesson_repository.dart';
 import '../../data/repositories/positions/positions_repository_asset.dart';
 import '../../data/repositories/school/lesson_repository_asset.dart';
 import '../../data/repositories/training/training_school_content.dart';
 import '../../data/services/lesson_content_service.dart';
 import '../../data/services/lesson_package_service.dart';
+import '../../data/services/voice_pack_service.dart';
 import '../build_flags.dart';
 import 'core.dart';
 
@@ -21,6 +24,7 @@ class ContentDependencies {
     required this.lessons,
     required this.trainingSchoolContent,
     required this.endgameLessons,
+    required this.lessonVoice,
   });
 
   factory ContentDependencies.create(CoreDependencies core) {
@@ -41,6 +45,19 @@ class ContentDependencies {
         ? source
         : LessonContentAssets(reader: packages);
     final lessons = AssetLessonRepository(lessonContent);
+    // A voz dos capítulos vem da mesma versão publicada do conteúdo.
+    const release = String.fromEnvironment('CONTENT_RELEASE');
+    final lessonVoice = DownloadedLessonVoiceRepository(
+      core.firebase && release.isNotEmpty
+          ? VoicePackService(
+              release: release,
+              download: firebaseLessonObjectDownload,
+              directory: getApplicationSupportDirectory,
+            )
+          : null,
+      core.preferences,
+      language: () async => (await core.settings.load()).languageCode ?? 'pt',
+    );
     return ContentDependencies._(
       source: source,
       packages: packages,
@@ -55,6 +72,7 @@ class ContentDependencies {
       endgameLessons: VisibleEndgameLessonRepository(
         AssetEndgameLessonRepository(lessonContent, school: lessons),
       ),
+      lessonVoice: lessonVoice,
     );
   }
 
@@ -73,4 +91,7 @@ class ContentDependencies {
   final AssetLessonRepository lessons;
   final TrainingSchoolContent trainingSchoolContent;
   final VisibleEndgameLessonRepository endgameLessons;
+
+  /// A voz gravada dos capítulos da aula em vídeo e a preferência de voz.
+  final LessonVoiceRepository lessonVoice;
 }

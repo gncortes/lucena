@@ -33,6 +33,7 @@ import '../../data/repositories/tablebase/script_table_repository.dart';
 import '../../data/repositories/training/training_repository_local.dart';
 import '../../data/repositories/voice/voice_repository_local.dart';
 import '../../data/repositories/wiki/wiki_links_repository_asset.dart';
+import '../../data/repositories/glossary/glossary_repository_asset.dart';
 import '../../data/services/app_links_deep_link_service.dart';
 import '../../data/services/firebase/push_service.dart';
 import '../../data/services/install_referrer_service.dart';
@@ -159,6 +160,7 @@ Dependencies buildNormalDependencies({
     blindCheckpointRepository: LocalBlindCheckpointRepository(preferences),
     surveyRepository: LocalSurveyRepository(preferences, now),
     wikiLinksRepository: AssetWikiLinksRepository(lessonContent),
+    glossaryRepository: AssetGlossaryRepository(assets),
     featuredRepository: AssetFeaturedRepository(assets),
     coursePreviewRepository: AssetCoursePreviewRepository(lessonContent),
     featuredProgressRepository: progress.featured,
@@ -171,6 +173,7 @@ Dependencies buildNormalDependencies({
     ),
     accountInviteRepository: account.invite,
     avatarRepository: account.avatars,
+    lessonVoice: content.lessonVoice,
     photoRepository: DevicePhotoRepository(),
     mailAppRepository: const DeviceMailAppRepository(),
     analyticsRepository: core.analytics,

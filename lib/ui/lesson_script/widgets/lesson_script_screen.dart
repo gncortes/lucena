@@ -34,15 +34,13 @@ import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
-import '../../core/motion/entrada_de_resultado.dart';
 import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
-import '../../voice/view_models/speech_cubit.dart';
 import '../view_models/lesson_script_cubit.dart';
 import 'curiosities_sheet.dart';
-import 'script_demo_controls.dart';
+import '../../lesson_video/widgets/lesson_video_stage.dart';
 import 'script_board.dart';
 import 'script_move_list.dart';
 import 'script_page.dart';
@@ -297,6 +295,23 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             onAction: cubit.retryPracticeIssue,
             onBack: () =>
                 context.canPop() ? context.pop() : context.go(Routes.home),
+          );
+        }
+        // L6: Teoria e Demonstração são a aula em vídeo; a Prática segue aqui.
+        if (state.ready &&
+            !_contentUnavailable &&
+            cubit.videoStages.contains(state.stageId)) {
+          return LessonVideoStage(
+            lessonId: cubit.lessonId,
+            partId: cubit.partId,
+            scriptPath: cubit.scriptPath,
+            stage: state.stageId,
+            language: cubit.language,
+            title: _safeTitle(),
+            viktor: _viktor,
+            autoplay: !cubit.videoOpensPaused,
+            onBack: () => unawaited(_leave()),
+            onNextStage: () => unawaited(cubit.videoStageDone()),
           );
         }
         return Scaffold(
@@ -864,18 +879,6 @@ class _LessonSpeech extends StatelessWidget {
         speakerId: 'master',
         child: speech,
       );
-      // Na demonstração, o passo espera a voz dizer a fala dele; sem som
-      // ou sem voz, vale o tempo de leitura.
-      speech = BlocListener<SpeechCubit, SpeechState>(
-        bloc: voice,
-        listenWhen: (a, b) =>
-            a.speaking != b.speaking || a.settings != b.settings,
-        listener: (context, speaking) => cubit.demoVoice(
-          speaking:
-              sound && speaking.settings.enabled && speaking.isSpeaking(text),
-        ),
-        child: speech,
-      );
     }
     return speech;
   }
@@ -1017,35 +1020,6 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     final primary = this.primary;
     final secondary = this.secondary;
-    final demo = state.demo;
-    // Demonstração (etapa 2): ↻ ⏮ ⏸/▶ e o ⏭ com o anel no lugar dos
-    // botões; no fim, só ↻ e o botão principal (canvas, E12). Teoria (etapa
-    // 1): nas falas de "Continuar", ⏸/▶ e o ⏭ com o anel.
-    final repeat = ScriptDemoButton(
-      buttonKey: LessonScriptKeys.demoRepeat,
-      icon: CanvasSymbols.replay,
-      tooltip: context.l10n.lessonDemoReplay,
-      onPressed: () => unawaited(cubit.demoRepeat()),
-    );
-    final controls = demo == null || demo.ended || primary == null
-        ? null
-        : ScriptDemoControls(
-            playing: demo.playing,
-            speaking: demo.speaking,
-            full: demo.full,
-            progress: demo.progress,
-            remaining: demo.remaining,
-            tick: demo.tick,
-            canStepBack: demo.canStepBack,
-            mainTooltip: primary.label,
-            onRepeat: () => unawaited(cubit.demoRepeat()),
-            onStepBack: cubit.demoStepBack,
-            onToggle: cubit.demoToggle,
-            onNext: () => primary.onPressed?.call(),
-            canvasLayout: true,
-          );
-    // A demonstração com ↻ ⏮ ⏸ e o ⏭ (a teoria só tem ⏸ e o ⏭).
-    final assistindo = controls != null && demo!.full;
     final back = state.canBack && state.stageId != 'pratica'
         ? _CanvasLessonFab(
             key: LessonScriptKeys.back,
@@ -1068,17 +1042,9 @@ class _Footer extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       spacing: 12,
       children: [
-        if (demo?.ended == true) repeat,
         if (secondary != null) Flexible(child: _ActionButton(secondary)),
         if (primary != null) Flexible(child: _ActionButton(primary)),
       ],
-    );
-    // H-ANI-25: no fim da demonstração, o tabuleiro e a fala ficam e ↻ e o
-    // botão principal entram por último; cada fim (também depois do ↻) é um
-    // resultado novo.
-    final fimDaDemo = EntradaDeResultado(
-      id: 'demo-${cubit.lessonId}-${state.stageId}-${demo?.tick}',
-      botoes: acoes,
     );
     return SizedBox(
       key: LessonScriptKeys.footer,
@@ -1089,16 +1055,14 @@ class _Footer extends StatelessWidget {
           spacing: 12,
           children: [
             ?back,
-            // Com ↻ ⏮ ⏸ e o ⏭ na tela o aluno só assiste: a 💡 e a 🔍
-            // esperam o fim da demonstração (e o rodapé cabe em 411 dp).
-            if (!assistindo && cubit.canHint)
+            if (cubit.canHint)
               _CanvasLessonFab(
                 key: LessonScriptKeys.hint,
                 tooltip: context.l10n.lessonHint,
                 onPressed: () => unawaited(cubit.hint()),
                 child: const Icon(CanvasSymbols.lightbulb),
               ),
-            if (!assistindo && cubit.canAnalyze && onAnalyze != null)
+            if (cubit.canAnalyze && onAnalyze != null)
               _CanvasLessonFab(
                 key: LessonScriptKeys.analyze,
                 tooltip: context.l10n.lessonAnalyzePosition,
@@ -1106,10 +1070,7 @@ class _Footer extends StatelessWidget {
                 child: const Icon(CanvasSymbols.search),
               ),
             Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: controls ?? (demo?.ended == true ? fimDaDemo : acoes),
-              ),
+              child: Align(alignment: Alignment.centerRight, child: acoes),
             ),
           ],
         ),

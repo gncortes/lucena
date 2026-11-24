@@ -96,6 +96,7 @@ void main() {
         await settings.load();
         addTearDown(settings.close);
         final cubit = LessonScriptCubit(
+          videoStages: const {},
           lessonId: school ? 'pieces.rook' : 'pilares.c1',
           partId: 'first',
           scriptPath: 'fixture.json',

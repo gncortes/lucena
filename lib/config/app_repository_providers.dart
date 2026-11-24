@@ -8,6 +8,7 @@ import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/alerts/alerts_repository.dart';
+import '../data/repositories/glossary/glossary_repository.dart';
 import '../data/repositories/alerts/region_prompt_repository.dart';
 import '../data/repositories/analysis/analysis_repository.dart';
 import '../data/repositories/analysis/learning_analysis_repository.dart';
@@ -66,6 +67,10 @@ import '../data/repositories/rating/rating_repository.dart';
 import '../data/repositories/review/game_review_repository.dart';
 import '../data/repositories/review/review_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/lesson_video/lesson_video_repository.dart';
+import '../data/repositories/lesson_video/lesson_video_repository_local.dart';
+import '../data/repositories/lesson_video/video_interruptions_repository.dart';
+import '../data/repositories/lesson_video/video_interruptions_repository_device.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/school/star_challenge_repository.dart';
@@ -82,6 +87,7 @@ import '../data/repositories/training/course_download_repository.dart';
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../data/repositories/training/demo_offer_repository.dart';
+import '../data/repositories/lesson_voice/lesson_voice_repository.dart';
 import '../data/repositories/training/training_endgame_content.dart';
 import '../data/repositories/training/training_history_source.dart';
 import '../data/repositories/training/training_repository.dart';
@@ -209,6 +215,16 @@ _Providers _game(Dependencies deps) => [
         deps.learningAnalysisRepository ??
         LearningAnalysisRepository(PreferencesService()),
   ),
+  // A aula em vídeo: onde parou, os ajustes e o que a pausa (L3).
+  RepositoryProvider<LessonVideoRepository>(
+    create: (_) => LocalLessonVideoRepository(PreferencesService()),
+  ),
+  RepositoryProvider<VideoInterruptionsRepository>(
+    create: (_) => DeviceVideoInterruptionsRepository(),
+  ),
+  // A voz gravada da aula (L4): sem ela, a aula fica em modo leitura.
+  if (deps.lessonVoice case final voice?)
+    RepositoryProvider<LessonVoiceRepository>.value(value: voice),
   RepositoryProvider<DeepAnalysisRepository>.value(
     value: deps.deepAnalysisRepository,
   ),
@@ -319,6 +335,10 @@ _Providers _home(Dependencies deps) => [
 /// A opinião de quem usa: pesquisa, feedback e o pedido de avaliação.
 _Providers _care(Dependencies deps) => [
   RepositoryProvider<SurveyRepository>.value(value: deps.surveyRepository),
+  RepositoryProvider<GlossaryRepository>.value(value: deps.glossaryRepository),
+  RepositoryProvider<ConnectivityRepository>.value(
+    value: deps.connectivityRepository,
+  ),
   RepositoryProvider<FeedbackRepository>.value(value: deps.feedbackRepository),
   RepositoryProvider<FeedbackDraftRepository>.value(
     value: deps.feedbackDraftRepository,

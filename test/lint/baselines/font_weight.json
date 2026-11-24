@@ -58,7 +58,6 @@
   "lib/ui/lesson_end/widgets/week_review_screen.dart": 4,
   "lib/ui/lesson_finished/widgets/lesson_finished_screen.dart": 1,
   "lib/ui/lesson_script/widgets/lesson_script_screen.dart": 1,
-  "lib/ui/lesson_script/widgets/script_demo_controls.dart": 1,
   "lib/ui/lesson_script/widgets/script_move_list.dart": 1,
   "lib/ui/level/widgets/level_band_sheet.dart": 2,
   "lib/ui/level/widgets/level_rating_screen.dart": 1,

@@ -22,6 +22,16 @@ extension AppText on BuildContext {
       Theme.of(this).textTheme.headlineSmall
           ?.copyWith(fontWeight: AppWeight.strong);
 
+  /// Fala do Viktor no balão da aula em vídeo: `bodyLarge` em 18/26.
+  TextStyle? get videoCaption =>
+      Theme.of(this).textTheme.bodyLarge
+          ?.copyWith(fontSize: 18, height: 26 / 18);
+
+  /// Rótulo da pílula tonal de 32 ("Ver a resposta"): `labelLarge` 13 em 600.
+  TextStyle? get pillLabel =>
+      Theme.of(this).textTheme.labelLarge
+          ?.copyWith(fontSize: 13, fontWeight: AppWeight.medium);
+
   /// Título de seção: `titleSmall` em `onSurfaceVariant`.
   TextStyle? get sectionTitle {
     final theme = Theme.of(this);
@@ -34,6 +44,7 @@ extension AppText on BuildContext {
 /// Peso de fonte para o que não parte de um estilo do tema: trecho em
 /// destaque dentro de um texto corrido, número de selo e relógio.
 abstract final class AppWeight {
+  static const medium = FontWeight.w600;
   static const strong = FontWeight.w700;
   static const heavy = FontWeight.w800;
 }

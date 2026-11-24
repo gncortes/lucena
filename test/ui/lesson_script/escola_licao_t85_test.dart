@@ -31,6 +31,7 @@ void main() {
   }) async {
     final source = FakeLessonSource(endgame: false);
     final cubit = LessonScriptCubit(
+      videoStages: const {},
       lessonId: lesson,
       partId: 'licao',
       scriptPath: AssetLessonScriptRepository.scriptPath(lesson),

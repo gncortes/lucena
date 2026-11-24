@@ -65,6 +65,7 @@ const _telas = <String, String>{
   // A lição (modo aula) desce o tabuleiro pelo balão do Viktor.
   'lesson_script/widgets/lesson_script_screen.dart': _licao,
   'lesson_script/widgets/script_board.dart': _licao,
+  'lesson_video/widgets/lesson_video_screen.dart': _licao,
   // Os próprios widgets de tabuleiro.
   'core/motion/tabuleiro_animado.dart': _componente,
   'core/widgets/position_board.dart': _componente,

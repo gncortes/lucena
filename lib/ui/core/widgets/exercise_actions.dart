@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../lesson_script/widgets/script_demo_controls.dart';
 import '../keys/training_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_button.dart';
 import '../theme/app_button_text.dart';
 import '../theme/app_spacing.dart';
 import 'round_footer_button.dart';
+import 'round_nav_button.dart';
 
 enum ExerciseNavigation { start, middle, end }
 
@@ -124,7 +124,7 @@ class ExerciseActions extends StatelessWidget {
             ?hint,
             if (navigation != null) ...[
               if (buttons.isEmpty) const Spacer(),
-              ScriptDemoButton(
+              RoundNavButton(
                 buttonKey: TrainingKeys.prevMove,
                 icon: Icons.chevron_left,
                 tooltip: context.l10n.trainingPrevMove,
@@ -132,8 +132,8 @@ class ExerciseActions extends StatelessWidget {
                     ? null
                     : onPreviousMove,
               ),
-              const SizedBox(width: ScriptDemoControls.gap),
-              ScriptDemoButton(
+              const SizedBox(width: AppSpacing.md),
+              RoundNavButton(
                 buttonKey: TrainingKeys.nextMove,
                 icon: Icons.chevron_right,
                 tooltip: context.l10n.trainingNextMove,
