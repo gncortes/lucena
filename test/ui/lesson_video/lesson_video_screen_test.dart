@@ -4,6 +4,7 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/lesson_voice.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -20,6 +21,7 @@ import 'package:lucena/ui/lesson_video/widgets/lesson_video_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/board_center.dart';
+import '../../../testing/fakes/fake_lesson_voice_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_video_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -82,6 +84,7 @@ Future<_Pumped> _pump(
   LessonScriptRepository? scripts,
   FakeLessonVideoRepository? videos,
   FakeNow? now,
+  FakeLessonVoiceRepository? voice,
 }) async {
   final padding = FakeViewPadding(top: aparelho.status, bottom: aparelho.nav);
   tester.view
@@ -111,6 +114,7 @@ Future<_Pumped> _pump(
     stage: stage,
     autoplay: autoplay,
     ticker: (_, _) => null,
+    voice: voice,
   );
   addTearDown(cubit.close);
   Widget screen = BlocProvider.value(
@@ -551,25 +555,49 @@ void main() {
     );
   });
 
-  group(
-    'gaps L3 (pendente: balão de legenda desligada)',
-    () {
-      testWidgets(
-        'Vídeo 12: legenda desligada → balão "Legenda desligada"; o destaque '
-        'da casa citada sai',
-        (tester) async {
-          await _pump(tester);
-          await tester.tap(find.byKey(LessonVideoKeys.captions));
-          await tester.pump(const Duration(milliseconds: 300));
-          expect(find.text('Legenda desligada'), findsOneWidget);
-        },
-      );
-    },
-    skip:
-        'L3: legenda desligada só esconde o balão (opacidade 0); não há '
-        'texto "Legenda desligada" (sem chave no .arb) nem destaque de casa '
-        'citada (L5)',
-  );
+  group('L4: legenda desligada e voz', () {
+    testWidgets(
+      'Vídeo 12: legenda desligada → "Legenda desligada" no lugar do balão',
+      (tester) async {
+        await _pump(tester);
+        await tester.tap(find.byKey(LessonVideoKeys.captions));
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byKey(LessonVideoKeys.captionsOff), findsOneWidget);
+        expect(find.text('Legenda desligada'), findsOneWidget);
+        expect(find.byKey(LessonVideoKeys.caption), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'Vídeo 10: sem o pacote → "Sem áudio." e "Baixar a voz" baixa',
+      (tester) async {
+        final voice = FakeLessonVoiceRepository()
+          ..nextDownload = const VoicePackFailed(VoicePackFailure.network);
+        final p = await _pump(tester, voice: voice);
+        expect(p.cubit.state.voice, VideoVoice.missing);
+        expect(find.byKey(LessonVideoKeys.voiceNotice), findsOneWidget);
+        expect(
+          find.textContaining('Sem áudio.', findRichText: true),
+          findsOneWidget,
+        );
+
+        expect(find.text('Baixar a voz'), findsOneWidget);
+        await tester.tap(find.byKey(LessonVideoKeys.voiceNoticeAction));
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(voice.downloads, ['pawns.test']);
+        // Vídeo 11: falhou → "Não deu para baixar a voz." e "Tentar novamente".
+        expect(find.text('Não deu para baixar a voz.'), findsOneWidget);
+        expect(find.text('Tentar novamente'), findsOneWidget);
+      },
+    );
+
+    testWidgets('voz desligada nos ajustes → leitura sem aviso', (
+      tester,
+    ) async {
+      await _pump(tester, voice: FakeLessonVoiceRepository(on: false));
+      expect(find.byKey(LessonVideoKeys.voiceNotice), findsNothing);
+    });
+  });
 
   // gaps L5 já cobertos (V1, 24/11):
   // - Vídeo 17 (volta do Glossário continua só se tocava): `pauseWhile` em

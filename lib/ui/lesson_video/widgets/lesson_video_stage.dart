@@ -6,6 +6,8 @@ import '../../../data/repositories/glossary/glossary_repository.dart';
 import '../../../data/repositories/school/lesson_script_repository.dart';
 import '../../../data/repositories/lesson_video/lesson_video_repository.dart';
 import '../../../data/repositories/lesson_video/video_interruptions_repository.dart';
+import '../../../data/repositories/lesson_voice/lesson_voice_repository.dart';
+import '../../../data/services/voice_audio_service.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/glossary_term.dart';
 import '../../../domain/use_cases/now.dart';
@@ -62,6 +64,8 @@ class LessonVideoStage extends StatelessWidget {
         scriptPath: scriptPath,
         stage: stage,
         language: language,
+        voice: context.read<LessonVoiceRepository?>(),
+        audio: JustAudioVoiceAudioService.create,
       )..start(),
       child: FutureBuilder<(String?, List<GlossaryTerm>)>(
         future: (

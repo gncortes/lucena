@@ -14671,5 +14671,21 @@
   "lessonVideoRestart": "Start over",
   "@lessonVideoRestart": {
     "description": "Action of the resume notice: plays the lesson video from 0:00."
+  },
+  "lessonVideoNoAudio": "No audio.",
+  "@lessonVideoNoAudio": {
+    "description": "Notice when the voice of the chapter is not on the device: the lesson video plays at reading pace."
+  },
+  "lessonVideoDownloadVoice": "Download the voice",
+  "@lessonVideoDownloadVoice": {
+    "description": "Action of the no-audio notice: downloads the voice of the chapter."
+  },
+  "lessonVideoVoiceFailed": "Couldn't download the voice.",
+  "@lessonVideoVoiceFailed": {
+    "description": "Notice when downloading the voice of the chapter failed; the action is lessonRetry."
+  },
+  "lessonVideoCaptionsOff": "Captions off",
+  "@lessonVideoCaptionsOff": {
+    "description": "Shown in place of the caption balloon when captions are off."
   }
 }

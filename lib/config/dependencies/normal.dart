@@ -173,6 +173,7 @@ Dependencies buildNormalDependencies({
     ),
     accountInviteRepository: account.invite,
     avatarRepository: account.avatars,
+    lessonVoice: content.lessonVoice,
     photoRepository: DevicePhotoRepository(),
     mailAppRepository: const DeviceMailAppRepository(),
     analyticsRepository: core.analytics,

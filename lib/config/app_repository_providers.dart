@@ -87,6 +87,7 @@ import '../data/repositories/training/course_download_repository.dart';
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../data/repositories/training/demo_offer_repository.dart';
+import '../data/repositories/lesson_voice/lesson_voice_repository.dart';
 import '../data/repositories/training/training_endgame_content.dart';
 import '../data/repositories/training/training_history_source.dart';
 import '../data/repositories/training/training_repository.dart';
@@ -221,6 +222,9 @@ _Providers _game(Dependencies deps) => [
   RepositoryProvider<VideoInterruptionsRepository>(
     create: (_) => DeviceVideoInterruptionsRepository(),
   ),
+  // A voz gravada da aula (L4): sem ela, a aula fica em modo leitura.
+  if (deps.lessonVoice case final voice?)
+    RepositoryProvider<LessonVoiceRepository>.value(value: voice),
   RepositoryProvider<DeepAnalysisRepository>.value(
     value: deps.deepAnalysisRepository,
   ),

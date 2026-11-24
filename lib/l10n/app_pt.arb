@@ -3113,5 +3113,9 @@
   "lessonVideoTimeSemantics": "{position} de {total}",
   "glossaryOpen": "Abrir o Glossário",
   "lessonVideoStoppedHere": "Você parou aqui.",
-  "lessonVideoRestart": "Recomeçar do início"
+  "lessonVideoRestart": "Recomeçar do início",
+  "lessonVideoNoAudio": "Sem áudio.",
+  "lessonVideoDownloadVoice": "Baixar a voz",
+  "lessonVideoVoiceFailed": "Não deu para baixar a voz.",
+  "lessonVideoCaptionsOff": "Legenda desligada"
 }

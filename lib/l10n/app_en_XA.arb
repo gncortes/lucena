@@ -2809,5 +2809,9 @@
   "lessonVideoTimeSemantics": "[{position} öf {total} one two three]",
   "glossaryOpen": "[Öpéñ thé ĝlöššåŕý one two]",
   "lessonVideoStoppedHere": "[Ýöû štöppéd héŕé. one two]",
-  "lessonVideoRestart": "[Štåŕt övéŕ one]"
+  "lessonVideoRestart": "[Štåŕt övéŕ one]",
+  "lessonVideoNoAudio": "[Ñö åûdîö. one]",
+  "lessonVideoDownloadVoice": "[Döwñlöåd thé vöîçé one two]",
+  "lessonVideoVoiceFailed": "[Çöûldñ't döwñlöåd thé vöîçé. one two three]",
+  "lessonVideoCaptionsOff": "[Çåptîöñš öff one two]"
 }

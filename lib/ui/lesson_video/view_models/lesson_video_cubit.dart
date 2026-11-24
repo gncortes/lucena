@@ -3,8 +3,9 @@
 // para voltar a qualquer ponto. O relógio manda (`VideoClock` + `Now`): em
 // cada tique o view model calcula o quadro (`VideoTimeline.frameAt`).
 //
-// Escopo: modo leitura (sem áudio; a voz entra no L4) e sem resposta às
-// perguntas (o vídeo para na pergunta; o L2 trata o lance). O L3 salva onde
+// A voz (L4) vem do pacote do capítulo: baixado, a fala segue o áudio
+// (`VideoPace.voice`) e toca junto com o relógio; sem o pacote ou com a voz
+// desligada, modo leitura. O L2 trata o lance na pergunta. O L3 salva onde
 // parou e os ajustes (`LessonVideoRepository`, `VideoResume`) e pausa em
 // qualquer interrupção, sem nunca voltar a tocar sozinho.
 import 'dart:async';
@@ -13,8 +14,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/lesson_video/lesson_video_repository.dart';
+import '../../../data/repositories/lesson_voice/lesson_voice_repository.dart';
+import '../../../data/services/voice_audio_service.dart';
 import '../../../data/repositories/lesson_video/video_interruptions_repository.dart';
 import '../../../data/repositories/school/lesson_script_repository.dart';
+import '../../../domain/models/lesson_script.dart';
 import '../../../domain/models/lesson_video.dart';
 import '../../../domain/models/lesson_video_progress.dart';
 import '../../../domain/use_cases/lesson_video_converter.dart';
@@ -33,6 +37,11 @@ typedef VideoTicker = Timer? Function(
 
 enum LessonVideoStatus { loading, ready, failed }
 
+/// A voz do Viktor na aula: desligada (leitura sem aviso), tocando o pacote
+/// do capítulo, ou sem o pacote ("Sem áudio." e "Baixar a voz"), baixando e
+/// falhou ("Não deu para baixar a voz." e "Tentar novamente").
+enum VideoVoice { off, ready, missing, downloading, failed }
+
 class LessonVideoState {
   const LessonVideoState({
     this.status = LessonVideoStatus.loading,
@@ -50,9 +59,14 @@ class LessonVideoState {
     this.chapters = const [],
     this.gates = const [],
     this.turn,
+    this.voice = VideoVoice.off,
   });
 
   final LessonVideoStatus status;
+
+  /// A voz do capítulo (o aviso "Sem áudio." aparece fora de [VideoVoice.off]
+  /// e [VideoVoice.ready]).
+  final VideoVoice voice;
 
   /// O que a tela mostra agora.
   final VideoFrame? frame;
@@ -101,6 +115,7 @@ class LessonVideoState {
     bool? captions,
     bool? flip,
     bool? notice,
+    VideoVoice? voice,
     List<Duration>? chapters,
     List<Duration>? gates,
     VideoTurnView? Function()? turn,
@@ -120,6 +135,7 @@ class LessonVideoState {
     chapters: chapters ?? this.chapters,
     gates: gates ?? this.gates,
     turn: turn == null ? this.turn : turn(),
+    voice: voice ?? this.voice,
   );
 }
 
@@ -136,8 +152,18 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     this.language = 'pt',
     this._autoplay = true,
     VideoTicker? ticker,
+    this._voice,
+    this._audio,
+    String? chapterId,
   }) : _ticker = ticker ?? Timer.periodic,
+       chapterId = chapterId ?? lessonId,
        super(const LessonVideoState());
+
+  final LessonVoiceRepository? _voice;
+  final Future<VoiceAudioService> Function()? _audio;
+
+  /// O capítulo do pacote da voz (padrão: a lição).
+  final String chapterId;
 
   final LessonScriptRepository _scripts;
   final LessonVideoRepository _videos;
@@ -160,6 +186,16 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   static const skipStep = Duration(seconds: 10);
 
   LessonVideo? _video;
+  LessonScript? _script;
+  ScriptTexts? _texts;
+  VideoPace _pace = VideoPace.reading;
+
+  // ---- Voz (L4) ----------------------------------------------------------
+  VoiceAudioService? _player;
+  StreamSubscription<VoiceInterruption>? _audioInterrupted;
+  final _files = <String, String>{};
+  TimedLine? _speaking;
+  bool _voiceDirty = false;
   late VideoTimeline _main;
   VideoClock _clock = const VideoClock();
   final _resolved = <String>{};
@@ -193,16 +229,23 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
       final texts = await _scripts.texts(lessonId, language);
       final settings = await _videos.settings();
       final saved = await _videos.progress(lessonId, partId, stage);
+      final (voice, clips) = await _loadVoice();
       final video = LessonVideoConverter.convert(
         script,
         texts,
         language: language,
+        clips: clips,
       ).stage(stage);
       if (isClosed) return;
+      _script = script;
+      _texts = texts;
       _video = video;
+      _pace = voice == VideoVoice.ready ? VideoPace.voice : VideoPace.reading;
+      if (_pace == VideoPace.voice) await _prepareAudio(video);
+      if (isClosed) return;
       _main = VideoTimeline.layout(
         video.lines,
-        pace: VideoPace.reading,
+        pace: _pace,
         rate: settings.rate,
       );
       final point = VideoResume.pointFrom(_main, saved);
@@ -214,6 +257,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
       emit(
         state.copyWith(
           status: LessonVideoStatus.ready,
+          voice: voice,
           rate: settings.rate,
           captions: settings.captions,
           notice: point.notice,
@@ -287,6 +331,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     // Caiu no meio de um lance: a peça já aparece na casa, sem andar.
     final landed = _main.frameAt(to, resolved: _resolved);
     _stillFen = landed.animating ? landed.fen : null;
+    _voiceDirty = true;
     tick();
   }
 
@@ -300,6 +345,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
   void restart() {
     if (!_ready) return;
     _clock = const VideoClock();
+    _voiceDirty = true;
     unawaited(_videos.clearProgress(lessonId, partId, stage));
     play();
   }
@@ -322,16 +368,13 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     if (video == null) return;
     final now = _now();
     final anchor = _main.anchorAt(_clock.position(now));
-    final next = VideoTimeline.layout(
-      video.lines,
-      pace: VideoPace.reading,
-      rate: rate,
-    );
+    final next = VideoTimeline.layout(video.lines, pace: _pace, rate: rate);
     final mapped = anchor == null
         ? Duration.zero
         : next.timeOf(anchor.id, anchor.fraction) ?? Duration.zero;
     _main = next;
     _clock = _clock.seek(_main.reachable(mapped, _resolved), now);
+    _voiceDirty = true;
     emit(
       state.copyWith(
         rate: rate,
@@ -415,6 +458,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
         turn: () => _turnView(t) ?? _sealView(),
       ),
     );
+    _syncVoice(_main, t, playing: _clock.playing);
   }
 
   /// O lance do aluno na pergunta (Vídeo 26–30): julga e toca o ramo.
@@ -481,7 +525,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     }
     _branch = VideoTimeline.layout(
       lines,
-      pace: VideoPace.reading,
+      pace: _pace,
       rate: state.rate,
       startFen: state.frame?.fen,
     );
@@ -514,6 +558,7 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
         ),
       ),
     );
+    _syncVoice(branch, t, playing: _branchClock.playing);
     return true;
   }
 
@@ -555,10 +600,135 @@ class LessonVideoCubit extends Cubit<LessonVideoState> {
     return flip;
   }
 
+  // ---- Voz ---------------------------------------------------------------
+
+  /// A voz ao abrir: desligada, pronta (com os tempos das falas) ou sem o
+  /// pacote. Pronta sem tempos (pacote antigo) conta como sem o pacote.
+  Future<(VideoVoice, Map<String, VoiceClip>)> _loadVoice() async {
+    final repo = _voice;
+    if (repo == null || !await repo.voiceOn()) {
+      return (VideoVoice.off, const <String, VoiceClip>{});
+    }
+    if (await repo.state(chapterId) is! VoicePackReady) {
+      return (VideoVoice.missing, const <String, VoiceClip>{});
+    }
+    final clips = await repo.clips(chapterId);
+    return clips.isEmpty
+        ? (VideoVoice.missing, clips)
+        : (VideoVoice.ready, clips);
+  }
+
+  /// Os arquivos de cada fala e o tocador (criado só com a voz pronta).
+  Future<void> _prepareAudio(LessonVideo video) async {
+    final repo = _voice!;
+    final paths = {
+      for (final l in video.lines) ?l.audio,
+      for (final b in video.branches.values)
+        for (final l in b) ?l.audio,
+    };
+    for (final path in paths) {
+      final file = await repo.audioFile(chapterId, path);
+      if (file != null) _files[path] = file;
+    }
+    final make = _audio;
+    if (_player == null && make != null) {
+      _player = await make();
+      _audioInterrupted = _player!.interruptions.listen((_) => pause());
+    }
+  }
+
+  /// A voz acompanha o relógio: toca a fala de [t] do ponto certo e cala
+  /// fora da fala, pausado ou na pergunta. Volume do aparelho em zero não
+  /// desliga a voz (a legenda segue igual).
+  void _syncVoice(VideoTimeline timeline, Duration t, {required bool playing}) {
+    final audio = _player;
+    if (audio == null || _pace != VideoPace.voice) return;
+    TimedLine? want;
+    if (playing && t < timeline.total && timeline.lines.isNotEmpty) {
+      final timed = timeline.lines[timeline.lineAt(t)];
+      if (timed.line.audio != null &&
+          _files.containsKey(timed.line.audio) &&
+          t >= timed.voiceStart &&
+          t < timed.voiceEnd) {
+        want = timed;
+      }
+    }
+    if (identical(want, _speaking) && !_voiceDirty) return;
+    _voiceDirty = false;
+    _speaking = want;
+    if (want == null) {
+      unawaited(audio.pause());
+    } else {
+      unawaited(
+        audio.play(
+          _files[want.line.audio]!,
+          from: (t - want.voiceStart) * state.rate,
+          rate: state.rate,
+        ),
+      );
+    }
+  }
+
+  /// "Baixar a voz" e "Tentar de novo": baixa o pacote do capítulo e, pronto,
+  /// passa a aula para o ritmo da voz no mesmo ponto da fala.
+  Future<void> downloadVoice() async {
+    final repo = _voice;
+    if (repo == null || !_ready || state.voice == VideoVoice.downloading) {
+      return;
+    }
+    emit(state.copyWith(voice: VideoVoice.downloading));
+    final result = await repo.download(chapterId);
+    if (!_ready) return;
+    if (result is! VoicePackReady) {
+      emit(state.copyWith(voice: VideoVoice.failed));
+      return;
+    }
+    final clips = await repo.clips(chapterId);
+    if (!_ready) return;
+    if (clips.isEmpty) {
+      emit(state.copyWith(voice: VideoVoice.failed));
+      return;
+    }
+    final video = LessonVideoConverter.convert(
+      _script!,
+      _texts!,
+      language: language,
+      clips: clips,
+    ).stage(stage);
+    await _prepareAudio(video);
+    if (!_ready) return;
+    final now = _now();
+    final anchor = _main.anchorAt(_clock.position(now));
+    _video = video;
+    _pace = VideoPace.voice;
+    final next = VideoTimeline.layout(
+      video.lines,
+      pace: _pace,
+      rate: state.rate,
+    );
+    final mapped = anchor == null
+        ? Duration.zero
+        : next.timeOf(anchor.id, anchor.fraction) ?? Duration.zero;
+    _main = next;
+    _clock = _clock.seek(_main.reachable(mapped, _resolved), now);
+    _voiceDirty = true;
+    emit(
+      state.copyWith(
+        voice: VideoVoice.ready,
+        total: next.total,
+        chapters: _chapterStarts(video, next),
+        gates: [for (final g in next.gates) g.at],
+      ),
+    );
+    tick();
+  }
+
   @override
   Future<void> close() async {
     _stopTicking();
     await _interrupted?.cancel();
+    await _audioInterrupted?.cancel();
+    await _player?.dispose();
     _save();
     return super.close();
   }
