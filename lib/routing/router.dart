@@ -1,3 +1,5 @@
+import '../data/repositories/lesson_voice/lesson_voice_repository.dart';
+import '../data/services/voice_audio_service.dart';
 import 'training_lesson_scope.dart';
 import 'abre_do_cartao.dart';
 import '../domain/models/load_failure.dart';
@@ -1353,6 +1355,8 @@ GoRouter buildRouter({
                                 ),
                             stage: stage,
                             language: language,
+                            voice: context.read<LessonVoiceRepository?>(),
+                            audio: JustAudioVoiceAudioService.create,
                           )..start(),
                           child:
                               FutureBuilder<

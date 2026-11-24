@@ -1,0 +1,69 @@
+import 'dart:async';
+
+import 'package:lucena/data/repositories/lesson_voice/lesson_voice_repository.dart';
+import 'package:lucena/domain/models/lesson_video.dart';
+
+/// A voz dos capítulos em memória: o teste diz o estado de cada capítulo e o
+/// que o próximo download devolve.
+class FakeLessonVoiceRepository implements LessonVoiceRepository {
+  FakeLessonVoiceRepository({
+    Map<String, VoicePackState>? states,
+    this.on = true,
+    Map<String, VoiceClip>? clips,
+  }) : states = states ?? {},
+       clipsByKey = clips ?? {};
+
+  /// Os tempos das falas de todo capítulo pronto, pela chave do áudio.
+  final Map<String, VoiceClip> clipsByKey;
+
+  final Map<String, VoicePackState> states;
+
+  /// O resultado do próximo download (padrão: pronto).
+  VoicePackState nextDownload = const VoicePackReady();
+  final downloads = <String>[];
+  bool on;
+  final _changes = StreamController<(String, VoicePackState)>.broadcast();
+
+  @override
+  Future<VoicePackState> state(String chapterId) async =>
+      states[chapterId] ?? const VoicePackMissing();
+
+  @override
+  Stream<VoicePackState> watch(String chapterId) {
+    // Sem async*: cancelar não espera o gerador (trava o tearDown do widget).
+    StreamSubscription<(String, VoicePackState)>? changes;
+    late final StreamController<VoicePackState> out;
+    out = StreamController<VoicePackState>(
+      onListen: () {
+        out.add(states[chapterId] ?? const VoicePackMissing());
+        changes = _changes.stream
+            .where((c) => c.$1 == chapterId)
+            .listen((c) => out.add(c.$2));
+      },
+      onCancel: () => changes?.cancel(),
+    );
+    return out.stream;
+  }
+
+  @override
+  Future<VoicePackState> download(String chapterId) async {
+    downloads.add(chapterId);
+    states[chapterId] = nextDownload;
+    _changes.add((chapterId, nextDownload));
+    return nextDownload;
+  }
+
+  @override
+  Future<String?> audioFile(String chapterId, String audioPath) async =>
+      states[chapterId] is VoicePackReady ? '/fake/$audioPath' : null;
+
+  @override
+  Future<Map<String, VoiceClip>> clips(String chapterId) async =>
+      states[chapterId] is VoicePackReady ? clipsByKey : const {};
+
+  @override
+  Future<bool> voiceOn() async => on;
+
+  @override
+  Future<void> setVoiceOn({required bool on}) async => this.on = on;
+}

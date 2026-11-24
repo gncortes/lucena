@@ -33,6 +33,13 @@ abstract final class LessonVideoKeys {
   static const notice = Key('lessonVideo.notice');
   static const noticeAction = Key('lessonVideo.noticeAction');
 
+  /// "Sem áudio." / "Não deu para baixar a voz." e a ação (L4).
+  static const voiceNotice = Key('lessonVideo.voiceNotice');
+  static const voiceNoticeAction = Key('lessonVideo.voiceNoticeAction');
+
+  /// A linha "Legenda desligada" no lugar do balão.
+  static const captionsOff = Key('lessonVideo.captionsOff');
+
   /// Rodapé do fim da etapa.
   static const endRestart = Key('lessonVideo.endRestart');
   static const endNext = Key('lessonVideo.endNext');

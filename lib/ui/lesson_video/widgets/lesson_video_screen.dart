@@ -348,6 +348,34 @@ class _Balloon extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final frame = this.frame;
+    if (!visible && !loading) {
+      // Legenda desligada: no lugar do balão, só o aviso (protótipo).
+      return Align(
+        alignment: AlignmentDirectional.topStart,
+        child: SizedBox(
+          key: LessonVideoKeys.captionsOff,
+          height: 48,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: 16),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.closed_caption_disabled,
+                  size: 20,
+                  color: colors.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  context.l10n.lessonVideoCaptionsOff,
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: colors.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     final Widget content = loading
         ? const Column(
             key: LessonVideoKeys.caption,
@@ -554,6 +582,12 @@ class _Bottom extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
+                  ),
+                ] else if (state.voice == VideoVoice.missing ||
+                    state.voice == VideoVoice.failed) ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _VoiceNotice(state: state, cubit: cubit),
                   ),
                 ],
               ],
@@ -997,6 +1031,65 @@ class _VideoBoardState extends State<_VideoBoard> {
             color: AppColors.white,
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Sem a voz do capítulo (Vídeo 10–11): "Sem áudio." e "Baixar a voz", ou
+/// "Não deu para baixar a voz." e "Tentar novamente". Com a voz desligada nos
+/// ajustes, nada (leitura sem aviso).
+class _VoiceNotice extends StatelessWidget {
+  const _VoiceNotice({required this.state, required this.cubit});
+
+  final LessonVideoState state;
+  final LessonVideoCubit cubit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    final small = Theme.of(context).textTheme.bodySmall;
+    final failed = state.voice == VideoVoice.failed;
+    // A ação fica sempre à vista; a mensagem encolhe com reticências.
+    return LayoutBuilder(
+      builder: (context, constraints) => Row(
+        key: LessonVideoKeys.voiceNotice,
+        children: [
+          Icon(
+            failed ? Icons.error : Icons.volume_off,
+            size: 16,
+            color: failed ? colors.error : colors.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              failed ? l10n.lessonVideoVoiceFailed : l10n.lessonVideoNoAudio,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: small,
+            ),
+          ),
+          const SizedBox(width: 8),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: max(0, constraints.maxWidth - 28),
+            ),
+            child: GestureDetector(
+              key: LessonVideoKeys.voiceNoticeAction,
+              onTap: cubit.downloadVoice,
+              child: Text(
+                failed ? l10n.lessonRetry : l10n.lessonVideoDownloadVoice,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: small?.copyWith(
+                  color: colors.primary,
+                  fontWeight: AppWeight.medium,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

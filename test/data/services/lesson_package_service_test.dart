@@ -168,6 +168,53 @@ void main() {
     expect(await restored.isDownloaded(TrainingCourseConfig.pilares), isTrue);
   });
 
+  test(
+    'baixar o capítulo também pede a voz dele, e falha da voz não atrapalha',
+    () async {
+      source.files[indexPath] = jsonEncode({
+        'partes': [
+          {
+            'capitulos': [
+              {
+                'id': 'pilares.c1',
+                'aulas': [
+                  {'id': 'pilares.c1', 'tipo': 'teste'},
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      source.files.addAll({
+        'assets/lessons/en/lessons.json': '{}',
+        'assets/lessons/en/endgames/pilares.c1.json': '{}',
+      });
+      final voices = <String>[];
+      final repository = CourseDownloadRepository(
+        service(),
+        voice: (chapterId) async {
+          voices.add(chapterId);
+          throw const SocketException('sem internet');
+        },
+      );
+      await repository.prepare(TrainingCourseConfig.pilares);
+      expect(voices, isEmpty);
+      await repository.prepare(
+        TrainingCourseConfig.pilares,
+        chapterId: 'pilares.c1',
+      );
+      await pumpEventQueue();
+      expect(voices, ['pilares.c1']);
+      expect(
+        await repository.isDownloaded(
+          TrainingCourseConfig.pilares,
+          chapterId: 'pilares.c1',
+        ),
+        isTrue,
+      );
+    },
+  );
+
   test('school package follows every script and never accepts missing required content', () async {
     const school = 'assets/lessons/course.json';
     source.files.addAll({
